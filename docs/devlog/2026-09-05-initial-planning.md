@@ -64,3 +64,4 @@
 - Web toolchain 第二輪驗證：改用 Rust `wasm32-unknown-emscripten` target 搭配完整 Emscripten wrapper；`cargo check -p unone-engine --target wasm32-unknown-emscripten` 通過。先前 `wasm32-unknown-unknown` 的 `No thread API` 被判定為 target override／sysroot 不匹配，不是引擎邏輯問題。
 - 為 native／Web 共用 runtime 補上 `EngineRuntime::load_source`：Web host 負責 fetch／cache 後以記憶體提供 scene 與 Luau source；引擎仍只負責 Luau、world、physics、input 與 observation。新增 regression test 證明沒有 project files 也能執行同一 runtime。
 - Web compile 的證據仍只到 engine library；瀏覽器 WebGPU host、平台 capability report 與固定 CI toolchain 尚未宣稱完成，避免把編譯通過誤報成跨平台運行通過。
+- 依重大切片節奏再次執行 Claude CLI read-only review；CLI 可啟動但 60 秒無輸出，已中止且不算 review 通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-4.md`。
