@@ -58,3 +58,9 @@ Bundle 的第一版只包含 manifest、依賴、host-provided fetch、streaming
 ## 驗證遊戲
 
 中期先在 `D:/Projects/Unone_Games/` 用憤怒鳥 2D 壓測 2D physics、camera、input replay、scene/prefab、asset、UI、hot reload、headless test 與 AI 教學。最終驗收仍包括 3D 賽車、紅色警戒式 RTS、放置戰鬥、AVG、自走棋、老虎機與魚機。
+
+正式 gate 以 `D:/Projects/Unone_Games/validation/acceptance-matrix.json` 為準；可用以下命令檢查，任何一個 gate 未完成都會以非零狀態回報：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File D:/Projects/Unone/scripts/validate-game-matrix.ps1 -MatrixPath D:/Projects/Unone_Games/validation/acceptance-matrix.json
+```
