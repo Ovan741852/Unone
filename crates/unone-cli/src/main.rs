@@ -14,6 +14,8 @@ use winit::{
     window::{Window, WindowId},
 };
 
+mod mcp;
+
 #[derive(Debug, Parser)]
 #[command(name = "game", version, about = "Unone AI-native game developer CLI")]
 struct Cli {
@@ -63,6 +65,8 @@ enum Command {
         #[command(subcommand)]
         command: BundleCommand,
     },
+    /// Serve the existing Developer Protocol over MCP stdio.
+    Mcp,
 }
 
 #[derive(Debug, Subcommand)]
@@ -248,6 +252,7 @@ fn run() -> Result<ExitCode> {
                 BundleCommand::Install { id } => print_result(manager.install(&id), cli.json),
             }
         }
+        Command::Mcp => mcp::serve(&cli.project),
     }
 }
 

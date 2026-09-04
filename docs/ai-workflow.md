@@ -1,6 +1,19 @@
 # AI 開發流程
 
-這是目前 AI 或人類操作 Unone 的最小流程。CLI 是 Developer Protocol 的第一個 client；MCP 與 Editor 必須在這個 protocol 穩定後再接入。
+這是目前 AI 或人類操作 Unone 的最小流程。CLI 與 `game mcp` 都是 Developer Protocol client；MCP 只做 stdio 薄轉接，不在另一層重做引擎邏輯。
+
+## -0. MCP stdio（可選）
+
+需要 MCP host 時，先建立 CLI binary，再以固定 project 啟動：
+
+```powershell
+cargo build -p unone-cli
+target/debug/game.exe --project D:/Projects/Unone_Games/minimal-2d mcp
+# 可重跑的 protocol smoke
+.\scripts\mcp-smoke.ps1
+```
+
+MCP host 設定可使用同一個 command 與 args。連線後先完成 `initialize` 與 `notifications/initialized`，再 discovery `tools/list`；工具名稱以 `unone_` 開頭。`unone_run` 的 arguments 直接接受 `frames`、`seed`、單一 `action` 或 `input_sequence`，後者與 CLI 相同，使用語意 action 與 world-space pointer。工具結果內的 `content[0].text` 是完整 `EngineResult` JSON；錯誤也會保留 `code`、`explanation`、`facts`、`likely_causes` 與 `suggested_actions`。
 
 ## -1. 先確認平台能力
 

@@ -77,4 +77,6 @@
 - pointer input 與 Web toolchain 文件切片後依流程執行 Claude CLI `2.1.260` read-only review；約 60 秒完全無輸出後中止，沒有可判讀 findings，故不算通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-7.md`。
 - bundle runtime 補上 `BundleFetcher` host boundary：引擎以 reader 做 streaming size/SHA-256 verify、`.part` staging、sync、cache commit 與 generation activation；native local file 是 adapter，Web/mobile fetch 與 storage policy 留在 host。新增 cache-only source 與驗證失敗保留上一代的 regression tests，決策記錄於 `docs/decisions/0010-bundle-fetch-boundary.md`。
 - 建立 `web/smoke/index.html` 並以本地 browser 實際載入 Emscripten `.js + .wasm`；DOM 顯示 `passed: 60 deterministic frames executed`，observation digest 與 Node smoke 一致。截圖保存於 `docs/devlog/2026-09-05-web-browser-runtime-smoke.png`；這只通過 browser runtime smoke，WebGPU game host、browser input 與 storage adapter 仍未完成。
+- 依官方 MCP 2025-11-25 lifecycle／stdio 邊界建立 `game mcp` 薄轉接：initialize、initialized、ping、tools/list、tools/call，工具只呼叫既有 CLI/engine operations，stdout 僅輸出 JSON-RPC。整合 smoke 驗證 10 tools、project inspect、deterministic run、API describe；邊界記錄於 `docs/decisions/0011-mcp-thin-adapter.md`。
+- 將 MCP stdio 驗證收成 `scripts/mcp-smoke.ps1`，避免人工解析 response 行列造成假成功；目前輸出為 `protocol=2025-11-25, tools=10, conflict=MCP_ARGUMENT_CONFLICT`。
 - bundle slice 後依流程執行 Claude CLI `2.1.260` read-only review；約 60 秒完全無輸出後中止，沒有可判讀 findings，故不算通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-8.md`。

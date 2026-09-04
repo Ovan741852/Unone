@@ -28,6 +28,17 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json te
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview --watch
 ```
 
+AI host 也可以使用同一個 Developer Protocol 的 MCP stdio 薄轉接：
+
+```powershell
+cargo build -p unone-cli
+target/debug/game.exe --project D:/Projects/Unone_Games/minimal-2d mcp
+# 驗證 lifecycle、tools discovery、deterministic run 與語意錯誤
+.\scripts\mcp-smoke.ps1
+```
+
+MCP 只位於 `unone-cli`，不成為 engine core 的依賴；工具結果保留完整 `EngineResult` JSON 與語意化 diagnostics。
+
 目前已驗證：Luau entrypoint、`--!strict` contract、官方 `luau-analyze` adapter、headless fixed timestep、deterministic 2D rigid body／重力／地面碰撞、Camera2D state、逐 frame input replay、seeded Luau random、seed/input observation digest、failed reload fallback、與遊戲命名無關的 native wgpu preview、`preview --watch` 腳本熱更、JSON test manifest 與 bundle hash/cache/activation。
 
 完整型別檢查使用 `game check --types`，需要另外安裝並固定版本的官方 `luau-analyze`；工具不存在時引擎會明確回報錯誤，不會把基本 contract check 說成完整型別檢查。

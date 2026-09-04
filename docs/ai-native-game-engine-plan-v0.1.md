@@ -199,7 +199,7 @@ Bundle hot update 的驗收重點是「可恢復、可驗證、可觀測」，�
 
 ## 5. Developer Protocol：AI 的主要入口
 
-CLI、MCP 與未來 Editor 不各自實作引擎邏輯，而是共用 Developer Protocol。第一版先做 CLI；MCP 只在 protocol、診斷與 headless loop 穩定後加上。
+CLI、MCP 與未來 Editor 不各自實作引擎邏輯，而是共用 Developer Protocol。CLI 仍是最容易 debug 的 client；在 protocol、診斷與 headless loop 穩定後，`game mcp` 以 stdio 做薄轉接，讓 MCP host discovery／call 同一批 operation。
 
 傳輸層與命令層分離：native 開發先用 CLI + local process/session transport；Web 之後用 browser bridge。AI 不應依賴某個 GUI 的座標或畫面狀態。
 
@@ -220,9 +220,9 @@ game diagnostics [--json]
 game test [name] [--json]
 ```
 
-目前已實作 `project inspect`、`api search`、`api describe` 的最小版本；它們的 metadata 仍以少量公開 Engine API 為範圍，不做 Rust 全量反射。`game preview --watch` 是目前可用的持續 session reload 入口；一次性 CLI process 不另外假裝提供無狀態的 `game reload`。
+目前已實作 `project inspect`、`api search`、`api describe` 與 `game mcp` 的最小版本；MCP 提供 initialize、tools/list、tools/call，工具只包裝既有 CLI operation，metadata 仍以少量公開 Engine API 為範圍，不做 Rust 全量反射。`game preview --watch` 是目前可用的持續 session reload 入口；一次性 CLI process 不另外假裝提供無狀態的 `game reload`。
 
-所有命令都要有穩定 exit code、machine-readable JSON 與人類可讀輸出。MCP 只包裝這些 protocol operation，不成為 Engine core 的依賴。
+所有命令都要有穩定 exit code、machine-readable JSON 與人類可讀輸出。MCP 只包裝這些 protocol operation，不成為 Engine core 的依賴；第一版不做 resources、prompts、tasks、Streamable HTTP 或長生命週期遊戲 session。
 
 ## 6. 語意化 API 與診斷
 
