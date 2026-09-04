@@ -32,5 +32,7 @@
 ## 工程驗證結果
 
 - `cargo test --workspace` 通過：2 個 engine regression tests、CLI/doc tests 無失敗。
+- `game test --json` 通過：`minimal-2d` 的 `player_moves_right` manifest test 成功。
+- 移除預設逐幀 trace，避免 AI 觀測輸出被 frame noise 淹沒；只保留語意事件。
 - 本地 Git 已初始化，baseline commit：`8a4e598`。
 - Claude CLI `2.1.206` 已安裝，但 code review 因 OAuth session 過期未完成；詳見 `docs/issues/2026-09-05-claude-cli-auth-expired.md`。

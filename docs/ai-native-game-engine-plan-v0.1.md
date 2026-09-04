@@ -216,7 +216,7 @@ headless run 至少要能固定：
 
 輸出 semantic state、trace、diagnostics 與 observation digest。相同 seed + 相同輸入在同一平台應可重現；跨平台完全 bit-identical 不先承諾，先做結果層級的 tolerance 與可解釋差異。
 
-第一版測試使用 Luau test API，結果由引擎輸出 JSON；不要一開始同時維護 Luau DSL 與 YAML schema。當 AI 反覆需要聲明式測試時，再加入第二種格式。
+第一版測試使用簡單的 JSON test manifest，結果由引擎輸出 JSON；不要一開始同時維護 Luau DSL 與 YAML schema。當測試需要表達遊戲特有邏輯時，再加入 Luau test API，而不是預先做兩套格式。
 
 ## 8. 資料格式與單一來源
 

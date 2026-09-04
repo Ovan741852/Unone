@@ -6,7 +6,7 @@ use sha2::{Digest, Sha256};
 
 use crate::{
     diagnostics::{ActionSuggestion, Diagnostic, EngineResult, SourceLocation},
-    project::{ProjectConfig, ProjectPaths},
+    project::{ProjectConfig, ProjectPaths, TestSpec},
     world::{Vec2, World, WorldSnapshot},
 };
 
@@ -29,6 +29,22 @@ pub struct RunReport {
     pub observation_digest: String,
     pub world: WorldSnapshot,
     pub trace: Vec<TraceEvent>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct TestCaseReport {
+    pub name: String,
+    pub passed: bool,
+    pub frames: u64,
+    pub observation_digest: Option<String>,
+    pub failures: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct TestSuiteReport {
+    pub project: String,
+    pub passed: bool,
+    pub cases: Vec<TestCaseReport>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -63,38 +79,57 @@ impl EngineRuntime {
         };
         let source = match fs::read_to_string(&paths.entry_script) {
             Ok(source) => source,
-            Err(err) => return EngineResult::failure(Diagnostic::error(
-                "SCRIPT_READ_FAILED",
-                "無法讀取入口腳本",
-                format!("{}：{}", paths.entry_script.display(), err),
-            )),
+            Err(err) => {
+                return EngineResult::failure(Diagnostic::error(
+                    "SCRIPT_READ_FAILED",
+                    "無法讀取入口腳本",
+                    format!("{}：{}", paths.entry_script.display(), err),
+                ));
+            }
         };
         let lua = Lua::new();
-        let value = match lua.load(&source).set_name(paths.entry_script.to_string_lossy()).eval::<Value>() {
+        let value = match lua
+            .load(&source)
+            .set_name(paths.entry_script.to_string_lossy())
+            .eval::<Value>()
+        {
             Ok(value) => value,
             Err(err) => return EngineResult::failure(script_diagnostic(&paths, err.to_string())),
         };
         let table = match value {
             Value::Table(table) => table,
-            _ => return EngineResult::failure(Diagnostic::error(
-                "SCRIPT_ENTRY_INVALID",
-                "入口腳本必須回傳 Game table",
-                "入口腳本最後必須 return 一個包含 start 與 update function 的 table。",
-            )),
+            _ => {
+                return EngineResult::failure(Diagnostic::error(
+                    "SCRIPT_ENTRY_INVALID",
+                    "入口腳本必須回傳 Game table",
+                    "入口腳本最後必須 return 一個包含 start 與 update function 的 table。",
+                ));
+            }
         };
         let mut entrypoints = Vec::new();
         for name in ["start", "update"] {
             match table.get::<Value>(name) {
                 Ok(Value::Function(_)) => entrypoints.push(name.to_string()),
-                Ok(_) => return EngineResult::failure(Diagnostic::error(
-                    "SCRIPT_ENTRYPOINT_INVALID",
-                    format!("Game.{name} 不是 function"),
-                    format!("引擎需要 Game.{name}(api{}) 才能執行專案。", if name == "update" { ", dt" } else { "" }),
-                )),
-                Err(err) => return EngineResult::failure(script_diagnostic(&paths, err.to_string())),
+                Ok(_) => {
+                    return EngineResult::failure(Diagnostic::error(
+                        "SCRIPT_ENTRYPOINT_INVALID",
+                        format!("Game.{name} 不是 function"),
+                        format!(
+                            "引擎需要 Game.{name}(api{}) 才能執行專案。",
+                            if name == "update" { ", dt" } else { "" }
+                        ),
+                    ));
+                }
+                Err(err) => {
+                    return EngineResult::failure(script_diagnostic(&paths, err.to_string()));
+                }
             }
         }
-        let strict_mode = source.lines().next().map(|line| line.trim() == "--!strict").unwrap_or(false);
+        let strict_mode = source
+            .lines()
+            .next()
+            .map(|line| line.trim() == "--!strict")
+            .unwrap_or(false);
         let mut result = EngineResult::success(CheckReport {
             project: config.name,
             script: paths.entry_script.display().to_string(),
@@ -120,10 +155,26 @@ impl EngineRuntime {
         let input = Rc::new(RefCell::new(InputState::default()));
         let trace = Rc::new(RefCell::new(Vec::new()));
         let lua = Lua::new();
-        let api = build_api(&lua, Rc::clone(&world), Rc::clone(&input), Rc::clone(&trace))
-            .map_err(|err| Diagnostic::error("ENGINE_API_BIND_FAILED", "無法建立 Luau Engine API", err.to_string()))?;
-        let placeholder = lua.create_function(|_, _: ()| Ok(()))
-            .map_err(|err| Diagnostic::error("ENGINE_INIT_FAILED", "無法初始化 Luau runtime", err.to_string()))?;
+        let api = build_api(
+            &lua,
+            Rc::clone(&world),
+            Rc::clone(&input),
+            Rc::clone(&trace),
+        )
+        .map_err(|err| {
+            Diagnostic::error(
+                "ENGINE_API_BIND_FAILED",
+                "無法建立 Luau Engine API",
+                err.to_string(),
+            )
+        })?;
+        let placeholder = lua.create_function(|_, _: ()| Ok(())).map_err(|err| {
+            Diagnostic::error(
+                "ENGINE_INIT_FAILED",
+                "無法初始化 Luau runtime",
+                err.to_string(),
+            )
+        })?;
         let mut runtime = Self {
             config,
             paths,
@@ -150,20 +201,14 @@ impl EngineRuntime {
     pub fn run(&mut self, frames: u64, seed: u64) -> EngineResult<RunReport> {
         self.trace.borrow_mut().clear();
         for _ in 0..frames {
-            let frame = self.world.borrow().frame;
             if let Err(err) = self.update_fn.call::<()>((self.api.clone(), FIXED_DT)) {
                 return EngineResult::failure(script_diagnostic(&self.paths, err.to_string()));
             }
             {
                 let mut world = self.world.borrow_mut();
                 world.frame += 1;
-                world.time_seconds += FIXED_DT;
+                world.time_seconds = world.frame as f64 / 60.0;
             }
-            self.trace.borrow_mut().push(TraceEvent {
-                frame,
-                event: "frame_completed".to_string(),
-                details: serde_json::json!({"dt": FIXED_DT, "generation": self.generation}),
-            });
         }
         let world = self.world.borrow().snapshot();
         let observation = serde_json::to_vec(&world).unwrap_or_default();
@@ -179,33 +224,124 @@ impl EngineRuntime {
         })
     }
 
+    pub fn run_tests(project_root: impl AsRef<Path>) -> EngineResult<TestSuiteReport> {
+        let (config, paths) = match ProjectPaths::discover(project_root) {
+            Ok(value) => value,
+            Err(diagnostic) => return EngineResult::failure(diagnostic),
+        };
+        if paths.test_files.is_empty() {
+            return EngineResult::failure(Diagnostic::error(
+                "TESTS_NOT_CONFIGURED",
+                "專案沒有設定測試檔",
+                "請在 project.unone.json 的 test_files 陣列加入 .test.json 檔案。",
+            ));
+        }
+        let mut cases = Vec::new();
+        for test_path in paths.test_files {
+            let text = match fs::read_to_string(&test_path) {
+                Ok(text) => text,
+                Err(err) => {
+                    return EngineResult::failure(Diagnostic::error(
+                        "TEST_READ_FAILED",
+                        "無法讀取測試檔",
+                        format!("{}：{}", test_path.display(), err),
+                    ));
+                }
+            };
+            let spec: TestSpec = match serde_json::from_str(&text) {
+                Ok(spec) => spec,
+                Err(err) => {
+                    return EngineResult::failure(Diagnostic::error(
+                        "TEST_INVALID",
+                        "測試檔不是有效 JSON",
+                        format!("{}：{}", test_path.display(), err),
+                    ));
+                }
+            };
+            let mut runtime = match Self::load(&paths.root) {
+                Ok(runtime) => runtime,
+                Err(diagnostic) => return EngineResult::failure(diagnostic),
+            };
+            for (action, is_down) in &spec.input {
+                runtime.set_input(action.clone(), *is_down);
+            }
+            let run = runtime.run(spec.frames, spec.seed);
+            let report = match run.value {
+                Some(report) => report,
+                None => {
+                    return EngineResult::failure(
+                        run.diagnostics.into_iter().next().unwrap_or_else(|| {
+                            Diagnostic::error(
+                                "TEST_RUN_FAILED",
+                                "測試執行失敗",
+                                "測試 runtime 沒有產生結果。",
+                            )
+                        }),
+                    );
+                }
+            };
+            let mut failures = Vec::new();
+            for assertion in &spec.assertions {
+                match evaluate_assertion(&report.world, assertion) {
+                    Ok(()) => {}
+                    Err(failure) => failures.push(failure),
+                }
+            }
+            cases.push(TestCaseReport {
+                name: spec.name,
+                passed: failures.is_empty(),
+                frames: report.frames,
+                observation_digest: Some(report.observation_digest),
+                failures,
+            });
+        }
+        let passed = cases.iter().all(|case| case.passed);
+        EngineResult::success(TestSuiteReport {
+            project: config.name,
+            passed,
+            cases,
+        })
+    }
+
     pub fn observe(&self) -> WorldSnapshot {
         self.world.borrow().snapshot()
     }
 
     fn load_script(&mut self, is_reload: bool) -> Result<(), Diagnostic> {
-        let source = fs::read_to_string(&self.paths.entry_script).map_err(|err| Diagnostic::error(
-            "SCRIPT_READ_FAILED",
-            "無法讀取入口腳本",
-            format!("{}：{}", self.paths.entry_script.display(), err),
-        ))?;
-        let value = self.lua.load(&source)
+        let source = fs::read_to_string(&self.paths.entry_script).map_err(|err| {
+            Diagnostic::error(
+                "SCRIPT_READ_FAILED",
+                "無法讀取入口腳本",
+                format!("{}：{}", self.paths.entry_script.display(), err),
+            )
+        })?;
+        let value = self
+            .lua
+            .load(&source)
             .set_name(self.paths.entry_script.to_string_lossy())
             .eval::<Value>()
             .map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
         let table = match value {
             Value::Table(table) => table,
-            _ => return Err(Diagnostic::error(
-                "SCRIPT_ENTRY_INVALID",
-                "入口腳本必須回傳 Game table",
-                "入口腳本最後必須 return 一個包含 start 與 update function 的 table。",
-            )),
+            _ => {
+                return Err(Diagnostic::error(
+                    "SCRIPT_ENTRY_INVALID",
+                    "入口腳本必須回傳 Game table",
+                    "入口腳本最後必須 return 一個包含 start 與 update function 的 table。",
+                ));
+            }
         };
-        let update_fn = table.get::<Function>("update").map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
-        let start_fn = table.get::<Function>("start").map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+        let update_fn = table
+            .get::<Function>("update")
+            .map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+        let start_fn = table
+            .get::<Function>("start")
+            .map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
         if is_reload {
             if let Ok(on_reload) = table.get::<Function>("onReload") {
-                on_reload.call::<()>(self.api.clone()).map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+                on_reload
+                    .call::<()>(self.api.clone())
+                    .map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
             }
             self.generation += 1;
             self.trace.borrow_mut().push(TraceEvent {
@@ -214,54 +350,89 @@ impl EngineRuntime {
                 details: serde_json::json!({"generation": self.generation, "state_policy": "rust_owned_state_preserved"}),
             });
         } else {
-            start_fn.call::<()>(self.api.clone()).map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+            start_fn
+                .call::<()>(self.api.clone())
+                .map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
         }
         self.update_fn = update_fn;
         Ok(())
     }
 }
 
-fn build_api(lua: &Lua, world: Rc<RefCell<World>>, input: Rc<RefCell<InputState>>, trace: Rc<RefCell<Vec<TraceEvent>>>) -> mlua::Result<Table> {
+fn build_api(
+    lua: &Lua,
+    world: Rc<RefCell<World>>,
+    input: Rc<RefCell<InputState>>,
+    trace: Rc<RefCell<Vec<TraceEvent>>>,
+) -> mlua::Result<Table> {
     let api = lua.create_table()?;
     let entity = lua.create_table()?;
     let input_api = lua.create_table()?;
 
     let spawn_world = Rc::clone(&world);
-    entity.set("spawn", lua.create_function(move |_, name: String| Ok(spawn_world.borrow_mut().spawn(&name)))?)?;
+    entity.set(
+        "spawn",
+        lua.create_function(move |_, name: String| Ok(spawn_world.borrow_mut().spawn(&name)))?,
+    )?;
 
     let get_world = Rc::clone(&world);
-    entity.set("getPosition", lua.create_function(move |lua, id: String| {
-        let world = get_world.borrow();
-        let entity = world.entities.get(&id).ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' 不存在。")))?;
-        let table = lua.create_table()?;
-        table.set("x", entity.transform.x)?;
-        table.set("y", entity.transform.y)?;
-        Ok(table)
-    })?)?;
+    entity.set(
+        "getPosition",
+        lua.create_function(move |lua, id: String| {
+            let world = get_world.borrow();
+            let entity = world
+                .entities
+                .get(&id)
+                .ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' 不存在。")))?;
+            let table = lua.create_table()?;
+            table.set("x", entity.transform.x)?;
+            table.set("y", entity.transform.y)?;
+            Ok(table)
+        })?,
+    )?;
 
     let set_world = Rc::clone(&world);
-    entity.set("setPosition", lua.create_function(move |_, (id, position): (String, Table)| {
-        let x: f64 = position.get("x")?;
-        let y: f64 = position.get("y")?;
-        let mut world = set_world.borrow_mut();
-        let entity = world.entities.get_mut(&id).ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' 不存在。")))?;
-        entity.transform = Vec2 { x, y };
-        Ok(())
-    })?)?;
+    entity.set(
+        "setPosition",
+        lua.create_function(move |_, (id, position): (String, Table)| {
+            let x: f64 = position.get("x")?;
+            let y: f64 = position.get("y")?;
+            let mut world = set_world.borrow_mut();
+            let entity = world
+                .entities
+                .get_mut(&id)
+                .ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' 不存在。")))?;
+            entity.transform = Vec2 { x, y };
+            Ok(())
+        })?,
+    )?;
 
     let input_state = Rc::clone(&input);
-    input_api.set("isDown", lua.create_function(move |_, action: String| Ok(input_state.borrow().down.get(&action).copied().unwrap_or(false)))?)?;
+    input_api.set(
+        "isDown",
+        lua.create_function(move |_, action: String| {
+            Ok(input_state
+                .borrow()
+                .down
+                .get(&action)
+                .copied()
+                .unwrap_or(false))
+        })?,
+    )?;
 
     let log_trace = Rc::clone(&trace);
     let log_world = Rc::clone(&world);
-    api.set("log", lua.create_function(move |_, message: String| {
-        log_trace.borrow_mut().push(TraceEvent {
-            frame: log_world.borrow().frame,
-            event: "script_log".to_string(),
-            details: serde_json::json!({"message": message}),
-        });
-        Ok(())
-    })?)?;
+    api.set(
+        "log",
+        lua.create_function(move |_, message: String| {
+            log_trace.borrow_mut().push(TraceEvent {
+                frame: log_world.borrow().frame,
+                event: "script_log".to_string(),
+                details: serde_json::json!({"message": message}),
+            });
+            Ok(())
+        })?,
+    )?;
     api.set("entity", entity)?;
     api.set("input", input_api)?;
     Ok(api)
@@ -278,14 +449,26 @@ fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
         "runtime": "Luau",
         "message": message,
     });
-    diagnostic.source = Some(SourceLocation { file: paths.entry_script.display().to_string(), line: None, column: None });
+    diagnostic.source = Some(SourceLocation {
+        file: paths.entry_script.display().to_string(),
+        line: None,
+        column: None,
+    });
     diagnostic.likely_causes = vec![
         "入口腳本的語法或 Engine API 呼叫不符合目前契約".to_string(),
         "腳本在 runtime 使用了不存在的 Entity 或欄位".to_string(),
     ];
     diagnostic.suggested_actions = vec![
-        ActionSuggestion { action: "check_script".to_string(), description: "先檢查入口腳本 contract。".to_string(), command: Some("game check --json".to_string()) },
-        ActionSuggestion { action: "inspect_project".to_string(), description: "確認 scene 與 Entity id。".to_string(), command: Some("game project inspect --json".to_string()) },
+        ActionSuggestion {
+            action: "check_script".to_string(),
+            description: "先檢查入口腳本 contract。".to_string(),
+            command: Some("game check --json".to_string()),
+        },
+        ActionSuggestion {
+            action: "inspect_project".to_string(),
+            description: "確認 scene 與 Entity id。".to_string(),
+            command: Some("game project inspect --json".to_string()),
+        },
     ];
     diagnostic
 }
@@ -293,6 +476,50 @@ fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
 fn hex_digest(bytes: &[u8]) -> String {
     let digest = Sha256::digest(bytes);
     digest.iter().map(|byte| format!("{byte:02x}")).collect()
+}
+
+fn evaluate_assertion(
+    world: &WorldSnapshot,
+    assertion: &crate::project::TestAssertion,
+) -> Result<(), String> {
+    let entity = world
+        .entities
+        .get(&assertion.entity)
+        .ok_or_else(|| format!("Entity '{}' 不存在。", assertion.entity))?;
+    let actual = match assertion.field.as_str() {
+        "transform.x" => entity.transform.x,
+        "transform.y" => entity.transform.y,
+        field => {
+            return Err(format!(
+                "不支援的 assertion field '{field}'；目前支援 transform.x 與 transform.y。"
+            ));
+        }
+    };
+    if let Some(expected) = assertion.equals {
+        if (actual - expected).abs() > 0.000_001 {
+            return Err(format!(
+                "{} {} 不等於預期 {}。",
+                assertion.entity, assertion.field, expected
+            ));
+        }
+    }
+    if let Some(expected) = assertion.greater_than {
+        if actual <= expected {
+            return Err(format!(
+                "{} {} = {}，沒有大於 {}。",
+                assertion.entity, assertion.field, actual, expected
+            ));
+        }
+    }
+    if let Some(expected) = assertion.less_than {
+        if actual >= expected {
+            return Err(format!(
+                "{} {} = {}，沒有小於 {}。",
+                assertion.entity, assertion.field, actual, expected
+            ));
+        }
+    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -306,18 +533,26 @@ mod tests {
     fn write_project(dir: &std::path::Path, script: &str) {
         fs::create_dir_all(dir.join("scripts")).unwrap();
         fs::create_dir_all(dir.join("scenes")).unwrap();
-        fs::write(dir.join("project.unone.json"), r#"{
+        fs::write(
+            dir.join("project.unone.json"),
+            r#"{
             "name": "ReloadTest",
             "entry_script": "scripts/main.luau",
             "main_scene": "scenes/main.scene.json"
-        }"#).unwrap();
-        fs::write(dir.join("scenes/main.scene.json"), r#"{
+        }"#,
+        )
+        .unwrap();
+        fs::write(
+            dir.join("scenes/main.scene.json"),
+            r#"{
             "entities": [{
                 "id": "player",
                 "name": "Player",
                 "transform": {"x": 0.0, "y": 0.0}
             }]
-        }"#).unwrap();
+        }"#,
+        )
+        .unwrap();
         fs::write(dir.join("scripts/main.luau"), script).unwrap();
     }
 
@@ -347,7 +582,10 @@ return Game
         right.set_input("Right", true);
         let left_report = left.run(60, 42).value.unwrap();
         let right_report = right.run(60, 42).value.unwrap();
-        assert_eq!(left_report.observation_digest, right_report.observation_digest);
+        assert_eq!(
+            left_report.observation_digest,
+            right_report.observation_digest
+        );
     }
 
     #[test]

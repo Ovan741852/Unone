@@ -35,7 +35,11 @@ pub struct Diagnostic {
 }
 
 impl Diagnostic {
-    pub fn error(code: impl Into<String>, summary: impl Into<String>, explanation: impl Into<String>) -> Self {
+    pub fn error(
+        code: impl Into<String>,
+        summary: impl Into<String>,
+        explanation: impl Into<String>,
+    ) -> Self {
         Self {
             code: code.into(),
             severity: DiagnosticSeverity::Error,
@@ -48,7 +52,11 @@ impl Diagnostic {
         }
     }
 
-    pub fn warning(code: impl Into<String>, summary: impl Into<String>, explanation: impl Into<String>) -> Self {
+    pub fn warning(
+        code: impl Into<String>,
+        summary: impl Into<String>,
+        explanation: impl Into<String>,
+    ) -> Self {
         Self {
             code: code.into(),
             severity: DiagnosticSeverity::Warning,
@@ -72,10 +80,20 @@ pub struct EngineResult<T: Serialize> {
 
 impl<T: Serialize> EngineResult<T> {
     pub fn success(value: T) -> Self {
-        Self { ok: true, value: Some(value), diagnostics: Vec::new(), effects: Vec::new() }
+        Self {
+            ok: true,
+            value: Some(value),
+            diagnostics: Vec::new(),
+            effects: Vec::new(),
+        }
     }
 
     pub fn failure(diagnostic: Diagnostic) -> Self {
-        Self { ok: false, value: None, diagnostics: vec![diagnostic], effects: Vec::new() }
+        Self {
+            ok: false,
+            value: None,
+            diagnostics: vec![diagnostic],
+            effects: Vec::new(),
+        }
     }
 }

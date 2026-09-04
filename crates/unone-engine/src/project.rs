@@ -1,4 +1,8 @@
-use std::{fs, path::{Path, PathBuf}};
+use std::{
+    collections::BTreeMap,
+    fs,
+    path::{Path, PathBuf},
+};
 
 use serde::Deserialize;
 
@@ -11,6 +15,8 @@ pub struct ProjectConfig {
     pub entry_script: String,
     #[serde(default)]
     pub main_scene: Option<String>,
+    #[serde(default)]
+    pub test_files: Vec<String>,
 }
 
 fn default_entry_script() -> String {
@@ -23,6 +29,7 @@ pub struct ProjectPaths {
     pub config: PathBuf,
     pub entry_script: PathBuf,
     pub main_scene: Option<PathBuf>,
+    pub test_files: Vec<PathBuf>,
 }
 
 impl ProjectPaths {
@@ -45,6 +52,52 @@ impl ProjectPaths {
         })?;
         let entry_script = root.join(&config.entry_script);
         let main_scene = config.main_scene.as_ref().map(|path| root.join(path));
-        Ok((config, Self { root, config: config_path, entry_script, main_scene }))
+        let test_files = config
+            .test_files
+            .iter()
+            .map(|path| root.join(path))
+            .collect();
+        Ok((
+            config,
+            Self {
+                root,
+                config: config_path,
+                entry_script,
+                main_scene,
+                test_files,
+            },
+        ))
     }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct TestSpec {
+    pub name: String,
+    #[serde(default = "default_test_frames")]
+    pub frames: u64,
+    #[serde(default = "default_test_seed")]
+    pub seed: u64,
+    #[serde(default)]
+    pub input: BTreeMap<String, bool>,
+    #[serde(default)]
+    pub assertions: Vec<TestAssertion>,
+}
+
+fn default_test_frames() -> u64 {
+    60
+}
+fn default_test_seed() -> u64 {
+    42
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct TestAssertion {
+    pub entity: String,
+    pub field: String,
+    #[serde(default)]
+    pub equals: Option<f64>,
+    #[serde(default)]
+    pub greater_than: Option<f64>,
+    #[serde(default)]
+    pub less_than: Option<f64>,
 }

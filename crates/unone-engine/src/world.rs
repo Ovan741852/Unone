@@ -11,7 +11,9 @@ pub struct Vec2 {
 }
 
 impl Default for Vec2 {
-    fn default() -> Self { Self { x: 0.0, y: 0.0 } }
+    fn default() -> Self {
+        Self { x: 0.0, y: 0.0 }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -38,7 +40,9 @@ pub struct SpriteData {
     pub visible: bool,
 }
 
-fn default_true() -> bool { true }
+fn default_true() -> bool {
+    true
+}
 
 #[derive(Debug, Clone, Serialize)]
 pub struct EntitySnapshot {
@@ -87,12 +91,15 @@ impl World {
             )
         })?;
         for entity in scene.entities {
-            self.entities.insert(entity.id.clone(), EntityState {
-                id: entity.id,
-                name: entity.name,
-                transform: entity.transform,
-                sprite: entity.sprite,
-            });
+            self.entities.insert(
+                entity.id.clone(),
+                EntityState {
+                    id: entity.id,
+                    name: entity.name,
+                    transform: entity.transform,
+                    sprite: entity.sprite,
+                },
+            );
         }
         Ok(())
     }
@@ -105,22 +112,38 @@ impl World {
             id = format!("{base}_{index}");
             index += 1;
         }
-        self.entities.insert(id.clone(), EntityState {
-            id: id.clone(),
-            name: name.to_string(),
-            transform: Vec2::default(),
-            sprite: None,
-        });
+        self.entities.insert(
+            id.clone(),
+            EntityState {
+                id: id.clone(),
+                name: name.to_string(),
+                transform: Vec2::default(),
+                sprite: None,
+            },
+        );
         id
     }
 
     pub(crate) fn snapshot(&self) -> WorldSnapshot {
-        let entities = self.entities.iter().map(|(id, entity)| (id.clone(), EntitySnapshot {
-            id: entity.id.clone(),
-            name: entity.name.clone(),
-            transform: entity.transform,
-            sprite: entity.sprite.clone(),
-        })).collect();
-        WorldSnapshot { frame: self.frame, time_seconds: self.time_seconds, entities }
+        let entities = self
+            .entities
+            .iter()
+            .map(|(id, entity)| {
+                (
+                    id.clone(),
+                    EntitySnapshot {
+                        id: entity.id.clone(),
+                        name: entity.name.clone(),
+                        transform: entity.transform,
+                        sprite: entity.sprite.clone(),
+                    },
+                )
+            })
+            .collect();
+        WorldSnapshot {
+            frame: self.frame,
+            time_seconds: self.time_seconds,
+            entities,
+        }
     }
 }
