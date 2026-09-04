@@ -504,36 +504,40 @@ impl Renderer {
     }
 
     fn render(&mut self, snapshot: &WorldSnapshot) -> Result<(), String> {
-        let tracked_entity_x = snapshot
+        let (tracked_entity_x, tracked_entity_y) = snapshot
             .entities
             .values()
             .next()
-            .map(|entity| entity.transform.x as f32)
-            .unwrap_or(0.0);
-        let x = (-0.8 + tracked_entity_x * 0.2).clamp(-0.95, 0.75);
+            .map(|entity| (entity.transform.x as f32, entity.transform.y as f32))
+            .unwrap_or((0.0, 0.0));
+        let zoom = snapshot.camera.zoom as f32;
+        let x = (-0.8 + (tracked_entity_x - snapshot.camera.position.x as f32) * 0.2 * zoom)
+            .clamp(-0.95, 0.75);
+        let y = (-0.1 + (tracked_entity_y - snapshot.camera.position.y as f32) * 0.2 * zoom)
+            .clamp(-0.9, 0.7);
         let vertices = [
             Vertex {
-                position: [x, -0.1],
+                position: [x, y],
                 color: [0.9, 0.2, 0.15],
             },
             Vertex {
-                position: [x + 0.2, -0.1],
+                position: [x + 0.2, y],
                 color: [0.9, 0.2, 0.15],
             },
             Vertex {
-                position: [x + 0.2, 0.1],
+                position: [x + 0.2, y + 0.2],
                 color: [0.9, 0.2, 0.15],
             },
             Vertex {
-                position: [x, -0.1],
+                position: [x, y],
                 color: [0.9, 0.2, 0.15],
             },
             Vertex {
-                position: [x + 0.2, 0.1],
+                position: [x + 0.2, y + 0.2],
                 color: [0.9, 0.2, 0.15],
             },
             Vertex {
-                position: [x, 0.1],
+                position: [x, y + 0.2],
                 color: [0.9, 0.2, 0.15],
             },
         ];

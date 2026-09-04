@@ -20,6 +20,6 @@ pub use runtime::{
     CheckReport, EngineRuntime, RunReport, TestCaseReport, TestSuiteReport, TypeCheckReport,
 };
 pub use world::{
-    EntitySnapshot, PhysicsSettings, RigidBody2DData, RigidBodySnapshot, RigidBodyType, SceneFile,
-    Vec2, WorldSnapshot,
+    Camera2DData, EntitySnapshot, PhysicsSettings, RigidBody2DData, RigidBodySnapshot,
+    RigidBodyType, SceneFile, Vec2, WorldSnapshot,
 };

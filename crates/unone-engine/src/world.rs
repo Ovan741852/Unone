@@ -61,6 +61,27 @@ impl Default for PhysicsSettings {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Camera2DData {
+    #[serde(default)]
+    pub position: Vec2,
+    #[serde(default = "default_zoom")]
+    pub zoom: f64,
+}
+
+fn default_zoom() -> f64 {
+    1.0
+}
+
+impl Default for Camera2DData {
+    fn default() -> Self {
+        Self {
+            position: Vec2::default(),
+            zoom: default_zoom(),
+        }
+    }
+}
+
 impl Default for Vec2 {
     fn default() -> Self {
         Self { x: 0.0, y: 0.0 }
@@ -73,6 +94,8 @@ pub struct SceneFile {
     pub entities: Vec<SceneEntity>,
     #[serde(default)]
     pub physics: PhysicsSettings,
+    #[serde(default)]
+    pub camera: Camera2DData,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -121,6 +144,7 @@ pub struct RigidBodySnapshot {
 pub struct WorldSnapshot {
     pub frame: u64,
     pub time_seconds: f64,
+    pub camera: Camera2DData,
     pub entities: BTreeMap<String, EntitySnapshot>,
 }
 
@@ -148,6 +172,7 @@ pub(crate) struct World {
     pub time_seconds: f64,
     pub entities: BTreeMap<String, EntityState>,
     pub physics: PhysicsSettings,
+    pub camera: Camera2DData,
 }
 
 impl World {
@@ -167,6 +192,14 @@ impl World {
             ))
         })?;
         self.physics = scene.physics;
+        if scene.camera.zoom <= 0.0 || !scene.camera.zoom.is_finite() {
+            return Err(Box::new(Diagnostic::error(
+                "SCENE_CAMERA_INVALID",
+                "Camera2D 的 zoom 無效",
+                "Camera2D zoom 必須是大於 0 的有限數字。",
+            )));
+        }
+        self.camera = scene.camera;
         for entity in scene.entities {
             let rigidbody = entity.rigidbody.map(|body| {
                 if body.mass <= 0.0 || !body.mass.is_finite() {
@@ -270,8 +303,35 @@ impl World {
         WorldSnapshot {
             frame: self.frame,
             time_seconds: self.time_seconds,
+            camera: Camera2DData {
+                position: Vec2 {
+                    x: quantize_observation(self.camera.position.x),
+                    y: quantize_observation(self.camera.position.y),
+                },
+                zoom: quantize_observation(self.camera.zoom),
+            },
             entities,
         }
+    }
+
+    pub(crate) fn get_camera_position(&self) -> Vec2 {
+        self.camera.position
+    }
+
+    pub(crate) fn set_camera_position(&mut self, position: Vec2) {
+        self.camera.position = position;
+    }
+
+    pub(crate) fn get_camera_zoom(&self) -> f64 {
+        self.camera.zoom
+    }
+
+    pub(crate) fn set_camera_zoom(&mut self, zoom: f64) -> Result<(), String> {
+        if zoom <= 0.0 || !zoom.is_finite() {
+            return Err("Camera2D zoom 必須是大於 0 的有限數字。".to_string());
+        }
+        self.camera.zoom = zoom;
+        Ok(())
     }
 
     pub(crate) fn get_velocity(&self, id: &str) -> Result<Vec2, String> {
@@ -490,6 +550,7 @@ mod tests {
                 gravity: Vec2 { x: 0.0, y: -9.8 },
                 ground_y: Some(0.0),
             },
+            camera: super::Camera2DData::default(),
         }
     }
 

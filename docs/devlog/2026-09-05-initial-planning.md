@@ -55,3 +55,6 @@
 - 新增 physics regression tests：dynamic body 落地停止、dynamic body 與 static circle 的碰撞分離；目前只做必要機制，不先加入 friction、joints、polygon solver 或遊戲專用名詞。邊界記錄於 `docs/decisions/0006-minimal-2d-physics-boundary.md`。
 - 發現 native preview renderer 硬編碼 `player` id，會讓其他遊戲命名無法預覽；分類為 engine boundary 問題，已改成依 stable entity ordering 選取預覽目標，移除遊戲業務命名依賴。
 - native physics preview 已啟動並截圖：`docs/devlog/2026-09-05-physics-preview.png`；視窗顯示 `bird` 專案的物件，證明 preview 不再依賴 `player` 這個遊戲專用 id。
+- 首次 Web compile check：`wasm32-unknown-unknown` target 已安裝，但 `mlua-sys` 編譯 vendored Luau 找不到 `clang++`；官方 LLVM 安裝嘗試被 Windows 取消。分類為 platform/toolchain issue，詳見 `docs/issues/2026-09-05-wasm-luau-toolchain.md`，因此 Web smoke 尚未通過。
+- Camera API 接入後第一次 sample typecheck 發現 physics 腳本的 local `EngineApi` 遺漏 `camera` 欄位；官方 analyzer 回報 `Key 'camera' not found in table 'EngineApi'`。分類為 game-side contract drift，補上 sample 型別定義後重新驗證。
+- Camera2D 已加入最小 contract：引擎持有 position／zoom，Luau 持有 follow policy；physics sample run 後 observation 回報 camera position `x=9.9,y=0.5`，`api search "camera zoom"` 可回傳四個 camera API 的語意 metadata。Camera 邊界記錄於 `docs/decisions/0007-2d-camera-boundary.md`。

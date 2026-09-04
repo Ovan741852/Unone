@@ -462,6 +462,7 @@ fn build_api(
     let api = lua.create_table()?;
     let entity = lua.create_table()?;
     let input_api = lua.create_table()?;
+    let camera = lua.create_table()?;
 
     let spawn_world = Rc::clone(&world);
     entity.set(
@@ -560,6 +561,48 @@ fn build_api(
         })?,
     )?;
 
+    let camera_get_world = Rc::clone(&world);
+    camera.set(
+        "getPosition",
+        lua.create_function(move |lua, _: ()| {
+            let position = camera_get_world.borrow().get_camera_position();
+            let table = lua.create_table()?;
+            table.set("x", position.x)?;
+            table.set("y", position.y)?;
+            Ok(table)
+        })?,
+    )?;
+
+    let camera_set_world = Rc::clone(&world);
+    camera.set(
+        "setPosition",
+        lua.create_function(move |_, position: Table| {
+            let position = Vec2 {
+                x: position.get("x")?,
+                y: position.get("y")?,
+            };
+            camera_set_world.borrow_mut().set_camera_position(position);
+            Ok(())
+        })?,
+    )?;
+
+    let camera_zoom_world = Rc::clone(&world);
+    camera.set(
+        "getZoom",
+        lua.create_function(move |_, _: ()| Ok(camera_zoom_world.borrow().get_camera_zoom()))?,
+    )?;
+
+    let camera_set_zoom_world = Rc::clone(&world);
+    camera.set(
+        "setZoom",
+        lua.create_function(move |_, zoom: f64| {
+            camera_set_zoom_world
+                .borrow_mut()
+                .set_camera_zoom(zoom)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+
     let log_trace = Rc::clone(&trace);
     let log_world = Rc::clone(&world);
     api.set(
@@ -576,6 +619,7 @@ fn build_api(
     api.set("entity", entity)?;
     api.set("input", input_api)?;
     api.set("physics", physics)?;
+    api.set("camera", camera)?;
     Ok(api)
 }
 
