@@ -2,7 +2,7 @@
 
 這是 browser host 的第一個垂直切片：`game run --json` 產出的 `WorldSnapshot` 由 host 載入，瀏覽器以 WebGPU 畫出 engine entities，並把 pointer event 轉成與 native 相同的 world-space semantic shape。
 
-它刻意不是 live WASM game loop：目前 Emscripten smoke 是一次性 runtime；本頁不把 snapshot bridge 說成完整 Web platform。下一步才是把相同 `EngineRuntime` 接到 browser-owned frame loop，並由 host 決定 fetch/cache/storage。
+它刻意不是 live WASM game loop：本頁只驗證 snapshot bridge。`web/live/` 已另有固定 smoke fixture 的 live WASM frame loop；本頁不把 snapshot bridge 說成完整 Web platform。通用 project loader 與 host fetch/cache/storage 仍是後續工作。
 
 在 `D:/Projects/Unone` 執行：
 

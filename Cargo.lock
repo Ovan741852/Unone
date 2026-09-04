@@ -2111,6 +2111,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "unone-web-live-smoke"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "unone-engine",
+]
+
+[[package]]
 name = "unone-web-smoke"
 version = "0.1.0"
 dependencies = [

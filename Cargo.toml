@@ -3,6 +3,7 @@ members = [
     "crates/unone-engine",
     "crates/unone-cli",
     "crates/unone-web-smoke",
+    "crates/unone-web-live-smoke",
 ]
 resolver = "2"
 

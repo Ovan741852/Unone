@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="../smoke/favicon.svg" type="image/svg+xml" />
+    <title>Unone live Web host</title>
+    <style>
+      :root { color-scheme: dark; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+      body { margin: 0; min-height: 100vh; background: #0b1020; color: #e5e7eb; }
+      main { width: min(1120px, calc(100vw - 32px)); margin: 24px auto; }
+      h1 { margin: 0 0 6px; font-size: 1.25rem; }
+      .note { color: #9ca3af; margin-top: 0; }
+      #status { color: #93c5fd; }
+      .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+      canvas { display: block; width: 100%; aspect-ratio: 16 / 9; border: 1px solid #334155; border-radius: 10px; background: #111827; touch-action: none; }
+      aside { padding: 14px; border: 1px solid #334155; border-radius: 10px; background: #111827; }
+      h2 { margin: 0 0 8px; font-size: 1rem; }
+      pre { min-height: 12rem; max-height: 26rem; margin: 0; overflow: auto; white-space: pre-wrap; color: #a7f3d0; }
+      @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Unone live Web host</h1>
+      <p id="status" data-testid="status">waiting for Emscripten runtime…</p>
+      <p class="note">The browser owns WebGPU and pointer normalization; the live frame and Luau simulation run in the Rust engine bridge.</p>
+      <div class="layout">
+        <canvas id="game" data-testid="game-canvas" aria-label="Unone live engine preview"></canvas>
+        <aside>
+          <h2>Semantic live state</h2>
+          <pre id="output" data-testid="output"></pre>
+        </aside>
+      </div>
+    </main>
+    <script type="module" src="./main.js"></script>
+    <script>
+      var Module = {
+        noInitialRun: true,
+        onRuntimeInitialized: function () {
+          window.unoneRuntimeReady = true;
+          window.dispatchEvent(new Event("unone-runtime-ready"));
+        }
+      };
+    </script>
+    <script src="../../target/wasm32-unknown-emscripten/debug/deps/unone_web_live_smoke.js"></script>
+  </body>
+</html>
