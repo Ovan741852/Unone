@@ -43,10 +43,12 @@ bundle 成功不是只代表檔案存在：要確認 manifest hash、cache hash�
 ## 5. native preview
 
 ```powershell
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview --watch
 ```
 
-方向鍵或 A/D 會更新 Luau input。Escape 或關閉視窗結束。這個 preview 是 runtime smoke client，不是 Editor。
+`--watch` 會在檔案 metadata 變更後，於下一個等待 frame 嘗試載入入口 Luau。成功會保留 Rust-owned world state 並切換腳本 generation；失敗會輸出語意診斷，繼續使用上一份可運作腳本，直到檔案再次變更。方向鍵或 A/D 會更新 Luau input。Escape 或關閉視窗結束。這個 preview 是 runtime smoke client，不是 Editor。
+
+不帶 `--watch` 也可以啟動一次性的 native preview；AI 需要快速修改與觀察時使用 `--watch`。
 
 ## 輸出規則
 

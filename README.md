@@ -23,7 +23,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json te
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview
 ```
 
-目前已驗證：Luau entrypoint、`--!strict` contract、headless fixed timestep、seed/input observation digest、failed reload fallback、native wgpu preview、JSON test manifest 與 bundle hash/cache/activation。
+目前已驗證：Luau entrypoint、`--!strict` contract、headless fixed timestep、seed/input observation digest、failed reload fallback、native wgpu preview、`preview --watch` 腳本熱更、JSON test manifest 與 bundle hash/cache/activation。
 
 ## 邊界
 

@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::BTreeMap, fs, path::Path, rc::Rc};
+use std::{cell::RefCell, collections::BTreeMap, fs, path::Path, rc::Rc, time::SystemTime};
 
 use mlua::{Function, Lua, Table, Value};
 use serde::Serialize;
@@ -59,6 +59,12 @@ struct InputState {
     down: BTreeMap<String, bool>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ScriptStamp {
+    modified: SystemTime,
+    size: u64,
+}
+
 pub struct EngineRuntime {
     config: ProjectConfig,
     paths: ProjectPaths,
@@ -69,6 +75,7 @@ pub struct EngineRuntime {
     update_fn: Function,
     trace: Rc<RefCell<Vec<TraceEvent>>>,
     generation: u64,
+    last_seen_script_stamp: Option<ScriptStamp>,
 }
 
 impl EngineRuntime {
@@ -185,6 +192,7 @@ impl EngineRuntime {
             update_fn: placeholder,
             trace,
             generation: 0,
+            last_seen_script_stamp: None,
         };
         runtime.load_script(false)?;
         Ok(runtime)
@@ -196,6 +204,21 @@ impl EngineRuntime {
 
     pub fn reload(&mut self) -> Result<(), Box<Diagnostic>> {
         self.load_script(true)
+    }
+
+    /// Reload the entry script once its file metadata changes.
+    ///
+    /// The changed stamp is remembered before attempting the reload so an
+    /// invalid file does not spam the preview every frame. A later file edit
+    /// produces a new stamp and can be retried.
+    pub fn reload_if_changed(&mut self) -> Result<bool, Box<Diagnostic>> {
+        let current = self.script_stamp()?;
+        if self.last_seen_script_stamp.as_ref() == Some(&current) {
+            return Ok(false);
+        }
+        self.last_seen_script_stamp = Some(current);
+        self.reload()?;
+        Ok(true)
     }
 
     pub fn run(&mut self, frames: u64, seed: u64) -> EngineResult<RunReport> {
@@ -315,6 +338,7 @@ impl EngineRuntime {
     }
 
     fn load_script(&mut self, is_reload: bool) -> Result<(), Box<Diagnostic>> {
+        let script_stamp = self.script_stamp()?;
         let source = fs::read_to_string(&self.paths.entry_script).map_err(|err| {
             Box::new(Diagnostic::error(
                 "SCRIPT_READ_FAILED",
@@ -362,7 +386,29 @@ impl EngineRuntime {
                 .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
         }
         self.update_fn = update_fn;
+        self.last_seen_script_stamp = Some(script_stamp);
         Ok(())
+    }
+
+    fn script_stamp(&self) -> Result<ScriptStamp, Box<Diagnostic>> {
+        let metadata = fs::metadata(&self.paths.entry_script).map_err(|err| {
+            Box::new(Diagnostic::error(
+                "SCRIPT_METADATA_FAILED",
+                "無法取得入口腳本狀態",
+                format!("{}：{}", self.paths.entry_script.display(), err),
+            ))
+        })?;
+        let modified = metadata.modified().map_err(|err| {
+            Box::new(Diagnostic::error(
+                "SCRIPT_METADATA_FAILED",
+                "無法取得入口腳本修改時間",
+                format!("{}：{}", self.paths.entry_script.display(), err),
+            ))
+        })?;
+        Ok(ScriptStamp {
+            modified,
+            size: metadata.len(),
+        })
     }
 }
 
@@ -607,5 +653,22 @@ return Game
         let report = runtime.run(30, 42).value.unwrap();
         let x = report.world.entities.get("player").unwrap().transform.x;
         assert!((x - 4.0).abs() < 0.000_001);
+    }
+
+    #[test]
+    fn reload_if_changed_swaps_script_and_preserves_world_state() {
+        let dir = tempdir().unwrap();
+        write_project(dir.path(), SCRIPT);
+        let mut runtime = EngineRuntime::load(dir.path()).unwrap();
+        runtime.set_input("Right", true);
+        runtime.run(30, 42);
+
+        let faster_script = SCRIPT.replace("speed: number = 4", "speed: number = 12");
+        fs::write(dir.path().join("scripts/main.luau"), faster_script).unwrap();
+        assert!(runtime.reload_if_changed().unwrap());
+
+        let report = runtime.run(30, 42).value.unwrap();
+        let x = report.world.entities.get("player").unwrap().transform.x;
+        assert!((x - 8.0).abs() < 0.000_001);
     }
 }

@@ -35,7 +35,10 @@ enum Command {
     },
     Test,
     Observe,
-    Preview,
+    Preview {
+        #[arg(long, help = "Reload the entry Luau script when its file changes")]
+        watch: bool,
+    },
     Bundle {
         #[command(subcommand)]
         command: BundleCommand,
@@ -104,7 +107,7 @@ fn run() -> Result<ExitCode> {
             };
             print_result(EngineResult::success(runtime.observe()), cli.json)
         }
-        Command::Preview => preview(&cli.project),
+        Command::Preview { watch } => preview(&cli.project, watch),
         Command::Bundle { command } => {
             let manager = match BundleManager::from_project(&cli.project) {
                 Ok(manager) => manager,
@@ -151,11 +154,11 @@ fn print_result<T: serde::Serialize>(result: EngineResult<T>, json: bool) -> Res
     })
 }
 
-fn preview(project: &PathBuf) -> Result<ExitCode> {
+fn preview(project: &PathBuf, watch: bool) -> Result<ExitCode> {
     let runtime = EngineRuntime::load(project)
         .map_err(|diagnostic| anyhow::anyhow!("{}: {}", diagnostic.code, diagnostic.explanation))?;
     let event_loop = EventLoop::new()?;
-    let mut app = PreviewApp::new(runtime);
+    let mut app = PreviewApp::new(runtime, watch);
     event_loop.run_app(&mut app)?;
     Ok(ExitCode::SUCCESS)
 }
@@ -164,14 +167,16 @@ struct PreviewApp {
     runtime: Option<EngineRuntime>,
     window: Option<Arc<Window>>,
     renderer: Option<Renderer>,
+    watch: bool,
 }
 
 impl PreviewApp {
-    fn new(runtime: EngineRuntime) -> Self {
+    fn new(runtime: EngineRuntime, watch: bool) -> Self {
         Self {
             runtime: Some(runtime),
             window: None,
             renderer: None,
+            watch,
         }
     }
 }
@@ -263,6 +268,18 @@ impl ApplicationHandler for PreviewApp {
     }
 
     fn about_to_wait(&mut self, _event_loop: &ActiveEventLoop) {
+        if self.watch
+            && let Some(runtime) = &mut self.runtime
+        {
+            match runtime.reload_if_changed() {
+                Ok(true) => eprintln!("unone preview: script reloaded"),
+                Ok(false) => {}
+                Err(err) => eprintln!(
+                    "unone preview: reload rejected [{}] {}\n{}",
+                    err.code, err.summary, err.explanation
+                ),
+            }
+        }
         if let Some(window) = &self.window {
             window.request_redraw();
         }

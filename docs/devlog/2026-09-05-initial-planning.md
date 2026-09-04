@@ -43,3 +43,7 @@
 - `cargo clippy --workspace --all-targets -- -D warnings` 通過。
 - Bundle runtime 已加入：manifest、依賴安裝、串流 hash 驗證、content-addressed cache、cache 二次驗證與 generation activation；sample bundle inspect/install 通過。
 - 已建立 `README.md` 與 `docs/ai-workflow.md`，明確標示目前 `check` 只保證語法與 entrypoint contract，避免把尚未接入的 Luau static analyzer 說成已完成。
+- 驗證遊戲 workspace `D:/Projects/Unone_Games/` 已獨立 `git init`；`.unone/` 只保留本機 cache、staging 與 active generation，不進版本庫。
+- `game preview --watch` 已加入：以腳本修改時間與檔案大小做輕量輪詢，變更時在等待 frame 嘗試 reload；失敗會只回報一次並保留舊腳本，待下一次檔案變更再重試。
+- `cargo test --workspace` 通過 5 個 engine tests；新增 reload success + state preservation regression test。`cargo clippy --workspace --all-targets -- -D warnings`、sample `check`、`test`、`bundle inspect` 均通過。
+- 目前仍未宣稱完整型別檢查、Web/mobile、MCP 或七類遊戲驗收完成；這些保留在後續階段，避免把原型能力說成引擎完成。
