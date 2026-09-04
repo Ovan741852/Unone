@@ -124,6 +124,17 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview -
 
 不帶 `--watch` 也可以啟動一次性的 native preview；AI 需要快速修改與觀察時使用 `--watch`。
 
+3D 專案使用 `Transform3D`／`Camera3D` 的 semantic API；先查語意再寫腳本：
+
+```powershell
+cargo run -p unone-cli -- --json api describe entity.getTransform3D
+cargo run -p unone-cli -- --json api describe entity.setTransform3D
+cargo run -p unone-cli -- --json api describe camera3d.setTarget
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json test
+```
+
+要驗證實際遊戲專案的 Web host，可從 `D:/Projects` 啟動 `python -m http.server 8001`，再開啟 `http://127.0.0.1:8001/Unone/web/runner/?project=/Unone_Games/3d-racing/`。同一個 runner 也可替換成 `red-alert-rts`、`fish-machine` 或其他 game project。這是 generic host smoke；bundle generation/rollback 仍使用 `web/live/`，沒有 asset CDN 或 production save storage 時不可標記 Web final gate 通過。
+
 ## 輸出規則
 
 - 需要 machine action 時使用 `--json`。

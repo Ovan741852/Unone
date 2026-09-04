@@ -15,6 +15,7 @@ thread_local! {
             screen_position: None,
         })
     };
+    static INPUT_FRAME: RefCell<Option<InputFrame>> = const { RefCell::new(None) };
     static OUTPUT: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static INPUT_BUFFER: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static PROJECT_NAME: RefCell<String> = const { RefCell::new(String::new()) };
@@ -205,6 +206,7 @@ pub unsafe extern "C" fn unone_web_load_project(
     let project_name = payload.project.clone();
     match create_runtime(payload, seed) {
         Ok(runtime_value) => {
+            INPUT_FRAME.with(|input| *input.borrow_mut() = None);
             let snapshot = runtime_value.observe();
             let save_payload = runtime_value.save_payload();
             RUNTIME.with(|runtime| *runtime.borrow_mut() = Some(runtime_value));
@@ -298,6 +300,33 @@ pub extern "C" fn unone_web_set_pointer(x: f64, y: f64, down: i32) {
     });
 }
 
+/// Set the complete host-normalized input frame for the next tick.
+///
+/// This is the generic Web host path. The older scalar pointer setters remain
+/// available for the focused pointer smoke and are used when no frame payload
+/// has been supplied.
+#[unsafe(no_mangle)]
+/// # Safety
+///
+/// `pointer` must reference `length` readable UTF-8 JSON bytes for the
+/// duration of this call. The payload must be an `InputFrame`.
+pub unsafe extern "C" fn unone_web_set_input_frame(pointer: *const u8, length: usize) -> i32 {
+    if pointer.is_null() {
+        write_error("input frame pointer is null");
+        return -1;
+    }
+    let bytes = unsafe { std::slice::from_raw_parts(pointer, length) };
+    let frame: InputFrame = match serde_json::from_slice(bytes) {
+        Ok(frame) => frame,
+        Err(error) => {
+            write_error(format!("input frame is invalid JSON: {error}"));
+            return -1;
+        }
+    };
+    INPUT_FRAME.with(|input| *input.borrow_mut() = Some(frame));
+    0
+}
+
 #[unsafe(no_mangle)]
 pub extern "C" fn unone_web_set_screen_pointer(x: f64, y: f64) -> i32 {
     if !x.is_finite() || !y.is_finite() {
@@ -322,10 +351,12 @@ pub extern "C" fn unone_web_tick() -> i32 {
             write_error("web runtime is not initialized");
             return -1;
         };
-        let frame = InputFrame {
-            actions: BTreeMap::new(),
-            pointer: Some(pointer),
-        };
+        let frame = INPUT_FRAME
+            .with(|input| input.borrow_mut().take())
+            .unwrap_or_else(|| InputFrame {
+                actions: BTreeMap::new(),
+                pointer: Some(pointer),
+            });
         match runtime.tick_with_input(&frame) {
             Ok(_) => {
                 write_runtime_snapshot(runtime);
@@ -355,8 +386,9 @@ fn main() {}
 mod tests {
     use super::{
         OUTPUT, unone_web_bundle_begin, unone_web_bundle_finish, unone_web_bundle_write,
-        unone_web_load_project, unone_web_reload_script, unone_web_set_pointer,
-        unone_web_set_save_payload, unone_web_set_screen_pointer, unone_web_tick,
+        unone_web_load_project, unone_web_reload_script, unone_web_set_input_frame,
+        unone_web_set_pointer, unone_web_set_save_payload, unone_web_set_screen_pointer,
+        unone_web_tick,
     };
     use serde_json::json;
 
@@ -401,6 +433,15 @@ function Game.update(api, _dt)
     if payload ~= nil then
         api.observation.set("loaded_node", payload.node)
     end
+end
+return Game
+"#;
+
+    const INPUT_FRAME_SCRIPT: &str = r#"
+local Game = {}
+function Game.start(_api) end
+function Game.update(api, _dt)
+    api.observation.set("shoot_down", api.input.isDown("Shoot"))
 end
 return Game
 "#;
@@ -504,6 +545,36 @@ return Game
         assert_eq!(
             value["save_payload"],
             json!({"version": 1, "node": "brave"})
+        );
+    }
+
+    #[test]
+    fn c_abi_complete_input_frame_replaces_scalar_pointer_for_one_tick() {
+        let payload = serde_json::to_vec(&json!({
+            "project": "WebInputFrameTest",
+            "script": INPUT_FRAME_SCRIPT,
+        }))
+        .unwrap();
+        assert_eq!(
+            unsafe { unone_web_load_project(payload.as_ptr(), payload.len(), 42) },
+            0
+        );
+        let frame = serde_json::to_vec(&json!({
+            "actions": {"Shoot": true},
+            "pointer": {"position": {"x": 1, "y": 2}, "down": false}
+        }))
+        .unwrap();
+        assert_eq!(
+            unsafe { unone_web_set_input_frame(frame.as_ptr(), frame.len()) },
+            0
+        );
+        assert_eq!(unone_web_tick(), 0);
+        assert_eq!(output()["world"]["observations"]["shoot_down"], json!(true));
+
+        assert_eq!(unone_web_tick(), 0);
+        assert_eq!(
+            output()["world"]["observations"]["shoot_down"],
+            json!(false)
         );
     }
 }

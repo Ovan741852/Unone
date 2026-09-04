@@ -17,7 +17,10 @@ export function semanticSummary(snapshot, pointer = null) {
       asset: entity.sprite?.asset ?? null,
       size: entity.sprite?.size ?? null,
       position: entity.transform,
+      transform3d: entity.transform3d ?? null,
+      mesh3d: entity.mesh3d ?? null,
     })),
+    camera3d: world.camera3d ?? null,
     ui: world.ui ?? null,
     pointer,
   };
@@ -45,6 +48,7 @@ function colorFor(entity) {
 
 function verticesFor(snapshot) {
   const world = worldOf(snapshot);
+  if (world.camera3d) return verticesFor3d(world);
   const zoom = world.camera.zoom;
   const camera = world.camera.position;
   const vertices = [];
@@ -59,6 +63,113 @@ function verticesFor(snapshot) {
       x, y, ...color, x + width, y, ...color, x + width, y + height, ...color,
       x, y, ...color, x + width, y + height, ...color, x, y + height, ...color,
     );
+  }
+  return new Float32Array(vertices);
+}
+
+function add3(left, right) {
+  return { x: left.x + right.x, y: left.y + right.y, z: left.z + right.z };
+}
+
+function sub3(left, right) {
+  return { x: left.x - right.x, y: left.y - right.y, z: left.z - right.z };
+}
+
+function dot3(left, right) {
+  return left.x * right.x + left.y * right.y + left.z * right.z;
+}
+
+function cross3(left, right) {
+  return {
+    x: left.y * right.z - left.z * right.y,
+    y: left.z * right.x - left.x * right.z,
+    z: left.x * right.y - left.y * right.x,
+  };
+}
+
+function normalize3(value) {
+  const length = Math.sqrt(dot3(value, value));
+  if (length <= Number.EPSILON) return null;
+  return { x: value.x / length, y: value.y / length, z: value.z / length };
+}
+
+function rotateEuler3(point, rotation) {
+  const [sinX, cosX] = [Math.sin(rotation.x), Math.cos(rotation.x)];
+  const [sinY, cosY] = [Math.sin(rotation.y), Math.cos(rotation.y)];
+  const [sinZ, cosZ] = [Math.sin(rotation.z), Math.cos(rotation.z)];
+  const aroundX = {
+    x: point.x,
+    y: point.y * cosX - point.z * sinX,
+    z: point.y * sinX + point.z * cosX,
+  };
+  const aroundY = {
+    x: aroundX.x * cosY + aroundX.z * sinY,
+    y: aroundX.y,
+    z: -aroundX.x * sinY + aroundX.z * cosY,
+  };
+  return {
+    x: aroundY.x * cosZ - aroundY.y * sinZ,
+    y: aroundY.x * sinZ + aroundY.y * cosZ,
+    z: aroundY.z,
+  };
+}
+
+function colorFor3d(entity) {
+  if (entity.id.includes("track")) return [0.18, 0.2, 0.24, 1];
+  if (entity.id.includes("rival")) return [0.18, 0.45, 0.9, 1];
+  return [0.9, 0.18, 0.12, 1];
+}
+
+function project3d(camera, point, aspect) {
+  const forward = normalize3(sub3(camera.target, camera.position));
+  const right = forward && normalize3(cross3(forward, { x: 0, y: 1, z: 0 }));
+  if (!forward || !right) return null;
+  const up = cross3(right, forward);
+  const relative = sub3(point, camera.position);
+  const depth = dot3(relative, forward);
+  if (depth <= 0.05) return null;
+  const f = 1 / Math.tan((camera.fov_degrees * Math.PI / 180) * 0.5);
+  return [dot3(relative, right) * f / aspect / depth, dot3(relative, up) * f / depth];
+}
+
+function verticesFor3d(world) {
+  const camera = world.camera3d;
+  const forward = normalize3(sub3(camera.target, camera.position));
+  if (!forward) return new Float32Array();
+  const aspect = 16 / 9;
+  const faces = [];
+  for (const entity of Object.values(world.entities)) {
+    const transform = entity.transform3d;
+    if (!transform || entity.mesh3d?.visible === false) continue;
+    const half = {
+      x: transform.scale.x * 0.5,
+      y: transform.scale.y * 0.5,
+      z: transform.scale.z * 0.5,
+    };
+    const local = [
+      { x: -half.x, y: -half.y, z: -half.z }, { x: half.x, y: -half.y, z: -half.z },
+      { x: half.x, y: half.y, z: -half.z }, { x: -half.x, y: half.y, z: -half.z },
+      { x: -half.x, y: -half.y, z: half.z }, { x: half.x, y: -half.y, z: half.z },
+      { x: half.x, y: half.y, z: half.z }, { x: -half.x, y: half.y, z: half.z },
+    ];
+    const corners = local.map((point) => add3(transform.position, rotateEuler3(point, transform.rotation)));
+    const indices = [[0, 1, 2, 3], [4, 7, 6, 5], [0, 4, 5, 1], [3, 2, 6, 7], [1, 5, 6, 2], [0, 3, 7, 4]];
+    const color = colorFor3d(entity);
+    for (const [a, b, c, d] of indices) {
+      const depth = (dot3(sub3(corners[a], camera.position), forward)
+        + dot3(sub3(corners[b], camera.position), forward)
+        + dot3(sub3(corners[c], camera.position), forward)
+        + dot3(sub3(corners[d], camera.position), forward)) / 4;
+      faces.push({ depth, triangle: [corners[a], corners[b], corners[c]], color });
+      faces.push({ depth, triangle: [corners[a], corners[c], corners[d]], color });
+    }
+  }
+  faces.sort((left, right) => right.depth - left.depth);
+  const vertices = [];
+  for (const face of faces) {
+    const projected = face.triangle.map((point) => project3d(camera, point, aspect));
+    if (projected.some((point) => point === null)) continue;
+    for (const point of projected) vertices.push(point[0], point[1], ...face.color);
   }
   return new Float32Array(vertices);
 }

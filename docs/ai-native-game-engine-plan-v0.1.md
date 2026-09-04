@@ -381,7 +381,7 @@ Model 是遊戲的真實狀態，ViewModel 是遊戲端定義的 typed presentat
 - native/web 的 platform capability report。
 - 最小 Inspector 只讀取 Developer Protocol。
 
-目前進度：`unone-engine` 已通過 `wasm32-unknown-emscripten` library compile，`unone-web-smoke` 已完成 Emscripten link、Node smoke 與 browser runtime smoke page，且已有 `platform capabilities` CLI query。`web/host/` 已完成 snapshot bridge，`web/live/` 已以窄 C ABI 完成 host-provided source/scene payload、script reload、live WASM frame loop、browser input 驅動同一個 Rust/Luau simulation 與 WebGPU render；sample 的 project bundle/catalog、incremental verify、IndexedDB cache、generation transaction 與 script hot update 已通過 browser smoke。Android 的 `aarch64-linux-android` 與 `x86_64-linux-android` engine cross-compile 也已通過。通用遊戲 asset streaming、production storage writer、live reload error transport、mobile host lifecycle/package 與最小 Inspector 仍未完成，不能把這個里程碑標成完成。
+目前進度：`unone-engine` 已通過 `wasm32-unknown-emscripten` library compile，`unone-web-smoke` 已完成 Emscripten link、Node smoke 與 browser runtime smoke page，且已有 `platform capabilities` CLI query。`web/host/` 已完成 snapshot bridge，`web/live/` 已以窄 C ABI 完成 host-provided source/scene payload、script reload、live WASM frame loop、browser input 驅動同一個 Rust/Luau simulation 與 WebGPU render；sample 的 project bundle/catalog、incremental verify、IndexedDB cache、generation transaction 與 script hot update 已通過 browser smoke。`web/runner/` 也已用同一個 WASM runtime 實際載入 3D Racing、Red Alert-style RTS 與 Fish Machine，並消費 2D/3D snapshot、semantic UI 與完整 `InputFrame`。Android 的 `aarch64-linux-android` 與 `x86_64-linux-android` engine cross-compile 也已通過。通用遊戲 bundle/asset streaming、production storage writer、live reload error transport、mobile host lifecycle/package、各遊戲跨平台 smoke 與最小 Inspector 仍未完成，不能把這個里程碑標成完成。
 
 ### M4：憤怒鳥 2D 驗證
 
