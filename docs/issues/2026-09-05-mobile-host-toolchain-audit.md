@@ -7,13 +7,13 @@
 
 ## 盤點結果
 
-- Rust installed targets：`x86_64-pc-windows-msvc`、`wasm32-unknown-unknown`、`wasm32-unknown-emscripten`；尚未安裝 Android/iOS Rust target。
-- Android SDK 與 `adb.exe` 存在，但本機未找到 `gradle`；因此目前只能做 SDK/device 可見性盤點，不能宣稱 Android host package/build 通過。
+- Rust installed targets：`x86_64-pc-windows-msvc`、`wasm32-unknown-unknown`、`wasm32-unknown-emscripten`、`aarch64-linux-android`、`x86_64-linux-android`。使用 NDK `27.1.12297006` 的 clang wrapper，`cargo check -p unone-engine --target aarch64-linux-android` 與 `cargo check -p unone-engine --target x86_64-linux-android` 均成功。
+- Android SDK 與 `adb.exe` 存在，但本機未找到 `gradle`；`adb devices -l` 沒有 connected emulator/device。因此目前只有 engine cross-compile evidence，不能宣稱 Android host package/build/lifecycle smoke 通過。
 - `xcodebuild` 不存在；Windows 不能直接完成 Apple SDK、codesign、simulator 或 device smoke。
 
 ## 判斷
 
-這是 host toolchain / 實機驗證問題，不是把 iOS/Android 依賴塞進 engine core 的理由。engine 先維持 platform-neutral Rust runtime，mobile host 依 `docs/decisions/0017-mobile-host-lifecycle-boundary.md` 在具備對應工具鏈的環境實作。
+這是 host packaging / 實機驗證問題，不是把 iOS/Android 依賴塞進 engine core 的理由。Android engine cross-compile 已解除第一個 toolchain blocker；engine 仍維持 platform-neutral Rust runtime，mobile host 依 `docs/decisions/0017-mobile-host-lifecycle-boundary.md` 在具備 Gradle、emulator/device 的環境實作。
 
 ## 解鎖條件
 
