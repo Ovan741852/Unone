@@ -38,6 +38,7 @@ struct MobileObservation {
     surface: Option<SurfaceState>,
     reason: Option<String>,
     world: Option<unone_engine::WorldSnapshot>,
+    save_payload: Option<serde_json::Value>,
 }
 
 /// Opaque session owned by the mobile host.
@@ -90,6 +91,7 @@ impl UnoneMobileSession {
             surface: self.surface.clone(),
             reason: reason.map(str::to_string),
             world: self.runtime.as_ref().map(EngineRuntime::observe),
+            save_payload: self.runtime.as_ref().and_then(EngineRuntime::save_payload),
         };
         self.output = serde_json::to_vec(&observation).unwrap_or_default();
     }
@@ -248,6 +250,38 @@ pub unsafe extern "C" fn unone_mobile_load_project(
     session.pending_input = InputFrame::default();
     session.paused = false;
     session.write_observation("project_loaded", None);
+    0
+}
+
+/// Inject a host-loaded JSON save payload. The game decides whether the
+/// version and schema are valid when it reads `api.save.get()` during update.
+///
+/// # Safety
+///
+/// `session` must be live. `pointer` must reference `length` readable UTF-8
+/// JSON bytes for the duration of this call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_set_save_payload(
+    session: *mut UnoneMobileSession,
+    pointer: *const u8,
+    length: usize,
+) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    let bytes = match unsafe { bytes_from_ptr(pointer, length) } {
+        Ok(bytes) => bytes,
+        Err(error) => return session.write_error(error),
+    };
+    let payload: serde_json::Value = match serde_json::from_slice(&bytes) {
+        Ok(payload) => payload,
+        Err(error) => return session.write_error(format!("save payload is invalid JSON: {error}")),
+    };
+    let Some(runtime) = session.runtime.as_mut() else {
+        return session.write_error("cannot load save before a project is loaded");
+    };
+    runtime.set_save_payload(Some(payload));
+    session.write_observation("save_loaded", Some("host_injected_payload"));
     0
 }
 
@@ -620,11 +654,31 @@ end
 return Game
 "#;
 
+    const SAVE_SCRIPT: &str = r#"
+local Game = {}
+function Game.start(_api) end
+function Game.update(api, _dt)
+    local payload = api.save.get()
+    if payload ~= nil then
+        api.observation.set("loaded_node", payload.node)
+    end
+end
+return Game
+"#;
+
     fn payload() -> Vec<u8> {
         serde_json::to_vec(&json!({
             "project": "MobileContract",
             "script": SCRIPT,
             "scene": {"entities": [{"id": "player", "transform": {"x": 0.0, "y": 0.0}}]}
+        }))
+        .unwrap()
+    }
+
+    fn payload_with_script(script: &str) -> Vec<u8> {
+        serde_json::to_vec(&json!({
+            "project": "MobileSaveContract",
+            "script": script,
         }))
         .unwrap()
     }
@@ -752,6 +806,33 @@ return Game
                 - 1.0 / 60.0)
                 .abs()
                 < 0.000_001
+        );
+        unsafe { unone_mobile_shutdown(session) };
+    }
+
+    #[test]
+    fn save_payload_bridge_injects_json_before_tick() {
+        let session = unone_mobile_init();
+        let project = payload_with_script(SAVE_SCRIPT);
+        assert_eq!(
+            unsafe { unone_mobile_load_project(session, project.as_ptr(), project.len(), 42) },
+            0
+        );
+        let save = serde_json::to_vec(&json!({"version": 1, "node": "brave"})).unwrap();
+        assert_eq!(
+            unsafe { unone_mobile_set_save_payload(session, save.as_ptr(), save.len()) },
+            0
+        );
+        assert_eq!(unsafe { unone_mobile_tick(session) }, 0);
+        let value = output(session);
+        assert_eq!(value["event"], json!("tick"));
+        assert_eq!(
+            value["world"]["observations"]["loaded_node"],
+            json!("brave")
+        );
+        assert_eq!(
+            value["save_payload"],
+            json!({"version": 1, "node": "brave"})
         );
         unsafe { unone_mobile_shutdown(session) };
     }

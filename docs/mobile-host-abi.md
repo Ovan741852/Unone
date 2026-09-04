@@ -17,6 +17,7 @@ The adapter owns only the bridge to `EngineRuntime`:
 - one opaque session;
 - host-normalized `InputFrame` delivery;
 - fixed-step tick and semantic observation;
+- opaque JSON-like save payload injection and observation;
 - pause/resume without wall-clock catch-up;
 - surface descriptor bookkeeping without resetting the runtime;
 - Luau source reload with engine-state preservation.
@@ -30,6 +31,7 @@ Include `crates/unone-mobile-ffi/include/unone_mobile.h` from the native wrapper
 init
   → resize (surface available)
   → load_project
+  → optional set_save_payload
   → set_pointer / set_action / set_input_frame
   → tick → observe
   → pause
@@ -60,5 +62,7 @@ The ABI intentionally does not expose a filesystem, IndexedDB, OPFS, Android sto
 ## Observation and errors
 
 Successful calls produce semantic JSON with `kind=mobile_observation`, `event`, `lifecycle`, `project`, `surface`, and optional `world`. Failure produces `kind=mobile_error` with either a message or the full engine diagnostic (`code`, `severity`, `explanation`, `facts`, `likely_causes`, and `suggested_actions`).
+
+`unone_mobile_set_save_payload` injects a host-loaded JSON payload before a tick. A successful tick returns the latest `save_payload` alongside `world`; the game owns schema/version/migration and the host owns durable storage.
 
 The ABI does not expose raw Rust or GPU objects. If a future mobile requirement needs a new capability, first reproduce it in a validation game; add the smallest host/adapter contract only when the need is shared.

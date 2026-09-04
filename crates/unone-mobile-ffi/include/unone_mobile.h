@@ -19,6 +19,11 @@ int32_t unone_mobile_load_project(
     size_t payload_length,
     uint64_t seed);
 
+int32_t unone_mobile_set_save_payload(
+    UnoneMobileSession *session,
+    const uint8_t *payload,
+    size_t payload_length);
+
 int32_t unone_mobile_bundle_begin(
     UnoneMobileSession *session,
     const uint8_t *bundle_spec,

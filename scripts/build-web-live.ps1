@@ -10,7 +10,7 @@ $env:CC_wasm32_unknown_emscripten = Join-Path $emscriptenRoot 'emcc.bat'
 $env:CXX_wasm32_unknown_emscripten = Join-Path $emscriptenRoot 'em++.bat'
 $env:AR_wasm32_unknown_emscripten = Join-Path $emscriptenRoot 'emar.bat'
 $env:CXXFLAGS_wasm32_unknown_emscripten = '-fwasm-exceptions'
-$env:RUSTFLAGS = '-C link-arg=--export=unone_web_init -C link-arg=--export=unone_web_alloc -C link-arg=--export=unone_web_bundle_begin -C link-arg=--export=unone_web_bundle_write -C link-arg=--export=unone_web_bundle_finish -C link-arg=--export=unone_web_load_project -C link-arg=--export=unone_web_reload_script -C link-arg=--export=unone_web_set_pointer -C link-arg=--export=unone_web_tick -C link-arg=--export=unone_web_observation_ptr -C link-arg=--export=unone_web_observation_len'
+$env:RUSTFLAGS = '-C link-arg=--export=unone_web_init -C link-arg=--export=unone_web_alloc -C link-arg=--export=unone_web_bundle_begin -C link-arg=--export=unone_web_bundle_write -C link-arg=--export=unone_web_bundle_finish -C link-arg=--export=unone_web_load_project -C link-arg=--export=unone_web_set_save_payload -C link-arg=--export=unone_web_reload_script -C link-arg=--export=unone_web_set_pointer -C link-arg=--export=unone_web_tick -C link-arg=--export=unone_web_observation_ptr -C link-arg=--export=unone_web_observation_len'
 
 cargo build --quiet -p unone-web-live-smoke --target wasm32-unknown-emscripten
 if ($LASTEXITCODE -ne 0) {

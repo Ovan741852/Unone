@@ -40,12 +40,18 @@ fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Stri
 struct ProjectObservation<'a> {
     project: &'a str,
     world: &'a WorldSnapshot,
+    save_payload: Option<serde_json::Value>,
 }
 
-fn write_snapshot(project: &str, snapshot: &WorldSnapshot) {
+fn write_snapshot(
+    project: &str,
+    snapshot: &WorldSnapshot,
+    save_payload: Option<serde_json::Value>,
+) {
     let observation = ProjectObservation {
         project,
         world: snapshot,
+        save_payload,
     };
     let bytes = serde_json::to_vec(&observation).unwrap_or_else(|error| {
         serde_json::to_vec(&serde_json::json!({
@@ -56,8 +62,10 @@ fn write_snapshot(project: &str, snapshot: &WorldSnapshot) {
     OUTPUT.with(|output| *output.borrow_mut() = bytes);
 }
 
-fn write_runtime_snapshot(snapshot: &WorldSnapshot) {
-    PROJECT_NAME.with(|project| write_snapshot(project.borrow().as_str(), snapshot));
+fn write_runtime_snapshot(runtime: &EngineRuntime) {
+    let snapshot = runtime.observe();
+    let save_payload = runtime.save_payload();
+    PROJECT_NAME.with(|project| write_snapshot(project.borrow().as_str(), &snapshot, save_payload));
 }
 
 fn write_error(message: impl Into<String>) {
@@ -194,9 +202,10 @@ pub unsafe extern "C" fn unone_web_load_project(
     match create_runtime(payload, seed) {
         Ok(runtime_value) => {
             let snapshot = runtime_value.observe();
+            let save_payload = runtime_value.save_payload();
             RUNTIME.with(|runtime| *runtime.borrow_mut() = Some(runtime_value));
             PROJECT_NAME.with(|project| *project.borrow_mut() = project_name.clone());
-            write_snapshot(&project_name, &snapshot);
+            write_snapshot(&project_name, &snapshot, save_payload);
             0
         }
         Err(error) => {
@@ -204,6 +213,38 @@ pub unsafe extern "C" fn unone_web_load_project(
             -1
         }
     }
+}
+
+/// Inject a host-loaded JSON save payload before the next tick.
+///
+/// # Safety
+///
+/// `pointer` must reference `length` readable UTF-8 JSON bytes for the
+/// duration of this call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_web_set_save_payload(pointer: *const u8, length: usize) -> i32 {
+    if pointer.is_null() {
+        write_error("save payload pointer is null");
+        return -1;
+    }
+    let bytes = unsafe { std::slice::from_raw_parts(pointer, length) };
+    let payload: serde_json::Value = match serde_json::from_slice(bytes) {
+        Ok(payload) => payload,
+        Err(error) => {
+            write_error(format!("save payload is invalid JSON: {error}"));
+            return -1;
+        }
+    };
+    RUNTIME.with(|runtime| {
+        let mut runtime = runtime.borrow_mut();
+        let Some(runtime) = runtime.as_mut() else {
+            write_error("web runtime is not initialized");
+            return -1;
+        };
+        runtime.set_save_payload(Some(payload));
+        write_runtime_snapshot(runtime);
+        0
+    })
 }
 
 #[unsafe(no_mangle)]
@@ -232,7 +273,7 @@ pub unsafe extern "C" fn unone_web_reload_script(pointer: *const u8, length: usi
         };
         match runtime.reload_source(source) {
             Ok(()) => {
-                write_runtime_snapshot(&runtime.observe());
+                write_runtime_snapshot(runtime);
                 0
             }
             Err(diagnostic) => {
@@ -269,8 +310,8 @@ pub extern "C" fn unone_web_tick() -> i32 {
             pointer: Some(pointer),
         };
         match runtime.tick_with_input(&frame) {
-            Ok(snapshot) => {
-                write_runtime_snapshot(&snapshot);
+            Ok(_) => {
+                write_runtime_snapshot(runtime);
                 0
             }
             Err(diagnostic) => {
@@ -297,7 +338,8 @@ fn main() {}
 mod tests {
     use super::{
         OUTPUT, unone_web_bundle_begin, unone_web_bundle_finish, unone_web_bundle_write,
-        unone_web_load_project, unone_web_reload_script, unone_web_set_pointer, unone_web_tick,
+        unone_web_load_project, unone_web_reload_script, unone_web_set_pointer,
+        unone_web_set_save_payload, unone_web_tick,
     };
     use serde_json::json;
 
@@ -331,6 +373,18 @@ end
 return Game
 "#;
 
+    const SAVE_SCRIPT: &str = r#"
+local Game = {}
+function Game.start(_api) end
+function Game.update(api, _dt)
+    local payload = api.save.get()
+    if payload ~= nil then
+        api.observation.set("loaded_node", payload.node)
+    end
+end
+return Game
+"#;
+
     fn project_payload() -> Vec<u8> {
         serde_json::to_vec(&json!({
             "project": "NativeAbiTest",
@@ -339,6 +393,14 @@ return Game
                 "id": "web_probe",
                 "transform": {"x": 0.0, "y": 0.0}
             }]}
+        }))
+        .unwrap()
+    }
+
+    fn save_project_payload() -> Vec<u8> {
+        serde_json::to_vec(&json!({
+            "project": "WebSaveAbiTest",
+            "script": SAVE_SCRIPT,
         }))
         .unwrap()
     }
@@ -392,6 +454,31 @@ return Game
                 .as_f64()
                 .unwrap()
                 > 3.0
+        );
+    }
+
+    #[test]
+    fn c_abi_save_payload_reaches_luau_and_snapshot() {
+        let payload = save_project_payload();
+        assert_eq!(
+            unsafe { unone_web_load_project(payload.as_ptr(), payload.len(), 42) },
+            0
+        );
+        let save = serde_json::to_vec(&json!({"version": 1, "node": "brave"})).unwrap();
+        assert_eq!(
+            unsafe { unone_web_set_save_payload(save.as_ptr(), save.len()) },
+            0
+        );
+        assert_eq!(unone_web_tick(), 0);
+        let value = output();
+        assert_eq!(value["project"], json!("WebSaveAbiTest"));
+        assert_eq!(
+            value["world"]["observations"]["loaded_node"],
+            json!("brave")
+        );
+        assert_eq!(
+            value["save_payload"],
+            json!({"version": 1, "node": "brave"})
         );
     }
 }
