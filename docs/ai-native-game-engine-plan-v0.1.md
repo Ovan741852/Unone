@@ -376,7 +376,7 @@ Model 是遊戲的真實狀態，ViewModel 是遊戲端定義的 typed presentat
 - native/web 的 platform capability report。
 - 最小 Inspector 只讀取 Developer Protocol。
 
-目前進度：`unone-engine` 已通過 `wasm32-unknown-emscripten` library compile，`unone-web-smoke` 已完成 Emscripten link、Node smoke 與 browser runtime smoke page，且已有 `platform capabilities` CLI query；瀏覽器 WebGPU game host、browser input、storage adapter 與最小 Inspector 仍未完成，不能把這個里程碑標成完成。
+目前進度：`unone-engine` 已通過 `wasm32-unknown-emscripten` library compile，`unone-web-smoke` 已完成 Emscripten link、Node smoke 與 browser runtime smoke page，且已有 `platform capabilities` CLI query。`web/host/` 已完成第一個 snapshot bridge：瀏覽器以 WebGPU 畫出 engine `WorldSnapshot`，並把 pointer 轉成 world-space semantic frame；live WASM frame loop、browser input 驅動 simulation、storage adapter 與最小 Inspector 仍未完成，不能把這個里程碑標成完成。
 
 ### M4：憤怒鳥 2D 驗證
 

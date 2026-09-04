@@ -1,0 +1,114 @@
+﻿{
+    "project":  "AngryBirds2D",
+    "seed":  42,
+    "status":  "completed",
+    "frames":  60,
+    "observation_digest":  "sha256:c67bef3936ceafc11aec95c517a151a9f7dfc9f82cfefdb8723cdabb5e21cb9f",
+    "world":  {
+                  "frame":  60,
+                  "time_seconds":  1.0,
+                  "camera":  {
+                                 "position":  {
+                                                  "x":  -1.4,
+                                                  "y":  0.75
+                                              },
+                                 "zoom":  1.0
+                             },
+                  "entities":  {
+                                   "bird":  {
+                                                "id":  "bird",
+                                                "name":  "Red Bird",
+                                                "transform":  {
+                                                                  "x":  -2.266667,
+                                                                  "y":  0.4
+                                                              },
+                                                "sprite":  {
+                                                               "asset":  "asset://characters/bird/red",
+                                                               "size":  {
+                                                                            "x":  0.8,
+                                                                            "y":  0.8
+                                                                        },
+                                                               "visible":  true
+                                                           },
+                                                "rigidbody":  {
+                                                                  "body_type":  "dynamic",
+                                                                  "mass":  1.0,
+                                                                  "radius":  0.4,
+                                                                  "velocity":  {
+                                                                                   "x":  8.0,
+                                                                                   "y":  0.0
+                                                                               },
+                                                                  "restitution":  0.0
+                                                              }
+                                            },
+                                   "block":  {
+                                                 "id":  "block",
+                                                 "name":  "Wood Block",
+                                                 "transform":  {
+                                                                   "x":  7.0,
+                                                                   "y":  1.5
+                                                               },
+                                                 "sprite":  {
+                                                                "asset":  "asset://structures/wood/block",
+                                                                "size":  {
+                                                                             "x":  1.2,
+                                                                             "y":  2.0
+                                                                         },
+                                                                "visible":  true
+                                                            },
+                                                 "rigidbody":  {
+                                                                   "body_type":  "static",
+                                                                   "mass":  1.0,
+                                                                   "radius":  0.6,
+                                                                   "velocity":  {
+                                                                                    "x":  0.0,
+                                                                                    "y":  0.0
+                                                                                },
+                                                                   "restitution":  0.0
+                                                               }
+                                             },
+                                   "pig":  {
+                                               "id":  "pig",
+                                               "name":  "Target Pig",
+                                               "transform":  {
+                                                                 "x":  5.0,
+                                                                 "y":  0.5
+                                                             },
+                                               "sprite":  {
+                                                              "asset":  "asset://characters/pig/basic",
+                                                              "size":  {
+                                                                           "x":  1.0,
+                                                                           "y":  1.0
+                                                                       },
+                                                              "visible":  true
+                                                          },
+                                               "rigidbody":  {
+                                                                 "body_type":  "static",
+                                                                 "mass":  1.0,
+                                                                 "radius":  0.5,
+                                                                 "velocity":  {
+                                                                                  "x":  0.0,
+                                                                                  "y":  0.0
+                                                                              },
+                                                                 "restitution":  0.0
+                                                             }
+                                           }
+                               }
+              },
+    "trace":  [
+                  {
+                      "frame":  0,
+                      "event":  "script_log",
+                      "details":  {
+                                      "message":  "angry_birds_scene_ready"
+                                  }
+                  },
+                  {
+                      "frame":  2,
+                      "event":  "script_log",
+                      "details":  {
+                                      "message":  "bird_pointer_launch_released"
+                                  }
+                  }
+              ]
+}
