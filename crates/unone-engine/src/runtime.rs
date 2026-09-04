@@ -406,6 +406,26 @@ impl EngineRuntime {
         self.run_internal(frames, seed, Some(input_sequence))
     }
 
+    /// Apply one host-normalized input frame, advance the fixed-step runtime,
+    /// and return the resulting observation.
+    ///
+    /// Native, Web, iOS and Android adapters should converge on this method
+    /// instead of each maintaining a separate input-to-tick convention.
+    pub fn tick_with_input(
+        &mut self,
+        frame: &InputFrame,
+    ) -> Result<WorldSnapshot, Box<Diagnostic>> {
+        self.input.borrow_mut().down = frame.actions.clone();
+        if let Some(pointer) = &frame.pointer {
+            let mut input = self.input.borrow_mut();
+            input.pointer.position = pointer.position;
+            input.pointer.down = pointer.down;
+        } else {
+            self.input.borrow_mut().pointer.down = false;
+        }
+        self.tick()
+    }
+
     fn run_internal(
         &mut self,
         frames: u64,
@@ -413,21 +433,16 @@ impl EngineRuntime {
         input_sequence: Option<&[InputFrame]>,
     ) -> EngineResult<RunReport> {
         for frame_index in 0..frames {
-            if let Some(input_sequence) = input_sequence {
+            let tick = if let Some(input_sequence) = input_sequence {
                 let frame = input_sequence
                     .get(frame_index as usize)
                     .cloned()
                     .unwrap_or_default();
-                let mut input = self.input.borrow_mut();
-                input.down = frame.actions;
-                if let Some(pointer) = frame.pointer {
-                    input.pointer.position = pointer.position;
-                    input.pointer.down = pointer.down;
-                } else {
-                    input.pointer.down = false;
-                }
-            }
-            if let Err(err) = self.tick() {
+                self.tick_with_input(&frame)
+            } else {
+                self.tick()
+            };
+            if let Err(err) = tick {
                 return EngineResult::failure(*err);
             }
         }
@@ -1114,6 +1129,41 @@ return Game
             .unwrap();
         let x = report.world.entities.get("player").unwrap().transform.x;
         assert!((x - 2.0).abs() < 0.000_001);
+    }
+
+    #[test]
+    fn tick_with_input_is_the_shared_host_frame_boundary() {
+        let dir = tempdir().unwrap();
+        let script = r#"--!strict
+type Vec2 = { x: number, y: number }
+type EntityApi = { getPosition: (id: string) -> Vec2, setPosition: (id: string, position: Vec2) -> () }
+type InputApi = { getPointerPosition: () -> Vec2, isPointerDown: () -> boolean }
+type EngineApi = { entity: EntityApi, input: InputApi }
+local Game = {}
+function Game.start(_api: EngineApi) end
+function Game.update(api: EngineApi, _dt: number)
+    if api.input.isPointerDown() then
+        api.entity.setPosition("player", api.input.getPointerPosition())
+    end
+end
+return Game
+"#;
+        write_project(dir.path(), script);
+        let mut runtime = EngineRuntime::load(dir.path()).unwrap();
+        let frame = InputFrame {
+            actions: BTreeMap::new(),
+            pointer: Some(crate::project::PointerInput {
+                position: crate::world::Vec2 { x: 3.0, y: 4.0 },
+                down: true,
+            }),
+        };
+
+        let snapshot = runtime.tick_with_input(&frame).unwrap();
+
+        assert_eq!(
+            snapshot.entities.get("player").unwrap().transform,
+            crate::world::Vec2 { x: 3.0, y: 4.0 }
+        );
     }
 
     #[test]
