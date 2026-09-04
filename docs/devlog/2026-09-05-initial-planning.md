@@ -70,4 +70,5 @@
 - 累積至下一個 review 間隔後再次執行 Claude CLI read-only review；連續 60 秒無輸出後中止，沒有 findings，故不算通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-5.md`。
 - 發現 `RunReport.seed` 原本只被記錄、沒有進入 runtime；分類為引擎 deterministic contract 問題。加入 seeded Luau `random.nextFloat`／`random.nextInt`、inclusive range validation、unbiased rejection sampling 與 seed regression test，並更新三個 sample 的 contract types。
 - 新增 `platform capabilities` Developer Protocol query，讓 AI 可先讀 target family、可用 project loader、hot reload mode、已驗證 runtime 與待完成 host work；native 輸出明確列出 iOS／Android wrapper 尚未完成，避免平台能力被猜測。
+- Web smoke／seeded RNG／platform query 切片後依節奏執行 Claude CLI read-only review；連續 60 秒無輸出後中止，沒有 findings，故不算通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-6.md`。
 - Web smoke host 首次 cdylib link 發現 side module 需要 PIC；依影響範圍判定為 Emscripten/C++ exception model 的 platform architecture 問題，改用主模組 executable，清理舊 `mlua-sys` cache 後加上 `-fwasm-exceptions` 重建成功。Node 執行 `.js + .wasm` 完成 60 frames 並輸出 observation digest；瀏覽器 WebGPU page 仍未宣稱完成。
