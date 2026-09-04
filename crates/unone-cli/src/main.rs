@@ -2,7 +2,7 @@ use std::{borrow::Cow, path::PathBuf, process::ExitCode, sync::Arc};
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use unone_engine::{EngineResult, EngineRuntime, WorldSnapshot};
+use unone_engine::{BundleManager, EngineResult, EngineRuntime, WorldSnapshot};
 use winit::{
     application::ApplicationHandler,
     event::{ElementState, WindowEvent},
@@ -36,6 +36,16 @@ enum Command {
     Test,
     Observe,
     Preview,
+    Bundle {
+        #[command(subcommand)]
+        command: BundleCommand,
+    },
+}
+
+#[derive(Debug, Subcommand)]
+enum BundleCommand {
+    Inspect,
+    Install { id: String },
 }
 
 fn main() -> ExitCode {
@@ -95,6 +105,21 @@ fn run() -> Result<ExitCode> {
             print_result(EngineResult::success(runtime.observe()), cli.json)
         }
         Command::Preview => preview(&cli.project),
+        Command::Bundle { command } => {
+            let manager = match BundleManager::from_project(&cli.project) {
+                Ok(manager) => manager,
+                Err(diagnostic) => {
+                    return print_result(
+                        EngineResult::<serde_json::Value>::failure(*diagnostic),
+                        cli.json,
+                    );
+                }
+            };
+            match command {
+                BundleCommand::Inspect => print_result(manager.inspect(), cli.json),
+                BundleCommand::Install { id } => print_result(manager.install(&id), cli.json),
+            }
+        }
     }
 }
 

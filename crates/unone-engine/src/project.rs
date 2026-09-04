@@ -17,6 +17,8 @@ pub struct ProjectConfig {
     pub main_scene: Option<String>,
     #[serde(default)]
     pub test_files: Vec<String>,
+    #[serde(default)]
+    pub bundle_manifest: Option<String>,
 }
 
 fn default_entry_script() -> String {

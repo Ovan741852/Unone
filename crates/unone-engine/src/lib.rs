@@ -1,8 +1,10 @@
+mod bundle;
 mod diagnostics;
 mod project;
 mod runtime;
 mod world;
 
+pub use bundle::{BundleManager, BundleManifest, BundleReport, BundleSpec};
 pub use diagnostics::{
     ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult, SourceLocation,
 };

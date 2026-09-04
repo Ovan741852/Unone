@@ -41,3 +41,5 @@
 - wgpu 30 API 適配完成；依賴版本已寫入 `Cargo.lock`，避免 renderer 編譯環境漂移。
 - 對外 observation 將浮點值量化至 6 位小數，內部 simulation 仍保留精度；GPU surface capability 缺失改回傳錯誤，不再直接 panic。
 - `cargo clippy --workspace --all-targets -- -D warnings` 通過。
+- Bundle runtime 已加入：manifest、依賴安裝、串流 hash 驗證、content-addressed cache、cache 二次驗證與 generation activation；sample bundle inspect/install 通過。
+- 已建立 `README.md` 與 `docs/ai-workflow.md`，明確標示目前 `check` 只保證語法與 entrypoint contract，避免把尚未接入的 Luau static analyzer 說成已完成。
