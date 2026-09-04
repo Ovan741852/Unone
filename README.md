@@ -40,7 +40,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview -
 
 引擎只提供必要的遊戲機制。遊戲規則、數值、ViewModel、UI flow、內容 catalog、下載時機與營運服務留在遊戲專案或服務端。UI 會採 MVVM；ECS + systems 負責高頻模擬。
 
-Bundle 的第一版只包含 manifest、依賴、hash 驗證、content-addressed cache、staging 與 generation activation；不包含 CDN、P2P、差分更新或遠端腳本執行。
+Bundle 的第一版只包含 manifest、依賴、host-provided fetch、streaming hash 驗證、content-addressed cache、staging 與 generation activation；不包含 CDN、P2P、差分更新或遠端腳本執行。fetch、重試與平台 storage policy 不進 engine core。
 
 ## 驗證遊戲
 

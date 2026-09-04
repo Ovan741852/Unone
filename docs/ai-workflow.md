@@ -82,7 +82,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json bu
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json bundle install base
 ```
 
-bundle 成功不是只代表檔案存在：要確認 manifest hash、cache hash、active generation 與 dependencies。下載來源尚未內建；目前 sample 使用 local source，未來由 native/Web adapter 或外部 downloader 提供 bytes。
+bundle 成功不是只代表檔案存在：要確認 manifest hash、cache hash、active generation、dependencies 與 `available`。引擎的 `BundleFetcher` 只接收 host 提供的 reader，再負責 streaming size/hash verify、staging 與 atomic activation；native CLI 使用 local source，Web/mobile 的 fetch、重試、storage quota 與背景下載政策留在 host adapter。詳見 `docs/decisions/0010-bundle-fetch-boundary.md`。
 
 ## 5. native preview
 

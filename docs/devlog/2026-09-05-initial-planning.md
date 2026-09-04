@@ -75,3 +75,5 @@
 - Web smoke host 首次 cdylib link 發現 side module 需要 PIC；依影響範圍判定為 Emscripten/C++ exception model 的 platform architecture 問題，改用主模組 executable，清理舊 `mlua-sys` cache 後加上 `-fwasm-exceptions` 重建成功。Node 執行 `.js + .wasm` 完成 60 frames 並輸出 observation digest；瀏覽器 WebGPU page 仍未宣稱完成。
 - Node 直接執行 Web smoke 時發現預設未開啟 Emscripten exception section 所需的 exnref；分類為 host runtime 條件問題，不是引擎邏輯問題。以 `node --experimental-wasm-exnref .../unone_web_smoke.js` 重跑成功，並將 flag 寫入 toolchain 文件與 issue，避免普通 `node` 命令被誤記為可用。
 - pointer input 與 Web toolchain 文件切片後依流程執行 Claude CLI `2.1.260` read-only review；約 60 秒完全無輸出後中止，沒有可判讀 findings，故不算通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-7.md`。
+- bundle runtime 補上 `BundleFetcher` host boundary：引擎以 reader 做 streaming size/SHA-256 verify、`.part` staging、sync、cache commit 與 generation activation；native local file 是 adapter，Web/mobile fetch 與 storage policy 留在 host。新增 cache-only source 與驗證失敗保留上一代的 regression tests，決策記錄於 `docs/decisions/0010-bundle-fetch-boundary.md`。
+- bundle slice 後依流程執行 Claude CLI `2.1.260` read-only review；約 60 秒完全無輸出後中止，沒有可判讀 findings，故不算通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-8.md`。

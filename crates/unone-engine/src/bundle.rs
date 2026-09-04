@@ -1,7 +1,7 @@
 use std::{
     collections::{BTreeMap, BTreeSet},
     fs::{self, File},
-    io::Read,
+    io::{Read, Write},
     path::{Path, PathBuf},
 };
 
@@ -28,6 +28,15 @@ pub struct BundleSpec {
     pub dependencies: Vec<String>,
 }
 
+/// Host-owned source for a bundle.
+///
+/// Native callers can open a local file; Web/mobile callers can fetch or
+/// decrypt bytes outside the engine and return a reader here. The engine only
+/// owns streaming verification, staging and activation.
+pub trait BundleFetcher {
+    fn open(&mut self, spec: &BundleSpec) -> Result<Box<dyn Read + '_>, Box<Diagnostic>>;
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct BundleEntryReport {
     pub id: String,
@@ -37,6 +46,7 @@ pub struct BundleEntryReport {
     pub hash_valid: bool,
     pub cached: bool,
     pub cache_valid: bool,
+    pub available: bool,
     pub error: Option<String>,
 }
 
@@ -143,7 +153,9 @@ impl BundleManager {
             };
             let cached = self.cache_path(spec).is_file();
             let cache_valid = cached && self.verify_cache(spec);
-            if !source_exists || !size_valid || !hash_valid || (cached && !cache_valid) {
+            let source_valid = source_exists && size_valid && hash_valid;
+            let available = source_valid || cache_valid;
+            if !available || (cached && !cache_valid) {
                 valid = false;
             }
             entries.push(BundleEntryReport {
@@ -154,6 +166,7 @@ impl BundleManager {
                 hash_valid,
                 cached,
                 cache_valid,
+                available,
                 error,
             });
         }
@@ -169,6 +182,15 @@ impl BundleManager {
     }
 
     pub fn install(&self, bundle_id: &str) -> EngineResult<BundleReport> {
+        let mut fetcher = LocalBundleFetcher { root: &self.root };
+        self.install_with_fetcher(bundle_id, &mut fetcher)
+    }
+
+    pub fn install_with_fetcher(
+        &self,
+        bundle_id: &str,
+        fetcher: &mut dyn BundleFetcher,
+    ) -> EngineResult<BundleReport> {
         let manifest = match self.read_manifest() {
             Ok(manifest) => manifest,
             Err(diagnostic) => return EngineResult::failure(*diagnostic),
@@ -185,7 +207,7 @@ impl BundleManager {
         let mut visiting = BTreeSet::new();
         let mut installed = BTreeMap::new();
         if let Err(diagnostic) =
-            self.install_recursive(&manifest, root_spec, &mut visiting, &mut installed)
+            self.install_recursive(&manifest, root_spec, &mut visiting, &mut installed, fetcher)
         {
             return EngineResult::failure(*diagnostic);
         }
@@ -217,6 +239,7 @@ impl BundleManager {
         spec: &BundleSpec,
         visiting: &mut BTreeSet<String>,
         installed: &mut BTreeMap<String, String>,
+        fetcher: &mut dyn BundleFetcher,
     ) -> Result<(), Box<Diagnostic>> {
         if installed.contains_key(&spec.id) {
             return Ok(());
@@ -243,25 +266,7 @@ impl BundleManager {
                     ),
                 )));
             };
-            self.install_recursive(manifest, dependency_spec, visiting, installed)?;
-        }
-        let verification = self.verify_source(spec).map_err(|error| {
-            let mut diagnostic = Diagnostic::error(
-                "BUNDLE_VERIFY_FAILED",
-                "bundle 驗證失敗",
-                format!("bundle '{}' 未通過 size/hash 驗證。", spec.id),
-            );
-            diagnostic.facts = serde_json::json!({"bundle_id": spec.id, "error": error, "expected_sha256": spec.sha256, "expected_size_bytes": spec.size_bytes});
-            Box::new(diagnostic)
-        })?;
-        if verification.size != spec.size_bytes || verification.sha256 != spec.sha256 {
-            let mut diagnostic = Diagnostic::error(
-                "BUNDLE_VERIFY_FAILED",
-                "bundle 驗證失敗",
-                format!("bundle '{}' 的大小或 SHA-256 與 manifest 不一致。", spec.id),
-            );
-            diagnostic.facts = serde_json::json!({"bundle_id": spec.id, "actual_sha256": verification.sha256, "expected_sha256": spec.sha256, "actual_size_bytes": verification.size, "expected_size_bytes": spec.size_bytes});
-            return Err(Box::new(diagnostic));
+            self.install_recursive(manifest, dependency_spec, visiting, installed, fetcher)?;
         }
         fs::create_dir_all(&self.staging_dir).map_err(|err| {
             Box::new(Diagnostic::error(
@@ -289,13 +294,11 @@ impl BundleManager {
         }
         if !cache_path.exists() {
             let staged_path = self.staging_dir.join(format!("{}.part", spec.sha256));
-            fs::copy(self.source_path(spec), &staged_path).map_err(|err| {
-                Box::new(Diagnostic::error(
-                    "BUNDLE_DOWNLOAD_FAILED",
-                    "無法將 bundle 寫入 staging",
-                    err.to_string(),
-                ))
-            })?;
+            let mut reader = fetcher.open(spec)?;
+            if let Err(diagnostic) = self.write_verified_stream(spec, &staged_path, &mut *reader) {
+                let _ = fs::remove_file(&staged_path);
+                return Err(diagnostic);
+            }
             fs::rename(&staged_path, &cache_path).map_err(|err| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_CACHE_COMMIT_FAILED",
@@ -328,6 +331,77 @@ impl BundleManager {
 
     fn source_path(&self, spec: &BundleSpec) -> PathBuf {
         self.root.join(&spec.source)
+    }
+
+    fn write_verified_stream(
+        &self,
+        spec: &BundleSpec,
+        staged_path: &Path,
+        reader: &mut dyn Read,
+    ) -> Result<(), Box<Diagnostic>> {
+        let mut file = File::create(staged_path).map_err(|err| {
+            Box::new(Diagnostic::error(
+                "BUNDLE_STAGING_FAILED",
+                "無法建立 bundle staging 檔案",
+                format!("{}：{}", staged_path.display(), err),
+            ))
+        })?;
+        let mut hasher = Sha256::new();
+        let mut buffer = [0_u8; 64 * 1024];
+        let mut size = 0_u64;
+        loop {
+            let read = reader.read(&mut buffer).map_err(|err| {
+                Box::new(Diagnostic::error(
+                    "BUNDLE_FETCH_FAILED",
+                    "讀取 bundle 來源失敗",
+                    format!("bundle '{}'：{}", spec.id, err),
+                ))
+            })?;
+            if read == 0 {
+                break;
+            }
+            file.write_all(&buffer[..read]).map_err(|err| {
+                Box::new(Diagnostic::error(
+                    "BUNDLE_STAGING_FAILED",
+                    "寫入 bundle staging 失敗",
+                    format!("bundle '{}'：{}", spec.id, err),
+                ))
+            })?;
+            size += read as u64;
+            hasher.update(&buffer[..read]);
+        }
+        file.flush().map_err(|err| {
+            Box::new(Diagnostic::error(
+                "BUNDLE_STAGING_FAILED",
+                "flush bundle staging 失敗",
+                format!("bundle '{}'：{}", spec.id, err),
+            ))
+        })?;
+        file.sync_all().map_err(|err| {
+            Box::new(Diagnostic::error(
+                "BUNDLE_STAGING_FAILED",
+                "同步 bundle staging 失敗",
+                format!("bundle '{}'：{}", spec.id, err),
+            ))
+        })?;
+        let actual_sha256 = hex_digest(&hasher.finalize());
+        if size != spec.size_bytes || actual_sha256 != spec.sha256 {
+            let mut diagnostic = Diagnostic::error(
+                "BUNDLE_VERIFY_FAILED",
+                "bundle 驗證失敗",
+                format!("bundle '{}' 的大小或 SHA-256 與 manifest 不一致。", spec.id),
+            );
+            diagnostic.facts = serde_json::json!({
+                "bundle_id": spec.id,
+                "actual_sha256": actual_sha256,
+                "expected_sha256": spec.sha256,
+                "actual_size_bytes": size,
+                "expected_size_bytes": spec.size_bytes,
+                "staging_removed": true,
+            });
+            return Err(Box::new(diagnostic));
+        }
+        Ok(())
     }
 
     fn cache_path(&self, spec: &BundleSpec) -> PathBuf {
@@ -406,17 +480,38 @@ struct FileVerification {
     sha256: String,
 }
 
+struct LocalBundleFetcher<'a> {
+    root: &'a Path,
+}
+
+impl BundleFetcher for LocalBundleFetcher<'_> {
+    fn open(&mut self, spec: &BundleSpec) -> Result<Box<dyn Read + '_>, Box<Diagnostic>> {
+        let path = self.root.join(&spec.source);
+        File::open(&path)
+            .map(|file| Box::new(file) as Box<dyn Read>)
+            .map_err(|err| {
+                Box::new(Diagnostic::error(
+                    "BUNDLE_FETCH_FAILED",
+                    "無法開啟本地 bundle 來源",
+                    format!("{}：{}", path.display(), err),
+                ))
+            })
+    }
+}
+
 fn hex_digest(bytes: &[u8]) -> String {
     bytes.iter().map(|byte| format!("{byte:02x}")).collect()
 }
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
+    use std::{collections::BTreeMap, fs, io::Cursor};
 
     use tempfile::tempdir;
 
-    use super::{BundleManager, BundleManifest, BundleSpec};
+    use crate::diagnostics::Diagnostic;
+
+    use super::{BundleFetcher, BundleManager, BundleManifest, BundleSpec};
 
     #[test]
     fn installs_verified_bundle_and_dependencies() {
@@ -486,6 +581,126 @@ mod tests {
         let report = manager.install("base");
         assert!(!report.ok);
         assert_eq!(report.diagnostics[0].code, "BUNDLE_VERIFY_FAILED");
+    }
+
+    #[test]
+    fn host_fetcher_can_install_without_local_source() {
+        let dir = tempdir().unwrap();
+        let content = b"fetched-content";
+        let manifest = BundleManifest {
+            version: 1,
+            bundles: vec![BundleSpec {
+                id: "remote-feature".to_string(),
+                version: "1".to_string(),
+                source: "https://cdn.example/remote-feature.bundle".to_string(),
+                sha256: digest(content),
+                size_bytes: content.len() as u64,
+                dependencies: vec![],
+            }],
+        };
+        fs::write(
+            dir.path().join("manifest.json"),
+            serde_json::to_vec(&manifest).unwrap(),
+        )
+        .unwrap();
+        let manager = BundleManager::new(dir.path(), "manifest.json").unwrap();
+        let mut fetcher = MemoryFetcher::one("remote-feature", content);
+
+        let report = manager
+            .install_with_fetcher("remote-feature", &mut fetcher)
+            .value
+            .unwrap();
+
+        assert!(report.valid);
+        assert_eq!(report.active_generation, Some(1));
+        assert!(!report.entries[0].source_exists);
+        assert!(report.entries[0].cache_valid);
+        assert!(report.entries[0].available);
+    }
+
+    #[test]
+    fn failed_host_fetch_keeps_previous_active_generation() {
+        let dir = tempdir().unwrap();
+        let base = b"base-content";
+        let feature = b"feature-content";
+        let manifest = BundleManifest {
+            version: 1,
+            bundles: vec![
+                BundleSpec {
+                    id: "base".to_string(),
+                    version: "1".to_string(),
+                    source: "remote/base.bundle".to_string(),
+                    sha256: digest(base),
+                    size_bytes: base.len() as u64,
+                    dependencies: vec![],
+                },
+                BundleSpec {
+                    id: "feature".to_string(),
+                    version: "1".to_string(),
+                    source: "remote/feature.bundle".to_string(),
+                    sha256: digest(feature),
+                    size_bytes: feature.len() as u64,
+                    dependencies: vec!["base".to_string()],
+                },
+            ],
+        };
+        fs::write(
+            dir.path().join("manifest.json"),
+            serde_json::to_vec(&manifest).unwrap(),
+        )
+        .unwrap();
+        let manager = BundleManager::new(dir.path(), "manifest.json").unwrap();
+        let mut first_fetcher =
+            MemoryFetcher::new([("base", base.as_slice()), ("feature", feature.as_slice())]);
+        assert!(manager.install_with_fetcher("base", &mut first_fetcher).ok);
+
+        let mut bad_fetcher = MemoryFetcher::one("feature", b"tampered");
+        let failed = manager.install_with_fetcher("feature", &mut bad_fetcher);
+        assert!(!failed.ok);
+        assert_eq!(failed.diagnostics[0].code, "BUNDLE_VERIFY_FAILED");
+
+        let active = manager.inspect().value.unwrap();
+        assert_eq!(active.active_generation, Some(1));
+        assert_eq!(active.active_bundles.len(), 1);
+        assert!(active.active_bundles.contains_key("base"));
+    }
+
+    struct MemoryFetcher {
+        bundles: BTreeMap<String, Vec<u8>>,
+    }
+
+    impl MemoryFetcher {
+        fn new<'a>(bundles: impl IntoIterator<Item = (&'a str, &'a [u8])>) -> Self {
+            Self {
+                bundles: bundles
+                    .into_iter()
+                    .map(|(id, bytes)| (id.to_string(), bytes.to_vec()))
+                    .collect(),
+            }
+        }
+
+        fn one(id: &str, bytes: &[u8]) -> Self {
+            Self::new([(id, bytes)])
+        }
+    }
+
+    impl BundleFetcher for MemoryFetcher {
+        fn open(
+            &mut self,
+            spec: &BundleSpec,
+        ) -> Result<Box<dyn std::io::Read + '_>, Box<Diagnostic>> {
+            self.bundles
+                .get(&spec.id)
+                .cloned()
+                .map(|bytes| Box::new(Cursor::new(bytes)) as Box<dyn std::io::Read>)
+                .ok_or_else(|| {
+                    Box::new(Diagnostic::error(
+                        "BUNDLE_FETCH_FAILED",
+                        "測試 bundle fetcher 找不到內容",
+                        spec.id.clone(),
+                    ))
+                })
+        }
     }
 
     fn digest(value: &[u8]) -> String {

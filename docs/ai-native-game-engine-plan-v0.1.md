@@ -177,7 +177,7 @@ AssetManager load / unload / ref-count
 
 Manifest 至少包含 bundle id、版本、平台、依賴、大小、壓縮格式、content hash 與簽章。Bundle 以 content hash 做 cache key，支援暫存下載、重試與中斷續傳；新版本先寫入 staging，驗證完整後才切換 active pointer。切換失敗保留上一個可運作版本，舊 bundle 在沒有引用後才回收。
 
-native 使用檔案 cache；Web 使用 browser fetch/cache/持久化 adapter。兩邊共用 manifest、hash、依賴與 Asset API，不把平台儲存細節暴露給 Luau。第一版不做 P2P、差分 patch、遠端腳本執行、原生 plugin 熱插拔或完整 CDN/後台。
+native 使用檔案 cache；Web 使用 browser fetch/cache/持久化 adapter。引擎以 `BundleFetcher` 接收 host 提供的 reader，統一負責 streaming verify、staging、cache commit 與 generation activation；fetch、重試、storage quota、背景下載與平台持久化政策留在 host。兩邊共用 manifest、hash、依賴與 Asset API，不把平台儲存細節暴露給 Luau。第一版不做 P2P、差分 patch、遠端腳本執行、原生 plugin 熱插拔或完整 CDN/後台。
 
 遊戲端只描述內容 catalog、預載/按需載入時機與 feature gate；引擎負責安全地下載、驗證、解壓、快取、引用計數與載入。這樣不會把營運規則塞進引擎，也不會讓每款遊戲重寫資源下載器。
 
@@ -358,9 +358,9 @@ Model 是遊戲的真實狀態，ViewModel 是遊戲端定義的 typed presentat
 
 - manifest schema、content-addressed bundle cache、依賴解析。
 - staging download、hash/簽章驗證、atomic activate、失敗回滾。
-- AssetManager 的 load/unload/ref-count 與 native/Web storage adapter contract。
+- `BundleFetcher` host boundary 與 AssetManager 的 load/unload/ref-count、native/Web storage adapter contract。
 
-驗收：替換一個 texture/scene bundle 時，下載中斷或 hash 錯誤不破壞目前版本；成功後下一個 safe point 才看到新內容，並能由 CLI observe bundle 狀態。
+驗收：替換一個 texture/scene bundle 時，host 可提供非檔案 reader；下載中斷或 hash 錯誤不破壞目前版本；成功後下一個 safe point 才看到新內容，並能由 CLI observe bundle 狀態。
 
 ### M2：AI 可操作閉環
 
