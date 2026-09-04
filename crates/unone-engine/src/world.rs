@@ -114,8 +114,14 @@ pub struct SceneEntity {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SpriteData {
     pub asset: String,
+    #[serde(default = "default_sprite_size")]
+    pub size: Vec2,
     #[serde(default = "default_true")]
     pub visible: bool,
+}
+
+fn default_sprite_size() -> Vec2 {
+    Vec2 { x: 1.0, y: 1.0 }
 }
 
 fn default_true() -> bool {
@@ -205,6 +211,21 @@ impl World {
         }
         self.camera = scene.camera;
         for entity in scene.entities {
+            if let Some(sprite) = &entity.sprite
+                && (sprite.size.x <= 0.0
+                    || sprite.size.y <= 0.0
+                    || !sprite.size.x.is_finite()
+                    || !sprite.size.y.is_finite())
+            {
+                return Err(Box::new(Diagnostic::error(
+                    "SCENE_SPRITE_INVALID",
+                    "Sprite 的 size 無效",
+                    format!(
+                        "Entity '{}' 的 Sprite size 必須是 x、y 都大於 0 的有限數字。",
+                        entity.id
+                    ),
+                )));
+            }
             let rigidbody = entity.rigidbody.map(|body| {
                 if body.mass <= 0.0 || !body.mass.is_finite() {
                     return Err(Box::new(Diagnostic::error(
@@ -522,7 +543,9 @@ fn quantize_observation(value: f64) -> f64 {
 
 #[cfg(test)]
 mod tests {
-    use super::{EntityState, PhysicsSettings, RigidBodyState, RigidBodyType, Vec2, World};
+    use super::{
+        EntityState, PhysicsSettings, RigidBodyState, RigidBodyType, SceneFile, Vec2, World,
+    };
     use std::collections::BTreeMap;
 
     fn body(body_type: RigidBodyType, radius: f64) -> RigidBodyState {
@@ -593,5 +616,34 @@ mod tests {
 
         let a = world.entities.get("a").unwrap();
         assert!(a.transform.x < 0.0);
+    }
+
+    #[test]
+    fn sprite_size_defaults_to_unit_dimensions() {
+        let scene: SceneFile = serde_json::from_str(
+            r#"{"entities":[{"id":"player","sprite":{"asset":"asset://player"}}]}"#,
+        )
+        .unwrap();
+
+        let sprite = scene.entities[0].sprite.as_ref().unwrap();
+        assert_eq!(sprite.size, Vec2 { x: 1.0, y: 1.0 });
+    }
+
+    #[test]
+    fn invalid_sprite_size_is_rejected_with_semantic_diagnostic() {
+        let scene: SceneFile = serde_json::from_str(
+            r#"{"entities":[{"id":"player","sprite":{"asset":"asset://player","size":{"x":0.0,"y":1.0}}}]}"#,
+        )
+        .unwrap();
+        let mut world = World::default();
+
+        let diagnostic = world.load_scene_data(scene).unwrap_err();
+
+        assert_eq!(diagnostic.code, "SCENE_SPRITE_INVALID");
+        assert!(
+            diagnostic
+                .explanation
+                .contains("Sprite size 必須是 x、y 都大於 0")
+        );
     }
 }

@@ -606,6 +606,16 @@ impl Renderer {
             let y = (-0.1
                 + (entity.transform.y as f32 - snapshot.camera.position.y as f32) * 0.2 * zoom)
                 .clamp(-0.9, 0.7);
+            let (width, height) = entity
+                .sprite
+                .as_ref()
+                .map(|sprite| {
+                    (
+                        (sprite.size.x as f32 * 0.2 * zoom).max(0.01),
+                        (sprite.size.y as f32 * 0.2 * zoom).max(0.01),
+                    )
+                })
+                .unwrap_or((0.2, 0.2));
             let color = match entity.rigidbody.as_ref().map(|body| body.body_type) {
                 Some(unone_engine::RigidBodyType::Dynamic) => [0.9, 0.2, 0.15],
                 Some(unone_engine::RigidBodyType::Static) => [0.3, 0.65, 0.9],
@@ -617,11 +627,11 @@ impl Renderer {
                     color,
                 },
                 Vertex {
-                    position: [x + 0.2, y],
+                    position: [x + width, y],
                     color,
                 },
                 Vertex {
-                    position: [x + 0.2, y + 0.2],
+                    position: [x + width, y + height],
                     color,
                 },
                 Vertex {
@@ -629,11 +639,11 @@ impl Renderer {
                     color,
                 },
                 Vertex {
-                    position: [x + 0.2, y + 0.2],
+                    position: [x + width, y + height],
                     color,
                 },
                 Vertex {
-                    position: [x, y + 0.2],
+                    position: [x, y + height],
                     color,
                 },
             ]);

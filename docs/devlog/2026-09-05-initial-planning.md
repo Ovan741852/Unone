@@ -81,3 +81,5 @@
 - 將 MCP stdio 驗證收成 `scripts/mcp-smoke.ps1`，避免人工解析 response 行列造成假成功；目前輸出為 `protocol=2025-11-25, tools=10, conflict=MCP_ARGUMENT_CONFLICT`。
 - MCP adapter 切片後依流程執行 Claude CLI `2.1.260` read-only review；約 60 秒完全無輸出後中止，沒有可判讀 findings，故不算通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-9.md`。
 - bundle slice 後依流程執行 Claude CLI `2.1.260` read-only review；約 60 秒完全無輸出後中止，沒有可判讀 findings，故不算通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-8.md`。
+- 修正 Angry Birds README 的過時說法：pointer drag 已有 headless regression test，不再列為未完成。引擎新增 `SpriteData.size` scene contract 與 `SCENE_SPRITE_INVALID` 語意診斷；native preview 依 scene 尺寸畫 procedural quad。此切片只補必要的幾何契約，沒有把真實 asset pipeline 或遊戲規則塞進 engine。截圖：`docs/devlog/2026-09-05-angry-birds-sprite-size-preview.png`。
+- 依重要垂直切片執行 Claude CLI `2.1.260` 第十次 read-only review；約 60 秒完全無輸出後中止，沒有 findings，故不算 review 通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-10.md`。
