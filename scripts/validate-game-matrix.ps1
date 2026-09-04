@@ -39,6 +39,7 @@ try {
 }
 
 $matrixRoot = Split-Path -Parent $MatrixPath
+$gamesRoot = Split-Path -Parent $matrixRoot
 $expectedFinalGates = @(
     "3d-racing", "red-alert-rts", "idle-battle", "avg-romance",
     "auto-chess", "slot-machine", "fish-machine"
@@ -57,7 +58,9 @@ foreach ($expectedId in $expectedFinalGates) {
 }
 
 foreach ($game in $games) {
-    $projectPath = Join-Path $matrixRoot $game.project_path
+    # project_path is relative to the games workspace root, while the matrix
+    # intentionally lives under its validation subdirectory.
+    $projectPath = Join-Path $gamesRoot $game.project_path
     $missing = @()
     foreach ($evidence in @($game.required_evidence)) {
         $evidencePath = Join-Path $projectPath $evidence

@@ -194,12 +194,22 @@ fn default_test_seed() -> u64 {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct TestAssertion {
-    pub entity: String,
-    pub field: String,
+    #[serde(default)]
+    pub entity: Option<String>,
+    #[serde(default)]
+    pub field: Option<String>,
     #[serde(default)]
     pub equals: Option<f64>,
     #[serde(default)]
     pub greater_than: Option<f64>,
     #[serde(default)]
     pub less_than: Option<f64>,
+    #[serde(default)]
+    pub observation: Option<ObservationAssertion>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct ObservationAssertion {
+    pub key: String,
+    pub equals: serde_json::Value,
 }

@@ -140,6 +140,7 @@ pub struct EngineRuntime {
     api: Table,
     update_fn: Function,
     trace: Rc<RefCell<Vec<TraceEvent>>>,
+    observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
     generation: u64,
     last_seen_script_stamp: Option<ScriptStamp>,
     script_source: Option<String>,
@@ -314,6 +315,7 @@ impl EngineRuntime {
         let input = Rc::new(RefCell::new(InputState::default()));
         let random = Rc::new(RefCell::new(DeterministicRng::new(seed)));
         let trace = Rc::new(RefCell::new(Vec::new()));
+        let observations = Rc::new(RefCell::new(BTreeMap::new()));
         let lua = Lua::new();
         let api = build_api(
             &lua,
@@ -321,6 +323,7 @@ impl EngineRuntime {
             Rc::clone(&input),
             Rc::clone(&random),
             Rc::clone(&trace),
+            Rc::clone(&observations),
         )
         .map_err(|err| {
             Box::new(Diagnostic::error(
@@ -345,6 +348,7 @@ impl EngineRuntime {
             api,
             update_fn: placeholder,
             trace,
+            observations,
             generation: 0,
             last_seen_script_stamp: None,
             script_source,
@@ -446,7 +450,7 @@ impl EngineRuntime {
                 return EngineResult::failure(*err);
             }
         }
-        let world = self.world.borrow().snapshot();
+        let world = self.observe();
         let observation = serde_json::to_vec(&world).unwrap_or_default();
         let digest = format!("sha256:{}", hex_digest(&observation));
         EngineResult::success(RunReport {
@@ -470,7 +474,7 @@ impl EngineRuntime {
             world.frame += 1;
             world.time_seconds = world.frame as f64 / 60.0;
         }
-        Ok(self.world.borrow().snapshot())
+        Ok(self.observe())
     }
 
     pub fn run_tests(project_root: impl AsRef<Path>) -> EngineResult<TestSuiteReport> {
@@ -557,7 +561,9 @@ impl EngineRuntime {
     }
 
     pub fn observe(&self) -> WorldSnapshot {
-        self.world.borrow().snapshot()
+        let mut snapshot = self.world.borrow().snapshot();
+        snapshot.observations = self.observations.borrow().clone();
+        snapshot
     }
 
     fn load_script(&mut self, is_reload: bool) -> Result<(), Box<Diagnostic>> {
@@ -650,12 +656,14 @@ fn build_api(
     input: Rc<RefCell<InputState>>,
     random: Rc<RefCell<DeterministicRng>>,
     trace: Rc<RefCell<Vec<TraceEvent>>>,
+    observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
 ) -> mlua::Result<Table> {
     let api = lua.create_table()?;
     let entity = lua.create_table()?;
     let input_api = lua.create_table()?;
     let random_api = lua.create_table()?;
     let camera = lua.create_table()?;
+    let observation_api = lua.create_table()?;
 
     let spawn_world = Rc::clone(&world);
     entity.set(
@@ -844,12 +852,104 @@ fn build_api(
             Ok(())
         })?,
     )?;
+    let observation_state = Rc::clone(&observations);
+    observation_api.set(
+        "set",
+        lua.create_function(move |_, (key, value): (String, Value)| {
+            if key.trim().is_empty() {
+                return Err(mlua::Error::RuntimeError(
+                    "observation key must not be empty".to_string(),
+                ));
+            }
+            let value = lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
+            observation_state.borrow_mut().insert(key, value);
+            Ok(())
+        })?,
+    )?;
     api.set("entity", entity)?;
     api.set("input", input_api)?;
     api.set("random", random_api)?;
     api.set("physics", physics)?;
     api.set("camera", camera)?;
+    api.set("observation", observation_api)?;
     Ok(api)
+}
+
+const MAX_OBSERVATION_DEPTH: usize = 8;
+
+fn lua_value_to_json(value: Value) -> Result<serde_json::Value, String> {
+    lua_value_to_json_at(value, 0)
+}
+
+fn lua_value_to_json_at(value: Value, depth: usize) -> Result<serde_json::Value, String> {
+    if depth > MAX_OBSERVATION_DEPTH {
+        return Err(format!(
+            "observation value exceeds maximum nesting depth of {MAX_OBSERVATION_DEPTH}"
+        ));
+    }
+    match value {
+        Value::Nil => Ok(serde_json::Value::Null),
+        Value::Boolean(value) => Ok(serde_json::Value::Bool(value)),
+        Value::Integer(value) => Ok(serde_json::json!(value)),
+        Value::Number(value) if value.is_finite() => Ok(serde_json::json!(value)),
+        Value::Number(_) => Err("observation numbers must be finite".to_string()),
+        Value::String(value) => value
+            .to_str()
+            .map(|value| serde_json::Value::String(value.to_string()))
+            .map_err(|error| format!("observation string is not valid UTF-8: {error}")),
+        Value::Table(table) => table_to_json(table, depth),
+        other => Err(format!(
+            "observation value kind '{}' is not serializable",
+            other.type_name()
+        )),
+    }
+}
+
+fn table_to_json(table: Table, depth: usize) -> Result<serde_json::Value, String> {
+    let mut object = BTreeMap::new();
+    let mut array = BTreeMap::new();
+    for pair in table.pairs::<Value, Value>() {
+        let (key, value) = pair.map_err(|error| error.to_string())?;
+        let value = lua_value_to_json_at(value, depth + 1)?;
+        match key {
+            Value::String(key) => {
+                if !array.is_empty() {
+                    return Err("observation table cannot mix string and integer keys".to_string());
+                }
+                let key = key
+                    .to_str()
+                    .map_err(|error| format!("observation key is not valid UTF-8: {error}"))?
+                    .to_string();
+                object.insert(key, value);
+            }
+            Value::Integer(key) if key > 0 => {
+                if !object.is_empty() {
+                    return Err("observation table cannot mix string and integer keys".to_string());
+                }
+                array.insert(key, value);
+            }
+            Value::Number(key) if key.is_finite() && key.fract() == 0.0 && key > 0.0 => {
+                if !object.is_empty() {
+                    return Err("observation table cannot mix string and integer keys".to_string());
+                }
+                array.insert(key as i64, value);
+            }
+            _ => {
+                return Err(
+                    "observation table keys must be UTF-8 strings or positive integers".to_string(),
+                );
+            }
+        }
+    }
+    if !array.is_empty() {
+        let expected = (1..=array.len() as i64).collect::<Vec<_>>();
+        let keys = array.keys().copied().collect::<Vec<_>>();
+        if keys != expected {
+            return Err("observation array keys must be contiguous starting at 1".to_string());
+        }
+        return Ok(serde_json::Value::Array(array.into_values().collect()));
+    }
+    Ok(serde_json::Value::Object(object.into_iter().collect()))
 }
 
 fn run_luau_analyzer(paths: &ProjectPaths) -> Result<TypeCheckReport, Box<Diagnostic>> {
@@ -969,11 +1069,32 @@ fn evaluate_assertion(
     world: &WorldSnapshot,
     assertion: &crate::project::TestAssertion,
 ) -> Result<(), String> {
+    if let Some(observation) = &assertion.observation {
+        let actual = world
+            .observations
+            .get(&observation.key)
+            .ok_or_else(|| format!("Observation '{}' 不存在。", observation.key))?;
+        if actual != &observation.equals {
+            return Err(format!(
+                "Observation '{}' = {}，不等於預期 {}。",
+                observation.key, actual, observation.equals
+            ));
+        }
+        return Ok(());
+    }
+    let entity_id = assertion
+        .entity
+        .as_deref()
+        .ok_or_else(|| "Assertion 必須提供 entity/field 或 observation。".to_string())?;
+    let field = assertion
+        .field
+        .as_deref()
+        .ok_or_else(|| "Entity assertion 必須提供 field。".to_string())?;
     let entity = world
         .entities
-        .get(&assertion.entity)
-        .ok_or_else(|| format!("Entity '{}' 不存在。", assertion.entity))?;
-    let actual = match assertion.field.as_str() {
+        .get(entity_id)
+        .ok_or_else(|| format!("Entity '{}' 不存在。", entity_id))?;
+    let actual = match field {
         "transform.x" => entity.transform.x,
         "transform.y" => entity.transform.y,
         field => {
@@ -985,17 +1106,14 @@ fn evaluate_assertion(
     if let Some(expected) = assertion.equals
         && (actual - expected).abs() > 0.000_001
     {
-        return Err(format!(
-            "{} {} 不等於預期 {}。",
-            assertion.entity, assertion.field, expected
-        ));
+        return Err(format!("{} {} 不等於預期 {}。", entity_id, field, expected));
     }
     if let Some(expected) = assertion.greater_than
         && actual <= expected
     {
         return Err(format!(
             "{} {} = {}，沒有大於 {}。",
-            assertion.entity, assertion.field, actual, expected
+            entity_id, field, actual, expected
         ));
     }
     if let Some(expected) = assertion.less_than
@@ -1003,7 +1121,7 @@ fn evaluate_assertion(
     {
         return Err(format!(
             "{} {} = {}，沒有小於 {}。",
-            assertion.entity, assertion.field, actual, expected
+            entity_id, field, actual, expected
         ));
     }
     Ok(())
@@ -1185,6 +1303,61 @@ return Game
         let report = runtime.run(60, 42).value.unwrap();
         let x = report.world.entities.get("player").unwrap().transform.x;
         assert!((x - 1.0).abs() < 0.000_001);
+    }
+
+    #[test]
+    fn observation_state_serializes_typed_view_model_for_ai() {
+        let source = r#"
+local Game = {}
+function Game.start(api)
+    api.observation.set("view_model", {
+        screen = "dialogue",
+        node = "intro",
+        choices = { "kind", "brave" },
+        enabled = true,
+    })
+end
+function Game.update(_api, _dt) end
+return Game
+"#;
+        let runtime =
+            EngineRuntime::load_source("ObservationSmoke", "main.luau", source, None).unwrap();
+
+        let snapshot = runtime.observe();
+
+        assert_eq!(
+            snapshot.observations.get("view_model"),
+            Some(&serde_json::json!({
+                "screen": "dialogue",
+                "node": "intro",
+                "choices": ["kind", "brave"],
+                "enabled": true,
+            }))
+        );
+    }
+
+    #[test]
+    fn observation_rejects_non_serializable_values_with_runtime_diagnostic() {
+        let source = r#"
+local Game = {}
+function Game.start(_api) end
+function Game.update(api, _dt)
+    api.observation.set("invalid", { callback = function() end })
+end
+return Game
+"#;
+        let mut runtime =
+            EngineRuntime::load_source("ObservationError", "main.luau", source, None).unwrap();
+
+        let result = runtime.run(1, 42);
+
+        assert!(!result.ok);
+        assert_eq!(result.diagnostics[0].code, "LUAU_RUNTIME_ERROR");
+        assert!(
+            result.diagnostics[0]
+                .explanation
+                .contains("not serializable")
+        );
     }
 
     #[test]

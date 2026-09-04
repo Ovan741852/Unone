@@ -108,6 +108,7 @@ Luau 不應看見 raw pointer、Rust lifetime、wgpu handle、ECS archetype 或 
 - 引擎暴露的 public API 必須有生成的 `.d.luau` 型別。
 - `any` 只允許在明確標記的邊界；錯誤資訊指出它降低了哪些保證。
 - `game check` 同時回傳 parser、typecheck、lint 與 runtime contract 問題。
+- `api.observation.set` 提供有限制的 JSON-like semantic projection；typed game ViewModel 只在明確 serialization boundary 轉出，test 可直接 assertion observation。
 - 不在第一版設計「未來可換任意語言」的 public abstraction；Rust 內部保留 `ScriptHost` 邊界即可。
 
 建議遊戲結構：
@@ -273,7 +274,7 @@ headless run 至少要能固定：
 - frame count
 - physics timestep（加入 physics 後）
 
-輸出 semantic state、trace、diagnostics 與 observation digest。相同 seed + 相同輸入在同一平台應可重現；跨平台完全 bit-identical 不先承諾，先做結果層級的 tolerance 與可解釋差異。
+輸出 semantic state、trace、diagnostics 與 observation digest。相同 seed + 相同輸入在同一平台應可重現；跨平台完全 bit-identical 不先承諾，先做結果層級的 tolerance 與可解釋差異。遊戲端可用 `api.observation.set` 發布 ViewModel 或其他 JSON-like projection，讓 AI/test 不需依賴畫面猜測。
 
 第一版測試使用簡單的 JSON test manifest，結果由引擎輸出 JSON；不要一開始同時維護 Luau DSL 與 YAML schema。當測試需要表達遊戲特有邏輯時，再加入 Luau test API，而不是預先做兩套格式。
 

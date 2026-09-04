@@ -303,6 +303,34 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["random.nextFloat"],
         ),
         descriptor(
+            "observation.set",
+            "observation",
+            "發布遊戲端目前的可序列化語意狀態，供 AI、測試與 host 觀察。",
+            "需要讓對話 ViewModel、戰鬥結果、隨機結果或其他遊戲狀態可被 headless/Web/mobile 讀取時。",
+            "不要把它當成第二份 gameplay state，也不要每個 frame 發布未變動的大型資產或 telemetry。",
+            vec![
+                parameter(
+                    "key",
+                    "string",
+                    "非空的穩定 observation 名稱，例如 view_model。",
+                ),
+                parameter(
+                    "value",
+                    "ObservationValue",
+                    "可序列化的 string、number、boolean、null、object 或 array。",
+                ),
+            ],
+            "()：成功時沒有額外資料。",
+            vec!["替換指定 key 的最新遊戲端 observation"],
+            "同一個 update 內立即可更新；下一次 observe、run report 與 test assertion 會看到最新值。只保留每個 key 的最後一次發布。",
+            vec![
+                "key 為空會回傳 LUAU_RUNTIME_ERROR",
+                "value 含 function、userdata、循環表、非有限數字或不連續 array key 會回傳 LUAU_RUNTIME_ERROR",
+            ],
+            "api.observation.set(\"view_model\", { screen = \"dialogue\", node = \"intro\" })",
+            vec!["log", "input.isDown"],
+        ),
+        descriptor(
             "log",
             "diagnostics",
             "寫入語意化 script trace，供 AI、測試與開發紀錄觀察。",

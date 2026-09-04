@@ -152,6 +152,7 @@ pub struct WorldSnapshot {
     pub time_seconds: f64,
     pub camera: Camera2DData,
     pub entities: BTreeMap<String, EntitySnapshot>,
+    pub observations: BTreeMap<String, serde_json::Value>,
 }
 
 #[derive(Debug, Clone)]
@@ -336,6 +337,7 @@ impl World {
                 zoom: quantize_observation(self.camera.zoom),
             },
             entities,
+            observations: BTreeMap::new(),
         }
     }
 

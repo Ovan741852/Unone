@@ -99,6 +99,8 @@ Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 f
 - architecture：重複阻塞多個遊戲或無法支援平台/reload，改架構。
 - tooling/docs：CLI、診斷或教學有噪音，改 protocol/metadata/文件。
 
+若遊戲有對話、戰鬥結果或其他不適合塞進 Entity Transform 的狀態，使用 `api.observation.set(key, value)` 發布 typed ViewModel 的 semantic projection；test assertion 可用 `{"observation":{"key":"view_model","equals":{...}}}` 做完整 JSON equality。ViewModel 仍屬遊戲端，`observation` 不是第二份可寫 gameplay state。
+
 ## 4. 檢查 bundle
 
 ```powershell
