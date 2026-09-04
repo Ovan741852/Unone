@@ -31,4 +31,4 @@ the engine. Report findings by severity with file/line and concrete fixes.
 
 ## 本次狀態
 
-2026-09-05：Claude CLI `2.1.206` 曾回報 OAuth session expired，後續 review 無輸出並超時；`2.1.260` 的第十三次 review 也在約 60 秒後無輸出而中止，所有這些都不算完成。待 transport 或登入狀態可正常回應後重試；第十三次詳細紀錄見 `docs/issues/2026-09-05-claude-cli-review-timeout-13.md`。
+2026-09-05：Claude CLI `2.1.206` 曾回報 OAuth session expired，後續 review 無輸出並超時；`2.1.260` 的第十四次 review 也在約 60 秒後無輸出而中止，所有這些都不算完成。待 transport 或登入狀態可正常回應後重試；第十四次詳細紀錄見 `docs/issues/2026-09-05-claude-cli-review-timeout-14.md`。
