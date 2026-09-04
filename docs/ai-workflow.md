@@ -40,7 +40,7 @@ AI 應優先讀 `world`、`observation_digest`、`diagnostics`，再看 screensh
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json test
 ```
 
-Test manifest 放在遊戲專案，包含 frames、seed、input 與 assertion。測試失敗時要先判斷是：
+Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 frame `input_sequence` 與 assertion。`input_sequence` 每一項是一個 action snapshot；未提供的 frame 會清空按鍵狀態，避免 sticky input。測試失敗時要先判斷是：
 
 - game logic：改 `Unone_Games` 的 Luau 或內容。
 - engine contract：改引擎、測試與文件。

@@ -277,6 +277,8 @@ headless run 至少要能固定：
 
 第一版測試使用簡單的 JSON test manifest，結果由引擎輸出 JSON；不要一開始同時維護 Luau DSL 與 YAML schema。當測試需要表達遊戲特有邏輯時，再加入 Luau test API，而不是預先做兩套格式。
 
+Test manifest 可用 `input_sequence` 表達逐 frame 的語意 action snapshot；未指定的 frame 視為全放開。這足以先驗證蓄力／放開與 replay，不把觸控座標或平台事件直接暴露給遊戲規則。
+
 ## 8. 資料格式與單一來源
 
 場景與 prefab 先使用 schema-based、diff-friendly 的 JSON source format，穩定的 readable path 與 stable id 並存；日後可生成 binary cache，但 source of truth 不依賴 editor binary state。

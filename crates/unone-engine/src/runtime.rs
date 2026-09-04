@@ -263,7 +263,32 @@ impl EngineRuntime {
     }
 
     pub fn run(&mut self, frames: u64, seed: u64) -> EngineResult<RunReport> {
-        for _ in 0..frames {
+        self.run_internal(frames, seed, None)
+    }
+
+    pub fn run_with_input_sequence(
+        &mut self,
+        frames: u64,
+        seed: u64,
+        input_sequence: &[BTreeMap<String, bool>],
+    ) -> EngineResult<RunReport> {
+        self.run_internal(frames, seed, Some(input_sequence))
+    }
+
+    fn run_internal(
+        &mut self,
+        frames: u64,
+        seed: u64,
+        input_sequence: Option<&[BTreeMap<String, bool>]>,
+    ) -> EngineResult<RunReport> {
+        for frame_index in 0..frames {
+            if let Some(input_sequence) = input_sequence {
+                let snapshot = input_sequence
+                    .get(frame_index as usize)
+                    .cloned()
+                    .unwrap_or_default();
+                self.input.borrow_mut().down = snapshot;
+            }
             if let Err(err) = self.tick() {
                 return EngineResult::failure(*err);
             }
@@ -336,7 +361,11 @@ impl EngineRuntime {
             for (action, is_down) in &spec.input {
                 runtime.set_input(action.clone(), *is_down);
             }
-            let run = runtime.run(spec.frames, spec.seed);
+            let run = if spec.input_sequence.is_empty() {
+                runtime.run(spec.frames, spec.seed)
+            } else {
+                runtime.run_with_input_sequence(spec.frames, spec.seed, &spec.input_sequence)
+            };
             let report = match run.value {
                 Some(report) => report,
                 None => {
@@ -782,7 +811,7 @@ fn evaluate_assertion(
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
+    use std::{collections::BTreeMap, fs};
 
     use tempfile::tempdir;
 
@@ -875,5 +904,25 @@ return Game
         let report = runtime.run(30, 42).value.unwrap();
         let x = report.world.entities.get("player").unwrap().transform.x;
         assert!((x - 8.0).abs() < 0.000_001);
+    }
+
+    #[test]
+    fn input_sequence_is_relative_to_run_and_clears_missing_frames() {
+        let dir = tempdir().unwrap();
+        write_project(dir.path(), SCRIPT);
+        let mut runtime = EngineRuntime::load(dir.path()).unwrap();
+        let mut held = BTreeMap::new();
+        held.insert("Right".to_string(), true);
+        let sequence = vec![held; 30]
+            .into_iter()
+            .chain((0..30).map(|_| BTreeMap::new()))
+            .collect::<Vec<_>>();
+
+        let report = runtime
+            .run_with_input_sequence(60, 42, &sequence)
+            .value
+            .unwrap();
+        let x = report.world.entities.get("player").unwrap().transform.x;
+        assert!((x - 2.0).abs() < 0.000_001);
     }
 }

@@ -164,6 +164,8 @@ pub struct TestSpec {
     #[serde(default)]
     pub input: BTreeMap<String, bool>,
     #[serde(default)]
+    pub input_sequence: Vec<BTreeMap<String, bool>>,
+    #[serde(default)]
     pub assertions: Vec<TestAssertion>,
 }
 
