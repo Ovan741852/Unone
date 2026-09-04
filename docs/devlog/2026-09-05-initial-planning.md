@@ -28,3 +28,9 @@
 - `minimal-2d` 的 `game check` 通過，入口腳本使用 `--!strict`。
 - `game run --headless --frames 60 --action Right` 通過；Player x=0 → x=4，產生 observation digest。
 - 已加入 deterministic digest 與 failed-reload regression tests，待 `cargo test` 驗證。
+
+## 工程驗證結果
+
+- `cargo test --workspace` 通過：2 個 engine regression tests、CLI/doc tests 無失敗。
+- 本地 Git 已初始化，baseline commit：`8a4e598`。
+- Claude CLI `2.1.206` 已安裝，但 code review 因 OAuth session 過期未完成；詳見 `docs/issues/2026-09-05-claude-cli-auth-expired.md`。
