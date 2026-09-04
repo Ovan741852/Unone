@@ -1,0 +1,12 @@
+[package]
+name = "unone-web-smoke"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "unone-web-smoke"
+path = "src/main.rs"
+
+[dependencies]
+unone-engine = { path = "../unone-engine" }
