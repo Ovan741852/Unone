@@ -263,7 +263,6 @@ impl EngineRuntime {
     }
 
     pub fn run(&mut self, frames: u64, seed: u64) -> EngineResult<RunReport> {
-        self.trace.borrow_mut().clear();
         for _ in 0..frames {
             if let Err(err) = self.tick() {
                 return EngineResult::failure(*err);
@@ -287,6 +286,7 @@ impl EngineRuntime {
         self.update_fn
             .call::<()>((self.api.clone(), FIXED_DT))
             .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
+        self.world.borrow_mut().step_physics(FIXED_DT);
         {
             let mut world = self.world.borrow_mut();
             world.frame += 1;
@@ -501,6 +501,52 @@ fn build_api(
         })?,
     )?;
 
+    let get_velocity_world = Rc::clone(&world);
+    entity.set(
+        "getVelocity",
+        lua.create_function(move |lua, id: String| {
+            let velocity = get_velocity_world
+                .borrow()
+                .get_velocity(&id)
+                .map_err(mlua::Error::RuntimeError)?;
+            let table = lua.create_table()?;
+            table.set("x", velocity.x)?;
+            table.set("y", velocity.y)?;
+            Ok(table)
+        })?,
+    )?;
+
+    let set_velocity_world = Rc::clone(&world);
+    entity.set(
+        "setVelocity",
+        lua.create_function(move |_, (id, velocity): (String, Table)| {
+            let velocity = Vec2 {
+                x: velocity.get("x")?,
+                y: velocity.get("y")?,
+            };
+            set_velocity_world
+                .borrow_mut()
+                .set_velocity(&id, velocity)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+
+    let physics = lua.create_table()?;
+    let impulse_world = Rc::clone(&world);
+    physics.set(
+        "applyImpulse",
+        lua.create_function(move |_, (id, impulse): (String, Table)| {
+            let impulse = Vec2 {
+                x: impulse.get("x")?,
+                y: impulse.get("y")?,
+            };
+            impulse_world
+                .borrow_mut()
+                .apply_impulse(&id, impulse)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+
     let input_state = Rc::clone(&input);
     input_api.set(
         "isDown",
@@ -529,6 +575,7 @@ fn build_api(
     )?;
     api.set("entity", entity)?;
     api.set("input", input_api)?;
+    api.set("physics", physics)?;
     Ok(api)
 }
 

@@ -71,4 +71,5 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview -
 - 需要 machine action 時使用 `--json`。
 - `facts` 是引擎觀測到的事實；`likely_causes` 是推論；`suggested_actions` 必須能對應下一個 CLI/protocol action。
 - 預設 trace 只記錄語意事件，不記錄每一幀，避免 AI context 被噪音淹沒。
+- `run` 會保留 runtime load／reload 期間的 lifecycle trace，例如 `api.log` 與 `script_reloaded`；這些事件不是逐 frame telemetry。
 - 任何教學命令若不能在乾淨 checkout 重跑，必須修文件或建立 issue，不保留錯誤說法。

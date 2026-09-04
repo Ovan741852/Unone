@@ -50,3 +50,6 @@
 - 已加入最小 AI 語意入口：`project inspect`、`api search`、`api describe`。API metadata 回報用途、適用／不適用情境、參數、回傳、side effects、frame semantics、常見錯誤與範例；先覆蓋現有公開 Luau API，不做全量 Rust 反射。
 - 依 review 流程重試 Claude CLI：本次執行 60 秒無輸出後中止，沒有 review 結果，不算通過；詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-2.md`。
 - 官方 Luau 0.734 Windows `luau-analyze` 已在本機 tool cache 對 sample 通過；`game check --types` adapter 已加入。若 analyzer 不存在會回傳 `LUAU_ANALYZER_NOT_FOUND`，不把 `--!strict` 字串誤稱為完整型別檢查。
+- 物理 sample 初次 run 發現 `run()` 清空 trace 會吃掉 `Game.start()` 的語意 log；已移除清空行為，讓 lifecycle trace 可被 AI 觀察，避免「腳本確實記錄但輸出為空」的誤導。
+- 建立 `minimal-2d-physics` 驗證專案：Luau 只負責 launch policy，engine 負責 dynamic/static circle、gravity、ground collision、fixed-step integration；120 frames 後 bird `x=12`、`y=0.5`，且 `physics_launch_applied` trace 可被觀察。
+- 新增 physics regression tests：dynamic body 落地停止、dynamic body 與 static circle 的碰撞分離；目前只做必要機制，不先加入 friction、joints、polygon solver 或遊戲專用名詞。邊界記錄於 `docs/decisions/0006-minimal-2d-physics-boundary.md`。

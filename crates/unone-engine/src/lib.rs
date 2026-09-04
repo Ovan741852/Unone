@@ -19,4 +19,7 @@ pub use project::{
 pub use runtime::{
     CheckReport, EngineRuntime, RunReport, TestCaseReport, TestSuiteReport, TypeCheckReport,
 };
-pub use world::{EntitySnapshot, SceneFile, Vec2, WorldSnapshot};
+pub use world::{
+    EntitySnapshot, PhysicsSettings, RigidBody2DData, RigidBodySnapshot, RigidBodyType, SceneFile,
+    Vec2, WorldSnapshot,
+};
