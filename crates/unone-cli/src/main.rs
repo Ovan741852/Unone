@@ -35,7 +35,10 @@ enum Command {
         #[command(subcommand)]
         command: ApiCommand,
     },
-    Check,
+    Check {
+        #[arg(long, help = "Also run the official luau-analyze tool")]
+        types: bool,
+    },
     Run {
         #[arg(long, default_value_t = 60)]
         frames: u64,
@@ -125,7 +128,14 @@ fn run() -> Result<ExitCode> {
                 ),
             },
         },
-        Command::Check => print_result(EngineRuntime::check(&cli.project), cli.json),
+        Command::Check { types } => {
+            let result = if types {
+                EngineRuntime::check_with_types(&cli.project)
+            } else {
+                EngineRuntime::check(&cli.project)
+            };
+            print_result(result, cli.json)
+        }
         Command::Run {
             frames,
             seed,
