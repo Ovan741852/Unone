@@ -49,3 +49,4 @@
 - 目前仍未宣稱完整型別檢查、Web/mobile、MCP 或七類遊戲驗收完成；這些保留在後續階段，避免把原型能力說成引擎完成。
 - 已加入最小 AI 語意入口：`project inspect`、`api search`、`api describe`。API metadata 回報用途、適用／不適用情境、參數、回傳、side effects、frame semantics、常見錯誤與範例；先覆蓋現有公開 Luau API，不做全量 Rust 反射。
 - 依 review 流程重試 Claude CLI：本次執行 60 秒無輸出後中止，沒有 review 結果，不算通過；詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-2.md`。
+- 官方 Luau 0.734 Windows `luau-analyze` 已在本機 tool cache 對 sample 通過；`game check --types` adapter 已加入。若 analyzer 不存在會回傳 `LUAU_ANALYZER_NOT_FOUND`，不把 `--!strict` 字串誤稱為完整型別檢查。

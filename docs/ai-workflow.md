@@ -15,10 +15,16 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json ap
 ## 1. 先檢查專案
 
 ```powershell
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check --types
 ```
 
-`check` 目前保證 Luau syntax 與 Engine entrypoint contract；它會確認入口腳本回傳 `Game` table，且有 `start` / `update` function。`--!strict` 會被回報為 contract metadata。完整 Luau static analyzer 尚未接入，不能把這個命令誤稱為完整型別檢查。
+`check` 保證 Luau syntax 與 Engine entrypoint contract；它會確認入口腳本回傳 `Game` table，且有 `start` / `update` function。`--!strict` 會被回報為 contract metadata。加上 `--types` 才會呼叫官方 `luau-analyze`；若工具不存在，命令會回傳 `LUAU_ANALYZER_NOT_FOUND`，不會把缺少型別檢查的狀態藏起來。`UNONE_LUAU_ANALYZER` 可指定 analyzer 可執行檔路徑。
+
+若只要驗證 runtime contract，可移除 `--types`。本機可用官方 Luau release 的 Windows binary，或先設定：
+
+```powershell
+$env:UNONE_LUAU_ANALYZER = 'D:/tools/luau-analyze.exe'
+```
 
 ## 2. 跑 deterministic simulation
 

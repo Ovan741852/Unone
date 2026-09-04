@@ -1,5 +1,6 @@
 /target/
 .unone/
+/.toolcache/
 .idea/
 .vscode/
 *.swp

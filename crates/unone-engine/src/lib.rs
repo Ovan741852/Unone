@@ -16,5 +16,7 @@ pub use project::{
     ProjectConfig, ProjectFileStatus, ProjectInspectReport, ProjectPaths, TestAssertion, TestSpec,
     inspect as inspect_project,
 };
-pub use runtime::{CheckReport, EngineRuntime, RunReport, TestCaseReport, TestSuiteReport};
+pub use runtime::{
+    CheckReport, EngineRuntime, RunReport, TestCaseReport, TestSuiteReport, TypeCheckReport,
+};
 pub use world::{EntitySnapshot, SceneFile, Vec2, WorldSnapshot};

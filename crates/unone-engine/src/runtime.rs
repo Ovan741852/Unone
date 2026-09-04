@@ -1,4 +1,12 @@
-use std::{cell::RefCell, collections::BTreeMap, fs, path::Path, rc::Rc, time::SystemTime};
+use std::{
+    cell::RefCell,
+    collections::BTreeMap,
+    env, fs,
+    path::{Path, PathBuf},
+    process::Command,
+    rc::Rc,
+    time::SystemTime,
+};
 
 use mlua::{Function, Lua, Table, Value};
 use serde::Serialize;
@@ -18,6 +26,15 @@ pub struct CheckReport {
     pub script: String,
     pub strict_mode: bool,
     pub entrypoints: Vec<String>,
+    pub type_check: Option<TypeCheckReport>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct TypeCheckReport {
+    pub tool: String,
+    pub files: Vec<String>,
+    pub passed: bool,
+    pub output: String,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -142,6 +159,7 @@ impl EngineRuntime {
             script: paths.entry_script.display().to_string(),
             strict_mode,
             entrypoints,
+            type_check: None,
         });
         if !strict_mode {
             result.diagnostics.push(Diagnostic::warning(
@@ -149,6 +167,29 @@ impl EngineRuntime {
                 "入口腳本未啟用 strict mode",
                 "目前只完成 Luau 語法與 Engine entrypoint contract 檢查；加入 --!strict 才能讓型別分析更早回報問題。",
             ));
+        }
+        result
+    }
+
+    pub fn check_with_types(project_root: impl AsRef<Path>) -> EngineResult<CheckReport> {
+        let mut result = Self::check(&project_root);
+        if !result.ok {
+            return result;
+        }
+        let (_, paths) = match ProjectPaths::discover(project_root) {
+            Ok(value) => value,
+            Err(diagnostic) => return EngineResult::failure(*diagnostic),
+        };
+        match run_luau_analyzer(&paths) {
+            Ok(report) => {
+                if let Some(check) = result.value.as_mut() {
+                    check.type_check = Some(report);
+                }
+            }
+            Err(diagnostic) => {
+                result.ok = false;
+                result.diagnostics.push(*diagnostic);
+            }
         }
         result
     }
@@ -489,6 +530,79 @@ fn build_api(
     api.set("entity", entity)?;
     api.set("input", input_api)?;
     Ok(api)
+}
+
+fn run_luau_analyzer(paths: &ProjectPaths) -> Result<TypeCheckReport, Box<Diagnostic>> {
+    let analyzer = analyzer_path();
+    let output = Command::new(&analyzer)
+        .arg("--formatter=gnu")
+        .arg(&paths.entry_script)
+        .output()
+        .map_err(|err| {
+            let mut diagnostic = Diagnostic::error(
+                "LUAU_ANALYZER_NOT_FOUND",
+                "找不到 Luau static analyzer",
+                "`game check --types` 需要官方 luau-analyze；目前 runtime 只內嵌 Luau 執行器，不會假裝執行完整型別分析。",
+            );
+            diagnostic.facts = serde_json::json!({
+                "requested_tool": analyzer.display().to_string(),
+                "error": err.to_string(),
+                "override_environment": "UNONE_LUAU_ANALYZER",
+            });
+            diagnostic.suggested_actions = vec![ActionSuggestion {
+                action: "install_luau_analyzer".to_string(),
+                description: "安裝官方 luau-analyze，或設定 UNONE_LUAU_ANALYZER 指向可執行檔。".to_string(),
+                command: Some("$env:UNONE_LUAU_ANALYZER = 'D:/tools/luau-analyze.exe'".to_string()),
+            }];
+            Box::new(diagnostic)
+        })?;
+    let stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
+    let combined = [stdout, stderr]
+        .into_iter()
+        .filter(|text| !text.is_empty())
+        .collect::<Vec<_>>()
+        .join("\n");
+    let tool = analyzer.display().to_string();
+    let files = vec![paths.entry_script.display().to_string()];
+    if output.status.success() {
+        return Ok(TypeCheckReport {
+            tool,
+            files,
+            passed: true,
+            output: combined,
+        });
+    }
+    let mut diagnostic = Diagnostic::error(
+        "LUAU_TYPECHECK_FAILED",
+        "Luau static analyzer 發現型別或 lint 問題",
+        "入口腳本通過 runtime contract，但沒有通過官方 luau-analyze；先修正 typecheck output，再進行 hot reload 或執行測試。",
+    );
+    diagnostic.facts = serde_json::json!({
+        "tool": tool,
+        "exit_code": output.status.code(),
+        "files": files,
+        "output": combined,
+    });
+    diagnostic.suggested_actions = vec![ActionSuggestion {
+        action: "fix_typecheck".to_string(),
+        description: "依 output 的檔案、行號與訊息修正 Luau 型別或 lint 問題。".to_string(),
+        command: Some("game check --types --json".to_string()),
+    }];
+    Err(Box::new(diagnostic))
+}
+
+fn analyzer_path() -> PathBuf {
+    if let Ok(path) = env::var("UNONE_LUAU_ANALYZER") {
+        return PathBuf::from(path);
+    }
+    let local_tool = env::current_dir()
+        .ok()
+        .map(|root| root.join(".toolcache/luau-0.734/luau-analyze.exe"));
+    if let Some(path) = local_tool.filter(|path| path.is_file()) {
+        return path;
+    }
+    PathBuf::from("luau-analyze")
 }
 
 fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
