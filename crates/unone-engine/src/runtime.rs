@@ -16,7 +16,7 @@ use crate::{
     diagnostics::{ActionSuggestion, Diagnostic, EngineResult, SourceLocation},
     project::{InputFrame, ProjectConfig, ProjectPaths, TestSpec},
     ui::UiTree,
-    world::{SceneFile, Vec2, World, WorldSnapshot},
+    world::{SceneFile, Transform3DData, Vec2, Vec3, World, WorldSnapshot},
 };
 
 const FIXED_DT: f64 = 1.0 / 60.0;
@@ -704,6 +704,7 @@ fn build_api(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let input_api = lua.create_table()?;
     let random_api = lua.create_table()?;
     let camera = lua.create_table()?;
+    let camera3d = lua.create_table()?;
     let observation_api = lua.create_table()?;
     let ui_api = lua.create_table()?;
     let save_api = lua.create_table()?;
@@ -743,6 +744,65 @@ fn build_api(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
                 .ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' 不存在。")))?;
             entity.transform = Vec2 { x, y };
             Ok(())
+        })?,
+    )?;
+
+    let get_transform3d_world = Rc::clone(&world);
+    entity.set(
+        "getTransform3D",
+        lua.create_function(move |lua, id: String| {
+            let transform = get_transform3d_world
+                .borrow()
+                .get_transform3d(&id)
+                .map_err(mlua::Error::RuntimeError)?;
+            let result = lua.create_table()?;
+            let position = lua.create_table()?;
+            position.set("x", transform.position.x)?;
+            position.set("y", transform.position.y)?;
+            position.set("z", transform.position.z)?;
+            let rotation = lua.create_table()?;
+            rotation.set("x", transform.rotation.x)?;
+            rotation.set("y", transform.rotation.y)?;
+            rotation.set("z", transform.rotation.z)?;
+            let scale = lua.create_table()?;
+            scale.set("x", transform.scale.x)?;
+            scale.set("y", transform.scale.y)?;
+            scale.set("z", transform.scale.z)?;
+            result.set("position", position)?;
+            result.set("rotation", rotation)?;
+            result.set("scale", scale)?;
+            Ok(result)
+        })?,
+    )?;
+
+    let set_transform3d_world = Rc::clone(&world);
+    entity.set(
+        "setTransform3D",
+        lua.create_function(move |_, (id, value): (String, Table)| {
+            let position: Table = value.get("position")?;
+            let rotation: Table = value.get("rotation")?;
+            let scale: Table = value.get("scale")?;
+            let transform = Transform3DData {
+                position: Vec3 {
+                    x: position.get("x")?,
+                    y: position.get("y")?,
+                    z: position.get("z")?,
+                },
+                rotation: Vec3 {
+                    x: rotation.get("x")?,
+                    y: rotation.get("y")?,
+                    z: rotation.get("z")?,
+                },
+                scale: Vec3 {
+                    x: scale.get("x")?,
+                    y: scale.get("y")?,
+                    z: scale.get("z")?,
+                },
+            };
+            set_transform3d_world
+                .borrow_mut()
+                .set_transform3d(&id, transform)
+                .map_err(mlua::Error::RuntimeError)
         })?,
     )?;
 
@@ -897,6 +957,62 @@ fn build_api(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         })?,
     )?;
 
+    let camera3d_get_world = Rc::clone(&world);
+    camera3d.set(
+        "getTransform",
+        lua.create_function(move |lua, _: ()| {
+            let camera = camera3d_get_world
+                .borrow()
+                .get_camera3d()
+                .map_err(mlua::Error::RuntimeError)?;
+            let result = lua.create_table()?;
+            let position = lua.create_table()?;
+            position.set("x", camera.position.x)?;
+            position.set("y", camera.position.y)?;
+            position.set("z", camera.position.z)?;
+            let target = lua.create_table()?;
+            target.set("x", camera.target.x)?;
+            target.set("y", camera.target.y)?;
+            target.set("z", camera.target.z)?;
+            result.set("position", position)?;
+            result.set("target", target)?;
+            result.set("fovDegrees", camera.fov_degrees)?;
+            Ok(result)
+        })?,
+    )?;
+
+    let camera3d_set_position_world = Rc::clone(&world);
+    camera3d.set(
+        "setPosition",
+        lua.create_function(move |_, position: Table| {
+            let position = Vec3 {
+                x: position.get("x")?,
+                y: position.get("y")?,
+                z: position.get("z")?,
+            };
+            camera3d_set_position_world
+                .borrow_mut()
+                .set_camera3d_position(position)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+
+    let camera3d_set_target_world = Rc::clone(&world);
+    camera3d.set(
+        "setTarget",
+        lua.create_function(move |_, target: Table| {
+            let target = Vec3 {
+                x: target.get("x")?,
+                y: target.get("y")?,
+                z: target.get("z")?,
+            };
+            camera3d_set_target_world
+                .borrow_mut()
+                .set_camera3d_target(target)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+
     let log_trace = Rc::clone(&trace);
     let log_world = Rc::clone(&world);
     api.set(
@@ -958,6 +1074,7 @@ fn build_api(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     api.set("random", random_api)?;
     api.set("physics", physics)?;
     api.set("camera", camera)?;
+    api.set("camera3d", camera3d)?;
     api.set("observation", observation_api)?;
     api.set("ui", ui_api)?;
     api.set("save", save_api)?;
@@ -1306,7 +1423,7 @@ mod tests {
     use tempfile::tempdir;
 
     use super::{DeterministicRng, EngineRuntime};
-    use crate::{project::InputFrame, ui::UiTree};
+    use crate::{project::InputFrame, ui::UiTree, world::SceneFile};
 
     fn write_project(dir: &std::path::Path, script: &str) {
         fs::create_dir_all(dir.join("scripts")).unwrap();
@@ -1476,6 +1593,49 @@ return Game
         let report = runtime.run(60, 42).value.unwrap();
         let x = report.world.entities.get("player").unwrap().transform.x;
         assert!((x - 1.0).abs() < 0.000_001);
+    }
+
+    #[test]
+    fn three_d_script_api_updates_transform_and_camera_without_game_specific_rules() {
+        let scene: SceneFile = serde_json::from_value(serde_json::json!({
+            "camera3d": {
+                "position": {"x": 0, "y": 2, "z": 6},
+                "target": {"x": 0, "y": 0, "z": 0},
+                "fov_degrees": 60
+            },
+            "entities": [{
+                "id": "car",
+                "transform3d": {
+                    "position": {"x": 0, "y": 0, "z": 0},
+                    "rotation": {"x": 0, "y": 0, "z": 0},
+                    "scale": {"x": 1, "y": 1, "z": 2}
+                },
+                "mesh3d": {"asset": "mesh://car"}
+            }]
+        }))
+        .unwrap();
+        let source = r#"
+local Game = {}
+function Game.start(api)
+    local transform = api.entity.getTransform3D("car")
+    transform.position.z -= 3
+    transform.rotation.y = 0.25
+    api.entity.setTransform3D("car", transform)
+    api.camera3d.setPosition({ x = 0, y = 3, z = 8 })
+    api.camera3d.setTarget({ x = 0, y = 0, z = -3 })
+end
+function Game.update(_api, _dt) end
+return Game
+"#;
+
+        let runtime =
+            EngineRuntime::load_source("3DContract", "main.luau", source, Some(scene)).unwrap();
+        let snapshot = runtime.observe();
+
+        let car = snapshot.entities.get("car").unwrap();
+        assert_eq!(car.transform3d.as_ref().unwrap().position.z, -3.0);
+        assert_eq!(car.transform3d.as_ref().unwrap().rotation.y, 0.25);
+        assert_eq!(snapshot.camera3d.as_ref().unwrap().target.z, -3.0);
     }
 
     #[test]

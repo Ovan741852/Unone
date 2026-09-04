@@ -3,8 +3,8 @@ use std::{borrow::Cow, fs, path::PathBuf, process::ExitCode, sync::Arc};
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use unone_engine::{
-    BundleManager, EngineResult, EngineRuntime, InputFrame, Vec2, WorldSnapshot, api_describe,
-    api_search, inspect_project,
+    BundleManager, Camera3DData, EngineResult, EngineRuntime, InputFrame, Vec2, Vec3,
+    WorldSnapshot, api_describe, api_search, inspect_project,
 };
 use winit::{
     application::ApplicationHandler,
@@ -594,59 +594,63 @@ impl Renderer {
     }
 
     fn render(&mut self, snapshot: &WorldSnapshot) -> Result<(), String> {
-        let zoom = snapshot.camera.zoom as f32;
         let mut vertices = Vec::with_capacity(snapshot.entities.len() * 6);
-        for entity in snapshot.entities.values() {
-            if entity.sprite.as_ref().is_some_and(|sprite| !sprite.visible) {
-                continue;
+        if let Some(camera3d) = &snapshot.camera3d {
+            self.build_3d_vertices(snapshot, camera3d, &mut vertices);
+        } else {
+            let zoom = snapshot.camera.zoom as f32;
+            for entity in snapshot.entities.values() {
+                if entity.sprite.as_ref().is_some_and(|sprite| !sprite.visible) {
+                    continue;
+                }
+                let x = (-0.8
+                    + (entity.transform.x as f32 - snapshot.camera.position.x as f32) * 0.2 * zoom)
+                    .clamp(-0.95, 0.75);
+                let y = (-0.1
+                    + (entity.transform.y as f32 - snapshot.camera.position.y as f32) * 0.2 * zoom)
+                    .clamp(-0.9, 0.7);
+                let (width, height) = entity
+                    .sprite
+                    .as_ref()
+                    .map(|sprite| {
+                        (
+                            (sprite.size.x as f32 * 0.2 * zoom).max(0.01),
+                            (sprite.size.y as f32 * 0.2 * zoom).max(0.01),
+                        )
+                    })
+                    .unwrap_or((0.2, 0.2));
+                let color = match entity.rigidbody.as_ref().map(|body| body.body_type) {
+                    Some(unone_engine::RigidBodyType::Dynamic) => [0.9, 0.2, 0.15],
+                    Some(unone_engine::RigidBodyType::Static) => [0.3, 0.65, 0.9],
+                    None => [0.9, 0.75, 0.2],
+                };
+                vertices.extend([
+                    Vertex {
+                        position: [x, y],
+                        color,
+                    },
+                    Vertex {
+                        position: [x + width, y],
+                        color,
+                    },
+                    Vertex {
+                        position: [x + width, y + height],
+                        color,
+                    },
+                    Vertex {
+                        position: [x, y],
+                        color,
+                    },
+                    Vertex {
+                        position: [x + width, y + height],
+                        color,
+                    },
+                    Vertex {
+                        position: [x, y + height],
+                        color,
+                    },
+                ]);
             }
-            let x = (-0.8
-                + (entity.transform.x as f32 - snapshot.camera.position.x as f32) * 0.2 * zoom)
-                .clamp(-0.95, 0.75);
-            let y = (-0.1
-                + (entity.transform.y as f32 - snapshot.camera.position.y as f32) * 0.2 * zoom)
-                .clamp(-0.9, 0.7);
-            let (width, height) = entity
-                .sprite
-                .as_ref()
-                .map(|sprite| {
-                    (
-                        (sprite.size.x as f32 * 0.2 * zoom).max(0.01),
-                        (sprite.size.y as f32 * 0.2 * zoom).max(0.01),
-                    )
-                })
-                .unwrap_or((0.2, 0.2));
-            let color = match entity.rigidbody.as_ref().map(|body| body.body_type) {
-                Some(unone_engine::RigidBodyType::Dynamic) => [0.9, 0.2, 0.15],
-                Some(unone_engine::RigidBodyType::Static) => [0.3, 0.65, 0.9],
-                None => [0.9, 0.75, 0.2],
-            };
-            vertices.extend([
-                Vertex {
-                    position: [x, y],
-                    color,
-                },
-                Vertex {
-                    position: [x + width, y],
-                    color,
-                },
-                Vertex {
-                    position: [x + width, y + height],
-                    color,
-                },
-                Vertex {
-                    position: [x, y],
-                    color,
-                },
-                Vertex {
-                    position: [x + width, y + height],
-                    color,
-                },
-                Vertex {
-                    position: [x, y + height],
-                    color,
-                },
-            ]);
         }
         self.ensure_vertex_buffer(vertices.len());
         if !vertices.is_empty() {
@@ -706,6 +710,148 @@ impl Renderer {
         Ok(())
     }
 
+    fn build_3d_vertices(
+        &self,
+        snapshot: &WorldSnapshot,
+        camera: &Camera3DData,
+        vertices: &mut Vec<Vertex>,
+    ) {
+        let mut faces = Vec::new();
+        for entity in snapshot.entities.values() {
+            let Some(transform) = &entity.transform3d else {
+                continue;
+            };
+            if entity.mesh3d.as_ref().is_some_and(|mesh| !mesh.visible) {
+                continue;
+            }
+            let half = [
+                transform.scale.x * 0.5,
+                transform.scale.y * 0.5,
+                transform.scale.z * 0.5,
+            ];
+            let local = [
+                Vec3 {
+                    x: -half[0],
+                    y: -half[1],
+                    z: -half[2],
+                },
+                Vec3 {
+                    x: half[0],
+                    y: -half[1],
+                    z: -half[2],
+                },
+                Vec3 {
+                    x: half[0],
+                    y: half[1],
+                    z: -half[2],
+                },
+                Vec3 {
+                    x: -half[0],
+                    y: half[1],
+                    z: -half[2],
+                },
+                Vec3 {
+                    x: -half[0],
+                    y: -half[1],
+                    z: half[2],
+                },
+                Vec3 {
+                    x: half[0],
+                    y: -half[1],
+                    z: half[2],
+                },
+                Vec3 {
+                    x: half[0],
+                    y: half[1],
+                    z: half[2],
+                },
+                Vec3 {
+                    x: -half[0],
+                    y: half[1],
+                    z: half[2],
+                },
+            ];
+            let corners: Vec<Vec3> = local
+                .into_iter()
+                .map(|point| add(transform.position, rotate_euler(point, transform.rotation)))
+                .collect();
+            let face_indices = [
+                [0, 1, 2, 3],
+                [4, 7, 6, 5],
+                [0, 4, 5, 1],
+                [3, 2, 6, 7],
+                [1, 5, 6, 2],
+                [0, 3, 7, 4],
+            ];
+            let color = if entity.id.contains("track") {
+                [0.18, 0.2, 0.24]
+            } else if entity.id.contains("rival") {
+                [0.18, 0.45, 0.9]
+            } else {
+                [0.9, 0.18, 0.12]
+            };
+            for indices in face_indices {
+                let a = corners[indices[0]];
+                let b = corners[indices[1]];
+                let c = corners[indices[2]];
+                let d = corners[indices[3]];
+                let depth = (depth_from_camera(camera, a)
+                    + depth_from_camera(camera, b)
+                    + depth_from_camera(camera, c)
+                    + depth_from_camera(camera, d))
+                    * 0.25;
+                faces.push((depth, [a, b, c], color));
+                faces.push((depth, [a, c, d], color));
+            }
+        }
+        faces.sort_by(|left, right| {
+            right
+                .0
+                .partial_cmp(&left.0)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+        for (_, triangle, color) in faces {
+            let Some(a) = self.project_3d(camera, triangle[0]) else {
+                continue;
+            };
+            let Some(b) = self.project_3d(camera, triangle[1]) else {
+                continue;
+            };
+            let Some(c) = self.project_3d(camera, triangle[2]) else {
+                continue;
+            };
+            vertices.extend([
+                Vertex { position: a, color },
+                Vertex { position: b, color },
+                Vertex { position: c, color },
+            ]);
+        }
+    }
+
+    fn project_3d(&self, camera: &Camera3DData, point: Vec3) -> Option<[f32; 2]> {
+        let forward = normalize(sub(camera.target, camera.position))?;
+        let right = normalize(cross(
+            forward,
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+        ))?;
+        let up = cross(right, forward);
+        let relative = sub(point, camera.position);
+        let depth = dot(relative, forward);
+        if depth <= 0.05 {
+            return None;
+        }
+        let f = 1.0 / (camera.fov_degrees.to_radians() * 0.5).tan();
+        let aspect = f64::from(self.config.width.max(1)) / f64::from(self.config.height.max(1));
+        Some([
+            (dot(relative, right) * f / aspect / depth) as f32,
+            (dot(relative, up) * f / depth) as f32,
+        ])
+    }
+
     fn ensure_vertex_buffer(&mut self, required_vertices: usize) {
         if required_vertices <= self.vertex_capacity {
             return;
@@ -718,6 +864,75 @@ impl Renderer {
             mapped_at_creation: false,
         });
     }
+}
+
+fn add(left: Vec3, right: Vec3) -> Vec3 {
+    Vec3 {
+        x: left.x + right.x,
+        y: left.y + right.y,
+        z: left.z + right.z,
+    }
+}
+
+fn sub(left: Vec3, right: Vec3) -> Vec3 {
+    Vec3 {
+        x: left.x - right.x,
+        y: left.y - right.y,
+        z: left.z - right.z,
+    }
+}
+
+fn dot(left: Vec3, right: Vec3) -> f64 {
+    left.x * right.x + left.y * right.y + left.z * right.z
+}
+
+fn cross(left: Vec3, right: Vec3) -> Vec3 {
+    Vec3 {
+        x: left.y * right.z - left.z * right.y,
+        y: left.z * right.x - left.x * right.z,
+        z: left.x * right.y - left.y * right.x,
+    }
+}
+
+fn normalize(value: Vec3) -> Option<Vec3> {
+    let length = dot(value, value).sqrt();
+    if length <= f64::EPSILON {
+        None
+    } else {
+        Some(Vec3 {
+            x: value.x / length,
+            y: value.y / length,
+            z: value.z / length,
+        })
+    }
+}
+
+fn rotate_euler(point: Vec3, rotation: Vec3) -> Vec3 {
+    let (sin_x, cos_x) = rotation.x.sin_cos();
+    let (sin_y, cos_y) = rotation.y.sin_cos();
+    let (sin_z, cos_z) = rotation.z.sin_cos();
+    let around_x = Vec3 {
+        x: point.x,
+        y: point.y * cos_x - point.z * sin_x,
+        z: point.y * sin_x + point.z * cos_x,
+    };
+    let around_y = Vec3 {
+        x: around_x.x * cos_y + around_x.z * sin_y,
+        y: around_x.y,
+        z: -around_x.x * sin_y + around_x.z * cos_y,
+    };
+    Vec3 {
+        x: around_y.x * cos_z - around_y.y * sin_z,
+        y: around_y.x * sin_z + around_y.y * cos_z,
+        z: around_y.z,
+    }
+}
+
+fn depth_from_camera(camera: &Camera3DData, point: Vec3) -> f64 {
+    let Some(forward) = normalize(sub(camera.target, camera.position)) else {
+        return 0.0;
+    };
+    dot(sub(point, camera.position), forward)
 }
 
 const SHADER: &str = r#"

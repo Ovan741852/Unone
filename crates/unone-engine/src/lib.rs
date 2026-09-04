@@ -28,6 +28,6 @@ pub use runtime::{
 };
 pub use ui::{UiNode, UiRect, UiTree};
 pub use world::{
-    Camera2DData, EntitySnapshot, PhysicsSettings, RigidBody2DData, RigidBodySnapshot,
-    RigidBodyType, SceneFile, Vec2, WorldSnapshot,
+    Camera2DData, Camera3DData, EntitySnapshot, Mesh3DData, PhysicsSettings, RigidBody2DData,
+    RigidBodySnapshot, RigidBodyType, SceneFile, Transform3DData, Vec2, Vec3, WorldSnapshot,
 };

@@ -10,6 +10,92 @@ pub struct Vec2 {
     pub y: f64,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+pub struct Vec3 {
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+}
+
+impl Default for Vec3 {
+    fn default() -> Self {
+        Self {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct Transform3DData {
+    #[serde(default)]
+    pub position: Vec3,
+    /// Euler rotation in radians. The engine stores the transform; game code
+    /// owns the meaning of steering and other gameplay-specific orientation.
+    #[serde(default)]
+    pub rotation: Vec3,
+    #[serde(default = "default_scale3d")]
+    pub scale: Vec3,
+}
+
+fn default_scale3d() -> Vec3 {
+    Vec3 {
+        x: 1.0,
+        y: 1.0,
+        z: 1.0,
+    }
+}
+
+impl Default for Transform3DData {
+    fn default() -> Self {
+        Self {
+            position: Vec3::default(),
+            rotation: Vec3::default(),
+            scale: default_scale3d(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct Mesh3DData {
+    pub asset: String,
+    #[serde(default = "default_true")]
+    pub visible: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct Camera3DData {
+    #[serde(default = "default_camera3d_position")]
+    pub position: Vec3,
+    #[serde(default)]
+    pub target: Vec3,
+    #[serde(default = "default_camera3d_fov")]
+    pub fov_degrees: f64,
+}
+
+fn default_camera3d_position() -> Vec3 {
+    Vec3 {
+        x: 0.0,
+        y: 3.0,
+        z: 8.0,
+    }
+}
+
+fn default_camera3d_fov() -> f64 {
+    60.0
+}
+
+impl Default for Camera3DData {
+    fn default() -> Self {
+        Self {
+            position: default_camera3d_position(),
+            target: Vec3::default(),
+            fov_degrees: default_camera3d_fov(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum RigidBodyType {
@@ -96,6 +182,8 @@ pub struct SceneFile {
     pub physics: PhysicsSettings,
     #[serde(default)]
     pub camera: Camera2DData,
+    #[serde(default)]
+    pub camera3d: Option<Camera3DData>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -106,7 +194,11 @@ pub struct SceneEntity {
     #[serde(default)]
     pub transform: Vec2,
     #[serde(default)]
+    pub transform3d: Option<Transform3DData>,
+    #[serde(default)]
     pub sprite: Option<SpriteData>,
+    #[serde(default)]
+    pub mesh3d: Option<Mesh3DData>,
     #[serde(default)]
     pub rigidbody: Option<RigidBody2DData>,
 }
@@ -133,7 +225,9 @@ pub struct EntitySnapshot {
     pub id: String,
     pub name: String,
     pub transform: Vec2,
+    pub transform3d: Option<Transform3DData>,
     pub sprite: Option<SpriteData>,
+    pub mesh3d: Option<Mesh3DData>,
     pub rigidbody: Option<RigidBodySnapshot>,
 }
 
@@ -151,6 +245,8 @@ pub struct WorldSnapshot {
     pub frame: u64,
     pub time_seconds: f64,
     pub camera: Camera2DData,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub camera3d: Option<Camera3DData>,
     pub entities: BTreeMap<String, EntitySnapshot>,
     pub observations: BTreeMap<String, serde_json::Value>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -162,7 +258,9 @@ pub(crate) struct EntityState {
     pub id: String,
     pub name: String,
     pub transform: Vec2,
+    pub transform3d: Option<Transform3DData>,
     pub sprite: Option<SpriteData>,
+    pub mesh3d: Option<Mesh3DData>,
     pub rigidbody: Option<RigidBodyState>,
 }
 
@@ -182,6 +280,7 @@ pub(crate) struct World {
     pub entities: BTreeMap<String, EntityState>,
     pub physics: PhysicsSettings,
     pub camera: Camera2DData,
+    pub camera3d: Option<Camera3DData>,
 }
 
 impl World {
@@ -212,8 +311,34 @@ impl World {
                 "Camera2D zoom 必須是大於 0 的有限數字。",
             )));
         }
+        if let Some(camera3d) = &scene.camera3d {
+            validate_vec3(camera3d.position, "Camera3D position")?;
+            validate_vec3(camera3d.target, "Camera3D target")?;
+            if !(1.0..179.0).contains(&camera3d.fov_degrees) || !camera3d.fov_degrees.is_finite() {
+                return Err(Box::new(Diagnostic::error(
+                    "SCENE_CAMERA3D_INVALID",
+                    "Camera3D 的 fov_degrees 無效",
+                    "Camera3D fov_degrees 必須是大於 1 且小於 179 的有限數字。",
+                )));
+            }
+        }
         self.camera = scene.camera;
+        self.camera3d = scene.camera3d;
         for entity in scene.entities {
+            if let Some(transform3d) = &entity.transform3d {
+                validate_vec3(transform3d.position, "Transform3D position")?;
+                validate_vec3(transform3d.rotation, "Transform3D rotation")?;
+                validate_scale3d(transform3d.scale)?;
+            }
+            if let Some(mesh3d) = &entity.mesh3d
+                && mesh3d.asset.trim().is_empty()
+            {
+                return Err(Box::new(Diagnostic::error(
+                    "SCENE_MESH3D_INVALID",
+                    "Mesh3D 的 asset 無效",
+                    format!("Entity '{}' 的 Mesh3D asset 不可為空。", entity.id),
+                )));
+            }
             if let Some(sprite) = &entity.sprite
                 && (sprite.size.x <= 0.0
                     || sprite.size.y <= 0.0
@@ -270,7 +395,9 @@ impl World {
                     id: entity.id,
                     name: entity.name,
                     transform: entity.transform,
+                    transform3d: entity.transform3d,
                     sprite: entity.sprite,
+                    mesh3d: entity.mesh3d,
                     rigidbody,
                 },
             );
@@ -292,7 +419,9 @@ impl World {
                 id: id.clone(),
                 name: name.to_string(),
                 transform: Vec2::default(),
+                transform3d: None,
                 sprite: None,
+                mesh3d: None,
                 rigidbody: None,
             },
         );
@@ -300,34 +429,42 @@ impl World {
     }
 
     pub(crate) fn snapshot(&self) -> WorldSnapshot {
-        let entities = self
-            .entities
-            .iter()
-            .map(|(id, entity)| {
-                (
-                    id.clone(),
-                    EntitySnapshot {
-                        id: entity.id.clone(),
-                        name: entity.name.clone(),
-                        transform: Vec2 {
-                            x: quantize_observation(entity.transform.x),
-                            y: quantize_observation(entity.transform.y),
-                        },
-                        sprite: entity.sprite.clone(),
-                        rigidbody: entity.rigidbody.as_ref().map(|body| RigidBodySnapshot {
-                            body_type: body.body_type,
-                            mass: quantize_observation(body.mass),
-                            radius: quantize_observation(body.radius),
-                            velocity: Vec2 {
-                                x: quantize_observation(body.velocity.x),
-                                y: quantize_observation(body.velocity.y),
+        let entities =
+            self.entities
+                .iter()
+                .map(|(id, entity)| {
+                    (
+                        id.clone(),
+                        EntitySnapshot {
+                            id: entity.id.clone(),
+                            name: entity.name.clone(),
+                            transform: Vec2 {
+                                x: quantize_observation(entity.transform.x),
+                                y: quantize_observation(entity.transform.y),
                             },
-                            restitution: quantize_observation(body.restitution),
-                        }),
-                    },
-                )
-            })
-            .collect();
+                            transform3d: entity.transform3d.as_ref().map(|transform| {
+                                Transform3DData {
+                                    position: quantize_vec3(transform.position),
+                                    rotation: quantize_vec3(transform.rotation),
+                                    scale: quantize_vec3(transform.scale),
+                                }
+                            }),
+                            sprite: entity.sprite.clone(),
+                            mesh3d: entity.mesh3d.clone(),
+                            rigidbody: entity.rigidbody.as_ref().map(|body| RigidBodySnapshot {
+                                body_type: body.body_type,
+                                mass: quantize_observation(body.mass),
+                                radius: quantize_observation(body.radius),
+                                velocity: Vec2 {
+                                    x: quantize_observation(body.velocity.x),
+                                    y: quantize_observation(body.velocity.y),
+                                },
+                                restitution: quantize_observation(body.restitution),
+                            }),
+                        },
+                    )
+                })
+                .collect();
         WorldSnapshot {
             frame: self.frame,
             time_seconds: self.time_seconds,
@@ -338,6 +475,11 @@ impl World {
                 },
                 zoom: quantize_observation(self.camera.zoom),
             },
+            camera3d: self.camera3d.as_ref().map(|camera| Camera3DData {
+                position: quantize_vec3(camera.position),
+                target: quantize_vec3(camera.target),
+                fov_degrees: quantize_observation(camera.fov_degrees),
+            }),
             entities,
             observations: BTreeMap::new(),
             ui: None,
@@ -361,6 +503,66 @@ impl World {
             return Err("Camera2D zoom 必須是大於 0 的有限數字。".to_string());
         }
         self.camera.zoom = zoom;
+        Ok(())
+    }
+
+    pub(crate) fn get_transform3d(&self, id: &str) -> Result<Transform3DData, String> {
+        let entity = self
+            .entities
+            .get(id)
+            .ok_or_else(|| format!("Entity '{id}' 不存在。"))?;
+        entity
+            .transform3d
+            .clone()
+            .ok_or_else(|| format!("Entity '{id}' 沒有 Transform3D。"))
+    }
+
+    pub(crate) fn set_transform3d(
+        &mut self,
+        id: &str,
+        transform: Transform3DData,
+    ) -> Result<(), String> {
+        validate_vec3(transform.position, "Transform3D position")
+            .map_err(|diagnostic| diagnostic.explanation.clone())?;
+        validate_vec3(transform.rotation, "Transform3D rotation")
+            .map_err(|diagnostic| diagnostic.explanation.clone())?;
+        validate_scale3d(transform.scale).map_err(|diagnostic| diagnostic.explanation.clone())?;
+        let entity = self
+            .entities
+            .get_mut(id)
+            .ok_or_else(|| format!("Entity '{id}' 不存在。"))?;
+        if entity.transform3d.is_none() {
+            return Err(format!("Entity '{id}' 沒有 Transform3D。"));
+        }
+        entity.transform3d = Some(transform);
+        Ok(())
+    }
+
+    pub(crate) fn get_camera3d(&self) -> Result<Camera3DData, String> {
+        self.camera3d
+            .clone()
+            .ok_or_else(|| "目前 scene 沒有 Camera3D。".to_string())
+    }
+
+    pub(crate) fn set_camera3d_position(&mut self, position: Vec3) -> Result<(), String> {
+        validate_vec3(position, "Camera3D position")
+            .map_err(|diagnostic| diagnostic.explanation.clone())?;
+        let camera = self
+            .camera3d
+            .as_mut()
+            .ok_or_else(|| "目前 scene 沒有 Camera3D。".to_string())?;
+        camera.position = position;
+        Ok(())
+    }
+
+    pub(crate) fn set_camera3d_target(&mut self, target: Vec3) -> Result<(), String> {
+        validate_vec3(target, "Camera3D target")
+            .map_err(|diagnostic| diagnostic.explanation.clone())?;
+        let camera = self
+            .camera3d
+            .as_mut()
+            .ok_or_else(|| "目前 scene 沒有 Camera3D。".to_string())?;
+        camera.target = target;
         Ok(())
     }
 
@@ -542,6 +744,37 @@ impl World {
     }
 }
 
+fn validate_vec3(value: Vec3, label: &str) -> Result<(), Box<Diagnostic>> {
+    if !value.x.is_finite() || !value.y.is_finite() || !value.z.is_finite() {
+        return Err(Box::new(Diagnostic::error(
+            "SCENE_TRANSFORM3D_INVALID",
+            "3D 座標含有非有限數字",
+            format!("{label} 的 x、y、z 必須都是有限數字。"),
+        )));
+    }
+    Ok(())
+}
+
+fn validate_scale3d(scale: Vec3) -> Result<(), Box<Diagnostic>> {
+    validate_vec3(scale, "Transform3D scale")?;
+    if scale.x <= 0.0 || scale.y <= 0.0 || scale.z <= 0.0 {
+        return Err(Box::new(Diagnostic::error(
+            "SCENE_TRANSFORM3D_INVALID",
+            "Transform3D 的 scale 無效",
+            "Transform3D scale 的 x、y、z 必須都是大於 0 的有限數字。",
+        )));
+    }
+    Ok(())
+}
+
+fn quantize_vec3(value: Vec3) -> Vec3 {
+    Vec3 {
+        x: quantize_observation(value.x),
+        y: quantize_observation(value.y),
+        z: quantize_observation(value.z),
+    }
+}
+
 fn quantize_observation(value: f64) -> f64 {
     (value * 1_000_000.0).round() / 1_000_000.0
 }
@@ -568,7 +801,9 @@ mod tests {
             id: id.to_string(),
             name: id.to_string(),
             transform: Vec2 { x, y },
+            transform3d: None,
             sprite: None,
+            mesh3d: None,
             rigidbody: Some(rigidbody),
         }
     }
@@ -583,6 +818,7 @@ mod tests {
                 ground_y: Some(0.0),
             },
             camera: super::Camera2DData::default(),
+            camera3d: None,
         }
     }
 
@@ -650,5 +886,56 @@ mod tests {
                 .explanation
                 .contains("Sprite size 必須是 x、y 都大於 0")
         );
+    }
+
+    #[test]
+    fn loads_minimal_3d_scene_and_exposes_quantized_snapshot() {
+        let scene: SceneFile = serde_json::from_value(serde_json::json!({
+            "camera3d": {
+                "position": {"x": 0, "y": 3, "z": 8},
+                "target": {"x": 0, "y": 0, "z": 0},
+                "fov_degrees": 60
+            },
+            "entities": [{
+                "id": "car",
+                "transform3d": {
+                    "position": {"x": 1.23456789, "y": 0, "z": -2},
+                    "rotation": {"x": 0, "y": 0.25, "z": 0},
+                    "scale": {"x": 1, "y": 0.5, "z": 2}
+                },
+                "mesh3d": {"asset": "mesh://car"}
+            }]
+        }))
+        .unwrap();
+        let mut world = World::default();
+
+        world.load_scene_data(scene).unwrap();
+
+        let snapshot = world.snapshot();
+        let car = snapshot.entities.get("car").unwrap();
+        assert_eq!(car.transform3d.as_ref().unwrap().position.x, 1.234568);
+        assert_eq!(car.mesh3d.as_ref().unwrap().asset, "mesh://car");
+        assert_eq!(snapshot.camera3d.as_ref().unwrap().fov_degrees, 60.0);
+    }
+
+    #[test]
+    fn rejects_invalid_3d_scale_with_semantic_diagnostic() {
+        let scene: SceneFile = serde_json::from_value(serde_json::json!({
+            "entities": [{
+                "id": "car",
+                "transform3d": {
+                    "position": {"x": 0, "y": 0, "z": 0},
+                    "rotation": {"x": 0, "y": 0, "z": 0},
+                    "scale": {"x": 0, "y": 1, "z": 1}
+                }
+            }]
+        }))
+        .unwrap();
+        let mut world = World::default();
+
+        let diagnostic = world.load_scene_data(scene).unwrap_err();
+
+        assert_eq!(diagnostic.code, "SCENE_TRANSFORM3D_INVALID");
+        assert!(diagnostic.explanation.contains("scale 的 x、y、z"));
     }
 }

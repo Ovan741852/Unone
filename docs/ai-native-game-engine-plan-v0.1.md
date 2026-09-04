@@ -338,6 +338,8 @@ Model 是遊戲的真實狀態，ViewModel 是遊戲端定義的 typed presentat
 
 第一版不做全域 magic binding、雙向自動同步、反射式 converter graph、全引擎 ViewModel registry、layout engine、widget library、UI event bus 或讓每個 Entity 都建立 ViewModel。`api.ui.setRoot` 只提供 flat `screen/text/button` transport；ViewModel、View 組合、hit-test 與 action 仍在遊戲端，高頻 gameplay simulation 維持 ECS。
 
+3D 也遵守同一個最小原則：先只提供被 3D Racing 證明必要的 `Vec3`、`Transform3D`、`Mesh3D`、`Camera3D` 與 semantic snapshot；車輛、賽道、輪胎、material、animation、navigation、3D physics 與完整 asset editor 不預先放進 engine。後續只有在至少多個遊戲出現相同且低階的阻塞時，才依 evidence 提煉下一個 primitive。
+
 ## 11. 里程碑與驗收
 
 ### M0：引擎骨架
