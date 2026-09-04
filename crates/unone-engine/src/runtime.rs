@@ -919,6 +919,8 @@ fn build_api(
 }
 
 const MAX_OBSERVATION_DEPTH: usize = 8;
+const PORTABLE_INTEGER_MIN: i64 = i32::MIN as i64;
+const PORTABLE_INTEGER_MAX: i64 = i32::MAX as i64;
 
 fn lua_value_to_json(value: Value) -> Result<serde_json::Value, String> {
     lua_value_to_json_at(value, 0)
@@ -933,7 +935,11 @@ fn lua_value_to_json_at(value: Value, depth: usize) -> Result<serde_json::Value,
     match value {
         Value::Nil => Ok(serde_json::Value::Null),
         Value::Boolean(value) => Ok(serde_json::Value::Bool(value)),
-        Value::Integer(value) => Ok(serde_json::json!(value)),
+        Value::Integer(value) => {
+            let value = luau_integer_to_i64(value);
+            ensure_portable_integer(value)?;
+            Ok(serde_json::json!(value))
+        }
         Value::Number(value) if value.is_finite() => Ok(serde_json::json!(value)),
         Value::Number(_) => Err("observation numbers must be finite".to_string()),
         Value::String(value) => value
@@ -950,7 +956,7 @@ fn lua_value_to_json_at(value: Value, depth: usize) -> Result<serde_json::Value,
 
 fn table_to_json(table: Table, depth: usize) -> Result<serde_json::Value, String> {
     let mut object = BTreeMap::new();
-    let mut array = BTreeMap::new();
+    let mut array: BTreeMap<i64, serde_json::Value> = BTreeMap::new();
     for pair in table.pairs::<Value, Value>() {
         let (key, value) = pair.map_err(|error| error.to_string())?;
         let value = lua_value_to_json_at(value, depth + 1)?;
@@ -969,11 +975,16 @@ fn table_to_json(table: Table, depth: usize) -> Result<serde_json::Value, String
                 if !object.is_empty() {
                     return Err("observation table cannot mix string and integer keys".to_string());
                 }
-                array.insert(key, value);
+                array.insert(ensure_portable_integer(luau_integer_to_i64(key))?, value);
             }
             Value::Number(key) if key.is_finite() && key.fract() == 0.0 && key > 0.0 => {
                 if !object.is_empty() {
                     return Err("observation table cannot mix string and integer keys".to_string());
+                }
+                if key > PORTABLE_INTEGER_MAX as f64 {
+                    return Err(
+                        "observation array key is outside the portable integer range".to_string(),
+                    );
                 }
                 array.insert(key as i64, value);
             }
@@ -995,13 +1006,36 @@ fn table_to_json(table: Table, depth: usize) -> Result<serde_json::Value, String
     Ok(serde_json::Value::Object(object.into_iter().collect()))
 }
 
+#[cfg(target_pointer_width = "64")]
+fn luau_integer_to_i64(value: mlua::Integer) -> i64 {
+    value
+}
+
+#[cfg(not(target_pointer_width = "64"))]
+fn luau_integer_to_i64(value: mlua::Integer) -> i64 {
+    value as i64
+}
+
+fn ensure_portable_integer(value: i64) -> Result<i64, String> {
+    if !(PORTABLE_INTEGER_MIN..=PORTABLE_INTEGER_MAX).contains(&value) {
+        return Err("observation integer is outside the portable Luau integer range".to_string());
+    }
+    Ok(value)
+}
+
 fn json_to_lua(lua: &Lua, value: serde_json::Value) -> mlua::Result<Value> {
     match value {
         serde_json::Value::Null => Ok(Value::Nil),
         serde_json::Value::Bool(value) => Ok(Value::Boolean(value)),
         serde_json::Value::Number(value) => {
             if let Some(value) = value.as_i64() {
-                Ok(Value::Integer(value))
+                if ensure_portable_integer(value).is_err() {
+                    return Err(mlua::Error::RuntimeError(
+                        "save payload integer is outside the portable Luau integer range"
+                            .to_string(),
+                    ));
+                }
+                Ok(Value::Integer(value as mlua::Integer))
             } else if let Some(value) = value.as_f64() {
                 Ok(Value::Number(value))
             } else {
@@ -1434,6 +1468,26 @@ return Game
                 .explanation
                 .contains("not serializable")
         );
+    }
+
+    #[test]
+    fn observation_rejects_integers_outside_portable_range() {
+        let source = r#"
+local Game = {}
+function Game.start(_api) end
+function Game.update(api, _dt)
+    api.observation.set("invalid", 2147483648)
+end
+return Game
+"#;
+        let mut runtime =
+            EngineRuntime::load_source("PortableIntegerError", "main.luau", source, None).unwrap();
+
+        let result = runtime.run(1, 42);
+
+        assert!(!result.ok);
+        assert_eq!(result.diagnostics[0].code, "LUAU_RUNTIME_ERROR");
+        assert!(result.diagnostics[0].explanation.contains("portable"));
     }
 
     #[test]
