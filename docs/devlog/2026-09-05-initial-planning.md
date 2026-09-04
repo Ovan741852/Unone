@@ -113,3 +113,4 @@
 - Slot Machine 初次 deterministic fixture 先猜測 seed 結果而被 test 正確拒絕，另發現 manual `run` 若誤傳 `.test.json` 會把 manifest 當 sequence；分類為 game fixture／教學流程問題，已改用實際 replay 結果 `[2,2,1]` 與獨立 sequence 檔，並記錄於 `docs/issues/2026-09-05-slot-deterministic-fixture.md`。不修改 engine RNG 或新增 slot 專用 API。
 - Slot Machine validation slice 修正後 `check --types`、3 個 tests 與手動 replay 通過；engine 維持只提供 seeded RNG、input、observation、save transport，reels／paytable／credits 全留在 Luau。矩陣已更新為 `in_progress`，尚未有 host render、durable storage 或跨平台 game smoke。
 - Slot Machine slice 後執行第十九次 Claude CLI read-only review；約 70 秒無 stdout/stderr 後中止，沒有 findings，不算 review 通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-19.md`。
+- Idle Battle 初次 fixtures 錯把 save checkpoint 當成 pre-tick 狀態，且猜測 victory 時 unit arrays 會清空；deterministic replay 實際捕捉到第一 frame 攻擊與 360 frame 的 victory state，已修正 assertions 並記錄於 `docs/issues/2026-09-05-idle-battle-fixture-expectation.md`。分類為 game fixture，不增加 combat 專用 engine API。
