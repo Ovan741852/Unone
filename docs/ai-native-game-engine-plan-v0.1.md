@@ -376,6 +376,8 @@ Model 是遊戲的真實狀態，ViewModel 是遊戲端定義的 typed presentat
 - native/web 的 platform capability report。
 - 最小 Inspector 只讀取 Developer Protocol。
 
+目前進度：`unone-engine` 已通過 `wasm32-unknown-emscripten` library compile，並已有 `platform capabilities` CLI query；瀏覽器 WebGPU host、browser input、storage adapter 與最小 Inspector 仍未完成，不能把這個里程碑標成完成。
+
 ### M4：憤怒鳥 2D 驗證
 
 在 `D:/Projects/Unone_Games/` 建立獨立遊戲專案。它不是把遊戲規則塞回引擎，而是用來壓測：2D physics、camera、input recording、scene/prefab、asset pipeline、UI、hot reload、headless test 與 AI 教學。
