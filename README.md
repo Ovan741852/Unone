@@ -19,6 +19,7 @@ Unone 是 AI-native 遊戲引擎原型：Rust 負責遊戲引擎機制，Luau �
 cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json project inspect
+cargo run -p unone-cli -- --json platform capabilities
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json api describe entity.setPosition
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json run --frames 60 --action Right

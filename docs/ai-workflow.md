@@ -2,6 +2,14 @@
 
 這是目前 AI 或人類操作 Unone 的最小流程。CLI 是 Developer Protocol 的第一個 client；MCP 與 Editor 必須在這個 protocol 穩定後再接入。
 
+## -1. 先確認平台能力
+
+```powershell
+cargo run -p unone-cli -- --json platform capabilities
+```
+
+先讀 `target_family`、`project_loaders`、`hot_reload_modes` 與 `pending_host_work`。`wasm` 回報的是可用 memory-source runtime 與待完成的 browser host；不要把 library compile 直接推論成 WebGPU 頁面完成。
+
 ## 0. 先取得專案與 API 語意
 
 ```powershell

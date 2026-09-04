@@ -35,6 +35,10 @@ enum Command {
         #[command(subcommand)]
         command: ApiCommand,
     },
+    Platform {
+        #[command(subcommand)]
+        command: PlatformCommand,
+    },
     Check {
         #[arg(long, help = "Also run the official luau-analyze tool")]
         types: bool,
@@ -70,6 +74,11 @@ enum ProjectCommand {
 enum ApiCommand {
     Search { meaning: String },
     Describe { name: String },
+}
+
+#[derive(Debug, Subcommand)]
+enum PlatformCommand {
+    Capabilities,
 }
 
 #[derive(Debug, Subcommand)]
@@ -129,6 +138,11 @@ fn run() -> Result<ExitCode> {
                     cli.json,
                 ),
             },
+        },
+        Command::Platform { command } => match command {
+            PlatformCommand::Capabilities => {
+                print_result(unone_engine::platform_capabilities(), cli.json)
+            }
         },
         Command::Check { types } => {
             let result = if types {
