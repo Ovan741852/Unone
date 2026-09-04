@@ -30,6 +30,10 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview -
 
 完整型別檢查使用 `game check --types`，需要另外安裝並固定版本的官方 `luau-analyze`；工具不存在時引擎會明確回報錯誤，不會把基本 contract check 說成完整型別檢查。
 
+## Web 目前狀態
+
+`unone-engine` 已以 `wasm32-unknown-emscripten` 搭配 Emscripten wrapper 通過 library compile。Web host 會負責下載與快取內容，再使用 `EngineRuntime::load_source` 提供記憶體中的 scene／Luau source；目前仍未把瀏覽器 WebGPU 頁面或 Unity 本機路徑當成完成條件。
+
 ## 邊界
 
 引擎只提供必要的遊戲機制。遊戲規則、數值、ViewModel、UI flow、內容 catalog、下載時機與營運服務留在遊戲專案或服務端。UI 會採 MVVM；ECS + systems 負責高頻模擬。

@@ -191,6 +191,10 @@ impl World {
                 format!("{}：{}", path.display(), err),
             ))
         })?;
+        self.load_scene_data(scene)
+    }
+
+    pub(crate) fn load_scene_data(&mut self, scene: SceneFile) -> Result<(), Box<Diagnostic>> {
         self.physics = scene.physics;
         if scene.camera.zoom <= 0.0 || !scene.camera.zoom.is_finite() {
             return Err(Box::new(Diagnostic::error(

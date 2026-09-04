@@ -15,7 +15,7 @@ use sha2::{Digest, Sha256};
 use crate::{
     diagnostics::{ActionSuggestion, Diagnostic, EngineResult, SourceLocation},
     project::{ProjectConfig, ProjectPaths, TestSpec},
-    world::{Vec2, World, WorldSnapshot},
+    world::{SceneFile, Vec2, World, WorldSnapshot},
 };
 
 const FIXED_DT: f64 = 1.0 / 60.0;
@@ -93,6 +93,7 @@ pub struct EngineRuntime {
     trace: Rc<RefCell<Vec<TraceEvent>>>,
     generation: u64,
     last_seen_script_stamp: Option<ScriptStamp>,
+    script_source: Option<String>,
 }
 
 impl EngineRuntime {
@@ -200,6 +201,49 @@ impl EngineRuntime {
         if let Some(scene) = &paths.main_scene {
             world.borrow_mut().load_scene(scene)?;
         }
+        Self::with_world(config, paths, world, None)
+    }
+
+    /// Create a runtime from host-provided source instead of a native filesystem.
+    ///
+    /// Browser hosts fetch the manifest, scene and Luau source themselves, then
+    /// hand the bytes to this same engine runtime. This keeps storage, fetch and
+    /// hot-update policy in the platform host while preserving one simulation
+    /// contract across native and Web.
+    pub fn load_source(
+        project_name: impl Into<String>,
+        script_name: impl Into<String>,
+        source: impl Into<String>,
+        scene: Option<SceneFile>,
+    ) -> Result<Self, Box<Diagnostic>> {
+        let script_name = script_name.into();
+        let config = ProjectConfig {
+            name: project_name.into(),
+            entry_script: script_name.clone(),
+            main_scene: None,
+            test_files: Vec::new(),
+            bundle_manifest: None,
+        };
+        let paths = ProjectPaths {
+            root: PathBuf::from("<memory>"),
+            config: PathBuf::from("<memory>/project.unone.json"),
+            entry_script: PathBuf::from(script_name),
+            main_scene: None,
+            test_files: Vec::new(),
+        };
+        let world = Rc::new(RefCell::new(World::default()));
+        if let Some(scene) = scene {
+            world.borrow_mut().load_scene_data(scene)?;
+        }
+        Self::with_world(config, paths, world, Some(source.into()))
+    }
+
+    fn with_world(
+        config: ProjectConfig,
+        paths: ProjectPaths,
+        world: Rc<RefCell<World>>,
+        script_source: Option<String>,
+    ) -> Result<Self, Box<Diagnostic>> {
         let input = Rc::new(RefCell::new(InputState::default()));
         let trace = Rc::new(RefCell::new(Vec::new()));
         let lua = Lua::new();
@@ -234,6 +278,7 @@ impl EngineRuntime {
             trace,
             generation: 0,
             last_seen_script_stamp: None,
+            script_source,
         };
         runtime.load_script(false)?;
         Ok(runtime)
@@ -244,6 +289,15 @@ impl EngineRuntime {
     }
 
     pub fn reload(&mut self) -> Result<(), Box<Diagnostic>> {
+        self.load_script(true)
+    }
+
+    /// Replace a host-provided script while keeping Rust-owned world state.
+    ///
+    /// A failed source keeps the previous update function active, matching
+    /// filesystem hot reload behavior. The host can fix the source and retry.
+    pub fn reload_source(&mut self, source: impl Into<String>) -> Result<(), Box<Diagnostic>> {
+        self.script_source = Some(source.into());
         self.load_script(true)
     }
 
@@ -409,13 +463,16 @@ impl EngineRuntime {
 
     fn load_script(&mut self, is_reload: bool) -> Result<(), Box<Diagnostic>> {
         let script_stamp = self.script_stamp()?;
-        let source = fs::read_to_string(&self.paths.entry_script).map_err(|err| {
-            Box::new(Diagnostic::error(
-                "SCRIPT_READ_FAILED",
-                "無法讀取入口腳本",
-                format!("{}：{}", self.paths.entry_script.display(), err),
-            ))
-        })?;
+        let source = match &self.script_source {
+            Some(source) => source.clone(),
+            None => fs::read_to_string(&self.paths.entry_script).map_err(|err| {
+                Box::new(Diagnostic::error(
+                    "SCRIPT_READ_FAILED",
+                    "無法讀取入口腳本",
+                    format!("{}：{}", self.paths.entry_script.display(), err),
+                ))
+            })?,
+        };
         let value = self
             .lua
             .load(&source)
@@ -461,6 +518,12 @@ impl EngineRuntime {
     }
 
     fn script_stamp(&self) -> Result<ScriptStamp, Box<Diagnostic>> {
+        if self.script_source.is_some() {
+            return Ok(ScriptStamp {
+                modified: SystemTime::UNIX_EPOCH,
+                size: 0,
+            });
+        }
         let metadata = fs::metadata(&self.paths.entry_script).map_err(|err| {
             Box::new(Diagnostic::error(
                 "SCRIPT_METADATA_FAILED",
@@ -924,5 +987,26 @@ return Game
             .unwrap();
         let x = report.world.entities.get("player").unwrap().transform.x;
         assert!((x - 2.0).abs() < 0.000_001);
+    }
+
+    #[test]
+    fn memory_runtime_runs_without_project_files() {
+        let source = r#"
+local Game = {}
+function Game.start(api)
+    api.entity.spawn("player")
+end
+function Game.update(api, dt)
+    local position = api.entity.getPosition("player")
+    position.x += dt
+    api.entity.setPosition("player", position)
+end
+return Game
+"#;
+        let mut runtime =
+            EngineRuntime::load_source("WebSmoke", "main.luau", source, None).unwrap();
+        let report = runtime.run(60, 42).value.unwrap();
+        let x = report.world.entities.get("player").unwrap().transform.x;
+        assert!((x - 1.0).abs() < 0.000_001);
     }
 }
