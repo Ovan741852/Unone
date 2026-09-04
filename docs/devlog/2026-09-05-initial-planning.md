@@ -65,3 +65,5 @@
 - 為 native／Web 共用 runtime 補上 `EngineRuntime::load_source`：Web host 負責 fetch／cache 後以記憶體提供 scene 與 Luau source；引擎仍只負責 Luau、world、physics、input 與 observation。新增 regression test 證明沒有 project files 也能執行同一 runtime。
 - Web compile 的證據仍只到 engine library；瀏覽器 WebGPU host、平台 capability report 與固定 CI toolchain 尚未宣稱完成，避免把編譯通過誤報成跨平台運行通過。
 - 依重大切片節奏再次執行 Claude CLI read-only review；CLI 可啟動但 60 秒無輸出，已中止且不算 review 通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-4.md`。
+- 建立 `D:/Projects/Unone_Games/angry-birds-2d/` 第一個遊戲型驗證切片：三個 scene entities、Luau `Launch` action、拋射與落地測試通過；`check --types`、headless `test` 與 input replay `run` 均通過。native preview 已截圖至 `docs/devlog/2026-09-05-angry-birds-preview.png`。
+- 手動 replay 初次使用了尚未建立的 `launch-sequence.json`，雖然 test manifest 內嵌 sequence 已通過，仍造成教學命令失敗；補上可重播 fixture 並在 game README 寫入完整命令，避免測試與教學使用不同輸入來源。
