@@ -21,7 +21,7 @@ claude -p "Review the current Unone Rust/Luau engine prototype ..." --output-for
 
 ## 預期與實際
 
-預期取得只讀 code review；實際回覆：`Failed to authenticate: OAuth session expired and could not be refreshed`。
+第一次預期取得只讀 code review；實際回覆：`Failed to authenticate: OAuth session expired and could not be refreshed`。第二次以相同 read-only 目的重試，進程長時間無輸出，超過合理等待後停止。
 
 ## 根因判斷
 
@@ -29,7 +29,7 @@ claude -p "Review the current Unone Rust/Luau engine prototype ..." --output-for
 
 ## 修正
 
-待重新登入 Claude CLI 後重試。工具可用前，主流程仍以 `cargo check`、`cargo test`、git diff 與人工審查維持品質。
+待重新登入 Claude CLI 後重試。工具可用前，主流程仍以 `cargo check`、`cargo clippy --workspace --all-targets -- -D warnings`、`cargo test`、git diff 與人工審查維持品質。
 
 ## 回歸測試
 

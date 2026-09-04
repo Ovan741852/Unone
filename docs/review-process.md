@@ -31,4 +31,4 @@ the engine. Report findings by severity with file/line and concrete fixes.
 
 ## 本次狀態
 
-2026-09-05：Claude CLI `2.1.206` 已找到，但 OAuth session expired 且無法刷新，因此 review 尚未完成；待重新登入後重試。
+2026-09-05：Claude CLI `2.1.206` 已找到；第一次 review 回報 OAuth session expired 且無法刷新，第二次 review 無輸出並超時，兩次都不算完成。待重新登入後重試。
