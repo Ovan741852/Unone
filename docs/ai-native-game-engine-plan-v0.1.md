@@ -376,7 +376,7 @@ Model 是遊戲的真實狀態，ViewModel 是遊戲端定義的 typed presentat
 - native/web 的 platform capability report。
 - 最小 Inspector 只讀取 Developer Protocol。
 
-目前進度：`unone-engine` 已通過 `wasm32-unknown-emscripten` library compile，`unone-web-smoke` 已完成 Emscripten link、Node smoke 與 browser runtime smoke page，且已有 `platform capabilities` CLI query。`web/host/` 已完成 snapshot bridge，`web/live/` 已以窄 C ABI 完成 host-provided source/scene payload、script reload、live WASM frame loop、browser input 驅動同一個 Rust/Luau simulation 與 WebGPU render；sample 的 project bundle/catalog、incremental verify、IndexedDB cache、generation transaction 與 script hot update 已通過 browser smoke。通用遊戲 asset streaming、production storage writer、live reload error transport 與最小 Inspector 仍未完成，不能把這個里程碑標成完成。
+目前進度：`unone-engine` 已通過 `wasm32-unknown-emscripten` library compile，`unone-web-smoke` 已完成 Emscripten link、Node smoke 與 browser runtime smoke page，且已有 `platform capabilities` CLI query。`web/host/` 已完成 snapshot bridge，`web/live/` 已以窄 C ABI 完成 host-provided source/scene payload、script reload、live WASM frame loop、browser input 驅動同一個 Rust/Luau simulation 與 WebGPU render；sample 的 project bundle/catalog、incremental verify、IndexedDB cache、generation transaction 與 script hot update 已通過 browser smoke。Android 的 `aarch64-linux-android` 與 `x86_64-linux-android` engine cross-compile 也已通過。通用遊戲 asset streaming、production storage writer、live reload error transport、mobile host lifecycle/package 與最小 Inspector 仍未完成，不能把這個里程碑標成完成。
 
 ### M4：憤怒鳥 2D 驗證
 
@@ -386,7 +386,7 @@ Model 是遊戲的真實狀態，ViewModel 是遊戲端定義的 typed presentat
 
 ### M5：mobile 與長期能力
 
-先 iOS 再 Android，之後依目標遊戲的真實阻塞增加 3D、audio、animation、save、networking、performance tooling。
+先完成 Android host 的可取得工具鏈與 lifecycle smoke，再在 macOS/Xcode 環境完成 iOS host；之後依目標遊戲的真實阻塞增加 3D、audio、animation、save、networking、performance tooling。engine cross-compile 不是 host 完成的替代證據。
 
 ## 12. 長期遊戲驗證順序與通過門檻
 

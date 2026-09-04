@@ -61,6 +61,14 @@ python -m http.server 8000
 
 目前 engine core 不依賴 UIKit、Android View 或 JNI；mobile host 應沿用 `EngineRuntime::tick_with_input`，由平台 adapter 負責 lifecycle、surface、safe area、touch、storage 與 package/update policy。這台 Windows 已用 Android NDK `27.1.12297006` 成功 cross-check `unone-engine` 的 `aarch64-linux-android` 與 `x86_64-linux-android`，但沒有 Gradle，`adb` 也沒有 connected device；沒有 Apple `xcodebuild`，所以 iOS/Android host package 或 lifecycle smoke 尚未完成。完整責任邊界與驗收項目見 `docs/decisions/0017-mobile-host-lifecycle-boundary.md`，盤點細節見 `docs/issues/2026-09-05-mobile-host-toolchain-audit.md`。
 
+Android engine cross-check 可用：
+
+```powershell
+.\scripts\check-android-engine.ps1
+```
+
+這只驗證 Rust engine library 可被 Android target 編譯；不會建立 APK、不會啟動 emulator，也不會取代 Android host lifecycle smoke。
+
 ## 尚未完成
 
 - CI 尚未固定下載 Emscripten SDK 的來源與 checksum。

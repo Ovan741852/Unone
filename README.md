@@ -47,6 +47,8 @@ MCP 只位於 `unone-cli`，不成為 engine core 的依賴；工具結果保留
 
 `unone-engine` 已以 `wasm32-unknown-emscripten` 搭配 Emscripten wrapper 通過 library compile，`unone-web-smoke` 也已完成 link、由 host Node（需 `--experimental-wasm-exnref`）執行 60 frames，並由 `web/smoke/index.html` 在瀏覽器實際載入執行。`web/host/` 已驗證 snapshot bridge，`web/live/` 另以窄 C ABI 驗證 browser animation frame、host-provided project payload、script reload、pointer 驅動同一個 Rust/Luau runtime、WebGPU render，以及 sample bundle verify、IndexedDB cache、generation activation 與 cache-only reopen；目前仍是 smoke fixture，不是完整 production asset packaging。mobile host、OPFS/chunked asset streaming、CDN policy 與正式 error transport 仍未完成。
 
+Android preflight 已用 NDK `27.1.12297006` 通過 `unone-engine` 的 `aarch64-linux-android` 與 `x86_64-linux-android` cross-compile；這不等於 APK、emulator/device 或 mobile lifecycle 通過。
+
 ## 邊界
 
 引擎只提供必要的遊戲機制。遊戲規則、數值、ViewModel、UI flow、內容 catalog、下載時機與營運服務留在遊戲專案或服務端。UI 會採 MVVM；ECS + systems 負責高頻模擬。
