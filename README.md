@@ -9,6 +9,7 @@ Unone 是 AI-native 遊戲引擎原型：Rust 負責遊戲引擎機制，Luau �
 - 技術草案：[docs/ai-native-game-engine-plan-v0.1.md](docs/ai-native-game-engine-plan-v0.1.md)
 - AI CLI 流程：[docs/ai-workflow.md](docs/ai-workflow.md)
 - Code review 流程：[docs/review-process.md](docs/review-process.md)
+- 平台 toolchain：[docs/platform-toolchain.md](docs/platform-toolchain.md)
 
 ## 目前可執行的垂直切片
 
