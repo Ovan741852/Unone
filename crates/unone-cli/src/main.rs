@@ -144,7 +144,7 @@ fn run() -> Result<ExitCode> {
             action,
             input_sequence,
         } => {
-            let mut runtime = match EngineRuntime::load(&cli.project) {
+            let mut runtime = match EngineRuntime::load_with_seed(&cli.project, seed) {
                 Ok(runtime) => runtime,
                 Err(diagnostic) => {
                     return print_result(

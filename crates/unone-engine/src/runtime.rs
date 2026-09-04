@@ -76,6 +76,48 @@ struct InputState {
     down: BTreeMap<String, bool>,
 }
 
+#[derive(Debug, Clone)]
+struct DeterministicRng {
+    state: u64,
+}
+
+impl DeterministicRng {
+    fn new(seed: u64) -> Self {
+        Self { state: seed }
+    }
+
+    fn next_u64(&mut self) -> u64 {
+        self.state = self.state.wrapping_add(0x9E3779B97F4A7C15);
+        let mut value = self.state;
+        value = (value ^ (value >> 30)).wrapping_mul(0xBF58476D1CE4E5B9);
+        value = (value ^ (value >> 27)).wrapping_mul(0x94D049BB133111EB);
+        value ^ (value >> 31)
+    }
+
+    fn next_float(&mut self) -> f64 {
+        const SCALE: f64 = 1.0 / ((1u64 << 53) as f64);
+        (self.next_u64() >> 11) as f64 * SCALE
+    }
+
+    fn next_int(&mut self, min: i64, max: i64) -> Result<i64, String> {
+        if min > max {
+            return Err(format!(
+                "random.nextInt 的 min ({min}) 不能大於 max ({max})。"
+            ));
+        }
+        let range = (max as i128 - min as i128 + 1) as u128;
+        let domain = 1u128 << 64;
+        let limit = domain - (domain % range);
+        loop {
+            let sample = self.next_u64() as u128;
+            if sample < limit {
+                let value = (sample % range) as i128 + min as i128;
+                return Ok(value as i64);
+            }
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct ScriptStamp {
     modified: SystemTime,
@@ -196,12 +238,19 @@ impl EngineRuntime {
     }
 
     pub fn load(project_root: impl AsRef<Path>) -> Result<Self, Box<Diagnostic>> {
+        Self::load_with_seed(project_root, 42)
+    }
+
+    pub fn load_with_seed(
+        project_root: impl AsRef<Path>,
+        seed: u64,
+    ) -> Result<Self, Box<Diagnostic>> {
         let (config, paths) = ProjectPaths::discover(project_root)?;
         let world = Rc::new(RefCell::new(World::default()));
         if let Some(scene) = &paths.main_scene {
             world.borrow_mut().load_scene(scene)?;
         }
-        Self::with_world(config, paths, world, None)
+        Self::with_world(config, paths, world, None, seed)
     }
 
     /// Create a runtime from host-provided source instead of a native filesystem.
@@ -215,6 +264,16 @@ impl EngineRuntime {
         script_name: impl Into<String>,
         source: impl Into<String>,
         scene: Option<SceneFile>,
+    ) -> Result<Self, Box<Diagnostic>> {
+        Self::load_source_with_seed(project_name, script_name, source, scene, 42)
+    }
+
+    pub fn load_source_with_seed(
+        project_name: impl Into<String>,
+        script_name: impl Into<String>,
+        source: impl Into<String>,
+        scene: Option<SceneFile>,
+        seed: u64,
     ) -> Result<Self, Box<Diagnostic>> {
         let script_name = script_name.into();
         let config = ProjectConfig {
@@ -235,7 +294,7 @@ impl EngineRuntime {
         if let Some(scene) = scene {
             world.borrow_mut().load_scene_data(scene)?;
         }
-        Self::with_world(config, paths, world, Some(source.into()))
+        Self::with_world(config, paths, world, Some(source.into()), seed)
     }
 
     fn with_world(
@@ -243,14 +302,17 @@ impl EngineRuntime {
         paths: ProjectPaths,
         world: Rc<RefCell<World>>,
         script_source: Option<String>,
+        seed: u64,
     ) -> Result<Self, Box<Diagnostic>> {
         let input = Rc::new(RefCell::new(InputState::default()));
+        let random = Rc::new(RefCell::new(DeterministicRng::new(seed)));
         let trace = Rc::new(RefCell::new(Vec::new()));
         let lua = Lua::new();
         let api = build_api(
             &lua,
             Rc::clone(&world),
             Rc::clone(&input),
+            Rc::clone(&random),
             Rc::clone(&trace),
         )
         .map_err(|err| {
@@ -408,7 +470,7 @@ impl EngineRuntime {
                     ));
                 }
             };
-            let mut runtime = match Self::load(&paths.root) {
+            let mut runtime = match Self::load_with_seed(&paths.root, spec.seed) {
                 Ok(runtime) => runtime,
                 Err(diagnostic) => return EngineResult::failure(*diagnostic),
             };
@@ -549,11 +611,13 @@ fn build_api(
     lua: &Lua,
     world: Rc<RefCell<World>>,
     input: Rc<RefCell<InputState>>,
+    random: Rc<RefCell<DeterministicRng>>,
     trace: Rc<RefCell<Vec<TraceEvent>>>,
 ) -> mlua::Result<Table> {
     let api = lua.create_table()?;
     let entity = lua.create_table()?;
     let input_api = lua.create_table()?;
+    let random_api = lua.create_table()?;
     let camera = lua.create_table()?;
 
     let spawn_world = Rc::clone(&world);
@@ -653,6 +717,23 @@ fn build_api(
         })?,
     )?;
 
+    let next_float_random = Rc::clone(&random);
+    random_api.set(
+        "nextFloat",
+        lua.create_function(move |_, _: ()| Ok(next_float_random.borrow_mut().next_float()))?,
+    )?;
+
+    let next_int_random = Rc::clone(&random);
+    random_api.set(
+        "nextInt",
+        lua.create_function(move |_, (min, max): (i64, i64)| {
+            next_int_random
+                .borrow_mut()
+                .next_int(min, max)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+
     let camera_get_world = Rc::clone(&world);
     camera.set(
         "getPosition",
@@ -710,6 +791,7 @@ fn build_api(
     )?;
     api.set("entity", entity)?;
     api.set("input", input_api)?;
+    api.set("random", random_api)?;
     api.set("physics", physics)?;
     api.set("camera", camera)?;
     Ok(api)
@@ -880,6 +962,8 @@ mod tests {
 
     use super::EngineRuntime;
 
+    use super::DeterministicRng;
+
     fn write_project(dir: &std::path::Path, script: &str) {
         fs::create_dir_all(dir.join("scripts")).unwrap();
         fs::create_dir_all(dir.join("scenes")).unwrap();
@@ -1008,5 +1092,45 @@ return Game
         let report = runtime.run(60, 42).value.unwrap();
         let x = report.world.entities.get("player").unwrap().transform.x;
         assert!((x - 1.0).abs() < 0.000_001);
+    }
+
+    #[test]
+    fn seed_controls_luau_random_sequence() {
+        let source = r#"
+local Game = {}
+function Game.start(api)
+    api.entity.spawn("player")
+end
+function Game.update(api, _dt)
+    local position = api.entity.getPosition("player")
+    position.x = api.random.nextFloat()
+    api.entity.setPosition("player", position)
+end
+return Game
+"#;
+        let mut left =
+            EngineRuntime::load_source_with_seed("RandomSmoke", "main.luau", source, None, 7)
+                .unwrap();
+        let mut right =
+            EngineRuntime::load_source_with_seed("RandomSmoke", "main.luau", source, None, 7)
+                .unwrap();
+        let mut different =
+            EngineRuntime::load_source_with_seed("RandomSmoke", "main.luau", source, None, 8)
+                .unwrap();
+        let left_digest = left.run(3, 7).value.unwrap().observation_digest;
+        let right_digest = right.run(3, 7).value.unwrap().observation_digest;
+        let different_digest = different.run(3, 8).value.unwrap().observation_digest;
+        assert_eq!(left_digest, right_digest);
+        assert_ne!(left_digest, different_digest);
+    }
+
+    #[test]
+    fn random_int_is_inclusive_and_rejects_invalid_range() {
+        let mut rng = DeterministicRng::new(42);
+        for _ in 0..100 {
+            let value = rng.next_int(-2, 2).unwrap();
+            assert!((-2..=2).contains(&value));
+        }
+        assert!(rng.next_int(2, -2).is_err());
     }
 }
