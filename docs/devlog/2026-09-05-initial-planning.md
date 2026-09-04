@@ -110,3 +110,5 @@
 - mobile save bridge：新增 `unone_mobile_set_save_payload`，將 host 注入的 JSON 在下一次 tick 提供給 Luau，並把最新 `save_payload` 放入 semantic mobile observation；mobile FFI 回歸測試通過，host durable storage 仍不屬 adapter。
 - Web save bridge 初次 Emscripten build 發現 Luau Integer 在 wasm 與 native 的寬度不一致；分類為跨平台 serialization ABI 架構問題，統一 JSON-like integer 為 signed 32-bit，observation/save 超界都回傳 semantic runtime error，並記錄於 `docs/issues/2026-09-05-wasm-integer-width.md`。修正後 Web live build 通過。
 - save/native/Web adapter slice 後執行第十八次 Claude CLI read-only review；約 70 秒無 stdout/stderr 後中止，沒有 findings，不算 review 通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-18.md`。
+- Slot Machine 初次 deterministic fixture 先猜測 seed 結果而被 test 正確拒絕，另發現 manual `run` 若誤傳 `.test.json` 會把 manifest 當 sequence；分類為 game fixture／教學流程問題，已改用實際 replay 結果 `[2,2,1]` 與獨立 sequence 檔，並記錄於 `docs/issues/2026-09-05-slot-deterministic-fixture.md`。不修改 engine RNG 或新增 slot 專用 API。
+- Slot Machine validation slice 修正後 `check --types`、3 個 tests 與手動 replay 通過；engine 維持只提供 seeded RNG、input、observation、save transport，reels／paytable／credits 全留在 Luau。矩陣已更新為 `in_progress`，尚未有 host render、durable storage 或跨平台 game smoke。
