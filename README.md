@@ -25,7 +25,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json te
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview --watch
 ```
 
-目前已驗證：Luau entrypoint、`--!strict` contract、官方 `luau-analyze` adapter、headless fixed timestep、deterministic 2D rigid body／重力／地面碰撞、seed/input observation digest、failed reload fallback、native wgpu preview、`preview --watch` 腳本熱更、JSON test manifest 與 bundle hash/cache/activation。
+目前已驗證：Luau entrypoint、`--!strict` contract、官方 `luau-analyze` adapter、headless fixed timestep、deterministic 2D rigid body／重力／地面碰撞、seed/input observation digest、failed reload fallback、與遊戲命名無關的 native wgpu preview、`preview --watch` 腳本熱更、JSON test manifest 與 bundle hash/cache/activation。
 
 完整型別檢查使用 `game check --types`，需要另外安裝並固定版本的官方 `luau-analyze`；工具不存在時引擎會明確回報錯誤，不會把基本 contract check 說成完整型別檢查。
 

@@ -53,3 +53,5 @@
 - 物理 sample 初次 run 發現 `run()` 清空 trace 會吃掉 `Game.start()` 的語意 log；已移除清空行為，讓 lifecycle trace 可被 AI 觀察，避免「腳本確實記錄但輸出為空」的誤導。
 - 建立 `minimal-2d-physics` 驗證專案：Luau 只負責 launch policy，engine 負責 dynamic/static circle、gravity、ground collision、fixed-step integration；120 frames 後 bird `x=12`、`y=0.5`，且 `physics_launch_applied` trace 可被觀察。
 - 新增 physics regression tests：dynamic body 落地停止、dynamic body 與 static circle 的碰撞分離；目前只做必要機制，不先加入 friction、joints、polygon solver 或遊戲專用名詞。邊界記錄於 `docs/decisions/0006-minimal-2d-physics-boundary.md`。
+- 發現 native preview renderer 硬編碼 `player` id，會讓其他遊戲命名無法預覽；分類為 engine boundary 問題，已改成依 stable entity ordering 選取預覽目標，移除遊戲業務命名依賴。
+- native physics preview 已啟動並截圖：`docs/devlog/2026-09-05-physics-preview.png`；視窗顯示 `bird` 專案的物件，證明 preview 不再依賴 `player` 這個遊戲專用 id。

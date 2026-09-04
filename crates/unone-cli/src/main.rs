@@ -504,12 +504,13 @@ impl Renderer {
     }
 
     fn render(&mut self, snapshot: &WorldSnapshot) -> Result<(), String> {
-        let player_x = snapshot
+        let tracked_entity_x = snapshot
             .entities
-            .get("player")
+            .values()
+            .next()
             .map(|entity| entity.transform.x as f32)
             .unwrap_or(0.0);
-        let x = (-0.8 + player_x * 0.2).clamp(-0.95, 0.75);
+        let x = (-0.8 + tracked_entity_x * 0.2).clamp(-0.95, 0.75);
         let vertices = [
             Vertex {
                 position: [x, -0.1],
