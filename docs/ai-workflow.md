@@ -49,6 +49,17 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json ch
 $env:UNONE_LUAU_ANALYZER = 'D:/tools/luau-analyze.exe'
 ```
 
+## 1.5 mobile host contract
+
+Android/iOS host 先以 `unone-mobile-ffi` 的窄 ABI 驗證 lifecycle，不要在遊戲腳本處理 JNI、UIKit、View、螢幕像素或 safe area：
+
+```powershell
+cargo test -p unone-mobile-ffi
+.\scripts\check-android-engine.ps1
+```
+
+native host 的基本順序是 `init → resize → load_project → set_pointer/set_action → tick → observe → pause → surface_lost/resize → resume → tick → shutdown`。`pause` 期間不送 tick；`resume` 不把過期 wall-clock 偷塞進 simulation。ABI 的 JSON observation、C header 與 ownership 規則見 `docs/mobile-host-abi.md`。這些命令只驗證 adapter contract 與 Android cross-compile，沒有 APK、emulator/device 或 iOS 實機證據時，不得標記 mobile 完成。
+
 ## 2. 跑 deterministic simulation
 
 ```powershell

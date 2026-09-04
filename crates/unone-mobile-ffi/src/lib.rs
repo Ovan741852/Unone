@@ -1,0 +1,660 @@
+use serde::{Deserialize, Serialize};
+use unone_engine::{Diagnostic, EngineRuntime, InputFrame, PointerInput, SceneFile, Vec2};
+
+#[derive(Debug, Deserialize)]
+struct HostProject {
+    project: String,
+    script: String,
+    #[serde(default)]
+    scene: Option<SceneFile>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct SafeArea {
+    left_px: f64,
+    top_px: f64,
+    right_px: f64,
+    bottom_px: f64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct SurfaceState {
+    width_px: u32,
+    height_px: u32,
+    scale_factor: f64,
+    safe_area: SafeArea,
+}
+
+#[derive(Debug, Serialize)]
+struct MobileObservation {
+    ok: bool,
+    kind: &'static str,
+    event: &'static str,
+    lifecycle: &'static str,
+    project: Option<String>,
+    surface: Option<SurfaceState>,
+    reason: Option<String>,
+    world: Option<unone_engine::WorldSnapshot>,
+}
+
+/// Opaque session owned by the mobile host.
+///
+/// The host must create, use and destroy a session on one serialized call
+/// sequence. The type intentionally exposes no engine or platform handles.
+#[repr(C)]
+pub struct UnoneMobileSession {
+    runtime: Option<EngineRuntime>,
+    pending_input: InputFrame,
+    paused: bool,
+    surface: Option<SurfaceState>,
+    project: Option<String>,
+    output: Vec<u8>,
+}
+
+impl UnoneMobileSession {
+    fn new() -> Self {
+        let mut session = Self {
+            runtime: None,
+            pending_input: InputFrame::default(),
+            paused: false,
+            surface: None,
+            project: None,
+            output: Vec::new(),
+        };
+        session.write_observation("initialized", None);
+        session
+    }
+
+    fn lifecycle(&self) -> &'static str {
+        if self.runtime.is_none() {
+            "initialized"
+        } else if self.paused {
+            "paused"
+        } else {
+            "running"
+        }
+    }
+
+    fn write_observation(&mut self, event: &'static str, reason: Option<&str>) {
+        let observation = MobileObservation {
+            ok: true,
+            kind: "mobile_observation",
+            event,
+            lifecycle: self.lifecycle(),
+            project: self.project.clone(),
+            surface: self.surface.clone(),
+            reason: reason.map(str::to_string),
+            world: self.runtime.as_ref().map(EngineRuntime::observe),
+        };
+        self.output = serde_json::to_vec(&observation).unwrap_or_default();
+    }
+
+    fn write_error(&mut self, message: impl Into<String>) -> i32 {
+        self.output = serde_json::to_vec(&serde_json::json!({
+            "ok": false,
+            "kind": "mobile_error",
+            "message": message.into(),
+        }))
+        .unwrap_or_default();
+        -1
+    }
+
+    fn write_diagnostic(&mut self, diagnostic: Diagnostic) -> i32 {
+        self.output = serde_json::to_vec(&serde_json::json!({
+            "ok": false,
+            "kind": "mobile_error",
+            "diagnostic": diagnostic,
+        }))
+        .unwrap_or_default();
+        -1
+    }
+
+    fn validate_surface(
+        width_px: u32,
+        height_px: u32,
+        scale_factor: f64,
+        safe_left_px: f64,
+        safe_top_px: f64,
+        safe_right_px: f64,
+        safe_bottom_px: f64,
+    ) -> Result<SurfaceState, Box<Diagnostic>> {
+        let safe_values = [safe_left_px, safe_top_px, safe_right_px, safe_bottom_px];
+        let safe_values_valid = safe_values
+            .iter()
+            .all(|value| value.is_finite() && *value >= 0.0);
+        let dimensions_valid = width_px > 0 && height_px > 0;
+        let scale_valid = scale_factor.is_finite() && scale_factor > 0.0;
+        let insets_fit = safe_left_px + safe_right_px <= f64::from(width_px)
+            && safe_top_px + safe_bottom_px <= f64::from(height_px);
+        if !dimensions_valid || !scale_valid || !safe_values_valid || !insets_fit {
+            let mut diagnostic = Diagnostic::error(
+                "MOBILE_SURFACE_INVALID",
+                "mobile surface descriptor is invalid",
+                "width and height must be positive, scale_factor must be finite and positive, and safe-area insets must be finite, non-negative, and fit inside the surface.",
+            );
+            diagnostic.facts = serde_json::json!({
+                "width_px": width_px,
+                "height_px": height_px,
+                "scale_factor": scale_factor,
+                "safe_area": {
+                    "left_px": safe_left_px,
+                    "top_px": safe_top_px,
+                    "right_px": safe_right_px,
+                    "bottom_px": safe_bottom_px,
+                },
+            });
+            return Err(Box::new(diagnostic));
+        }
+        Ok(SurfaceState {
+            width_px,
+            height_px,
+            scale_factor,
+            safe_area: SafeArea {
+                left_px: safe_left_px,
+                top_px: safe_top_px,
+                right_px: safe_right_px,
+                bottom_px: safe_bottom_px,
+            },
+        })
+    }
+}
+
+/// # Safety
+///
+/// `pointer` must be null only for an empty payload or point to `length`
+/// readable bytes for the duration of this call.
+unsafe fn bytes_from_ptr(pointer: *const u8, length: usize) -> Result<Vec<u8>, String> {
+    if pointer.is_null() && length != 0 {
+        return Err("payload pointer is null for non-empty payload".to_string());
+    }
+    if length == 0 {
+        return Ok(Vec::new());
+    }
+    // SAFETY: Each caller documents that the host keeps this range readable
+    // for the duration of the FFI call.
+    Ok(unsafe { std::slice::from_raw_parts(pointer, length).to_vec() })
+}
+
+/// # Safety
+///
+/// The pointer and length must satisfy `bytes_from_ptr`'s contract.
+unsafe fn str_from_ptr(pointer: *const u8, length: usize) -> Result<String, String> {
+    let bytes = unsafe { bytes_from_ptr(pointer, length) }?;
+    std::str::from_utf8(&bytes)
+        .map(str::to_owned)
+        .map_err(|error| format!("payload is not valid UTF-8: {error}"))
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn unone_mobile_init() -> *mut UnoneMobileSession {
+    Box::into_raw(Box::new(UnoneMobileSession::new()))
+}
+
+/// # Safety
+///
+/// `session` must be a pointer returned by `unone_mobile_init` that has not
+/// already been released. No other FFI call may use it after this call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_shutdown(session: *mut UnoneMobileSession) {
+    if !session.is_null() {
+        // SAFETY: The caller guarantees ownership of this allocation.
+        drop(unsafe { Box::from_raw(session) });
+    }
+}
+
+/// # Safety
+///
+/// `session` must be a live pointer returned by `unone_mobile_init`.
+/// `pointer` must reference `length` readable UTF-8 JSON bytes for this call.
+/// The JSON payload contains `project`, `script`, and optional `scene` fields.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_load_project(
+    session: *mut UnoneMobileSession,
+    pointer: *const u8,
+    length: usize,
+    seed: u64,
+) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    let bytes = match unsafe { bytes_from_ptr(pointer, length) } {
+        Ok(bytes) => bytes,
+        Err(error) => return session.write_error(error),
+    };
+    let payload: HostProject = match serde_json::from_slice(&bytes) {
+        Ok(payload) => payload,
+        Err(error) => {
+            return session.write_error(format!("project payload is invalid JSON: {error}"));
+        }
+    };
+    let project_name = payload.project.clone();
+    let runtime = match EngineRuntime::load_source_with_seed(
+        payload.project,
+        "main.luau",
+        payload.script,
+        payload.scene,
+        seed,
+    ) {
+        Ok(runtime) => runtime,
+        Err(diagnostic) => return session.write_diagnostic(*diagnostic),
+    };
+    session.runtime = Some(runtime);
+    session.project = Some(project_name);
+    session.pending_input = InputFrame::default();
+    session.paused = false;
+    session.write_observation("project_loaded", None);
+    0
+}
+
+/// # Safety
+///
+/// `session` must be a live pointer returned by `unone_mobile_init`.
+/// `pointer` must reference `length` readable UTF-8 JSON bytes containing an
+/// engine `InputFrame`. The frame is consumed by the next tick.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_set_input_frame(
+    session: *mut UnoneMobileSession,
+    pointer: *const u8,
+    length: usize,
+) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    let bytes = match unsafe { bytes_from_ptr(pointer, length) } {
+        Ok(bytes) => bytes,
+        Err(error) => return session.write_error(error),
+    };
+    let frame: InputFrame = match serde_json::from_slice(&bytes) {
+        Ok(frame) => frame,
+        Err(error) => return session.write_error(format!("input frame is invalid JSON: {error}")),
+    };
+    session.pending_input = frame;
+    session.write_observation("input_frame_set", None);
+    0
+}
+
+/// Set a pointer without JSON parsing for the high-frequency touch path.
+#[unsafe(no_mangle)]
+///
+/// # Safety
+///
+/// `session` must be a live pointer returned by `unone_mobile_init`.
+pub unsafe extern "C" fn unone_mobile_set_pointer(
+    session: *mut UnoneMobileSession,
+    x: f64,
+    y: f64,
+    down: i32,
+) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    if !x.is_finite() || !y.is_finite() {
+        return session.write_error("pointer coordinates must be finite");
+    }
+    session.pending_input.pointer = Some(PointerInput {
+        position: Vec2 { x, y },
+        down: down != 0,
+    });
+    0
+}
+
+/// Set one semantic action without JSON parsing. The action is consumed by
+/// the next tick, so hosts should send both press and release state changes.
+///
+/// # Safety
+///
+/// `session` must be live. `pointer` must reference `length` readable UTF-8
+/// bytes for this call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_set_action(
+    session: *mut UnoneMobileSession,
+    pointer: *const u8,
+    length: usize,
+    is_down: i32,
+) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    let action = match unsafe { str_from_ptr(pointer, length) } {
+        Ok(action) if !action.is_empty() => action,
+        Ok(_) => return session.write_error("action name must not be empty"),
+        Err(error) => return session.write_error(error),
+    };
+    session.pending_input.actions.insert(action, is_down != 0);
+    0
+}
+
+/// Update the host-owned surface descriptor. This does not recreate the
+/// engine runtime or alter simulation state.
+///
+/// # Safety
+///
+/// `session` must be a live pointer returned by `unone_mobile_init`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_resize(
+    session: *mut UnoneMobileSession,
+    width_px: u32,
+    height_px: u32,
+    scale_factor: f64,
+    safe_left_px: f64,
+    safe_top_px: f64,
+    safe_right_px: f64,
+    safe_bottom_px: f64,
+) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    let surface = match UnoneMobileSession::validate_surface(
+        width_px,
+        height_px,
+        scale_factor,
+        safe_left_px,
+        safe_top_px,
+        safe_right_px,
+        safe_bottom_px,
+    ) {
+        Ok(surface) => surface,
+        Err(diagnostic) => return session.write_diagnostic(*diagnostic),
+    };
+    session.surface = Some(surface);
+    session.write_observation("surface_resized", None);
+    0
+}
+
+/// Notify the adapter that the platform surface is gone. The runtime session
+/// stays alive and can be paired with a later resize call.
+///
+/// # Safety
+///
+/// `session` must be a live pointer returned by `unone_mobile_init`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_surface_lost(session: *mut UnoneMobileSession) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    session.surface = None;
+    session.write_observation("surface_lost", Some("renderer_surface_recreated_by_host"));
+    0
+}
+
+/// # Safety
+///
+/// `session` must be a live pointer returned by `unone_mobile_init`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_pause(session: *mut UnoneMobileSession) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    if session.runtime.is_none() {
+        return session.write_error("cannot pause before a project is loaded");
+    }
+    session.paused = true;
+    session.write_observation("paused", Some("host_lifecycle_pause"));
+    0
+}
+
+/// # Safety
+///
+/// `session` must be a live pointer returned by `unone_mobile_init`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_resume(session: *mut UnoneMobileSession) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    if session.runtime.is_none() {
+        return session.write_error("cannot resume before a project is loaded");
+    }
+    session.paused = false;
+    session.write_observation(
+        "resumed",
+        Some("host_lifecycle_resume_no_wall_clock_catch_up"),
+    );
+    0
+}
+
+/// # Safety
+///
+/// `session` must be a live pointer returned by `unone_mobile_init`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_tick(session: *mut UnoneMobileSession) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    if session.runtime.is_none() {
+        return session.write_error("cannot tick before a project is loaded");
+    }
+    if session.paused {
+        session.write_observation("tick_skipped", Some("paused"));
+        return 0;
+    }
+    let frame = std::mem::take(&mut session.pending_input);
+    let result = session
+        .runtime
+        .as_mut()
+        .expect("runtime checked above")
+        .tick_with_input(&frame);
+    match result {
+        Ok(_) => {
+            session.write_observation("tick", None);
+            0
+        }
+        Err(diagnostic) => session.write_diagnostic(*diagnostic),
+    }
+}
+
+/// # Safety
+///
+/// `session` must be a live pointer returned by `unone_mobile_init`.
+/// `pointer` must reference `length` readable UTF-8 Luau bytes for this call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_reload_script(
+    session: *mut UnoneMobileSession,
+    pointer: *const u8,
+    length: usize,
+) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    let source = match unsafe { str_from_ptr(pointer, length) } {
+        Ok(source) => source,
+        Err(error) => return session.write_error(error),
+    };
+    let Some(runtime) = session.runtime.as_mut() else {
+        return session.write_error("cannot reload before a project is loaded");
+    };
+    match runtime.reload_source(source) {
+        Ok(()) => {
+            session.write_observation("script_reloaded", None);
+            0
+        }
+        Err(diagnostic) => session.write_diagnostic(*diagnostic),
+    }
+}
+
+/// Return the latest semantic JSON observation. The pointer remains valid
+/// until the next mutating call on this session.
+///
+/// # Safety
+///
+/// `session` must be a live pointer returned by `unone_mobile_init`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_observation_ptr(
+    session: *const UnoneMobileSession,
+) -> *const u8 {
+    let Some(session) = (unsafe { session.as_ref() }) else {
+        return std::ptr::null();
+    };
+    session.output.as_ptr()
+}
+
+/// # Safety
+///
+/// `session` must be a live pointer returned by `unone_mobile_init`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_observation_len(session: *const UnoneMobileSession) -> usize {
+    let Some(session) = (unsafe { session.as_ref() }) else {
+        return 0;
+    };
+    session.output.len()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::{Value, json};
+
+    const SCRIPT: &str = r#"--!strict
+type Vec2 = { x: number, y: number }
+type EntityApi = { getPosition: (id: string) -> Vec2, setPosition: (id: string, position: Vec2) -> () }
+type InputApi = { isDown: (action: string) -> boolean, getPointerPosition: () -> Vec2, isPointerDown: () -> boolean }
+type EngineApi = { entity: EntityApi, input: InputApi }
+local Game = {}
+function Game.start(_api: EngineApi) end
+function Game.update(api: EngineApi, dt: number)
+    local position = api.entity.getPosition("player")
+    if api.input.isPointerDown() then
+        position = api.input.getPointerPosition()
+    elseif api.input.isDown("Right") then
+        position.x += dt
+    end
+    api.entity.setPosition("player", position)
+end
+return Game
+"#;
+
+    fn payload() -> Vec<u8> {
+        serde_json::to_vec(&json!({
+            "project": "MobileContract",
+            "script": SCRIPT,
+            "scene": {"entities": [{"id": "player", "transform": {"x": 0.0, "y": 0.0}}]}
+        }))
+        .unwrap()
+    }
+
+    fn output(session: *const UnoneMobileSession) -> Value {
+        let pointer = unsafe { unone_mobile_observation_ptr(session) };
+        let length = unsafe { unone_mobile_observation_len(session) };
+        let bytes = unsafe { std::slice::from_raw_parts(pointer, length) };
+        serde_json::from_slice(bytes).unwrap()
+    }
+
+    #[test]
+    fn lifecycle_surface_and_pause_resume_preserve_session() {
+        let session = unone_mobile_init();
+        assert_eq!(
+            unsafe { unone_mobile_resize(session, 1920, 1080, 3.0, 0.0, 80.0, 0.0, 0.0) },
+            0
+        );
+        let project = payload();
+        assert_eq!(
+            unsafe { unone_mobile_load_project(session, project.as_ptr(), project.len(), 42) },
+            0
+        );
+
+        let action = b"Right";
+        assert_eq!(
+            unsafe { unone_mobile_set_action(session, action.as_ptr(), action.len(), 1) },
+            0
+        );
+        assert_eq!(unsafe { unone_mobile_tick(session) }, 0);
+        assert_eq!(output(session)["world"]["frame"], json!(1));
+        assert_eq!(unsafe { unone_mobile_set_pointer(session, 7.0, 8.0, 1) }, 0);
+        assert_eq!(unsafe { unone_mobile_tick(session) }, 0);
+        let pointer_tick = output(session);
+        assert_eq!(pointer_tick["world"]["frame"], json!(2));
+        assert_eq!(
+            pointer_tick["world"]["entities"]["player"]["transform"],
+            json!({"x": 7.0, "y": 8.0})
+        );
+
+        assert_eq!(unsafe { unone_mobile_pause(session) }, 0);
+        assert_eq!(unsafe { unone_mobile_tick(session) }, 0);
+        let paused = output(session);
+        assert_eq!(paused["event"], json!("tick_skipped"));
+        assert_eq!(paused["reason"], json!("paused"));
+        assert_eq!(paused["world"]["frame"], json!(2));
+
+        assert_eq!(unsafe { unone_mobile_surface_lost(session) }, 0);
+        assert_eq!(output(session)["surface"], Value::Null);
+        assert_eq!(
+            unsafe { unone_mobile_resize(session, 1080, 1920, 3.0, 50.0, 0.0, 50.0, 90.0) },
+            0
+        );
+        assert_eq!(unsafe { unone_mobile_resume(session) }, 0);
+        assert_eq!(unsafe { unone_mobile_tick(session) }, 0);
+        let resumed = output(session);
+        assert_eq!(resumed["lifecycle"], json!("running"));
+        assert_eq!(resumed["world"]["frame"], json!(3));
+        assert_eq!(resumed["surface"]["safe_area"]["bottom_px"], json!(90.0));
+
+        unsafe { unone_mobile_shutdown(session) };
+    }
+
+    #[test]
+    fn invalid_surface_returns_semantic_diagnostic() {
+        let session = unone_mobile_init();
+        assert_eq!(
+            unsafe { unone_mobile_resize(session, 100, 100, 0.0, 0.0, 0.0, 0.0, 0.0) },
+            -1
+        );
+        let value = output(session);
+        assert_eq!(value["diagnostic"]["code"], json!("MOBILE_SURFACE_INVALID"));
+        assert_eq!(value["diagnostic"]["severity"], json!("ERROR"));
+        unsafe { unone_mobile_shutdown(session) };
+    }
+
+    #[test]
+    fn script_reload_preserves_world_and_failed_reload_is_explained() {
+        let session = unone_mobile_init();
+        let project = payload();
+        assert_eq!(
+            unsafe { unone_mobile_load_project(session, project.as_ptr(), project.len(), 42) },
+            0
+        );
+        assert_eq!(unsafe { unone_mobile_tick(session) }, 0);
+        let bad = b"return broken syntax";
+        assert_eq!(
+            unsafe { unone_mobile_reload_script(session, bad.as_ptr(), bad.len()) },
+            -1
+        );
+        let error = output(session);
+        assert_eq!(error["diagnostic"]["code"], json!("LUAU_RUNTIME_ERROR"));
+        assert_eq!(error["diagnostic"]["source"]["file"], json!("main.luau"));
+        let good = SCRIPT.replace("position.x += dt", "position.x += dt * 2");
+        assert_eq!(
+            unsafe { unone_mobile_reload_script(session, good.as_ptr(), good.len()) },
+            0
+        );
+        assert_eq!(output(session)["event"], json!("script_reloaded"));
+        unsafe { unone_mobile_shutdown(session) };
+    }
+
+    #[test]
+    fn semantic_input_frame_replaces_actions_for_one_tick() {
+        let session = unone_mobile_init();
+        let project = payload();
+        assert_eq!(
+            unsafe { unone_mobile_load_project(session, project.as_ptr(), project.len(), 42) },
+            0
+        );
+        let frame = serde_json::to_vec(&json!({"actions": {"Right": true}})).unwrap();
+        assert_eq!(
+            unsafe { unone_mobile_set_input_frame(session, frame.as_ptr(), frame.len()) },
+            0
+        );
+        assert_eq!(unsafe { unone_mobile_tick(session) }, 0);
+        assert_eq!(output(session)["world"]["frame"], json!(1));
+        assert_eq!(unsafe { unone_mobile_tick(session) }, 0);
+        let next = output(session);
+        assert_eq!(next["world"]["frame"], json!(2));
+        assert!(
+            (next["world"]["entities"]["player"]["transform"]["x"]
+                .as_f64()
+                .unwrap()
+                - 1.0 / 60.0)
+                .abs()
+                < 0.000_001
+        );
+        unsafe { unone_mobile_shutdown(session) };
+    }
+}

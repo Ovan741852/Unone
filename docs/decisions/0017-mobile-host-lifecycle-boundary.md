@@ -15,11 +15,11 @@ mobile host 只提供 platform adapter，使用與 Web/native 相同的 engine b
 - engine 負責 `EngineRuntime`、fixed-step simulation、world state、Luau、semantic diagnostics、bundle integrity primitive 與 `tick_with_input`。
 - 每次 host frame 先送已正規化的 `InputFrame`，再呼叫一個 fixed tick；pause 時停止送 tick，但不偷偷改變 simulation time。resume 時由 host 選擇丟棄過期 wall-clock 或按明確的 catch-up budget 重播，不把不受控的 elapsed time 傳進遊戲規則。
 - surface recreate 只重建 renderer/resource binding，不能重建遊戲 session；bundle generation 只有在 safe point 成功驗證後才 apply，失敗保留上一代。
-- 第一版 mobile FFI 只需要 `init/load`, `set_surface_or_resize`, `set_input_frame`, `tick`, `observe`, `pause/resume` 的窄 adapter；不把 UIKit、Android View、JNI、Objective-C object 或 GPU handle 暴露給 Luau。
+- 第一版 mobile FFI 只需要 `init/load`, `resize/surface_lost`, `set_input_frame`, scalar `set_pointer/set_action`, `tick`, `observe`, `pause/resume` 的窄 adapter；另提供與既有 runtime 相同的 `reload_script`。不把 UIKit、Android View、JNI、Objective-C object 或 GPU handle 暴露給 Luau。ABI 與生命週期順序記錄於 `docs/mobile-host-abi.md`。
 
 ## Acceptance
 
-同一份 Luau scene 至少要通過：冷啟動、pause/resume、surface recreation、旋轉/safe-area resize、觸控 pointer normalization、cache-only bundle load、失敗 hot update 保留上一代，以及 headless replay digest 對照。沒有 iOS/Android 實機或 emulator 證據時，只能標記 contract drafted，不能標記平台完成。
+同一份 Luau scene 至少要通過：冷啟動、pause/resume、surface recreation、旋轉/safe-area resize、觸控 pointer normalization、cache-only bundle load、失敗 hot update 保留上一代，以及 headless replay digest 對照。`unone-mobile-ffi` 的 native contract tests 先驗證 lifecycle、surface descriptor、scalar pointer bridge 與 script reload；pointer normalization、bundle cache/update、package 與實機 lifecycle 仍必須由 Android/iOS host smoke 補證據。沒有 iOS/Android 實機或 emulator 證據時，只能標記 contract drafted，不能標記平台完成。
 
 ## Consequences
 

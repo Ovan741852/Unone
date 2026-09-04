@@ -1,6 +1,7 @@
 param(
     [string[]]$Target = @("aarch64-linux-android", "x86_64-linux-android"),
-    [string]$NdkPath = ""
+    [string]$NdkPath = "",
+    [string[]]$Package = @("unone-engine", "unone-mobile-ffi")
 )
 
 $ErrorActionPreference = "Stop"
@@ -52,9 +53,12 @@ foreach ($androidTarget in $Target) {
     [Environment]::SetEnvironmentVariable("CXX_$($androidTarget.Replace('-', '_'))", $cxxPath, "Process")
     [Environment]::SetEnvironmentVariable("AR_$($androidTarget.Replace('-', '_'))", $arPath, "Process")
 
-    cargo check -p unone-engine --target $androidTarget
-    if ($LASTEXITCODE -ne 0) {
-        throw "Android engine check failed for target '$androidTarget'."
+    foreach ($packageName in $Package) {
+        cargo check -p $packageName --target $androidTarget
+        if ($LASTEXITCODE -ne 0) {
+            throw "Android package check failed for package '$packageName' and target '$androidTarget'."
+        }
+        Write-Output "Android package target check passed: $packageName / $androidTarget"
     }
-    Write-Output "Android engine target check passed: $androidTarget (NDK $($NdkPath | Split-Path -Leaf), API $apiLevel)"
+    Write-Output "Android target set passed: $androidTarget (NDK $($NdkPath | Split-Path -Leaf), API $apiLevel)"
 }

@@ -2111,6 +2111,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "unone-mobile-ffi"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "unone-engine",
+]
+
+[[package]]
 name = "unone-web-live-smoke"
 version = "0.1.0"
 dependencies = [
