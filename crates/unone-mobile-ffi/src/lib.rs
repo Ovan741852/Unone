@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
-use unone_engine::{Diagnostic, EngineRuntime, InputFrame, PointerInput, SceneFile, Vec2};
+use unone_engine::{
+    BundleSpec, BundleVerifier, Diagnostic, EngineRuntime, InputFrame, PointerInput, SceneFile,
+    Vec2,
+};
 
 #[derive(Debug, Deserialize)]
 struct HostProject {
@@ -48,6 +51,7 @@ pub struct UnoneMobileSession {
     paused: bool,
     surface: Option<SurfaceState>,
     project: Option<String>,
+    bundle_verifier: Option<BundleVerifier>,
     output: Vec<u8>,
 }
 
@@ -59,6 +63,7 @@ impl UnoneMobileSession {
             paused: false,
             surface: None,
             project: None,
+            bundle_verifier: None,
             output: Vec::new(),
         };
         session.write_observation("initialized", None);
@@ -244,6 +249,99 @@ pub unsafe extern "C" fn unone_mobile_load_project(
     session.paused = false;
     session.write_observation("project_loaded", None);
     0
+}
+
+/// Begin verifying one host-fetched bundle. The host owns downloading and
+/// staging; this adapter owns the shared size and SHA-256 rule.
+///
+/// # Safety
+///
+/// `session` must be live. `pointer` must reference `length` readable UTF-8
+/// JSON bytes describing an engine `BundleSpec`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_bundle_begin(
+    session: *mut UnoneMobileSession,
+    pointer: *const u8,
+    length: usize,
+) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    let bytes = match unsafe { bytes_from_ptr(pointer, length) } {
+        Ok(bytes) => bytes,
+        Err(error) => return session.write_error(error),
+    };
+    let spec: BundleSpec = match serde_json::from_slice(&bytes) {
+        Ok(spec) => spec,
+        Err(error) => {
+            return session.write_error(format!("bundle spec is invalid JSON: {error}"));
+        }
+    };
+    let bundle_id = spec.id.clone();
+    session.bundle_verifier = Some(BundleVerifier::new(&spec));
+    session.output = serde_json::to_vec(&serde_json::json!({
+        "ok": true,
+        "kind": "bundle_verification",
+        "status": "started",
+        "bundle_id": bundle_id,
+    }))
+    .unwrap_or_default();
+    0
+}
+
+/// Feed one bounded bundle chunk to the shared verifier.
+///
+/// # Safety
+///
+/// `session` must be live. `pointer` must reference `length` readable bytes;
+/// a null pointer is valid only when `length` is zero.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_bundle_write(
+    session: *mut UnoneMobileSession,
+    pointer: *const u8,
+    length: usize,
+) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    let bytes = match unsafe { bytes_from_ptr(pointer, length) } {
+        Ok(bytes) => bytes,
+        Err(error) => return session.write_error(error),
+    };
+    let Some(verifier) = session.bundle_verifier.as_mut() else {
+        return session.write_error("bundle verifier has not started");
+    };
+    verifier.update(&bytes);
+    0
+}
+
+/// Finish bundle verification. The host must commit the staged bytes only
+/// after this returns success; a failure does not alter any active generation.
+///
+/// # Safety
+///
+/// `session` must be live.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_bundle_finish(session: *mut UnoneMobileSession) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    let Some(verifier) = session.bundle_verifier.take() else {
+        return session.write_error("bundle verifier has not started");
+    };
+    match verifier.finish() {
+        Ok(result) => {
+            session.output = serde_json::to_vec(&serde_json::json!({
+                "ok": true,
+                "kind": "bundle_verification",
+                "status": "verified",
+                "value": result,
+            }))
+            .unwrap_or_default();
+            0
+        }
+        Err(diagnostic) => session.write_diagnostic(*diagnostic),
+    }
 }
 
 /// # Safety
@@ -654,6 +752,70 @@ return Game
                 - 1.0 / 60.0)
                 .abs()
                 < 0.000_001
+        );
+        unsafe { unone_mobile_shutdown(session) };
+    }
+
+    #[test]
+    fn bundle_verifier_uses_shared_integrity_contract() {
+        let session = unone_mobile_init();
+        let content = b"bundle-content";
+        let spec = serde_json::to_vec(&json!({
+            "id": "mobile-bundle",
+            "version": "1",
+            "source": "remote/mobile.bundle",
+            "sha256": "17cc744c34dd53bc69277fd7b622b0e1c99d9157e0714d1afffc8264893b2ea3",
+            "size_bytes": content.len(),
+            "dependencies": []
+        }))
+        .unwrap();
+        assert_eq!(
+            unsafe { unone_mobile_bundle_begin(session, spec.as_ptr(), spec.len()) },
+            0
+        );
+        assert_eq!(
+            unsafe { unone_mobile_bundle_write(session, content.as_ptr(), 6) },
+            0
+        );
+        assert_eq!(
+            unsafe { unone_mobile_bundle_write(session, content[6..].as_ptr(), content.len() - 6) },
+            0
+        );
+        assert_eq!(unsafe { unone_mobile_bundle_finish(session) }, 0);
+        let value = output(session);
+        assert_eq!(value["status"], json!("verified"));
+        assert_eq!(value["value"]["bundle_id"], json!("mobile-bundle"));
+        unsafe { unone_mobile_shutdown(session) };
+    }
+
+    #[test]
+    fn failed_bundle_verification_is_semantic_and_consumes_verifier() {
+        let session = unone_mobile_init();
+        let spec = serde_json::to_vec(&json!({
+            "id": "tampered-bundle",
+            "version": "1",
+            "source": "remote/tampered.bundle",
+            "sha256": "17cc744c34dd53bc69277fd7b622b0e1c99d9157e0714d1afffc8264893b2ea3",
+            "size_bytes": 14,
+            "dependencies": []
+        }))
+        .unwrap();
+        assert_eq!(
+            unsafe { unone_mobile_bundle_begin(session, spec.as_ptr(), spec.len()) },
+            0
+        );
+        let tampered = b"tampered-bytes";
+        assert_eq!(
+            unsafe { unone_mobile_bundle_write(session, tampered.as_ptr(), tampered.len()) },
+            0
+        );
+        assert_eq!(unsafe { unone_mobile_bundle_finish(session) }, -1);
+        let value = output(session);
+        assert_eq!(value["diagnostic"]["code"], json!("BUNDLE_VERIFY_FAILED"));
+        assert_eq!(unsafe { unone_mobile_bundle_finish(session) }, -1);
+        assert_eq!(
+            output(session)["message"],
+            json!("bundle verifier has not started")
         );
         unsafe { unone_mobile_shutdown(session) };
     }

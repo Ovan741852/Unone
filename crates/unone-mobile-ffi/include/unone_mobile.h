@@ -19,6 +19,16 @@ int32_t unone_mobile_load_project(
     size_t payload_length,
     uint64_t seed);
 
+int32_t unone_mobile_bundle_begin(
+    UnoneMobileSession *session,
+    const uint8_t *bundle_spec,
+    size_t bundle_spec_length);
+int32_t unone_mobile_bundle_write(
+    UnoneMobileSession *session,
+    const uint8_t *chunk,
+    size_t chunk_length);
+int32_t unone_mobile_bundle_finish(UnoneMobileSession *session);
+
 int32_t unone_mobile_set_input_frame(
     UnoneMobileSession *session,
     const uint8_t *payload,

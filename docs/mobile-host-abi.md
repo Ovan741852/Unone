@@ -20,6 +20,7 @@ The adapter owns only the bridge to `EngineRuntime`:
 - pause/resume without wall-clock catch-up;
 - surface descriptor bookkeeping without resetting the runtime;
 - Luau source reload with engine-state preservation.
+- shared bundle size/SHA-256 verification; the host still owns storage and generation activation.
 
 Include `crates/unone-mobile-ffi/include/unone_mobile.h` from the native wrapper. The host must serialize calls for one session and keep the observation pointer alive only until the next mutating call on that session.
 
@@ -39,6 +40,20 @@ init
 ```
 
 When paused, `tick` returns success with `event=tick_skipped`, `reason=paused`, and the same world frame. Resume does not replay elapsed wall-clock time; the host decides when to submit the next normal frame. Surface loss never destroys the loaded project or world.
+
+## Bundle update sequence
+
+The host downloads into its own staging area, feeds bounded chunks through `bundle_begin → bundle_write* → bundle_finish`, and commits the staged bytes plus a new generation only after `bundle_finish` returns success:
+
+```text
+host fetch → host staging
+                 ↓ chunks
+        mobile bundle verifier
+                 ↓ verified
+       host atomic cache/generation activate
+```
+
+The ABI intentionally does not expose a filesystem, IndexedDB, OPFS, Android storage API, iOS URLSession, CDN, retry policy or active-generation pointer. A failed verification leaves host state untouched; cache-only reopen and rollback remain host smoke requirements.
 
 `set_pointer` and `set_action` are scalar/event paths for native input. The host must normalize raw touch coordinates into the engine's world-space pointer before calling them. `set_input_frame` accepts the same semantic JSON shape used by headless/Web replay and is useful for automation and contract tests. The adapter consumes pending input at the next tick, so an action is not silently sticky across frames.
 
