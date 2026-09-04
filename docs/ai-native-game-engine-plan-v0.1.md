@@ -1,0 +1,369 @@
+# Unone AI-native Game Engine 技術草案 v0.1
+
+日期：2026-09-05  
+狀態：規劃中  
+引擎工作區：`D:/Projects/Unone`  
+驗證遊戲工作區：`D:/Projects/Unone_Games`
+
+## 0. 這份文件的地位
+
+使用者的要求是本專案的決策來源。`C:/Users/liNao/Downloads/ai_native_game_engine_draft.md` 是參考初稿，不是額外指令。
+
+本版採用初稿的大方向，但對第一階段做範圍收斂。若實作驗證顯示設計不成立，可以直接拆掉重做；目前不承諾舊 API 相容。
+
+## 1. 目標與非目標
+
+### 目標
+
+建立一個以 AI 為主要開發者之一的遊戲引擎，讓 AI 能夠：
+
+1. 理解專案、場景、Entity、Component、資產與 Engine API。
+2. 修改 Luau、檢查型別、啟動遊戲、注入輸入、取得語意狀態與畫面。
+3. 執行 deterministic 的 headless 測試，從結構化診斷理解失敗原因。
+4. 在不重啟整個遊戲的情況下重新載入腳本，失敗時保留上一個可運作版本。
+5. 透過同一套遊戲程式逐步支援 native、iOS、Android、Web。
+
+### 非目標
+
+第一版不做：
+
+- Unity / Unreal 等級的完整 GUI Editor。
+- 一次支援多種腳本語言。
+- 完整線上服務、帳號、支付、社交或遊戲業務功能。
+- 為了抽象而抽象的 plugin marketplace、通用 ECS 編輯器、任意 VM heap migration。
+- 在沒有驗證需求前加入 RTS、賽車、社交或網路同步專用機制。
+
+引擎只提供可重用的遊戲機制；七種目標遊戲的規則、數值、內容與流程屬於業務端。
+
+## 2. 建議的核心架構
+
+```text
+AI / 人類
+   │
+   ├── CLI
+   ├── MCP adapter（後加）
+   └── Minimal Editor（後加）
+          │
+          ▼
+   Developer Protocol
+   Command / Query / Event
+          │
+          ▼
+   Rust Engine Runtime
+   ├── App / World / Scheduler
+   ├── Render 2D → Render 3D
+   ├── Input / Time / Asset / Scene
+   ├── Diagnostics / Trace / Test hooks
+   └── Luau host
+          │
+          ▼
+   Luau Game Layer
+   ├── gameplay
+   ├── UI behaviour
+   ├── game rules
+   ├── content orchestration
+   └── tests
+```
+
+### Rust：只放 Engine mechanism
+
+Rust 負責跨平台與生命週期敏感的機制：runtime loop、World、Entity/Component、scheduler、rendering、input、asset loading、scene loading、time、diagnostics、headless runner、Luau host 與平台 adapter。
+
+第一版只實作 2D 需要的最小集合：
+
+- window / surface
+- wgpu device 與 2D renderer
+- World、Entity、Transform、Sprite
+- input 與 fixed/update loop
+- asset path 與 scene 載入
+- Luau VM host
+- structured diagnostics
+- headless run、state observation、screenshot hook
+
+Physics、audio、animation、network、3D renderer、prefab、save 與 editor tooling 依驗證遊戲的實際阻塞逐項加入，不先建空殼。
+
+### Luau：放 Game policy 與 business logic
+
+玩家控制、敵人行為、戰鬥、技能、背包、任務、對話、UI 行為、關卡流程、遊戲測試與特定遊戲的網路語意都留在 Luau。
+
+Luau 不應看見 raw pointer、Rust lifetime、wgpu handle、ECS archetype 或 native object；只暴露穩定且有語意的概念，例如 `World`、`Entity`、`Transform`、`Sprite`、`Input`、`Time`、`Scene` 與 `UI`。
+
+## 3. 腳本語言與型別
+
+第一版採 Luau，所有新腳本預設 `--!strict`，搭配 Luau analyzer 做檢查。Luau 官方定義的是 gradual type system；`strict` 會比 `nonstrict` 更積極追蹤型別，因此「有型別」應理解為可逐步收斂的靜態檢查，不是假設所有 runtime 值都能被編譯期證明。
+
+規則：
+
+- 引擎暴露的 public API 必須有生成的 `.d.luau` 型別。
+- `any` 只允許在明確標記的邊界；錯誤資訊指出它降低了哪些保證。
+- `game check` 同時回傳 parser、typecheck、lint 與 runtime contract 問題。
+- 不在第一版設計「未來可換任意語言」的 public abstraction；Rust 內部保留 `ScriptHost` 邊界即可。
+
+建議遊戲結構：
+
+```text
+game/
+├── project.unone.json
+├── scripts/
+│   ├── main.luau
+│   ├── gameplay/
+│   ├── ui/
+│   └── tests/
+├── scenes/
+├── assets/
+└── generated/
+    └── engine.d.luau
+```
+
+## 4. Hot Reload 與清除模型
+
+核心規則：
+
+> Engine-owned state survives；script implementation is disposable。
+
+第一版只保證：修改 Luau → check → compile → 建立新 module → 替換 implementation；Entity 的 Rust-owned Component state 保留。暫不搬遷任意 closure、coroutine、call stack 或 VM heap。
+
+每個 script instance 必須有可清理的生命週期：
+
+- `onCreate`
+- `onStart`
+- `onUpdate`
+- `onDestroy`
+- `onReload`
+
+事件訂閱、timer、tween 與 callback 都必須隸屬 instance scope，scope 銷毀就全部清除；禁止讓 reload 後的舊 callback 继续寫入新 instance。這是「好 hot reload、好清除」的必要條件。
+
+Reload 失敗時：
+
+1. 新模組在 shadow context 中檢查與載入。
+2. 若失敗，保留上一份 module 繼續執行。
+3. 回傳原始檔案、行列、Entity、錯誤原因、受影響範圍與下一步建議。
+4. 成功後才切換 generation，並記錄 reload event。
+
+## 5. Developer Protocol：AI 的主要入口
+
+CLI、MCP 與未來 Editor 不各自實作引擎邏輯，而是共用 Developer Protocol。第一版先做 CLI；MCP 只在 protocol、診斷與 headless loop 穩定後加上。
+
+傳輸層與命令層分離：native 開發先用 CLI + local process/session transport；Web 之後用 browser bridge。AI 不應依賴某個 GUI 的座標或畫面狀態。
+
+第一批命令控制在小範圍：
+
+```text
+game project inspect [--json]
+game api search <meaning> [--json]
+game api describe <name> [--json]
+game check [--json]
+game run [--headless --frames N --seed N]
+game stop
+game reload
+game observe world|scene|entity <id>
+game input action <name> [--state ...]
+game capture screenshot
+game diagnostics [--json]
+game test [name] [--json]
+```
+
+所有命令都要有穩定 exit code、machine-readable JSON 與人類可讀輸出。MCP 只包裝這些 protocol operation，不成為 Engine core 的依賴。
+
+## 6. 語意化 API 與診斷
+
+每個 public API 至少要有：名稱、用途、適用情境、不適用情境、參數與回傳、side effects、frame semantics、常見錯誤、範例、相關 API 與效能注意事項。
+
+診斷不可只回「Invalid operation」。最低模型：
+
+```json
+{
+  "ok": false,
+  "error": {
+    "code": "COMPONENT_NOT_FOUND",
+    "summary": "Player 沒有 CharacterController",
+    "explanation": "腳本要求碰撞式移動，但目前 Entity 只含 Transform、Sprite、Health。",
+    "facts": {
+      "entity": "Player",
+      "requested": "CharacterController",
+      "existing": ["Transform", "Sprite", "Health"]
+    },
+    "likely_causes": ["Component 尚未掛上", "場景載入了錯誤 prefab"],
+    "suggested_actions": [
+      {"action": "inspect_entity", "command": "game observe entity Player"}
+    ],
+    "source": {"file": "scripts/gameplay/player.luau", "line": 20}
+  }
+}
+```
+
+`facts` 必須是引擎觀測到的事實；`likely_causes` 是推論；`suggested_actions` 必須能被 protocol 執行或明確標示為人工行動。這能避免「語意化原因」變成沒有根據的漂亮文字。
+
+同一份診斷應可被 CLI、MCP、Editor、CI 與 runtime overlay 使用。錯誤分類與 code 必須可測試，不能只依賴自由文字比對。
+
+## 7. 自動啟動、觀察、測試與迭代
+
+AI 最小閉環：
+
+```text
+inspect → search API → edit Luau → check → reload
+       → run/headless → inject input → observe
+       → capture → test/diagnostics → fix → repeat
+```
+
+headless run 至少要能固定：
+
+- seed
+- fixed timestep
+- input sequence
+- frame count
+- physics timestep（加入 physics 後）
+
+輸出 semantic state、trace、diagnostics 與 observation digest。相同 seed + 相同輸入在同一平台應可重現；跨平台完全 bit-identical 不先承諾，先做結果層級的 tolerance 與可解釋差異。
+
+第一版測試使用 Luau test API，結果由引擎輸出 JSON；不要一開始同時維護 Luau DSL 與 YAML schema。當 AI 反覆需要聲明式測試時，再加入第二種格式。
+
+## 8. 資料格式與單一來源
+
+場景與 prefab 先使用 schema-based、diff-friendly 的 JSON source format，穩定的 readable path 與 stable id 並存；日後可生成 binary cache，但 source of truth 不依賴 editor binary state。
+
+Engine API 的 public metadata、Luau 型別、CLI help、MCP tool schema 與文件應由同一份 metadata 生成。MVP 不追求「所有 Rust struct 自動反射」，只涵蓋對遊戲腳本與 Developer Protocol 公開的少量 API。
+
+## 9. 平台策略
+
+```text
+同一份 Luau game code
+          │
+     Rust runtime
+     /    |     \
+ native  mobile   web
+  wgpu   thin      wasm + WebGPU
+         wrappers
+```
+
+實作順序：Windows native 開發執行檔 → Web smoke build → iOS → Android。這不是降低目標，而是先用最快的回饋迴路驗證引擎契約，再處理 mobile lifecycle、touch、storage、audio 與 packaging。
+
+wgpu 的官方平台矩陣涵蓋 native 的 Vulkan/Metal/DX12 與 WebAssembly 的 WebGPU；它適合作為跨平台 renderer 基礎，但不代表所有 GPU feature 在各平台都等價。因此引擎公開 API 以共同能力為準，平台特有能力必須顯式查詢，不暗中假設可用。
+
+## 10. 引擎端與業務端界線
+
+| 項目 | 引擎端 | 業務端 / 驗證遊戲 |
+|---|---|---|
+| 2D rendering | Sprite、texture、camera primitive | 關卡美術與排列 |
+| movement | Transform、input、collision primitive | 憤怒鳥的拉弓與拋射規則 |
+| combat | 可重用 physics/damage primitive | 各遊戲傷害公式、技能、數值 |
+| UI | Node、Text、Button、layout primitive | 商店、任務、戀愛選項流程 |
+| save | serialization/storage primitive | 玩家資料 schema 與何時存檔 |
+| network | transport/replication primitive（後期） | RTS、PVP 的同步規則 |
+| test | runner、clock、input、observation | 測試場景與驗收條件 |
+
+判斷原則：如果需求只服務一款遊戲，先留在遊戲專案；如果三種以上遊戲重複需要且語意相同，才提煉為引擎能力。
+
+## 11. 里程碑與驗收
+
+### M0：引擎骨架
+
+- Cargo workspace、native app、wgpu 視窗。
+- ECS/World 的最小可運作版本。
+- 2D quad/sprite、Transform、Input。
+- 一個 Luau entry script 可驅動物件。
+
+驗收：不用 Editor，`game run` 能啟動範例場景並以鍵盤移動 sprite。
+
+### M1：可迭代腳本
+
+- `game check`、generated Luau types、source location。
+- file watcher、module dependency、reload generation。
+- reload 失敗保留舊模組；instance scope 可清理。
+
+驗收：修改移動速度或重力後，在不重啟遊戲的前提下看到結果；故意放入型別錯誤時能得到可定位、可行動的診斷。
+
+### M2：AI 可操作閉環
+
+- headless runner、fixed dt、seed、input injection。
+- observe entity/world、screenshot、trace、diagnostics JSON。
+- Luau test runner 與 regression artifact。
+
+驗收：AI 或 CLI 能從零啟動、操作、觀察、測試並修正一個 2D 小場景。
+
+### M3：Web 與開發體驗
+
+- WebAssembly/WebGPU smoke build。
+- native/web 的 platform capability report。
+- 最小 Inspector 只讀取 Developer Protocol。
+
+### M4：憤怒鳥 2D 驗證
+
+在 `D:/Projects/Unone_Games/` 建立獨立遊戲專案。它不是把遊戲規則塞回引擎，而是用來壓測：2D physics、camera、input recording、scene/prefab、asset pipeline、UI、hot reload、headless test 與 AI 教學。
+
+驗收標準不是「畫面像不像」，而是 AI 能否依文件完成一個功能、遇到錯誤能否自行定位、修改後能否以測試與截圖證明結果。
+
+### M5：mobile 與長期能力
+
+先 iOS 再 Android，之後依目標遊戲的真實阻塞增加 3D、audio、animation、save、networking、performance tooling。
+
+## 12. 長期遊戲驗證順序與通過門檻
+
+七種遊戲不是靈感清單，而是引擎的正式驗收 gate。只有七種遊戲都能以引擎完成可玩的驗證版本，並通過各自的測試、跨平台 smoke test、AI 開發閉環與問題回饋檢查，才算引擎通過長期目標。
+
+不要求第一天就做七款完整商業產品；按下列順序逐項驗證能力：
+
+1. 憤怒鳥 2D：2D physics、trajectory、camera、input replay。
+2. AVG 戀愛遊戲：dialogue、資料驅動流程、存檔、UI、文字資產。
+3. 刀塔傳奇式放置戰鬥：timer、combat simulation、數值測試、批次模擬。
+4. 老虎機 / 魚機：deterministic RNG、UI、結果解釋與測試；真實金流與營運不屬引擎。
+5. 自走棋：board state、rule system、AI simulation、replay。
+6. 紅色警戒式 RTS：大量 Entity、pathfinding、fog/command、networking 壓力。
+7. 3D 賽車：3D renderer、vehicle physics、camera、mobile performance。
+
+每個驗證遊戲的最低通過條件：
+
+- 可從專案檔啟動，不依賴人工操作特定 Editor 狀態。
+- 主要玩法由引擎 API + 遊戲端 Luau 完成，沒有把遊戲規則硬編進 Rust。
+- 至少有一條 deterministic headless regression test。
+- AI 能透過 CLI/Developer Protocol inspect、修改、reload、run、observe、diagnose。
+- 至少完成 native 與 Web smoke test；若該階段已開通 mobile，加入 iOS/Android smoke test。
+- 有開發日誌、問題分類、修正證據與截圖；教學中的命令必須能在乾淨環境重跑。
+
+只有被至少兩個專案證明的共同能力，才提煉進引擎。這可避免為了想像中的未來需求把 core 做成無法使用的抽象層。
+
+## 13. 問題、決策與開發紀錄
+
+所有開發工作都留下三類紀錄：
+
+- `docs/devlog/`：做了什麼、觀察到什麼、測試輸出與截圖路徑。
+- `docs/issues/`：問題、影響範圍、分類、證據、修正、回歸測試。
+- `docs/decisions/`：重要架構決策、替代方案、為何選擇、何時重開決策。
+
+問題先按影響範圍分類：
+
+| 分類 | 判斷 | 解法 |
+|---|---|---|
+| Game logic | 單一遊戲規則或資料錯 | 改 `Unone_Games` 的 Luau/內容 |
+| Engine contract | API 行為、生命週期或診斷與文件不一致 | 改引擎、測試與文件 |
+| Architecture | 多平台、reload、觀察或重用需求反覆卡住 | 改架構，不在業務端打補丁 |
+| Tooling/docs | CLI、MCP、教學有雜訊或無法操作 | 改 protocol、metadata、教學 |
+
+每個 issue 至少記錄：重現步驟、預期/實際、受影響平台與專案、證據（log/JSON/screenshot）、分類理由、修正、回歸測試與是否更新教學。錯誤資訊若被證明不正確，要刪除或修正來源，不保留在文件中製造雜訊。
+
+## 14. 第一個實作切片
+
+接下來不要先做 MCP 或完整 Editor，先完成以下垂直切片：
+
+1. `unone` native app 建立視窗並畫一個可移動的 2D sprite。
+2. `main.luau` 以 `--!strict` 控制移動。
+3. `game check` 輸出 JSON 型別錯誤與 source location。
+4. 修改腳本後 `game reload`，保留 Transform state。
+5. `game run --headless --frames 60 --seed 42` 輸出 entity observation。
+6. 一個 test 驗證 sprite 在固定輸入下到達預期位置。
+7. 將一次成功與一次失敗迭代寫入 devlog，附 terminal output 與 screenshot。
+
+完成這條切片後，再依真實阻塞決定 physics 與 Web 的先後；在此之前不擴增 crate 數量、不做泛用 editor、不做 MCP 特殊邏輯。
+
+## 15. 目前結論
+
+保留參考初稿的核心判斷：Rust/Luau 分層、wgpu 跨平台基礎、CLI-first、語意診斷、semantic observation、deterministic test、hot reload 與 schema metadata。
+
+本版的重要修正是：先做能被憤怒鳥 2D 驗證的最小遊戲引擎；把 MCP、Editor、3D、network、完整 reflection 與多 domain 安全模型放到有證據的階段；不建立沒有使用者的抽象。引擎要保持像遊戲引擎，而不是變成 AI workflow 平台。
+
+## 參考
+
+- [Luau types](https://luau.org/types/)
+- [Luau getting started](https://luau.org/getting-started/)
+- [Luau C API](https://luau.org/api/)
+- [wgpu repository and supported platforms](https://github.com/gfx-rs/wgpu)

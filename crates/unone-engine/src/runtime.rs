@@ -1,0 +1,366 @@
+use std::{cell::RefCell, collections::BTreeMap, fs, path::Path, rc::Rc};
+
+use mlua::{Function, Lua, Table, Value};
+use serde::Serialize;
+use sha2::{Digest, Sha256};
+
+use crate::{
+    diagnostics::{ActionSuggestion, Diagnostic, EngineResult, SourceLocation},
+    project::{ProjectConfig, ProjectPaths},
+    world::{Vec2, World, WorldSnapshot},
+};
+
+const FIXED_DT: f64 = 1.0 / 60.0;
+
+#[derive(Debug, Clone, Serialize)]
+pub struct CheckReport {
+    pub project: String,
+    pub script: String,
+    pub strict_mode: bool,
+    pub entrypoints: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct RunReport {
+    pub project: String,
+    pub seed: u64,
+    pub status: String,
+    pub frames: u64,
+    pub observation_digest: String,
+    pub world: WorldSnapshot,
+    pub trace: Vec<TraceEvent>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct TraceEvent {
+    pub frame: u64,
+    pub event: String,
+    pub details: serde_json::Value,
+}
+
+#[derive(Debug, Clone, Default)]
+struct InputState {
+    down: BTreeMap<String, bool>,
+}
+
+pub struct EngineRuntime {
+    config: ProjectConfig,
+    paths: ProjectPaths,
+    world: Rc<RefCell<World>>,
+    input: Rc<RefCell<InputState>>,
+    lua: Lua,
+    api: Table,
+    update_fn: Function,
+    trace: Rc<RefCell<Vec<TraceEvent>>>,
+    generation: u64,
+}
+
+impl EngineRuntime {
+    pub fn check(project_root: impl AsRef<Path>) -> EngineResult<CheckReport> {
+        let (config, paths) = match ProjectPaths::discover(project_root) {
+            Ok(value) => value,
+            Err(diagnostic) => return EngineResult::failure(diagnostic),
+        };
+        let source = match fs::read_to_string(&paths.entry_script) {
+            Ok(source) => source,
+            Err(err) => return EngineResult::failure(Diagnostic::error(
+                "SCRIPT_READ_FAILED",
+                "無法讀取入口腳本",
+                format!("{}：{}", paths.entry_script.display(), err),
+            )),
+        };
+        let lua = Lua::new();
+        let value = match lua.load(&source).set_name(paths.entry_script.to_string_lossy()).eval::<Value>() {
+            Ok(value) => value,
+            Err(err) => return EngineResult::failure(script_diagnostic(&paths, err.to_string())),
+        };
+        let table = match value {
+            Value::Table(table) => table,
+            _ => return EngineResult::failure(Diagnostic::error(
+                "SCRIPT_ENTRY_INVALID",
+                "入口腳本必須回傳 Game table",
+                "入口腳本最後必須 return 一個包含 start 與 update function 的 table。",
+            )),
+        };
+        let mut entrypoints = Vec::new();
+        for name in ["start", "update"] {
+            match table.get::<Value>(name) {
+                Ok(Value::Function(_)) => entrypoints.push(name.to_string()),
+                Ok(_) => return EngineResult::failure(Diagnostic::error(
+                    "SCRIPT_ENTRYPOINT_INVALID",
+                    format!("Game.{name} 不是 function"),
+                    format!("引擎需要 Game.{name}(api{}) 才能執行專案。", if name == "update" { ", dt" } else { "" }),
+                )),
+                Err(err) => return EngineResult::failure(script_diagnostic(&paths, err.to_string())),
+            }
+        }
+        let strict_mode = source.lines().next().map(|line| line.trim() == "--!strict").unwrap_or(false);
+        let mut result = EngineResult::success(CheckReport {
+            project: config.name,
+            script: paths.entry_script.display().to_string(),
+            strict_mode,
+            entrypoints,
+        });
+        if !strict_mode {
+            result.diagnostics.push(Diagnostic::warning(
+                "STRICT_MODE_NOT_ENABLED",
+                "入口腳本未啟用 strict mode",
+                "目前只完成 Luau 語法與 Engine entrypoint contract 檢查；加入 --!strict 才能讓型別分析更早回報問題。",
+            ));
+        }
+        result
+    }
+
+    pub fn load(project_root: impl AsRef<Path>) -> Result<Self, Diagnostic> {
+        let (config, paths) = ProjectPaths::discover(project_root)?;
+        let world = Rc::new(RefCell::new(World::default()));
+        if let Some(scene) = &paths.main_scene {
+            world.borrow_mut().load_scene(scene)?;
+        }
+        let input = Rc::new(RefCell::new(InputState::default()));
+        let trace = Rc::new(RefCell::new(Vec::new()));
+        let lua = Lua::new();
+        let api = build_api(&lua, Rc::clone(&world), Rc::clone(&input), Rc::clone(&trace))
+            .map_err(|err| Diagnostic::error("ENGINE_API_BIND_FAILED", "無法建立 Luau Engine API", err.to_string()))?;
+        let placeholder = lua.create_function(|_, _: ()| Ok(()))
+            .map_err(|err| Diagnostic::error("ENGINE_INIT_FAILED", "無法初始化 Luau runtime", err.to_string()))?;
+        let mut runtime = Self {
+            config,
+            paths,
+            world,
+            input,
+            lua,
+            api,
+            update_fn: placeholder,
+            trace,
+            generation: 0,
+        };
+        runtime.load_script(false)?;
+        Ok(runtime)
+    }
+
+    pub fn set_input(&mut self, action: impl Into<String>, is_down: bool) {
+        self.input.borrow_mut().down.insert(action.into(), is_down);
+    }
+
+    pub fn reload(&mut self) -> Result<(), Diagnostic> {
+        self.load_script(true)
+    }
+
+    pub fn run(&mut self, frames: u64, seed: u64) -> EngineResult<RunReport> {
+        self.trace.borrow_mut().clear();
+        for _ in 0..frames {
+            let frame = self.world.borrow().frame;
+            if let Err(err) = self.update_fn.call::<()>((self.api.clone(), FIXED_DT)) {
+                return EngineResult::failure(script_diagnostic(&self.paths, err.to_string()));
+            }
+            {
+                let mut world = self.world.borrow_mut();
+                world.frame += 1;
+                world.time_seconds += FIXED_DT;
+            }
+            self.trace.borrow_mut().push(TraceEvent {
+                frame,
+                event: "frame_completed".to_string(),
+                details: serde_json::json!({"dt": FIXED_DT, "generation": self.generation}),
+            });
+        }
+        let world = self.world.borrow().snapshot();
+        let observation = serde_json::to_vec(&world).unwrap_or_default();
+        let digest = format!("sha256:{}", hex_digest(&observation));
+        EngineResult::success(RunReport {
+            project: self.config.name.clone(),
+            seed,
+            status: "completed".to_string(),
+            frames,
+            observation_digest: digest,
+            world,
+            trace: self.trace.borrow().clone(),
+        })
+    }
+
+    pub fn observe(&self) -> WorldSnapshot {
+        self.world.borrow().snapshot()
+    }
+
+    fn load_script(&mut self, is_reload: bool) -> Result<(), Diagnostic> {
+        let source = fs::read_to_string(&self.paths.entry_script).map_err(|err| Diagnostic::error(
+            "SCRIPT_READ_FAILED",
+            "無法讀取入口腳本",
+            format!("{}：{}", self.paths.entry_script.display(), err),
+        ))?;
+        let value = self.lua.load(&source)
+            .set_name(self.paths.entry_script.to_string_lossy())
+            .eval::<Value>()
+            .map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+        let table = match value {
+            Value::Table(table) => table,
+            _ => return Err(Diagnostic::error(
+                "SCRIPT_ENTRY_INVALID",
+                "入口腳本必須回傳 Game table",
+                "入口腳本最後必須 return 一個包含 start 與 update function 的 table。",
+            )),
+        };
+        let update_fn = table.get::<Function>("update").map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+        let start_fn = table.get::<Function>("start").map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+        if is_reload {
+            if let Ok(on_reload) = table.get::<Function>("onReload") {
+                on_reload.call::<()>(self.api.clone()).map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+            }
+            self.generation += 1;
+            self.trace.borrow_mut().push(TraceEvent {
+                frame: self.world.borrow().frame,
+                event: "script_reloaded".to_string(),
+                details: serde_json::json!({"generation": self.generation, "state_policy": "rust_owned_state_preserved"}),
+            });
+        } else {
+            start_fn.call::<()>(self.api.clone()).map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+        }
+        self.update_fn = update_fn;
+        Ok(())
+    }
+}
+
+fn build_api(lua: &Lua, world: Rc<RefCell<World>>, input: Rc<RefCell<InputState>>, trace: Rc<RefCell<Vec<TraceEvent>>>) -> mlua::Result<Table> {
+    let api = lua.create_table()?;
+    let entity = lua.create_table()?;
+    let input_api = lua.create_table()?;
+
+    let spawn_world = Rc::clone(&world);
+    entity.set("spawn", lua.create_function(move |_, name: String| Ok(spawn_world.borrow_mut().spawn(&name)))?)?;
+
+    let get_world = Rc::clone(&world);
+    entity.set("getPosition", lua.create_function(move |lua, id: String| {
+        let world = get_world.borrow();
+        let entity = world.entities.get(&id).ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' 不存在。")))?;
+        let table = lua.create_table()?;
+        table.set("x", entity.transform.x)?;
+        table.set("y", entity.transform.y)?;
+        Ok(table)
+    })?)?;
+
+    let set_world = Rc::clone(&world);
+    entity.set("setPosition", lua.create_function(move |_, (id, position): (String, Table)| {
+        let x: f64 = position.get("x")?;
+        let y: f64 = position.get("y")?;
+        let mut world = set_world.borrow_mut();
+        let entity = world.entities.get_mut(&id).ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' 不存在。")))?;
+        entity.transform = Vec2 { x, y };
+        Ok(())
+    })?)?;
+
+    let input_state = Rc::clone(&input);
+    input_api.set("isDown", lua.create_function(move |_, action: String| Ok(input_state.borrow().down.get(&action).copied().unwrap_or(false)))?)?;
+
+    let log_trace = Rc::clone(&trace);
+    let log_world = Rc::clone(&world);
+    api.set("log", lua.create_function(move |_, message: String| {
+        log_trace.borrow_mut().push(TraceEvent {
+            frame: log_world.borrow().frame,
+            event: "script_log".to_string(),
+            details: serde_json::json!({"message": message}),
+        });
+        Ok(())
+    })?)?;
+    api.set("entity", entity)?;
+    api.set("input", input_api)?;
+    Ok(api)
+}
+
+fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
+    let mut diagnostic = Diagnostic::error(
+        "LUAU_RUNTIME_ERROR",
+        "Luau 腳本無法載入或執行",
+        message.clone(),
+    );
+    diagnostic.facts = serde_json::json!({
+        "script": paths.entry_script.display().to_string(),
+        "runtime": "Luau",
+        "message": message,
+    });
+    diagnostic.source = Some(SourceLocation { file: paths.entry_script.display().to_string(), line: None, column: None });
+    diagnostic.likely_causes = vec![
+        "入口腳本的語法或 Engine API 呼叫不符合目前契約".to_string(),
+        "腳本在 runtime 使用了不存在的 Entity 或欄位".to_string(),
+    ];
+    diagnostic.suggested_actions = vec![
+        ActionSuggestion { action: "check_script".to_string(), description: "先檢查入口腳本 contract。".to_string(), command: Some("game check --json".to_string()) },
+        ActionSuggestion { action: "inspect_project".to_string(), description: "確認 scene 與 Entity id。".to_string(), command: Some("game project inspect --json".to_string()) },
+    ];
+    diagnostic
+}
+
+fn hex_digest(bytes: &[u8]) -> String {
+    let digest = Sha256::digest(bytes);
+    digest.iter().map(|byte| format!("{byte:02x}")).collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fs;
+
+    use tempfile::tempdir;
+
+    use super::EngineRuntime;
+
+    fn write_project(dir: &std::path::Path, script: &str) {
+        fs::create_dir_all(dir.join("scripts")).unwrap();
+        fs::create_dir_all(dir.join("scenes")).unwrap();
+        fs::write(dir.join("project.unone.json"), r#"{
+            "name": "ReloadTest",
+            "entry_script": "scripts/main.luau",
+            "main_scene": "scenes/main.scene.json"
+        }"#).unwrap();
+        fs::write(dir.join("scenes/main.scene.json"), r#"{
+            "entities": [{
+                "id": "player",
+                "name": "Player",
+                "transform": {"x": 0.0, "y": 0.0}
+            }]
+        }"#).unwrap();
+        fs::write(dir.join("scripts/main.luau"), script).unwrap();
+    }
+
+    const SCRIPT: &str = r#"--!strict
+type Vec2 = { x: number, y: number }
+type EntityApi = { getPosition: (id: string) -> Vec2, setPosition: (id: string, position: Vec2) -> () }
+type InputApi = { isDown: (action: string) -> boolean }
+type EngineApi = { entity: EntityApi, input: InputApi, log: (message: string) -> () }
+local Game = {}
+local speed: number = 4
+function Game.start(api: EngineApi) end
+function Game.update(api: EngineApi, dt: number)
+    local p = api.entity.getPosition("player")
+    if api.input.isDown("Right") then p.x += speed * dt end
+    api.entity.setPosition("player", p)
+end
+return Game
+"#;
+
+    #[test]
+    fn same_seed_and_input_produce_same_observation_digest() {
+        let dir = tempdir().unwrap();
+        write_project(dir.path(), SCRIPT);
+        let mut left = EngineRuntime::load(dir.path()).unwrap();
+        let mut right = EngineRuntime::load(dir.path()).unwrap();
+        left.set_input("Right", true);
+        right.set_input("Right", true);
+        let left_report = left.run(60, 42).value.unwrap();
+        let right_report = right.run(60, 42).value.unwrap();
+        assert_eq!(left_report.observation_digest, right_report.observation_digest);
+    }
+
+    #[test]
+    fn failed_reload_keeps_previous_script_running() {
+        let dir = tempdir().unwrap();
+        write_project(dir.path(), SCRIPT);
+        let mut runtime = EngineRuntime::load(dir.path()).unwrap();
+        runtime.set_input("Right", true);
+        runtime.run(30, 42);
+        fs::write(dir.path().join("scripts/main.luau"), "return broken syntax").unwrap();
+        assert!(runtime.reload().is_err());
+        let report = runtime.run(30, 42).value.unwrap();
+        let x = report.world.entities.get("player").unwrap().transform.x;
+        assert!((x - 4.0).abs() < 0.000_001);
+    }
+}

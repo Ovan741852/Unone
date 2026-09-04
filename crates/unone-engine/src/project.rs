@@ -1,0 +1,50 @@
+use std::{fs, path::{Path, PathBuf}};
+
+use serde::Deserialize;
+
+use crate::diagnostics::Diagnostic;
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct ProjectConfig {
+    pub name: String,
+    #[serde(default = "default_entry_script")]
+    pub entry_script: String,
+    #[serde(default)]
+    pub main_scene: Option<String>,
+}
+
+fn default_entry_script() -> String {
+    "scripts/main.luau".to_string()
+}
+
+#[derive(Debug, Clone)]
+pub struct ProjectPaths {
+    pub root: PathBuf,
+    pub config: PathBuf,
+    pub entry_script: PathBuf,
+    pub main_scene: Option<PathBuf>,
+}
+
+impl ProjectPaths {
+    pub fn discover(root: impl AsRef<Path>) -> Result<(ProjectConfig, Self), Diagnostic> {
+        let root = root.as_ref().to_path_buf();
+        let config_path = root.join("project.unone.json");
+        let text = fs::read_to_string(&config_path).map_err(|err| {
+            Diagnostic::error(
+                "PROJECT_CONFIG_NOT_FOUND",
+                "找不到 Unone 專案設定",
+                format!("無法讀取 {}：{}", config_path.display(), err),
+            )
+        })?;
+        let config: ProjectConfig = serde_json::from_str(&text).map_err(|err| {
+            Diagnostic::error(
+                "PROJECT_CONFIG_INVALID",
+                "Unone 專案設定不是有效 JSON",
+                format!("{}：{}", config_path.display(), err),
+            )
+        })?;
+        let entry_script = root.join(&config.entry_script);
+        let main_scene = config.main_scene.as_ref().map(|path| root.join(path));
+        Ok((config, Self { root, config: config_path, entry_script, main_scene }))
+    }
+}
