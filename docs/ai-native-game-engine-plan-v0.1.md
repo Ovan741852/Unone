@@ -220,6 +220,8 @@ game diagnostics [--json]
 game test [name] [--json]
 ```
 
+目前已實作 `project inspect`、`api search`、`api describe` 的最小版本；它們的 metadata 仍以少量公開 Engine API 為範圍，不做 Rust 全量反射。`game preview --watch` 是目前可用的持續 session reload 入口；一次性 CLI process 不另外假裝提供無狀態的 `game reload`。
+
 所有命令都要有穩定 exit code、machine-readable JSON 與人類可讀輸出。MCP 只包裝這些 protocol operation，不成為 Engine core 的依賴。
 
 ## 6. 語意化 API 與診斷

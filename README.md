@@ -17,10 +17,12 @@ Unone 是 AI-native 遊戲引擎原型：Rust 負責遊戲引擎機制，Luau �
 ```powershell
 cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json project inspect
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json api describe entity.setPosition
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json run --frames 60 --action Right
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json test
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview --watch
 ```
 
 目前已驗證：Luau entrypoint、`--!strict` contract、headless fixed timestep、seed/input observation digest、failed reload fallback、native wgpu preview、`preview --watch` 腳本熱更、JSON test manifest 與 bundle hash/cache/activation。

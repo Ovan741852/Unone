@@ -47,3 +47,4 @@
 - `game preview --watch` 已加入：以腳本修改時間與檔案大小做輕量輪詢，變更時在等待 frame 嘗試 reload；失敗會只回報一次並保留舊腳本，待下一次檔案變更再重試。
 - `cargo test --workspace` 通過 5 個 engine tests；新增 reload success + state preservation regression test。`cargo clippy --workspace --all-targets -- -D warnings`、sample `check`、`test`、`bundle inspect` 均通過。
 - 目前仍未宣稱完整型別檢查、Web/mobile、MCP 或七類遊戲驗收完成；這些保留在後續階段，避免把原型能力說成引擎完成。
+- 已加入最小 AI 語意入口：`project inspect`、`api search`、`api describe`。API metadata 回報用途、適用／不適用情境、參數、回傳、side effects、frame semantics、常見錯誤與範例；先覆蓋現有公開 Luau API，不做全量 Rust 反射。

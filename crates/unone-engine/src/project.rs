@@ -4,9 +4,9 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-use crate::diagnostics::Diagnostic;
+use crate::diagnostics::{Diagnostic, EngineResult};
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ProjectConfig {
@@ -32,6 +32,23 @@ pub struct ProjectPaths {
     pub entry_script: PathBuf,
     pub main_scene: Option<PathBuf>,
     pub test_files: Vec<PathBuf>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ProjectFileStatus {
+    pub path: String,
+    pub exists: bool,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ProjectInspectReport {
+    pub project: String,
+    pub root: String,
+    pub config: ProjectFileStatus,
+    pub entry_script: ProjectFileStatus,
+    pub main_scene: Option<ProjectFileStatus>,
+    pub test_files: Vec<ProjectFileStatus>,
+    pub bundle_manifest: Option<ProjectFileStatus>,
 }
 
 impl ProjectPaths {
@@ -69,6 +86,71 @@ impl ProjectPaths {
                 test_files,
             },
         ))
+    }
+}
+
+pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<ProjectInspectReport> {
+    let (config, paths) = match ProjectPaths::discover(project_root) {
+        Ok(value) => value,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let report = ProjectInspectReport {
+        project: config.name,
+        root: paths.root.display().to_string(),
+        config: file_status(&paths.config),
+        entry_script: file_status(&paths.entry_script),
+        main_scene: paths.main_scene.as_deref().map(file_status),
+        test_files: paths
+            .test_files
+            .iter()
+            .map(|path| file_status(path))
+            .collect(),
+        bundle_manifest: config
+            .bundle_manifest
+            .as_ref()
+            .map(|path| file_status(&paths.root.join(path))),
+    };
+    let mut result = EngineResult::success(report);
+    if let Some(report) = &result.value {
+        let mut missing = Vec::new();
+        if !report.entry_script.exists {
+            missing.push(report.entry_script.path.clone());
+        }
+        if let Some(scene) = &report.main_scene
+            && !scene.exists
+        {
+            missing.push(scene.path.clone());
+        }
+        missing.extend(
+            report
+                .test_files
+                .iter()
+                .filter(|file| !file.exists)
+                .map(|file| file.path.clone()),
+        );
+        if let Some(bundle) = &report.bundle_manifest
+            && !bundle.exists
+        {
+            missing.push(bundle.path.clone());
+        }
+        if !missing.is_empty() {
+            result.diagnostics.push(Diagnostic::warning(
+                "PROJECT_FILES_MISSING",
+                "專案宣告了尚未存在的檔案",
+                "設定檔可以被讀取，但部分入口、場景、測試或 bundle manifest 不存在；下一步應先修正路徑或建立檔案。",
+            ));
+            if let Some(diagnostic) = result.diagnostics.last_mut() {
+                diagnostic.facts = serde_json::json!({"missing": missing});
+            }
+        }
+    }
+    result
+}
+
+fn file_status(path: &Path) -> ProjectFileStatus {
+    ProjectFileStatus {
+        path: path.display().to_string(),
+        exists: path.is_file(),
     }
 }
 

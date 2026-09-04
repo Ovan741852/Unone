@@ -2,6 +2,16 @@
 
 這是目前 AI 或人類操作 Unone 的最小流程。CLI 是 Developer Protocol 的第一個 client；MCP 與 Editor 必須在這個 protocol 穩定後再接入。
 
+## 0. 先取得專案與 API 語意
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json project inspect
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json api search "move entity"
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json api describe entity.setPosition
+```
+
+`project inspect` 回報引擎看見的設定與檔案事實；`api search` 是依用途找能力；`api describe` 會回傳參數、回傳值、side effects、frame semantics、常見錯誤、範例與相關 API。AI 應先讀這些資料，再修改遊戲腳本，不要猜測 API。
+
 ## 1. 先檢查專案
 
 ```powershell

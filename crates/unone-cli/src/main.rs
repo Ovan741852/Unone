@@ -2,7 +2,10 @@ use std::{borrow::Cow, path::PathBuf, process::ExitCode, sync::Arc};
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use unone_engine::{BundleManager, EngineResult, EngineRuntime, WorldSnapshot};
+use unone_engine::{
+    BundleManager, EngineResult, EngineRuntime, WorldSnapshot, api_describe, api_search,
+    inspect_project,
+};
 use winit::{
     application::ApplicationHandler,
     event::{ElementState, WindowEvent},
@@ -24,6 +27,14 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    Project {
+        #[command(subcommand)]
+        command: ProjectCommand,
+    },
+    Api {
+        #[command(subcommand)]
+        command: ApiCommand,
+    },
     Check,
     Run {
         #[arg(long, default_value_t = 60)]
@@ -46,6 +57,17 @@ enum Command {
 }
 
 #[derive(Debug, Subcommand)]
+enum ProjectCommand {
+    Inspect,
+}
+
+#[derive(Debug, Subcommand)]
+enum ApiCommand {
+    Search { meaning: String },
+    Describe { name: String },
+}
+
+#[derive(Debug, Subcommand)]
 enum BundleCommand {
     Inspect,
     Install { id: String },
@@ -64,6 +86,45 @@ fn main() -> ExitCode {
 fn run() -> Result<ExitCode> {
     let cli = Cli::parse();
     match cli.command {
+        Command::Project { command } => match command {
+            ProjectCommand::Inspect => print_result(inspect_project(&cli.project), cli.json),
+        },
+        Command::Api { command } => match command {
+            ApiCommand::Search { meaning } => {
+                let matches = api_search(&meaning);
+                let mut result = EngineResult::success(unone_engine::ApiSearchReport {
+                    query: meaning,
+                    matches,
+                });
+                if result
+                    .value
+                    .as_ref()
+                    .map(|report| report.matches.is_empty())
+                    .unwrap_or(false)
+                {
+                    result.diagnostics.push(unone_engine::Diagnostic::warning(
+                        "API_SEARCH_EMPTY",
+                        "沒有找到符合語意的 Engine API",
+                        "搜尋只涵蓋目前公開的最小 API；請改用更具體的動詞或先查看 project inspect。",
+                    ));
+                }
+                print_result(result, cli.json)
+            }
+            ApiCommand::Describe { name } => match api_describe(&name) {
+                Some(descriptor) => print_result(EngineResult::success(descriptor), cli.json),
+                None => print_result(
+                    EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
+                        "API_NOT_FOUND",
+                        "找不到指定的 Engine API",
+                        format!(
+                            "目前公開 API 沒有 '{}'；先執行 game api search <meaning> 查看可用能力。",
+                            name
+                        ),
+                    )),
+                    cli.json,
+                ),
+            },
+        },
         Command::Check => print_result(EngineRuntime::check(&cli.project), cli.json),
         Command::Run {
             frames,
