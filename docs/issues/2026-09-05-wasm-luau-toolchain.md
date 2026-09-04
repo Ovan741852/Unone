@@ -2,7 +2,7 @@
 
 - 日期：2026-09-05
 - 範圍：Web platform toolchain／script host build
-- 狀態：engine library 的 Web compile 已解除；瀏覽器 WebGPU host 尚未完成
+- 狀態：已完成當時的 engine library toolchain blocker；其餘 Web host 工作由後續切片追蹤
 
 ## 重現
 
@@ -42,13 +42,15 @@ cargo check -p unone-engine --target wasm32-unknown-emscripten
 
 結果：通過，`mlua-sys` vendored Luau 與 `unone-engine` 均成功編譯。此前失敗的 `wasm32-unknown-unknown` 是因 Cargo 傳入的 target 會覆蓋 Emscripten target，造成 libc++ 回報 `No thread API`；不能只替換 `clang++` 來解決。
 
-## 目前邊界
+## 當時邊界（截至問題建立）
 
 - 這次證據是 `unone-engine` library 的 Web compile，不等於瀏覽器頁面已能顯示 WebGPU。
 - `EngineRuntime::load_source` 已提供必要的 host 邊界：Web host 可自行 fetch manifest／scene／Luau source，再交給同一個 runtime；native 仍使用檔案系統。
 - Web fetch、cache quota、IndexedDB／Storage、Canvas／WebGPU lifecycle 不進 engine core，留在 platform host。
 - 仍需建立最小 Web host／WebGPU smoke page，並在 CI 固定 Emscripten 與 Rust target 來源，不能依賴某台電腦的 Unity 安裝路徑。
 
-## 後續
+## 後續與目前狀態
 
 建立可重現的 CI／開發 toolchain，固定 Emscripten、Luau analyzer 與 embedded Luau 版本；完成最小 Web host／WebGPU smoke，再驗證同一個 Luau scene 可在 native 與 Web 執行。若未來 `mlua` 的 native C host 在瀏覽器限制下不適合，改採獨立的 Web Luau host adapter，不在遊戲端繞過引擎 contract。
+
+後續已完成 `web/host/` snapshot bridge 與 `web/live/` live WebGPU/browser input smoke；`web/live/` 也已有 host-owned IndexedDB bundle generation contract。CI 固定 toolchain、production asset streaming、mobile host 與完整 Web release packaging 仍未完成，不能把這份歷史 issue 解讀成全部平台已通過。

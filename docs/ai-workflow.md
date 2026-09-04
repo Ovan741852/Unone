@@ -21,7 +21,7 @@ MCP host 設定可使用同一個 command 與 args。連線後先完成 `initial
 cargo run -p unone-cli -- --json platform capabilities
 ```
 
-先讀 `target_family`、`project_loaders`、`hot_reload_modes` 與 `pending_host_work`。`wasm` 回報的是可用 memory-source runtime 與待完成的 browser host；不要把 library compile 直接推論成 WebGPU 頁面完成。
+先讀 `target_family`、`project_loaders`、`hot_reload_modes` 與 `pending_host_work`。`wasm` 的 capabilities 仍是 binary-level 資訊；目前 Web live 的 browser/WebGPU/bundle storage 證據來自 `web/live/` smoke，不要把 library compile 或單一 smoke fixture 推論成完整 Web 發布包。
 
 ## 0. 先取得專案與 API 語意
 
@@ -95,7 +95,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json bu
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json bundle install base
 ```
 
-bundle 成功不是只代表檔案存在：要確認 manifest hash、cache hash、active generation、dependencies 與 `available`。引擎的 `BundleFetcher` 只接收 host 提供的 reader，再負責 streaming size/hash verify、staging 與 atomic activation；native CLI 使用 local source，Web/mobile 的 fetch、重試、storage quota 與背景下載政策留在 host adapter。詳見 `docs/decisions/0010-bundle-fetch-boundary.md`。
+bundle 成功不是只代表檔案存在：要確認 manifest hash、cache hash、active generation、dependencies 與 `available`。引擎的 `BundleFetcher` 只接收 host 提供的 reader，再負責 streaming size/hash verify、staging 與 atomic activation；native CLI 使用 local source，Web/mobile 的 fetch、重試、storage quota 與背景下載政策留在 host adapter。Web sample 的 browser generation/cache smoke 另見 `docs/decisions/0016-bundle-generation-and-browser-storage.md`。
 
 ## 5. native preview
 

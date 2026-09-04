@@ -57,8 +57,13 @@ python -m http.server 8000
 
 開啟 `http://127.0.0.1:8000/web/smoke/`。`web/smoke/index.html` 會載入同一份 Emscripten `.js + .wasm`，頁面顯示 `passed: 60 deterministic frames executed` 才算 browser runtime smoke 通過。這仍不是 WebGPU renderer、瀏覽器輸入或正式遊戲 host。
 
+## Mobile host 盤點
+
+目前 engine core 不依賴 UIKit、Android View 或 JNI；mobile host 應沿用 `EngineRuntime::tick_with_input`，由平台 adapter 負責 lifecycle、surface、safe area、touch、storage 與 package/update policy。這台 Windows 已有 Android SDK/`adb`，但沒有 Gradle；沒有 Apple `xcodebuild`，所以 iOS/Android 實機或 emulator smoke 尚未完成。完整責任邊界與驗收項目見 `docs/decisions/0017-mobile-host-lifecycle-boundary.md`，盤點細節見 `docs/issues/2026-09-05-mobile-host-toolchain-audit.md`。
+
 ## 尚未完成
 
 - CI 尚未固定下載 Emscripten SDK 的來源與 checksum。
-- `unone-web-smoke` 與 `web/smoke/index.html` 已驗證 Emscripten memory-source runtime 可在瀏覽器執行；尚未完成瀏覽器 WebGPU host、browser input 與完整 Web 發布頁面。
+- `unone-web-smoke` 與 `web/smoke/index.html` 已驗證 Emscripten memory-source runtime；`web/live/index.html` 另已驗證窄 C ABI、WebGPU live loop、browser input、bundle verifier、IndexedDB generation/cache 與 script hot update。兩者都不是完整 Web 發布頁面。
+- 大型 asset 的 OPFS/chunked storage writer、CDN policy、背景下載、production error transport 與 mobile host 尚未完成。
 - 這裡的 `cargo check`／smoke artifact 不等於完整 Web 發布包。
