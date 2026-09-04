@@ -426,7 +426,39 @@ pub unsafe extern "C" fn unone_mobile_set_pointer(
     session.pending_input.pointer = Some(PointerInput {
         position: Vec2 { x, y },
         down: down != 0,
+        screen_position: Some(Vec2 { x, y }),
     });
+    0
+}
+
+/// Set the host-normalized logical UI pointer position while preserving the
+/// current world pointer and button state.
+///
+/// Hosts should call `unone_mobile_set_pointer` first when they need to set a
+/// complete pointer frame, then use this function for a distinct UI-space
+/// coordinate.
+///
+/// # Safety
+///
+/// `session` must be a live pointer returned by `unone_mobile_init`.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_mobile_set_screen_pointer(
+    session: *mut UnoneMobileSession,
+    x: f64,
+    y: f64,
+) -> i32 {
+    let Some(session) = (unsafe { session.as_mut() }) else {
+        return -1;
+    };
+    if !x.is_finite() || !y.is_finite() {
+        return session.write_error("screen pointer coordinates must be finite");
+    }
+    let pointer = session.pending_input.pointer.get_or_insert(PointerInput {
+        position: Vec2::default(),
+        down: false,
+        screen_position: None,
+    });
+    pointer.screen_position = Some(Vec2 { x, y });
     0
 }
 
@@ -666,6 +698,15 @@ end
 return Game
 "#;
 
+    const SCREEN_POINTER_SCRIPT: &str = r#"
+local Game = {}
+function Game.start(_api) end
+function Game.update(api, _dt)
+    api.observation.set("screen_pointer", api.input.getScreenPointerPosition() :: any)
+end
+return Game
+"#;
+
     fn payload() -> Vec<u8> {
         serde_json::to_vec(&json!({
             "project": "MobileContract",
@@ -897,6 +938,27 @@ return Game
         assert_eq!(
             output(session)["message"],
             json!("bundle verifier has not started")
+        );
+        unsafe { unone_mobile_shutdown(session) };
+    }
+
+    #[test]
+    fn screen_pointer_bridge_keeps_ui_space_separate_from_world_space() {
+        let session = unone_mobile_init();
+        let project = payload_with_script(SCREEN_POINTER_SCRIPT);
+        assert_eq!(
+            unsafe { unone_mobile_load_project(session, project.as_ptr(), project.len(), 42) },
+            0
+        );
+        assert_eq!(unsafe { unone_mobile_set_pointer(session, 3.0, 4.0, 1) }, 0);
+        assert_eq!(
+            unsafe { unone_mobile_set_screen_pointer(session, 20.0, 15.0) },
+            0
+        );
+        assert_eq!(unsafe { unone_mobile_tick(session) }, 0);
+        assert_eq!(
+            output(session)["world"]["observations"]["screen_pointer"],
+            json!({"x": 20, "y": 15})
         );
         unsafe { unone_mobile_shutdown(session) };
     }

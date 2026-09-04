@@ -57,7 +57,7 @@ host fetch → host staging
 
 The ABI intentionally does not expose a filesystem, IndexedDB, OPFS, Android storage API, iOS URLSession, CDN, retry policy or active-generation pointer. A failed verification leaves host state untouched; cache-only reopen and rollback remain host smoke requirements.
 
-`set_pointer` and `set_action` are scalar/event paths for native input. The host must normalize raw touch coordinates into the engine's world-space pointer before calling them. `set_input_frame` accepts the same semantic JSON shape used by headless/Web replay and is useful for automation and contract tests. The adapter consumes pending input at the next tick, so an action is not silently sticky across frames.
+`set_pointer` and `set_action` are scalar/event paths for native input. The host must normalize raw touch coordinates into the engine's world-space pointer before calling them. `set_screen_pointer` optionally supplies a separate logical UI coordinate after `set_pointer`; the host owns pixel, DPI and safe-area conversion. `set_input_frame` accepts the same semantic JSON shape used by headless/Web replay and is useful for automation and contract tests. The adapter consumes pending input at the next tick, so an action is not silently sticky across frames.
 
 ## Observation and errors
 

@@ -43,6 +43,10 @@ int32_t unone_mobile_set_pointer(
     double x,
     double y,
     int32_t down);
+int32_t unone_mobile_set_screen_pointer(
+    UnoneMobileSession *session,
+    double x,
+    double y);
 int32_t unone_mobile_set_action(
     UnoneMobileSession *session,
     const uint8_t *action,

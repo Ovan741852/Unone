@@ -1,7 +1,7 @@
 # Decision 0019: semantic observation is the MVVM projection boundary
 
 日期：2026-09-05  
-狀態：accepted（AVG validation slice；UI renderer pending）
+狀態：accepted（AVG validation slice；host renderer pending）
 
 ## Context
 
@@ -26,11 +26,11 @@ Luau Model / game rules
 Luau ViewModel
         ↓ observation.set (explicit serialization boundary)
 Engine semantic observation → AI/test/host
-        ↓ later, when proven necessary
-Engine UI primitives / View
+        ↓ api.ui.setRoot (game-composed, engine-validated tree)
+Engine host renderer → Web/native viewport
 ```
 
-這讓 AI 可以直接比較 `view_model` JSON 與 deterministic input，而不用猜畫面座標。真正的 declarative View、button hit-test、save/load 仍需由 AVG 或其他遊戲的實際阻塞證明後再加入；本決策不預先建立 UI framework。
+這讓 AI 可以直接比較 `view_model` JSON 與 deterministic input，而不用猜畫面座標；需要 host 顯示時，遊戲再發布扁平的 declarative UI tree。UI tree 的最小 schema 與 screen-space input 邊界另見 Decision 0021；本決策不建立 UI framework。
 
 ## Consequences
 

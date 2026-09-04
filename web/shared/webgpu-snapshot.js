@@ -18,6 +18,7 @@ export function semanticSummary(snapshot, pointer = null) {
       size: entity.sprite?.size ?? null,
       position: entity.transform,
     })),
+    ui: world.ui ?? null,
     pointer,
   };
 }

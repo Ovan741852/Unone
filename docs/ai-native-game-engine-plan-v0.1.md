@@ -110,6 +110,7 @@ Luau 不應看見 raw pointer、Rust lifetime、wgpu handle、ECS archetype 或 
 - `game check` 同時回傳 parser、typecheck、lint 與 runtime contract 問題。
 - `api.observation.set` 提供有限制的 JSON-like semantic projection；typed game ViewModel 只在明確 serialization boundary 轉出，test 可直接 assertion observation。
 - `api.save.set/get` 提供同樣受限的 opaque JSON-like save payload transport；遊戲端負責 schema/version/migration，host 負責平台 storage，引擎不做 save slot、cloud sync 或遊戲專用 persistence。
+- `api.ui.setRoot` 只驗證／傳輸遊戲端組合的 flat `screen/text/button` tree；logical UI 座標由 host 正規化，engine 不做 layout、binding、widget 或遊戲規則。
 - 不在第一版設計「未來可換任意語言」的 public abstraction；Rust 內部保留 `ScriptHost` 邊界即可。
 
 建議遊戲結構：
@@ -310,7 +311,7 @@ wgpu 的官方平台矩陣涵蓋 native 的 Vulkan/Metal/DX12 與 WebAssembly �
 | 2D rendering | Sprite、texture、camera primitive | 關卡美術與排列 |
 | movement | Transform、input、collision primitive | 憤怒鳥的拉弓與拋射規則 |
 | combat | 可重用 physics/damage primitive | 各遊戲傷害公式、技能、數值 |
-| UI | Node、Text、Button、layout primitive、最小 binding/command primitive | View、ViewModel、商店、任務、戀愛選項流程 |
+| UI | 最小 tree schema validation、snapshot transport | View、ViewModel、rect 組合、hit-test、action、商店、任務、戀愛選項流程 |
 | save | serialization/storage primitive | 玩家資料 schema 與何時存檔 |
 | network | transport/replication primitive（後期） | RTS、PVP 的同步規則 |
 | test | runner、clock、input、observation | 測試場景與驗收條件 |
@@ -328,14 +329,14 @@ ECS simulation / game state（Luau + engine components）
 Luau ViewModel（畫面投影、UI commands、screen flow）
                   │ explicit bindings
                   ▼
-Declarative View（engine UI primitives）
+Declarative View（game-composed; engine validates/transports minimal tree）
 ```
 
 Model 是遊戲的真實狀態，ViewModel 是遊戲端定義的 typed presentation projection，View 是由引擎提供 primitive、由遊戲端組合的 declarative UI。View 不直接修改 ECS，也不把遊戲規則藏進 callback。
 
 這對 AI 友善，因為 AI 可以分別 inspect model、ViewModel 與 UI tree；ViewModel 是小型、typed、可序列化的上下文；commands 有名稱、參數、前置條件、結果與 diagnostics；測試可先驗證 ViewModel，再驗證 View binding。
 
-第一版不做全域 magic binding、雙向自動同步、反射式 converter graph、全引擎 ViewModel registry 或讓每個 Entity 都建立 ViewModel。Binding 只在 UI boundary、明確宣告、可清除、可追蹤；高頻 gameplay simulation 維持 ECS。
+第一版不做全域 magic binding、雙向自動同步、反射式 converter graph、全引擎 ViewModel registry、layout engine、widget library、UI event bus 或讓每個 Entity 都建立 ViewModel。`api.ui.setRoot` 只提供 flat `screen/text/button` transport；ViewModel、View 組合、hit-test 與 action 仍在遊戲端，高頻 gameplay simulation 維持 ECS。
 
 ## 11. 里程碑與驗收
 

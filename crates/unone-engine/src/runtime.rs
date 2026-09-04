@@ -15,6 +15,7 @@ use sha2::{Digest, Sha256};
 use crate::{
     diagnostics::{ActionSuggestion, Diagnostic, EngineResult, SourceLocation},
     project::{InputFrame, ProjectConfig, ProjectPaths, TestSpec},
+    ui::UiTree,
     world::{SceneFile, Vec2, World, WorldSnapshot},
 };
 
@@ -82,7 +83,19 @@ struct InputState {
 #[derive(Debug, Clone, Default)]
 struct PointerState {
     position: Vec2,
+    screen_position: Vec2,
     down: bool,
+}
+
+#[derive(Clone)]
+struct ApiState {
+    world: Rc<RefCell<World>>,
+    input: Rc<RefCell<InputState>>,
+    random: Rc<RefCell<DeterministicRng>>,
+    trace: Rc<RefCell<Vec<TraceEvent>>>,
+    observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
+    ui: Rc<RefCell<Option<UiTree>>>,
+    save_payload: Rc<RefCell<Option<serde_json::Value>>>,
 }
 
 #[derive(Debug, Clone)]
@@ -143,6 +156,7 @@ pub struct EngineRuntime {
     update_fn: Function,
     trace: Rc<RefCell<Vec<TraceEvent>>>,
     observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
+    ui: Rc<RefCell<Option<UiTree>>>,
     save_payload: Rc<RefCell<Option<serde_json::Value>>>,
     generation: u64,
     last_seen_script_stamp: Option<ScriptStamp>,
@@ -319,18 +333,19 @@ impl EngineRuntime {
         let random = Rc::new(RefCell::new(DeterministicRng::new(seed)));
         let trace = Rc::new(RefCell::new(Vec::new()));
         let observations = Rc::new(RefCell::new(BTreeMap::new()));
+        let ui = Rc::new(RefCell::new(None));
         let save_payload = Rc::new(RefCell::new(None));
+        let api_state = ApiState {
+            world: Rc::clone(&world),
+            input: Rc::clone(&input),
+            random: Rc::clone(&random),
+            trace: Rc::clone(&trace),
+            observations: Rc::clone(&observations),
+            ui: Rc::clone(&ui),
+            save_payload: Rc::clone(&save_payload),
+        };
         let lua = Lua::new();
-        let api = build_api(
-            &lua,
-            Rc::clone(&world),
-            Rc::clone(&input),
-            Rc::clone(&random),
-            Rc::clone(&trace),
-            Rc::clone(&observations),
-            Rc::clone(&save_payload),
-        )
-        .map_err(|err| {
+        let api = build_api(&lua, &api_state).map_err(|err| {
             Box::new(Diagnostic::error(
                 "ENGINE_API_BIND_FAILED",
                 "無法建立 Luau Engine API",
@@ -354,6 +369,7 @@ impl EngineRuntime {
             update_fn: placeholder,
             trace,
             observations,
+            ui,
             save_payload,
             generation: 0,
             last_seen_script_stamp: None,
@@ -368,7 +384,9 @@ impl EngineRuntime {
     }
 
     pub fn set_pointer_position(&mut self, position: Vec2) {
-        self.input.borrow_mut().pointer.position = position;
+        let mut input = self.input.borrow_mut();
+        input.pointer.position = position;
+        input.pointer.screen_position = position;
     }
 
     pub fn set_pointer_down(&mut self, is_down: bool) {
@@ -441,6 +459,7 @@ impl EngineRuntime {
         if let Some(pointer) = &frame.pointer {
             let mut input = self.input.borrow_mut();
             input.pointer.position = pointer.position;
+            input.pointer.screen_position = pointer.screen_position.unwrap_or(pointer.position);
             input.pointer.down = pointer.down;
         } else {
             self.input.borrow_mut().pointer.down = false;
@@ -584,6 +603,7 @@ impl EngineRuntime {
     pub fn observe(&self) -> WorldSnapshot {
         let mut snapshot = self.world.borrow().snapshot();
         snapshot.observations = self.observations.borrow().clone();
+        snapshot.ui = self.ui.borrow().clone();
         snapshot
     }
 
@@ -671,21 +691,21 @@ impl EngineRuntime {
     }
 }
 
-fn build_api(
-    lua: &Lua,
-    world: Rc<RefCell<World>>,
-    input: Rc<RefCell<InputState>>,
-    random: Rc<RefCell<DeterministicRng>>,
-    trace: Rc<RefCell<Vec<TraceEvent>>>,
-    observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
-    save_payload: Rc<RefCell<Option<serde_json::Value>>>,
-) -> mlua::Result<Table> {
+fn build_api(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
+    let world = Rc::clone(&state.world);
+    let input = Rc::clone(&state.input);
+    let random = Rc::clone(&state.random);
+    let trace = Rc::clone(&state.trace);
+    let observations = Rc::clone(&state.observations);
+    let ui = Rc::clone(&state.ui);
+    let save_payload = Rc::clone(&state.save_payload);
     let api = lua.create_table()?;
     let entity = lua.create_table()?;
     let input_api = lua.create_table()?;
     let random_api = lua.create_table()?;
     let camera = lua.create_table()?;
     let observation_api = lua.create_table()?;
+    let ui_api = lua.create_table()?;
     let save_api = lua.create_table()?;
 
     let spawn_world = Rc::clone(&world);
@@ -797,6 +817,21 @@ fn build_api(
         })?,
     )?;
 
+    let screen_pointer_position_input = Rc::clone(&input);
+    input_api.set(
+        "getScreenPointerPosition",
+        lua.create_function(move |lua, _: ()| {
+            let position = screen_pointer_position_input
+                .borrow()
+                .pointer
+                .screen_position;
+            let table = lua.create_table()?;
+            table.set("x", position.x)?;
+            table.set("y", position.y)?;
+            Ok(table)
+        })?,
+    )?;
+
     let pointer_down_input = Rc::clone(&input);
     input_api.set(
         "isPointerDown",
@@ -889,6 +924,16 @@ fn build_api(
             Ok(())
         })?,
     )?;
+    let ui_state = Rc::clone(&ui);
+    ui_api.set(
+        "setRoot",
+        lua.create_function(move |_, value: Value| {
+            let value = lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
+            let tree = UiTree::from_json(value).map_err(mlua::Error::RuntimeError)?;
+            *ui_state.borrow_mut() = Some(tree);
+            Ok(())
+        })?,
+    )?;
     let save_state = Rc::clone(&save_payload);
     save_api.set(
         "set",
@@ -914,6 +959,7 @@ fn build_api(
     api.set("physics", physics)?;
     api.set("camera", camera)?;
     api.set("observation", observation_api)?;
+    api.set("ui", ui_api)?;
     api.set("save", save_api)?;
     Ok(api)
 }
@@ -1179,6 +1225,22 @@ fn evaluate_assertion(
     world: &WorldSnapshot,
     assertion: &crate::project::TestAssertion,
 ) -> Result<(), String> {
+    if let Some(ui) = &assertion.ui {
+        let actual = world
+            .ui
+            .as_ref()
+            .ok_or_else(|| "UI tree 不存在。".to_string())?;
+        let expected = UiTree::from_json(ui.equals.clone())
+            .map_err(|error| format!("UI assertion 不是有效的 UI tree：{error}"))?;
+        if actual != &expected {
+            return Err(format!(
+                "UI tree 不等於預期；actual={} expected={}",
+                serde_json::to_string(actual).unwrap_or_else(|_| "<unserializable>".to_string()),
+                serde_json::to_string(&expected).unwrap_or_else(|_| "<unserializable>".to_string())
+            ));
+        }
+        return Ok(());
+    }
     if let Some(observation) = &assertion.observation {
         let actual = world
             .observations
@@ -1244,7 +1306,7 @@ mod tests {
     use tempfile::tempdir;
 
     use super::{DeterministicRng, EngineRuntime};
-    use crate::project::InputFrame;
+    use crate::{project::InputFrame, ui::UiTree};
 
     fn write_project(dir: &std::path::Path, script: &str) {
         fs::create_dir_all(dir.join("scripts")).unwrap();
@@ -1383,6 +1445,7 @@ return Game
             pointer: Some(crate::project::PointerInput {
                 position: crate::world::Vec2 { x: 3.0, y: 4.0 },
                 down: true,
+                screen_position: None,
             }),
         };
 
@@ -1488,6 +1551,62 @@ return Game
         assert!(!result.ok);
         assert_eq!(result.diagnostics[0].code, "LUAU_RUNTIME_ERROR");
         assert!(result.diagnostics[0].explanation.contains("portable"));
+    }
+
+    #[test]
+    fn ui_set_root_validates_and_exposes_host_render_contract() {
+        let source = r#"
+local Game = {}
+function Game.start(api)
+    api.ui.setRoot({
+        kind = "screen",
+        id = "dialogue",
+        node = "intro",
+        children = {
+            { kind = "text", id = "speaker", rect = { x = 10, y = 70, width = 80, height = 10 }, text = "Mira" },
+            { kind = "button", id = "choice", rect = { x = 10, y = 10, width = 35, height = 10 }, text = "Listen", action = "Continue" },
+        },
+    })
+end
+function Game.update(_api, _dt) end
+return Game
+"#;
+        let runtime = EngineRuntime::load_source("UiSmoke", "main.luau", source, None).unwrap();
+
+        assert_eq!(
+            runtime.observe().ui,
+            Some(UiTree::from_json(serde_json::json!({
+                "kind": "screen",
+                "id": "dialogue",
+                "node": "intro",
+                "children": [
+                    {"kind": "text", "id": "speaker", "rect": {"x": 10, "y": 70, "width": 80, "height": 10}, "text": "Mira"},
+                    {"kind": "button", "id": "choice", "rect": {"x": 10, "y": 10, "width": 35, "height": 10}, "text": "Listen", "action": "Continue"}
+                ]
+            })).unwrap())
+        );
+    }
+
+    #[test]
+    fn ui_set_root_rejects_unknown_nodes_with_runtime_diagnostic() {
+        let source = r#"
+local Game = {}
+function Game.start(api)
+    api.ui.setRoot({
+        kind = "screen", id = "screen", node = "intro",
+        children = {{ kind = "slider", id = "volume", rect = { x = 0, y = 0, width = 1, height = 1 }, text = "" }},
+    })
+end
+function Game.update(_api, _dt) end
+return Game
+"#;
+        let error = match EngineRuntime::load_source("UiError", "main.luau", source, None) {
+            Ok(_) => panic!("invalid UI root unexpectedly loaded"),
+            Err(error) => error,
+        };
+
+        assert_eq!(error.code, "LUAU_RUNTIME_ERROR");
+        assert!(error.explanation.contains("unsupported kind"));
     }
 
     #[test]

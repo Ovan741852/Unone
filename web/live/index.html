@@ -13,7 +13,12 @@
       .note { color: #9ca3af; margin-top: 0; }
       #status { color: #93c5fd; }
       .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+      #game-shell { position: relative; min-width: 0; }
       canvas { display: block; width: 100%; aspect-ratio: 16 / 9; border: 1px solid #334155; border-radius: 10px; background: #111827; touch-action: none; }
+      #ui-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+      .unone-ui-node { position: absolute; box-sizing: border-box; overflow: hidden; color: #f8fafc; text-align: left; }
+      .unone-ui-text { padding: 2px 4px; }
+      .unone-ui-button { padding: 2px 6px; border: 1px solid #93c5fd; border-radius: 5px; background: rgba(30, 64, 175, .8); color: #f8fafc; font: inherit; }
       aside { padding: 14px; border: 1px solid #334155; border-radius: 10px; background: #111827; }
       h2 { margin: 0 0 8px; font-size: 1rem; }
       button { margin-bottom: 12px; padding: 7px 10px; border: 1px solid #475569; border-radius: 6px; background: #1e293b; color: #e5e7eb; font: inherit; cursor: pointer; }
@@ -28,7 +33,10 @@
       <p id="status" data-testid="status">waiting for Emscripten runtime…</p>
       <p class="note">The browser owns fetch, IndexedDB and WebGPU; Rust owns bundle integrity, live frame semantics and Luau simulation.</p>
       <div class="layout">
-        <canvas id="game" data-testid="game-canvas" aria-label="Unone live engine preview"></canvas>
+        <div id="game-shell">
+          <canvas id="game" data-testid="game-canvas" aria-label="Unone live engine preview"></canvas>
+          <div id="ui-layer" data-testid="ui-layer" aria-label="Engine declarative UI"></div>
+        </div>
         <aside>
           <h2>Semantic live state</h2>
           <button id="reload-script" data-testid="reload-script" disabled>Reload Luau script</button>
@@ -37,7 +45,7 @@
         </aside>
       </div>
     </main>
-    <script type="module" src="./main.js?v=4"></script>
+    <script type="module" src="./main.js?v=5"></script>
     <script>
       var Module = {
         noInitialRun: true,

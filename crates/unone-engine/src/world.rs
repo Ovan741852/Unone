@@ -153,6 +153,8 @@ pub struct WorldSnapshot {
     pub camera: Camera2DData,
     pub entities: BTreeMap<String, EntitySnapshot>,
     pub observations: BTreeMap<String, serde_json::Value>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ui: Option<crate::ui::UiTree>,
 }
 
 #[derive(Debug, Clone)]
@@ -338,6 +340,7 @@ impl World {
             },
             entities,
             observations: BTreeMap::new(),
+            ui: None,
         }
     }
 

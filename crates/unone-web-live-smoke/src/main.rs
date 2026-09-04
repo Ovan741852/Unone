@@ -9,7 +9,11 @@ use unone_engine::{
 thread_local! {
     static RUNTIME: RefCell<Option<EngineRuntime>> = const { RefCell::new(None) };
     static POINTER: RefCell<PointerInput> = const {
-        RefCell::new(PointerInput { position: Vec2 { x: 0.0, y: 0.0 }, down: false })
+        RefCell::new(PointerInput {
+            position: Vec2 { x: 0.0, y: 0.0 },
+            down: false,
+            screen_position: None,
+        })
     };
     static OUTPUT: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static INPUT_BUFFER: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
@@ -289,8 +293,21 @@ pub extern "C" fn unone_web_set_pointer(x: f64, y: f64, down: i32) {
     POINTER.with(|pointer| {
         let mut pointer = pointer.borrow_mut();
         pointer.position = Vec2 { x, y };
+        pointer.screen_position = Some(Vec2 { x, y });
         pointer.down = down != 0;
     });
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn unone_web_set_screen_pointer(x: f64, y: f64) -> i32 {
+    if !x.is_finite() || !y.is_finite() {
+        write_error("screen pointer coordinates must be finite");
+        return -1;
+    }
+    POINTER.with(|pointer| {
+        pointer.borrow_mut().screen_position = Some(Vec2 { x, y });
+    });
+    0
 }
 
 #[unsafe(no_mangle)]
@@ -339,21 +356,24 @@ mod tests {
     use super::{
         OUTPUT, unone_web_bundle_begin, unone_web_bundle_finish, unone_web_bundle_write,
         unone_web_load_project, unone_web_reload_script, unone_web_set_pointer,
-        unone_web_set_save_payload, unone_web_tick,
+        unone_web_set_save_payload, unone_web_set_screen_pointer, unone_web_tick,
     };
     use serde_json::json;
 
     const PROJECT_SCRIPT: &str = r#"--!strict
 type Vec2 = { x: number, y: number }
 type EntityApi = { getPosition: (id: string) -> Vec2, setPosition: (id: string, position: Vec2) -> () }
-type InputApi = { getPointerPosition: () -> Vec2, isPointerDown: () -> boolean }
-type EngineApi = { entity: EntityApi, input: InputApi }
+type ObservationValue = nil | boolean | number | string | {[string]: ObservationValue} | {ObservationValue}
+type ObservationApi = { set: (key: string, value: ObservationValue) -> () }
+type InputApi = { getPointerPosition: () -> Vec2, getScreenPointerPosition: () -> Vec2, isPointerDown: () -> boolean }
+type EngineApi = { entity: EntityApi, input: InputApi, observation: ObservationApi }
 local Game = {}
 function Game.start(_api: EngineApi) end
 function Game.update(api: EngineApi, _dt: number)
     if api.input.isPointerDown() then
         api.entity.setPosition("web_probe", api.input.getPointerPosition())
     end
+    api.observation.set("screen_pointer", api.input.getScreenPointerPosition() :: any)
 end
 return Game
 "#;
@@ -438,9 +458,14 @@ return Game
         assert_eq!(loaded, 0);
 
         unone_web_set_pointer(3.0, 4.0, 1);
+        assert_eq!(unone_web_set_screen_pointer(20.0, 15.0), 0);
         assert_eq!(unone_web_tick(), 0);
         let position = output()["world"]["entities"]["web_probe"]["transform"].clone();
         assert_eq!(position, json!({"x": 3.0, "y": 4.0}));
+        assert_eq!(
+            output()["world"]["observations"]["screen_pointer"],
+            json!({"x": 20, "y": 15})
+        );
 
         let reloaded =
             unsafe { unone_web_reload_script(RELOAD_SCRIPT.as_ptr(), RELOAD_SCRIPT.len()) };

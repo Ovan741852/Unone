@@ -13,8 +13,8 @@
       "id": "script",
       "version": "2",
       "source": "./reload-v2.luau",
-      "sha256": "147fdf4004cd0319e8cd2011ce11e009bb969901710c9ca6430878b0e27beffe",
-      "size_bytes": 651,
+      "sha256": "fd8b5206037b09c558f6f6c16c1e5fbd121aa2a18e18d7eb0b0a2b5f913071b0",
+      "size_bytes": 1310,
       "dependencies": ["project"]
     }
   ]

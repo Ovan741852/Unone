@@ -2,17 +2,40 @@ import { createWebGpuRenderer, frameOf, semanticSummary, worldFromPointer } from
 import { installGeneration, readActiveText } from "./bundle-store.js?v=1";
 
 const canvas = document.querySelector("#game");
+const uiLayer = document.querySelector("#ui-layer");
 const status = document.querySelector("#status");
 const output = document.querySelector("#output");
 const reloadButton = document.querySelector("#reload-script");
 const bundleUpdateButton = document.querySelector("#bundle-update");
 let snapshot = null;
 let renderer = null;
-let pointer = { position: { x: 0, y: 0 }, down: false };
+let pointer = { position: { x: 0, y: 0 }, screen_position: { x: 0, y: 0 }, down: false };
 let started = false;
 let reloadNotice = null;
 let manifest = null;
 let generationState = null;
+let renderedUi = null;
+
+function renderUi(nextSnapshot) {
+  const ui = nextSnapshot?.world?.ui ?? null;
+  const serialized = JSON.stringify(ui);
+  if (serialized === renderedUi) return;
+  renderedUi = serialized;
+  uiLayer.replaceChildren();
+  if (!ui) return;
+  for (const node of ui.children ?? []) {
+    const element = document.createElement(node.kind === "button" ? "button" : "div");
+    element.className = `unone-ui-node unone-ui-${node.kind}`;
+    element.textContent = node.text;
+    element.dataset.nodeId = node.id;
+    if (node.kind === "button") element.dataset.action = node.action;
+    element.style.left = `${node.rect.x}%`;
+    element.style.bottom = `${node.rect.y}%`;
+    element.style.width = `${node.rect.width}%`;
+    element.style.height = `${node.rect.height}%`;
+    uiLayer.appendChild(element);
+  }
+}
 
 function showState() {
   const state = semanticSummary(snapshot, pointer);
@@ -24,6 +47,7 @@ function showState() {
       }
     : null;
   output.textContent = JSON.stringify(state, null, 2);
+  renderUi(snapshot);
 }
 
 function readSnapshot() {
@@ -32,6 +56,13 @@ function readSnapshot() {
   const length = module._unone_web_observation_len();
   const bytes = module.HEAPU8.slice(pointerAddress, pointerAddress + length);
   return JSON.parse(new TextDecoder().decode(bytes));
+}
+
+function screenFromPointer(canvasElement, event) {
+  const rect = canvasElement.getBoundingClientRect();
+  const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  const y = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
+  return { x: x * 100, y: (1 - y) * 100 };
 }
 
 async function writeBridgePayload(text) {
@@ -93,6 +124,9 @@ async function updateBundle() {
 
 function step() {
   window.Module._unone_web_set_pointer(pointer.position.x, pointer.position.y, pointer.down ? 1 : 0);
+  if (window.Module._unone_web_set_screen_pointer(pointer.screen_position.x, pointer.screen_position.y) !== 0) {
+    throw new Error("live engine screen pointer update failed");
+  }
   if (window.Module._unone_web_tick() !== 0) throw new Error("live engine tick failed");
   snapshot = readSnapshot();
   renderer.draw(snapshot);
@@ -117,15 +151,16 @@ async function start() {
   }));
   canvas.addEventListener("pointerdown", (event) => {
     canvas.setPointerCapture(event.pointerId);
-    pointer = { position: worldFromPointer(canvas, event, snapshot), down: true };
+    pointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: true };
   });
   canvas.addEventListener("pointermove", (event) => {
-    if (event.buttons & 1) pointer = { position: worldFromPointer(canvas, event, snapshot), down: true };
+    if (event.buttons & 1) pointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: true };
   });
   canvas.addEventListener("pointerup", (event) => {
-    pointer = { position: worldFromPointer(canvas, event, snapshot), down: false };
+    pointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: false };
   });
   showState();
+  await reloadScriptFromActiveBundle();
   window.requestAnimationFrame(step);
 }
 

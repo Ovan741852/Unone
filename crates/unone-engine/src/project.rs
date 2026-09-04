@@ -185,6 +185,10 @@ pub struct PointerInput {
     pub position: Vec2,
     #[serde(default)]
     pub down: bool,
+    /// Host-normalized logical UI coordinates. When omitted, world position
+    /// is used as a compatibility-free default for headless callers.
+    #[serde(default)]
+    pub screen_position: Option<Vec2>,
 }
 
 fn default_test_frames() -> u64 {
@@ -208,10 +212,17 @@ pub struct TestAssertion {
     pub less_than: Option<f64>,
     #[serde(default)]
     pub observation: Option<ObservationAssertion>,
+    #[serde(default)]
+    pub ui: Option<UiAssertion>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ObservationAssertion {
     pub key: String,
+    pub equals: serde_json::Value,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct UiAssertion {
     pub equals: serde_json::Value,
 }

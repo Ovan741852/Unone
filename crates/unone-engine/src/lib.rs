@@ -4,6 +4,7 @@ mod diagnostics;
 mod platform;
 mod project;
 mod runtime;
+mod ui;
 mod world;
 
 pub use api::{
@@ -19,11 +20,13 @@ pub use diagnostics::{
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{
     InputFrame, ObservationAssertion, PointerInput, ProjectConfig, ProjectFileStatus,
-    ProjectInspectReport, ProjectPaths, TestAssertion, TestSpec, inspect as inspect_project,
+    ProjectInspectReport, ProjectPaths, TestAssertion, TestSpec, UiAssertion,
+    inspect as inspect_project,
 };
 pub use runtime::{
     CheckReport, EngineRuntime, RunReport, TestCaseReport, TestSuiteReport, TypeCheckReport,
 };
+pub use ui::{UiNode, UiRect, UiTree};
 pub use world::{
     Camera2DData, EntitySnapshot, PhysicsSettings, RigidBody2DData, RigidBodySnapshot,
     RigidBodyType, SceneFile, Vec2, WorldSnapshot,
