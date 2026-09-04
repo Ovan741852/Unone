@@ -18,6 +18,7 @@ cargo clippy --workspace --all-targets -- -D warnings
 ```powershell
 $UnoneEmsdkRoot = 'D:/path/to/emsdk'
 $UnoneEmscriptenRoot = Join-Path $UnoneEmsdkRoot 'emscripten'
+$UnoneHostNode = (Get-Command node -ErrorAction Stop).Source
 $env:EMSDK = $UnoneEmsdkRoot
 $env:EM_CONFIG = Join-Path $UnoneEmsdkRoot '.emscripten'
 $env:EMSDK_PYTHON = Join-Path $UnoneEmsdkRoot 'python/python.exe'
@@ -41,10 +42,10 @@ cargo clean -p mlua-sys --target wasm32-unknown-emscripten
 目前 smoke artifact 可由 Node 執行（`.js` 與同目錄 `.wasm` 必須一起存在）：
 
 ```powershell
-node target/wasm32-unknown-emscripten/debug/deps/unone_web_smoke.js
+& $UnoneHostNode --experimental-wasm-exnref target/wasm32-unknown-emscripten/debug/deps/unone_web_smoke.js
 ```
 
-成功時會印出 `unone_web_smoke completed: sha256:...`；這證明 memory-backed Luau runtime 已完成 link 並執行 60 frames，但仍不是瀏覽器 WebGPU page。
+目前 host Node 需要 `--experimental-wasm-exnref` 才能載入這個 Emscripten exception section；要在修改 `PATH` 前先記住 host Node，避免誤執行 Emscripten SDK 內不支援該 flag 的舊 Node。成功時會印出 `unone_web_smoke completed: sha256:...`；這證明 memory-backed Luau runtime 已完成 link 並執行 60 frames，但仍不是瀏覽器 WebGPU page。
 
 ## 尚未完成
 

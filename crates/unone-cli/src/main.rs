@@ -1,14 +1,14 @@
-use std::{borrow::Cow, collections::BTreeMap, fs, path::PathBuf, process::ExitCode, sync::Arc};
+use std::{borrow::Cow, fs, path::PathBuf, process::ExitCode, sync::Arc};
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use unone_engine::{
-    BundleManager, EngineResult, EngineRuntime, WorldSnapshot, api_describe, api_search,
-    inspect_project,
+    BundleManager, EngineResult, EngineRuntime, InputFrame, Vec2, WorldSnapshot, api_describe,
+    api_search, inspect_project,
 };
 use winit::{
     application::ApplicationHandler,
-    event::{ElementState, WindowEvent},
+    event::{ElementState, MouseButton, WindowEvent},
     event_loop::{ActiveEventLoop, EventLoop},
     keyboard::{KeyCode, PhysicalKey},
     window::{Window, WindowId},
@@ -183,14 +183,14 @@ fn run() -> Result<ExitCode> {
                         );
                     }
                 };
-                let sequence: Vec<BTreeMap<String, bool>> = match serde_json::from_str(&text) {
+                let sequence: Vec<InputFrame> = match serde_json::from_str(&text) {
                     Ok(sequence) => sequence,
                     Err(error) => {
                         return print_result(
                             EngineResult::<serde_json::Value>::failure(
                                 unone_engine::Diagnostic::error(
                                     "INPUT_SEQUENCE_INVALID",
-                                    "input sequence 不是有效的 JSON action snapshot 陣列",
+                                    "input sequence 不是有效的 JSON input frame 陣列",
                                     format!("{}：{}", path.display(), error),
                                 ),
                             ),
@@ -346,6 +346,25 @@ impl ApplicationHandler for PreviewApp {
             WindowEvent::Resized(size) => {
                 if let Some(renderer) = &mut self.renderer {
                     renderer.resize(size.width, size.height);
+                }
+            }
+            WindowEvent::CursorMoved { position, .. } => {
+                let Some(runtime) = &mut self.runtime else {
+                    return;
+                };
+                let Some(renderer) = &self.renderer else {
+                    return;
+                };
+                let pointer = renderer.screen_to_world(position.x, position.y, &runtime.observe());
+                runtime.set_pointer_position(pointer);
+            }
+            WindowEvent::MouseInput {
+                state,
+                button: MouseButton::Left,
+                ..
+            } => {
+                if let Some(runtime) = &mut self.runtime {
+                    runtime.set_pointer_down(state == ElementState::Pressed);
                 }
             }
             WindowEvent::KeyboardInput { event, .. } => {
@@ -557,6 +576,16 @@ impl Renderer {
         self.config.width = width;
         self.config.height = height;
         self.surface.configure(&self.device, &self.config);
+    }
+
+    fn screen_to_world(&self, x: f64, y: f64, snapshot: &WorldSnapshot) -> Vec2 {
+        let clip_x = (x / f64::from(self.config.width)) * 2.0 - 1.0;
+        let clip_y = 1.0 - (y / f64::from(self.config.height)) * 2.0;
+        let zoom = snapshot.camera.zoom;
+        Vec2 {
+            x: snapshot.camera.position.x + (clip_x + 0.8) / (0.2 * zoom),
+            y: snapshot.camera.position.y + (clip_y + 0.1) / (0.2 * zoom),
+        }
     }
 
     fn render(&mut self, snapshot: &WorldSnapshot) -> Result<(), String> {

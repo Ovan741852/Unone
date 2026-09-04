@@ -59,8 +59,8 @@
 - Camera API 接入後第一次 sample typecheck 發現 physics 腳本的 local `EngineApi` 遺漏 `camera` 欄位；官方 analyzer 回報 `Key 'camera' not found in table 'EngineApi'`。分類為 game-side contract drift，補上 sample 型別定義後重新驗證。
 - Camera2D 已加入最小 contract：引擎持有 position／zoom，Luau 持有 follow policy；physics sample run 後 observation 回報 camera position `x=9.9,y=0.5`，`api search "camera zoom"` 可回傳四個 camera API 的語意 metadata。Camera 邊界記錄於 `docs/decisions/0007-2d-camera-boundary.md`。
 - 對 `4a46f06` 依流程重試 Claude CLI review，第三次仍 60 秒無輸出，沒有 findings，不算通過；詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-3.md`。
-- 加入 `TestSpec.input_sequence` 與 `run_with_input_sequence`：測試可逐 frame 注入語意 action snapshot，序列不足的 frame 會清空 input；新增 regression test 證明序列以本次 run 為相對起點且不會 sticky。這是 Angry Birds input replay 的引擎機制，觸控／滑鼠座標轉換仍留在 platform adapter。
-- CLI 已加入 `run --input-sequence <json>`，沿用同一個 action snapshot 格式；`--action` 與它互斥，檔案讀取／JSON 格式錯誤會回傳可行動 diagnostic。這讓 AI 不需要操作 GUI 就能重播多 frame 輸入。
+- 加入 `TestSpec.input_sequence` 與 `run_with_input_sequence`：第一版測試可逐 frame 注入語意 action snapshot，序列不足的 frame 會清空 input；新增 regression test 證明序列以本次 run 為相對起點且不會 sticky。這是 Angry Birds input replay 的引擎機制，觸控／滑鼠座標轉換仍留在 platform adapter。
+- CLI 已加入 `run --input-sequence <json>`，第一版沿用 action snapshot 格式；`--action` 與它互斥，檔案讀取／JSON 格式錯誤會回傳可行動 diagnostic。後續已演進為明確的 `InputFrame`（`actions`／`pointer`），讓 AI 不需要操作 GUI 就能重播多 frame 輸入。
 - Web toolchain 第二輪驗證：改用 Rust `wasm32-unknown-emscripten` target 搭配完整 Emscripten wrapper；`cargo check -p unone-engine --target wasm32-unknown-emscripten` 通過。先前 `wasm32-unknown-unknown` 的 `No thread API` 被判定為 target override／sysroot 不匹配，不是引擎邏輯問題。
 - 為 native／Web 共用 runtime 補上 `EngineRuntime::load_source`：Web host 負責 fetch／cache 後以記憶體提供 scene 與 Luau source；引擎仍只負責 Luau、world、physics、input 與 observation。新增 regression test 證明沒有 project files 也能執行同一 runtime。
 - Web compile 的證據仍只到 engine library；瀏覽器 WebGPU host、平台 capability report 與固定 CI toolchain 尚未宣稱完成，避免把編譯通過誤報成跨平台運行通過。
@@ -70,5 +70,8 @@
 - 累積至下一個 review 間隔後再次執行 Claude CLI read-only review；連續 60 秒無輸出後中止，沒有 findings，故不算通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-5.md`。
 - 發現 `RunReport.seed` 原本只被記錄、沒有進入 runtime；分類為引擎 deterministic contract 問題。加入 seeded Luau `random.nextFloat`／`random.nextInt`、inclusive range validation、unbiased rejection sampling 與 seed regression test，並更新三個 sample 的 contract types。
 - 新增 `platform capabilities` Developer Protocol query，讓 AI 可先讀 target family、可用 project loader、hot reload mode、已驗證 runtime 與待完成 host work；native 輸出明確列出 iOS／Android wrapper 尚未完成，避免平台能力被猜測。
+- pointer input slice 完成：`InputFrame` 改為明確的 `actions`／world-space `pointer` schema，Luau 暴露 `getPointerPosition`／`isPointerDown`，native preview 完成滑鼠到 world 的 Camera2D 反轉，Angry Birds 新增 pointer drag/release headless test 並通過。邊界記錄於 `docs/decisions/0009-semantic-pointer-input.md`。
 - Web smoke／seeded RNG／platform query 切片後依節奏執行 Claude CLI read-only review；連續 60 秒無輸出後中止，沒有 findings，故不算通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-6.md`。
 - Web smoke host 首次 cdylib link 發現 side module 需要 PIC；依影響範圍判定為 Emscripten/C++ exception model 的 platform architecture 問題，改用主模組 executable，清理舊 `mlua-sys` cache 後加上 `-fwasm-exceptions` 重建成功。Node 執行 `.js + .wasm` 完成 60 frames 並輸出 observation digest；瀏覽器 WebGPU page 仍未宣稱完成。
+- Node 直接執行 Web smoke 時發現預設未開啟 Emscripten exception section 所需的 exnref；分類為 host runtime 條件問題，不是引擎邏輯問題。以 `node --experimental-wasm-exnref .../unone_web_smoke.js` 重跑成功，並將 flag 寫入 toolchain 文件與 issue，避免普通 `node` 命令被誤記為可用。
+- pointer input 與 Web toolchain 文件切片後依流程執行 Claude CLI `2.1.260` read-only review；約 60 秒完全無輸出後中止，沒有可判讀 findings，故不算通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-7.md`。

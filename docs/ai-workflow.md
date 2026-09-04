@@ -44,17 +44,23 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json ru
 
 AI 應優先讀 `world`、`observation_digest`、`diagnostics`，再看 screenshot。相同 project、seed、frames 與 input 應產生相同 digest；不要用畫面像不像取代 state assertion。
 
-要重播逐 frame action，可使用 JSON 陣列：
+要重播逐 frame input，可使用 JSON 陣列。每 frame 明確分成語意 actions 與可選的 world-space pointer：
 
 ```json
-[{"Right": true}, {"Right": true}, {}, {"Right": false}]
+[
+  {"actions": {"Right": true}},
+  {"actions": {"Right": true}},
+  {"actions": {}},
+  {"actions": {"Right": false}},
+  {"pointer": {"position": {"x": 2, "y": 1}, "down": true}}
+]
 ```
 
 ```powershell
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json run --frames 4 --seed 42 --input-sequence D:/Projects/Unone_Games/minimal-2d/tests/input-sequence.json
 ```
 
-`--action` 與 `--input-sequence` 互斥；sequence 不足的 frame 會清空 action。平台觸控／滑鼠／鍵盤只需在 adapter 層映射成相同的語意 action。
+`--action` 與 `--input-sequence` 互斥；sequence 不足的 frame 會清空 actions 與 pointer down 狀態。`pointer.position` 已是 world space，平台觸控／滑鼠只需在 adapter 層完成像素到 world 的轉換；遊戲腳本不讀 key code 或螢幕座標。
 
 ## 3. 執行測試
 
@@ -62,7 +68,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json ru
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json test
 ```
 
-Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 frame `input_sequence` 與 assertion。`input_sequence` 每一項是一個 action snapshot；未提供的 frame 會清空按鍵狀態，避免 sticky input。測試失敗時要先判斷是：
+Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 frame `input_sequence` 與 assertion。每個 `input_sequence` frame 可包含 `actions` 與 `pointer`；未提供的 frame 會清空 action 與 pointer down 狀態，避免 sticky input。測試失敗時要先判斷是：
 
 - game logic：改 `Unone_Games` 的 Luau 或內容。
 - engine contract：改引擎、測試與文件。

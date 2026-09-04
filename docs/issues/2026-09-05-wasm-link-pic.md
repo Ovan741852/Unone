@@ -20,4 +20,4 @@ relocation R_WASM_MEMORY_ADDR_SLEB cannot be used ...; recompile with -fPIC
 
 smoke host 改成 Emscripten 主模組 executable，避免不必要的 `SIDE_MODULE`。重新編譯 vendored Luau 時設定 `CXXFLAGS_wasm32_unknown_emscripten=-fwasm-exceptions`，讓 C++ objects 與 Rust target 的 exception model 一致；若 build cache 是舊 flags，需先清理 `mlua-sys` target artifacts。
 
-驗證結果：`cargo build -p unone-web-smoke --target wasm32-unknown-emscripten` 成功，Node 執行生成的 Emscripten `.js` 成功完成 60 frames 並輸出 observation digest。瀏覽器 WebGPU host 仍是後續工作；目前不把 `cdylib` 當成產品架構。
+驗證結果：`cargo build -p unone-web-smoke --target wasm32-unknown-emscripten` 成功；Node 需加 `--experimental-wasm-exnref` 才能執行生成的 Emscripten `.js`，成功完成 60 frames 並輸出 observation digest。瀏覽器 WebGPU host 仍是後續工作；目前不把 `cdylib` 當成產品架構。

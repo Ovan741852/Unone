@@ -14,7 +14,7 @@ use sha2::{Digest, Sha256};
 
 use crate::{
     diagnostics::{ActionSuggestion, Diagnostic, EngineResult, SourceLocation},
-    project::{ProjectConfig, ProjectPaths, TestSpec},
+    project::{InputFrame, ProjectConfig, ProjectPaths, TestSpec},
     world::{SceneFile, Vec2, World, WorldSnapshot},
 };
 
@@ -74,6 +74,13 @@ pub struct TraceEvent {
 #[derive(Debug, Clone, Default)]
 struct InputState {
     down: BTreeMap<String, bool>,
+    pointer: PointerState,
+}
+
+#[derive(Debug, Clone, Default)]
+struct PointerState {
+    position: Vec2,
+    down: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -350,6 +357,14 @@ impl EngineRuntime {
         self.input.borrow_mut().down.insert(action.into(), is_down);
     }
 
+    pub fn set_pointer_position(&mut self, position: Vec2) {
+        self.input.borrow_mut().pointer.position = position;
+    }
+
+    pub fn set_pointer_down(&mut self, is_down: bool) {
+        self.input.borrow_mut().pointer.down = is_down;
+    }
+
     pub fn reload(&mut self) -> Result<(), Box<Diagnostic>> {
         self.load_script(true)
     }
@@ -386,7 +401,7 @@ impl EngineRuntime {
         &mut self,
         frames: u64,
         seed: u64,
-        input_sequence: &[BTreeMap<String, bool>],
+        input_sequence: &[InputFrame],
     ) -> EngineResult<RunReport> {
         self.run_internal(frames, seed, Some(input_sequence))
     }
@@ -395,15 +410,22 @@ impl EngineRuntime {
         &mut self,
         frames: u64,
         seed: u64,
-        input_sequence: Option<&[BTreeMap<String, bool>]>,
+        input_sequence: Option<&[InputFrame]>,
     ) -> EngineResult<RunReport> {
         for frame_index in 0..frames {
             if let Some(input_sequence) = input_sequence {
-                let snapshot = input_sequence
+                let frame = input_sequence
                     .get(frame_index as usize)
                     .cloned()
                     .unwrap_or_default();
-                self.input.borrow_mut().down = snapshot;
+                let mut input = self.input.borrow_mut();
+                input.down = frame.actions;
+                if let Some(pointer) = frame.pointer {
+                    input.pointer.position = pointer.position;
+                    input.pointer.down = pointer.down;
+                } else {
+                    input.pointer.down = false;
+                }
             }
             if let Err(err) = self.tick() {
                 return EngineResult::failure(*err);
@@ -717,6 +739,24 @@ fn build_api(
         })?,
     )?;
 
+    let pointer_position_input = Rc::clone(&input);
+    input_api.set(
+        "getPointerPosition",
+        lua.create_function(move |lua, _: ()| {
+            let position = pointer_position_input.borrow().pointer.position;
+            let table = lua.create_table()?;
+            table.set("x", position.x)?;
+            table.set("y", position.y)?;
+            Ok(table)
+        })?,
+    )?;
+
+    let pointer_down_input = Rc::clone(&input);
+    input_api.set(
+        "isPointerDown",
+        lua.create_function(move |_, _: ()| Ok(pointer_down_input.borrow().pointer.down))?,
+    )?;
+
     let next_float_random = Rc::clone(&random);
     random_api.set(
         "nextFloat",
@@ -960,9 +1000,8 @@ mod tests {
 
     use tempfile::tempdir;
 
-    use super::EngineRuntime;
-
-    use super::DeterministicRng;
+    use super::{DeterministicRng, EngineRuntime};
+    use crate::project::InputFrame;
 
     fn write_project(dir: &std::path::Path, script: &str) {
         fs::create_dir_all(dir.join("scripts")).unwrap();
@@ -1058,11 +1097,15 @@ return Game
         let dir = tempdir().unwrap();
         write_project(dir.path(), SCRIPT);
         let mut runtime = EngineRuntime::load(dir.path()).unwrap();
-        let mut held = BTreeMap::new();
-        held.insert("Right".to_string(), true);
-        let sequence = vec![held; 30]
+        let mut actions = BTreeMap::new();
+        actions.insert("Right".to_string(), true);
+        let active = InputFrame {
+            actions,
+            pointer: None,
+        };
+        let sequence = vec![active; 30]
             .into_iter()
-            .chain((0..30).map(|_| BTreeMap::new()))
+            .chain((0..30).map(|_| InputFrame::default()))
             .collect::<Vec<_>>();
 
         let report = runtime

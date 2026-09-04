@@ -7,6 +7,7 @@ use std::{
 use serde::{Deserialize, Serialize};
 
 use crate::diagnostics::{Diagnostic, EngineResult};
+use crate::world::Vec2;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ProjectConfig {
@@ -164,9 +165,24 @@ pub struct TestSpec {
     #[serde(default)]
     pub input: BTreeMap<String, bool>,
     #[serde(default)]
-    pub input_sequence: Vec<BTreeMap<String, bool>>,
+    pub input_sequence: Vec<InputFrame>,
     #[serde(default)]
     pub assertions: Vec<TestAssertion>,
+}
+
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+pub struct InputFrame {
+    #[serde(default)]
+    pub actions: BTreeMap<String, bool>,
+    #[serde(default)]
+    pub pointer: Option<PointerInput>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct PointerInput {
+    pub position: Vec2,
+    #[serde(default)]
+    pub down: bool,
 }
 
 fn default_test_frames() -> u64 {
