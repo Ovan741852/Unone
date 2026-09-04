@@ -121,3 +121,4 @@
 - UI／Web／mobile slice 後執行 Claude CLI `2.1.260` 第 20 次 read-only review；約 60 秒無 stdout/stderr 後中止，沒有可判讀 findings，不算 review 通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-20.md`。
 - Idle Battle 與 Slot Machine 都採用同一個最小 `api.ui.setRoot`：由各自 typed ViewModel 組合 battle／reel 的 flat View，沒有新增 Unit、Combat、Reel 或 paytable engine API。兩個遊戲的 strict type check 與原有 tests 通過，digest 已更新；generic Web renderer 證明了 host 能消費同一 schema，但兩個正式 gate 仍未完成 native/Web game smoke、durable storage、bundle evidence 與完整業務規則。
 - Auto Chess validation slice 初次讓空 typed shop table 直接進 JSON assertion，發現 Luau 空 table 無法表達 array／object 意圖，engine 安全輸出 `{}`；依影響範圍分類為 game data-shape boundary，不新增全域 marker 或自走棋 API，改成符合實際商店語意的初始三商品狀態，並記錄於 `docs/issues/2026-09-05-auto-chess-empty-array-shape.md`。
+- Auto Chess slice 後執行 Claude CLI `2.1.260` 第二十一次 read-only review；約 60 秒無 stdout/stderr 後中止，沒有可判讀 findings，不算 review 通過，詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-21.md`。
