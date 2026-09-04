@@ -2,6 +2,10 @@ export function worldOf(snapshot) {
   return snapshot.world ?? snapshot;
 }
 
+export function frameOf(snapshot) {
+  return worldOf(snapshot).frame;
+}
+
 export function semanticSummary(snapshot, pointer = null) {
   const world = worldOf(snapshot);
   return {

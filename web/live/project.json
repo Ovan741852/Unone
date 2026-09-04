@@ -1,0 +1,12 @@
+{
+  "project": "WebLiveProject",
+  "script": "--!strict\ntype Vec2 = { x: number, y: number }\ntype EntityApi = { getPosition: (id: string) -> Vec2, setPosition: (id: string, position: Vec2) -> () }\ntype InputApi = { getPointerPosition: () -> Vec2, isPointerDown: () -> boolean }\ntype EngineApi = { entity: EntityApi, input: InputApi, log: (message: string) -> () }\nlocal Game = {}\nfunction Game.start(api: EngineApi)\n    api.log(\"web_live_project_loaded\")\nend\nfunction Game.update(api: EngineApi, _dt: number)\n    if api.input.isPointerDown() then\n        api.entity.setPosition(\"web_probe\", api.input.getPointerPosition())\n    end\nend\nreturn Game\n",
+  "scene": {
+    "entities": [{
+      "id": "web_probe",
+      "name": "Web Probe",
+      "transform": {"x": 0.0, "y": 0.0},
+      "sprite": {"asset": "asset://placeholder/web-probe", "size": {"x": 1.0, "y": 1.0}}
+    }]
+  }
+}

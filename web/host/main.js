@@ -1,4 +1,4 @@
-import { createWebGpuRenderer, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js";
+import { createWebGpuRenderer, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=2";
 
 const canvas = document.querySelector("#game");
 const status = document.querySelector("#status");

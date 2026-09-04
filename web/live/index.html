@@ -16,6 +16,8 @@
       canvas { display: block; width: 100%; aspect-ratio: 16 / 9; border: 1px solid #334155; border-radius: 10px; background: #111827; touch-action: none; }
       aside { padding: 14px; border: 1px solid #334155; border-radius: 10px; background: #111827; }
       h2 { margin: 0 0 8px; font-size: 1rem; }
+      button { margin-bottom: 12px; padding: 7px 10px; border: 1px solid #475569; border-radius: 6px; background: #1e293b; color: #e5e7eb; font: inherit; cursor: pointer; }
+      button:disabled { cursor: not-allowed; opacity: .5; }
       pre { min-height: 12rem; max-height: 26rem; margin: 0; overflow: auto; white-space: pre-wrap; color: #a7f3d0; }
       @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
     </style>
@@ -29,11 +31,12 @@
         <canvas id="game" data-testid="game-canvas" aria-label="Unone live engine preview"></canvas>
         <aside>
           <h2>Semantic live state</h2>
+          <button id="reload-script" data-testid="reload-script" disabled>Reload Luau script</button>
           <pre id="output" data-testid="output"></pre>
         </aside>
       </div>
     </main>
-    <script type="module" src="./main.js"></script>
+    <script type="module" src="./main.js?v=2"></script>
     <script>
       var Module = {
         noInitialRun: true,
