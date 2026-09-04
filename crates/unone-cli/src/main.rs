@@ -424,6 +424,7 @@ struct Renderer {
     config: wgpu::SurfaceConfiguration,
     pipeline: wgpu::RenderPipeline,
     vertex_buffer: wgpu::Buffer,
+    vertex_capacity: usize,
 }
 
 impl Renderer {
@@ -531,6 +532,7 @@ impl Renderer {
             config,
             pipeline,
             vertex_buffer,
+            vertex_capacity: 6,
         })
     }
 
@@ -544,45 +546,55 @@ impl Renderer {
     }
 
     fn render(&mut self, snapshot: &WorldSnapshot) -> Result<(), String> {
-        let (tracked_entity_x, tracked_entity_y) = snapshot
-            .entities
-            .values()
-            .next()
-            .map(|entity| (entity.transform.x as f32, entity.transform.y as f32))
-            .unwrap_or((0.0, 0.0));
         let zoom = snapshot.camera.zoom as f32;
-        let x = (-0.8 + (tracked_entity_x - snapshot.camera.position.x as f32) * 0.2 * zoom)
-            .clamp(-0.95, 0.75);
-        let y = (-0.1 + (tracked_entity_y - snapshot.camera.position.y as f32) * 0.2 * zoom)
-            .clamp(-0.9, 0.7);
-        let vertices = [
-            Vertex {
-                position: [x, y],
-                color: [0.9, 0.2, 0.15],
-            },
-            Vertex {
-                position: [x + 0.2, y],
-                color: [0.9, 0.2, 0.15],
-            },
-            Vertex {
-                position: [x + 0.2, y + 0.2],
-                color: [0.9, 0.2, 0.15],
-            },
-            Vertex {
-                position: [x, y],
-                color: [0.9, 0.2, 0.15],
-            },
-            Vertex {
-                position: [x + 0.2, y + 0.2],
-                color: [0.9, 0.2, 0.15],
-            },
-            Vertex {
-                position: [x, y + 0.2],
-                color: [0.9, 0.2, 0.15],
-            },
-        ];
-        self.queue
-            .write_buffer(&self.vertex_buffer, 0, bytemuck::cast_slice(&vertices));
+        let mut vertices = Vec::with_capacity(snapshot.entities.len() * 6);
+        for entity in snapshot.entities.values() {
+            if entity.sprite.as_ref().is_some_and(|sprite| !sprite.visible) {
+                continue;
+            }
+            let x = (-0.8
+                + (entity.transform.x as f32 - snapshot.camera.position.x as f32) * 0.2 * zoom)
+                .clamp(-0.95, 0.75);
+            let y = (-0.1
+                + (entity.transform.y as f32 - snapshot.camera.position.y as f32) * 0.2 * zoom)
+                .clamp(-0.9, 0.7);
+            let color = match entity.rigidbody.as_ref().map(|body| body.body_type) {
+                Some(unone_engine::RigidBodyType::Dynamic) => [0.9, 0.2, 0.15],
+                Some(unone_engine::RigidBodyType::Static) => [0.3, 0.65, 0.9],
+                None => [0.9, 0.75, 0.2],
+            };
+            vertices.extend([
+                Vertex {
+                    position: [x, y],
+                    color,
+                },
+                Vertex {
+                    position: [x + 0.2, y],
+                    color,
+                },
+                Vertex {
+                    position: [x + 0.2, y + 0.2],
+                    color,
+                },
+                Vertex {
+                    position: [x, y],
+                    color,
+                },
+                Vertex {
+                    position: [x + 0.2, y + 0.2],
+                    color,
+                },
+                Vertex {
+                    position: [x, y + 0.2],
+                    color,
+                },
+            ]);
+        }
+        self.ensure_vertex_buffer(vertices.len());
+        if !vertices.is_empty() {
+            self.queue
+                .write_buffer(&self.vertex_buffer, 0, bytemuck::cast_slice(&vertices));
+        }
         let output = match self.surface.get_current_texture() {
             wgpu::CurrentSurfaceTexture::Success(texture)
             | wgpu::CurrentSurfaceTexture::Suboptimal(texture) => texture,
@@ -629,11 +641,24 @@ impl Renderer {
             });
             pass.set_pipeline(&self.pipeline);
             pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
-            pass.draw(0..6, 0..1);
+            pass.draw(0..vertices.len() as u32, 0..1);
         }
         self.queue.submit(Some(encoder.finish()));
         self.queue.present(output);
         Ok(())
+    }
+
+    fn ensure_vertex_buffer(&mut self, required_vertices: usize) {
+        if required_vertices <= self.vertex_capacity {
+            return;
+        }
+        self.vertex_capacity = required_vertices.next_power_of_two();
+        self.vertex_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("unone-preview-vertices"),
+            size: (std::mem::size_of::<Vertex>() * self.vertex_capacity) as u64,
+            usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
     }
 }
 
