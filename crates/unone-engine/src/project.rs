@@ -33,22 +33,22 @@ pub struct ProjectPaths {
 }
 
 impl ProjectPaths {
-    pub fn discover(root: impl AsRef<Path>) -> Result<(ProjectConfig, Self), Diagnostic> {
+    pub fn discover(root: impl AsRef<Path>) -> Result<(ProjectConfig, Self), Box<Diagnostic>> {
         let root = root.as_ref().to_path_buf();
         let config_path = root.join("project.unone.json");
         let text = fs::read_to_string(&config_path).map_err(|err| {
-            Diagnostic::error(
+            Box::new(Diagnostic::error(
                 "PROJECT_CONFIG_NOT_FOUND",
                 "找不到 Unone 專案設定",
                 format!("無法讀取 {}：{}", config_path.display(), err),
-            )
+            ))
         })?;
         let config: ProjectConfig = serde_json::from_str(&text).map_err(|err| {
-            Diagnostic::error(
+            Box::new(Diagnostic::error(
                 "PROJECT_CONFIG_INVALID",
                 "Unone 專案設定不是有效 JSON",
                 format!("{}：{}", config_path.display(), err),
-            )
+            ))
         })?;
         let entry_script = root.join(&config.entry_script);
         let main_scene = config.main_scene.as_ref().map(|path| root.join(path));

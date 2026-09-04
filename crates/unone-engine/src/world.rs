@@ -75,20 +75,20 @@ pub(crate) struct World {
 }
 
 impl World {
-    pub fn load_scene(&mut self, path: &Path) -> Result<(), Diagnostic> {
+    pub fn load_scene(&mut self, path: &Path) -> Result<(), Box<Diagnostic>> {
         let text = fs::read_to_string(path).map_err(|err| {
-            Diagnostic::error(
+            Box::new(Diagnostic::error(
                 "SCENE_READ_FAILED",
                 "無法讀取主場景",
                 format!("{}：{}", path.display(), err),
-            )
+            ))
         })?;
         let scene: SceneFile = serde_json::from_str(&text).map_err(|err| {
-            Diagnostic::error(
+            Box::new(Diagnostic::error(
                 "SCENE_INVALID",
                 "主場景不是有效的 Unone scene JSON",
                 format!("{}：{}", path.display(), err),
-            )
+            ))
         })?;
         for entity in scene.entities {
             self.entities.insert(
@@ -134,7 +134,10 @@ impl World {
                     EntitySnapshot {
                         id: entity.id.clone(),
                         name: entity.name.clone(),
-                        transform: entity.transform,
+                        transform: Vec2 {
+                            x: quantize_observation(entity.transform.x),
+                            y: quantize_observation(entity.transform.y),
+                        },
                         sprite: entity.sprite.clone(),
                     },
                 )
@@ -146,4 +149,8 @@ impl World {
             entities,
         }
     }
+}
+
+fn quantize_observation(value: f64) -> f64 {
+    (value * 1_000_000.0).round() / 1_000_000.0
 }

@@ -61,7 +61,7 @@ fn run() -> Result<ExitCode> {
                 Ok(runtime) => runtime,
                 Err(diagnostic) => {
                     return print_result(
-                        EngineResult::<serde_json::Value>::failure(diagnostic),
+                        EngineResult::<serde_json::Value>::failure(*diagnostic),
                         cli.json,
                     );
                 }
@@ -87,7 +87,7 @@ fn run() -> Result<ExitCode> {
                 Ok(runtime) => runtime,
                 Err(diagnostic) => {
                     return print_result(
-                        EngineResult::<serde_json::Value>::failure(diagnostic),
+                        EngineResult::<serde_json::Value>::failure(*diagnostic),
                         cli.json,
                     );
                 }
@@ -226,11 +226,11 @@ impl ApplicationHandler for PreviewApp {
                         return;
                     }
                 };
-                if let Some(renderer) = &mut self.renderer {
-                    if let Err(err) = renderer.render(&snapshot) {
-                        eprintln!("unone preview: render failed: {err}");
-                        event_loop.exit();
-                    }
+                if let Some(renderer) = &mut self.renderer
+                    && let Err(err) = renderer.render(&snapshot)
+                {
+                    eprintln!("unone preview: render failed: {err}");
+                    event_loop.exit();
                 }
             }
             _ => {}
@@ -306,15 +306,26 @@ impl Renderer {
             .iter()
             .copied()
             .find(wgpu::TextureFormat::is_srgb)
-            .unwrap_or(capabilities.formats[0]);
+            .or_else(|| capabilities.formats.first().copied())
+            .ok_or_else(|| "GPU surface reported no supported texture formats".to_string())?;
+        let present_mode = capabilities
+            .present_modes
+            .first()
+            .copied()
+            .ok_or_else(|| "GPU surface reported no supported present modes".to_string())?;
+        let alpha_mode = capabilities
+            .alpha_modes
+            .first()
+            .copied()
+            .ok_or_else(|| "GPU surface reported no supported alpha modes".to_string())?;
         let config = wgpu::SurfaceConfiguration {
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
             format,
             color_space: wgpu::SurfaceColorSpace::Auto,
             width: size.width.max(1),
             height: size.height.max(1),
-            present_mode: capabilities.present_modes[0],
-            alpha_mode: capabilities.alpha_modes[0],
+            present_mode,
+            alpha_mode,
             view_formats: vec![],
             desired_maximum_frame_latency: 2,
         };

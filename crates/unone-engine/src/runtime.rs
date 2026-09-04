@@ -75,7 +75,7 @@ impl EngineRuntime {
     pub fn check(project_root: impl AsRef<Path>) -> EngineResult<CheckReport> {
         let (config, paths) = match ProjectPaths::discover(project_root) {
             Ok(value) => value,
-            Err(diagnostic) => return EngineResult::failure(diagnostic),
+            Err(diagnostic) => return EngineResult::failure(*diagnostic),
         };
         let source = match fs::read_to_string(&paths.entry_script) {
             Ok(source) => source,
@@ -146,7 +146,7 @@ impl EngineRuntime {
         result
     }
 
-    pub fn load(project_root: impl AsRef<Path>) -> Result<Self, Diagnostic> {
+    pub fn load(project_root: impl AsRef<Path>) -> Result<Self, Box<Diagnostic>> {
         let (config, paths) = ProjectPaths::discover(project_root)?;
         let world = Rc::new(RefCell::new(World::default()));
         if let Some(scene) = &paths.main_scene {
@@ -162,18 +162,18 @@ impl EngineRuntime {
             Rc::clone(&trace),
         )
         .map_err(|err| {
-            Diagnostic::error(
+            Box::new(Diagnostic::error(
                 "ENGINE_API_BIND_FAILED",
                 "無法建立 Luau Engine API",
                 err.to_string(),
-            )
+            ))
         })?;
         let placeholder = lua.create_function(|_, _: ()| Ok(())).map_err(|err| {
-            Diagnostic::error(
+            Box::new(Diagnostic::error(
                 "ENGINE_INIT_FAILED",
                 "無法初始化 Luau runtime",
                 err.to_string(),
-            )
+            ))
         })?;
         let mut runtime = Self {
             config,
@@ -194,7 +194,7 @@ impl EngineRuntime {
         self.input.borrow_mut().down.insert(action.into(), is_down);
     }
 
-    pub fn reload(&mut self) -> Result<(), Diagnostic> {
+    pub fn reload(&mut self) -> Result<(), Box<Diagnostic>> {
         self.load_script(true)
     }
 
@@ -202,7 +202,7 @@ impl EngineRuntime {
         self.trace.borrow_mut().clear();
         for _ in 0..frames {
             if let Err(err) = self.tick() {
-                return EngineResult::failure(err);
+                return EngineResult::failure(*err);
             }
         }
         let world = self.world.borrow().snapshot();
@@ -219,10 +219,10 @@ impl EngineRuntime {
         })
     }
 
-    pub fn tick(&mut self) -> Result<WorldSnapshot, Diagnostic> {
+    pub fn tick(&mut self) -> Result<WorldSnapshot, Box<Diagnostic>> {
         self.update_fn
             .call::<()>((self.api.clone(), FIXED_DT))
-            .map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+            .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
         {
             let mut world = self.world.borrow_mut();
             world.frame += 1;
@@ -234,7 +234,7 @@ impl EngineRuntime {
     pub fn run_tests(project_root: impl AsRef<Path>) -> EngineResult<TestSuiteReport> {
         let (config, paths) = match ProjectPaths::discover(project_root) {
             Ok(value) => value,
-            Err(diagnostic) => return EngineResult::failure(diagnostic),
+            Err(diagnostic) => return EngineResult::failure(*diagnostic),
         };
         if paths.test_files.is_empty() {
             return EngineResult::failure(Diagnostic::error(
@@ -267,7 +267,7 @@ impl EngineRuntime {
             };
             let mut runtime = match Self::load(&paths.root) {
                 Ok(runtime) => runtime,
-                Err(diagnostic) => return EngineResult::failure(diagnostic),
+                Err(diagnostic) => return EngineResult::failure(*diagnostic),
             };
             for (action, is_down) in &spec.input {
                 runtime.set_input(action.clone(), *is_down);
@@ -314,41 +314,41 @@ impl EngineRuntime {
         self.world.borrow().snapshot()
     }
 
-    fn load_script(&mut self, is_reload: bool) -> Result<(), Diagnostic> {
+    fn load_script(&mut self, is_reload: bool) -> Result<(), Box<Diagnostic>> {
         let source = fs::read_to_string(&self.paths.entry_script).map_err(|err| {
-            Diagnostic::error(
+            Box::new(Diagnostic::error(
                 "SCRIPT_READ_FAILED",
                 "無法讀取入口腳本",
                 format!("{}：{}", self.paths.entry_script.display(), err),
-            )
+            ))
         })?;
         let value = self
             .lua
             .load(&source)
             .set_name(self.paths.entry_script.to_string_lossy())
             .eval::<Value>()
-            .map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+            .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
         let table = match value {
             Value::Table(table) => table,
             _ => {
-                return Err(Diagnostic::error(
+                return Err(Box::new(Diagnostic::error(
                     "SCRIPT_ENTRY_INVALID",
                     "入口腳本必須回傳 Game table",
                     "入口腳本最後必須 return 一個包含 start 與 update function 的 table。",
-                ));
+                )));
             }
         };
         let update_fn = table
             .get::<Function>("update")
-            .map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+            .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
         let start_fn = table
             .get::<Function>("start")
-            .map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+            .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
         if is_reload {
             if let Ok(on_reload) = table.get::<Function>("onReload") {
                 on_reload
                     .call::<()>(self.api.clone())
-                    .map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+                    .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
             }
             self.generation += 1;
             self.trace.borrow_mut().push(TraceEvent {
@@ -359,7 +359,7 @@ impl EngineRuntime {
         } else {
             start_fn
                 .call::<()>(self.api.clone())
-                .map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+                .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
         }
         self.update_fn = update_fn;
         Ok(())
@@ -502,29 +502,29 @@ fn evaluate_assertion(
             ));
         }
     };
-    if let Some(expected) = assertion.equals {
-        if (actual - expected).abs() > 0.000_001 {
-            return Err(format!(
-                "{} {} 不等於預期 {}。",
-                assertion.entity, assertion.field, expected
-            ));
-        }
+    if let Some(expected) = assertion.equals
+        && (actual - expected).abs() > 0.000_001
+    {
+        return Err(format!(
+            "{} {} 不等於預期 {}。",
+            assertion.entity, assertion.field, expected
+        ));
     }
-    if let Some(expected) = assertion.greater_than {
-        if actual <= expected {
-            return Err(format!(
-                "{} {} = {}，沒有大於 {}。",
-                assertion.entity, assertion.field, actual, expected
-            ));
-        }
+    if let Some(expected) = assertion.greater_than
+        && actual <= expected
+    {
+        return Err(format!(
+            "{} {} = {}，沒有大於 {}。",
+            assertion.entity, assertion.field, actual, expected
+        ));
     }
-    if let Some(expected) = assertion.less_than {
-        if actual >= expected {
-            return Err(format!(
-                "{} {} = {}，沒有小於 {}。",
-                assertion.entity, assertion.field, actual, expected
-            ));
-        }
+    if let Some(expected) = assertion.less_than
+        && actual >= expected
+    {
+        return Err(format!(
+            "{} {} = {}，沒有小於 {}。",
+            assertion.entity, assertion.field, actual, expected
+        ));
     }
     Ok(())
 }
