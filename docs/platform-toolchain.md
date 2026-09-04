@@ -47,8 +47,18 @@ cargo clean -p mlua-sys --target wasm32-unknown-emscripten
 
 目前 host Node 需要 `--experimental-wasm-exnref` 才能載入這個 Emscripten exception section；要在修改 `PATH` 前先記住 host Node，避免誤執行 Emscripten SDK 內不支援該 flag 的舊 Node。成功時會印出 `unone_web_smoke completed: sha256:...`；這證明 memory-backed Luau runtime 已完成 link 並執行 60 frames，但仍不是瀏覽器 WebGPU page。
 
+## Browser runtime smoke
+
+完成 build 後，在 repo root 啟動靜態 server：
+
+```powershell
+python -m http.server 8000
+```
+
+開啟 `http://127.0.0.1:8000/web/smoke/`。`web/smoke/index.html` 會載入同一份 Emscripten `.js + .wasm`，頁面顯示 `passed: 60 deterministic frames executed` 才算 browser runtime smoke 通過。這仍不是 WebGPU renderer、瀏覽器輸入或正式遊戲 host。
+
 ## 尚未完成
 
 - CI 尚未固定下載 Emscripten SDK 的來源與 checksum。
-- `unone-web-smoke` 先驗證 Emscripten 可連結記憶體 source runtime；尚未完成瀏覽器 WebGPU host、browser input 與可操作的 Web smoke page。
+- `unone-web-smoke` 與 `web/smoke/index.html` 已驗證 Emscripten memory-source runtime 可在瀏覽器執行；尚未完成瀏覽器 WebGPU host、browser input 與完整 Web 發布頁面。
 - 這裡的 `cargo check`／smoke artifact 不等於完整 Web 發布包。
