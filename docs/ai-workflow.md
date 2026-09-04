@@ -97,9 +97,13 @@ Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 f
 - game logic：改 `Unone_Games` 的 Luau 或內容。
 - engine contract：改引擎、測試與文件。
 - architecture：重複阻塞多個遊戲或無法支援平台/reload，改架構。
+
+需要驗證 restore 時，test manifest 可額外提供 `load_save` JSON payload；runner 會在第一次 tick 前注入，輸出也會帶 `save_payload`，但不會替遊戲判斷版本或 migration。
 - tooling/docs：CLI、診斷或教學有噪音，改 protocol/metadata/文件。
 
 若遊戲有對話、戰鬥結果或其他不適合塞進 Entity Transform 的狀態，使用 `api.observation.set(key, value)` 發布 typed ViewModel 的 semantic projection；test assertion 可用 `{"observation":{"key":"view_model","equals":{...}}}` 做完整 JSON equality。ViewModel 仍屬遊戲端，`observation` 不是第二份可寫 gameplay state。
+
+需要存檔時使用 `api.save.set(value)`／`api.save.get()`，payload 由遊戲端定義版本與 migration；引擎只做 JSON-like transport，host 負責檔案／平台儲存。不要把 observation 當 save，也不要在引擎增加 save slot、cloud sync 或遊戲專用 schema。
 
 ## 4. 檢查 bundle
 

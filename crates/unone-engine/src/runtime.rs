@@ -45,6 +45,7 @@ pub struct RunReport {
     pub frames: u64,
     pub observation_digest: String,
     pub world: WorldSnapshot,
+    pub save_payload: Option<serde_json::Value>,
     pub trace: Vec<TraceEvent>,
 }
 
@@ -54,6 +55,7 @@ pub struct TestCaseReport {
     pub passed: bool,
     pub frames: u64,
     pub observation_digest: Option<String>,
+    pub save_payload: Option<serde_json::Value>,
     pub failures: Vec<String>,
 }
 
@@ -141,6 +143,7 @@ pub struct EngineRuntime {
     update_fn: Function,
     trace: Rc<RefCell<Vec<TraceEvent>>>,
     observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
+    save_payload: Rc<RefCell<Option<serde_json::Value>>>,
     generation: u64,
     last_seen_script_stamp: Option<ScriptStamp>,
     script_source: Option<String>,
@@ -316,6 +319,7 @@ impl EngineRuntime {
         let random = Rc::new(RefCell::new(DeterministicRng::new(seed)));
         let trace = Rc::new(RefCell::new(Vec::new()));
         let observations = Rc::new(RefCell::new(BTreeMap::new()));
+        let save_payload = Rc::new(RefCell::new(None));
         let lua = Lua::new();
         let api = build_api(
             &lua,
@@ -324,6 +328,7 @@ impl EngineRuntime {
             Rc::clone(&random),
             Rc::clone(&trace),
             Rc::clone(&observations),
+            Rc::clone(&save_payload),
         )
         .map_err(|err| {
             Box::new(Diagnostic::error(
@@ -349,6 +354,7 @@ impl EngineRuntime {
             update_fn: placeholder,
             trace,
             observations,
+            save_payload,
             generation: 0,
             last_seen_script_stamp: None,
             script_source,
@@ -367,6 +373,18 @@ impl EngineRuntime {
 
     pub fn set_pointer_down(&mut self, is_down: bool) {
         self.input.borrow_mut().pointer.down = is_down;
+    }
+
+    /// Provide an opaque, host-loaded save payload to the game script.
+    ///
+    /// The engine validates the transport as JSON but does not interpret the
+    /// game schema. The game owns versioning and migration decisions.
+    pub fn set_save_payload(&mut self, payload: Option<serde_json::Value>) {
+        *self.save_payload.borrow_mut() = payload;
+    }
+
+    pub fn save_payload(&self) -> Option<serde_json::Value> {
+        self.save_payload.borrow().clone()
     }
 
     pub fn reload(&mut self) -> Result<(), Box<Diagnostic>> {
@@ -460,6 +478,7 @@ impl EngineRuntime {
             frames,
             observation_digest: digest,
             world,
+            save_payload: self.save_payload(),
             trace: self.trace.borrow().clone(),
         })
     }
@@ -515,6 +534,7 @@ impl EngineRuntime {
                 Ok(runtime) => runtime,
                 Err(diagnostic) => return EngineResult::failure(*diagnostic),
             };
+            runtime.set_save_payload(spec.load_save.clone());
             for (action, is_down) in &spec.input {
                 runtime.set_input(action.clone(), *is_down);
             }
@@ -549,6 +569,7 @@ impl EngineRuntime {
                 passed: failures.is_empty(),
                 frames: report.frames,
                 observation_digest: Some(report.observation_digest),
+                save_payload: report.save_payload,
                 failures,
             });
         }
@@ -657,6 +678,7 @@ fn build_api(
     random: Rc<RefCell<DeterministicRng>>,
     trace: Rc<RefCell<Vec<TraceEvent>>>,
     observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
+    save_payload: Rc<RefCell<Option<serde_json::Value>>>,
 ) -> mlua::Result<Table> {
     let api = lua.create_table()?;
     let entity = lua.create_table()?;
@@ -664,6 +686,7 @@ fn build_api(
     let random_api = lua.create_table()?;
     let camera = lua.create_table()?;
     let observation_api = lua.create_table()?;
+    let save_api = lua.create_table()?;
 
     let spawn_world = Rc::clone(&world);
     entity.set(
@@ -866,12 +889,32 @@ fn build_api(
             Ok(())
         })?,
     )?;
+    let save_state = Rc::clone(&save_payload);
+    save_api.set(
+        "set",
+        lua.create_function(move |_, value: Value| {
+            let value = lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
+            *save_state.borrow_mut() = Some(value);
+            Ok(())
+        })?,
+    )?;
+    let save_state = Rc::clone(&save_payload);
+    save_api.set(
+        "get",
+        lua.create_function(move |lua, ()| {
+            let Some(value) = save_state.borrow().clone() else {
+                return Ok(Value::Nil);
+            };
+            json_to_lua(lua, value)
+        })?,
+    )?;
     api.set("entity", entity)?;
     api.set("input", input_api)?;
     api.set("random", random_api)?;
     api.set("physics", physics)?;
     api.set("camera", camera)?;
     api.set("observation", observation_api)?;
+    api.set("save", save_api)?;
     Ok(api)
 }
 
@@ -950,6 +993,39 @@ fn table_to_json(table: Table, depth: usize) -> Result<serde_json::Value, String
         return Ok(serde_json::Value::Array(array.into_values().collect()));
     }
     Ok(serde_json::Value::Object(object.into_iter().collect()))
+}
+
+fn json_to_lua(lua: &Lua, value: serde_json::Value) -> mlua::Result<Value> {
+    match value {
+        serde_json::Value::Null => Ok(Value::Nil),
+        serde_json::Value::Bool(value) => Ok(Value::Boolean(value)),
+        serde_json::Value::Number(value) => {
+            if let Some(value) = value.as_i64() {
+                Ok(Value::Integer(value))
+            } else if let Some(value) = value.as_f64() {
+                Ok(Value::Number(value))
+            } else {
+                Err(mlua::Error::RuntimeError(
+                    "save payload number is not representable in Luau".to_string(),
+                ))
+            }
+        }
+        serde_json::Value::String(value) => Ok(Value::String(lua.create_string(value)?)),
+        serde_json::Value::Array(values) => {
+            let table = lua.create_table()?;
+            for (index, value) in values.into_iter().enumerate() {
+                table.set(index + 1, json_to_lua(lua, value)?)?;
+            }
+            Ok(Value::Table(table))
+        }
+        serde_json::Value::Object(values) => {
+            let table = lua.create_table()?;
+            for (key, value) in values {
+                table.set(key, json_to_lua(lua, value)?)?;
+            }
+            Ok(Value::Table(table))
+        }
+    }
 }
 
 fn run_luau_analyzer(paths: &ProjectPaths) -> Result<TypeCheckReport, Box<Diagnostic>> {
@@ -1357,6 +1433,46 @@ return Game
             result.diagnostics[0]
                 .explanation
                 .contains("not serializable")
+        );
+    }
+
+    #[test]
+    fn save_payload_round_trips_between_host_and_luau() {
+        let source = r#"
+local Game = {}
+function Game.start(_api) end
+function Game.update(api, _dt)
+    local loaded = api.save.get()
+    if loaded ~= nil then
+        api.observation.set("loaded_node", loaded.node)
+    end
+    if api.input.isDown("Save") then
+        api.save.set({ version = 1, node = "kind" })
+    end
+end
+return Game
+"#;
+        let mut runtime =
+            EngineRuntime::load_source_with_seed("SaveSmoke", "main.luau", source, None, 42)
+                .unwrap();
+        runtime.set_save_payload(Some(serde_json::json!({
+            "version": 1,
+            "node": "brave",
+        })));
+        runtime.set_input("Save", true);
+
+        let report = runtime.run(1, 42).value.unwrap();
+
+        assert_eq!(
+            report.world.observations.get("loaded_node"),
+            Some(&serde_json::json!("brave"))
+        );
+        assert_eq!(
+            report.save_payload,
+            Some(serde_json::json!({
+                "version": 1,
+                "node": "kind",
+            }))
         );
     }
 

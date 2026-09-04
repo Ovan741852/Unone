@@ -167,6 +167,8 @@ pub struct TestSpec {
     #[serde(default)]
     pub input_sequence: Vec<InputFrame>,
     #[serde(default)]
+    pub load_save: Option<serde_json::Value>,
+    #[serde(default)]
     pub assertions: Vec<TestAssertion>,
 }
 
