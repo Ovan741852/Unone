@@ -34,6 +34,18 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json ru
 
 AI 應優先讀 `world`、`observation_digest`、`diagnostics`，再看 screenshot。相同 project、seed、frames 與 input 應產生相同 digest；不要用畫面像不像取代 state assertion。
 
+要重播逐 frame action，可使用 JSON 陣列：
+
+```json
+[{"Right": true}, {"Right": true}, {}, {"Right": false}]
+```
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json run --frames 4 --seed 42 --input-sequence D:/Projects/Unone_Games/minimal-2d/tests/input-sequence.json
+```
+
+`--action` 與 `--input-sequence` 互斥；sequence 不足的 frame 會清空 action。平台觸控／滑鼠／鍵盤只需在 adapter 層映射成相同的語意 action。
+
 ## 3. 執行測試
 
 ```powershell

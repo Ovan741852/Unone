@@ -60,3 +60,4 @@
 - Camera2D 已加入最小 contract：引擎持有 position／zoom，Luau 持有 follow policy；physics sample run 後 observation 回報 camera position `x=9.9,y=0.5`，`api search "camera zoom"` 可回傳四個 camera API 的語意 metadata。Camera 邊界記錄於 `docs/decisions/0007-2d-camera-boundary.md`。
 - 對 `4a46f06` 依流程重試 Claude CLI review，第三次仍 60 秒無輸出，沒有 findings，不算通過；詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-3.md`。
 - 加入 `TestSpec.input_sequence` 與 `run_with_input_sequence`：測試可逐 frame 注入語意 action snapshot，序列不足的 frame 會清空 input；新增 regression test 證明序列以本次 run 為相對起點且不會 sticky。這是 Angry Birds input replay 的引擎機制，觸控／滑鼠座標轉換仍留在 platform adapter。
+- CLI 已加入 `run --input-sequence <json>`，沿用同一個 action snapshot 格式；`--action` 與它互斥，檔案讀取／JSON 格式錯誤會回傳可行動 diagnostic。這讓 AI 不需要操作 GUI 就能重播多 frame 輸入。

@@ -21,6 +21,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json pr
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json api describe entity.setPosition
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json run --frames 60 --action Right
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json run --frames 2 --input-sequence D:/Projects/Unone_Games/minimal-2d/tests/input-sequence.json
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json test
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview --watch
 ```

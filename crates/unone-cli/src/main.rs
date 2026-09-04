@@ -1,4 +1,4 @@
-use std::{borrow::Cow, path::PathBuf, process::ExitCode, sync::Arc};
+use std::{borrow::Cow, collections::BTreeMap, fs, path::PathBuf, process::ExitCode, sync::Arc};
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
@@ -46,6 +46,8 @@ enum Command {
         seed: u64,
         #[arg(long)]
         action: Option<String>,
+        #[arg(long, conflicts_with = "action")]
+        input_sequence: Option<PathBuf>,
     },
     Test,
     Observe,
@@ -140,6 +142,7 @@ fn run() -> Result<ExitCode> {
             frames,
             seed,
             action,
+            input_sequence,
         } => {
             let mut runtime = match EngineRuntime::load(&cli.project) {
                 Ok(runtime) => runtime,
@@ -150,10 +153,47 @@ fn run() -> Result<ExitCode> {
                     );
                 }
             };
-            if let Some(action) = action {
-                runtime.set_input(action, true);
+            if let Some(path) = input_sequence {
+                let text = match fs::read_to_string(&path) {
+                    Ok(text) => text,
+                    Err(error) => {
+                        return print_result(
+                            EngineResult::<serde_json::Value>::failure(
+                                unone_engine::Diagnostic::error(
+                                    "INPUT_SEQUENCE_READ_FAILED",
+                                    "無法讀取 input sequence",
+                                    format!("{}：{}", path.display(), error),
+                                ),
+                            ),
+                            cli.json,
+                        );
+                    }
+                };
+                let sequence: Vec<BTreeMap<String, bool>> = match serde_json::from_str(&text) {
+                    Ok(sequence) => sequence,
+                    Err(error) => {
+                        return print_result(
+                            EngineResult::<serde_json::Value>::failure(
+                                unone_engine::Diagnostic::error(
+                                    "INPUT_SEQUENCE_INVALID",
+                                    "input sequence 不是有效的 JSON action snapshot 陣列",
+                                    format!("{}：{}", path.display(), error),
+                                ),
+                            ),
+                            cli.json,
+                        );
+                    }
+                };
+                print_result(
+                    runtime.run_with_input_sequence(frames, seed, &sequence),
+                    cli.json,
+                )
+            } else {
+                if let Some(action) = action {
+                    runtime.set_input(action, true);
+                }
+                print_result(runtime.run(frames, seed), cli.json)
             }
-            print_result(runtime.run(frames, seed), cli.json)
         }
         Command::Test => {
             let result = EngineRuntime::run_tests(&cli.project);
