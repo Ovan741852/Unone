@@ -26,17 +26,18 @@
     <main>
       <h1>Unone live Web host</h1>
       <p id="status" data-testid="status">waiting for Emscripten runtime…</p>
-      <p class="note">The browser owns WebGPU and pointer normalization; the live frame and Luau simulation run in the Rust engine bridge.</p>
+      <p class="note">The browser owns fetch, IndexedDB and WebGPU; Rust owns bundle integrity, live frame semantics and Luau simulation.</p>
       <div class="layout">
         <canvas id="game" data-testid="game-canvas" aria-label="Unone live engine preview"></canvas>
         <aside>
           <h2>Semantic live state</h2>
           <button id="reload-script" data-testid="reload-script" disabled>Reload Luau script</button>
+          <button id="bundle-update" data-testid="bundle-update" disabled>Apply bundle update</button>
           <pre id="output" data-testid="output"></pre>
         </aside>
       </div>
     </main>
-    <script type="module" src="./main.js?v=2"></script>
+    <script type="module" src="./main.js?v=4"></script>
     <script>
       var Module = {
         noInitialRun: true,

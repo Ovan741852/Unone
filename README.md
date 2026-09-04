@@ -45,7 +45,7 @@ MCP 只位於 `unone-cli`，不成為 engine core 的依賴；工具結果保留
 
 ## Web 目前狀態
 
-`unone-engine` 已以 `wasm32-unknown-emscripten` 搭配 Emscripten wrapper 通過 library compile，`unone-web-smoke` 也已完成 link、由 host Node（需 `--experimental-wasm-exnref`）執行 60 frames，並由 `web/smoke/index.html` 在瀏覽器實際載入執行。`web/host/` 已驗證 snapshot bridge，`web/live/` 另以窄 C ABI 驗證 browser animation frame、host-provided project payload、script reload 與 pointer 能驅動同一個 Rust/Luau runtime，再以 WebGPU render；目前仍是 smoke fixture，不是完整 bundle/project packaging。mobile host、bundle hot update 與 browser storage adapter 仍未完成。
+`unone-engine` 已以 `wasm32-unknown-emscripten` 搭配 Emscripten wrapper 通過 library compile，`unone-web-smoke` 也已完成 link、由 host Node（需 `--experimental-wasm-exnref`）執行 60 frames，並由 `web/smoke/index.html` 在瀏覽器實際載入執行。`web/host/` 已驗證 snapshot bridge，`web/live/` 另以窄 C ABI 驗證 browser animation frame、host-provided project payload、script reload、pointer 驅動同一個 Rust/Luau runtime、WebGPU render，以及 sample bundle verify、IndexedDB cache、generation activation 與 cache-only reopen；目前仍是 smoke fixture，不是完整 production asset packaging。mobile host、OPFS/chunked asset streaming、CDN policy 與正式 error transport 仍未完成。
 
 ## 邊界
 

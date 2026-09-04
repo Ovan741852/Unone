@@ -13,6 +13,9 @@ snapshot bridge 已驗證 WebGPU renderer 與 pointer normalization，但它不�
 
 - `unone_web_init() -> i32`
 - `unone_web_alloc(length) -> *mut u8`
+- `unone_web_bundle_begin(ptr, len) -> i32`（bundle integrity spec）
+- `unone_web_bundle_write(ptr, len) -> i32`（bounded bundle chunk）
+- `unone_web_bundle_finish() -> i32`（size/SHA-256 result）
 - `unone_web_load_project(ptr, len, seed) -> i32`（raw payload boundary，host 必須保證 pointer/length 有效）
 - `unone_web_reload_script(ptr, len) -> i32`（raw payload boundary，host 必須保證 pointer/length 有效）
 - `unone_web_set_pointer(x, y, down)`
@@ -22,7 +25,7 @@ snapshot bridge 已驗證 WebGPU renderer 與 pointer normalization，但它不�
 
 ABI 只傳 primitive 與 UTF-8 JSON：project load 接收 host payload，observation 回傳 `{ project, world }` envelope。runtime ownership、Luau call、fixed timestep 與 world state 留在 Rust engine runtime，WebGPU、animation frame、DOM pointer event 留在 browser host。`tick_with_input` 是 ABI 內部唯一的 input/tick boundary。
 
-第一版 binary 已改由 browser 提供 JSON project payload（project name、Luau source、scene）；頁面另提供一份 source reload fixture。這只證明 host-provided source/scene loader 與 script reload 的 ABI 生命週期，不宣稱 bundle fetch、generation activation 或 storage 已完成。正式通用 API 要等 project bundle source、error transport、generation/reload 與 memory lifetime 都有獨立測試後再提煉。
+第一版 binary 已改由 browser 提供 JSON project payload（project name、Luau source、scene）；頁面另提供一份 source reload fixture。後續加入 bounded bundle chunk verifier，讓 host 不必自行重寫 SHA-256 規則；`web/live/bundle-store.js` 以 IndexedDB 保存 content-addressed bytes，驗證所有依賴後在單一 transaction 寫入 generation 與 active pointer。這已證明 sample 的 bundle fetch/cache/generation contract，但不宣稱完整 CDN、背景下載、差分更新或 production asset streaming。
 
 ## Consequences
 
@@ -31,4 +34,5 @@ ABI 只傳 primitive 與 UTF-8 JSON：project load 接收 host payload，observa
 - project/script payload pointer 只在對應 call 期間有效；Rust 端以 `unsafe extern "C"` 明確標示這個 FFI 前置條件，host 負責 buffer validity 與 length。
 - ABI 中的 Rust `u64`（例如 seed）在 JavaScript 端必須以 `BigInt` 傳入，例如 `42n`；host 不可用可能失去精度的 Number。
 - ABI 的錯誤以 return code + JSON error payload 回報，避免把 Rust panic 或內部型別暴露給 AI/host。
+- bundle verifier 可以重複 `begin → write* → finish`；host 必須在 `finish` 成功前不把內容放入 active generation，驗證失敗只能保留上一代。
 - 新增一個 smoke binary 是驗證工具，不是把 Web 平台功能變成 engine core；真實遊戲使用前仍需先完成通用 host loader。

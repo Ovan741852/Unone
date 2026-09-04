@@ -1,7 +1,10 @@
 use std::{cell::RefCell, collections::BTreeMap};
 
 use serde::{Deserialize, Serialize};
-use unone_engine::{EngineRuntime, InputFrame, PointerInput, SceneFile, Vec2, WorldSnapshot};
+use unone_engine::{
+    BundleSpec, BundleVerifier, EngineRuntime, InputFrame, PointerInput, SceneFile, Vec2,
+    WorldSnapshot,
+};
 
 thread_local! {
     static RUNTIME: RefCell<Option<EngineRuntime>> = const { RefCell::new(None) };
@@ -11,6 +14,7 @@ thread_local! {
     static OUTPUT: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static INPUT_BUFFER: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static PROJECT_NAME: RefCell<String> = const { RefCell::new(String::new()) };
+    static BUNDLE_VERIFIER: RefCell<Option<BundleVerifier>> = const { RefCell::new(None) };
 }
 
 #[derive(Debug, Deserialize)]
@@ -61,6 +65,11 @@ fn write_error(message: impl Into<String>) {
     OUTPUT.with(|output| *output.borrow_mut() = serde_json::to_vec(&value).unwrap_or_default());
 }
 
+fn write_diagnostic(diagnostic: &unone_engine::Diagnostic) {
+    let value = serde_json::json!({"ok": false, "diagnostic": diagnostic});
+    OUTPUT.with(|output| *output.borrow_mut() = serde_json::to_vec(&value).unwrap_or_default());
+}
+
 #[unsafe(no_mangle)]
 pub extern "C" fn unone_web_init() -> i32 {
     0
@@ -73,6 +82,90 @@ pub extern "C" fn unone_web_alloc(length: usize) -> *mut u8 {
         buffer.resize(length, 0);
         buffer.as_mut_ptr()
     })
+}
+
+#[unsafe(no_mangle)]
+/// # Safety
+///
+/// `pointer` must reference `length` readable UTF-8 JSON bytes for the
+/// duration of this call. The payload must contain `id`, `sha256` and
+/// `size_bytes` fields describing the expected bundle content.
+pub unsafe extern "C" fn unone_web_bundle_begin(pointer: *const u8, length: usize) -> i32 {
+    if pointer.is_null() {
+        write_error("bundle spec pointer is null");
+        return -1;
+    }
+    let bytes = unsafe { std::slice::from_raw_parts(pointer, length) };
+    let spec: BundleSpec = match serde_json::from_slice(bytes) {
+        Ok(spec) => spec,
+        Err(error) => {
+            write_error(format!("bundle spec is invalid JSON: {error}"));
+            return -1;
+        }
+    };
+    let bundle_id = spec.id.clone();
+    BUNDLE_VERIFIER.with(|verifier| *verifier.borrow_mut() = Some(BundleVerifier::new(&spec)));
+    let value = serde_json::json!({
+        "ok": true,
+        "kind": "bundle_verification",
+        "status": "started",
+        "bundle_id": bundle_id,
+    });
+    OUTPUT.with(|output| *output.borrow_mut() = serde_json::to_vec(&value).unwrap_or_default());
+    0
+}
+
+#[unsafe(no_mangle)]
+/// # Safety
+///
+/// `pointer` must reference `length` readable bytes for the duration of this
+/// call. A null pointer is only valid when `length` is zero.
+pub unsafe extern "C" fn unone_web_bundle_write(pointer: *const u8, length: usize) -> i32 {
+    if pointer.is_null() && length != 0 {
+        write_error("bundle chunk pointer is null for non-empty chunk");
+        return -1;
+    }
+    let bytes = if length == 0 {
+        &[]
+    } else {
+        unsafe { std::slice::from_raw_parts(pointer, length) }
+    };
+    BUNDLE_VERIFIER.with(|verifier| {
+        let mut binding = verifier.borrow_mut();
+        let Some(verifier) = binding.as_mut() else {
+            write_error("bundle verifier has not started");
+            return -1;
+        };
+        verifier.update(bytes);
+        0
+    })
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn unone_web_bundle_finish() -> i32 {
+    let verifier = BUNDLE_VERIFIER.with(|verifier| verifier.borrow_mut().take());
+    let Some(verifier) = verifier else {
+        write_error("bundle verifier has not started");
+        return -1;
+    };
+    match verifier.finish() {
+        Ok(result) => {
+            let value = serde_json::json!({
+                "ok": true,
+                "kind": "bundle_verification",
+                "status": "verified",
+                "value": result,
+            });
+            OUTPUT.with(|output| {
+                *output.borrow_mut() = serde_json::to_vec(&value).unwrap_or_default()
+            });
+            0
+        }
+        Err(diagnostic) => {
+            write_diagnostic(&diagnostic);
+            -1
+        }
+    }
 }
 
 #[unsafe(no_mangle)]
@@ -203,8 +296,8 @@ fn main() {}
 #[cfg(test)]
 mod tests {
     use super::{
-        OUTPUT, unone_web_load_project, unone_web_reload_script, unone_web_set_pointer,
-        unone_web_tick,
+        OUTPUT, unone_web_bundle_begin, unone_web_bundle_finish, unone_web_bundle_write,
+        unone_web_load_project, unone_web_reload_script, unone_web_set_pointer, unone_web_tick,
     };
     use serde_json::json;
 
@@ -256,6 +349,28 @@ return Game
 
     #[test]
     fn c_abi_load_tick_and_reload_preserve_runtime_contract() {
+        let bundle = b"bundle-content";
+        let bundle_spec = serde_json::to_vec(&json!({
+            "id": "test-bundle",
+            "version": "1",
+            "source": "memory",
+            "sha256": "17cc744c34dd53bc69277fd7b622b0e1c99d9157e0714d1afffc8264893b2ea3",
+            "size_bytes": bundle.len(),
+            "dependencies": []
+        }))
+        .unwrap();
+        assert_eq!(
+            unsafe { unone_web_bundle_begin(bundle_spec.as_ptr(), bundle_spec.len()) },
+            0
+        );
+        assert_eq!(unsafe { unone_web_bundle_write(bundle.as_ptr(), 6) }, 0);
+        assert_eq!(
+            unsafe { unone_web_bundle_write(bundle[6..].as_ptr(), bundle.len() - 6) },
+            0
+        );
+        assert_eq!(unone_web_bundle_finish(), 0);
+        assert_eq!(output()["status"], json!("verified"));
+
         let payload = project_payload();
         let loaded = unsafe { unone_web_load_project(payload.as_ptr(), payload.len(), 42) };
         assert_eq!(loaded, 0);

@@ -16,9 +16,8 @@
 
 ## 修正
 
-改為 `-C link-arg=--export=...`，並在 native command 後檢查 `$LASTEXITCODE`，失敗時 throw。重新建置後 generated JS 確實包含 `_unone_web_init`、`_unone_web_set_pointer`、`_unone_web_tick`、observation pointer/length 五個 symbols。
+改為 `-C link-arg=--export=...`，並在 native command 後檢查 `$LASTEXITCODE`，失敗時 throw。重新建置後 generated JS 確實包含目前 ABI 的 init、alloc、bundle begin/write/finish、project load、script reload、pointer、tick 與 observation pointer/length symbols。
 
 ## 回歸
 
 `build-web-live.ps1` 成功；瀏覽器 live page 可逐 frame 呼叫 ABI、讀取 snapshot，pointer drag 後 `web_probe` position 改變；console 無 warning/error。教學不再使用錯誤的直接 `--export` 寫法。
-

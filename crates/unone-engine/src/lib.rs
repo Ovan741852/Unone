@@ -9,7 +9,10 @@ mod world;
 pub use api::{
     ApiDescriptor, ApiParameter, ApiSearchReport, describe as api_describe, search as api_search,
 };
-pub use bundle::{BundleFetcher, BundleManager, BundleManifest, BundleReport, BundleSpec};
+pub use bundle::{
+    BundleFetcher, BundleManager, BundleManifest, BundleReport, BundleSpec, BundleVerification,
+    BundleVerifier,
+};
 pub use diagnostics::{
     ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult, SourceLocation,
 };

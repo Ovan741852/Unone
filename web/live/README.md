@@ -1,8 +1,8 @@
 # Live Web host smoke
 
-這是 snapshot bridge 之後的第一個 live Web vertical slice。Emscripten binary 透過明確的 C ABI 暴露 project payload load、script reload、pointer、tick 與 snapshot read；browser host 每個 animation frame 將 pointer frame 傳入，同一個 Rust/Luau runtime tick，再以 WebGPU render 回傳的 world state。
+這是 snapshot bridge 之後的第一個 live Web vertical slice。Emscripten binary 透過明確的 C ABI 暴露 bundle incremental verify、project payload load、script reload、pointer、tick 與 snapshot read；browser host 用 IndexedDB 保存 content-addressed bundle，所有 bundle 驗證完成後才以 transaction 啟用 generation，每個 animation frame 再將 pointer frame 傳入同一個 Rust/Luau runtime tick，最後以 WebGPU render 回傳的 world state。
 
-它使用 browser 提供的 `project.json` 與 `reload.luau` fixture，已驗證 host-provided source/scene load 與 script hot reload；仍不代表任意遊戲專案已經有 bundle manifest、驗證下載、generation activation 或 browser storage adapter。
+`bundle-manifest-v1.json` 會安裝 `project` 與依賴它的 `script` bundle；`Apply bundle update` 載入 v2 manifest，只重新下載變更過的 script，驗證並啟用新 generation 後，再以同一個 runtime 的 source reload 保留 world state。啟動失敗不會切換 active generation。這是 browser storage/generation contract 的 smoke，不代表任意遊戲專案已經有完整 CDN、差分更新、背景下載或 asset streaming。
 
 建置並啟動：
 
@@ -11,4 +11,6 @@
 python -m http.server 8000
 ```
 
-開啟 `http://127.0.0.1:8000/web/live/`。成功時 status 會持續更新 `passed: live WASM frame …`，右側 `frame` 會遞增；拖曳 canvas 會將 browser pointer 經 Camera2D 轉換後送進 Rust runtime；按 `Reload Luau script` 可驗證保留 world state 的 source reload。
+開啟 `http://127.0.0.1:8000/web/live/`。成功時 status 會持續更新 `passed: live WASM frame …`，右側 `frame` 會遞增；拖曳 canvas 會將 browser pointer 經 Camera2D 轉換後送進 Rust runtime；`Reload Luau script` 讀取目前 active generation 的 script，`Apply bundle update` 驗證、快取並啟用 v2 generation，再驗證 hot reload。
+
+`bundle-store.js` 是 host adapter，不是 engine core：它負責 fetch、IndexedDB、cache miss、瀏覽器 transaction 與 storage 生命週期；Rust/Wasm 只負責以 bounded chunks 驗證 manifest 的 size/SHA-256。瀏覽器 WebCrypto 不作為唯一 hash 來源，避免 native/Web 演算法漂移；大 bundle 也不要求一次塞進 WebCrypto digest。

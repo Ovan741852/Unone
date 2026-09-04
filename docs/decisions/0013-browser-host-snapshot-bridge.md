@@ -1,7 +1,7 @@
 # Decision 0013：Browser host 先接 engine snapshot，再接 live frame loop
 
 - 日期：2026-09-05
-- 狀態：accepted
+- 狀態：accepted（snapshot layer；live follow-up 見 0015/0016）
 
 ## Context
 
@@ -26,3 +26,4 @@
 - 目前 snapshot 與 runtime 是兩個時間點；不能把本頁的 pointer event 當成遊戲 simulation input。
 - 只有當 live loop 的 ABI、reload safe point 與 host ownership 有測試證據後，才把它提煉為正式 Web runtime API。
 
+後續已由 `0015-emscripten-live-host-bridge.md` 接上 live WASM frame loop，並由 `0016-bundle-generation-and-browser-storage.md` 接上 sample bundle/cache/generation smoke；本決策仍只定義 snapshot layer，不應被解讀為完整 Web runtime 狀態。

@@ -37,6 +37,70 @@ pub trait BundleFetcher {
     fn open(&mut self, spec: &BundleSpec) -> Result<Box<dyn Read + '_>, Box<Diagnostic>>;
 }
 
+/// Incremental integrity verifier shared by native storage and Web hosts.
+///
+/// Fetching, retry policy and persistence stay outside the engine. The engine
+/// owns the one integrity rule so a host can feed a response in bounded chunks
+/// without reimplementing the manifest contract in JavaScript or mobile code.
+pub struct BundleVerifier {
+    bundle_id: String,
+    expected_sha256: String,
+    expected_size_bytes: u64,
+    hasher: Sha256,
+    size_bytes: u64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct BundleVerification {
+    pub bundle_id: String,
+    pub size_bytes: u64,
+    pub sha256: String,
+}
+
+impl BundleVerifier {
+    pub fn new(spec: &BundleSpec) -> Self {
+        Self {
+            bundle_id: spec.id.clone(),
+            expected_sha256: spec.sha256.clone(),
+            expected_size_bytes: spec.size_bytes,
+            hasher: Sha256::new(),
+            size_bytes: 0,
+        }
+    }
+
+    pub fn update(&mut self, bytes: &[u8]) {
+        self.size_bytes += bytes.len() as u64;
+        self.hasher.update(bytes);
+    }
+
+    pub fn finish(self) -> Result<BundleVerification, Box<Diagnostic>> {
+        let actual_sha256 = hex_digest(&self.hasher.finalize());
+        if self.size_bytes != self.expected_size_bytes || actual_sha256 != self.expected_sha256 {
+            let mut diagnostic = Diagnostic::error(
+                "BUNDLE_VERIFY_FAILED",
+                "bundle 驗證失敗",
+                format!(
+                    "bundle '{}' 的大小或 SHA-256 與 manifest 不一致。",
+                    self.bundle_id
+                ),
+            );
+            diagnostic.facts = serde_json::json!({
+                "bundle_id": self.bundle_id,
+                "actual_sha256": actual_sha256,
+                "expected_sha256": self.expected_sha256,
+                "actual_size_bytes": self.size_bytes,
+                "expected_size_bytes": self.expected_size_bytes,
+            });
+            return Err(Box::new(diagnostic));
+        }
+        Ok(BundleVerification {
+            bundle_id: self.bundle_id,
+            size_bytes: self.size_bytes,
+            sha256: actual_sha256,
+        })
+    }
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct BundleEntryReport {
     pub id: String,
@@ -346,9 +410,8 @@ impl BundleManager {
                 format!("{}：{}", staged_path.display(), err),
             ))
         })?;
-        let mut hasher = Sha256::new();
+        let mut verifier = BundleVerifier::new(spec);
         let mut buffer = [0_u8; 64 * 1024];
-        let mut size = 0_u64;
         loop {
             let read = reader.read(&mut buffer).map_err(|err| {
                 Box::new(Diagnostic::error(
@@ -367,8 +430,7 @@ impl BundleManager {
                     format!("bundle '{}'：{}", spec.id, err),
                 ))
             })?;
-            size += read as u64;
-            hasher.update(&buffer[..read]);
+            verifier.update(&buffer[..read]);
         }
         file.flush().map_err(|err| {
             Box::new(Diagnostic::error(
@@ -384,24 +446,7 @@ impl BundleManager {
                 format!("bundle '{}'：{}", spec.id, err),
             ))
         })?;
-        let actual_sha256 = hex_digest(&hasher.finalize());
-        if size != spec.size_bytes || actual_sha256 != spec.sha256 {
-            let mut diagnostic = Diagnostic::error(
-                "BUNDLE_VERIFY_FAILED",
-                "bundle 驗證失敗",
-                format!("bundle '{}' 的大小或 SHA-256 與 manifest 不一致。", spec.id),
-            );
-            diagnostic.facts = serde_json::json!({
-                "bundle_id": spec.id,
-                "actual_sha256": actual_sha256,
-                "expected_sha256": spec.sha256,
-                "actual_size_bytes": size,
-                "expected_size_bytes": spec.size_bytes,
-                "staging_removed": true,
-            });
-            return Err(Box::new(diagnostic));
-        }
-        Ok(())
+        verifier.finish().map(|_| ())
     }
 
     fn cache_path(&self, spec: &BundleSpec) -> PathBuf {
@@ -448,6 +493,9 @@ impl BundleManager {
             .collect();
         paths.sort();
         for path in paths.into_iter().rev() {
+            if path.extension().and_then(|value| value.to_str()) != Some("json") {
+                continue;
+            }
             if let Ok(text) = fs::read_to_string(&path)
                 && let Ok(generation) = serde_json::from_str::<ActiveGeneration>(&text)
             {
@@ -466,12 +514,49 @@ impl BundleManager {
     }
 
     fn write_generation(&self, generation: &ActiveGeneration) -> Result<(), String> {
-        fs::create_dir_all(&self.active_dir).map_err(|err| err.to_string())?;
+        fs::create_dir_all(&self.active_dir)
+            .map_err(|err| format!("create active dir '{}': {err}", self.active_dir.display()))?;
         let path = self
             .active_dir
             .join(format!("generation-{:020}.json", generation.generation));
+        let staging_path = self.active_dir.join(format!(
+            "generation-{:020}.json.part",
+            generation.generation
+        ));
         let text = serde_json::to_vec_pretty(generation).map_err(|err| err.to_string())?;
-        fs::write(path, text).map_err(|err| err.to_string())
+        let mut file = File::create(&staging_path).map_err(|err| {
+            format!(
+                "write generation staging '{}': {err}",
+                staging_path.display()
+            )
+        })?;
+        file.write_all(&text).map_err(|err| {
+            format!(
+                "write generation staging '{}': {err}",
+                staging_path.display()
+            )
+        })?;
+        file.flush().map_err(|err| {
+            format!(
+                "flush generation staging '{}': {err}",
+                staging_path.display()
+            )
+        })?;
+        #[cfg(not(windows))]
+        file.sync_all().map_err(|err| {
+            format!(
+                "sync generation staging '{}': {err}",
+                staging_path.display()
+            )
+        })?;
+        drop(file);
+        fs::rename(&staging_path, &path).map_err(|err| {
+            format!(
+                "rename generation '{}' -> '{}': {err}",
+                staging_path.display(),
+                path.display()
+            )
+        })
     }
 }
 
@@ -511,7 +596,27 @@ mod tests {
 
     use crate::diagnostics::Diagnostic;
 
-    use super::{BundleFetcher, BundleManager, BundleManifest, BundleSpec};
+    use super::{BundleFetcher, BundleManager, BundleManifest, BundleSpec, BundleVerifier};
+
+    #[test]
+    fn incremental_verifier_accepts_multiple_chunks() {
+        let content = b"chunk-a-chunk-b";
+        let spec = BundleSpec {
+            id: "chunked".to_string(),
+            version: "1".to_string(),
+            source: "memory".to_string(),
+            sha256: digest(content),
+            size_bytes: content.len() as u64,
+            dependencies: vec![],
+        };
+        let mut verifier = BundleVerifier::new(&spec);
+        verifier.update(b"chunk-a-");
+        verifier.update(b"chunk-b");
+        let result = verifier.finish().unwrap();
+        assert_eq!(result.bundle_id, "chunked");
+        assert_eq!(result.size_bytes, content.len() as u64);
+        assert_eq!(result.sha256, spec.sha256);
+    }
 
     #[test]
     fn installs_verified_bundle_and_dependencies() {

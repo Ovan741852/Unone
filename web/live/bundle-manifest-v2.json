@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "bundles": [
+    {
+      "id": "project",
+      "version": "1",
+      "source": "./project.json",
+      "sha256": "806d273f30bfd0f8f4c9d0e5e041e0b325b3163c1e849ccb63a78a9b34b80067",
+      "size_bytes": 896,
+      "dependencies": []
+    },
+    {
+      "id": "script",
+      "version": "2",
+      "source": "./reload-v2.luau",
+      "sha256": "147fdf4004cd0319e8cd2011ce11e009bb969901710c9ca6430878b0e27beffe",
+      "size_bytes": 651,
+      "dependencies": ["project"]
+    }
+  ]
+}
