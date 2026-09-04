@@ -36,3 +36,6 @@
 - 移除預設逐幀 trace，避免 AI 觀測輸出被 frame noise 淹沒；只保留語意事件。
 - 本地 Git 已初始化，baseline commit：`8a4e598`。
 - Claude CLI `2.1.206` 已安裝，但 code review 因 OAuth session 過期未完成；詳見 `docs/issues/2026-09-05-claude-cli-auth-expired.md`。
+- 已確認「只做必要的」是整個產品的全域規則；MVVM 採用於 Luau UI/presentation，不套用到 ECS simulation。
+- native preview 已以 winit + wgpu 啟動，並成功顯示由 Luau 更新位置的 Player 矩形；截圖：`docs/devlog/2026-09-05-native-preview.png`。
+- wgpu 30 API 適配完成；依賴版本已寫入 `Cargo.lock`，避免 renderer 編譯環境漂移。

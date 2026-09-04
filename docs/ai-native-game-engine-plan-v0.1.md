@@ -35,6 +35,17 @@
 
 引擎只提供可重用的遊戲機制；七種目標遊戲的規則、數值、內容與流程屬於業務端。
 
+### 全域的必要性檢查
+
+「只做必要的」適用於整個產品，不只 Rust core。任何新功能進入引擎前都要回答：
+
+1. 哪一個驗證遊戲已經遇到這個問題？
+2. 它是否跨至少兩個遊戲重複出現，且語意相同？
+3. 放在引擎是否能降低複雜度，而不是只把複雜度搬家？
+4. 能否用測試證明它解決了問題？
+
+沒有明確答案就留在遊戲專案、工具或服務端。引擎不預先擁有遊戲流程、營運規則、ViewModel、下載策略、內容 catalog、後台、帳號、支付或社群功能。
+
 ## 2. 建議的核心架構
 
 ```text
@@ -139,6 +150,52 @@ Reload 失敗時：
 2. 若失敗，保留上一份 module 繼續執行。
 3. 回傳原始檔案、行列、Entity、錯誤原因、受影響範圍與下一步建議。
 4. 成功後才切換 generation，並記錄 reload event。
+
+### 開發 hot reload、內容 hot update、引擎更新要分開
+
+這三者不能共用一個模糊的 `reload`：
+
+| 類型 | 第一版策略 | 負責者 |
+|---|---|---|
+| Luau script hot reload | shadow compile/check、safe-frame swap、保留 Engine state | 引擎 runtime |
+| 線上內容 hot update | manifest、bundle download/cache/verify、原子啟用與回滾 | 引擎資源 runtime + 業務 catalog |
+| Rust engine binary update | 不在 runtime 替換；native 重新發版，Web 重新部署 | 發版流程 |
+
+### Bundle / 分包下載設計
+
+第一版只做必要的內容分發 runtime：
+
+```text
+catalog (game-owned)
+        ↓ resolve
+signed manifest
+        ↓ download missing content-addressed bundles
+staging cache → hash/signature verify → atomic activate
+        ↓
+AssetManager load / unload / ref-count
+```
+
+Manifest 至少包含 bundle id、版本、平台、依賴、大小、壓縮格式、content hash 與簽章。Bundle 以 content hash 做 cache key，支援暫存下載、重試與中斷續傳；新版本先寫入 staging，驗證完整後才切換 active pointer。切換失敗保留上一個可運作版本，舊 bundle 在沒有引用後才回收。
+
+native 使用檔案 cache；Web 使用 browser fetch/cache/持久化 adapter。兩邊共用 manifest、hash、依賴與 Asset API，不把平台儲存細節暴露給 Luau。第一版不做 P2P、差分 patch、遠端腳本執行、原生 plugin 熱插拔或完整 CDN/後台。
+
+遊戲端只描述內容 catalog、預載/按需載入時機與 feature gate；引擎負責安全地下載、驗證、解壓、快取、引用計數與載入。這樣不會把營運規則塞進引擎，也不會讓每款遊戲重寫資源下載器。
+
+### 實務瓶頸與預防設計
+
+| 瓶頸 | 預防 | 不做的過度設計 |
+|---|---|---|
+| 網路延遲 / 首次啟動慢 | bundle manifest、按需載入、預載提示、可重試 cache | 不在引擎內建 CDN 或 P2P |
+| bundle 太碎造成 request 噪音 | 以場景/功能邊界切包，記錄依賴圖與大小 | 不追求每個檔案一包 |
+| 更新中斷 / 檔案損壞 | staging、hash/簽章驗證、原子切換、上一版本保留 | 不做複雜資料庫 migration |
+| 下載後記憶體尖峰 | streaming、ref-count、明確 unload、bundle budget | 不讓所有資產永久常駐 |
+| shader/資源切換卡頓 | 背景準備、safe-frame activate、pipeline warm-up hook | 不先做全平台 shader 魔法兼容 |
+| Mobile suspend/resume | 可恢復下載、生命週期事件、啟動時重驗 manifest | 不在引擎保證背景下載政策 |
+| Web storage/下載限制 | platform capability report、cache quota 診斷、可清理 cache | 不假設 Web 等同 native filesystem |
+| script/asset stale handle | generation、scope、asset lease，失效 handle 回語意診斷 | 不允許舊 callback 靜默寫入新資源 |
+| 更新後 replay 不一致 | 測試 artifact 記錄 engine/script/manifest hash | 不承諾不同版本 bit-identical |
+
+Bundle hot update 的驗收重點是「可恢復、可驗證、可觀測」，不是任何檔案都能在任意時刻無痛替換。場景與 prefab 的 live update 先採 transaction/apply-at-safe-point；引擎不偷偷改動正在執行的遊戲規則。
 
 ## 5. Developer Protocol：AI 的主要入口
 
@@ -247,12 +304,32 @@ wgpu 的官方平台矩陣涵蓋 native 的 Vulkan/Metal/DX12 與 WebAssembly �
 | 2D rendering | Sprite、texture、camera primitive | 關卡美術與排列 |
 | movement | Transform、input、collision primitive | 憤怒鳥的拉弓與拋射規則 |
 | combat | 可重用 physics/damage primitive | 各遊戲傷害公式、技能、數值 |
-| UI | Node、Text、Button、layout primitive | 商店、任務、戀愛選項流程 |
+| UI | Node、Text、Button、layout primitive、最小 binding/command primitive | View、ViewModel、商店、任務、戀愛選項流程 |
 | save | serialization/storage primitive | 玩家資料 schema 與何時存檔 |
 | network | transport/replication primitive（後期） | RTS、PVP 的同步規則 |
 | test | runner、clock、input、observation | 測試場景與驗收條件 |
 
 判斷原則：如果需求只服務一款遊戲，先留在遊戲專案；如果三種以上遊戲重複需要且語意相同，才提煉為引擎能力。
+
+## 10.5 UI 架構：MVVM 只放在 presentation 邊界
+
+MVVM 適合 UI/presentation，但不適合拿來統一整個遊戲引擎。建議分層：
+
+```text
+ECS simulation / game state（Luau + engine components）
+                  │ typed selectors / commands
+                  ▼
+Luau ViewModel（畫面投影、UI commands、screen flow）
+                  │ explicit bindings
+                  ▼
+Declarative View（engine UI primitives）
+```
+
+Model 是遊戲的真實狀態，ViewModel 是遊戲端定義的 typed presentation projection，View 是由引擎提供 primitive、由遊戲端組合的 declarative UI。View 不直接修改 ECS，也不把遊戲規則藏進 callback。
+
+這對 AI 友善，因為 AI 可以分別 inspect model、ViewModel 與 UI tree；ViewModel 是小型、typed、可序列化的上下文；commands 有名稱、參數、前置條件、結果與 diagnostics；測試可先驗證 ViewModel，再驗證 View binding。
+
+第一版不做全域 magic binding、雙向自動同步、反射式 converter graph、全引擎 ViewModel registry 或讓每個 Entity 都建立 ViewModel。Binding 只在 UI boundary、明確宣告、可清除、可追蹤；高頻 gameplay simulation 維持 ECS。
 
 ## 11. 里程碑與驗收
 
@@ -263,7 +340,7 @@ wgpu 的官方平台矩陣涵蓋 native 的 Vulkan/Metal/DX12 與 WebAssembly �
 - 2D quad/sprite、Transform、Input。
 - 一個 Luau entry script 可驅動物件。
 
-驗收：不用 Editor，`game run` 能啟動範例場景並以鍵盤移動 sprite。
+驗收：不用 Editor，`game run` 能啟動範例場景並以鍵盤移動 sprite；`game preview` 能以 native wgpu 視窗顯示同一份 Luau 驅動的 Entity state。
 
 ### M1：可迭代腳本
 
@@ -272,6 +349,14 @@ wgpu 的官方平台矩陣涵蓋 native 的 Vulkan/Metal/DX12 與 WebAssembly �
 - reload 失敗保留舊模組；instance scope 可清理。
 
 驗收：修改移動速度或重力後，在不重啟遊戲的前提下看到結果；故意放入型別錯誤時能得到可定位、可行動的診斷。
+
+### M1.5：內容 bundle runtime
+
+- manifest schema、content-addressed bundle cache、依賴解析。
+- staging download、hash/簽章驗證、atomic activate、失敗回滾。
+- AssetManager 的 load/unload/ref-count 與 native/Web storage adapter contract。
+
+驗收：替換一個 texture/scene bundle 時，下載中斷或 hash 錯誤不破壞目前版本；成功後下一個 safe point 才看到新內容，並能由 CLI observe bundle 狀態。
 
 ### M2：AI 可操作閉環
 
@@ -359,7 +444,7 @@ wgpu 的官方平台矩陣涵蓋 native 的 Vulkan/Metal/DX12 與 WebAssembly �
 
 保留參考初稿的核心判斷：Rust/Luau 分層、wgpu 跨平台基礎、CLI-first、語意診斷、semantic observation、deterministic test、hot reload 與 schema metadata。
 
-本版的重要修正是：先做能被憤怒鳥 2D 驗證的最小遊戲引擎；把 MCP、Editor、3D、network、完整 reflection 與多 domain 安全模型放到有證據的階段；不建立沒有使用者的抽象。引擎要保持像遊戲引擎，而不是變成 AI workflow 平台。
+本版的重要修正是：先做能被憤怒鳥 2D 驗證的最小遊戲引擎；把 MCP、Editor、3D、network、完整 reflection 與多 domain 安全模型放到有證據的階段；熱更只先做腳本與必要的內容 bundle runtime；MVVM 只用於 Luau UI/presentation；不建立沒有使用者的抽象。引擎要保持像遊戲引擎，而不是變成 AI workflow 平台。
 
 ## 參考
 

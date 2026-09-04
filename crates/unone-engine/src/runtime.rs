@@ -201,13 +201,8 @@ impl EngineRuntime {
     pub fn run(&mut self, frames: u64, seed: u64) -> EngineResult<RunReport> {
         self.trace.borrow_mut().clear();
         for _ in 0..frames {
-            if let Err(err) = self.update_fn.call::<()>((self.api.clone(), FIXED_DT)) {
-                return EngineResult::failure(script_diagnostic(&self.paths, err.to_string()));
-            }
-            {
-                let mut world = self.world.borrow_mut();
-                world.frame += 1;
-                world.time_seconds = world.frame as f64 / 60.0;
+            if let Err(err) = self.tick() {
+                return EngineResult::failure(err);
             }
         }
         let world = self.world.borrow().snapshot();
@@ -222,6 +217,18 @@ impl EngineRuntime {
             world,
             trace: self.trace.borrow().clone(),
         })
+    }
+
+    pub fn tick(&mut self) -> Result<WorldSnapshot, Diagnostic> {
+        self.update_fn
+            .call::<()>((self.api.clone(), FIXED_DT))
+            .map_err(|err| script_diagnostic(&self.paths, err.to_string()))?;
+        {
+            let mut world = self.world.borrow_mut();
+            world.frame += 1;
+            world.time_seconds = world.frame as f64 / 60.0;
+        }
+        Ok(self.world.borrow().snapshot())
     }
 
     pub fn run_tests(project_root: impl AsRef<Path>) -> EngineResult<TestSuiteReport> {

@@ -1,8 +1,15 @@
-use std::{path::PathBuf, process::ExitCode};
+use std::{borrow::Cow, path::PathBuf, process::ExitCode, sync::Arc};
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use unone_engine::{EngineResult, EngineRuntime};
+use unone_engine::{EngineResult, EngineRuntime, WorldSnapshot};
+use winit::{
+    application::ApplicationHandler,
+    event::{ElementState, WindowEvent},
+    event_loop::{ActiveEventLoop, EventLoop},
+    keyboard::{KeyCode, PhysicalKey},
+    window::{Window, WindowId},
+};
 
 #[derive(Debug, Parser)]
 #[command(name = "game", version, about = "Unone AI-native game developer CLI")]
@@ -28,6 +35,7 @@ enum Command {
     },
     Test,
     Observe,
+    Preview,
 }
 
 fn main() -> ExitCode {
@@ -86,6 +94,7 @@ fn run() -> Result<ExitCode> {
             };
             print_result(EngineResult::success(runtime.observe()), cli.json)
         }
+        Command::Preview => preview(&cli.project),
     }
 }
 
@@ -116,3 +125,365 @@ fn print_result<T: serde::Serialize>(result: EngineResult<T>, json: bool) -> Res
         ExitCode::from(1)
     })
 }
+
+fn preview(project: &PathBuf) -> Result<ExitCode> {
+    let runtime = EngineRuntime::load(project)
+        .map_err(|diagnostic| anyhow::anyhow!("{}: {}", diagnostic.code, diagnostic.explanation))?;
+    let event_loop = EventLoop::new()?;
+    let mut app = PreviewApp::new(runtime);
+    event_loop.run_app(&mut app)?;
+    Ok(ExitCode::SUCCESS)
+}
+
+struct PreviewApp {
+    runtime: Option<EngineRuntime>,
+    window: Option<Arc<Window>>,
+    renderer: Option<Renderer>,
+}
+
+impl PreviewApp {
+    fn new(runtime: EngineRuntime) -> Self {
+        Self {
+            runtime: Some(runtime),
+            window: None,
+            renderer: None,
+        }
+    }
+}
+
+impl ApplicationHandler for PreviewApp {
+    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+        if self.window.is_some() {
+            return;
+        }
+        let attributes = Window::default_attributes()
+            .with_title("Unone native preview")
+            .with_inner_size(winit::dpi::LogicalSize::new(960.0, 540.0));
+        let window = Arc::new(
+            event_loop
+                .create_window(attributes)
+                .expect("create preview window"),
+        );
+        let renderer = match pollster::block_on(Renderer::new(Arc::clone(&window))) {
+            Ok(renderer) => renderer,
+            Err(err) => {
+                eprintln!("unone preview: renderer init failed: {err}");
+                event_loop.exit();
+                return;
+            }
+        };
+        self.window = Some(window);
+        self.renderer = Some(renderer);
+    }
+
+    fn window_event(
+        &mut self,
+        event_loop: &ActiveEventLoop,
+        window_id: WindowId,
+        event: WindowEvent,
+    ) {
+        let Some(window) = &self.window else { return };
+        if window.id() != window_id {
+            return;
+        }
+        match event {
+            WindowEvent::CloseRequested => event_loop.exit(),
+            WindowEvent::Resized(size) => {
+                if let Some(renderer) = &mut self.renderer {
+                    renderer.resize(size.width, size.height);
+                }
+            }
+            WindowEvent::KeyboardInput { event, .. } => {
+                let Some(runtime) = &mut self.runtime else {
+                    return;
+                };
+                let action = match event.physical_key {
+                    PhysicalKey::Code(KeyCode::ArrowLeft) | PhysicalKey::Code(KeyCode::KeyA) => {
+                        Some("Left")
+                    }
+                    PhysicalKey::Code(KeyCode::ArrowRight) | PhysicalKey::Code(KeyCode::KeyD) => {
+                        Some("Right")
+                    }
+                    PhysicalKey::Code(KeyCode::Escape) if event.state == ElementState::Pressed => {
+                        event_loop.exit();
+                        None
+                    }
+                    _ => None,
+                };
+                if let Some(action) = action {
+                    runtime.set_input(action, event.state == ElementState::Pressed);
+                }
+            }
+            WindowEvent::RedrawRequested => {
+                let Some(runtime) = &mut self.runtime else {
+                    return;
+                };
+                let snapshot = match runtime.tick() {
+                    Ok(snapshot) => snapshot,
+                    Err(err) => {
+                        eprintln!("unone preview: {}: {}", err.code, err.explanation);
+                        event_loop.exit();
+                        return;
+                    }
+                };
+                if let Some(renderer) = &mut self.renderer {
+                    if let Err(err) = renderer.render(&snapshot) {
+                        eprintln!("unone preview: render failed: {err}");
+                        event_loop.exit();
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    fn about_to_wait(&mut self, _event_loop: &ActiveEventLoop) {
+        if let Some(window) = &self.window {
+            window.request_redraw();
+        }
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, bytemuck::Pod, bytemuck::Zeroable)]
+struct Vertex {
+    position: [f32; 2],
+    color: [f32; 3],
+}
+
+impl Vertex {
+    const ATTRIBUTES: [wgpu::VertexAttribute; 2] =
+        wgpu::vertex_attr_array![0 => Float32x2, 1 => Float32x3];
+
+    fn layout<'a>() -> wgpu::VertexBufferLayout<'a> {
+        wgpu::VertexBufferLayout {
+            array_stride: std::mem::size_of::<Vertex>() as wgpu::BufferAddress,
+            step_mode: wgpu::VertexStepMode::Vertex,
+            attributes: &Self::ATTRIBUTES,
+        }
+    }
+}
+
+struct Renderer {
+    surface: wgpu::Surface<'static>,
+    device: wgpu::Device,
+    queue: wgpu::Queue,
+    config: wgpu::SurfaceConfiguration,
+    pipeline: wgpu::RenderPipeline,
+    vertex_buffer: wgpu::Buffer,
+}
+
+impl Renderer {
+    async fn new(window: Arc<Window>) -> Result<Self, String> {
+        let instance = wgpu::Instance::default();
+        let surface = instance
+            .create_surface(window.clone())
+            .map_err(|err| err.to_string())?;
+        let adapter = instance
+            .request_adapter(&wgpu::RequestAdapterOptions {
+                power_preference: wgpu::PowerPreference::HighPerformance,
+                compatible_surface: Some(&surface),
+                force_fallback_adapter: false,
+                apply_limit_buckets: false,
+            })
+            .await
+            .map_err(|err| err.to_string())?;
+        let (device, queue) = adapter
+            .request_device(&wgpu::DeviceDescriptor {
+                label: Some("unone-preview-device"),
+                required_features: wgpu::Features::empty(),
+                required_limits: wgpu::Limits::downlevel_defaults(),
+                experimental_features: wgpu::ExperimentalFeatures::disabled(),
+                memory_hints: wgpu::MemoryHints::Performance,
+                trace: wgpu::Trace::Off,
+            })
+            .await
+            .map_err(|err| err.to_string())?;
+        let size = window.inner_size();
+        let capabilities = surface.get_capabilities(&adapter);
+        let format = capabilities
+            .formats
+            .iter()
+            .copied()
+            .find(wgpu::TextureFormat::is_srgb)
+            .unwrap_or(capabilities.formats[0]);
+        let config = wgpu::SurfaceConfiguration {
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+            format,
+            color_space: wgpu::SurfaceColorSpace::Auto,
+            width: size.width.max(1),
+            height: size.height.max(1),
+            present_mode: capabilities.present_modes[0],
+            alpha_mode: capabilities.alpha_modes[0],
+            view_formats: vec![],
+            desired_maximum_frame_latency: 2,
+        };
+        surface.configure(&device, &config);
+        let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+            label: Some("unone-preview-shader"),
+            source: wgpu::ShaderSource::Wgsl(Cow::Borrowed(SHADER)),
+        });
+        let pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+            label: Some("unone-preview-pipeline"),
+            layout: Some(
+                &device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+                    label: Some("unone-preview-layout"),
+                    bind_group_layouts: &[],
+                    immediate_size: 0,
+                }),
+            ),
+            vertex: wgpu::VertexState {
+                module: &shader,
+                entry_point: Some("vs_main"),
+                buffers: &[Some(Vertex::layout())],
+                compilation_options: Default::default(),
+            },
+            fragment: Some(wgpu::FragmentState {
+                module: &shader,
+                entry_point: Some("fs_main"),
+                targets: &[Some(wgpu::ColorTargetState {
+                    format,
+                    blend: Some(wgpu::BlendState::REPLACE),
+                    write_mask: wgpu::ColorWrites::ALL,
+                })],
+                compilation_options: Default::default(),
+            }),
+            primitive: wgpu::PrimitiveState::default(),
+            depth_stencil: None,
+            multisample: wgpu::MultisampleState::default(),
+            multiview_mask: None,
+            cache: None,
+        });
+        let vertex_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("unone-preview-vertices"),
+            size: (std::mem::size_of::<Vertex>() * 6) as u64,
+            usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
+        Ok(Self {
+            surface,
+            device,
+            queue,
+            config,
+            pipeline,
+            vertex_buffer,
+        })
+    }
+
+    fn resize(&mut self, width: u32, height: u32) {
+        if width == 0 || height == 0 {
+            return;
+        }
+        self.config.width = width;
+        self.config.height = height;
+        self.surface.configure(&self.device, &self.config);
+    }
+
+    fn render(&mut self, snapshot: &WorldSnapshot) -> Result<(), String> {
+        let player_x = snapshot
+            .entities
+            .get("player")
+            .map(|entity| entity.transform.x as f32)
+            .unwrap_or(0.0);
+        let x = (-0.8 + player_x * 0.2).clamp(-0.95, 0.75);
+        let vertices = [
+            Vertex {
+                position: [x, -0.1],
+                color: [0.9, 0.2, 0.15],
+            },
+            Vertex {
+                position: [x + 0.2, -0.1],
+                color: [0.9, 0.2, 0.15],
+            },
+            Vertex {
+                position: [x + 0.2, 0.1],
+                color: [0.9, 0.2, 0.15],
+            },
+            Vertex {
+                position: [x, -0.1],
+                color: [0.9, 0.2, 0.15],
+            },
+            Vertex {
+                position: [x + 0.2, 0.1],
+                color: [0.9, 0.2, 0.15],
+            },
+            Vertex {
+                position: [x, 0.1],
+                color: [0.9, 0.2, 0.15],
+            },
+        ];
+        self.queue
+            .write_buffer(&self.vertex_buffer, 0, bytemuck::cast_slice(&vertices));
+        let output = match self.surface.get_current_texture() {
+            wgpu::CurrentSurfaceTexture::Success(texture)
+            | wgpu::CurrentSurfaceTexture::Suboptimal(texture) => texture,
+            wgpu::CurrentSurfaceTexture::Timeout | wgpu::CurrentSurfaceTexture::Occluded => {
+                return Ok(());
+            }
+            wgpu::CurrentSurfaceTexture::Outdated | wgpu::CurrentSurfaceTexture::Lost => {
+                self.surface.configure(&self.device, &self.config);
+                return Ok(());
+            }
+            wgpu::CurrentSurfaceTexture::Validation => {
+                return Err("surface validation failed".to_string());
+            }
+        };
+        let view = output
+            .texture
+            .create_view(&wgpu::TextureViewDescriptor::default());
+        let mut encoder = self
+            .device
+            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                label: Some("unone-preview-encoder"),
+            });
+        {
+            let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                label: Some("unone-preview-pass"),
+                color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                    view: &view,
+                    resolve_target: None,
+                    depth_slice: None,
+                    ops: wgpu::Operations {
+                        load: wgpu::LoadOp::Clear(wgpu::Color {
+                            r: 0.04,
+                            g: 0.05,
+                            b: 0.08,
+                            a: 1.0,
+                        }),
+                        store: wgpu::StoreOp::Store,
+                    },
+                })],
+                depth_stencil_attachment: None,
+                timestamp_writes: None,
+                occlusion_query_set: None,
+                multiview_mask: None,
+            });
+            pass.set_pipeline(&self.pipeline);
+            pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
+            pass.draw(0..6, 0..1);
+        }
+        self.queue.submit(Some(encoder.finish()));
+        self.queue.present(output);
+        Ok(())
+    }
+}
+
+const SHADER: &str = r#"
+struct VertexOutput {
+    @builtin(position) position: vec4<f32>,
+    @location(0) color: vec3<f32>,
+};
+
+@vertex
+fn vs_main(@location(0) position: vec2<f32>, @location(1) color: vec3<f32>) -> VertexOutput {
+    var out: VertexOutput;
+    out.position = vec4<f32>(position, 0.0, 1.0);
+    out.color = color;
+    return out;
+}
+
+@fragment
+fn fs_main(input: VertexOutput) -> @location(0) vec4<f32> {
+    return vec4<f32>(input.color, 1.0);
+}
+"#;
