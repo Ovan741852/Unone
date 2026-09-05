@@ -2,8 +2,8 @@
 
 ## Status
 
-Resolved in package smoke tooling; pending delegated reruns against package
-`10d1206`. The first failure remains part of the validation history.
+Resolved in package smoke tooling; pending delegated reruns against the latest
+immutable package. The first failures remain part of the validation history.
 
 ## Detection
 
@@ -16,13 +16,17 @@ those later facts were collected.
 ## Impact
 
 This was generic Android host tooling and could affect every game. It was not
-evidence of an engine or game runtime failure.
+evidence of an engine or game runtime failure. A follow-up RTS run showed that
+the Activity foreground poll could pass before the asynchronous
+`project_loaded` event was emitted, so the original one-shot log check had the
+same race in a second location.
 
 ## Fix
 
 Both the repository Android smoke script and package-contained smoke script now
-poll the expected Activity for up to 15 seconds after cold launch and resume.
-They still fail closed on timeout and preserve the original failure output.
+poll the expected Activity and the `project_loaded` lifecycle event for up to
+15 seconds after cold launch and resume. They still fail closed on timeout and
+preserve the original failure output.
 
 ## Required regression
 

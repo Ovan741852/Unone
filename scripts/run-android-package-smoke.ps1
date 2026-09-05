@@ -22,6 +22,17 @@ function Wait-ForUnoneActivity([string]$AdbPath, [string]$DeviceSerial) {
     throw "Unone Android Activity did not reach the foreground within 15 seconds."
 }
 
+function Wait-ForUnoneLogEvent([string]$AdbPath, [string]$DeviceSerial, [string]$EventName) {
+    for ($attempt = 0; $attempt -lt 60; $attempt++) {
+        $log = (& $AdbPath -s $DeviceSerial logcat -d) -join "`n"
+        if ($log -match "UnoneAndroidHost.*$EventName") {
+            return $log
+        }
+        Start-Sleep -Milliseconds 250
+    }
+    throw "Android host did not report $EventName through its lifecycle log within 15 seconds."
+}
+
 if ([string]::IsNullOrWhiteSpace($Serial)) {
     $devices = @((& $adb devices | Select-Object -Skip 1) | Where-Object { $_ -match "^\S+\s+device\s*$" })
     if ($devices.Count -ne 1) { throw "Expected exactly one connected Android device/emulator; pass -Serial explicitly." }
@@ -37,10 +48,7 @@ if ($LASTEXITCODE -ne 0) { throw "Could not launch Unone Android host on $Serial
 $activity = Wait-ForUnoneActivity $adb $Serial
 $packagePid = (& $adb -s $Serial shell pidof com.unone.android) -join ""
 if ([string]::IsNullOrWhiteSpace($packagePid.Trim())) { throw "Unone Android process is not alive after launch." }
-$initialLog = (& $adb -s $Serial logcat -d) -join "`n"
-if ($initialLog -notmatch "UnoneAndroidHost.*project_loaded") {
-    throw "Android host did not report project_loaded through its lifecycle log."
-}
+$initialLog = Wait-ForUnoneLogEvent $adb $Serial "project_loaded"
 
 & $adb -s $Serial shell input keyevent 3 | Out-Null
 Start-Sleep -Seconds 1
