@@ -2,6 +2,7 @@ mod api;
 mod asset;
 mod bundle;
 mod diagnostics;
+mod diff;
 mod layout;
 mod performance;
 mod platform;
@@ -29,6 +30,10 @@ pub use bundle::{
 };
 pub use diagnostics::{
     ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult, SourceLocation,
+};
+pub use diff::{
+    DiffReport, FieldDifference, RecordedFrame, Recording, diff as diff_run,
+    read_recording, record as record_run, to_markdown as diff_markdown,
 };
 pub use layout::{
     DEFAULT_LAYOUT_COLS, DEFAULT_LAYOUT_ROWS, LayoutFinding, LayoutNode, LayoutReport,

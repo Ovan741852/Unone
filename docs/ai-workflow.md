@@ -201,6 +201,29 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary --json ui 
 
 它只檢查**結構**：不重疊、放得下。它不會、也不打算判斷畫面好不好看。世界層（sprite、實體位置）目前還沒有對應的文字檢查。
 
+## 3.7 找出一次改動改了什麼
+
+digest 變了只代表「有東西不一樣」，它不指名 frame、不指名欄位、也不指名數值。錄一份基準，改完之後重播比對：
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json replay record --output baseline.json --frames 90 --seed 42 --input-sequence tests/spin-sequence.json
+# ...修改遊戲...
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine replay diff --baseline baseline.json
+```
+
+回報**第一個開始不同的 frame**，以及那一格所有差異欄位的 dotted path：
+
+```text
+## Replay diverged at frame 59 of 90
+
+| field | baseline | current |
+| entities.reel-3.animation.animation | "run" | "idle" |
+| observations.view_model.last_win | 0 | 1 |
+| ui.children[3].text | "2" | "4" |
+```
+
+只對**第一個**分歧 frame 做欄位比對：之後每一格都會繼承這個差異，全部列出只會把原因埋在雜訊裡。錄製檔不含任何 wall-clock 時間，所以換一台慢的機器不會被誤判成差異。
+
 ## 3.9 量測效能
 
 ```powershell

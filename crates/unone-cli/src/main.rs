@@ -52,6 +52,11 @@ enum Command {
     },
     /// Run every gate a game must pass and report one verdict.
     Verify,
+    /// Record a run, or replay a recording to find what changed.
+    Replay {
+        #[command(subcommand)]
+        command: ReplayCommand,
+    },
     /// Measure where a frame's time goes.
     Perf {
         #[arg(long, default_value_t = 600)]
@@ -149,6 +154,26 @@ enum AssetCommand {
             help = "Companion project-relative sources this asset needs, such as a Spine atlas"
         )]
         file: Vec<String>,
+    },
+}
+
+#[derive(Debug, Subcommand)]
+enum ReplayCommand {
+    /// Run the project and write every frame to a recording file.
+    Record {
+        #[arg(long)]
+        output: PathBuf,
+        #[arg(long, default_value_t = 60)]
+        frames: u64,
+        #[arg(long, default_value_t = 42)]
+        seed: u64,
+        #[arg(long)]
+        input_sequence: Option<PathBuf>,
+    },
+    /// Replay a recording against the project as it is now.
+    Diff {
+        #[arg(long)]
+        baseline: PathBuf,
     },
 }
 
@@ -304,6 +329,105 @@ fn run() -> Result<ExitCode> {
             }
         },
         Command::Verify => print_result(unone_engine::verify(&cli.project), cli.json),
+        Command::Replay { command } => match command {
+            ReplayCommand::Record {
+                output,
+                frames,
+                seed,
+                input_sequence,
+            } => {
+                let sequence = match input_sequence {
+                    Some(path) => match read_input_frames(&path) {
+                        Ok(sequence) => sequence,
+                        Err(diagnostic) => {
+                            return print_result(
+                                EngineResult::<serde_json::Value>::failure(*diagnostic),
+                                cli.json,
+                            );
+                        }
+                    },
+                    None => Vec::new(),
+                };
+                let result = unone_engine::record_run(&cli.project, frames, seed, &sequence);
+                let Some(recording) = result.value.as_ref() else {
+                    return print_result(result, cli.json);
+                };
+                let text = match serde_json::to_string(recording) {
+                    Ok(text) => text,
+                    Err(error) => {
+                        return print_result(
+                            EngineResult::<serde_json::Value>::failure(
+                                unone_engine::Diagnostic::error(
+                                    "RECORDING_WRITE_FAILED",
+                                    "無法序列化錄製檔",
+                                    error.to_string(),
+                                ),
+                            ),
+                            cli.json,
+                        );
+                    }
+                };
+                if let Some(parent) = output.parent()
+                    && !parent.as_os_str().is_empty()
+                    && let Err(error) = fs::create_dir_all(parent)
+                {
+                    return print_result(
+                        EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
+                            "RECORDING_WRITE_FAILED",
+                            "無法建立錄製檔目錄",
+                            format!("{}：{}", parent.display(), error),
+                        )),
+                        cli.json,
+                    );
+                }
+                if let Err(error) = fs::write(&output, text) {
+                    return print_result(
+                        EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
+                            "RECORDING_WRITE_FAILED",
+                            "無法寫入錄製檔",
+                            format!("{}：{}", output.display(), error),
+                        )),
+                        cli.json,
+                    );
+                }
+                let mut summary = EngineResult::success(serde_json::json!({
+                    "output": output.display().to_string(),
+                    "frames": recording.frames,
+                    "seed": recording.seed,
+                    "observation_digest": recording.observation_digest,
+                }));
+                summary
+                    .effects
+                    .push(format!("recording written to {}", output.display()));
+                print_result(summary, cli.json)
+            }
+            ReplayCommand::Diff { baseline } => {
+                let recording = match unone_engine::read_recording(&baseline) {
+                    Ok(recording) => recording,
+                    Err(diagnostic) => {
+                        return print_result(
+                            EngineResult::<serde_json::Value>::failure(*diagnostic),
+                            cli.json,
+                        );
+                    }
+                };
+                let result = unone_engine::diff_run(&cli.project, &recording);
+                if cli.json {
+                    return print_result(result, true);
+                }
+                if let Some(report) = result.value.as_ref() {
+                    println!("{}", unone_engine::diff_markdown(report));
+                }
+                for diagnostic in &result.diagnostics {
+                    eprintln!("{}: {}", diagnostic.code, diagnostic.explanation);
+                }
+                Ok(if result.ok {
+                    ExitCode::SUCCESS
+                } else {
+                    ExitCode::from(1)
+                })
+            }
+        },
         Command::Perf {
             frames,
             seed,
@@ -704,6 +828,23 @@ fn print_result<T: serde::Serialize>(result: EngineResult<T>, json: bool) -> Res
     } else {
         ExitCode::from(1)
     })
+}
+
+/// Read a per-frame input sequence file.
+fn read_input_frames(path: &Path) -> Result<Vec<InputFrame>, Box<unone_engine::Diagnostic>> {
+    fs::read_to_string(path)
+        .map_err(|error| format!("{}：{}", path.display(), error))
+        .and_then(|text| {
+            serde_json::from_str::<Vec<InputFrame>>(&text)
+                .map_err(|error| format!("{}：{}", path.display(), error))
+        })
+        .map_err(|error| {
+            Box::new(unone_engine::Diagnostic::error(
+                "INPUT_SEQUENCE_INVALID",
+                "無法讀取 input sequence",
+                error,
+            ))
+        })
 }
 
 fn preview(project: &PathBuf, watch: bool) -> Result<ExitCode> {

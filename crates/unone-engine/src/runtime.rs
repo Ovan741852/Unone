@@ -486,6 +486,11 @@ impl EngineRuntime {
         Ok(())
     }
 
+    /// Name this project reports itself as.
+    pub fn project_name(&self) -> &str {
+        &self.config.name
+    }
+
     pub fn viewport_aspect(&self) -> f64 {
         *self.viewport_aspect.borrow()
     }

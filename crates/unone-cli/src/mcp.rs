@@ -226,6 +226,7 @@ fn tool_names() -> Vec<&'static str> {
         "unone_asset_init",
         "unone_verify",
         "unone_perf",
+        "unone_replay_diff",
         "unone_ui_preview",
         "unone_systems_list",
         "unone_systems_search",
@@ -327,6 +328,19 @@ fn tool_definitions() -> Vec<Value> {
                     "frames": {"type": "integer", "minimum": 1, "default": 600, "description": "Frames to measure; more frames make the percentiles meaningful."},
                     "seed": {"type": "integer", "minimum": 0, "default": 42}
                 }
+            })),
+            true,
+            true,
+        ),
+        tool(
+            "unone_replay_diff",
+            "Find what a change altered",
+            "Replay a recording made by `game replay record` against the project as it is now, and report the first frame that stops matching plus every field that differs there, as dotted paths into the observation. A changed digest only says something differs; this says which frame and which field. Recordings hold no wall-clock timing, so a slower machine never shows up as a difference.",
+            object_schema(json!({
+                "properties": {
+                    "baseline": {"type": "string", "description": "Path to a recording file written by game replay record."}
+                },
+                "required": ["baseline"]
             })),
             true,
             true,
@@ -595,6 +609,15 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 }
             }
         }
+        "unone_replay_diff" => match required_string(arguments, "baseline") {
+            Ok(baseline) => match unone_engine::read_recording(Path::new(&baseline)) {
+                Ok(recording) => tool_result(unone_engine::diff_run(project, &recording)),
+                Err(diagnostic) => {
+                    tool_result(EngineResult::<serde_json::Value>::failure(*diagnostic))
+                }
+            },
+            Err(diagnostic) => argument_error(*diagnostic),
+        },
         "unone_ui_preview" => {
             let frames = match optional_u64(arguments, "frames", 1) {
                 Ok(frames) => frames,
@@ -1024,7 +1047,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 21);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 22);
     }
 
     #[test]
