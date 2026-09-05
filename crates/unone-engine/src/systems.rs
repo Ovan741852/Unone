@@ -393,7 +393,7 @@ fn descriptors() -> Vec<SystemDescriptor> {
             SystemStatus::Available,
             true,
             true,
-            vec!["api.physics.setGravity", "api.physics.applyImpulse"],
+            vec!["api.physics.applyImpulse"],
             vec!["world.entities[].rigidbody", "world.physics"],
             "關閉後引擎不再推進任何剛體；RigidBody2D 會保持 scene 的初始值，api.physics 會回報 SYSTEM_DISABLED。",
             "棋盤、放置、AVG、老虎機這類沒有物理模擬的遊戲；關閉可移除每 frame 的積分成本與非必要的 digest 變動來源。",

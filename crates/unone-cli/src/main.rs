@@ -159,6 +159,11 @@ enum SystemsCommand {
 enum ApiCommand {
     Search { meaning: String },
     Describe { name: String },
+    /// Print the engine's canonical Luau type contract, or write it to a file.
+    Typings {
+        #[arg(long, help = "Write the type contract to this path instead of stdout")]
+        output: Option<PathBuf>,
+    },
 }
 
 #[derive(Debug, Subcommand)]
@@ -303,6 +308,50 @@ fn run() -> Result<ExitCode> {
                         "搜尋只涵蓋目前公開的最小 API；請改用更具體的動詞或先查看 project inspect。",
                     ));
                 }
+                print_result(result, cli.json)
+            }
+            ApiCommand::Typings { output } => {
+                let types = unone_engine::api_typings();
+                let Some(path) = output else {
+                    if cli.json {
+                        return print_result(
+                            EngineResult::success(serde_json::json!({"typings": types})),
+                            true,
+                        );
+                    }
+                    println!("{types}");
+                    return Ok(ExitCode::SUCCESS);
+                };
+                if let Some(parent) = path.parent()
+                    && !parent.as_os_str().is_empty()
+                    && let Err(error) = fs::create_dir_all(parent)
+                {
+                    return print_result(
+                        EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
+                            "API_TYPINGS_WRITE_FAILED",
+                            "無法建立型別契約輸出目錄",
+                            format!("{}：{}", parent.display(), error),
+                        )),
+                        cli.json,
+                    );
+                }
+                if let Err(error) = fs::write(&path, types) {
+                    return print_result(
+                        EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
+                            "API_TYPINGS_WRITE_FAILED",
+                            "無法寫入型別契約",
+                            format!("{}：{}", path.display(), error),
+                        )),
+                        cli.json,
+                    );
+                }
+                let mut result = EngineResult::success(serde_json::json!({
+                    "output": path.display().to_string(),
+                    "bytes": types.len(),
+                }));
+                result
+                    .effects
+                    .push(format!("engine type contract written to {}", path.display()));
                 print_result(result, cli.json)
             }
             ApiCommand::Describe { name } => match api_describe(&name) {

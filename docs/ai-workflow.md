@@ -70,6 +70,8 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json 
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check --types
 ```
 
+`project init` 產生的入口腳本會**內嵌引擎的 Luau 型別契約**，因此 `check --types` 真的會擋下不存在的 API（引擎 runtime 沒有 module require，單檔遊戲必須自帶型別）。引擎升級後用 `game api typings --output <path>` 取得最新契約，或 `game api typings` 直接印出來。型別契約與 API 索引由測試保證不會漂移。
+
 `check` 保證 Luau syntax 與 Engine entrypoint contract；它會確認入口腳本回傳 `Game` table，且有 `start` / `update` function。`--!strict` 會被回報為 contract metadata。加上 `--types` 才會呼叫官方 `luau-analyze`；engine package 的 `bin/game.exe` 會自動尋找同目錄的 `bin/luau-analyze.exe`。若自行開發 engine 或替換工具，可用 `UNONE_LUAU_ANALYZER` 指定 analyzer 可執行檔路徑；工具不存在時，命令會回傳 `LUAU_ANALYZER_NOT_FOUND`，不會把缺少型別檢查的狀態藏起來。
 
 `.test.json` 的完整欄位與 assertion 結構以 package 內的 `test.schema.json` 為準；`game test` 會把每個 test file 當成一個獨立 deterministic case，最後回傳 observation digest、save payload 與 assertion failures。不要把 UI screenshot 當成 test assertion。
@@ -140,7 +142,7 @@ Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 f
 - engine contract：改引擎、測試與文件。
 - architecture：重複阻塞多個遊戲或無法支援平台/reload，改架構。
 
-需要驗證 restore 時，test manifest 可額外提供 `load_save` JSON payload；runner 會在第一次 tick 前注入，輸出也會帶 `save_payload`，但不會替遊戲判斷版本或 migration。
+需要驗證 restore 時，test manifest 可額外提供 `load_save` JSON payload。它在 `Game.start` **之前**就已還原，所以遊戲可以在 `start` 裡用 `api.save.get()` 重建狀態，不必等到第一次 update；輸出也會帶 `save_payload`，但引擎不會替遊戲判斷版本或 migration。
 - tooling/docs：CLI、診斷或教學有噪音，改 protocol/metadata/文件。
 
 若遊戲有對話、戰鬥結果或其他不適合塞進 Entity Transform 的狀態，使用 `api.observation.set(key, value)` 發布 typed ViewModel 的 semantic projection；test assertion 可用 `{"observation":{"key":"view_model","equals":{...}}}` 做完整 JSON equality。需要 host 顯示時，遊戲端以 `api.ui.setRoot(root)` 發布只含 screen/text/button/rect/action 的最小 View tree，test 可用 `{"ui":{"equals":{...}}}` assertion。ViewModel、View、hit-test 與 action 意義仍屬遊戲端；engine 只驗證／傳輸 tree，host 處理 viewport 與實際 render。

@@ -44,7 +44,8 @@ Copy-PackageFile $cliPath "bin\game.exe"
 Copy-PackageFile $analyzerPath "bin\luau-analyze.exe"
 Copy-PackageFile (Join-Path $engineRoot "docs\ai-agent-game-handoff.md") "docs\ai-agent-game-handoff.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\ai-workflow.md") "docs\ai-workflow.md"
-Copy-PackageFile (Join-Path $engineRoot "docs\engine.d.luau") "docs\engine.d.luau"
+& $cliPath api typings --output (Join-Path $outputRoot "docs\engine.d.luau") | Out-Null
+if ($LASTEXITCODE -ne 0) { throw "game api typings failed while packaging the Luau type contract" }
 Copy-PackageFile (Join-Path $engineRoot "docs\project.schema.json") "docs\project.schema.json"
 Copy-PackageFile (Join-Path $engineRoot "docs\scene.schema.json") "docs\scene.schema.json"
 Copy-PackageFile (Join-Path $engineRoot "docs\test.schema.json") "docs\test.schema.json"

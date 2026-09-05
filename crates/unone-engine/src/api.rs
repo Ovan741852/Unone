@@ -29,6 +29,15 @@ pub struct ApiSearchReport {
     pub matches: Vec<ApiDescriptor>,
 }
 
+/// The canonical Luau type contract for the engine API.
+///
+/// `project init` inlines this into a new entry script and `game api typings`
+/// writes it into an existing project. A test asserts it covers every API in
+/// the index below, so a new capability cannot ship without its type.
+pub fn typings() -> &'static str {
+    include_str!("engine.d.luau")
+}
+
 pub fn search(query: &str) -> Vec<ApiDescriptor> {
     let normalized = query.trim().to_ascii_lowercase();
     if normalized.is_empty() {
@@ -628,5 +637,29 @@ fn descriptor(
         common_errors: common_errors.into_iter().map(str::to_string).collect(),
         example: example.to_string(),
         related_apis: related_apis.into_iter().map(str::to_string).collect(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{descriptors, typings};
+
+    /// Every documented API must have a Luau type, or `check --types` silently
+    /// stops covering it.
+    #[test]
+    fn the_type_contract_covers_every_documented_api() {
+        let types = typings();
+        let mut missing = Vec::new();
+        for descriptor in descriptors() {
+            let member = descriptor
+                .name
+                .rsplit_once('.')
+                .map(|(_, member)| member.to_string())
+                .unwrap_or_else(|| descriptor.name.clone());
+            if !types.contains(&format!("{member}:")) {
+                missing.push(descriptor.name);
+            }
+        }
+        assert!(missing.is_empty(), "APIs with no Luau type: {missing:?}");
     }
 }

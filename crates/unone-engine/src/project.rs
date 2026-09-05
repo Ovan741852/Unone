@@ -178,16 +178,7 @@ pub fn init(project_root: impl AsRef<Path>, name: &str) -> EngineResult<ProjectI
             &config_path,
             serde_json::to_vec_pretty(&config).unwrap_or_default(),
         ),
-        (
-            &script_path,
-            b"--!strict\n\
-type EngineApi = any\n\
-local Game = {}\n\
-function Game.start(_api: EngineApi) end\n\
-function Game.update(_api: EngineApi, _dt: number) end\n\
-return Game\n"
-                .to_vec(),
-        ),
+        (&script_path, scaffold_script().into_bytes()),
         (&scene_path, b"{\n  \"entities\": []\n}\n".to_vec()),
     ];
     for (path, bytes) in writes {
@@ -204,6 +195,41 @@ return Game\n"
         root: root.display().to_string(),
         files: files.iter().map(|path| file_status(path)).collect(),
     })
+}
+
+/// The entry script a new project starts from.
+///
+/// The engine's Luau runtime has no module require, so a single-file game must
+/// carry its own type declarations. Inlining the engine's canonical contract is
+/// what makes `game check --types` able to reject a call to an API that does
+/// not exist; a scaffold typed `any` reports success for anything.
+fn scaffold_script() -> String {
+    let types = crate::api::typings()
+        .lines()
+        .filter(|line| !line.trim_start().starts_with("--"))
+        .collect::<Vec<_>>()
+        .join("
+");
+    format!(
+        "--!strict
+-- Engine type contract, inlined by `project init`.
+-- Refresh it after an engine upgrade with `game api typings`.
+{}
+
+-- Game code starts here. Rules, numbers, ViewModels and save schemas are
+-- game-owned; the engine only provides the API declared above.
+local Game = {{}}
+
+function Game.start(_api: EngineApi)
+end
+
+function Game.update(_api: EngineApi, _dt: number)
+end
+
+return Game
+",
+        types.trim()
+    )
 }
 
 pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<ProjectInspectReport> {

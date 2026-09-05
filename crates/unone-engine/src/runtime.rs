@@ -272,12 +272,25 @@ impl EngineRuntime {
         project_root: impl AsRef<Path>,
         seed: u64,
     ) -> Result<Self, Box<Diagnostic>> {
+        Self::load_with_seed_and_save(project_root, seed, None)
+    }
+
+    /// Load a project with a host-provided save payload already restored.
+    ///
+    /// The payload is visible to `api.save.get()` inside `Game.start`, so a game
+    /// can rebuild its state before the first frame instead of detecting the
+    /// restore on its first update.
+    pub fn load_with_seed_and_save(
+        project_root: impl AsRef<Path>,
+        seed: u64,
+        restored_save: Option<serde_json::Value>,
+    ) -> Result<Self, Box<Diagnostic>> {
         let (config, paths) = ProjectPaths::discover(project_root)?;
         let world = Rc::new(RefCell::new(World::default()));
         if let Some(scene) = &paths.main_scene {
             world.borrow_mut().load_scene(scene)?;
         }
-        Self::with_world(config, paths, world, None, seed)
+        Self::with_world(config, paths, world, None, seed, restored_save)
     }
 
     /// Create a runtime from host-provided source instead of a native filesystem.
@@ -325,6 +338,20 @@ impl EngineRuntime {
         seed: u64,
         systems: BTreeMap<String, bool>,
     ) -> Result<Self, Box<Diagnostic>> {
+        Self::load_source_with_options(project_name, script_name, source, scene, seed, systems, None)
+    }
+
+    /// Load a host-provided project with its systems and a restored save.
+    #[allow(clippy::too_many_arguments, reason = "one host entry point, no config struct yet")]
+    pub fn load_source_with_options(
+        project_name: impl Into<String>,
+        script_name: impl Into<String>,
+        source: impl Into<String>,
+        scene: Option<SceneFile>,
+        seed: u64,
+        systems: BTreeMap<String, bool>,
+        restored_save: Option<serde_json::Value>,
+    ) -> Result<Self, Box<Diagnostic>> {
         let script_name = script_name.into();
         let config = ProjectConfig {
             name: project_name.into(),
@@ -348,7 +375,14 @@ impl EngineRuntime {
         if let Some(scene) = scene {
             world.borrow_mut().load_scene_data(scene)?;
         }
-        Self::with_world(config, paths, world, Some(source.into()), seed)
+        Self::with_world(
+            config,
+            paths,
+            world,
+            Some(source.into()),
+            seed,
+            restored_save,
+        )
     }
 
     fn with_world(
@@ -357,13 +391,18 @@ impl EngineRuntime {
         world: Rc<RefCell<World>>,
         script_source: Option<String>,
         seed: u64,
+        restored_save: Option<serde_json::Value>,
     ) -> Result<Self, Box<Diagnostic>> {
         let input = Rc::new(RefCell::new(InputState::default()));
         let random = Rc::new(RefCell::new(DeterministicRng::new(seed)));
         let trace = Rc::new(RefCell::new(Vec::new()));
         let observations = Rc::new(RefCell::new(BTreeMap::new()));
         let ui = Rc::new(RefCell::new(None));
-        let save_payload = Rc::new(RefCell::new(None));
+        // A restored save has to exist before Game.start runs: start is the only
+        // place a game can rebuild its state before the first frame, and an
+        // injection after start would both hide the payload and silently
+        // overwrite anything start saved.
+        let save_payload = Rc::new(RefCell::new(restored_save));
         let api_state = ApiState {
             world: Rc::clone(&world),
             input: Rc::clone(&input),
@@ -582,11 +621,12 @@ impl EngineRuntime {
                     ));
                 }
             };
-            let mut runtime = match Self::load_with_seed(&paths.root, spec.seed) {
-                Ok(runtime) => runtime,
-                Err(diagnostic) => return EngineResult::failure(*diagnostic),
-            };
-            runtime.set_save_payload(spec.load_save.clone());
+            let mut runtime =
+                match Self::load_with_seed_and_save(&paths.root, spec.seed, spec.load_save.clone())
+                {
+                    Ok(runtime) => runtime,
+                    Err(diagnostic) => return EngineResult::failure(*diagnostic),
+                };
             for (action, is_down) in &spec.input {
                 runtime.set_input(action.clone(), *is_down);
             }
@@ -1768,6 +1808,38 @@ return Game
             error.explanation
         );
         assert!(error.explanation.contains("spine"), "{}", error.explanation);
+    }
+
+    const SAVE_SCRIPT: &str = r#"--!strict
+local Game = {}
+local restored: any = nil
+function Game.start(api)
+    restored = api.save.get()
+    api.observation.set("restored_in_start", restored)
+end
+function Game.update(api, _dt)
+    api.observation.set("restored_in_start", restored)
+end
+return Game
+"#;
+
+    #[test]
+    fn a_restored_save_is_visible_inside_game_start() {
+        let dir = tempdir().unwrap();
+        write_project_with_systems(dir.path(), SAVE_SCRIPT, "{}");
+        let payload = serde_json::json!({"version": 1, "credits": 9});
+        let mut runtime =
+            EngineRuntime::load_with_seed_and_save(dir.path(), 42, Some(payload.clone())).unwrap();
+        assert_eq!(
+            runtime.observe().observations.get("restored_in_start"),
+            Some(&payload),
+            "Game.start could not see the restored save"
+        );
+        runtime.run(1, 42);
+        assert_eq!(
+            runtime.observe().observations.get("restored_in_start"),
+            Some(&payload)
+        );
     }
 
     #[test]

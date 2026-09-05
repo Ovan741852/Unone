@@ -1,4 +1,13 @@
--- Unone public Luau contract snapshot.
+-- Unone public Luau contract.
+--
+-- This file is the engine's own copy and the single source of truth. A test
+-- asserts every API in the engine's semantic index appears here, so the two
+-- cannot drift. Write it into a project with:
+--     game api typings --output <path>
+-- project init inlines it into the entry script, because the engine runtime
+-- has no module require: a single-file game must carry its own types for
+-- `game check --types` to mean anything.
+--
 -- Game-owned models, ViewModels, Views and save schemas belong in the game.
 
 export type Vec2 = { x: number, y: number }
@@ -15,6 +24,7 @@ export type ObservationValue =
     | {ObservationValue}
 
 export type EntityApi = {
+    spawn: (name: string) -> string,
     getPosition: (id: string) -> Vec2,
     setPosition: (id: string, position: Vec2) -> (),
     getVelocity: (id: string) -> Vec2,

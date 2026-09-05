@@ -17,6 +17,8 @@ const saveProjectKey = projectRoot.pathname;
 const bundleDatabaseName = `unone-runner-bundles:${encodeURIComponent(projectRoot.pathname)}`;
 let snapshot = null;
 let renderer = null;
+// Set when the host has no usable GPU. The semantic loop keeps running.
+let rendererError = null;
 let bundleManifest = null;
 let generationState = null;
 let pointer = { position: { x: 0, y: 0 }, screen_position: { x: 0, y: 0 }, down: false };
@@ -225,6 +227,7 @@ function renderUi(nextSnapshot) {
 function showState() {
   output.textContent = JSON.stringify({
     project_root: projectRoot.pathname,
+    renderer: rendererError ? { available: false, error: rendererError } : { available: true },
     save_store: { backend: "indexeddb", loaded: loadedSave },
     bundle: generationState && {
       status: generationState.status,
@@ -349,9 +352,11 @@ function step() {
   if (window.Module._unone_web_tick() !== 0) throw new Error("generic host tick failed");
   snapshot = readSnapshot();
   storeSave();
-  renderer.draw(snapshot);
+  renderer?.draw(snapshot);
   showState();
-  status.textContent = `running ${projectRoot.pathname} / frame ${frameOf(snapshot)}`;
+  status.textContent = rendererError
+    ? `running ${projectRoot.pathname} / frame ${frameOf(snapshot)} — no renderer: ${rendererError}`
+    : `running ${projectRoot.pathname} / frame ${frameOf(snapshot)}`;
   window.requestAnimationFrame(step);
 }
 
@@ -371,7 +376,17 @@ function keyAction(event) {
 async function start() {
   if (window.Module._unone_web_init() !== 0) throw new Error("generic host engine init failed");
   await loadProject();
-  renderer = await createWebGpuRenderer(canvas);
+  // A missing GPU must not cost the semantic gate. Everything this host is
+  // asked to prove — snapshot, UI tree, save store, bundle generation — is
+  // already computed before anything is drawn, so a renderer failure degrades
+  // to "no picture" instead of stopping the loop.
+  try {
+    renderer = await createWebGpuRenderer(canvas);
+  } catch (error) {
+    renderer = null;
+    rendererError = error.message ?? String(error);
+    canvas.replaceChildren();
+  }
   document.querySelector("#bundle-reload")?.addEventListener("click", () => reloadActiveBundle().catch((error) => {
     status.textContent = `bundle reload failed: ${error.message}`;
     output.textContent = JSON.stringify({
@@ -406,7 +421,7 @@ async function start() {
   canvas.addEventListener("pointerup", releasePointer);
   canvas.addEventListener("pointercancel", releasePointer);
   showState();
-  renderer.draw(snapshot);
+  renderer?.draw(snapshot);
   window.requestAnimationFrame(step);
 }
 
