@@ -34,7 +34,7 @@ slot-machine: check --types / test / asset inspect --strict / bundle pack  PASS
 
 - 只有 Web 這一個 host 會播。native preview 與 Android host 仍不畫 Spine 或 Effekseer。
 - 錄影用的瀏覽器分頁是隱藏的，`requestAnimationFrame` 不會觸發、`setTimeout` 被節流到約 1 Hz，所以 host 迴圈與錄影都改為自行推進。互動播放在正常可見分頁才會是即時的。
-- **Spine 不是自由軟體**：Spine Runtimes License 要求每位整合者持有有效的 Spine 授權，`spineboy` 範例資產同樣受限。Effekseer 是 MIT。細節與後果見 `web/vendor/README.md`。
+- Spine runtime 本身免費、無 royalty；付費的是 **Spine Editor**，授權條件是「使用該產品的人各自取得自己的 Editor 授權」，Esoteric 的解釋是指專案內實際操作 Spine 製作骨骼的席次，不是玩家。目前使用的 `spineboy` 是官方範例資產，沒有人動用 Editor；一旦要做自己的骨骼美術，製作者需要 Editor 授權。Effekseer 是 MIT。見 `web/vendor/README.md`。
 - 特效的「站起來面向鏡頭」旋轉是 host 慣例（範例特效畫在地面），不是引擎狀態。
 - 動畫事件與播完通知仍沒有契約。
 

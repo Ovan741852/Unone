@@ -61,7 +61,11 @@ foreach ($decision in @(
     "0021-minimal-ui-tree-boundary.md",
     "0022-minimal-3d-world-boundary.md",
     "0023-generic-web-game-host-boundary.md",
-    "0024-minimal-asset-reference-contract.md"
+    "0024-minimal-asset-reference-contract.md",
+    "0025-asset-gate-and-ai-subagent-handoff.md",
+    "0026-host-asset-resolve-contract.md",
+    "0027-declared-engine-systems.md",
+    "0028-semantic-presentation-systems.md"
 )) {
     Copy-PackageFile (Join-Path $engineRoot "docs\decisions\$decision") "docs\decisions\$decision"
 }
@@ -101,6 +105,7 @@ before writing game code.
 Native command: bin/game.exe
 Luau analyzer: bin/luau-analyze.exe (game check --types finds it automatically)
 Web runner: web/runner/index.html
+Presentation host (Spine/Effekseer): web/presentation/index.html
 
 This package contains no validation-game implementation and no engine source.
 "@
