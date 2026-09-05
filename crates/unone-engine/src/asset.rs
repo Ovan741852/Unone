@@ -197,6 +197,27 @@ fn load_declared_manifest(paths: &ProjectPaths) -> Result<AssetManifest, Box<Dia
     Ok(manifest)
 }
 
+/// Load the game-owned asset manifest a host needs before resolving bundles.
+///
+/// The engine validates only the declaration contract: supported manifest
+/// version, stable ids, project-relative sources, kind and bundle id.
+pub fn manifest(project_root: impl AsRef<Path>) -> EngineResult<AssetManifest> {
+    let (_, paths) = match ProjectPaths::discover(project_root) {
+        Ok(value) => value,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let manifest = match load_declared_manifest(&paths) {
+        Ok(manifest) => manifest,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    for asset in &manifest.assets {
+        if let Err(diagnostic) = validate_asset_spec(asset) {
+            return EngineResult::failure(*diagnostic);
+        }
+    }
+    EngineResult::success(manifest)
+}
+
 /// Resolve one declared asset from the project's active bundle generation.
 ///
 /// This is the native half of the cross-host asset contract: the same asset id

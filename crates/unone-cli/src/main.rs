@@ -1,4 +1,10 @@
-use std::{borrow::Cow, fs, path::PathBuf, process::ExitCode, sync::Arc};
+use std::{
+    borrow::Cow,
+    fs,
+    path::{Path, PathBuf},
+    process::ExitCode,
+    sync::Arc,
+};
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
@@ -15,6 +21,7 @@ use winit::{
     window::{Window, WindowId},
 };
 
+mod assets;
 mod mcp;
 
 #[derive(Debug, Parser)]
@@ -398,10 +405,35 @@ fn print_result<T: serde::Serialize>(result: EngineResult<T>, json: bool) -> Res
 fn preview(project: &PathBuf, watch: bool) -> Result<ExitCode> {
     let runtime = EngineRuntime::load(project)
         .map_err(|diagnostic| anyhow::anyhow!("{}: {}", diagnostic.code, diagnostic.explanation))?;
+    report_host_assets(project);
     let event_loop = EventLoop::new()?;
     let mut app = PreviewApp::new(runtime, watch);
     event_loop.run_app(&mut app)?;
     Ok(ExitCode::SUCCESS)
+}
+
+/// Resolve and decode the project's declared textures before the window opens.
+///
+/// The preview does not draw these textures yet; reporting the verified digest
+/// and decoded size is what lets a native run be compared with the Web host for
+/// the same asset id, instead of comparing screenshots.
+fn report_host_assets(project: &Path) {
+    let assets = assets::load_textures(project);
+    for texture in assets.textures.values() {
+        eprintln!(
+            "unone preview: asset resolved {} sha256={} bytes={} decoded={}x{}",
+            texture.id, texture.sha256, texture.size_bytes, texture.width, texture.height
+        );
+    }
+    for note in &assets.notes {
+        eprintln!("unone preview: asset unresolved {note}");
+    }
+    if !assets.textures.is_empty() {
+        eprintln!(
+            "unone preview: {} texture(s) decoded; this preview still draws flat rectangles",
+            assets.textures.len()
+        );
+    }
 }
 
 struct PreviewApp {

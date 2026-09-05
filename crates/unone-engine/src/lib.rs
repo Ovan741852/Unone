@@ -14,7 +14,8 @@ pub use api::{
 pub use asset::{
     AssetInitReport, AssetInspectBlocker, AssetInspectReport, AssetManifest, AssetReference,
     AssetReadReport, AssetSpec, StaticReferenceScope, init_asset_manifest,
-    inspect as inspect_assets, inspect_strict as inspect_assets_strict, read as read_asset,
+    inspect as inspect_assets, inspect_strict as inspect_assets_strict,
+    manifest as load_asset_manifest, read as read_asset,
 };
 pub use bundle::{
     ASSET_ARCHIVE_VERSION, AssetArchiveEntry, BundleFetcher, BundleManager, BundleManifest,

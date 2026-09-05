@@ -13,8 +13,10 @@ anyhow = "1"
 bytemuck = { version = "1", features = ["derive"] }
 clap = { version = "4", features = ["derive"] }
 pollster = "0.4"
+resvg = { version = "0.48", default-features = false, features = ["raster-images", "text"] }
 serde = "1"
 serde_json = "1"
+sha2 = "0.10"
 unone-engine = { path = "../unone-engine" }
 wgpu = "30"
 winit = "0.30.12"
