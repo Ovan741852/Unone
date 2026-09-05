@@ -65,7 +65,7 @@ bin/game.exe --project <game-root> ui preview --strict
 2. 在遊戲 output 建立 validation/blockers/<id>.md，記錄首次發生時間、命令、完整 JSON/錯誤、影響範圍、已確認事實、推論、需要的決策。
 3. 立即在自己的 task thread 回報主代理，標題包含 [BLOCKER] <id>；不得等到整個遊戲完成才集中回報。
 4. 標明分類：game-logic、engine-contract、architecture、docs/tooling 或 host。若可能影響兩款以上遊戲、跨平台、reload/bundle/save 邊界，優先標成 architecture，由主代理處理。
-5. 收到主代理的處置或明確允許後，記下決策，再繼續並補回歸測試。
+5. 主代理把問題的事實、影響、選項與建議詢問使用者。依賴該問題的工作等使用者決策後才繼續，記下決策並補回歸測試；主代理不可自行以 workaround 或降低 gate 代替使用者答覆。
 
 「先繼續做其他不依賴的工作」可以，但必須在同一則回報明確列出哪些工作被暫停、哪些工作不受影響；不可默默跳過 blocker。
 
