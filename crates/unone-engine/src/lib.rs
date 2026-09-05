@@ -1,4 +1,5 @@
 mod api;
+mod asset;
 mod bundle;
 mod diagnostics;
 mod platform;
@@ -9,6 +10,9 @@ mod world;
 
 pub use api::{
     ApiDescriptor, ApiParameter, ApiSearchReport, describe as api_describe, search as api_search,
+};
+pub use asset::{
+    AssetInspectReport, AssetManifest, AssetReference, AssetSpec, inspect as inspect_assets,
 };
 pub use bundle::{
     BundleFetcher, BundleManager, BundleManifest, BundlePackReport, BundleReport, BundleSpec,

@@ -19,6 +19,7 @@ Unone 是 AI-native 遊戲引擎原型：Rust 負責遊戲引擎機制，Luau �
 cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json project inspect
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json asset inspect
 cargo run -p unone-cli -- --json platform capabilities
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json api describe entity.setPosition
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check
@@ -39,7 +40,7 @@ target/debug/game.exe --project D:/Projects/Unone_Games/minimal-2d mcp
 
 MCP 只位於 `unone-cli`，不成為 engine core 的依賴；工具結果保留完整 `EngineResult` JSON 與語意化 diagnostics。
 
-目前已驗證：Luau entrypoint、`--!strict` contract、官方 `luau-analyze` adapter、headless fixed timestep、deterministic 2D rigid body／重力／地面碰撞、Camera2D state、逐 frame input replay、共用的 `tick_with_input` host boundary、seeded Luau random、seed/input observation digest、failed reload fallback、scene Sprite size validation、與遊戲命名無關的 native wgpu preview、`preview --watch` 腳本熱更、JSON test manifest 與 bundle hash/cache/activation。
+目前已驗證：Luau entrypoint、`--!strict` contract、官方 `luau-analyze` adapter、headless fixed timestep、deterministic 2D rigid body／重力／地面碰撞、Camera2D state、逐 frame input replay、共用的 `tick_with_input` host boundary、seeded Luau random、seed/input observation digest、failed reload fallback、scene Sprite size validation、與遊戲命名無關的 native wgpu preview、`preview --watch` 腳本熱更、JSON test manifest、bundle hash/cache/activation，以及最小 asset reference inspect 契約。
 
 完整型別檢查使用 `game check --types`，需要另外安裝並固定版本的官方 `luau-analyze`；工具不存在時引擎會明確回報錯誤，不會把基本 contract check 說成完整型別檢查。
 

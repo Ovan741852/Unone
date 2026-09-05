@@ -27,11 +27,14 @@ cargo run -p unone-cli -- --json platform capabilities
 
 ```powershell
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json project inspect
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json asset inspect
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json api search "move entity"
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json api describe entity.setPosition
 ```
 
 `project inspect` 回報引擎看見的設定與檔案事實；`api search` 是依用途找能力；`api describe` 會回傳參數、回傳值、side effects、frame semantics、常見錯誤、範例與相關 API。AI 應先讀這些資料，再修改遊戲腳本，不要猜測 API。
+
+`asset inspect` 會列出主場景的靜態 sprite／mesh3d asset reference，並對照遊戲端 `asset_manifest` 的 id、project-relative source 與 bundle。`ASSET_MANIFEST_MISSING`、`ASSET_REFERENCE_MISSING`、`ASSET_SOURCE_MISSING` 與 `ASSET_BUNDLE_NOT_DECLARED` 都是可定位的事實診斷；它不會假裝能發現 Luau 動態選 asset，也不會代替 host 做下載、解碼或 GPU 資源管理。若沒有任何 scene asset reference，沒有 manifest 也不算錯誤。
 
 需要可重播的遊戲隨機性時使用 `api.random.nextFloat()` 或 `api.random.nextInt(min, max)`。CLI 的 `--seed` 會成為該 runtime 的 Luau random seed；同一個 seed、輸入順序與 random 呼叫順序才保證同一結果。它不是安全隨機數，也不應用於金流或密碼。
 

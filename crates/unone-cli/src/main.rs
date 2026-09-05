@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use unone_engine::{
     BundleManager, Camera3DData, EngineResult, EngineRuntime, InputFrame, Vec2, Vec3,
-    WorldSnapshot, api_describe, api_search, inspect_project, pack_project,
+    WorldSnapshot, api_describe, api_search, inspect_assets, inspect_project, pack_project,
 };
 use winit::{
     application::ApplicationHandler,
@@ -32,6 +32,10 @@ enum Command {
     Project {
         #[command(subcommand)]
         command: ProjectCommand,
+    },
+    Asset {
+        #[command(subcommand)]
+        command: AssetCommand,
     },
     Api {
         #[command(subcommand)]
@@ -75,6 +79,12 @@ enum ProjectCommand {
 }
 
 #[derive(Debug, Subcommand)]
+enum AssetCommand {
+    /// Inspect static scene asset references against the game-owned manifest.
+    Inspect,
+}
+
+#[derive(Debug, Subcommand)]
 enum ApiCommand {
     Search { meaning: String },
     Describe { name: String },
@@ -113,6 +123,9 @@ fn run() -> Result<ExitCode> {
     match cli.command {
         Command::Project { command } => match command {
             ProjectCommand::Inspect => print_result(inspect_project(&cli.project), cli.json),
+        },
+        Command::Asset { command } => match command {
+            AssetCommand::Inspect => print_result(inspect_assets(&cli.project), cli.json),
         },
         Command::Api { command } => match command {
             ApiCommand::Search { meaning } => {

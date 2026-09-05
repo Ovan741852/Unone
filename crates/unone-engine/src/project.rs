@@ -20,6 +20,8 @@ pub struct ProjectConfig {
     pub test_files: Vec<String>,
     #[serde(default)]
     pub bundle_manifest: Option<String>,
+    #[serde(default)]
+    pub asset_manifest: Option<String>,
 }
 
 fn default_entry_script() -> String {
@@ -33,6 +35,8 @@ pub struct ProjectPaths {
     pub entry_script: PathBuf,
     pub main_scene: Option<PathBuf>,
     pub test_files: Vec<PathBuf>,
+    pub bundle_manifest: Option<PathBuf>,
+    pub asset_manifest: Option<PathBuf>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -50,6 +54,7 @@ pub struct ProjectInspectReport {
     pub main_scene: Option<ProjectFileStatus>,
     pub test_files: Vec<ProjectFileStatus>,
     pub bundle_manifest: Option<ProjectFileStatus>,
+    pub asset_manifest: Option<ProjectFileStatus>,
 }
 
 impl ProjectPaths {
@@ -77,6 +82,8 @@ impl ProjectPaths {
             .iter()
             .map(|path| root.join(path))
             .collect();
+        let asset_manifest = config.asset_manifest.as_ref().map(|path| root.join(path));
+        let bundle_manifest = config.bundle_manifest.as_ref().map(|path| root.join(path));
         Ok((
             config,
             Self {
@@ -85,6 +92,8 @@ impl ProjectPaths {
                 entry_script,
                 main_scene,
                 test_files,
+                bundle_manifest,
+                asset_manifest,
             },
         ))
     }
@@ -110,6 +119,7 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<ProjectInspectRep
             .bundle_manifest
             .as_ref()
             .map(|path| file_status(&paths.root.join(path))),
+        asset_manifest: paths.asset_manifest.as_deref().map(file_status),
     };
     let mut result = EngineResult::success(report);
     if let Some(report) = &result.value {
@@ -134,11 +144,16 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<ProjectInspectRep
         {
             missing.push(bundle.path.clone());
         }
+        if let Some(assets) = &report.asset_manifest
+            && !assets.exists
+        {
+            missing.push(assets.path.clone());
+        }
         if !missing.is_empty() {
             result.diagnostics.push(Diagnostic::warning(
                 "PROJECT_FILES_MISSING",
                 "專案宣告了尚未存在的檔案",
-                "設定檔可以被讀取，但部分入口、場景、測試或 bundle manifest 不存在；下一步應先修正路徑或建立檔案。",
+                "設定檔可以被讀取，但部分入口、場景、測試、asset manifest 或 bundle manifest 不存在；下一步應先修正路徑或建立檔案。",
             ));
             if let Some(diagnostic) = result.diagnostics.last_mut() {
                 diagnostic.facts = serde_json::json!({"missing": missing});

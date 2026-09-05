@@ -175,7 +175,7 @@ signed manifest
         ↓ download missing content-addressed bundles
 staging cache → hash/signature verify → atomic activate
         ↓
-AssetManager load / unload / ref-count
+host resolves game-owned asset manifest entries
 ```
 
 Manifest 至少包含 bundle id、版本、平台、依賴、大小、壓縮格式、content hash 與簽章。Bundle 以 content hash 做 cache key，支援暫存下載、重試與中斷續傳；新版本先寫入 staging，驗證完整後才切換 active pointer。切換失敗保留上一個可運作版本，舊 bundle 在沒有引用後才回收。
@@ -210,6 +210,7 @@ CLI、MCP 與未來 Editor 不各自實作引擎邏輯，而是共用 Developer 
 
 ```text
 game project inspect [--json]
+game asset inspect [--json]
 game api search <meaning> [--json]
 game api describe <name> [--json]
 game check [--json]
@@ -223,7 +224,7 @@ game diagnostics [--json]
 game test [name] [--json]
 ```
 
-目前已實作 `project inspect`、`api search`、`api describe` 與 `game mcp` 的最小版本；MCP 提供 initialize、tools/list、tools/call，工具只包裝既有 CLI operation，metadata 仍以少量公開 Engine API 為範圍，不做 Rust 全量反射。`game preview --watch` 是目前可用的持續 session reload 入口；一次性 CLI process 不另外假裝提供無狀態的 `game reload`。
+目前已實作 `project inspect`、`asset inspect`、`api search`、`api describe` 與 `game mcp` 的最小版本；`asset inspect` 只檢查主場景的靜態 sprite/mesh3d reference，對照遊戲端 manifest、source 檔案與 bundle id，不負責下載、解碼或管理 runtime asset。MCP 提供 initialize、tools/list、tools/call，工具只包裝既有 CLI operation，metadata 仍以少量公開 Engine API 為範圍，不做 Rust 全量反射。`game preview --watch` 是目前可用的持續 session reload 入口；一次性 CLI process 不另外假裝提供無狀態的 `game reload`。
 
 所有命令都要有穩定 exit code、machine-readable JSON 與人類可讀輸出。MCP 只包裝這些 protocol operation，不成為 Engine core 的依賴；第一版不做 resources、prompts、tasks、Streamable HTTP 或長生命週期遊戲 session。
 
@@ -363,7 +364,8 @@ Model 是遊戲的真實狀態，ViewModel 是遊戲端定義的 typed presentat
 
 - manifest schema、content-addressed bundle cache、依賴解析。
 - staging download、hash/簽章驗證、atomic activate、失敗回滾。
-- `BundleFetcher` host boundary 與 AssetManager 的 load/unload/ref-count、native/Web storage adapter contract。
+- `BundleFetcher` host boundary、native/Web storage adapter contract，以及由遊戲端擁有的 asset reference manifest。
+- `game asset inspect` 只驗證 static reference → asset id → source/bundle 的鏈路；只有至少兩款遊戲證明同一套 runtime lease/load/unload 語意必要時，才加入 AssetManager。不要因為目前已有 asset id 就預先建立泛用資產物件系統。
 
 驗收：替換一個 texture/scene bundle 時，host 可提供非檔案 reader；下載中斷或 hash 錯誤不破壞目前版本；成功後下一個 safe point 才看到新內容，並能由 CLI observe bundle 狀態。
 

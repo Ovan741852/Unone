@@ -307,6 +307,7 @@ impl EngineRuntime {
             main_scene: None,
             test_files: Vec::new(),
             bundle_manifest: None,
+            asset_manifest: None,
         };
         let paths = ProjectPaths {
             root: PathBuf::from("<memory>"),
@@ -314,6 +315,8 @@ impl EngineRuntime {
             entry_script: PathBuf::from(script_name),
             main_scene: None,
             test_files: Vec::new(),
+            bundle_manifest: None,
+            asset_manifest: None,
         };
         let world = Rc::new(RefCell::new(World::default()));
         if let Some(scene) = scene {

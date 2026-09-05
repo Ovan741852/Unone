@@ -8,7 +8,7 @@ use anyhow::Result;
 use serde_json::{Map, Value, json};
 use unone_engine::{
     BundleManager, Diagnostic, EngineResult, EngineRuntime, InputFrame, api_describe, api_search,
-    inspect_project, pack_project, platform_capabilities,
+    inspect_assets, inspect_project, pack_project, platform_capabilities,
 };
 
 const LATEST_PROTOCOL_VERSION: &str = "2025-11-25";
@@ -34,10 +34,11 @@ pub fn serve(project: &Path) -> Result<ExitCode> {
         if input.read_line(&mut line)? == 0 {
             break;
         }
+        let line = line.trim_start_matches('\u{feff}');
         if line.trim().is_empty() {
             continue;
         }
-        let response = match serde_json::from_str::<Value>(&line) {
+        let response = match serde_json::from_str::<Value>(line) {
             Ok(message) => handle_message(message, project, &mut state),
             Err(error) => Some(error_response(
                 None,
@@ -217,6 +218,7 @@ fn handle_message(message: Value, project: &Path, state: &mut ProtocolState) -> 
 fn tool_names() -> Vec<&'static str> {
     vec![
         "unone_project_inspect",
+        "unone_asset_inspect",
         "unone_platform_capabilities",
         "unone_api_search",
         "unone_api_describe",
@@ -236,6 +238,14 @@ fn tool_definitions() -> Vec<Value> {
             "unone_project_inspect",
             "Inspect project",
             "Read the current Unone project configuration, entry script, scene, tests, and bundle configuration. No files are modified.",
+            object_schema(json!({})),
+            true,
+            true,
+        ),
+        tool(
+            "unone_asset_inspect",
+            "Inspect asset references",
+            "Compare main-scene sprite and mesh3d asset references with the game-owned asset manifest, source files, and declared bundle ids. Static inspection does not discover assets selected dynamically by Luau.",
             object_schema(json!({})),
             true,
             true,
@@ -391,6 +401,7 @@ fn object_schema(extra: Value) -> Value {
 fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
     match name {
         "unone_project_inspect" => tool_result(inspect_project(project)),
+        "unone_asset_inspect" => tool_result(inspect_assets(project)),
         "unone_platform_capabilities" => tool_result(platform_capabilities()),
         "unone_api_search" => match required_string(arguments, "meaning") {
             Ok(meaning) => {
@@ -635,7 +646,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 11);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 12);
     }
 
     #[test]
