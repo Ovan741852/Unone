@@ -25,6 +25,8 @@ export type ObservationValue =
 
 export type EntityApi = {
     spawn: (name: string) -> string,
+    despawn: (id: string) -> (),
+    setSpriteVisible: (id: string, visible: boolean) -> (),
     getPosition: (id: string) -> Vec2,
     setPosition: (id: string, position: Vec2) -> (),
     getVelocity: (id: string) -> Vec2,

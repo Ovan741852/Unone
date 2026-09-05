@@ -59,7 +59,7 @@ pub use systems::{
 pub use verify::{StepStatus, VerifyReport, VerifyStep, verify};
 pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiNode, UiRect, UiTree};
 pub use world::{
-    AnimationData, AnimationSnapshot, Camera2DData, Camera3DData, EffectInstance, EntitySnapshot,
+    AnimationData, AnimationSnapshot, Camera2DData, Contact, Camera3DData, EffectInstance, EntitySnapshot,
     Mesh3DData, PhysicsSettings, RigidBody2DData, RigidBodySnapshot, RigidBodyType, SceneFile,
     Transform3DData, Vec2, Vec3, WorldSnapshot,
 };

@@ -220,6 +220,18 @@
             "number",
             "null"
           ]
+        },
+        "linear_damping": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0,
+          "description": "Fraction of velocity every dynamic body loses per second. 0 means a body keeps its velocity forever."
+        },
+        "ground_friction": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0,
+          "description": "Fraction of horizontal velocity a body loses per second while resting on the ground. 0 means a landed body slides forever."
         }
       }
     },

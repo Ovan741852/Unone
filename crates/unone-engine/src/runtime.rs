@@ -1253,6 +1253,27 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
             json_to_lua(lua, value)
         })?,
     )?;
+    let despawn_world = Rc::clone(&world);
+    entity.set(
+        "despawn",
+        lua.create_function(move |_, id: String| {
+            despawn_world
+                .borrow_mut()
+                .despawn(&id)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+    let visibility_world = Rc::clone(&world);
+    entity.set(
+        "setSpriteVisible",
+        lua.create_function(move |_, (id, visible): (String, bool)| {
+            visibility_world
+                .borrow_mut()
+                .set_sprite_visible(&id, visible)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+
     let animation_api = lua.create_table()?;
     let play_world = Rc::clone(&world);
     animation_api.set(

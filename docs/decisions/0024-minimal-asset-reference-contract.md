@@ -26,7 +26,9 @@
 
 Engine 只驗證四件事：stable id、project-relative source、kind、bundle id；會從主場景列出 sprite/mesh3d 的靜態引用，回報缺少的 id、source 與 bundle，並明確說明 Luau 動態選擇的資產不在靜態檢查範圍。
 
-Engine 不因此取得資產載入、解碼、GPU handle、下載、重試、配額、引用計數或遊戲 catalog。這些只有在兩款以上遊戲證明「相同語意的 runtime 問題」後才可進入下一個最小 slice；否則留在 host、content pipeline 或遊戲端。
+Engine 不因此取得資產載入、解碼、GPU handle、下載、重試、配額、引用計數或遊戲 catalog。這些留在 host、content pipeline 或遊戲端。
+
+**這條規則針對的是投機性抽象，不是基本能力。**「兩款遊戲證明需求」是用來擋「照抄別家引擎的抽象」——例如支援 Unity prefab 或 Cocos2d-x `.csb` 這種對本引擎沒有意義的格式。它**不適用**於一般引擎都有的基本機制：碰撞事件、摩擦力、實體移除、音訊這類東西，遊戲需要時引擎就該提供，不需要的遊戲用 `systems` 關掉即可。曾經有一輪把這條規則誤用成「只有一款遊戲需要碰撞事件，所以不做」，那是錯的。
 
 ## 原因
 

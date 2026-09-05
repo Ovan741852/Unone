@@ -132,6 +132,18 @@ pub struct PhysicsSettings {
     pub gravity: Vec2,
     #[serde(default)]
     pub ground_y: Option<f64>,
+    /// Velocity lost per second by every dynamic body, as a fraction.
+    ///
+    /// Defaults to none, which is what this engine simulated before the field
+    /// existed: a body keeps its velocity forever unless something takes it.
+    #[serde(default)]
+    pub linear_damping: f64,
+    /// Horizontal velocity lost per second while a body rests on the ground.
+    ///
+    /// Without it a landed body slides the length of the level, which silently
+    /// turns a miss into a hit.
+    #[serde(default)]
+    pub ground_friction: f64,
 }
 
 fn default_gravity() -> Vec2 {
@@ -143,6 +155,8 @@ impl Default for PhysicsSettings {
         Self {
             gravity: default_gravity(),
             ground_y: None,
+            linear_damping: 0.0,
+            ground_friction: 0.0,
         }
     }
 }
@@ -242,6 +256,24 @@ fn default_speed() -> f64 {
 /// A game that leaks effect handles should fail loudly, not grow forever.
 const MAX_LIVE_EFFECTS: usize = 256;
 
+/// Two bodies that touched during a physics step.
+///
+/// The solver already computes all of this and used to discard it, so a game
+/// could be told nothing about the collision the engine had just resolved. Ids
+/// are ordered, so the same pair reads the same way every frame.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct Contact {
+    pub a: String,
+    pub b: String,
+    /// Unit normal pointing from `a` towards `b`.
+    pub normal: Vec2,
+    /// How far the two overlapped before the solver separated them.
+    pub penetration: f64,
+    /// Impulse the solver applied along the normal. Zero when the pair was
+    /// already separating, which is how a resting stack reads.
+    pub impulse: f64,
+}
+
 /// One live effect instance the game asked a host to play.
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct EffectInstance {
@@ -317,6 +349,12 @@ pub struct WorldSnapshot {
     pub ui: Option<crate::ui::UiTree>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub effects: Vec<EffectInstance>,
+    /// Bodies that touched each other this frame.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub contacts: Vec<Contact>,
+    /// Bodies resting on or striking the ground plane this frame.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ground_contacts: Vec<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -359,6 +397,9 @@ pub(crate) struct World {
     pub camera3d: Option<Camera3DData>,
     pub effects: Vec<EffectInstance>,
     next_effect_handle: u64,
+    /// Contacts from the most recent physics step, rebuilt every frame.
+    pub contacts: Vec<Contact>,
+    pub ground_contacts: Vec<String>,
 }
 
 impl World {
@@ -594,7 +635,49 @@ impl World {
                     started_frame: effect.started_frame,
                 })
                 .collect(),
+            contacts: self
+                .contacts
+                .iter()
+                .map(|contact| Contact {
+                    a: contact.a.clone(),
+                    b: contact.b.clone(),
+                    normal: Vec2 {
+                        x: quantize_observation(contact.normal.x),
+                        y: quantize_observation(contact.normal.y),
+                    },
+                    penetration: quantize_observation(contact.penetration),
+                    impulse: quantize_observation(contact.impulse),
+                })
+                .collect(),
+            ground_contacts: self.ground_contacts.clone(),
         }
+    }
+
+    /// Remove an entity and everything attached to it.
+    ///
+    /// `entity.spawn` existed with no counterpart, so "defeated" had to mean
+    /// "moved somewhere off screen", which leaves a body still colliding and
+    /// still costing a physics step.
+    pub(crate) fn despawn(&mut self, id: &str) -> Result<(), String> {
+        if self.entities.remove(id).is_none() {
+            return Err(format!("Entity '{id}' 不存在，無法移除。"));
+        }
+        self.contacts
+            .retain(|contact| contact.a != id && contact.b != id);
+        self.ground_contacts.retain(|entity| entity != id);
+        Ok(())
+    }
+
+    /// Show or hide an entity's sprite without removing the entity.
+    pub(crate) fn set_sprite_visible(&mut self, id: &str, visible: bool) -> Result<(), String> {
+        let Some(entity) = self.entities.get_mut(id) else {
+            return Err(format!("Entity '{id}' 不存在，無法設定 sprite 可見性。"));
+        };
+        let Some(sprite) = &mut entity.sprite else {
+            return Err(format!("Entity '{id}' 沒有 Sprite 可以顯示或隱藏。"));
+        };
+        sprite.visible = visible;
+        Ok(())
     }
 
     /// Select the animation clip an entity publishes to the host.
@@ -826,6 +909,9 @@ impl World {
     }
 
     pub(crate) fn step_physics(&mut self, dt: f64) {
+        self.contacts.clear();
+        self.ground_contacts.clear();
+        let damping = (1.0 - self.physics.linear_damping * dt).clamp(0.0, 1.0);
         for entity in self.entities.values_mut() {
             let Some(body) = &mut entity.rigidbody else {
                 continue;
@@ -833,13 +919,17 @@ impl World {
             if body.body_type == RigidBodyType::Dynamic {
                 body.velocity.x += self.physics.gravity.x * dt;
                 body.velocity.y += self.physics.gravity.y * dt;
+                body.velocity.x *= damping;
+                body.velocity.y *= damping;
                 entity.transform.x += body.velocity.x * dt;
                 entity.transform.y += body.velocity.y * dt;
             }
         }
 
         if let Some(ground_y) = self.physics.ground_y {
-            for entity in self.entities.values_mut() {
+            let friction = (1.0 - self.physics.ground_friction * dt).clamp(0.0, 1.0);
+            let mut touched = Vec::new();
+            for (id, entity) in self.entities.iter_mut() {
                 let Some(body) = &mut entity.rigidbody else {
                     continue;
                 };
@@ -853,8 +943,14 @@ impl World {
                             body.velocity.y = 0.0;
                         }
                     }
+                    body.velocity.x *= friction;
+                    if body.velocity.x.abs() < 0.01 {
+                        body.velocity.x = 0.0;
+                    }
+                    touched.push(id.clone());
                 }
             }
+            self.ground_contacts = touched;
         }
 
         let ids: Vec<String> = self.entities.keys().cloned().collect();
@@ -866,6 +962,8 @@ impl World {
     }
 
     fn resolve_circle_collision(&mut self, left_id: &str, right_id: &str) {
+        // Ids arrive in sorted order from the caller, so a pair always reads
+        // the same way and the contact list stays deterministic.
         let Some(left) = self.entities.get(left_id) else {
             return;
         };
@@ -940,6 +1038,14 @@ impl World {
             y: normal.y * impulse_magnitude,
         };
 
+        self.contacts.push(Contact {
+            a: left_id.to_string(),
+            b: right_id.to_string(),
+            normal,
+            penetration,
+            impulse: impulse_magnitude,
+        });
+
         if let Some(left) = self.entities.get_mut(left_id)
             && let Some(body) = &mut left.rigidbody
             && body.body_type == RigidBodyType::Dynamic
@@ -1013,6 +1119,13 @@ mod tests {
         }
     }
 
+    fn dynamic_body(velocity: Vec2) -> RigidBodyState {
+        RigidBodyState {
+            velocity,
+            ..body(RigidBodyType::Dynamic, 0.5)
+        }
+    }
+
     fn entity(id: &str, x: f64, y: f64, rigidbody: RigidBodyState) -> EntityState {
         EntityState {
             id: id.to_string(),
@@ -1034,12 +1147,96 @@ mod tests {
             physics: PhysicsSettings {
                 gravity: Vec2 { x: 0.0, y: -9.8 },
                 ground_y: Some(0.0),
+                linear_damping: 0.0,
+                ground_friction: 0.0,
             },
             camera: super::Camera2DData::default(),
             camera3d: None,
             effects: Vec::new(),
             next_effect_handle: 0,
+            contacts: Vec::new(),
+            ground_contacts: Vec::new(),
         }
+    }
+
+    /// The solver already knew every collision; a game just could not be told.
+    #[test]
+    fn a_resolved_collision_is_published_as_a_contact() {
+        let mut entities = BTreeMap::new();
+        entities.insert(
+            "bird".to_string(),
+            entity("bird", 0.0, 1.0, dynamic_body(Vec2 { x: 4.0, y: 0.0 })),
+        );
+        entities.insert(
+            "pig".to_string(),
+            entity("pig", 0.8, 1.0, dynamic_body(Vec2::default())),
+        );
+        let mut world = world_with(entities);
+        world.physics.ground_y = None;
+        world.step_physics(1.0 / 60.0);
+
+        let contact = world
+            .contacts
+            .iter()
+            .find(|contact| contact.a == "bird" && contact.b == "pig")
+            .expect("the pair the solver just separated is reported");
+        assert!(contact.penetration > 0.0, "{contact:?}");
+        assert!(contact.impulse > 0.0, "an approaching pair carries impulse");
+        assert!(contact.normal.x > 0.9, "normal points from a towards b");
+
+        // A separated pair stops being reported rather than lingering.
+        world.entities.get_mut("pig").unwrap().transform.x = 40.0;
+        world.step_physics(1.0 / 60.0);
+        assert!(world.contacts.is_empty(), "{:?}", world.contacts);
+    }
+
+    #[test]
+    fn ground_friction_stops_a_landed_body_sliding_forever() {
+        let mut entities = BTreeMap::new();
+        entities.insert(
+            "block".to_string(),
+            entity("block", 0.0, 0.5, dynamic_body(Vec2 { x: 6.0, y: 0.0 })),
+        );
+        let mut frictionless = world_with(entities.clone());
+        let mut with_friction = world_with(entities);
+        with_friction.physics.ground_friction = 8.0;
+        for _ in 0..120 {
+            frictionless.step_physics(1.0 / 60.0);
+            with_friction.step_physics(1.0 / 60.0);
+        }
+        let sliding = frictionless.entities["block"].transform.x;
+        let stopped = with_friction.entities["block"].transform.x;
+        assert!(sliding > 10.0, "without friction a body keeps its velocity");
+        assert!(stopped < sliding * 0.5, "friction took the horizontal speed");
+        assert!(
+            with_friction.ground_contacts.contains(&"block".to_string()),
+            "a body resting on the ground is reported"
+        );
+    }
+
+    #[test]
+    fn despawn_removes_the_entity_and_its_contacts() {
+        let mut entities = BTreeMap::new();
+        entities.insert(
+            "bird".to_string(),
+            entity("bird", 0.0, 1.0, dynamic_body(Vec2 { x: 4.0, y: 0.0 })),
+        );
+        entities.insert(
+            "pig".to_string(),
+            entity("pig", 0.8, 1.0, dynamic_body(Vec2::default())),
+        );
+        let mut world = world_with(entities);
+        world.physics.ground_y = None;
+        world.step_physics(1.0 / 60.0);
+        assert!(!world.contacts.is_empty());
+
+        world.despawn("pig").unwrap();
+        assert!(!world.entities.contains_key("pig"));
+        assert!(world.contacts.is_empty(), "{:?}", world.contacts);
+        assert_eq!(
+            world.despawn("pig").unwrap_err(),
+            "Entity 'pig' 不存在，無法移除。"
+        );
     }
 
     #[test]
