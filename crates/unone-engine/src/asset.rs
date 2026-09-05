@@ -1,7 +1,7 @@
 use std::{
     collections::{BTreeMap, BTreeSet},
     fs,
-    path::{Component, Path},
+    path::{Component, Path, PathBuf},
 };
 
 use serde::{Deserialize, Serialize};
@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     bundle::{BundleManager, BundleManifest, digest_bytes},
     diagnostics::{ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult},
-    project::{ProjectFileStatus, ProjectPaths},
+    project::{ProjectFileStatus, ProjectPaths, resolve_project_path},
     world::SceneFile,
 };
 
@@ -82,10 +82,14 @@ pub struct AssetInitReport {
     pub created: bool,
     pub added_asset: Option<AssetSpec>,
     pub assets: Vec<AssetSpec>,
+    pub changed_files: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub describe_argv: Option<Vec<String>>,
 }
 
 pub(crate) fn load_for_pack(root: &Path, path: &Path) -> Result<AssetManifest, Box<Diagnostic>> {
-    let text = fs::read_to_string(path).map_err(|error| {
+    let path = project_path_from_path(root, path, "asset manifest")?;
+    let text = fs::read_to_string(&path).map_err(|error| {
         Box::new(Diagnostic::error(
             "ASSET_MANIFEST_READ_FAILED",
             "無法讀取 asset manifest",
@@ -99,27 +103,9 @@ pub(crate) fn load_for_pack(root: &Path, path: &Path) -> Result<AssetManifest, B
             format!("{}：{}", path.display(), error),
         ))
     })?;
-    if manifest.version != SUPPORTED_ASSET_MANIFEST_VERSION {
-        return Err(Box::new(Diagnostic::error(
-            "ASSET_MANIFEST_VERSION_INVALID",
-            "asset manifest version 無效",
-            format!(
-                "目前只支援 asset manifest version {}，不會把未支援的版本靜默當成目前格式。",
-                SUPPORTED_ASSET_MANIFEST_VERSION
-            ),
-        )));
-    }
-    let mut ids = BTreeSet::new();
+    validate_asset_manifest(root, &manifest)?;
     for asset in &manifest.assets {
-        validate_asset_spec(asset)?;
-        if !ids.insert(asset.id.clone()) {
-            return Err(Box::new(Diagnostic::error(
-                "ASSET_MANIFEST_DUPLICATE_ID",
-                "asset manifest 有重複的 asset id",
-                format!("asset id '{}' 只能宣告一次。", asset.id),
-            )));
-        }
-        let source = root.join(&asset.source);
+        let source = resolve_project_path(root, &asset.source)?;
         if !source.is_file() {
             return Err(Box::new(Diagnostic::error(
                 "ASSET_SOURCE_NOT_FOUND",
@@ -130,30 +116,13 @@ pub(crate) fn load_for_pack(root: &Path, path: &Path) -> Result<AssetManifest, B
                 ),
             )));
         }
-        if !source_is_within_root(root, &asset.source) {
-            return Err(Box::new(Diagnostic::error(
-                "ASSET_SOURCE_SYMLINK_OUTSIDE_PROJECT",
-                "asset source symlink 超出專案根目錄",
-                format!(
-                    "asset '{}' 的 source '{}' 解析後不在專案根目錄內；禁止透過 symlink 把專案外檔案打進 bundle。",
-                    asset.id, asset.source
-                ),
-            )));
-        }
         for file in &asset.files {
-            let companion = root.join(file);
+            let companion = resolve_project_path(root, file)?;
             if !companion.is_file() {
                 return Err(Box::new(Diagnostic::error(
                     "ASSET_SOURCE_NOT_FOUND",
                     "找不到 asset 附屬檔案",
                     format!("asset '{}' 需要 '{file}'，但檔案不存在。", asset.id),
-                )));
-            }
-            if !source_is_within_root(root, file) {
-                return Err(Box::new(Diagnostic::error(
-                    "ASSET_SOURCE_SYMLINK_OUTSIDE_PROJECT",
-                    "asset 附屬檔案 symlink 超出專案根目錄",
-                    format!("asset '{}' 的 '{file}' 解析後不在專案根目錄內。", asset.id),
                 )));
             }
         }
@@ -187,7 +156,7 @@ pub struct AssetReadReport {
     pub host_responsibilities: Vec<String>,
 }
 
-fn load_declared_manifest(paths: &ProjectPaths) -> Result<AssetManifest, Box<Diagnostic>> {
+pub(crate) fn load_declared_manifest(paths: &ProjectPaths) -> Result<AssetManifest, Box<Diagnostic>> {
     let Some(manifest_path) = paths.asset_manifest.as_deref() else {
         return Err(Box::new(Diagnostic::error(
             "ASSET_MANIFEST_MISSING",
@@ -195,7 +164,8 @@ fn load_declared_manifest(paths: &ProjectPaths) -> Result<AssetManifest, Box<Dia
             "先在 project.unone.json 設定 asset_manifest，host 才能由 bundle 解析資產。",
         )));
     };
-    let text = fs::read_to_string(manifest_path).map_err(|error| {
+    let manifest_path = project_path_from_path(&paths.root, manifest_path, "asset manifest")?;
+    let text = fs::read_to_string(&manifest_path).map_err(|error| {
         Box::new(Diagnostic::error(
             "ASSET_MANIFEST_READ_FAILED",
             "無法讀取 asset manifest",
@@ -209,16 +179,7 @@ fn load_declared_manifest(paths: &ProjectPaths) -> Result<AssetManifest, Box<Dia
             format!("{}：{}", manifest_path.display(), error),
         ))
     })?;
-    if manifest.version != SUPPORTED_ASSET_MANIFEST_VERSION {
-        return Err(Box::new(Diagnostic::error(
-            "ASSET_MANIFEST_VERSION_INVALID",
-            "asset manifest version 無效",
-            format!(
-                "目前只支援 asset manifest version {}，不會把未支援的版本靜默當成目前格式。",
-                SUPPORTED_ASSET_MANIFEST_VERSION
-            ),
-        )));
-    }
+    validate_asset_manifest(&paths.root, &manifest)?;
     Ok(manifest)
 }
 
@@ -235,11 +196,6 @@ pub fn manifest(project_root: impl AsRef<Path>) -> EngineResult<AssetManifest> {
         Ok(manifest) => manifest,
         Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
-    for asset in &manifest.assets {
-        if let Err(diagnostic) = validate_asset_spec(asset) {
-            return EngineResult::failure(*diagnostic);
-        }
-    }
     EngineResult::success(manifest)
 }
 
@@ -316,12 +272,16 @@ pub fn read(
         Ok(bytes) => bytes,
         Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
-    let Some(bundle_generation) = manager.active_generation() else {
-        return EngineResult::failure(Diagnostic::error(
-            "BUNDLE_GENERATION_MISMATCH",
-            "沒有已啟用的 bundle generation",
-            "讀取資產前必須先安裝並啟用一個 generation。",
-        ));
+    let bundle_generation = match manager.active_generation() {
+        Ok(Some(generation)) => generation,
+        Ok(None) => {
+            return EngineResult::failure(Diagnostic::error(
+                "BUNDLE_GENERATION_MISMATCH",
+                "沒有已啟用的 bundle generation",
+                "讀取資產前必須先安裝並啟用一個 generation。",
+            ));
+        }
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
     let mut effects = Vec::new();
     let written = match output {
@@ -386,12 +346,30 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
         Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
 
-    let manifest_status = paths.asset_manifest.as_deref().map(file_status);
-    let Some(manifest_path) = paths.asset_manifest.as_deref() else {
+    let manifest_path = match paths
+        .asset_manifest
+        .as_deref()
+        .map(|path| project_path_from_path(&paths.root, path, "asset manifest"))
+        .transpose()
+    {
+        Ok(path) => path,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let bundle_manifest_path = match paths
+        .bundle_manifest
+        .as_deref()
+        .map(|path| project_path_from_path(&paths.root, path, "bundle manifest"))
+        .transpose()
+    {
+        Ok(path) => path,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let manifest_status = manifest_path.as_deref().map(file_status);
+    let Some(manifest_path) = manifest_path.as_deref() else {
         let report = AssetInspectReport {
             project: config.name,
             manifest: None,
-            bundle_manifest: paths.bundle_manifest.as_deref().map(file_status),
+            bundle_manifest: bundle_manifest_path.as_deref().map(file_status),
             manifest_version: None,
             assets: Vec::new(),
             references: references.clone(),
@@ -461,43 +439,13 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
             ));
         }
     };
-    if manifest.version != SUPPORTED_ASSET_MANIFEST_VERSION {
-        return EngineResult::failure(Diagnostic::error(
-            "ASSET_MANIFEST_VERSION_INVALID",
-            "asset manifest version 無效",
-            format!(
-                "目前只支援 asset manifest version {}，不會把未支援的版本靜默當成目前格式。",
-                SUPPORTED_ASSET_MANIFEST_VERSION
-            ),
-        ));
+    if let Err(diagnostic) = validate_asset_manifest(&paths.root, &manifest) {
+        return EngineResult::failure(*diagnostic);
     }
 
     let mut by_id = BTreeMap::new();
     for asset in &manifest.assets {
-        if let Err(diagnostic) = validate_asset_spec(asset) {
-            return EngineResult::failure(*diagnostic);
-        }
-        if paths.root.join(&asset.source).is_file()
-            && !source_is_within_root(&paths.root, &asset.source)
-        {
-            return EngineResult::failure(Diagnostic::error(
-                "ASSET_SOURCE_SYMLINK_OUTSIDE_PROJECT",
-                "asset source symlink 超出專案根目錄",
-                format!(
-                    "asset '{}' 的 source '{}' 解析後不在專案根目錄內；禁止 host 或 bundle pack 讀取專案外檔案。",
-                    asset.id, asset.source
-                ),
-            ));
-        }
-        if by_id.insert(asset.id.clone(), asset).is_some() {
-            let mut diagnostic = Diagnostic::error(
-                "ASSET_MANIFEST_DUPLICATE_ID",
-                "asset manifest 有重複的 asset id",
-                format!("asset id '{}' 只能宣告一次。", asset.id),
-            );
-            diagnostic.facts = serde_json::json!({"asset_id": asset.id});
-            return EngineResult::failure(diagnostic);
-        }
+        by_id.insert(asset.id.clone(), asset);
     }
 
     let bundle_ids = match read_bundle_ids(&paths) {
@@ -517,7 +465,11 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
             .flat_map(|asset| {
                 std::iter::once(asset.source.clone()).chain(asset.files.iter().cloned())
             })
-            .filter(|source| !paths.root.join(source).is_file()),
+            .filter(|source| {
+                resolve_project_path(&paths.root, source)
+                    .map(|path| !path.is_file())
+                    .unwrap_or(true)
+            }),
     );
     let undeclared_bundles = sorted_unique(
         manifest
@@ -540,7 +492,7 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
     let report = AssetInspectReport {
         project: config.name,
         manifest: manifest_status,
-        bundle_manifest: paths.bundle_manifest.as_deref().map(file_status),
+        bundle_manifest: bundle_manifest_path.as_deref().map(file_status),
         manifest_version: Some(manifest.version),
         assets: manifest.assets,
         references,
@@ -602,6 +554,22 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
                 "asset id 已存在，但 source 檔案不存在；打包或 host 載入會在這裡失敗。",
             );
             diagnostic.facts = serde_json::json!({"missing_sources": report.missing_sources});
+            if let Some(asset) = report.assets.iter().find(|asset| {
+                report
+                    .missing_sources
+                    .iter()
+                    .any(|path| path == &asset.source || asset.files.iter().any(|file| file == path))
+            }) {
+                diagnostic.suggested_actions.push(ActionSuggestion {
+                    action: "describe_asset".to_string(),
+                    description: "查看這個 declared asset 的 manifest pointer、shared files、引用與 native-local freshness。"
+                        .to_string(),
+                    command: Some(format!(
+                        "game asset describe --id {:?} --json",
+                        asset.id
+                    )),
+                });
+            }
             result.diagnostics.push(diagnostic);
         }
         if !report.undeclared_bundles.is_empty() {
@@ -611,6 +579,22 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
                 "asset 的 bundle id 沒有出現在 bundle manifest；不要讓 host 猜測資產該下載哪一包。",
             );
             diagnostic.facts = serde_json::json!({"undeclared_bundles": report.undeclared_bundles});
+            if let Some(asset) = report.assets.iter().find(|asset| {
+                report
+                    .undeclared_bundles
+                    .iter()
+                    .any(|bundle| bundle == &asset.bundle)
+            }) {
+                diagnostic.suggested_actions.push(ActionSuggestion {
+                    action: "describe_asset".to_string(),
+                    description: "先以單筆 asset describe 確認宣告與 active 狀態，再依序 pack/inspect/install。"
+                        .to_string(),
+                    command: Some(format!(
+                        "game asset describe --id {:?} --json",
+                        asset.id
+                    )),
+                });
+            }
             result.diagnostics.push(diagnostic);
         }
     }
@@ -626,7 +610,7 @@ pub fn init_asset_manifest(
     output_path: Option<&Path>,
     new_asset: Option<AssetSpec>,
 ) -> EngineResult<AssetInitReport> {
-    let (_config, paths) = match ProjectPaths::discover(project_root) {
+    let (config, paths) = match ProjectPaths::discover(project_root) {
         Ok(value) => value,
         Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
@@ -640,35 +624,32 @@ pub fn init_asset_manifest(
             ));
         }
     };
-    let candidate = output_path
-        .map(|path| {
-            if path.is_absolute() {
-                path.to_path_buf()
-            } else {
-                root.join(path)
+    let candidate_relative = match output_path {
+        Some(path) if path.is_absolute() => match path.strip_prefix(&root) {
+            Ok(relative) => relative.to_string_lossy().replace('\\', "/"),
+            Err(_) => {
+                return EngineResult::failure(Diagnostic::error(
+                    "ASSET_MANIFEST_OUTPUT_OUTSIDE_PROJECT",
+                    "asset manifest 輸出位置超出專案根目錄",
+                    "asset init 只會修改目前遊戲專案內的 manifest 與 project config。",
+                ));
             }
-        })
-        .or_else(|| {
-            paths
-                .asset_manifest
-                .as_ref()
-                .map(|path| root.join(relative_path(&paths.root, path)))
-        })
-        .unwrap_or_else(|| root.join("assets/manifest.json"));
-    if !candidate.starts_with(&root) {
-        return EngineResult::failure(Diagnostic::error(
-            "ASSET_MANIFEST_OUTPUT_OUTSIDE_PROJECT",
-            "asset manifest 輸出位置超出專案根目錄",
-            "asset init 只會修改目前遊戲專案內的 manifest 與 project config。",
-        ));
-    }
-    if candidate.exists() && !source_is_within_root(&root, &relative_path(&root, &candidate)) {
-        return EngineResult::failure(Diagnostic::error(
-            "ASSET_MANIFEST_SYMLINK_OUTSIDE_PROJECT",
-            "asset manifest symlink 超出專案根目錄",
-            "不會透過 symlink 修改專案外的 manifest。",
-        ));
-    }
+        },
+        Some(path) => path.to_string_lossy().replace('\\', "/"),
+        None => config
+            .asset_manifest
+            .as_deref()
+            .map(|path| path.replace('\\', "/"))
+            .unwrap_or_else(|| "assets/manifest.json".to_string()),
+    };
+    let candidate = match resolve_project_path(&root, &candidate_relative) {
+        Ok(path) => path,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let config_path = match resolve_project_path(&root, "project.unone.json") {
+        Ok(path) => path,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
 
     let mut manifest = if candidate.is_file() {
         let text = match fs::read_to_string(&candidate) {
@@ -697,31 +678,18 @@ pub fn init_asset_manifest(
             assets: Vec::new(),
         }
     };
-    if manifest.version != SUPPORTED_ASSET_MANIFEST_VERSION {
-        return EngineResult::failure(Diagnostic::error(
-            "ASSET_MANIFEST_VERSION_INVALID",
-            "asset manifest version 無效",
-            format!(
-                "目前只支援 asset manifest version {}。",
-                SUPPORTED_ASSET_MANIFEST_VERSION
-            ),
-        ));
+    if let Err(diagnostic) = validate_asset_manifest(&root, &manifest) {
+        return EngineResult::failure(*diagnostic);
     }
     let mut ids = BTreeSet::new();
     for asset in &manifest.assets {
-        if let Err(diagnostic) = validate_asset_spec(asset) {
-            return EngineResult::failure(*diagnostic);
-        }
-        if !ids.insert(asset.id.clone()) {
-            return EngineResult::failure(Diagnostic::error(
-                "ASSET_MANIFEST_DUPLICATE_ID",
-                "asset manifest 有重複的 asset id",
-                format!("asset id '{}' 只能宣告一次。", asset.id),
-            ));
-        }
+        ids.insert(asset.id.clone());
     }
     if let Some(asset) = &new_asset {
         if let Err(diagnostic) = validate_asset_spec(asset) {
+            return EngineResult::failure(*diagnostic);
+        }
+        if let Err(diagnostic) = validate_asset_paths(&root, asset) {
             return EngineResult::failure(*diagnostic);
         }
         if !ids.insert(asset.id.clone()) {
@@ -738,6 +706,8 @@ pub fn init_asset_manifest(
     }
     let created = !candidate.is_file();
     let changed = created || new_asset.is_some();
+    let mut changed_files = Vec::new();
+    let mut effects = Vec::new();
     if changed {
         let bytes = match serde_json::to_vec_pretty(&manifest) {
             Ok(bytes) => bytes,
@@ -759,42 +729,60 @@ pub fn init_asset_manifest(
             ));
         }
         if let Err(error) = fs::write(&candidate, bytes) {
-            return EngineResult::failure(Diagnostic::error(
+            return init_failure_with_effects(
+                Diagnostic::error(
                 "ASSET_MANIFEST_WRITE_FAILED",
                 "無法寫入 asset manifest",
                 format!("{}：{}", candidate.display(), error),
-            ));
+                ),
+                effects,
+                changed_files,
+            );
         }
+        let path = candidate.display().to_string();
+        changed_files.push(path.clone());
+        effects.push(format!("asset init wrote {path}"));
     }
 
-    let manifest_relative = relative_path(&root, &candidate);
-    let config_path = root.join("project.unone.json");
+    let manifest_relative = candidate_relative;
     let config_text = match fs::read_to_string(&config_path) {
         Ok(text) => text,
         Err(error) => {
-            return EngineResult::failure(Diagnostic::error(
+            return init_failure_with_effects(
+                Diagnostic::error(
                 "PROJECT_CONFIG_READ_FAILED",
                 "無法更新 asset manifest 設定",
                 format!("{}：{}", config_path.display(), error),
-            ));
+                ),
+                effects,
+                changed_files,
+            );
         }
     };
     let mut config_json: serde_json::Value = match serde_json::from_str(&config_text) {
         Ok(config_json) => config_json,
         Err(error) => {
-            return EngineResult::failure(Diagnostic::error(
+            return init_failure_with_effects(
+                Diagnostic::error(
                 "PROJECT_CONFIG_INVALID",
                 "Unone 專案設定不是有效 JSON",
                 error.to_string(),
-            ));
+                ),
+                effects,
+                changed_files,
+            );
         }
     };
     let Some(config_object) = config_json.as_object_mut() else {
-        return EngineResult::failure(Diagnostic::error(
-            "PROJECT_CONFIG_INVALID",
-            "專案設定必須是 JSON object",
-            "asset init 需要在 project.unone.json 設定 asset_manifest。",
-        ));
+        return init_failure_with_effects(
+            Diagnostic::error(
+                "PROJECT_CONFIG_INVALID",
+                "專案設定必須是 JSON object",
+                "asset init 需要在 project.unone.json 設定 asset_manifest。",
+            ),
+            effects,
+            changed_files,
+        );
     };
     let config_changed = config_object
         .get("asset_manifest")
@@ -808,28 +796,65 @@ pub fn init_asset_manifest(
         let bytes = match serde_json::to_vec_pretty(&config_json) {
             Ok(bytes) => bytes,
             Err(error) => {
-                return EngineResult::failure(Diagnostic::error(
-                    "PROJECT_CONFIG_WRITE_FAILED",
-                    "無法序列化專案設定",
-                    error.to_string(),
-                ));
+                return init_failure_with_effects(
+                    Diagnostic::error(
+                        "PROJECT_CONFIG_WRITE_FAILED",
+                        "無法序列化專案設定",
+                        error.to_string(),
+                    ),
+                    effects,
+                    changed_files,
+                );
             }
         };
-        if let Err(error) = fs::write(config_path, bytes) {
-            return EngineResult::failure(Diagnostic::error(
-                "PROJECT_CONFIG_WRITE_FAILED",
-                "無法更新 asset_manifest 設定",
-                error.to_string(),
-            ));
+        if let Err(error) = fs::write(&config_path, bytes) {
+            return init_failure_with_effects(
+                Diagnostic::error(
+                    "PROJECT_CONFIG_WRITE_FAILED",
+                    "無法更新 asset_manifest 設定",
+                    error.to_string(),
+                ),
+                effects,
+                changed_files,
+            );
         }
+        let path = config_path.display().to_string();
+        changed_files.push(path.clone());
+        effects.push(format!("asset init wrote {path}"));
     }
 
-    EngineResult::success(AssetInitReport {
+    let describe_argv = new_asset.as_ref().map(|asset| {
+        vec![
+            "--project".to_string(),
+            root.display().to_string(),
+            "asset".to_string(),
+            "describe".to_string(),
+            "--id".to_string(),
+            asset.id.clone(),
+            "--json".to_string(),
+        ]
+    });
+    let mut result = EngineResult::success(AssetInitReport {
         manifest: candidate.display().to_string(),
         created,
         added_asset: new_asset,
         assets: manifest.assets,
-    })
+        changed_files,
+        describe_argv,
+    });
+    result.effects = effects;
+    result
+}
+
+fn init_failure_with_effects(
+    mut diagnostic: Diagnostic,
+    effects: Vec<String>,
+    changed_files: Vec<String>,
+) -> EngineResult<AssetInitReport> {
+    diagnostic.facts = serde_json::json!({"changed_files": changed_files});
+    let mut result = EngineResult::failure(diagnostic);
+    result.effects = effects;
+    result
 }
 
 /// Turn static asset warnings into a build/CI gate failure.
@@ -857,7 +882,47 @@ pub fn inspect_strict(project_root: impl AsRef<Path>) -> EngineResult<AssetInspe
     result
 }
 
-fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnostic>> {
+pub(crate) fn validate_asset_manifest(
+    root: &Path,
+    manifest: &AssetManifest,
+) -> Result<(), Box<Diagnostic>> {
+    if manifest.version != SUPPORTED_ASSET_MANIFEST_VERSION {
+        return Err(Box::new(Diagnostic::error(
+            "ASSET_MANIFEST_VERSION_INVALID",
+            "asset manifest version 無效",
+            format!(
+                "目前只支援 asset manifest version {}，不會把未支援的版本靜默當成目前格式。",
+                SUPPORTED_ASSET_MANIFEST_VERSION
+            ),
+        )));
+    }
+    let mut ids = BTreeSet::new();
+    for asset in &manifest.assets {
+        validate_asset_spec(asset)?;
+        if !ids.insert(asset.id.clone()) {
+            return Err(Box::new(Diagnostic::error(
+                "ASSET_MANIFEST_DUPLICATE_ID",
+                "asset manifest 有重複的 asset id",
+                format!("asset id '{}' 只能宣告一次。", asset.id),
+            )));
+        }
+        validate_asset_paths(root, asset)?;
+    }
+    Ok(())
+}
+
+pub(crate) fn validate_asset_paths(
+    root: &Path,
+    asset: &AssetSpec,
+) -> Result<(), Box<Diagnostic>> {
+    resolve_project_path(root, &asset.source)?;
+    for file in &asset.files {
+        resolve_project_path(root, file)?;
+    }
+    Ok(())
+}
+
+pub(crate) fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnostic>> {
     if !looks_like_asset_id(&asset.id) {
         let mut diagnostic = Diagnostic::error(
             "ASSET_ID_INVALID",
@@ -900,6 +965,7 @@ fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnostic>> {
             ),
         )));
     }
+    let mut files = BTreeSet::new();
     for file in &asset.files {
         if !is_project_relative(file) {
             return Err(Box::new(Diagnostic::error(
@@ -918,8 +984,30 @@ fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnostic>> {
                 format!("asset '{}' 的 files 不可再列出 source 本身。", asset.id),
             )));
         }
+        if !files.insert(file) {
+            return Err(Box::new(Diagnostic::error(
+                "ASSET_SPEC_INVALID",
+                "asset 附屬檔案重複宣告",
+                format!("asset '{}' 的 files 不可重複列出 '{file}'。", asset.id),
+            )));
+        }
     }
     Ok(())
+}
+
+fn project_path_from_path(
+    root: &Path,
+    path: &Path,
+    label: &str,
+) -> Result<PathBuf, Box<Diagnostic>> {
+    let relative = path.strip_prefix(root).map_err(|_| {
+        Box::new(Diagnostic::error(
+            "ASSET_PATH_OUTSIDE_PROJECT",
+            "asset workflow path 超出專案根目錄",
+            format!("{label} '{}' 必須位於專案根目錄內。", path.display()),
+        ))
+    })?;
+    resolve_project_path(root, &relative.to_string_lossy().replace('\\', "/"))
 }
 
 pub(crate) fn read_scene_references(
@@ -928,7 +1016,8 @@ pub(crate) fn read_scene_references(
     let Some(scene_path) = paths.main_scene.as_deref() else {
         return Ok(Vec::new());
     };
-    let text = fs::read_to_string(scene_path).map_err(|error| {
+    let scene_path = project_path_from_path(&paths.root, scene_path, "main scene")?;
+    let text = fs::read_to_string(&scene_path).map_err(|error| {
         Box::new(Diagnostic::error(
             "SCENE_READ_FAILED",
             "無法讀取主場景",
@@ -973,10 +1062,11 @@ fn read_bundle_ids(paths: &ProjectPaths) -> Result<BTreeSet<String>, Box<Diagnos
     let Some(bundle_path) = paths.bundle_manifest.as_deref() else {
         return Ok(BTreeSet::new());
     };
+    let bundle_path = project_path_from_path(&paths.root, bundle_path, "bundle manifest")?;
     if !bundle_path.is_file() {
         return Ok(BTreeSet::new());
     }
-    let text = fs::read_to_string(bundle_path).map_err(|error| {
+    let text = fs::read_to_string(&bundle_path).map_err(|error| {
         Box::new(Diagnostic::error(
             "BUNDLE_MANIFEST_READ_FAILED",
             "無法讀取 bundle manifest",
@@ -1025,28 +1115,6 @@ fn is_project_relative(source: &str) -> bool {
         && path
             .components()
             .all(|component| matches!(component, Component::Normal(_)))
-}
-
-fn source_is_within_root(root: &Path, source: &str) -> bool {
-    let Ok(root) = fs::canonicalize(root) else {
-        return false;
-    };
-    let Ok(path) = fs::canonicalize(root.join(source)) else {
-        return true;
-    };
-    path.starts_with(root)
-}
-
-fn relative_path(root: &Path, path: &Path) -> String {
-    path.strip_prefix(root)
-        .unwrap_or(path)
-        .components()
-        .filter_map(|component| match component {
-            Component::Normal(value) => Some(value.to_string_lossy().into_owned()),
-            _ => None,
-        })
-        .collect::<Vec<_>>()
-        .join("/")
 }
 
 fn is_supported_asset_kind(kind: &str) -> bool {
@@ -1121,6 +1189,7 @@ mod tests {
     use tempfile::tempdir;
 
     use crate::bundle::{BundleManager, pack_project};
+    use crate::asset_workflow::describe_asset;
 
     use super::{
         AssetSpec, init_asset_manifest, inspect, inspect_strict, is_project_relative, read,
@@ -1245,6 +1314,59 @@ mod tests {
     }
 
     #[test]
+    fn duplicate_ids_fail_closed_for_manifest_read_and_describe() {
+        let dir = tempdir().unwrap();
+        fs::create_dir_all(dir.path().join("assets")).unwrap();
+        write_project(
+            dir.path(),
+            r#"{"name":"asset-duplicate","main_scene":"scenes/main.scene.json","asset_manifest":"assets/manifest.json","bundle_manifest":"bundles/manifest.json"}"#,
+            r#"{"entities":[]}"#,
+        );
+        fs::write(dir.path().join("assets/a.svg"), b"a").unwrap();
+        fs::write(
+            dir.path().join("assets/manifest.json"),
+            r#"{"version":1,"assets":[{"id":"asset://same","source":"assets/a.svg","kind":"texture2d","bundle":"content"},{"id":"asset://same","source":"assets/a.svg","kind":"texture2d","bundle":"content"}]}"#,
+        )
+        .unwrap();
+        assert_eq!(
+            super::manifest(dir.path()).diagnostics[0].code,
+            "ASSET_MANIFEST_DUPLICATE_ID"
+        );
+        assert_eq!(
+            read(dir.path(), "asset://same", None, None).diagnostics[0].code,
+            "ASSET_MANIFEST_DUPLICATE_ID"
+        );
+        assert_eq!(
+            describe_asset(dir.path(), "asset://same").diagnostics[0].code,
+            "ASSET_MANIFEST_DUPLICATE_ID"
+        );
+    }
+
+    #[test]
+    fn companion_path_safety_is_shared_by_inspect_and_pack() {
+        let dir = tempdir().unwrap();
+        fs::create_dir_all(dir.path().join("assets")).unwrap();
+        write_project(
+            dir.path(),
+            r#"{"name":"asset-companion-path","main_scene":"scenes/main.scene.json","asset_manifest":"assets/manifest.json","bundle_manifest":"bundles/manifest.json"}"#,
+            r#"{"entities":[]}"#,
+        );
+        fs::write(dir.path().join("assets/a.svg"), b"a").unwrap();
+        fs::write(
+            dir.path().join("assets/manifest.json"),
+            r#"{"version":1,"assets":[{"id":"asset://a","source":"assets/a.svg","kind":"texture2d","bundle":"content","files":["../outside.atlas"]}]}"#,
+        )
+        .unwrap();
+        assert_eq!(
+            inspect(dir.path()).diagnostics[0].code,
+            "ASSET_SOURCE_OUTSIDE_PROJECT"
+        );
+        let packed = pack_project(dir.path(), None);
+        assert!(!packed.ok, "越界 companion 不應被 pack");
+        assert!(!packed.diagnostics.is_empty());
+    }
+
+    #[test]
     fn rejects_nonportable_asset_source_paths() {
         assert!(!is_project_relative(""));
         assert!(!is_project_relative("."));
@@ -1288,7 +1410,78 @@ mod tests {
             }),
         );
         assert!(second.ok, "{:?}", second.diagnostics);
-        assert_eq!(second.value.unwrap().assets.len(), 1);
+        let second = second.value.unwrap();
+        assert_eq!(second.assets.len(), 1);
+        assert_eq!(
+            second.describe_argv,
+            Some(vec![
+                "--project".to_string(),
+                dir.path().canonicalize().unwrap().display().to_string(),
+                "asset".to_string(),
+                "describe".to_string(),
+                "--id".to_string(),
+                "asset://bird".to_string(),
+                "--json".to_string(),
+            ])
+        );
+    }
+
+    #[test]
+    fn empty_asset_init_reports_actual_writes_without_inventing_a_describe_id() {
+        let dir = tempdir().unwrap();
+        write_project(
+            dir.path(),
+            r#"{"name":"asset-init-empty","main_scene":"scenes/main.scene.json"}"#,
+            r#"{"entities":[]}"#,
+        );
+        let first = init_asset_manifest(dir.path(), None, None);
+        assert!(first.ok, "{:?}", first.diagnostics);
+        let first = first.value.unwrap();
+        assert_eq!(first.changed_files.len(), 2);
+        assert!(first
+            .changed_files
+            .iter()
+            .any(|path| path.ends_with("assets\\manifest.json") || path.ends_with("assets/manifest.json")));
+        assert!(first
+            .changed_files
+            .iter()
+            .any(|path| path.ends_with("project.unone.json")));
+        assert_eq!(first.describe_argv, None);
+
+        let second = init_asset_manifest(dir.path(), None, None);
+        assert!(second.ok, "{:?}", second.diagnostics);
+        let second = second.value.unwrap();
+        assert!(second.changed_files.is_empty());
+        assert_eq!(second.describe_argv, None);
+    }
+
+    #[test]
+    fn asset_init_reports_a_manifest_write_when_the_followup_config_write_fails() {
+        let dir = tempdir().unwrap();
+        write_project(
+            dir.path(),
+            r#"{"name":"asset-init-partial","main_scene":"scenes/main.scene.json"}"#,
+            r#"{"entities":[]}"#,
+        );
+        let config_path = dir.path().join("project.unone.json");
+        let mut permissions = fs::metadata(&config_path).unwrap().permissions();
+        permissions.set_readonly(true);
+        fs::set_permissions(&config_path, permissions).unwrap();
+
+        let result = init_asset_manifest(dir.path(), None, None);
+        assert!(!result.ok, "唯讀 project config 不應宣稱 init 成功");
+        assert_eq!(result.diagnostics[0].code, "PROJECT_CONFIG_WRITE_FAILED");
+        assert!(result.effects.iter().any(|effect| {
+            effect.contains("assets\\manifest.json") || effect.contains("assets/manifest.json")
+        }));
+        assert!(dir.path().join("assets/manifest.json").is_file());
+        assert_eq!(
+            result.diagnostics[0].facts["changed_files"]
+                .as_array()
+                .unwrap()
+                .len(),
+            1
+        );
     }
 
     #[test]

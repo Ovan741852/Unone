@@ -1,0 +1,215 @@
+{
+  "scope": "main-agent candidate CLI positive probe; not package-only blind validation",
+  "project": "D:/Projects/Unone/artifacts/asset-workflow-main-positive-20260906",
+  "stages": [
+    {
+      "stage": "positiveInitial",
+      "exit_code": 0,
+      "publication": {
+        "scope": "selected_asset_native_local",
+        "matches_authoring": true,
+        "asset_spec_matches": true,
+        "primary_bytes_match": true,
+        "companion_bytes_match": true,
+        "bytes_match": true,
+        "reasons": [
+          "active AssetSpec and primary/companion verified bytes match authoring"
+        ]
+      },
+      "active_generation": 1,
+      "active_files": [
+        {
+          "path": "assets/probe.svg",
+          "role": "primary",
+          "verified": true,
+          "size_bytes": 117,
+          "sha256": "072b7751020e925700afe6d779bf9f0d1702f50b02bdadb1047d57ab969cbe6d"
+        }
+      ],
+      "authoring_files": [
+        {
+          "path": "assets/probe.svg",
+          "role": "primary",
+          "exists": true,
+          "size_bytes": 117,
+          "sha256": "072b7751020e925700afe6d779bf9f0d1702f50b02bdadb1047d57ab969cbe6d",
+          "shared_with_asset_ids": []
+        }
+      ]
+    },
+    {
+      "stage": "positiveEdited",
+      "exit_code": 0,
+      "publication": {
+        "scope": "selected_asset_native_local",
+        "matches_authoring": false,
+        "asset_spec_matches": true,
+        "primary_bytes_match": false,
+        "companion_bytes_match": true,
+        "bytes_match": false,
+        "reasons": [
+          "one or more primary/companion verified bytes differ from authoring"
+        ]
+      },
+      "active_generation": 1,
+      "active_files": [
+        {
+          "path": "assets/probe.svg",
+          "role": "primary",
+          "verified": true,
+          "size_bytes": 117,
+          "sha256": "072b7751020e925700afe6d779bf9f0d1702f50b02bdadb1047d57ab969cbe6d"
+        }
+      ],
+      "authoring_files": [
+        {
+          "path": "assets/probe.svg",
+          "role": "primary",
+          "exists": true,
+          "size_bytes": 117,
+          "sha256": "0aa6ff31b75b616d7705ea2eba9ddd5d35ea3aa8d3b6ad1c62de19352859ba8c",
+          "shared_with_asset_ids": []
+        }
+      ]
+    },
+    {
+      "stage": "positivePacked",
+      "exit_code": 0,
+      "publication": {
+        "scope": "selected_asset_native_local",
+        "matches_authoring": null,
+        "asset_spec_matches": true,
+        "primary_bytes_match": null,
+        "companion_bytes_match": null,
+        "bytes_match": null,
+        "reasons": [
+          "one or more active primary/companion reads failed verification"
+        ]
+      },
+      "active_generation": 1,
+      "active_files": [
+        {
+          "path": "assets/probe.svg",
+          "role": "primary",
+          "verified": false,
+          "size_bytes": null,
+          "sha256": null,
+          "diagnostic": {
+            "code": "BUNDLE_GENERATION_MISMATCH",
+            "severity": "ERROR",
+            "summary": "bundle 不屬於目前啟用的 generation",
+            "explanation": "bundle 'content' 的 manifest 雜湊與 active generation 不一致；不會讀取未啟用的內容。",
+            "facts": {
+              "active_sha256": "e3e468089e4005c01ecc55b111cc0e8cf1dba80538e0af0b12f76211d22bf900",
+              "bundle_id": "content",
+              "generation": 1,
+              "manifest_sha256": "657dc59c2c2c728aceda024fd0d003ff1e06476a99accca0504b739d505dccf2"
+            },
+            "likely_causes": [],
+            "suggested_actions": [
+              {
+                "action": "install_bundle",
+                "description": "重新安裝 bundle 'content' 以啟用目前 manifest。",
+                "command": "game bundle install content"
+              }
+            ],
+            "source": null
+          }
+        }
+      ],
+      "authoring_files": [
+        {
+          "path": "assets/probe.svg",
+          "role": "primary",
+          "exists": true,
+          "size_bytes": 117,
+          "sha256": "0aa6ff31b75b616d7705ea2eba9ddd5d35ea3aa8d3b6ad1c62de19352859ba8c",
+          "shared_with_asset_ids": []
+        }
+      ]
+    },
+    {
+      "stage": "positivePublished",
+      "exit_code": 0,
+      "publication": {
+        "scope": "selected_asset_native_local",
+        "matches_authoring": true,
+        "asset_spec_matches": true,
+        "primary_bytes_match": true,
+        "companion_bytes_match": true,
+        "bytes_match": true,
+        "reasons": [
+          "active AssetSpec and primary/companion verified bytes match authoring"
+        ]
+      },
+      "active_generation": 2,
+      "active_files": [
+        {
+          "path": "assets/probe.svg",
+          "role": "primary",
+          "verified": true,
+          "size_bytes": 117,
+          "sha256": "0aa6ff31b75b616d7705ea2eba9ddd5d35ea3aa8d3b6ad1c62de19352859ba8c"
+        }
+      ],
+      "authoring_files": [
+        {
+          "path": "assets/probe.svg",
+          "role": "primary",
+          "exists": true,
+          "size_bytes": 117,
+          "sha256": "0aa6ff31b75b616d7705ea2eba9ddd5d35ea3aa8d3b6ad1c62de19352859ba8c",
+          "shared_with_asset_ids": []
+        }
+      ]
+    }
+  ],
+  "final_read": {
+    "ok": true,
+    "value": {
+      "project": "Asset publication main probe",
+      "asset": {
+        "id": "asset://probe/blue",
+        "source": "assets/probe.svg",
+        "kind": "texture2d",
+        "bundle": "content"
+      },
+      "bundle_generation": 2,
+      "size_bytes": 117,
+      "sha256": "0aa6ff31b75b616d7705ea2eba9ddd5d35ea3aa8d3b6ad1c62de19352859ba8c",
+      "output": null,
+      "host_responsibilities": [
+        "decode 與 GPU 資源生命週期屬於 host",
+        "下載、重試、快取容量與 CDN policy 屬於 host",
+        "engine 只驗證 bundle 與 archive entry 的完整性"
+      ]
+    },
+    "diagnostics": [],
+    "effects": []
+  },
+  "independent_source_sha256": "0aa6ff31b75b616d7705ea2eba9ddd5d35ea3aa8d3b6ad1c62de19352859ba8c",
+  "unchanged_scene_sha256": "e4121e3df9b7a052c0f9273974567381f3209ae6bc5b1a85f1ab403480304ad5",
+  "readonly_probe": {
+    "filesystem_unchanged": true,
+    "file_count": 15,
+    "action": {
+      "action": "asset_read_primary",
+      "kind": "command",
+      "reason": "active bytes 已與 authoring 對照一致；如 host 需要檔案，再以 explicit read export 讀取。",
+      "executable": "game",
+      "argv": [
+        "--project",
+        "\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-main-positive-20260906",
+        "asset",
+        "read",
+        "--id",
+        "asset://probe/blue",
+        "--json"
+      ],
+      "ready": true,
+      "status": "ready",
+      "prerequisites": []
+    },
+    "invoked_read_sha256": "0aa6ff31b75b616d7705ea2eba9ddd5d35ea3aa8d3b6ad1c62de19352859ba8c"
+  }
+}

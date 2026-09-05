@@ -1,0 +1,50 @@
+{
+  "scope": "main-agent same baseline fixture, rebuilt candidate CLI; not final package verification",
+  "read": {
+    "exit_code": 1,
+    "result": {
+      "ok": false,
+      "value": null,
+      "diagnostics": [
+        {
+          "code": "BUNDLE_ACTIVE_GENERATION_UNREADABLE",
+          "severity": "ERROR",
+          "summary": "無法讀取 active bundle generation",
+          "explanation": "\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-main-probe-20260906\\.unone\\active\\bundles\\generation-00000000000000000002.json：expected value at line 2 column 17",
+          "facts": {
+            "active_record_policy": "latest formal generation only; corrupt records do not fall back"
+          },
+          "likely_causes": [],
+          "suggested_actions": [],
+          "source": null
+        }
+      ],
+      "effects": []
+    }
+  },
+  "describe": {
+    "exit_code": 0,
+    "publication": {
+      "scope": "selected_asset_native_local",
+      "matches_authoring": null,
+      "asset_spec_matches": null,
+      "primary_bytes_match": null,
+      "companion_bytes_match": null,
+      "bytes_match": null,
+      "reasons": [
+        "active observation is missing or inconsistent"
+      ]
+    },
+    "first_action": {
+      "action": "repair_active_generation_record",
+      "kind": "manual",
+      "reason": "最新 native-local active generation record 無法讀取；先依 host 診斷並修復該 record。pack、strict、install 都不能被假定會修復它，也不建議清 cache。",
+      "executable": null,
+      "argv": [],
+      "ready": true,
+      "status": "manual_required",
+      "prerequisites": []
+    }
+  },
+  "remaining_at_capture": "describe repeats the same diagnostic three times; returned to implementation owner before final verification"
+}

@@ -1,0 +1,139 @@
+{
+  "valid": {
+    "version": 1,
+    "bundles": [
+      {
+        "id": "base",
+        "version": "1",
+        "source": "https://cdn.example/base.bundle",
+        "sha256": "5e894f9198f3b2da2aa6c9d41b4620f82a18dd28c1dbc71ddc46d3795a77baaf",
+        "size_bytes": 12,
+        "dependencies": []
+      },
+      {
+        "id": "feature",
+        "version": "1",
+        "source": "https://cdn.example/feature.bundle",
+        "sha256": "50997c798fdfb63a6a1d19e58dae9ce3fce09a3deb627738c5774531d27a3779",
+        "size_bytes": 15,
+        "dependencies": ["base"]
+      }
+    ]
+  },
+  "invalid": {
+    "empty_bundles": {
+      "version": 1,
+      "bundles": []
+    },
+    "empty_id": {
+      "version": 1,
+      "bundles": [
+        {
+          "id": "   ",
+          "version": "1",
+          "source": "https://cdn.example/empty-id.bundle",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "size_bytes": 0,
+          "dependencies": []
+        }
+      ]
+    },
+    "duplicate_id": {
+      "version": 1,
+      "bundles": [
+        {
+          "id": "same",
+          "version": "1",
+          "source": "https://cdn.example/one.bundle",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "size_bytes": 0,
+          "dependencies": []
+        },
+        {
+          "id": "same",
+          "version": "1",
+          "source": "https://cdn.example/two.bundle",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "size_bytes": 0,
+          "dependencies": []
+        }
+      ]
+    },
+    "invalid_hash": {
+      "version": 1,
+      "bundles": [
+        {
+          "id": "bad-hash",
+          "version": "1",
+          "source": "https://cdn.example/bad-hash.bundle",
+          "sha256": "ABC",
+          "size_bytes": 1,
+          "dependencies": []
+        }
+      ]
+    },
+    "invalid_size": {
+      "version": 1,
+      "bundles": [
+        {
+          "id": "bad-size",
+          "version": "1",
+          "source": "https://cdn.example/bad-size.bundle",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "size_bytes": 9007199254740992,
+          "dependencies": []
+        }
+      ]
+    },
+    "missing_dependency": {
+      "version": 1,
+      "bundles": [
+        {
+          "id": "base",
+          "version": "1",
+          "source": "https://cdn.example/base.bundle",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "size_bytes": 0,
+          "dependencies": []
+        },
+        {
+          "id": "feature",
+          "version": "1",
+          "source": "https://cdn.example/feature.bundle",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "size_bytes": 0,
+          "dependencies": ["missing"]
+        }
+      ]
+    },
+    "dependency_cycle": {
+      "version": 1,
+      "bundles": [
+        {
+          "id": "base",
+          "version": "1",
+          "source": "https://cdn.example/base.bundle",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "size_bytes": 0,
+          "dependencies": []
+        },
+        {
+          "id": "a",
+          "version": "1",
+          "source": "https://cdn.example/a.bundle",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "size_bytes": 0,
+          "dependencies": ["b"]
+        },
+        {
+          "id": "b",
+          "version": "1",
+          "source": "https://cdn.example/b.bundle",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "size_bytes": 0,
+          "dependencies": ["a"]
+        }
+      ]
+    }
+  }
+}

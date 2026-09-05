@@ -15,6 +15,8 @@ target/debug/game.exe --project D:/Projects/Unone_Games/minimal-2d mcp
 
 MCP host 設定可使用同一個 command 與 args。連線後先完成 `initialize` 與 `notifications/initialized`，再 discovery `tools/list`；工具名稱以 `unone_` 開頭。`unone_run` 的 arguments 直接接受 `frames`、`seed`、單一 `action` 或 `input_sequence`，後者與 CLI 相同，使用語意 action 與 world-space pointer。工具結果內的 `content[0].text` 是完整 `EngineResult` JSON；錯誤也會保留 `code`、`explanation`、`facts`、`likely_causes` 與 `suggested_actions`。
 
+資產工具的唯一現行契約是 [asset-workflow.md](asset-workflow.md)；MCP discovery 應包含 `unone_asset_describe`，總工具數為 23。需要單筆資產的編輯定位、引用、native-local active 與 freshness 時使用 describe，不用把 `asset inspect` 或 `asset read` 的結果自行拼成另一套規格。
+
 ## -1. 先確認平台能力
 
 ```powershell
@@ -43,7 +45,7 @@ bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json api describe
 
 `project inspect` 回報引擎看見的設定與檔案事實；`api search` 是依用途找能力；`api describe` 會回傳參數、回傳值、side effects、frame semantics、常見錯誤、範例與相關 API。AI 應先讀這些資料，再修改遊戲腳本，不要猜測 API。
 
-`asset inspect` 會列出主場景的靜態 sprite／mesh3d asset reference，並對照遊戲端 `asset_manifest` 的 id、project-relative source 與 bundle。它是 authoring 時的 advisory report；交接、CI 或 release 必須使用 `asset inspect --strict`，讓 `ASSET_MANIFEST_MISSING`、`ASSET_REFERENCE_MISSING`、`ASSET_SOURCE_MISSING` 與 `ASSET_BUNDLE_NOT_DECLARED` 變成 `ok=false`。目前只支援 manifest version 1 與 kind `texture2d`／`mesh3d`；不會把未知版本或 typo 靜默當成可用格式。source 必須使用 project-relative、正斜線路徑，且現有檔案的 canonical path 必須留在專案內。它不會假裝能發現 Luau 動態選 asset，也不會代替 host 做下載、解碼或 GPU 資源管理。若沒有任何 scene asset reference，沒有 manifest 也不算錯誤。
+`asset inspect` 會列出主場景的靜態 `sprite`／`mesh3d`／`animation` asset reference，並對照遊戲端 `asset_manifest` 的 id、project-relative source、companion files 與 bundle。它是 authoring 時的 advisory report；交接、CI 或 release 必須使用 `asset inspect --strict`，讓 `ASSET_MANIFEST_MISSING`、`ASSET_REFERENCE_MISSING`、`ASSET_SOURCE_MISSING` 與 `ASSET_BUNDLE_NOT_DECLARED` 變成 `ok=false`。目前 manifest version 是 1，kind 支援 `texture2d`、`mesh3d`、`spine`、`effekseer`；未知版本、typo 或不安全路徑不會靜默當成可用格式。需要單筆資產的 authoring path、JSON pointer、引用、active generation、publication freshness 與下一步時改用 `asset describe --id <id>`，詳見[資產工作流契約](asset-workflow.md)。它不會假裝能發現 Luau 動態選 asset，也不會代替 host 做下載、解碼或 GPU 資源管理。若沒有任何 scene asset reference，沒有 manifest 也不算錯誤。
 
 需要可重播的遊戲隨機性時使用 `api.random.nextFloat()` 或 `api.random.nextInt(min, max)`。CLI 的 `--seed` 會成為該 runtime 的 Luau random seed；同一個 seed、輸入順序與 random 呼叫順序才保證同一結果。它不是安全隨機數，也不應用於金流或密碼。
 
@@ -265,20 +267,28 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json bun
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json bundle inspect
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json bundle install script
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json bundle inspect
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json bundle install base
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json bundle install --all
 ```
 
-新專案先用 `bundle pack` 生成最小的 project/script/scene manifest；若有 asset manifest，它還會產生 deterministic、未壓縮的 content bundle，並拒絕未解決的主場景 asset reference。工具會自動把 `bundle_manifest` 寫入 `project.unone.json`；內容沒有變更時不增加 manifest version，內容變更時才遞增版本。bundle 成功不是只代表檔案存在：要確認 manifest hash、cache hash、active generation、dependencies 與 `available`。引擎的 `BundleFetcher` 只接收 host 提供的 reader，再負責 streaming size/hash verify、staging 與 atomic activation；native CLI 使用 local source，Web/mobile 的 fetch、重試、storage quota 與背景下載政策留在 host adapter。Web generic runner 會由 verified content bundle 解析 image asset，並將 URL lifetime 留在 host；production CDN、OPFS、大檔 streaming 與 quota policy 仍不是 engine core。Web sample 的 browser generation/cache smoke 另見 `docs/decisions/0016-bundle-generation-and-browser-storage.md`。
+新專案先用 `bundle pack` 生成最小的 project/script/scene manifest；若有 asset manifest，它還會產生 deterministic、未壓縮的 content bundle，並拒絕未解決的主場景 asset reference。工具會自動把 `bundle_manifest` 寫入 `project.unone.json`；內容沒有變更時不增加 manifest version，內容變更時才遞增版本。bundle 成功不是只代表檔案存在：要確認 manifest hash、cache hash、active generation、dependencies 與 `available`。需要整個 generation 時使用 `bundle install --all`；只需一個 bundle 時使用 `bundle install <id>`，不要把單包 install 當成全量啟用。引擎的 `BundleFetcher` 只接收 host 提供的 reader，再負責 streaming size/hash verify、staging 與 atomic activation；native CLI 使用 local source，Web/mobile 的 fetch、重試、storage quota 與背景下載政策留在 host adapter。Web generic runner 會由 verified content bundle 解析 image asset，並將 URL lifetime 留在 host；production CDN、OPFS、大檔 streaming 與 quota policy 仍不是 engine core。Web sample 的 browser generation/cache smoke 另見 `docs/decisions/0016-bundle-generation-and-browser-storage.md`。
 
-## 4.5 由已啟用 generation 取得資產
+## 4.5 建立、發佈並查證資產
 
 ```powershell
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json bundle install content
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset init --id asset://characters/bird/red --source assets/characters/bird/red.svg
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json bundle pack
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset inspect --strict
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json bundle install --all
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset describe --id asset://characters/bird/red
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset read --id asset://characters/bird/red
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset read --id asset://characters/bird/red --output D:/tmp/red.svg
 ```
 
-`asset read` 會由目前 active generation 的已驗證 bundle 取出一筆宣告資產，回報 `size_bytes`、`sha256` 與 `bundle_generation`；加上 `--output` 才會寫檔。它與 Web host 的 `readActiveAsset` 使用同一個 archive 契約與同一組錯誤碼：`BUNDLE_GENERATION_MISMATCH`（尚未安裝／manifest 已變更）、`BUNDLE_CACHE_MISS`、`BUNDLE_CACHE_CORRUPT`、`ASSET_ID_NOT_DECLARED`、`ASSET_NOT_IN_BUNDLE`、`ASSET_ARCHIVE_INVALID`、`ASSET_CONTENT_CORRUPT`。兩端都會另外驗證 archive entry 自己的 sha256，因此同一個 asset id 在 Web 與 native 必須得到相同的 `sha256`；不同就是 bundle 或 host 的問題，不是畫面問題。
+上面的順序是「先建立實際 source／companion bytes，再 `asset init` 宣告，接著 `pack`、strict inspect、`install --all`、describe、read」。`asset init` 不產生圖片或其他美術；它回報本次實際變更的 `changed_files`，若後續寫入失敗則 failure effects 仍會列出已發生的寫入。替換同一 stable id 的 source 不需改 scene 引用；搬移 source 或 companion 才修改 manifest path；scene 的 size/pivot/放置是另一個作者變更。
+
+`asset describe --id` 是單筆唯讀 workflow query，回報 manifest entry、primary/companion path、role、exists、可讀時的 size/hash、shared paths、主場景 JSON pointer、`main_scene_only` 的 static scope、`native_local` active verified files、`selected_asset_native_local` 的 `matches_authoring` 與 ordered `required_next_actions`。`matches_authoring=true` 只表示這筆資產的 active bytes 與 authoring 相同，不等於所有遊戲內容、其他 host 或整個 release 已更新；`false`／`null` 也不能被當成 true。缺 manifest、source 或 companion 時修正 authoring，再依序 pack、strict、install、describe、read。若最新正式 active record 損壞，`install`、`describe`、`read` 都會 fail closed；這是 host/operator 依診斷從可信備份修復的 manual prerequisite，沒有備份就回報 blocker，不能清 cache、刪 `.unone`、退回舊 generation 或篡造 record。只有 cache/archive 損壞或 authoring bundle manifest 尚未發布的落後，才走 `pack → strict → install --all → describe → read`。
+
+`asset read` 會由目前 active generation 的已驗證 bundle 取出一筆宣告資產，回報 `size_bytes`、`sha256` 與 `bundle_generation`；加上 `--output` 才會寫檔。它與 Web host 的 `readActiveAsset` 使用同一個 archive 契約與同一組錯誤碼：`BUNDLE_GENERATION_MISMATCH`（尚未安裝／manifest 已變更）、`BUNDLE_CACHE_MISS`、`BUNDLE_CACHE_CORRUPT`、`ASSET_ID_NOT_DECLARED`、`ASSET_NOT_IN_BUNDLE`、`ASSET_ARCHIVE_INVALID`、`ASSET_CONTENT_CORRUPT`。兩端都會另外驗證 archive entry 自己的 sha256，因此同一個 asset id 在 Web 與 native 必須得到相同的 `sha256`；不同就是 bundle 或 host 的問題，不是畫面問題。完整欄位與 safe path 規則見[資產工作流契約](asset-workflow.md)。
 
 引擎只回傳已驗證位元組與事實。解碼、貼圖上傳、下載、重試、快取容量與 CDN／OPFS policy 仍在 host。`game preview` 會由已啟用 generation 解析並解碼 `sprite.asset`，啟動時輸出每筆資產的 verified sha256 與解碼尺寸；但它**還不會把貼圖畫出來**，畫面仍是純色方塊。所以 `asset read` 或 preview 的解碼記錄都不代表 native 貼圖渲染通過。
 

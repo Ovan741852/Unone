@@ -44,6 +44,7 @@ Copy-PackageFile $cliPath "bin\game.exe"
 Copy-PackageFile $analyzerPath "bin\luau-analyze.exe"
 Copy-PackageFile (Join-Path $engineRoot "docs\ai-agent-game-handoff.md") "docs\ai-agent-game-handoff.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\ai-workflow.md") "docs\ai-workflow.md"
+Copy-PackageFile (Join-Path $engineRoot "docs\asset-workflow.md") "docs\asset-workflow.md"
 & $cliPath api typings --output (Join-Path $outputRoot "docs\engine.d.luau") | Out-Null
 if ($LASTEXITCODE -ne 0) { throw "game api typings failed while packaging the Luau type contract" }
 Copy-PackageFile (Join-Path $engineRoot "docs\project.schema.json") "docs\project.schema.json"
@@ -62,9 +63,7 @@ foreach ($decision in @(
     "0021-minimal-ui-tree-boundary.md",
     "0022-minimal-3d-world-boundary.md",
     "0023-generic-web-game-host-boundary.md",
-    "0024-minimal-asset-reference-contract.md",
     "0025-asset-gate-and-ai-subagent-handoff.md",
-    "0026-host-asset-resolve-contract.md",
     "0027-declared-engine-systems.md",
     "0028-semantic-presentation-systems.md",
     "0029-text-layout-gate.md",
@@ -112,7 +111,6 @@ before writing game code.
 Native command: bin/game.exe
 Luau analyzer: bin/luau-analyze.exe (game check --types finds it automatically)
 Web runner: web/runner/index.html
-Presentation host (Spine/Effekseer): web/presentation/index.html
 
 This package contains no validation-game implementation and no engine source.
 "@

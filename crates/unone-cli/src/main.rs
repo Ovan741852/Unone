@@ -10,9 +10,9 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use unone_engine::{
     AssetSpec, BundleManager, Camera3DData, EngineResult, EngineRuntime, InputFrame, Vec2, Vec3,
-    WorldSnapshot, api_describe, api_search, init_asset_manifest, init_project, inspect_assets,
-    inspect_assets_strict, inspect_project, inspect_systems, pack_project, read_asset,
-    search_systems, set_system,
+    WorldSnapshot, api_describe, api_search, describe_asset, init_asset_manifest, init_project,
+    inspect_assets, inspect_assets_strict, inspect_project, inspect_systems, pack_project,
+    read_asset, search_systems, set_system,
 };
 use winit::{
     application::ApplicationHandler,
@@ -124,6 +124,11 @@ enum AssetCommand {
     Inspect {
         #[arg(long, help = "Turn unresolved static references into a failing gate")]
         strict: bool,
+    },
+    /// Describe one declared asset's authoring, references, active bytes, and next actions.
+    Describe {
+        #[arg(long, help = "Declared asset id, for example asset://characters/hero")]
+        id: String,
     },
     /// Read one declared asset out of the active bundle generation.
     Read {
@@ -244,7 +249,13 @@ enum BundleCommand {
     },
     Inspect,
     Install {
-        id: String,
+        #[arg(value_name = "ID", help = "Bundle id from the project manifest")]
+        id: Option<String>,
+        #[arg(
+            long,
+            help = "Select every bundle in the manifest (mutually exclusive with ID)"
+        )]
+        all: bool,
     },
 }
 
@@ -276,6 +287,9 @@ fn run() -> Result<ExitCode> {
                 },
                 cli.json,
             ),
+            AssetCommand::Describe { id } => {
+                print_result(describe_asset(&cli.project, &id), cli.json)
+            }
             AssetCommand::Read { id, file, output } => print_result(
                 read_asset(&cli.project, &id, file.as_deref(), output.as_deref()),
                 cli.json,
@@ -800,7 +814,9 @@ fn run() -> Result<ExitCode> {
             match command {
                 BundleCommand::Pack { .. } => unreachable!("bundle pack was handled above"),
                 BundleCommand::Inspect => print_result(manager.inspect(), cli.json),
-                BundleCommand::Install { id } => print_result(manager.install(&id), cli.json),
+                BundleCommand::Install { id, all } => {
+                    print_result(manager.install_selected(id.as_deref(), all), cli.json)
+                }
             }
         }
         Command::Mcp => mcp::serve(&cli.project),
@@ -1558,3 +1574,41 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4<f32> {
     return vec4<f32>(input.color, 1.0);
 }
 "#;
+
+#[cfg(test)]
+mod tests {
+    use super::{BundleCommand, Cli, Command};
+    use clap::Parser;
+
+    fn install_selection(args: &[&str]) -> (Option<String>, bool) {
+        let mut argv = vec!["game"];
+        argv.extend_from_slice(args);
+        let cli = Cli::try_parse_from(argv).expect("bundle install arguments should parse");
+        match cli.command {
+            Command::Bundle {
+                command: BundleCommand::Install { id, all },
+            } => (id, all),
+            _ => panic!("expected bundle install command"),
+        }
+    }
+
+    #[test]
+    fn bundle_install_cli_preserves_all_selection_shapes_for_core() {
+        assert_eq!(
+            install_selection(&["bundle", "install", "content"]),
+            (Some("content".to_string()), false)
+        );
+        assert_eq!(
+            install_selection(&["bundle", "install", "content", "--all"]),
+            (Some("content".to_string()), true)
+        );
+        assert_eq!(
+            install_selection(&["bundle", "install", "--all"]),
+            (None, true)
+        );
+        assert_eq!(
+            install_selection(&["bundle", "install"]),
+            (None, false)
+        );
+    }
+}

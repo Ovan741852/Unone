@@ -7,7 +7,7 @@
 每個任務只提供：
 
 1. 一份 GAME_PLAN.md，只描述該款遊戲的玩法閉環、必要畫面、語意 action、可重播測試與驗收 evidence。
-2. 一份 immutable engine package：`bin/game.exe`、同目錄的 `bin/luau-analyze.exe`、`docs/engine.d.luau`、CLI/MCP 操作文件、`project.schema.json`／`scene.schema.json`／`test.schema.json`、Web runner/wasm host 與必要的 engine decision 文件。交接前先執行 `powershell -File scripts/verify-ai-engine-package.ps1 -PackagePath .`；package 內容在建立後會設為 read-only，manifest hash 也必須通過。
+2. 一份 immutable engine package：`bin/game.exe`、同目錄的 `bin/luau-analyze.exe`、`docs/engine.d.luau`、CLI/MCP 操作文件、`asset-workflow.md`、`project.schema.json`／`scene.schema.json`／`test.schema.json`、Web runner/wasm host 與必要的 engine decision 文件。交接前先執行 `powershell -File scripts/verify-ai-engine-package.ps1 -PackagePath .`；package 內容在建立後會設為 read-only，manifest hash 也必須通過。
 3. 一個乾淨的 game output directory。不可把其他驗證遊戲的程式碼當範本，也不可直接修改 engine source。
 
 遊戲端擁有玩法規則、數值、資料 catalog、ViewModel、View tree、hit-test、save schema/migration 與內容。engine 只擁有 fixed tick、input、ECS/world primitive、Luau 執行／reload、observation/UI/save transport、bundle integrity 與平台 host boundary。
@@ -29,7 +29,7 @@ bin/game.exe --project <game-root> --json check --types
 bin/game.exe --project <game-root> ui preview --strict
 ~~~
 
-`project init` 只接受明確的 project name，在空目錄建立 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不會覆蓋既有檔案，也不會替遊戲猜測玩法。設定檔、場景與 deterministic test manifest 的 canonical JSON Schema 分別在 `docs/project.schema.json`、`docs/scene.schema.json` 與 `docs/test.schema.json`。UI rect 固定使用 normalized 0..100 × 0..100 logical design space，host 不可猜測 960×540；`project.unone.json.test_files` 只列出 project-relative `.test.json`；測試支援 fixed frames/seed、semantic input 或 input sequence、opaque `load_save`，以及 entity transform、observation、UI tree assertions。CLI 內建的 `bin/luau-analyze.exe` 會由 `bin/game.exe` 自動找到，因此 `check --types` 不需要額外安裝或設定環境變數。CLI 沒有的能力不能自行發明；先查 api search，找不到就回報。
+`project init` 只接受明確的 project name，在空目錄建立 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不會覆蓋既有檔案，也不會替遊戲猜測玩法。設定檔、場景與 deterministic test manifest 的 canonical JSON Schema 分別在 `docs/project.schema.json`、`docs/scene.schema.json` 與 `docs/test.schema.json`。UI rect 固定使用 normalized 0..100 × 0..100 logical design space，host 不可猜測 960×540；`project.unone.json.test_files` 只列出 project-relative `.test.json`；測試支援 fixed frames/seed、semantic input 或 input sequence、opaque `load_save`，以及 entity transform、observation、UI tree assertions。CLI 內建的 `bin/luau-analyze.exe` 會由 `bin/game.exe` 自動找到，因此 `check --types` 不需要額外安裝或設定環境變數。任何 structured workflow action 的 `executable: "game"` 都只是邏輯 CLI 名稱；在 immutable package 內固定解析為該 package 的 `bin/game.exe`，並把 `argv` 原樣交給 subprocess argument list，禁止拼接 shell command 或要求 AI 猜 PATH／安裝 alias。CLI 沒有的能力不能自行發明；先查 api search，找不到就回報。
 
 最小測試檔範例（完整 schema 仍以 `docs/test.schema.json` 為準）：
 
@@ -47,7 +47,11 @@ bin/game.exe --project <game-root> ui preview --strict
 }
 ~~~
 
-資產真的能被 host 取出，必須用 `bin/game.exe --project <game-root> --json bundle install content` 加上 `bin/game.exe --project <game-root> --json asset read --id <asset-id>` 證明：它回報已驗證的 `size_bytes`、`sha256` 與 `bundle_generation`，與 Web host 解析同一個 asset id 的結果必須一致。子代理必須先用 systems list／systems search 決定這款遊戲要用哪些引擎系統，並用 `systems set --id <id> --enabled false` 關掉企劃不需要的機制（例如老虎機、AVG、自走棋通常不需要 physics2d）。未宣告的 system 使用引擎預設；不可自行發明 system id，也不可啟用 status 為 not_implemented 的 system。asset inspect 是作者檢查用的 advisory report；asset inspect --strict 是 handoff/release gate，任何靜態 reference、source、manifest、bundle 或目前不支援的 manifest kind/version 問題都必須 ok=false。bundle pack 也會拒絕未解決的主場景 asset reference。
+資產工作流必須先建立實際 primary source 與所有 companion bytes，再依序執行 `asset init` 宣告、`bundle pack`、`asset inspect --strict`、`bundle install --all`、`asset describe --id <asset-id>`、`asset read --id <asset-id>`。`asset init` 只建立／更新 manifest declaration，不會建立或猜測圖片、模型、Spine 或 Effekseer source；`bundle install <id>` 只是明確的 subset 選擇，不可當成完整 generation。`asset describe` 會把 authoring path、主場景 JSON pointer、引用 scope、native-local active 與 selected-asset freshness 放在同一份查詢結果；freshness 不等於整個遊戲或 Web／mobile host 已同步。`asset read` 回報已驗證的 `size_bytes`、`sha256` 與 `bundle_generation`，與 Web host 解析同一個 asset id 的結果才能逐項比對；`--output` 是明確的匯出寫入。完整現行契約見 package 的 `docs/asset-workflow.md`。
+
+子代理必須先用 systems list／systems search 決定這款遊戲要用哪些引擎系統，並用 `systems set --id <id> --enabled false` 關掉企劃不需要的機制（例如老虎機、AVG、自走棋通常不需要 physics2d）。未宣告的 system 使用引擎預設；不可自行發明 system id，也不可啟用 status 為 not_implemented 的 system。asset inspect 是作者檢查用的 advisory report；asset inspect --strict 是 handoff/release gate，任何靜態 reference、source、companion、manifest、bundle 或目前不支援的 manifest kind/version 問題都必須 ok=false。主場景只檢查 `sprite`、`mesh3d`、`animation` 靜態引用；Luau 動態 asset id 不在 scope。bundle pack 也會拒絕未解決的主場景 asset reference。
+
+若結果指出最新正式 native-local active record 無法讀取，這不是重新修改 source 就能解決的普通 stale asset：`install`、`describe`、`read` 都必須先停在 fail-closed 狀態，由 host/operator 依診斷從可信備份修復；沒有備份就建立 blocker record。不得清 cache、刪 `.unone`、退回舊 generation 或自行篡造 active record。只有 cache/archive 損壞或尚未發布的 authoring bundle manifest，才在修正 source 後重跑 `pack → strict → install --all → describe → read`。
 
 ## 遇到問題的立即回報協定
 

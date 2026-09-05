@@ -1,6 +1,6 @@
 # 資產工作流調整計畫
 
-版本：v3 / implementation_in_progress。v1 保留於 `146baeb`；獨立限定再審
+版本：v3 / code_review_in_progress。v1 保留於 `146baeb`；獨立限定再審
 無 unresolved plan blocker，製作已放行，尚非功能驗收通過。
 
 ## 目標與取捨

@@ -77,10 +77,114 @@ pub struct ProjectInitReport {
     pub files: Vec<ProjectFileStatus>,
 }
 
+/// Resolve a project-relative path without allowing lexical traversal or
+/// symlinks to escape the project root.
+///
+/// Project paths use `/` as their portable separator. The final component may
+/// be missing so callers can report a useful missing-file diagnostic; every
+/// existing target or ancestor is still checked canonically.
+pub(crate) fn resolve_project_path(
+    root: &Path,
+    relative: &str,
+) -> Result<PathBuf, Box<Diagnostic>> {
+    if relative.trim().is_empty()
+        || relative.contains('\\')
+        || relative.contains('\0')
+        || relative.starts_with('/')
+        || relative.starts_with("//")
+        || relative.as_bytes().get(1) == Some(&b':')
+    {
+        return Err(Box::new(Diagnostic::error(
+            "PROJECT_PATH_OUTSIDE_PROJECT",
+            "專案路徑不是安全的相對路徑",
+            format!(
+                "'{relative}' 必須使用 project-relative 正斜線路徑，不能是絕對路徑、磁碟路徑或含反斜線。"
+            ),
+        )));
+    }
+
+    for component in relative.split('/') {
+        if component.is_empty() || component == "." || component == ".." {
+            return Err(Box::new(Diagnostic::error(
+                "PROJECT_PATH_OUTSIDE_PROJECT",
+                "專案路徑超出根目錄",
+                format!(
+                    "'{relative}' 含有空白、目前目錄或 parent path component；只接受明確的 project-relative 路徑。"
+                ),
+            )));
+        }
+        if component.contains(':') {
+            return Err(Box::new(Diagnostic::error(
+                "PROJECT_PATH_OUTSIDE_PROJECT",
+                "專案路徑不是可攜式相對路徑",
+                format!("'{relative}' 含有不合法的磁碟或 URL 標記。"),
+            )));
+        }
+    }
+
+    let canonical_root = fs::canonicalize(root).map_err(|error| {
+        Box::new(Diagnostic::error(
+            "PROJECT_ROOT_INVALID",
+            "無法解析專案根目錄",
+            format!("{}：{}", root.display(), error),
+        ))
+    })?;
+    let candidate = canonical_root.join(relative);
+
+    let mut existing = candidate.as_path();
+    let canonical_existing = loop {
+        match fs::symlink_metadata(existing) {
+            Ok(_) => break fs::canonicalize(existing),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                existing = existing.parent().ok_or_else(|| {
+                    Box::new(Diagnostic::error(
+                        "PROJECT_PATH_INVALID",
+                        "無法解析專案路徑",
+                        format!("'{relative}' 沒有可檢查的既存 parent directory。"),
+                    ))
+                })?;
+            }
+            Err(error) => {
+                return Err(Box::new(Diagnostic::error(
+                    "PROJECT_PATH_RESOLVE_FAILED",
+                    "無法解析專案路徑",
+                    format!("{}：{}", existing.display(), error),
+                )));
+            }
+        }
+    }
+    .map_err(|error| {
+        Box::new(Diagnostic::error(
+            "PROJECT_PATH_RESOLVE_FAILED",
+            "無法解析專案路徑",
+            format!("{}：{}", existing.display(), error),
+        ))
+    })?;
+    if !canonical_existing.starts_with(&canonical_root) {
+        return Err(Box::new(Diagnostic::error(
+            "PROJECT_PATH_OUTSIDE_PROJECT",
+            "專案路徑透過 symlink 超出根目錄",
+            format!(
+                "'{relative}' 解析到 '{}'，不在專案根目錄 '{}' 內。",
+                canonical_existing.display(),
+                canonical_root.display()
+            ),
+        )));
+    }
+
+    Ok(candidate)
+}
+
 impl ProjectPaths {
     pub fn discover(root: impl AsRef<Path>) -> Result<(ProjectConfig, Self), Box<Diagnostic>> {
-        let root = root.as_ref().to_path_buf();
-        let config_path = root.join("project.unone.json");
+        let root = fs::canonicalize(root.as_ref()).map_err(|error| {
+            Box::new(Diagnostic::error(
+                "PROJECT_ROOT_NOT_FOUND",
+                "找不到 Unone 專案根目錄",
+                format!("{}：{}", root.as_ref().display(), error),
+            ))
+        })?;
+        let config_path = resolve_project_path(&root, "project.unone.json")?;
         let text = fs::read_to_string(&config_path).map_err(|err| {
             Box::new(Diagnostic::error(
                 "PROJECT_CONFIG_NOT_FOUND",
@@ -95,15 +199,27 @@ impl ProjectPaths {
                 format!("{}：{}", config_path.display(), err),
             ))
         })?;
-        let entry_script = root.join(&config.entry_script);
-        let main_scene = config.main_scene.as_ref().map(|path| root.join(path));
+        let entry_script = resolve_project_path(&root, &config.entry_script)?;
+        let main_scene = config
+            .main_scene
+            .as_deref()
+            .map(|path| resolve_project_path(&root, path))
+            .transpose()?;
         let test_files = config
             .test_files
             .iter()
-            .map(|path| root.join(path))
-            .collect();
-        let asset_manifest = config.asset_manifest.as_ref().map(|path| root.join(path));
-        let bundle_manifest = config.bundle_manifest.as_ref().map(|path| root.join(path));
+            .map(|path| resolve_project_path(&root, path))
+            .collect::<Result<Vec<_>, _>>()?;
+        let asset_manifest = config
+            .asset_manifest
+            .as_deref()
+            .map(|path| resolve_project_path(&root, path))
+            .transpose()?;
+        let bundle_manifest = config
+            .bundle_manifest
+            .as_deref()
+            .map(|path| resolve_project_path(&root, path))
+            .transpose()?;
         Ok((
             config,
             Self {
@@ -257,10 +373,7 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<ProjectInspectRep
             .iter()
             .map(|path| file_status(path))
             .collect(),
-        bundle_manifest: config
-            .bundle_manifest
-            .as_ref()
-            .map(|path| file_status(&paths.root.join(path))),
+        bundle_manifest: paths.bundle_manifest.as_deref().map(file_status),
         asset_manifest: paths.asset_manifest.as_deref().map(file_status),
     };
     let mut result = EngineResult::success(report);
@@ -307,9 +420,10 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<ProjectInspectRep
 
 #[cfg(test)]
 mod tests {
+    use std::fs;
     use tempfile::tempdir;
 
-    use super::{TestAssertion, init, inspect};
+    use super::{TestAssertion, init, inspect, resolve_project_path};
 
     #[test]
     fn init_creates_a_valid_minimal_project() {
@@ -366,6 +480,81 @@ mod tests {
         }))
         .unwrap();
         assert!(mixed_target.validate().is_err());
+    }
+
+    #[test]
+    fn resolver_returns_safe_missing_leaf_and_rejects_lexical_escape() {
+        let directory = tempdir().expect("temp project directory");
+        let missing = resolve_project_path(directory.path(), "assets/missing.svg")
+            .expect("missing final file is a caller-reportable path");
+        let canonical_root = fs::canonicalize(directory.path()).unwrap();
+        assert_eq!(missing, canonical_root.join("assets/missing.svg"));
+        assert!(resolve_project_path(directory.path(), "../outside.svg").is_err());
+        assert!(resolve_project_path(directory.path(), "assets\\missing.svg").is_err());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn resolver_rejects_dangling_symlink_and_missing_linked_ancestor() {
+        use std::os::unix::fs::symlink;
+
+        let directory = tempdir().expect("temp project directory");
+        symlink(
+            directory.path().join("not-created-target"),
+            directory.path().join("dangling"),
+        )
+        .expect("create dangling symlink");
+        assert!(resolve_project_path(directory.path(), "dangling").is_err());
+        assert!(resolve_project_path(directory.path(), "dangling/asset.bin").is_err());
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn resolver_rejects_dangling_symlink_and_missing_linked_ancestor() {
+        use std::os::windows::fs::symlink_dir;
+
+        let directory = tempdir().expect("temp project directory");
+        if let Err(error) = symlink_dir(
+            directory.path().join("not-created-target"),
+            directory.path().join("dangling"),
+        ) {
+            eprintln!(
+                "SKIP resolver_rejects_dangling_symlink_and_missing_linked_ancestor: symlink_dir failed: {error} (kind={:?})",
+                error.kind()
+            );
+            return;
+        }
+        eprintln!("MEASURED Windows dangling directory symlink containment");
+        assert!(resolve_project_path(directory.path(), "dangling").is_err());
+        assert!(resolve_project_path(directory.path(), "dangling/asset.bin").is_err());
+    }
+
+    #[test]
+    fn resolver_returns_canonical_path_for_existing_contained_directory() {
+        let directory = tempdir().expect("temp project directory");
+        fs::create_dir_all(directory.path().join("inside")).expect("inside directory");
+        let resolved = resolve_project_path(directory.path(), "inside/asset.svg")
+            .expect("safe missing descendant");
+        let canonical_root = fs::canonicalize(directory.path()).unwrap();
+        assert_eq!(resolved, canonical_root.join("inside/asset.svg"));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn resolver_rejects_existing_symlink_target_outside_project() {
+        use std::os::unix::fs::symlink;
+
+        let directory = tempdir().expect("temp project directory");
+        let outside = tempdir().expect("outside directory");
+        fs::create_dir_all(outside.path().join("target")).expect("outside target directory");
+        symlink(
+            outside.path().join("target"),
+            directory.path().join("linked"),
+        )
+        .expect("create outside symlink");
+
+        assert!(resolve_project_path(directory.path(), "linked").is_err());
+        assert!(resolve_project_path(directory.path(), "linked/asset.bin").is_err());
     }
 }
 

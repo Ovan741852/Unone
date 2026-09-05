@@ -2,6 +2,9 @@
 
 日期：2026-09-05
 
+本文保留當日的測試證據與限制，不是現行能力清單。現行權威與操作只看
+[資產工作流契約](../asset-workflow.md)；原規格檔已由新契約取代並移除。
+
 ## 目的
 
 接續 asset reference contract 的下一個切片：讓「宣告的資產真的能被 host 取出」變成可驗證的事實。先前只有 Web host 的 JavaScript 會讀 asset archive，Rust 端只會寫；native 與 mobile host 沒有任何取得資產位元組的路徑，格式也沒有 writer/reader 一致性的回歸測試。

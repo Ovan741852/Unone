@@ -1,5 +1,6 @@
 const DB_VERSION = 1;
 const DB_NAME = "unone-live-bundles";
+const MAX_SAFE_BUNDLE_SIZE = Number.MAX_SAFE_INTEGER;
 // The current Web C ABI exposes one verifier state per Wasm module. Asset
 // elements can resolve concurrently, so keep begin/write/finish transactions
 // serialized at the host boundary.
@@ -47,19 +48,31 @@ function openDatabase(name = DB_NAME) {
 }
 
 function normalizeManifest(manifest) {
-  if (!manifest || !Number.isInteger(manifest.version) || !Array.isArray(manifest.bundles)) {
+  if (!manifest || !Number.isInteger(manifest.version) || manifest.version < 0 || manifest.version > 0xffffffff || !Array.isArray(manifest.bundles)) {
     throw engineError("BUNDLE_MANIFEST_INVALID", "bundle manifest is invalid", "Expected integer version and bundles array.");
+  }
+  if (manifest.bundles.length === 0) {
+    throw engineError("BUNDLE_MANIFEST_EMPTY", "bundle manifest is empty", "Bundle activation requires at least one bundle.");
   }
   const ids = new Set();
   const bundles = manifest.bundles.map((spec) => {
-    if (!spec || typeof spec.id !== "string" || ids.has(spec.id)) {
-      throw engineError("BUNDLE_MANIFEST_INVALID", "bundle id is missing or duplicated", "Every bundle must have a unique id.");
+    if (!spec || typeof spec.id !== "string" || spec.id.trim() === "") {
+      throw engineError("BUNDLE_MANIFEST_INVALID", "bundle id is missing or empty", "Every bundle must have a non-empty id.");
     }
-    if (!Number.isSafeInteger(spec.size_bytes) || spec.size_bytes < 0 || !/^[0-9a-f]{64}$/.test(spec.sha256)) {
-      throw engineError("BUNDLE_MANIFEST_INVALID", `bundle '${spec.id}' integrity fields are invalid`, "size_bytes must be non-negative and sha256 must be lowercase SHA-256.");
+    if (ids.has(spec.id)) {
+      throw engineError("BUNDLE_MANIFEST_DUPLICATE_ID", "bundle id is duplicated", "Every bundle must have a unique id.", { bundle_id: spec.id });
+    }
+    if (typeof spec.version !== "string" || typeof spec.source !== "string" || spec.source.trim() === "") {
+      throw engineError("BUNDLE_MANIFEST_INVALID", `bundle '${spec.id}' declaration is invalid`, "version and source must be non-empty strings.");
+    }
+    if (!Number.isSafeInteger(spec.size_bytes) || spec.size_bytes < 0 || spec.size_bytes > MAX_SAFE_BUNDLE_SIZE || !/^[0-9a-f]{64}$/.test(spec.sha256)) {
+      throw engineError("BUNDLE_MANIFEST_INVALID", `bundle '${spec.id}' integrity fields are invalid`, "size_bytes must be a safe non-negative integer and sha256 must be lowercase SHA-256.");
+    }
+    if (spec.dependencies !== undefined && (!Array.isArray(spec.dependencies) || spec.dependencies.some((dependency) => typeof dependency !== "string" || dependency.trim() === ""))) {
+      throw engineError("BUNDLE_MANIFEST_INVALID", `bundle '${spec.id}' dependencies are invalid`, "dependencies must be an array of non-empty bundle ids.");
     }
     ids.add(spec.id);
-    return { ...spec, dependencies: Array.isArray(spec.dependencies) ? spec.dependencies : [] };
+    return { ...spec, dependencies: spec.dependencies ?? [] };
   });
   return { version: manifest.version, bundles };
 }

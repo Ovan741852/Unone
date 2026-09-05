@@ -1,0 +1,13 @@
+{
+  "scope": "main-agent candidate native CLI/MCP stdio comparison on the same positive probe",
+  "project": "D:/Projects/Unone/artifacts/asset-workflow-main-positive-20260906",
+  "asset_id": "asset://probe/blue",
+  "protocol_version": "2025-11-25",
+  "mcp_describe_ok": true,
+  "mcp_read_ok": true,
+  "cli_mcp_complete_describe_result_equal": true,
+  "publication_matches_authoring": true,
+  "read_sha256": "0aa6ff31b75b616d7705ea2eba9ddd5d35ea3aa8d3b6ad1c62de19352859ba8c",
+  "bundle_generation": 2,
+  "method": "initialize and initialized notification, tools/call unone_asset_describe and unone_asset_read, compare complete parsed describe JSON with CLI query; no output/export argument"
+}

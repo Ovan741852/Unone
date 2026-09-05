@@ -2,6 +2,9 @@
 
 日期：2026-09-05
 
+本文是當日實作與測試的歷史紀錄，不是現行 API／能力清單。現行資產操作與
+引擎邊界只看[資產工作流契約](../asset-workflow.md)；原規格檔已由新契約取代並移除。
+
 ## 目的
 
 處理七款遊戲共同的內容阻塞：scene 已有 `asset://...`／`mesh://...` ID，但沒有可讓 AI、bundle host 與跨平台 adapter 查證的 manifest。這輪只做必要的 reference inspect，不先建立泛用 AssetManager。

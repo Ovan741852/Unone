@@ -1,18 +1,22 @@
 # Decision 0025: explicit asset gate and isolated AI game handoff
 
+資產操作與引擎邊界的唯一現行契約是[資產工作流契約](../asset-workflow.md)；
+本 decision 保留一般的 blind gate 與 AI handoff 原則，不取代該契約。
+
 ## Context
 
 AI 需要知道 asset inspect 的 warning 是否阻止打包，也需要能只靠 engine build output 與一份企劃開始製作遊戲。模糊的 warning、沒有 schema 或讀其他遊戲實作，會讓不同 agent 各自發明 host workaround。
 
 ## Decision
 
-- asset inspect 是 authoring advisory，回傳 ready_for_packaging、結構化 blockers 與 static_reference_scope facts。
-- asset inspect --strict 與 bundle pack 是 canonical static asset gate；未解決的主場景 reference、source 或 manifest contract 會 ok=false。
-- manifest version 固定為 1；asset kind 目前只有 texture2d、mesh3d。新增 kind 必須先更新 engine/host contract，不接受 typo 或未知版本的靜默 fallback。
-- asset init 是唯一最小的 manifest bootstrap/append tool；它不建立、猜測或下載 source。
+- asset inspect 是 authoring advisory，回傳 ready_for_packaging、結構化 blockers 與 static_reference_scope facts；`asset describe` 是單筆 authoring／active／publication 查詢，不取代 inspect gate。
+- asset inspect --strict 與 bundle pack 是 canonical static asset gate；未解決的主場景 reference、source、companion、bundle 或 manifest contract 會 ok=false。
+- manifest version 固定為 1；asset kind 支援 texture2d、mesh3d、spine、effekseer。新增 kind 必須先更新 engine/host contract，不接受 typo 或未知版本的靜默 fallback。
+- asset init 是唯一最小的 manifest bootstrap/append tool；它不建立、猜測或下載 source，並回報本次實際寫入的 changed files。
+- `bundle install <id>` 與 `bundle install --all` 是不同選擇；CLI/MCP 都必須恰好選一種，透過同一個 core selection validator，不因 MCP schema 或 handler 分叉語意。
 - AssetManifest/AssetSpec 是跨平台資料 contract。filesystem discovery、canonical path、CLI/MCP inspect 與 init 是 developer-tool operation；Web/mobile host 不需要走 project filesystem。
 - `project init`、`docs/project.schema.json` 與 `docs/scene.schema.json` 是 package 內的 canonical scaffold/authoring contract；子代理不需要從其他遊戲反推 JSON 格式。正式 package 將 pinned `luau-analyze` 放在 CLI 同目錄，讓 `check --types` 可在隔離輸入中直接執行。
-- 每一個子代理只拿 immutable engine package 與一份 game plan。遇到 API、文件、host、跨遊戲或架構 blocker 必須立即回報主代理並留下 blocker record，再繼續不受影響的工作。
+- 每一個子代理只拿 immutable engine package 與一份 game plan。遇到 API、文件、host、跨遊戲或架構 blocker 必須立即回報主代理並留下 blocker record，再繼續不受影響的工作。asset freshness 只代表 selected asset 的 native-local 狀態，不得冒稱整個遊戲或其他 host 已同步。
 
 ## Rejected
 

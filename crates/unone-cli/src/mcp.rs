@@ -8,9 +8,9 @@ use anyhow::Result;
 use serde_json::{Map, Value, json};
 use unone_engine::{
     AssetSpec, BundleManager, Diagnostic, EngineResult, EngineRuntime, InputFrame, api_describe,
-    api_search, init_asset_manifest, init_project, inspect_assets, inspect_assets_strict,
-    inspect_project, inspect_systems, pack_project, platform_capabilities, read_asset,
-    search_systems, set_system,
+    api_search, describe_asset, init_asset_manifest, init_project, inspect_assets,
+    inspect_assets_strict, inspect_project, inspect_systems, pack_project, platform_capabilities,
+    read_asset, search_systems, set_system,
 };
 
 const LATEST_PROTOCOL_VERSION: &str = "2025-11-25";
@@ -222,6 +222,7 @@ fn tool_names() -> Vec<&'static str> {
         "unone_project_inspect",
         "unone_project_init",
         "unone_asset_inspect",
+        "unone_asset_describe",
         "unone_asset_read",
         "unone_asset_init",
         "unone_verify",
@@ -270,11 +271,24 @@ fn tool_definitions() -> Vec<Value> {
         tool(
             "unone_asset_inspect",
             "Inspect asset references",
-            "Compare main-scene sprite and mesh3d asset references with the game-owned asset manifest, source files, and declared bundle ids. Static inspection does not discover assets selected dynamically by Luau. Set strict=true for a failing handoff/release gate.",
+            "Compare main-scene asset references with the game-owned asset manifest, source files, and declared bundle ids. Static inspection does not discover assets selected dynamically by Luau. Set strict=true for a failing handoff/release gate; use unone_asset_describe for one asset's authoring, active, and publication workflow.",
             object_schema(json!({
                 "properties": {
                     "strict": {"type": "boolean", "default": false, "description": "Turn unresolved static references and missing files into ok=false."}
                 }
+            })),
+            true,
+            true,
+        ),
+        tool(
+            "unone_asset_describe",
+            "Describe one asset workflow",
+            "Read one declared asset's manifest location, primary and companion authoring files, static main-scene references, native-local active generation state, publication freshness, and ordered next actions. This is a focused read-only query; it does not edit files, pack bundles, install content, or inspect dynamic Luau asset ids.",
+            object_schema(json!({
+                "properties": {
+                    "id": {"type": "string", "description": "Declared asset id, for example asset://characters/hero."}
+                },
+                "required": ["id"]
             })),
             true,
             true,
@@ -291,7 +305,7 @@ fn tool_definitions() -> Vec<Value> {
                 },
                 "required": ["id"]
             })),
-            true,
+            false,
             false,
         ),
         tool(
@@ -304,7 +318,7 @@ fn tool_definitions() -> Vec<Value> {
                     "files": {"type": "array", "items": {"type": "string"}, "description": "Companion project-relative sources this asset cannot be used without, such as a Spine atlas and its texture pages."},
                     "id": {"type": "string", "description": "Stable asset id; provide with source to append a declaration."},
                     "source": {"type": "string", "description": "Project-relative source path; provide with id."},
-                    "kind": {"type": "string", "enum": ["texture2d", "mesh3d"], "default": "texture2d"},
+                    "kind": {"type": "string", "enum": ["texture2d", "mesh3d", "spine", "effekseer"], "default": "texture2d"},
                     "bundle": {"type": "string", "default": "content"}
                 }
             })),
@@ -500,12 +514,24 @@ fn tool_definitions() -> Vec<Value> {
         tool(
             "unone_bundle_install",
             "Install and activate bundle",
-            "Verify the requested local bundle and dependencies, stage them, and activate a new generation. A failed verify leaves the previous active generation intact.",
+            "Verify either one requested bundle id or all manifest bundles and their dependencies, then activate one new generation. Use id alone or with all=false, or use all=true without id; omit both and id with all=true are semantic errors. A failed verify leaves the previous active generation intact.",
             object_schema(json!({
+                "oneOf": [
+                    {
+                        "required": ["id"],
+                        "properties": {"all": {"const": false}}
+                    },
+                    {
+                        "required": ["all"],
+                        "properties": {"all": {"const": true}},
+                        "not": {"required": ["id"]}
+                    }
+                ],
                 "properties": {
-                    "id": {"type": "string", "description": "Bundle id from the project manifest."}
+                    "id": {"type": "string", "description": "Bundle id from the project manifest; choose this or all=true."},
+                    "all": {"type": "boolean", "description": "Set true to select every bundle; omit it or set false when selecting id."}
                 },
-                "required": ["id"]
+                "additionalProperties": false
             })),
             false,
             false,
@@ -557,6 +583,10 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
             } else {
                 inspect_assets(project)
             }),
+            Err(diagnostic) => argument_error(*diagnostic),
+        },
+        "unone_asset_describe" => match required_string(arguments, "id") {
+            Ok(id) => tool_result(describe_asset(project, &id)),
             Err(diagnostic) => argument_error(*diagnostic),
         },
         "unone_asset_read" => {
@@ -776,15 +806,26 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
             Ok(manager) => tool_result(manager.inspect()),
             Err(diagnostic) => tool_result(EngineResult::<Value>::failure(*diagnostic)),
         },
-        "unone_bundle_install" => match required_string(arguments, "id") {
-            Ok(id) => match BundleManager::from_project(project) {
-                Ok(manager) => tool_result(manager.install(&id)),
+        "unone_bundle_install" => {
+            let (id, all) = match bundle_install_arguments(arguments) {
+                Ok(selection) => selection,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            match BundleManager::from_project(project) {
+                Ok(manager) => tool_result(manager.install_selected(id.as_deref(), all)),
                 Err(diagnostic) => tool_result(EngineResult::<Value>::failure(*diagnostic)),
-            },
-            Err(diagnostic) => argument_error(*diagnostic),
-        },
+            }
+        }
         _ => unreachable!("tool name checked before dispatch"),
     }
+}
+
+fn bundle_install_arguments(
+    arguments: &Value,
+) -> Result<(Option<String>, bool), Box<Diagnostic>> {
+    let id = optional_string(arguments, "id")?;
+    let all = optional_bool(arguments, "all", false)?;
+    Ok((id, all))
 }
 
 fn run_tool(project: &Path, arguments: &Value) -> Value {
@@ -1015,7 +1056,9 @@ fn error_response(id: Option<&Value>, code: i64, message: &str, data: Value) -> 
 
 #[cfg(test)]
 mod tests {
-    use super::{ProtocolState, call_tool, handle_message, tool_definitions};
+    use super::{
+        ProtocolState, bundle_install_arguments, call_tool, handle_message, tool_definitions,
+    };
     use serde_json::json;
     use std::path::Path;
 
@@ -1052,7 +1095,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 22);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 23);
     }
 
     #[test]
@@ -1064,13 +1107,35 @@ mod tests {
             .collect();
         assert_eq!(names.first(), Some(&"unone_project_inspect"));
         assert_eq!(names.last(), Some(&"unone_bundle_install"));
+        assert!(names.contains(&"unone_asset_describe"));
         assert!(
             tools[0]["description"]
                 .as_str()
                 .unwrap()
                 .contains("No files")
         );
+        assert_eq!(tools[3]["annotations"]["readOnlyHint"], true);
+        assert_eq!(tools[4]["annotations"]["readOnlyHint"], false);
         assert_eq!(tools[5]["inputSchema"]["type"], "object");
+        assert_eq!(
+            tools[5]["inputSchema"]["properties"]["kind"]["enum"]
+                .as_array()
+                .unwrap()
+                .len(),
+            4
+        );
+        assert_eq!(
+            tools[22]["inputSchema"]["oneOf"]
+                .as_array()
+                .unwrap()
+                .len(),
+            2
+        );
+        assert!(tools[22]["inputSchema"].get("required").is_none());
+        assert_eq!(tools[22]["inputSchema"]["oneOf"][0]["properties"]["all"]["const"], false);
+        assert_eq!(tools[22]["inputSchema"]["oneOf"][1]["properties"]["all"]["const"], true);
+        assert_eq!(tools[22]["inputSchema"]["properties"]["all"]["type"], "boolean");
+        assert!(tools[22]["inputSchema"]["properties"]["all"].get("const").is_none());
     }
 
     #[test]
@@ -1103,5 +1168,33 @@ mod tests {
         let payload: serde_json::Value =
             serde_json::from_str(result["content"][0]["text"].as_str().unwrap()).unwrap();
         assert_eq!(payload["diagnostics"][0]["code"], "MCP_ARGUMENT_CONFLICT");
+    }
+
+    #[test]
+    fn bundle_install_arguments_keep_id_false_and_all_false_meanings() {
+        assert_eq!(
+            bundle_install_arguments(&json!({"id": "content"})).unwrap(),
+            (Some("content".to_string()), false)
+        );
+        assert_eq!(
+            bundle_install_arguments(&json!({"id": "content", "all": false})).unwrap(),
+            (Some("content".to_string()), false)
+        );
+        assert_eq!(
+            bundle_install_arguments(&json!({"all": true})).unwrap(),
+            (None, true)
+        );
+        assert_eq!(
+            bundle_install_arguments(&json!({"all": false})).unwrap(),
+            (None, false)
+        );
+    }
+
+    #[test]
+    fn bundle_install_arguments_reject_wrong_types() {
+        for arguments in [json!({"id": 7}), json!({"all": "yes"})] {
+            let error = bundle_install_arguments(&arguments).unwrap_err();
+            assert_eq!(error.code, "MCP_ARGUMENT_INVALID");
+        }
     }
 }

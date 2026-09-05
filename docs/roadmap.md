@@ -5,7 +5,7 @@
 ## 判斷標準
 
 1. **一般引擎有的，這個引擎也要有。** 不需要的遊戲用 `systems` 關掉，而不是引擎不提供。
-2. **投機性抽象不做。** 指的是照抄別家引擎、對本引擎沒有意義的抽象——例如支援 Unity prefab 或 Cocos2d-x `.csb`。這類需求用**擴充 pipeline** 解決，不進核心契約。基本機制（碰撞事件、摩擦、音訊、旋轉）不適用這條，見 [Decision 0024](decisions/0024-minimal-asset-reference-contract.md)。
+2. **投機性抽象不做。** 指的是照抄別家引擎、對本引擎沒有意義的抽象——例如支援 Unity prefab 或 Cocos2d-x `.csb`。這類需求用**擴充 pipeline** 解決，不進核心契約。基本機制（碰撞事件、摩擦、音訊、旋轉）不適用這條，見[現行資產契約的引擎邊界](asset-workflow.md)。
 3. **缺事實時補契約，不要猜。** 檢查工具只能建立在引擎擁有的事實上；需要猜常數的東西輸出**測量值**而不是判決，見 [Decision 0029](decisions/0029-text-layout-gate.md)。
 4. **可以做成工具的就不要寫成文件。** 降低判斷、降低出錯率。交接流程已由 `game verify` 取代逐條清單。
 
@@ -56,7 +56,7 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 
 | # | 項目 | 說明 |
 |---|---|---|
-| 11 | `bundle install` 無法一次啟用整個 generation | 每次 install 建立**新的** generation 而非累加，沒有 `--all`；native 因此無法讓 project+script+scene 同時 active。`BUNDLE_NOT_FOUND` 的 `suggested_actions` 也是空的 |
+| 11 | 完整 generation 與資產工作流 | [工作包](work-packages/2026-09-06-asset-workflow.md) 已經獨立計畫再審、製作中：`install --all` 一次啟用全部 roots，`asset describe` 提供來源／引用／發佈狀態與下一步。尚待實作與封裝盲驗，不先標解決 |
 | 12 | `API_SEARCH_EMPTY` 沒有 `suggested_actions` | 交接流程強制的第 4 步對「遊戲領域動詞」必然 0 命中，而診斷說不出「引擎沒有遊戲領域 API」。也沒有 `api list`（目前要猜 `api search ""`） |
 | 13 | `verify` 沒有 host parity gate | package 層已擋下 CLI/wasm 契約不一致（[issue](issues/2026-09-05-package-ships-two-engine-builds.md)），但 `verify` 本身仍只驗證 native build |
 | 14 | Web observations 與共用 digest | 已實作並通過 ABI、純 JS output 和新 wasm 瀏覽器 source-mode smoke；immutable package 發行仍待完成。見 [驗收紀錄](devlog/2026-09-06-digest-integration.md) |

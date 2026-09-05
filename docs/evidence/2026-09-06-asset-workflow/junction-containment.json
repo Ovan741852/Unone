@@ -1,0 +1,78 @@
+{
+  "scope": "real Windows Junction main-agent CLI smoke, separate from symbolic-link unit tests",
+  "symbolic_link_creation": {
+    "created": false,
+    "error": "Administrator privilege required for this operation."
+  },
+  "junction": {
+    "path": "D:/Projects/Unone/artifacts/asset-workflow-junction-root-20260906/assets/external",
+    "target": "D:/Projects/Unone/artifacts/asset-workflow-junction-outside-20260906",
+    "type": "Junction",
+    "created": true
+  },
+  "cases": [
+    {
+      "operation": "asset inspect --strict",
+      "exit_code": 1,
+      "result": {
+        "ok": false,
+        "value": null,
+        "diagnostics": [
+          {
+            "code": "PROJECT_PATH_OUTSIDE_PROJECT",
+            "severity": "ERROR",
+            "summary": "專案路徑透過 symlink 超出根目錄",
+            "explanation": "'assets/external/probe.svg' 解析到 '\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-junction-outside-20260906\\probe.svg'，不在專案根目錄 '\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-junction-root-20260906' 內。",
+            "facts": {},
+            "likely_causes": [],
+            "suggested_actions": [],
+            "source": null
+          }
+        ],
+        "effects": []
+      }
+    },
+    {
+      "operation": "asset describe --id asset://probe/inside",
+      "exit_code": 1,
+      "result": {
+        "ok": false,
+        "value": null,
+        "diagnostics": [
+          {
+            "code": "PROJECT_PATH_OUTSIDE_PROJECT",
+            "severity": "ERROR",
+            "summary": "專案路徑透過 symlink 超出根目錄",
+            "explanation": "'assets/external/probe.svg' 解析到 '\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-junction-outside-20260906\\probe.svg'，不在專案根目錄 '\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-junction-root-20260906' 內。",
+            "facts": {},
+            "likely_causes": [],
+            "suggested_actions": [],
+            "source": null
+          }
+        ],
+        "effects": []
+      }
+    },
+    {
+      "operation": "bundle pack",
+      "exit_code": 1,
+      "result": {
+        "ok": false,
+        "value": null,
+        "diagnostics": [
+          {
+            "code": "PROJECT_PATH_OUTSIDE_PROJECT",
+            "severity": "ERROR",
+            "summary": "專案路徑透過 symlink 超出根目錄",
+            "explanation": "'assets/external/probe.svg' 解析到 '\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-junction-outside-20260906\\probe.svg'，不在專案根目錄 '\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-junction-root-20260906' 內。",
+            "facts": {},
+            "likely_causes": [],
+            "suggested_actions": [],
+            "source": null
+          }
+        ],
+        "effects": []
+      }
+    }
+  ]
+}

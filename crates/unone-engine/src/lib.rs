@@ -1,5 +1,6 @@
 mod api;
 mod asset;
+mod asset_workflow;
 mod bundle;
 mod diagnostics;
 mod diff;
@@ -22,6 +23,11 @@ pub use asset::{
     AssetReference, AssetSpec, StaticReferenceScope, init_asset_manifest,
     inspect as inspect_assets, inspect_strict as inspect_assets_strict,
     manifest as load_asset_manifest, read as read_asset,
+};
+pub use asset_workflow::{
+    AssetActiveFileReport, AssetActiveReport, AssetAuthoringFileReport, AssetAuthoringReport,
+    AssetDescribeReference, AssetDescribeReport, AssetPublicationReport, AssetReferenceScope,
+    AssetWorkflowAction, describe_asset,
 };
 pub use bundle::{
     ASSET_ARCHIVE_VERSION, AssetArchiveEntry, BundleFetcher, BundleManager, BundleManifest,

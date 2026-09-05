@@ -1,0 +1,25 @@
+{
+  "scope": "main-agent baseline CLI reproduction; not a blind evaluation",
+  "cli_sha256": "ca79d3828d5006fe62d914ee346fdff003dee254f01b8773cf02d34900029254",
+  "project": "D:/Projects/Unone/artifacts/asset-workflow-main-probe-20260906",
+  "setup": [
+    "project init; declare asset://probe/blue with source assets/probe.svg",
+    "bundle pack; bundle install content; bundle install content",
+    "replace generation 2 JSON generation value with invalid token deliberately_corrupted"
+  ],
+  "invocation": {
+    "executable": "target/debug/game.exe",
+    "argv": ["--project", "D:/Projects/Unone/artifacts/asset-workflow-main-probe-20260906", "--json", "asset", "read", "--id", "asset://probe/blue"]
+  },
+  "observed": {
+    "exit_code": 0,
+    "ok": true,
+    "bundle_generation": 1,
+    "size_bytes": 117,
+    "sha256": "072b7751020e925700afe6d779bf9f0d1702f50b02bdadb1047d57ab969cbe6d",
+    "diagnostics": [],
+    "effects": []
+  },
+  "finding": "latest committed generation 2 was unreadable, but asset read silently succeeded using generation 1",
+  "after_fix_expectation": "same project must return BUNDLE_ACTIVE_GENERATION_UNREADABLE, not fallback to generation 1"
+}
