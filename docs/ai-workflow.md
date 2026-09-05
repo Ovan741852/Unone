@@ -181,12 +181,9 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary --json ui 
 
 不帶 `--json` 會輸出 markdown：一張 ASCII 圖、一張節點表、以及 findings。`--frames` 決定先跑幾格再畫（預設 1），`--cols`／`--rows` 調整格線大小。
 
-目前檢查兩件事：
+目前只有一條 finding：`UI_NODES_OVERLAP`（兩個節點的 rect 相交，圖上以 `#` 標出，附重疊的設計空間單位）。`--strict` 讓它變成 `ok=false` 與非零 exit code；交接與 release 應該使用它。
 
-- `UI_NODES_OVERLAP`：兩個節點的 rect 相交。圖上以 `#` 標出，附上重疊的設計空間單位。
-- `UI_TEXT_EXCEEDS_RECT`：文字在該框高之下放不進宣告的寬度。假設 16:9 viewport 與 0.5 字寬比例，是估算而非精確排版。
-
-`--strict` 讓 findings 變成 `ok=false` 與非零 exit code；交接與 release 應該使用它。
+節點表另外附 `text fit`：文字約佔宣告寬度的幾倍。它假設 16:9 viewport 與 0.5 字寬比例，所以是**測量值不是判決**——超過 1.0 表示 host 必須縮小、換行或裁切，值得看一眼，但引擎不會因此判定失敗。加規則的入場條件見 Decision 0029。
 
 它只檢查**結構**：不重疊、放得下。它不會、也不打算判斷畫面好不好看。世界層（sprite、實體位置）目前還沒有對應的文字檢查。
 

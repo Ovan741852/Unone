@@ -6,8 +6,13 @@
 //! and a model can read, it is deterministic enough to assert, and it needs no
 //! GPU, font or window.
 //!
-//! This reports structure only: overlap, out of bounds, text that cannot fit.
-//! It says nothing about whether a screen looks good.
+//! A finding here is a verdict, so it must be objectively decidable from the
+//! tree alone. Anything that needs a guessed constant — a font metric, a
+//! viewport shape — is reported as a measurement instead, and the reader
+//! decides. Rules that guess turn a gate into noise: see decision 0029.
+//!
+//! This reports structure only. It says nothing about whether a screen looks
+//! good.
 
 use serde::Serialize;
 
@@ -18,10 +23,11 @@ use crate::ui::{UiNode, UiRect, UiTree};
 pub const DEFAULT_LAYOUT_COLS: usize = 96;
 pub const DEFAULT_LAYOUT_ROWS: usize = 48;
 
-/// Viewport shape assumed when estimating whether text fits its box.
+/// Viewport shape assumed when measuring how full a text box is.
 ///
 /// The design space is 0..100 on both axes, so the engine cannot know the real
-/// aspect; 16:9 is the shape every current host uses.
+/// aspect; 16:9 is the shape every current host uses. This assumption is why
+/// text fullness is a number in the report and never a finding.
 const ASSUMED_ASPECT: f64 = 16.0 / 9.0;
 /// Character advance as a fraction of font height, for a typical UI face.
 const CHARACTER_ADVANCE: f64 = 0.5;
@@ -40,6 +46,11 @@ pub struct LayoutNode {
     pub rect: UiRect,
     pub text: String,
     pub action: Option<String>,
+    /// Roughly how much of the declared width the label needs, if the host sizes
+    /// text to the box height. Above 1.0 means the host must shrink, wrap or
+    /// clip it. This rests on assumed font metrics, so it is a measurement for
+    /// the reader, not a verdict.
+    pub text_fit: f64,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -88,28 +99,21 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
 
     for node in &tree.children {
         let (kind, id, rect, text, action) = node_parts(node);
+        // Out-of-bounds rects cannot reach here: UiTree::from_json already
+        // rejects anything outside the 0..100 design space.
+        let text_fit = if text.is_empty() || rect.width <= 0.0 {
+            0.0
+        } else {
+            (needed_width(text, rect) / rect.width * 100.0).round() / 100.0
+        };
         nodes.push(LayoutNode {
             id: id.clone(),
             kind: kind.to_string(),
             rect: *rect,
             text: text.clone(),
             action: action.cloned(),
+            text_fit,
         });
-        // Out-of-bounds rects cannot reach here: UiTree::from_json already
-        // rejects anything outside the 0..100 design space.
-        let required = needed_width(text, rect);
-        if !text.is_empty() && required > rect.width * 1.05 {
-            findings.push(LayoutFinding {
-                code: "UI_TEXT_EXCEEDS_RECT".to_string(),
-                detail: format!(
-                    "'{id}' 的 {} 個字在框高 {:.1} 下約需要寬度 {required:.1}，但只宣告了 {:.1}。",
-                    text.chars().count(),
-                    rect.height,
-                    rect.width
-                ),
-                nodes: vec![id.clone()],
-            });
-        }
     }
 
     for (index, left) in tree.children.iter().enumerate() {
@@ -137,7 +141,8 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
         readable: findings.is_empty(),
         findings,
         assumptions: vec![
-            format!("viewport aspect assumed to be 16:9 when estimating text width"),
+            "text_fit assumes a 16:9 viewport and a 0.5 character advance, so it is a              measurement to read, never a pass/fail"
+                .to_string(),
             "structure only: this says nothing about whether the screen looks good".to_string(),
         ],
     }
@@ -287,13 +292,19 @@ mod tests {
         assert!(report.ascii.contains('#'), "{}", report.ascii);
     }
 
+    /// Text fullness rests on guessed font metrics, so it is reported as a
+    /// number and never as a verdict. A rule that guesses cannot be a gate.
     #[test]
-    fn text_that_cannot_fit_its_box_is_reported() {
+    fn text_fullness_is_measured_but_never_becomes_a_finding() {
         let tree = tree(serde_json::json!([
-            {"kind": "text", "id": "cramped", "rect": {"x": 0.0, "y": 0.0, "width": 4.0, "height": 6.0}, "text": "a very long label"}
+            {"kind": "text", "id": "cramped", "rect": {"x": 0.0, "y": 0.0, "width": 4.0, "height": 6.0}, "text": "a very long label"},
+            {"kind": "text", "id": "roomy", "rect": {"x": 0.0, "y": 50.0, "width": 60.0, "height": 6.0}, "text": "ok"}
         ]));
         let report = inspect(&tree, DEFAULT_LAYOUT_COLS, DEFAULT_LAYOUT_ROWS);
-        assert_eq!(report.findings.len(), 1);
-        assert_eq!(report.findings[0].code, "UI_TEXT_EXCEEDS_RECT");
+        assert!(report.readable, "{:?}", report.findings);
+        let cramped = &report.nodes[0];
+        let roomy = &report.nodes[1];
+        assert!(cramped.text_fit > 2.0, "{}", cramped.text_fit);
+        assert!(roomy.text_fit < 0.2, "{}", roomy.text_fit);
     }
 }

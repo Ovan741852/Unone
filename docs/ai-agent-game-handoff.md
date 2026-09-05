@@ -51,7 +51,7 @@ bin/game.exe --project <game-root> ui preview --strict
 
 ## 遇到問題的立即回報協定
 
-**畫面必須用 `ui preview --strict` 檢查過。** 子代理看不到畫面，其他 gate 全部只檢查語意狀態，所以遊戲可以通過每一個測試、同時把控制項疊在一起。`ui preview` 會把 UI tree 畫成字元格並回報 `UI_NODES_OVERLAP` 與 `UI_TEXT_EXCEEDS_RECT`；`--strict` 讓它變成失敗的 gate。它只檢查結構，不判斷美觀。
+**畫面必須用 `ui preview --strict` 檢查過。** 子代理看不到畫面，其他 gate 全部只檢查語意狀態，所以遊戲可以通過每一個測試、同時把控制項疊在一起。`ui preview` 會把 UI tree 畫成字元格並回報 `UI_NODES_OVERLAP`；`--strict` 讓它變成失敗的 gate。節點表的 `text fit` 是測量值不是判決，超過 1.0 值得看一眼。**要看那張圖，不要只看 findings**：圖能顯示規則抓不到的問題。它只檢查結構，不判斷美觀。
 
 任何一項下列情況都算 blocker：命令與文件不一致、semantic diagnostic 不足以判斷下一步、API 找不到、typed Luau contract 不成立、同一問題在兩個以上遊戲會重現、host 不能載入／reload／儲存、或企劃需要 engine 未宣告的 primitive。
 
