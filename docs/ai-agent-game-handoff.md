@@ -7,7 +7,7 @@
 每個任務只提供：
 
 1. 一份 GAME_PLAN.md，只描述該款遊戲的玩法閉環、必要畫面、語意 action、可重播測試與驗收 evidence。
-2. 一份 immutable engine package：`bin/game.exe`、同目錄的 `bin/luau-analyze.exe`、`docs/engine.d.luau`、CLI/MCP 操作文件、`project.schema.json`／`scene.schema.json`／`test.schema.json`、Web runner/wasm host 與必要的 engine decision 文件。
+2. 一份 immutable engine package：`bin/game.exe`、同目錄的 `bin/luau-analyze.exe`、`docs/engine.d.luau`、CLI/MCP 操作文件、`project.schema.json`／`scene.schema.json`／`test.schema.json`、Web runner/wasm host 與必要的 engine decision 文件。交接前先執行 `powershell -File scripts/verify-ai-engine-package.ps1 -PackagePath .`；package 內容在建立後會設為 read-only，manifest hash 也必須通過。
 3. 一個乾淨的 game output directory。不可把其他驗證遊戲的程式碼當範本，也不可直接修改 engine source。
 
 遊戲端擁有玩法規則、數值、資料 catalog、ViewModel、View tree、hit-test、save schema/migration 與內容。engine 只擁有 fixed tick、input、ECS/world primitive、Luau 執行／reload、observation/UI/save transport、bundle integrity 與平台 host boundary。

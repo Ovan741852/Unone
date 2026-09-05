@@ -13,7 +13,10 @@ pub struct HostTexture {
     pub width: u32,
     pub height: u32,
     /// Premultiplied RGBA8, ready for a texture upload.
-    #[allow(dead_code, reason = "the preview renderer consumes this in the next slice")]
+    #[allow(
+        dead_code,
+        reason = "the preview renderer consumes this in the next slice"
+    )]
     pub rgba: Vec<u8>,
     pub size_bytes: u64,
     pub sha256: String,

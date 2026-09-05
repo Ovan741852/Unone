@@ -28,6 +28,7 @@ cargo run -p unone-cli -- --json platform capabilities
 子代理只拿到 engine package 與企劃時，先在自己的 game output directory 建立 scaffold：
 
 ```powershell
+powershell -File scripts/verify-ai-engine-package.ps1 -PackagePath .
 bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json project init --name "<game-name>"
 ```
 
@@ -145,7 +146,12 @@ Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 f
 需要驗證 restore 時，test manifest 可額外提供 `load_save` JSON payload。它在 `Game.start` **之前**就已還原，所以遊戲可以在 `start` 裡用 `api.save.get()` 重建狀態，不必等到第一次 update；輸出也會帶 `save_payload`，但引擎不會替遊戲判斷版本或 migration。
 - tooling/docs：CLI、診斷或教學有噪音，改 protocol/metadata/文件。
 
-若遊戲有對話、戰鬥結果或其他不適合塞進 Entity Transform 的狀態，使用 `api.observation.set(key, value)` 發布 typed ViewModel 的 semantic projection；test assertion 可用 `{"observation":{"key":"view_model","equals":{...}}}` 做完整 JSON equality。需要 host 顯示時，遊戲端以 `api.ui.setRoot(root)` 發布只含 screen/text/button/rect/action 的最小 View tree，test 可用 `{"ui":{"equals":{...}}}` assertion。ViewModel、View、hit-test 與 action 意義仍屬遊戲端；engine 只驗證／傳輸 tree，host 處理 viewport 與實際 render。
+若遊戲有對話、戰鬥結果或其他不適合塞進 Entity Transform 的狀態，使用 `api.observation.set(key, value)` 發布 typed ViewModel 的 semantic projection；test assertion 可用 `{"observation":{"key":"view_model","equals":{...}}}` 做完整 JSON equality。需要 host 顯示時，遊戲端以 `api.ui.setRoot(root)` 發布最小 View tree。每個節點的位置**二選一**：
+
+- `rect`：0..100 設計空間的絕對座標。適合不是貼邊的版面，例如用三角函數排出來的燈環。
+- `anchor` + `size`（可選 `offset`、`pivot`）：貼邊定位。`anchor` 是九個具名位置之一（`top_left`…`bottom_right`），數字**兩軸都是垂直單位**（畫面高度的百分比），所以同一份宣告在任何螢幕比例都保持形狀與邊距。引擎會依 host 回報的 viewport 解析成 rect，host 收到的仍然是純 rect。
+
+兩者同時宣告或都不宣告都會被拒絕。headless 測試使用 16:9 參考比例；host 用 `unone_web_set_viewport_aspect` 回報實際比例，test 可用 `{"ui":{"equals":{...}}}` assertion。ViewModel、View、hit-test 與 action 意義仍屬遊戲端；engine 只驗證／傳輸 tree，host 處理 viewport 與實際 render。
 
 需要存檔時使用 `api.save.set(value)`／`api.save.get()`，payload 由遊戲端定義版本與 migration；引擎只做 JSON-like transport，host 負責檔案／平台儲存。不要把 observation 當 save，也不要在引擎增加 save slot、cloud sync 或遊戲專用 schema。
 

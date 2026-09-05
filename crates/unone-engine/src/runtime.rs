@@ -96,6 +96,7 @@ struct ApiState {
     trace: Rc<RefCell<Vec<TraceEvent>>>,
     observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
     ui: Rc<RefCell<Option<UiTree>>>,
+    viewport_aspect: Rc<RefCell<f64>>,
     save_payload: Rc<RefCell<Option<serde_json::Value>>>,
 }
 
@@ -159,6 +160,7 @@ pub struct EngineRuntime {
     trace: Rc<RefCell<Vec<TraceEvent>>>,
     observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
     ui: Rc<RefCell<Option<UiTree>>>,
+    viewport_aspect: Rc<RefCell<f64>>,
     save_payload: Rc<RefCell<Option<serde_json::Value>>>,
     generation: u64,
     last_seen_script_stamp: Option<ScriptStamp>,
@@ -338,11 +340,22 @@ impl EngineRuntime {
         seed: u64,
         systems: BTreeMap<String, bool>,
     ) -> Result<Self, Box<Diagnostic>> {
-        Self::load_source_with_options(project_name, script_name, source, scene, seed, systems, None)
+        Self::load_source_with_options(
+            project_name,
+            script_name,
+            source,
+            scene,
+            seed,
+            systems,
+            None,
+        )
     }
 
     /// Load a host-provided project with its systems and a restored save.
-    #[allow(clippy::too_many_arguments, reason = "one host entry point, no config struct yet")]
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "one host entry point, no config struct yet"
+    )]
     pub fn load_source_with_options(
         project_name: impl Into<String>,
         script_name: impl Into<String>,
@@ -398,6 +411,7 @@ impl EngineRuntime {
         let trace = Rc::new(RefCell::new(Vec::new()));
         let observations = Rc::new(RefCell::new(BTreeMap::new()));
         let ui = Rc::new(RefCell::new(None));
+        let viewport_aspect = Rc::new(RefCell::new(crate::ui::UI_REFERENCE_ASPECT));
         // A restored save has to exist before Game.start runs: start is the only
         // place a game can rebuild its state before the first frame, and an
         // injection after start would both hide the payload and silently
@@ -410,6 +424,7 @@ impl EngineRuntime {
             trace: Rc::clone(&trace),
             observations: Rc::clone(&observations),
             ui: Rc::clone(&ui),
+            viewport_aspect: Rc::clone(&viewport_aspect),
             save_payload: Rc::clone(&save_payload),
         };
         let systems = SystemSettings::from_config(&config)?;
@@ -440,6 +455,7 @@ impl EngineRuntime {
             trace,
             observations,
             ui,
+            viewport_aspect,
             save_payload,
             generation: 0,
             last_seen_script_stamp: None,
@@ -447,6 +463,26 @@ impl EngineRuntime {
         };
         runtime.load_script(false)?;
         Ok(runtime)
+    }
+
+    /// Tell the engine the shape of the viewport the host is drawing into.
+    ///
+    /// Anchored UI nodes resolve against this, so a host that never calls it
+    /// gets the reference 16:9 layout, which is also what headless tests use.
+    pub fn set_viewport_aspect(&mut self, aspect: f64) -> Result<(), Box<Diagnostic>> {
+        if !aspect.is_finite() || aspect <= 0.0 {
+            return Err(Box::new(Diagnostic::error(
+                "VIEWPORT_ASPECT_INVALID",
+                "viewport aspect 必須是大於 0 的有限數字",
+                format!("host 傳入了 {aspect}；引擎不會用它推算 UI 版面。"),
+            )));
+        }
+        *self.viewport_aspect.borrow_mut() = aspect;
+        Ok(())
+    }
+
+    pub fn viewport_aspect(&self) -> f64 {
+        *self.viewport_aspect.borrow()
     }
 
     pub fn set_input(&mut self, action: impl Into<String>, is_down: bool) {
@@ -621,6 +657,18 @@ impl EngineRuntime {
                     ));
                 }
             };
+            for (index, assertion) in spec.assertions.iter().enumerate() {
+                if let Err(error) = assertion.validate() {
+                    return EngineResult::failure(Diagnostic::error(
+                        "TEST_ASSERTION_INVALID",
+                        "測試 assertion 不符合唯一目標 contract",
+                        format!(
+                            "{} 的 assertions[{index}]：{error}。請依 package 內 test.schema.json 修正。",
+                            test_path.display()
+                        ),
+                    ));
+                }
+            }
             let mut runtime =
                 match Self::load_with_seed_and_save(&paths.root, spec.seed, spec.load_save.clone())
                 {
@@ -771,6 +819,7 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
     let trace = Rc::clone(&state.trace);
     let observations = Rc::clone(&state.observations);
     let ui = Rc::clone(&state.ui);
+    let viewport_aspect = Rc::clone(&state.viewport_aspect);
     let save_payload = Rc::clone(&state.save_payload);
     let api = lua.create_table()?;
     let entity = lua.create_table()?;
@@ -1114,11 +1163,15 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
         })?,
     )?;
     let ui_state = Rc::clone(&ui);
+    let ui_aspect = Rc::clone(&viewport_aspect);
     ui_api.set(
         "setRoot",
         lua.create_function(move |_, value: Value| {
             let value = lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
-            let tree = UiTree::from_json(value).map_err(mlua::Error::RuntimeError)?;
+            // Anchored nodes resolve against the host's real viewport, so the
+            // same declaration lands in the same corner on any screen shape.
+            let tree = UiTree::from_json_for_viewport(value, *ui_aspect.borrow())
+                .map_err(mlua::Error::RuntimeError)?;
             *ui_state.borrow_mut() = Some(tree);
             Ok(())
         })?,
@@ -1146,20 +1199,22 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
     let play_world = Rc::clone(&world);
     animation_api.set(
         "play",
-        lua.create_function(move |_, (id, name, options): (String, String, Option<Table>)| {
-            let (asset, looping, speed) = match options {
-                Some(options) => (
-                    options.get::<Option<String>>("asset")?,
-                    options.get::<Option<bool>>("loop")?,
-                    options.get::<Option<f64>>("speed")?,
-                ),
-                None => (None, None, None),
-            };
-            play_world
-                .borrow_mut()
-                .play_animation(&id, &name, asset, looping, speed)
-                .map_err(mlua::Error::RuntimeError)
-        })?,
+        lua.create_function(
+            move |_, (id, name, options): (String, String, Option<Table>)| {
+                let (asset, looping, speed) = match options {
+                    Some(options) => (
+                        options.get::<Option<String>>("asset")?,
+                        options.get::<Option<bool>>("loop")?,
+                        options.get::<Option<f64>>("speed")?,
+                    ),
+                    None => (None, None, None),
+                };
+                play_world
+                    .borrow_mut()
+                    .play_animation(&id, &name, asset, looping, speed)
+                    .map_err(mlua::Error::RuntimeError)
+            },
+        )?,
     )?;
     let stop_animation_world = Rc::clone(&world);
     animation_api.set(
@@ -1207,10 +1262,19 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
 
     api.set("entity", entity)?;
     api.set("input", input_api)?;
-    api.set("random", disable_if_off(lua, systems, "random", random_api)?)?;
-    api.set("physics", disable_if_off(lua, systems, "physics2d", physics)?)?;
+    api.set(
+        "random",
+        disable_if_off(lua, systems, "random", random_api)?,
+    )?;
+    api.set(
+        "physics",
+        disable_if_off(lua, systems, "physics2d", physics)?,
+    )?;
     api.set("camera", disable_if_off(lua, systems, "camera2d", camera)?)?;
-    api.set("camera3d", disable_if_off(lua, systems, "camera3d", camera3d)?)?;
+    api.set(
+        "camera3d",
+        disable_if_off(lua, systems, "camera3d", camera3d)?,
+    )?;
     api.set("observation", observation_api)?;
     api.set("ui", disable_if_off(lua, systems, "ui", ui_api)?)?;
     api.set("save", disable_if_off(lua, systems, "save", save_api)?)?;
@@ -1822,6 +1886,55 @@ function Game.update(api, _dt)
 end
 return Game
 "#;
+
+    const ANCHOR_SCRIPT: &str = r#"--!strict
+local Game = {}
+local function publish(api)
+    api.ui.setRoot({
+        kind = "screen", id = "s", node = "s",
+        children = {
+            { kind = "button", id = "spin", text = "Spin", action = "Spin",
+              anchor = "bottom_right", offset = { x = 4, y = 4 },
+              size = { width = 30, height = 10 } },
+        },
+    })
+end
+function Game.start(api) publish(api) end
+function Game.update(api, _dt) publish(api) end
+return Game
+"#;
+
+    #[test]
+    fn the_host_viewport_shape_decides_where_an_anchored_node_lands() {
+        let dir = tempdir().unwrap();
+        write_project_with_systems(dir.path(), ANCHOR_SCRIPT, "{}");
+
+        let wide = EngineRuntime::load(dir.path()).unwrap().observe().ui.unwrap();
+        let mut narrow_runtime = EngineRuntime::load(dir.path()).unwrap();
+        narrow_runtime.set_viewport_aspect(9.0 / 16.0).unwrap();
+        narrow_runtime.run(1, 42);
+        let narrow = narrow_runtime.observe().ui.unwrap();
+
+        let rect_of = |tree: &crate::ui::UiTree| match &tree.children[0] {
+            crate::ui::UiNode::Text { rect, .. } | crate::ui::UiNode::Button { rect, .. } => *rect,
+        };
+        let wide_rect = rect_of(&wide);
+        let narrow_rect = rect_of(&narrow);
+        assert!(
+            narrow_rect.width > wide_rect.width,
+            "a narrow screen needs more design width: {wide_rect:?} vs {narrow_rect:?}"
+        );
+        assert!((wide_rect.y - narrow_rect.y).abs() < 1e-9);
+
+        assert_eq!(
+            EngineRuntime::load(dir.path())
+                .unwrap()
+                .set_viewport_aspect(0.0)
+                .unwrap_err()
+                .code,
+            "VIEWPORT_ASPECT_INVALID"
+        );
+    }
 
     #[test]
     fn a_restored_save_is_visible_inside_game_start() {

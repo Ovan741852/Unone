@@ -66,6 +66,20 @@ export type ObservationApi = {
     set: (key: string, value: ObservationValue) -> (),
 }
 
+-- A UI node declares its placement exactly one of two ways.
+--
+-- `rect` is absolute in the 0..100 design space; use it when the layout is not
+-- edge relative, such as a ring laid out with trigonometry.
+--
+-- `anchor` + `size` (+ optional `offset` and `pivot`) is edge relative. Its
+-- numbers are vertical units on both axes -- percent of the viewport height --
+-- so a box keeps its shape and its distance from the edge on any screen shape.
+-- The engine resolves it against the viewport the host reports.
+export type UiAnchor =
+    "top_left" | "top" | "top_right"
+    | "left" | "center" | "right"
+    | "bottom_left" | "bottom" | "bottom_right"
+
 export type UiApi = {
     setRoot: (root: ObservationValue) -> (),
 }

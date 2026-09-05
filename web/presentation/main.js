@@ -317,11 +317,23 @@ function resizeCanvas() {
   }
 }
 
+// Report the canvas shape so anchored UI nodes resolve against the real screen.
+let reportedAspect = 0;
+function syncViewportAspect() {
+  const width = canvas.clientWidth || canvas.width;
+  const height = canvas.clientHeight || canvas.height;
+  if (!width || !height) return;
+  const aspect = width / height;
+  if (Math.abs(aspect - reportedAspect) < 0.001) return;
+  if (window.Module._unone_web_set_viewport_aspect?.(aspect) === 0) reportedAspect = aspect;
+}
+
 function step() {
   const frame = writePayload(inputFrameJson());
   if (window.Module._unone_web_set_input_frame(frame.address, frame.length) !== 0) {
     fail(new Error("input frame rejected"));
   }
+  syncViewportAspect();
   if (window.Module._unone_web_tick() !== 0) fail(new Error("engine tick failed"));
   snapshot = readSnapshot();
   const world = snapshot.world;

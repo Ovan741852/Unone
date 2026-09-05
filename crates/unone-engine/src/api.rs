@@ -351,7 +351,11 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "移除一個特效實例。",
             "需要提前結束循環特效，或在場景切換時清除表現時。",
             "引擎不會自動移除特效；一次性特效播完後仍需遊戲端決定何時停止。",
-            vec![parameter("handle", "string", "effect.spawn 回傳的 handle。")],
+            vec![parameter(
+                "handle",
+                "string",
+                "effect.spawn 回傳的 handle。",
+            )],
             "boolean：是否真的移除了一個實例。",
             vec!["修改 Rust-owned effect list"],
             "下一次 observation 的 effects 不再包含這個 handle。",

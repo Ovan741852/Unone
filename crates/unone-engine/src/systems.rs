@@ -327,7 +327,10 @@ pub fn set(
     result
 }
 
-#[allow(clippy::too_many_arguments, reason = "one call site per declared system")]
+#[allow(
+    clippy::too_many_arguments,
+    reason = "one call site per declared system"
+)]
 fn descriptor(
     id: &str,
     summary: &str,

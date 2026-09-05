@@ -339,6 +339,27 @@ pub unsafe extern "C" fn unone_web_set_input_frame(pointer: *const u8, length: u
     0
 }
 
+/// Tell the engine the shape of the canvas it is drawing into.
+///
+/// Anchored UI nodes resolve against this, so a phone-shaped viewport keeps the
+/// same corners and proportions a 16:9 one has.
+#[unsafe(no_mangle)]
+pub extern "C" fn unone_web_set_viewport_aspect(aspect: f64) -> i32 {
+    RUNTIME.with(|runtime| match runtime.borrow_mut().as_mut() {
+        Some(runtime) => match runtime.set_viewport_aspect(aspect) {
+            Ok(()) => 0,
+            Err(diagnostic) => {
+                write_diagnostic(&diagnostic);
+                -1
+            }
+        },
+        None => {
+            write_error("no project is loaded");
+            -1
+        }
+    })
+}
+
 #[unsafe(no_mangle)]
 pub extern "C" fn unone_web_set_screen_pointer(x: f64, y: f64) -> i32 {
     if !x.is_finite() || !y.is_finite() {

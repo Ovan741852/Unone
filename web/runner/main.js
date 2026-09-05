@@ -331,6 +331,17 @@ async function reloadActiveBundle() {
   status.textContent = `bundle generation ${generationState.generation} active; Luau hot reload accepted`;
 }
 
+// Report the canvas shape so anchored UI nodes resolve against the real screen.
+let reportedAspect = 0;
+function syncViewportAspect() {
+  const width = canvas.clientWidth || canvas.width;
+  const height = canvas.clientHeight || canvas.height;
+  if (!width || !height) return;
+  const aspect = width / height;
+  if (Math.abs(aspect - reportedAspect) < 0.001) return;
+  if (window.Module._unone_web_set_viewport_aspect?.(aspect) === 0) reportedAspect = aspect;
+}
+
 function step() {
   const actions = { ...heldActions, ...pendingActions };
   pendingActions = {};
@@ -349,6 +360,7 @@ function step() {
   if (window.Module._unone_web_set_input_frame(input.pointerAddress, input.length) !== 0) {
     throw new Error("generic host input frame update failed");
   }
+  syncViewportAspect();
   if (window.Module._unone_web_tick() !== 0) throw new Error("generic host tick failed");
   snapshot = readSnapshot();
   storeSave();

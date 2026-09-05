@@ -153,10 +153,7 @@ pub(crate) fn load_for_pack(root: &Path, path: &Path) -> Result<AssetManifest, B
                 return Err(Box::new(Diagnostic::error(
                     "ASSET_SOURCE_SYMLINK_OUTSIDE_PROJECT",
                     "asset 附屬檔案 symlink 超出專案根目錄",
-                    format!(
-                        "asset '{}' 的 '{file}' 解析後不在專案根目錄內。",
-                        asset.id
-                    ),
+                    format!("asset '{}' 的 '{file}' 解析後不在專案根目錄內。", asset.id),
                 )));
             }
         }
@@ -1303,8 +1300,12 @@ mod tests {
             r#"{"entities":[{"id":"bird","sprite":{"asset":"asset://bird"}}]}"#,
         );
         fs::create_dir_all(dir.path().join("scripts")).unwrap();
-        fs::write(dir.path().join("scripts/main.luau"), "return {}
-").unwrap();
+        fs::write(
+            dir.path().join("scripts/main.luau"),
+            "return {}
+",
+        )
+        .unwrap();
         fs::create_dir_all(dir.path().join("assets")).unwrap();
         fs::write(dir.path().join("assets/bird.svg"), b"<svg>bird</svg>").unwrap();
         fs::write(

@@ -181,8 +181,12 @@ enum SystemsCommand {
 
 #[derive(Debug, Subcommand)]
 enum ApiCommand {
-    Search { meaning: String },
-    Describe { name: String },
+    Search {
+        meaning: String,
+    },
+    Describe {
+        name: String,
+    },
     /// Print the engine's canonical Luau type contract, or write it to a file.
     Typings {
         #[arg(long, help = "Write the type contract to this path instead of stdout")]
@@ -447,21 +451,25 @@ fn run() -> Result<ExitCode> {
                     && let Err(error) = fs::create_dir_all(parent)
                 {
                     return print_result(
-                        EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
-                            "API_TYPINGS_WRITE_FAILED",
-                            "無法建立型別契約輸出目錄",
-                            format!("{}：{}", parent.display(), error),
-                        )),
+                        EngineResult::<serde_json::Value>::failure(
+                            unone_engine::Diagnostic::error(
+                                "API_TYPINGS_WRITE_FAILED",
+                                "無法建立型別契約輸出目錄",
+                                format!("{}：{}", parent.display(), error),
+                            ),
+                        ),
                         cli.json,
                     );
                 }
                 if let Err(error) = fs::write(&path, types) {
                     return print_result(
-                        EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
-                            "API_TYPINGS_WRITE_FAILED",
-                            "無法寫入型別契約",
-                            format!("{}：{}", path.display(), error),
-                        )),
+                        EngineResult::<serde_json::Value>::failure(
+                            unone_engine::Diagnostic::error(
+                                "API_TYPINGS_WRITE_FAILED",
+                                "無法寫入型別契約",
+                                format!("{}：{}", path.display(), error),
+                            ),
+                        ),
                         cli.json,
                     );
                 }
@@ -469,9 +477,10 @@ fn run() -> Result<ExitCode> {
                     "output": path.display().to_string(),
                     "bytes": types.len(),
                 }));
-                result
-                    .effects
-                    .push(format!("engine type contract written to {}", path.display()));
+                result.effects.push(format!(
+                    "engine type contract written to {}",
+                    path.display()
+                ));
                 print_result(result, cli.json)
             }
             ApiCommand::Describe { name } => match api_describe(&name) {

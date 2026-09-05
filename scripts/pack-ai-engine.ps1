@@ -67,7 +67,8 @@ foreach ($decision in @(
     "0026-host-asset-resolve-contract.md",
     "0027-declared-engine-systems.md",
     "0028-semantic-presentation-systems.md",
-    "0029-text-layout-gate.md"
+    "0029-text-layout-gate.md",
+    "0030-anchored-ui-placement.md"
 )) {
     Copy-PackageFile (Join-Path $engineRoot "docs\decisions\$decision") "docs\decisions\$decision"
 }
@@ -84,6 +85,7 @@ Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.js") "web\runtim
 Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.wasm") "web\runtime\unone_web_live_smoke.wasm"
 Copy-PackageFile (Join-Path $engineRoot "scripts\build-android-package.ps1") "scripts\build-android-package.ps1"
 Copy-PackageFile (Join-Path $engineRoot "scripts\run-android-package-smoke.ps1") "scripts\run-android-package-smoke.ps1"
+Copy-PackageFile (Join-Path $engineRoot "scripts\verify-ai-engine-package.ps1") "scripts\verify-ai-engine-package.ps1"
 Copy-PackageFile (Join-Path $engineRoot "platform\android\AndroidManifest.xml") "mobile\android-host\AndroidManifest.xml"
 Copy-PackageFile (Join-Path $engineRoot "platform\android\debug.keystore") "mobile\android-host\debug.keystore"
 Copy-PackageFile (Join-Path $engineRoot "platform\android\build\x86_64-linux-android\dex\classes.dex") "mobile\android-host\classes.dex"
@@ -133,5 +135,10 @@ $package = [ordered]@{
 }
 $manifestPath = Join-Path $outputRoot "package-manifest.json"
 [IO.File]::WriteAllText($manifestPath, ($package | ConvertTo-Json -Depth 5), $utf8)
+
+& (Join-Path $outputRoot "scripts\verify-ai-engine-package.ps1") -PackagePath $outputRoot
+foreach ($file in Get-ChildItem -LiteralPath $outputRoot -File -Recurse) {
+    $file.IsReadOnly = $true
+}
 
 Write-Output "created immutable AI engine package: $outputRoot"

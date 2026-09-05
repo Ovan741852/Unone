@@ -551,16 +551,16 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 Ok(seed) => seed,
                 Err(diagnostic) => return argument_error(*diagnostic),
             };
-            let cols = match optional_u64(arguments, "cols", unone_engine::DEFAULT_LAYOUT_COLS as u64)
-            {
-                Ok(cols) => cols as usize,
-                Err(diagnostic) => return argument_error(*diagnostic),
-            };
-            let rows = match optional_u64(arguments, "rows", unone_engine::DEFAULT_LAYOUT_ROWS as u64)
-            {
-                Ok(rows) => rows as usize,
-                Err(diagnostic) => return argument_error(*diagnostic),
-            };
+            let cols =
+                match optional_u64(arguments, "cols", unone_engine::DEFAULT_LAYOUT_COLS as u64) {
+                    Ok(cols) => cols as usize,
+                    Err(diagnostic) => return argument_error(*diagnostic),
+                };
+            let rows =
+                match optional_u64(arguments, "rows", unone_engine::DEFAULT_LAYOUT_ROWS as u64) {
+                    Ok(rows) => rows as usize,
+                    Err(diagnostic) => return argument_error(*diagnostic),
+                };
             let strict = match optional_bool(arguments, "strict", false) {
                 Ok(strict) => strict,
                 Err(diagnostic) => return argument_error(*diagnostic),
@@ -849,10 +849,7 @@ fn ui_preview(
     result
 }
 
-fn optional_string_array(
-    arguments: &Value,
-    name: &str,
-) -> Result<Vec<String>, Box<Diagnostic>> {
+fn optional_string_array(arguments: &Value, name: &str) -> Result<Vec<String>, Box<Diagnostic>> {
     match arguments.get(name) {
         None | Some(Value::Null) => Ok(Vec::new()),
         Some(Value::Array(values)) => values
