@@ -208,8 +208,10 @@ fn scaffold_script() -> String {
         .lines()
         .filter(|line| !line.trim_start().starts_with("--"))
         .collect::<Vec<_>>()
-        .join("
-");
+        .join(
+            "
+",
+        );
     format!(
         "--!strict
 -- Engine type contract, inlined by `project init`.
@@ -300,7 +302,7 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<ProjectInspectRep
 mod tests {
     use tempfile::tempdir;
 
-    use super::{init, inspect};
+    use super::{TestAssertion, init, inspect};
 
     #[test]
     fn init_creates_a_valid_minimal_project() {
@@ -330,6 +332,33 @@ mod tests {
             std::fs::read_to_string(directory.path().join("project.unone.json")).unwrap(),
             "{}"
         );
+    }
+
+    #[test]
+    fn test_assertions_reject_ambiguous_targets_and_comparators() {
+        let valid: TestAssertion = serde_json::from_value(serde_json::json!({
+            "entity": "player",
+            "field": "transform.x",
+            "greater_than": 1.0
+        }))
+        .unwrap();
+        assert!(valid.validate().is_ok());
+
+        let ambiguous: TestAssertion = serde_json::from_value(serde_json::json!({
+            "entity": "player",
+            "field": "transform.x",
+            "equals": 1.0,
+            "greater_than": 0.0
+        }))
+        .unwrap();
+        assert!(ambiguous.validate().unwrap_err().contains("只能提供"));
+
+        let mixed_target: TestAssertion = serde_json::from_value(serde_json::json!({
+            "observation": {"key": "state", "equals": {}},
+            "equals": 1.0
+        }))
+        .unwrap();
+        assert!(mixed_target.validate().is_err());
     }
 }
 
@@ -403,6 +432,86 @@ pub struct TestAssertion {
     pub animation: Option<AnimationAssertion>,
     #[serde(default)]
     pub effects: Option<EffectsAssertion>,
+}
+
+impl TestAssertion {
+    pub fn validate(&self) -> Result<(), String> {
+        let target_count = [
+            self.observation.is_some(),
+            self.ui.is_some(),
+            self.animation.is_some(),
+            self.effects.is_some(),
+            self.entity.is_some() || self.field.is_some(),
+        ]
+        .into_iter()
+        .filter(|present| *present)
+        .count();
+        if target_count != 1 {
+            return Err(
+                "Assertion 必須且只能提供 observation、ui、animation、effects 或 entity/field 其中一種目標。"
+                .to_string(),
+            );
+        }
+        if (self.ui.is_some() || self.animation.is_some() || self.effects.is_some())
+            && self.has_numeric_comparator()
+        {
+            return Err(
+                "非 entity assertion 不可提供 equals、greater_than、less_than 數值 comparator。"
+                    .to_string(),
+            );
+        }
+        if let Some(observation) = &self.observation {
+            if observation.key.trim().is_empty() {
+                return Err("Observation assertion 的 key 不可為空。".to_string());
+            }
+            if self.has_numeric_comparator() {
+                return Err("Observation assertion 不可提供數值 comparator。".to_string());
+            }
+        }
+        if let Some(animation) = &self.animation
+            && animation.entity.trim().is_empty()
+        {
+            return Err("Animation assertion 的 entity 不可為空。".to_string());
+        }
+        if self.entity.is_some() || self.field.is_some() {
+            if self
+                .entity
+                .as_deref()
+                .is_none_or(|entity| entity.trim().is_empty())
+            {
+                return Err("Entity assertion 必須提供非空 entity。".to_string());
+            }
+            let field = self
+                .field
+                .as_deref()
+                .ok_or_else(|| "Entity assertion 必須提供 field。".to_string())?;
+            if !matches!(field, "transform.x" | "transform.y") {
+                return Err(format!("不支援的 assertion field '{field}'。"));
+            }
+            if self.numeric_comparator_count() != 1 {
+                return Err(
+                    "Entity assertion 必須且只能提供 equals、greater_than、less_than 其中一個。"
+                        .to_string(),
+                );
+            }
+        }
+        Ok(())
+    }
+
+    fn has_numeric_comparator(&self) -> bool {
+        self.numeric_comparator_count() != 0
+    }
+
+    fn numeric_comparator_count(&self) -> usize {
+        [
+            self.equals.is_some(),
+            self.greater_than.is_some(),
+            self.less_than.is_some(),
+        ]
+        .into_iter()
+        .filter(|present| *present)
+        .count()
+    }
 }
 
 /// Full equality against one entity's published animation state.

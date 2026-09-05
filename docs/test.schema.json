@@ -458,6 +458,62 @@
             ]
           }
         }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "anyOf": [
+              {"required": ["observation"]},
+              {"required": ["ui"]},
+              {"required": ["animation"]},
+              {"required": ["effects"]}
+            ]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {"required": ["equals"]},
+                {"required": ["greater_than"]},
+                {"required": ["less_than"]}
+              ]
+            }
+          }
+        },
+        {
+          "if": {"required": ["entity"]},
+          "then": {
+            "required": ["field"],
+            "oneOf": [
+              {
+                "required": ["equals"],
+                "not": {
+                  "anyOf": [
+                    {"required": ["greater_than"]},
+                    {"required": ["less_than"]}
+                  ]
+                }
+              },
+              {
+                "required": ["greater_than"],
+                "not": {
+                  "anyOf": [
+                    {"required": ["equals"]},
+                    {"required": ["less_than"]}
+                  ]
+                }
+              },
+              {
+                "required": ["less_than"],
+                "not": {
+                  "anyOf": [
+                    {"required": ["equals"]},
+                    {"required": ["greater_than"]}
+                  ]
+                }
+              }
+            ]
+          }
+        }
       ]
     },
     "animationAssertion": {

@@ -2,7 +2,7 @@ use std::{
     collections::{BTreeMap, BTreeSet},
     fs::{self, File},
     io::{Read, Write},
-    path::{Path, PathBuf},
+    path::{Component, Path, PathBuf},
 };
 
 use serde::{Deserialize, Serialize};
@@ -117,6 +117,7 @@ pub fn pack_project(
     }
 
     let mut sources = Vec::new();
+    let mut generated_archives = BTreeMap::<String, Vec<u8>>::new();
     if let Err(diagnostic) = validate_pack_source(&root, "project config", "project.unone.json") {
         return EngineResult::failure(*diagnostic);
     }
@@ -210,17 +211,7 @@ pub fn pack_project(
                 }
             };
             let source = format!("bundles/{bundle_id}.bundle");
-            let path = root.join(&source);
-            let changed = fs::read(&path)
-                .map(|current| current != archive)
-                .unwrap_or(true);
-            if changed && let Err(error) = write_atomic(&path, &archive) {
-                return EngineResult::failure(Diagnostic::error(
-                    "BUNDLE_ASSET_ARCHIVE_WRITE_FAILED",
-                    "無法寫入 asset bundle archive",
-                    error,
-                ));
-            }
+            generated_archives.insert(source.clone(), archive);
             sources.push((
                 bundle_id,
                 source,
@@ -229,8 +220,8 @@ pub fn pack_project(
         }
     }
 
-    if config_changed {
-        let config_bytes = match serde_json::to_vec_pretty(&config_json) {
+    let config_bytes = if config_changed {
+        match serde_json::to_vec_pretty(&config_json) {
             Ok(bytes) => bytes,
             Err(error) => {
                 return EngineResult::failure(Diagnostic::error(
@@ -239,26 +230,27 @@ pub fn pack_project(
                     error.to_string(),
                 ));
             }
-        };
-        if let Err(error) = write_atomic(&paths.config, &config_bytes) {
-            return EngineResult::failure(Diagnostic::error(
-                "PROJECT_CONFIG_WRITE_FAILED",
-                "無法更新 bundle_manifest 設定",
-                error,
-            ));
         }
-    }
+    } else {
+        Vec::new()
+    };
 
     let mut bundles = Vec::with_capacity(sources.len());
     for (id, source, dependencies) in sources {
-        let bytes = match fs::read(root.join(&source)) {
-            Ok(bytes) => bytes,
-            Err(error) => {
-                return EngineResult::failure(Diagnostic::error(
-                    "BUNDLE_SOURCE_READ_FAILED",
-                    "無法讀取 bundle 來源",
-                    format!("{}：{}", root.join(&source).display(), error),
-                ));
+        let bytes = if id == "project" && config_changed {
+            config_bytes.clone()
+        } else if let Some(bytes) = generated_archives.get(&source) {
+            bytes.clone()
+        } else {
+            match fs::read(root.join(&source)) {
+                Ok(bytes) => bytes,
+                Err(error) => {
+                    return EngineResult::failure(Diagnostic::error(
+                        "BUNDLE_SOURCE_READ_FAILED",
+                        "無法讀取 bundle 來源",
+                        format!("{}：{}", root.join(&source).display(), error),
+                    ));
+                }
             }
         };
         bundles.push(BundleSpec {
@@ -297,6 +289,28 @@ pub fn pack_project(
     let manifest_changed = fs::read(&manifest_path)
         .map(|current| current != manifest_bytes)
         .unwrap_or(true);
+    if config_changed
+        && let Err(error) = write_atomic(&paths.config, &config_bytes)
+    {
+        return EngineResult::failure(Diagnostic::error(
+            "PROJECT_CONFIG_WRITE_FAILED",
+            "無法更新 bundle_manifest 設定",
+            error,
+        ));
+    }
+    for (source, archive) in generated_archives {
+        let path = root.join(&source);
+        let changed = fs::read(&path)
+            .map(|current| current != archive)
+            .unwrap_or(true);
+        if changed && let Err(error) = write_atomic(&path, &archive) {
+            return EngineResult::failure(Diagnostic::error(
+                "BUNDLE_ASSET_ARCHIVE_WRITE_FAILED",
+                "無法寫入 asset bundle archive",
+                error,
+            ));
+        }
+    }
     if manifest_changed && let Err(error) = write_atomic(&manifest_path, &manifest_bytes) {
         return EngineResult::failure(Diagnostic::error(
             "BUNDLE_MANIFEST_WRITE_FAILED",
@@ -550,11 +564,7 @@ pub fn read_asset_from_archive(
 
 fn validate_pack_source(root: &Path, label: &str, source: &str) -> Result<(), Box<Diagnostic>> {
     let path = Path::new(source);
-    if path.is_absolute()
-        || path
-            .components()
-            .any(|component| matches!(component, std::path::Component::ParentDir))
-    {
+    if !is_project_relative_source(source, path) {
         return Err(Box::new(Diagnostic::error(
             "BUNDLE_SOURCE_OUTSIDE_PROJECT",
             "bundle 來源超出專案根目錄",
@@ -572,7 +582,47 @@ fn validate_pack_source(root: &Path, label: &str, source: &str) -> Result<(), Bo
             ),
         )));
     }
+    let canonical_root = fs::canonicalize(root).map_err(|error| {
+        Box::new(Diagnostic::error(
+            "BUNDLE_PROJECT_ROOT_INVALID",
+            "無法解析 bundle 專案根目錄",
+            format!("{}：{}", root.display(), error),
+        ))
+    })?;
+    let canonical_path = fs::canonicalize(&path).map_err(|error| {
+        Box::new(Diagnostic::error(
+            "BUNDLE_SOURCE_READ_FAILED",
+            "無法解析 bundle 來源",
+            format!("{}：{}", path.display(), error),
+        ))
+    })?;
+    if !canonical_path.starts_with(&canonical_root) {
+        return Err(Box::new(Diagnostic::error(
+            "BUNDLE_SOURCE_OUTSIDE_PROJECT",
+            "bundle 來源超出專案根目錄",
+            format!(
+                "{label} 的路徑 '{source}' 透過 symlink 指向專案外；bundle 只接受 project-relative 檔案。"
+            ),
+        )));
+    }
     Ok(())
+}
+
+fn is_project_relative_source(source: &str, path: &Path) -> bool {
+    if source.is_empty()
+        || source.starts_with('/')
+        || source.starts_with('\\')
+        || (source.len() >= 2
+            && source.as_bytes()[0].is_ascii_alphabetic()
+            && source.as_bytes()[1] == b':')
+    {
+        return false;
+    }
+    path.components()
+        .all(|component| matches!(component, Component::Normal(_)))
+        && source
+            .split(['/', '\\'])
+            .all(|component| !component.is_empty() && component != "." && component != "..")
 }
 
 fn read_existing_manifest(path: &Path) -> Result<Option<BundleManifest>, Box<Diagnostic>> {
@@ -606,20 +656,86 @@ fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), String> {
         .map_err(|error| format!("write '{}': {error}", staging.display()))?;
     file.flush()
         .map_err(|error| format!("flush '{}': {error}", staging.display()))?;
-    #[cfg(not(windows))]
     file.sync_all()
         .map_err(|error| format!("sync '{}': {error}", staging.display()))?;
     drop(file);
-    if path.exists() {
-        fs::remove_file(path).map_err(|error| format!("replace '{}': {error}", path.display()))?;
-    }
-    fs::rename(&staging, path).map_err(|error| {
+    replace_staged_file(&staging, path)
+}
+
+#[cfg(not(windows))]
+fn replace_staged_file(staging: &Path, path: &Path) -> Result<(), String> {
+    fs::rename(staging, path).map_err(|error| {
         format!(
             "rename '{}' -> '{}': {error}",
             staging.display(),
             path.display()
         )
     })
+}
+
+#[cfg(windows)]
+fn replace_staged_file(staging: &Path, path: &Path) -> Result<(), String> {
+    use std::{os::windows::ffi::OsStrExt, ptr};
+
+    use windows_sys::Win32::{
+        Foundation::{ERROR_FILE_NOT_FOUND, ERROR_PATH_NOT_FOUND, GetLastError},
+        Storage::FileSystem::{
+            MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH, MoveFileExW,
+            REPLACEFILE_WRITE_THROUGH, ReplaceFileW,
+        },
+    };
+
+    fn wide(path: &Path) -> Vec<u16> {
+        path.as_os_str()
+            .encode_wide()
+            .chain(std::iter::once(0))
+            .collect()
+    }
+
+    let staging_wide = wide(staging);
+    let path_wide = wide(path);
+    // ReplaceFileW keeps the previous destination until the replacement is
+    // committed. If the destination does not exist, MoveFileExW handles the
+    // first generation with replace and write-through semantics.
+    let replaced = unsafe {
+        ReplaceFileW(
+            path_wide.as_ptr(),
+            staging_wide.as_ptr(),
+            ptr::null(),
+            REPLACEFILE_WRITE_THROUGH,
+            ptr::null(),
+            ptr::null(),
+        )
+    };
+    if replaced != 0 {
+        return Ok(());
+    }
+    let error = unsafe { GetLastError() };
+    if error != ERROR_FILE_NOT_FOUND && error != ERROR_PATH_NOT_FOUND {
+        return Err(format!(
+            "replace '{}' -> '{}' failed: {}",
+            staging.display(),
+            path.display(),
+            std::io::Error::from_raw_os_error(error as i32)
+        ));
+    }
+    let moved = unsafe {
+        MoveFileExW(
+            staging_wide.as_ptr(),
+            path_wide.as_ptr(),
+            MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH,
+        )
+    };
+    if moved == 0 {
+        let error = unsafe { GetLastError() };
+        return Err(format!(
+            "rename '{}' -> '{}' failed: {}",
+            staging.display(),
+            path.display(),
+            std::io::Error::from_raw_os_error(error as i32)
+        ));
+    }
+    Ok(())
 }
 
 fn normalize_relative_path(path: &Path) -> String {
@@ -1066,7 +1182,7 @@ impl BundleManager {
                 let _ = fs::remove_file(&staged_path);
                 return Err(diagnostic);
             }
-            fs::rename(&staged_path, &cache_path).map_err(|err| {
+            replace_staged_file(&staged_path, &cache_path).map_err(|err| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_CACHE_COMMIT_FAILED",
                     "無法提交 bundle cache",
@@ -1245,7 +1361,6 @@ impl BundleManager {
                 staging_path.display()
             )
         })?;
-        #[cfg(not(windows))]
         file.sync_all().map_err(|err| {
             format!(
                 "sync generation staging '{}': {err}",
@@ -1253,13 +1368,7 @@ impl BundleManager {
             )
         })?;
         drop(file);
-        fs::rename(&staging_path, &path).map_err(|err| {
-            format!(
-                "rename generation '{}' -> '{}': {err}",
-                staging_path.display(),
-                path.display()
-            )
-        })
+        replace_staged_file(&staging_path, &path)
     }
 }
 
@@ -1301,8 +1410,29 @@ mod tests {
 
     use super::{
         BUNDLE_ARCHIVE_MAGIC, BundleFetcher, BundleManager, BundleManifest, BundleSpec,
-        BundleVerifier, pack_project, read_asset_from_archive,
+        BundleVerifier, is_project_relative_source, pack_project, read_asset_from_archive,
     };
+
+    #[test]
+    fn accepts_only_portable_project_relative_bundle_sources() {
+        assert!(is_project_relative_source(
+            "assets/bird.svg",
+            Path::new("assets/bird.svg")
+        ));
+        for source in [
+            "",
+            "/etc/passwd",
+            r"\Windows\system32.dll",
+            "C:/outside/file.bundle",
+            "assets/../outside.bundle",
+            "assets/./bird.svg",
+        ] {
+            assert!(
+                !is_project_relative_source(source, Path::new(source)),
+                "source should be rejected: {source}"
+            );
+        }
+    }
 
     #[test]
     fn incremental_verifier_accepts_multiple_chunks() {
@@ -1418,6 +1548,44 @@ mod tests {
         assert_eq!(first_bytes, fs::read(content).unwrap());
     }
 
+    #[test]
+    fn validation_failure_does_not_leave_generated_outputs_or_config_mutation() {
+        let dir = tempdir().unwrap();
+        fs::create_dir_all(dir.path().join("scripts")).unwrap();
+        fs::create_dir_all(dir.path().join("scenes")).unwrap();
+        fs::create_dir_all(dir.path().join("assets")).unwrap();
+        fs::create_dir_all(dir.path().join("bundles")).unwrap();
+        fs::write(
+            dir.path().join("project.unone.json"),
+            br#"{"name":"AtomicPackFixture","entry_script":"scripts/main.luau","main_scene":"scenes/main.scene.json","asset_manifest":"assets/manifest.json"}"#,
+        )
+        .unwrap();
+        fs::write(dir.path().join("scripts/main.luau"), b"return {}\n").unwrap();
+        fs::write(
+            dir.path().join("scenes/main.scene.json"),
+            br#"{"entities":[{"id":"bird","sprite":{"asset":"asset://bird"}}]}"#,
+        )
+        .unwrap();
+        fs::write(dir.path().join("assets/bird.svg"), b"<svg>bird</svg>").unwrap();
+        fs::write(
+            dir.path().join("assets/manifest.json"),
+            br#"{"version":1,"assets":[{"id":"asset://bird","source":"assets/bird.svg","kind":"texture2d","bundle":"content"}]}"#,
+        )
+        .unwrap();
+        fs::write(dir.path().join("bundles/manifest.json"), b"not-json").unwrap();
+        let original_config = fs::read(dir.path().join("project.unone.json")).unwrap();
+
+        let result = pack_project(dir.path(), None);
+
+        assert!(!result.ok);
+        assert_eq!(result.diagnostics[0].code, "BUNDLE_MANIFEST_INVALID");
+        assert_eq!(
+            fs::read(dir.path().join("project.unone.json")).unwrap(),
+            original_config
+        );
+        assert!(!dir.path().join("bundles/content.bundle").exists());
+    }
+
     fn write_asset_project(dir: &Path) {
         fs::create_dir_all(dir.join("scripts")).unwrap();
         fs::create_dir_all(dir.join("scenes")).unwrap();
@@ -1427,8 +1595,12 @@ mod tests {
             br#"{"name":"AssetReadFixture","entry_script":"scripts/main.luau","main_scene":"scenes/main.scene.json","asset_manifest":"assets/manifest.json"}"#,
         )
         .unwrap();
-        fs::write(dir.join("scripts/main.luau"), b"return {}
-").unwrap();
+        fs::write(
+            dir.join("scripts/main.luau"),
+            b"return {}
+",
+        )
+        .unwrap();
         fs::write(
             dir.join("scenes/main.scene.json"),
             br#"{"entities":[{"id":"bird","sprite":{"asset":"asset://bird"}}]}"#,
