@@ -9,7 +9,7 @@ use serde_json::{Map, Value, json};
 use unone_engine::{
     AssetSpec, BundleManager, Diagnostic, EngineResult, EngineRuntime, InputFrame, api_describe,
     api_search, init_asset_manifest, init_project, inspect_assets, inspect_assets_strict,
-    inspect_project, pack_project, platform_capabilities,
+    inspect_project, pack_project, platform_capabilities, read_asset,
 };
 
 const LATEST_PROTOCOL_VERSION: &str = "2025-11-25";
@@ -221,6 +221,7 @@ fn tool_names() -> Vec<&'static str> {
         "unone_project_inspect",
         "unone_project_init",
         "unone_asset_inspect",
+        "unone_asset_read",
         "unone_asset_init",
         "unone_platform_capabilities",
         "unone_api_search",
@@ -269,6 +270,20 @@ fn tool_definitions() -> Vec<Value> {
             })),
             true,
             true,
+        ),
+        tool(
+            "unone_asset_read",
+            "Read a declared asset",
+            "Resolve one declared asset id from the project's active bundle generation and report its verified size and sha256. The engine verifies bundle and archive entry integrity only; decoding, texture upload, download policy and cache quota stay in each host. Provide output to also write the verified bytes to a file.",
+            object_schema(json!({
+                "properties": {
+                    "id": {"type": "string", "description": "Declared asset id, for example asset://characters/hero."},
+                    "output": {"type": "string", "description": "Optional path that receives the verified asset bytes."}
+                },
+                "required": ["id"]
+            })),
+            true,
+            false,
         ),
         tool(
             "unone_asset_init",
@@ -449,6 +464,21 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
             }),
             Err(diagnostic) => argument_error(*diagnostic),
         },
+        "unone_asset_read" => {
+            let id = match required_string(arguments, "id") {
+                Ok(id) => id,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let output = match optional_string(arguments, "output") {
+                Ok(output) => output,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            tool_result(read_asset(
+                project,
+                &id,
+                output.as_deref().map(std::path::Path::new),
+            ))
+        }
         "unone_asset_init" => {
             let output = match optional_string(arguments, "output") {
                 Ok(output) => output,
@@ -736,7 +766,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 14);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 15);
     }
 
     #[test]

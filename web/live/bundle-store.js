@@ -292,5 +292,26 @@ export async function readActiveAsset(generationState, asset, module, manifestIn
   if (end > bytes.byteLength) {
     throw engineError("ASSET_ARCHIVE_INVALID", `asset '${asset.id}' has an out-of-range entry`, "The archive metadata points outside the verified bundle bytes.");
   }
-  return bytes.slice(start, end);
+  const content = bytes.slice(start, end);
+  await verifyArchiveEntry(asset, entry, content);
+  return content;
+}
+
+/**
+ * Verify one archive entry against its declared digest. This mirrors the Rust
+ * host reader in `unone_engine::read_asset_from_archive`, so the same asset id
+ * either resolves to identical bytes on both hosts or fails with the same code.
+ */
+async function verifyArchiveEntry(asset, entry, content) {
+  if (typeof entry.sha256 !== "string" || entry.sha256.length !== 64) {
+    throw engineError("ASSET_ARCHIVE_INVALID", `asset '${asset.id}' has no entry digest`, "Archive version 1 declares a sha256 for every file.");
+  }
+  if (!globalThis.crypto?.subtle) {
+    throw engineError("ASSET_CONTENT_UNVERIFIABLE", "this host cannot verify asset content", "Web Crypto is unavailable, so the archive entry digest cannot be checked. Serve the host from a secure context such as localhost or https.");
+  }
+  const digest = new Uint8Array(await globalThis.crypto.subtle.digest("SHA-256", content));
+  const actual = Array.from(digest, (value) => value.toString(16).padStart(2, "0")).join("");
+  if (actual !== entry.sha256) {
+    throw engineError("ASSET_CONTENT_CORRUPT", `asset '${asset.id}' content does not match the archive digest`, "The host must not use bytes the engine cannot verify.", { asset_id: asset.id, bundle: asset.bundle, expected_sha256: entry.sha256, actual_sha256: actual });
+  }
 }

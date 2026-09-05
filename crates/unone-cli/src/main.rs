@@ -5,7 +5,7 @@ use clap::{Parser, Subcommand};
 use unone_engine::{
     AssetSpec, BundleManager, Camera3DData, EngineResult, EngineRuntime, InputFrame, Vec2, Vec3,
     WorldSnapshot, api_describe, api_search, init_asset_manifest, init_project, inspect_assets,
-    inspect_assets_strict, inspect_project, pack_project,
+    inspect_assets_strict, inspect_project, pack_project, read_asset,
 };
 use winit::{
     application::ApplicationHandler,
@@ -91,6 +91,13 @@ enum AssetCommand {
         #[arg(long, help = "Turn unresolved static references into a failing gate")]
         strict: bool,
     },
+    /// Read one declared asset out of the active bundle generation.
+    Read {
+        #[arg(long, help = "Declared asset id, for example asset://characters/hero")]
+        id: String,
+        #[arg(long, help = "Write the verified asset bytes to this path")]
+        output: Option<PathBuf>,
+    },
     /// Create an empty manifest or add one explicit asset declaration.
     Init {
         #[arg(long, help = "Manifest path relative to the project root")]
@@ -158,6 +165,9 @@ fn run() -> Result<ExitCode> {
                 },
                 cli.json,
             ),
+            AssetCommand::Read { id, output } => {
+                print_result(read_asset(&cli.project, &id, output.as_deref()), cli.json)
+            }
             AssetCommand::Init {
                 output,
                 id,

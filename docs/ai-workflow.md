@@ -141,6 +141,18 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json bu
 
 新專案先用 `bundle pack` 生成最小的 project/script/scene manifest；若有 asset manifest，它還會產生 deterministic、未壓縮的 content bundle，並拒絕未解決的主場景 asset reference。工具會自動把 `bundle_manifest` 寫入 `project.unone.json`；內容沒有變更時不增加 manifest version，內容變更時才遞增版本。bundle 成功不是只代表檔案存在：要確認 manifest hash、cache hash、active generation、dependencies 與 `available`。引擎的 `BundleFetcher` 只接收 host 提供的 reader，再負責 streaming size/hash verify、staging 與 atomic activation；native CLI 使用 local source，Web/mobile 的 fetch、重試、storage quota 與背景下載政策留在 host adapter。Web generic runner 會由 verified content bundle 解析 image asset，並將 URL lifetime 留在 host；production CDN、OPFS、大檔 streaming 與 quota policy 仍不是 engine core。Web sample 的 browser generation/cache smoke 另見 `docs/decisions/0016-bundle-generation-and-browser-storage.md`。
 
+## 4.5 由已啟用 generation 取得資產
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json bundle install content
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset read --id asset://characters/bird/red
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset read --id asset://characters/bird/red --output D:/tmp/red.svg
+```
+
+`asset read` 會由目前 active generation 的已驗證 bundle 取出一筆宣告資產，回報 `size_bytes`、`sha256` 與 `bundle_generation`；加上 `--output` 才會寫檔。它與 Web host 的 `readActiveAsset` 使用同一個 archive 契約與同一組錯誤碼：`BUNDLE_GENERATION_MISMATCH`（尚未安裝／manifest 已變更）、`BUNDLE_CACHE_MISS`、`BUNDLE_CACHE_CORRUPT`、`ASSET_ID_NOT_DECLARED`、`ASSET_NOT_IN_BUNDLE`、`ASSET_ARCHIVE_INVALID`、`ASSET_CONTENT_CORRUPT`。兩端都會另外驗證 archive entry 自己的 sha256，因此同一個 asset id 在 Web 與 native 必須得到相同的 `sha256`；不同就是 bundle 或 host 的問題，不是畫面問題。
+
+引擎只回傳已驗證位元組與事實。解碼、貼圖上傳、下載、重試、快取容量與 CDN／OPFS policy 仍在 host。`game preview` 目前不會讀取 `sprite.asset`，所以 `asset read` 通過不代表 native 貼圖渲染通過。
+
 ## 5. native preview
 
 ```powershell

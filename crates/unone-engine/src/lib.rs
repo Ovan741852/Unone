@@ -13,12 +13,13 @@ pub use api::{
 };
 pub use asset::{
     AssetInitReport, AssetInspectBlocker, AssetInspectReport, AssetManifest, AssetReference,
-    AssetSpec, StaticReferenceScope, init_asset_manifest, inspect as inspect_assets,
-    inspect_strict as inspect_assets_strict,
+    AssetReadReport, AssetSpec, StaticReferenceScope, init_asset_manifest,
+    inspect as inspect_assets, inspect_strict as inspect_assets_strict, read as read_asset,
 };
 pub use bundle::{
-    BundleFetcher, BundleManager, BundleManifest, BundlePackReport, BundleReport, BundleSpec,
-    BundleVerification, BundleVerifier, pack_project,
+    ASSET_ARCHIVE_VERSION, AssetArchiveEntry, BundleFetcher, BundleManager, BundleManifest,
+    BundlePackReport, BundleReport, BundleSpec, BundleVerification, BundleVerifier, pack_project,
+    read_asset_from_archive,
 };
 pub use diagnostics::{
     ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult, SourceLocation,

@@ -44,7 +44,7 @@ bin/game.exe --project <game-root> --json check --types
 }
 ~~~
 
-asset inspect 是作者檢查用的 advisory report；asset inspect --strict 是 handoff/release gate，任何靜態 reference、source、manifest、bundle 或目前不支援的 manifest kind/version 問題都必須 ok=false。bundle pack 也會拒絕未解決的主場景 asset reference。
+資產真的能被 host 取出，必須用 `bin/game.exe --project <game-root> --json bundle install content` 加上 `bin/game.exe --project <game-root> --json asset read --id <asset-id>` 證明：它回報已驗證的 `size_bytes`、`sha256` 與 `bundle_generation`，與 Web host 解析同一個 asset id 的結果必須一致。asset inspect 是作者檢查用的 advisory report；asset inspect --strict 是 handoff/release gate，任何靜態 reference、source、manifest、bundle 或目前不支援的 manifest kind/version 問題都必須 ok=false。bundle pack 也會拒絕未解決的主場景 asset reference。
 
 ## 遇到問題的立即回報協定
 

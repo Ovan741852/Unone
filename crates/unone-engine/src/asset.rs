@@ -7,7 +7,7 @@ use std::{
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    bundle::BundleManifest,
+    bundle::{BundleManager, BundleManifest, digest_bytes},
     diagnostics::{ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult},
     project::{ProjectFileStatus, ProjectPaths},
     world::SceneFile,
@@ -149,6 +149,156 @@ fn default_asset_kind() -> String {
 
 fn default_asset_bundle() -> String {
     "content".to_string()
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct AssetReadReport {
+    pub project: String,
+    pub asset: AssetSpec,
+    pub bundle_generation: u64,
+    pub size_bytes: u64,
+    pub sha256: String,
+    pub output: Option<String>,
+    pub host_responsibilities: Vec<String>,
+}
+
+fn load_declared_manifest(paths: &ProjectPaths) -> Result<AssetManifest, Box<Diagnostic>> {
+    let Some(manifest_path) = paths.asset_manifest.as_deref() else {
+        return Err(Box::new(Diagnostic::error(
+            "ASSET_MANIFEST_MISSING",
+            "專案沒有宣告 asset manifest",
+            "先在 project.unone.json 設定 asset_manifest，host 才能由 bundle 解析資產。",
+        )));
+    };
+    let text = fs::read_to_string(manifest_path).map_err(|error| {
+        Box::new(Diagnostic::error(
+            "ASSET_MANIFEST_READ_FAILED",
+            "無法讀取 asset manifest",
+            format!("{}：{}", manifest_path.display(), error),
+        ))
+    })?;
+    let manifest: AssetManifest = serde_json::from_str(&text).map_err(|error| {
+        Box::new(Diagnostic::error(
+            "ASSET_MANIFEST_INVALID",
+            "asset manifest 不是有效 JSON",
+            format!("{}：{}", manifest_path.display(), error),
+        ))
+    })?;
+    if manifest.version != SUPPORTED_ASSET_MANIFEST_VERSION {
+        return Err(Box::new(Diagnostic::error(
+            "ASSET_MANIFEST_VERSION_INVALID",
+            "asset manifest version 無效",
+            format!(
+                "目前只支援 asset manifest version {}，不會把未支援的版本靜默當成目前格式。",
+                SUPPORTED_ASSET_MANIFEST_VERSION
+            ),
+        )));
+    }
+    Ok(manifest)
+}
+
+/// Resolve one declared asset from the project's active bundle generation.
+///
+/// This is the native half of the cross-host asset contract: the same asset id
+/// must produce the same bytes and digest in the Web host and here. The engine
+/// verifies bundle and archive integrity only; decoding, texture upload,
+/// caching and download policy stay in each host.
+pub fn read(
+    project_root: impl AsRef<Path>,
+    asset_id: &str,
+    output: Option<&Path>,
+) -> EngineResult<AssetReadReport> {
+    let (config, paths) = match ProjectPaths::discover(project_root) {
+        Ok(value) => value,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let manifest = match load_declared_manifest(&paths) {
+        Ok(manifest) => manifest,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let Some(asset) = manifest
+        .assets
+        .iter()
+        .find(|candidate| candidate.id == asset_id)
+    else {
+        let mut diagnostic = Diagnostic::error(
+            "ASSET_ID_NOT_DECLARED",
+            "asset manifest 沒有這個 asset id",
+            format!("manifest 沒有宣告 asset '{asset_id}'；引擎不會猜測資產來源。"),
+        );
+        diagnostic.facts = serde_json::json!({
+            "asset_id": asset_id,
+            "declared": manifest
+                .assets
+                .iter()
+                .map(|asset| asset.id.clone())
+                .collect::<Vec<_>>(),
+        });
+        diagnostic.suggested_actions.push(ActionSuggestion {
+            action: "inspect_assets".to_string(),
+            description: "列出目前宣告與被場景參照的 asset id。".to_string(),
+            command: Some("game asset inspect --json".to_string()),
+        });
+        return EngineResult::failure(diagnostic);
+    };
+    if let Err(diagnostic) = validate_asset_spec(asset) {
+        return EngineResult::failure(*diagnostic);
+    }
+    let manager = match BundleManager::from_project(&paths.root) {
+        Ok(manager) => manager,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let bytes = match manager.read_active_asset(asset) {
+        Ok(bytes) => bytes,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let Some(bundle_generation) = manager.active_generation() else {
+        return EngineResult::failure(Diagnostic::error(
+            "BUNDLE_GENERATION_MISMATCH",
+            "沒有已啟用的 bundle generation",
+            "讀取資產前必須先安裝並啟用一個 generation。",
+        ));
+    };
+    let mut effects = Vec::new();
+    let written = match output {
+        Some(path) => {
+            if let Some(parent) = path.parent()
+                && !parent.as_os_str().is_empty()
+                && let Err(error) = fs::create_dir_all(parent)
+            {
+                return EngineResult::failure(Diagnostic::error(
+                    "ASSET_OUTPUT_WRITE_FAILED",
+                    "無法建立 asset 輸出目錄",
+                    format!("{}：{}", parent.display(), error),
+                ));
+            }
+            if let Err(error) = fs::write(path, &bytes) {
+                return EngineResult::failure(Diagnostic::error(
+                    "ASSET_OUTPUT_WRITE_FAILED",
+                    "無法寫出 asset 內容",
+                    format!("{}：{}", path.display(), error),
+                ));
+            }
+            effects.push(format!("asset '{}' written to {}", asset.id, path.display()));
+            Some(path.display().to_string())
+        }
+        None => None,
+    };
+    let mut result = EngineResult::success(AssetReadReport {
+        project: config.name,
+        asset: asset.clone(),
+        bundle_generation,
+        size_bytes: bytes.len() as u64,
+        sha256: digest_bytes(&bytes),
+        output: written,
+        host_responsibilities: vec![
+            "decode 與 GPU 資源生命週期屬於 host".to_string(),
+            "下載、重試、快取容量與 CDN policy 屬於 host".to_string(),
+            "engine 只驗證 bundle 與 archive entry 的完整性".to_string(),
+        ],
+    });
+    result.effects = effects;
+    result
 }
 
 /// Inspect scene-declared asset references against the game-owned asset manifest.
@@ -865,7 +1015,11 @@ mod tests {
 
     use tempfile::tempdir;
 
-    use super::{AssetSpec, init_asset_manifest, inspect, inspect_strict, is_project_relative};
+    use crate::bundle::{BundleManager, pack_project};
+
+    use super::{
+        AssetSpec, init_asset_manifest, inspect, inspect_strict, is_project_relative, read,
+    };
 
     fn write_project(root: &std::path::Path, config: &str, scene: &str) {
         fs::create_dir_all(root.join("scenes")).unwrap();
@@ -1029,5 +1183,57 @@ mod tests {
         );
         assert!(second.ok, "{:?}", second.diagnostics);
         assert_eq!(second.value.unwrap().assets.len(), 1);
+    }
+
+    #[test]
+    fn reads_declared_asset_from_the_active_generation_and_reports_its_digest() {
+        let dir = tempdir().unwrap();
+        write_project(
+            dir.path(),
+            r#"{"name":"AssetReadCli","entry_script":"scripts/main.luau","main_scene":"scenes/main.scene.json","asset_manifest":"assets/manifest.json"}"#,
+            r#"{"entities":[{"id":"bird","sprite":{"asset":"asset://bird"}}]}"#,
+        );
+        fs::create_dir_all(dir.path().join("scripts")).unwrap();
+        fs::write(dir.path().join("scripts/main.luau"), "return {}
+").unwrap();
+        fs::create_dir_all(dir.path().join("assets")).unwrap();
+        fs::write(dir.path().join("assets/bird.svg"), b"<svg>bird</svg>").unwrap();
+        fs::write(
+            dir.path().join("assets/manifest.json"),
+            r#"{"version":1,"assets":[{"id":"asset://bird","source":"assets/bird.svg","kind":"texture2d","bundle":"content"}]}"#,
+        )
+        .unwrap();
+        assert!(pack_project(dir.path(), None).ok);
+
+        let before_install = read(dir.path(), "asset://bird", None);
+        assert!(!before_install.ok);
+        assert_eq!(
+            before_install.diagnostics[0].code,
+            "BUNDLE_GENERATION_MISMATCH"
+        );
+
+        assert!(
+            BundleManager::from_project(dir.path())
+                .unwrap()
+                .install("content")
+                .ok
+        );
+
+        let output = dir.path().join("out/bird.svg");
+        let result = read(dir.path(), "asset://bird", Some(&output));
+        assert!(result.ok, "{:?}", result.diagnostics);
+        let report = result.value.unwrap();
+        assert_eq!(report.asset.id, "asset://bird");
+        assert_eq!(report.bundle_generation, 1);
+        assert_eq!(report.size_bytes, 15);
+        assert_eq!(
+            report.sha256,
+            crate::bundle::digest_bytes(b"<svg>bird</svg>")
+        );
+        assert_eq!(fs::read(&output).unwrap(), b"<svg>bird</svg>");
+
+        let unknown = read(dir.path(), "asset://missing", None);
+        assert!(!unknown.ok);
+        assert_eq!(unknown.diagnostics[0].code, "ASSET_ID_NOT_DECLARED");
     }
 }

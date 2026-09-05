@@ -8,8 +8,8 @@ use std::{
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
-use crate::asset::{AssetManifest, load_for_pack};
-use crate::diagnostics::{Diagnostic, EngineResult};
+use crate::asset::{AssetManifest, AssetSpec, load_for_pack};
+use crate::diagnostics::{ActionSuggestion, Diagnostic, EngineResult};
 use crate::project::ProjectPaths;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -369,18 +369,25 @@ fn validate_pack_asset_references(
 
 const BUNDLE_ARCHIVE_MAGIC: &[u8] = b"UNONE-BUNDLE-1\n";
 
-#[derive(Debug, Serialize)]
+/// Only version 1 of the deterministic, uncompressed asset archive exists.
+///
+/// The engine writes and reads this format; each host owns decoding, caching
+/// and GPU/resource lifetime.
+pub const ASSET_ARCHIVE_VERSION: u32 = 1;
+
+#[derive(Debug, Serialize, Deserialize)]
 struct BundleArchiveHeader {
     version: u32,
-    files: Vec<BundleArchiveFile>,
+    files: Vec<AssetArchiveEntry>,
 }
 
-#[derive(Debug, Serialize)]
-struct BundleArchiveFile {
-    path: String,
-    offset: u64,
-    size_bytes: u64,
-    sha256: String,
+/// One file inside an engine-produced asset archive.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AssetArchiveEntry {
+    pub path: String,
+    pub offset: u64,
+    pub size_bytes: u64,
+    pub sha256: String,
 }
 
 fn build_bundle_archive(mut entries: Vec<(String, Vec<u8>)>) -> Result<Vec<u8>, String> {
@@ -393,7 +400,7 @@ fn build_bundle_archive(mut entries: Vec<(String, Vec<u8>)>) -> Result<Vec<u8>, 
     for (path, bytes) in entries {
         let offset = payload.len() as u64;
         let size_bytes = bytes.len() as u64;
-        files.push(BundleArchiveFile {
+        files.push(AssetArchiveEntry {
             path,
             offset,
             size_bytes,
@@ -412,6 +419,127 @@ fn build_bundle_archive(mut entries: Vec<(String, Vec<u8>)>) -> Result<Vec<u8>, 
     archive.extend_from_slice(&header);
     archive.extend_from_slice(&payload);
     Ok(archive)
+}
+
+/// Read one declared asset out of a deterministic engine asset archive.
+///
+/// This is the Rust half of the same host contract the Web host implements in
+/// `web/live/bundle-store.js`: the caller supplies already hash-verified bundle
+/// bytes, the engine resolves the manifest source to an archive entry and
+/// verifies that entry's own digest. The engine still does not decode, cache,
+/// download or manage GPU resources for the asset.
+pub fn read_asset_from_archive(
+    archive: &[u8],
+    asset: &AssetSpec,
+) -> Result<Vec<u8>, Box<Diagnostic>> {
+    let header_len_offset = BUNDLE_ARCHIVE_MAGIC.len();
+    let header_offset = header_len_offset + 4;
+    if archive.len() < header_offset || !archive.starts_with(BUNDLE_ARCHIVE_MAGIC) {
+        return Err(Box::new(Diagnostic::error(
+            "ASSET_ARCHIVE_INVALID",
+            "asset bundle 不是引擎 archive",
+            format!(
+                "bundle '{}' 的內容沒有引擎 asset archive 標頭。",
+                asset.bundle
+            ),
+        )));
+    }
+    let header_len = u32::from_le_bytes(
+        archive[header_len_offset..header_offset]
+            .try_into()
+            .expect("archive header length slice is 4 bytes"),
+    ) as usize;
+    let payload_offset = match header_offset.checked_add(header_len) {
+        Some(offset) if offset <= archive.len() => offset,
+        _ => {
+            return Err(Box::new(Diagnostic::error(
+                "ASSET_ARCHIVE_INVALID",
+                "asset bundle 的 header 長度超出內容",
+                format!(
+                    "bundle '{}' 宣告的 header 長度超過已驗證的位元組。",
+                    asset.bundle
+                ),
+            )));
+        }
+    };
+    let header: BundleArchiveHeader =
+        serde_json::from_slice(&archive[header_offset..payload_offset]).map_err(|error| {
+            Box::new(Diagnostic::error(
+                "ASSET_ARCHIVE_INVALID",
+                "asset bundle 的 header 不是有效 JSON",
+                format!("bundle '{}'：{error}", asset.bundle),
+            ))
+        })?;
+    if header.version != ASSET_ARCHIVE_VERSION {
+        return Err(Box::new(Diagnostic::error(
+            "ASSET_ARCHIVE_INVALID",
+            "asset archive version 不支援",
+            format!(
+                "目前只支援 asset archive version {ASSET_ARCHIVE_VERSION}，不會把未支援的版本靜默當成目前格式。"
+            ),
+        )));
+    }
+    let source = normalize_source_path(&asset.source);
+    let Some(entry) = header.files.iter().find(|entry| entry.path == source) else {
+        let mut diagnostic = Diagnostic::error(
+            "ASSET_NOT_IN_BUNDLE",
+            "asset 不在指定的 bundle 內",
+            format!(
+                "asset '{}' 的 source '{}' 不在 bundle '{}' 的 archive 內。",
+                asset.id, source, asset.bundle
+            ),
+        );
+        diagnostic.facts = serde_json::json!({
+            "asset_id": asset.id,
+            "source": source,
+            "bundle": asset.bundle,
+            "archive_files": header
+                .files
+                .iter()
+                .map(|entry| entry.path.clone())
+                .collect::<Vec<_>>(),
+        });
+        return Err(Box::new(diagnostic));
+    };
+    let start = usize::try_from(entry.offset).ok();
+    let size = usize::try_from(entry.size_bytes).ok();
+    let range = start
+        .zip(size)
+        .and_then(|(start, size)| {
+            let start = payload_offset.checked_add(start)?;
+            let end = start.checked_add(size)?;
+            (end <= archive.len()).then_some(start..end)
+        })
+        .ok_or_else(|| {
+            Box::new(Diagnostic::error(
+                "ASSET_ARCHIVE_INVALID",
+                "asset archive entry 超出內容範圍",
+                format!(
+                    "asset '{}' 在 bundle '{}' 的 offset/size 指向已驗證位元組之外。",
+                    asset.id, asset.bundle
+                ),
+            ))
+        })?;
+    let bytes = archive[range].to_vec();
+    let digest = digest_bytes(&bytes);
+    if digest != entry.sha256 {
+        let mut diagnostic = Diagnostic::error(
+            "ASSET_CONTENT_CORRUPT",
+            "asset 內容雜湊與 archive 宣告不符",
+            format!(
+                "asset '{}' 在 bundle '{}' 的內容雜湊不符，主機不應使用這份資料。",
+                asset.id, asset.bundle
+            ),
+        );
+        diagnostic.facts = serde_json::json!({
+            "asset_id": asset.id,
+            "bundle": asset.bundle,
+            "expected_sha256": entry.sha256,
+            "actual_sha256": digest,
+        });
+        return Err(Box::new(diagnostic));
+    }
+    Ok(bytes)
 }
 
 fn validate_pack_source(root: &Path, label: &str, source: &str) -> Result<(), Box<Diagnostic>> {
@@ -496,7 +624,7 @@ fn normalize_source_path(source: &str) -> String {
     normalize_relative_path(Path::new(source))
 }
 
-fn digest_bytes(bytes: &[u8]) -> String {
+pub(crate) fn digest_bytes(bytes: &[u8]) -> String {
     hex_digest(&Sha256::digest(bytes))
 }
 
@@ -767,6 +895,103 @@ impl BundleManager {
                 .push(format!("active bundle generation {} created", generation));
         }
         result
+    }
+
+    /// Report the currently active bundle generation, if one was activated.
+    pub fn active_generation(&self) -> Option<u64> {
+        self.latest_active()
+            .ok()
+            .flatten()
+            .map(|active| active.generation)
+    }
+
+    /// Read the cached bytes of an activated bundle.
+    ///
+    /// Mirrors the Web host's `readActiveBundle`: the bundle must exist in the
+    /// manifest, be part of the active generation, be cached and still match
+    /// the manifest digest. The engine never fetches here; installing a
+    /// generation stays a host-driven action.
+    pub fn read_active_bundle(&self, bundle_id: &str) -> Result<Vec<u8>, Box<Diagnostic>> {
+        let manifest = self.read_manifest()?;
+        let Some(spec) = manifest.bundles.iter().find(|spec| spec.id == bundle_id) else {
+            let mut diagnostic = Diagnostic::error(
+                "BUNDLE_NOT_FOUND",
+                "找不到要求讀取的 bundle",
+                format!("manifest 中沒有 bundle '{bundle_id}'。"),
+            );
+            diagnostic.facts = serde_json::json!({
+                "bundle_id": bundle_id,
+                "available": manifest
+                    .bundles
+                    .iter()
+                    .map(|spec| spec.id.clone())
+                    .collect::<Vec<_>>(),
+            });
+            return Err(Box::new(diagnostic));
+        };
+        let active = self.latest_active().map_err(|error| {
+            Box::new(Diagnostic::error(
+                "BUNDLE_ACTIVE_GENERATION_UNREADABLE",
+                "無法讀取 active bundle generation",
+                error,
+            ))
+        })?;
+        let Some(active) = active else {
+            let mut diagnostic = Diagnostic::error(
+                "BUNDLE_GENERATION_MISMATCH",
+                "沒有已啟用的 bundle generation",
+                format!("讀取 bundle '{bundle_id}' 前必須先安裝並啟用一個 generation。"),
+            );
+            diagnostic.suggested_actions.push(ActionSuggestion {
+                action: "install_bundle".to_string(),
+                description: format!("安裝並啟用 bundle '{bundle_id}'。"),
+                command: Some(format!("game bundle install {bundle_id}")),
+            });
+            return Err(Box::new(diagnostic));
+        };
+        if active.bundles.get(bundle_id) != Some(&spec.sha256) {
+            let mut diagnostic = Diagnostic::error(
+                "BUNDLE_GENERATION_MISMATCH",
+                "bundle 不屬於目前啟用的 generation",
+                format!(
+                    "bundle '{bundle_id}' 的 manifest 雜湊與 active generation 不一致；不會讀取未啟用的內容。"
+                ),
+            );
+            diagnostic.facts = serde_json::json!({
+                "bundle_id": bundle_id,
+                "generation": active.generation,
+                "manifest_sha256": spec.sha256,
+                "active_sha256": active.bundles.get(bundle_id),
+            });
+            diagnostic.suggested_actions.push(ActionSuggestion {
+                action: "install_bundle".to_string(),
+                description: format!("重新安裝 bundle '{bundle_id}' 以啟用目前 manifest。"),
+                command: Some(format!("game bundle install {bundle_id}")),
+            });
+            return Err(Box::new(diagnostic));
+        }
+        let cache_path = self.cache_path(spec);
+        let bytes = fs::read(&cache_path).map_err(|error| {
+            Box::new(Diagnostic::error(
+                "BUNDLE_CACHE_MISS",
+                "找不到已啟用 bundle 的快取內容",
+                format!("{}：{}", cache_path.display(), error),
+            ))
+        })?;
+        if bytes.len() as u64 != spec.size_bytes || digest_bytes(&bytes) != spec.sha256 {
+            return Err(Box::new(Diagnostic::error(
+                "BUNDLE_CACHE_CORRUPT",
+                "已啟用 bundle 的快取內容已損壞",
+                format!("bundle '{bundle_id}' 的快取大小或雜湊與 manifest 不符。"),
+            )));
+        }
+        Ok(bytes)
+    }
+
+    /// Resolve one declared asset from the active generation.
+    pub fn read_active_asset(&self, asset: &AssetSpec) -> Result<Vec<u8>, Box<Diagnostic>> {
+        let archive = self.read_active_bundle(&asset.bundle)?;
+        read_asset_from_archive(&archive, asset)
     }
 
     fn install_recursive(
@@ -1062,15 +1287,15 @@ fn hex_digest(bytes: &[u8]) -> String {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::BTreeMap, fs, io::Cursor};
+    use std::{collections::BTreeMap, fs, io::Cursor, path::Path};
 
     use tempfile::tempdir;
 
-    use crate::diagnostics::Diagnostic;
+    use crate::{asset::AssetSpec, diagnostics::Diagnostic};
 
     use super::{
         BUNDLE_ARCHIVE_MAGIC, BundleFetcher, BundleManager, BundleManifest, BundleSpec,
-        BundleVerifier, pack_project,
+        BundleVerifier, pack_project, read_asset_from_archive,
     };
 
     #[test]
@@ -1185,6 +1410,111 @@ mod tests {
         assert_eq!(second.manifest_version, 1);
         assert!(!second.manifest_changed);
         assert_eq!(first_bytes, fs::read(content).unwrap());
+    }
+
+    fn write_asset_project(dir: &Path) {
+        fs::create_dir_all(dir.join("scripts")).unwrap();
+        fs::create_dir_all(dir.join("scenes")).unwrap();
+        fs::create_dir_all(dir.join("assets")).unwrap();
+        fs::write(
+            dir.join("project.unone.json"),
+            br#"{"name":"AssetReadFixture","entry_script":"scripts/main.luau","main_scene":"scenes/main.scene.json","asset_manifest":"assets/manifest.json"}"#,
+        )
+        .unwrap();
+        fs::write(dir.join("scripts/main.luau"), b"return {}
+").unwrap();
+        fs::write(
+            dir.join("scenes/main.scene.json"),
+            br#"{"entities":[{"id":"bird","sprite":{"asset":"asset://bird"}}]}"#,
+        )
+        .unwrap();
+        fs::write(dir.join("assets/bird.svg"), b"<svg>bird</svg>").unwrap();
+        fs::write(
+            dir.join("assets/manifest.json"),
+            br#"{"version":1,"assets":[{"id":"asset://bird","source":"assets/bird.svg","kind":"texture2d","bundle":"content"}]}"#,
+        )
+        .unwrap();
+    }
+
+    fn bird_spec() -> AssetSpec {
+        AssetSpec {
+            id: "asset://bird".to_string(),
+            source: "assets/bird.svg".to_string(),
+            kind: "texture2d".to_string(),
+            bundle: "content".to_string(),
+        }
+    }
+
+    #[test]
+    fn reads_packed_asset_bytes_back_out_of_the_archive() {
+        let dir = tempdir().unwrap();
+        write_asset_project(dir.path());
+        assert!(pack_project(dir.path(), None).ok);
+
+        let archive = fs::read(dir.path().join("bundles/content.bundle")).unwrap();
+        let bytes = read_asset_from_archive(&archive, &bird_spec()).unwrap();
+        assert_eq!(bytes, b"<svg>bird</svg>");
+    }
+
+    #[test]
+    fn rejects_archive_reads_that_are_not_declared_or_not_an_archive() {
+        let dir = tempdir().unwrap();
+        write_asset_project(dir.path());
+        assert!(pack_project(dir.path(), None).ok);
+        let archive = fs::read(dir.path().join("bundles/content.bundle")).unwrap();
+
+        let mut undeclared = bird_spec();
+        undeclared.source = "assets/pig.svg".to_string();
+        let error = read_asset_from_archive(&archive, &undeclared).unwrap_err();
+        assert_eq!(error.code, "ASSET_NOT_IN_BUNDLE");
+
+        let error = read_asset_from_archive(b"not-an-archive", &bird_spec()).unwrap_err();
+        assert_eq!(error.code, "ASSET_ARCHIVE_INVALID");
+    }
+
+    #[test]
+    fn rejects_archive_content_that_does_not_match_its_entry_digest() {
+        let dir = tempdir().unwrap();
+        write_asset_project(dir.path());
+        assert!(pack_project(dir.path(), None).ok);
+        let mut archive = fs::read(dir.path().join("bundles/content.bundle")).unwrap();
+        let last = archive.len() - 1;
+        archive[last] ^= 0xff;
+
+        let error = read_asset_from_archive(&archive, &bird_spec()).unwrap_err();
+        assert_eq!(error.code, "ASSET_CONTENT_CORRUPT");
+    }
+
+    #[test]
+    fn reads_assets_only_from_an_activated_generation() {
+        let dir = tempdir().unwrap();
+        write_asset_project(dir.path());
+        assert!(pack_project(dir.path(), None).ok);
+        let manager = BundleManager::from_project(dir.path()).unwrap();
+
+        let error = manager.read_active_asset(&bird_spec()).unwrap_err();
+        assert_eq!(error.code, "BUNDLE_GENERATION_MISMATCH");
+        assert!(manager.active_generation().is_none());
+
+        assert!(manager.install("content").ok);
+        assert_eq!(manager.active_generation(), Some(1));
+        assert_eq!(
+            manager.read_active_asset(&bird_spec()).unwrap(),
+            b"<svg>bird</svg>"
+        );
+
+        let missing = BundleSpec {
+            id: "absent".to_string(),
+            version: "1".to_string(),
+            source: "absent".to_string(),
+            sha256: String::new(),
+            size_bytes: 0,
+            dependencies: Vec::new(),
+        };
+        assert_eq!(
+            manager.read_active_bundle(&missing.id).unwrap_err().code,
+            "BUNDLE_NOT_FOUND"
+        );
     }
 
     #[test]
