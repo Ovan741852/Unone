@@ -1,6 +1,6 @@
 # AI authoring：事實與範圍
 
-日期：2026-09-06。狀態：plan_rereview_pending，不是功能已修好。
+日期：2026-09-06。狀態：implementation_waiting_predecessor，不是功能已修好。
 Baseline source c187df8；CLI4a128d7（init/search/scene 路徑未變）。
 
 ## 可重現問題
@@ -27,6 +27,7 @@ Baseline source c187df8；CLI4a128d7（init/search/scene 路徑未變）。
 - 音訊、general sprite animation、host rendering、UI/3D pipeline 是真正缺口，
   但不是把它們一次塞進 scaffold；繼續做遊戲引擎必要功能，分垂直切片驗證。
 
-[第一切片計畫](../work-packages/2026-09-06-ai-authoring.md) 已送獨立 Luna/max
-計畫審查。上一輪 asset WIP 的 Rust/平台/package-only gate 先於新功能開工；
+[第一切片計畫](../work-packages/2026-09-06-ai-authoring.md) 已經獨立 Luna/max
+首審、主代理修訂與限定複審；計畫 blocker 已解除，但問題本身尚未修復。
+上一輪 asset WIP 的 Rust/平台/package-only gate 先於新功能開工；
 磁碟快取清理許可尚待使用者，不會把提供另一份建議視為刪除授權。

@@ -1,6 +1,6 @@
 # 不把「沒有工具」和「工具不夠可靠」混為一談
 
-日期：2026-09-06。狀態：plan_rereview_pending；未新增引擎功能。
+日期：2026-09-06。狀態：plan_review_closed / implementation_waiting_predecessor；未新增引擎功能。
 
 新一份第三方回饋把十類自主製作障礙排了優先順序。主代理先對照 source，
 沒有把全部描述當成既有事實：project init/MCP、位置斷言、state observation、
@@ -22,7 +22,11 @@ final gates 仍明確，不能把 starter 綠燈當真正遊戲完成。
 第一輪指出三個計畫 blocker：scene consumer/error transport、init 部分寫入、
 遊戲與 starter gate 不夠分明。主代理已修成 v2 並直接取代 v1，未留現行舊規格；
 另採納 API parity 與具名前案 gate 證據建議。
-[逐項處置](../reviews/2026-09-06-ai-authoring-plan.md) 待限定複審。
+[逐項處置](../reviews/2026-09-06-ai-authoring-plan.md) 已完成限定複審：
+v2（629824f）的三項計畫 blocker 均解除，兩项建議已採納，未發現新具體阻塞。
+這是計畫層結論，source 仍待實作；上輪 asset build/platform/package gate
+先於新功能開工。主代理驗證本輪5份 authoring 文件相對連結無缺失、兩份
+baseline evidence JSON 可解析、git diff --check 通過；未拿這些取代功能測試。
 roadmap 同步移除「別家引擎有就全部都要有」的無界原則，改由實際驗證遊戲
 需要的通用機制決定；不把系統開關當成無限制增加功能的理由。必要音訊／碰撞／
 渲染仍由引擎負責，並非刪掉難做的機制。API 空搜尋的現況也改成正確描述，

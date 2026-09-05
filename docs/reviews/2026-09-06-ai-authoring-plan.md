@@ -2,7 +2,7 @@
 
 日期：2026-09-06。Reviewer：Aquinas，Luna/max，未繼承主對話。
 範圍：計畫、必要 source／現行契約、主代理 baseline probes；不是封裝盲驗。
-目前：v2 待限定複審；未開始 A/B/C 實作。
+目前：v2 plan_review_closed / implementation_waiting_predecessor；未開始 A/B/C 實作。
 
 ## 第一輪：v1
 
@@ -23,3 +23,20 @@ review 的 MCP source link 寫成 engine crate，實際為
 
 v1 被現行計畫直接取代，沒有另留可被當成現行規格的舊副本；Git 留歷史。
 原始 typo／duplicate 反例不覆寫，後續修復驗證另外存檔。
+
+## 第二輪：v2（修訂 commit 629824f）
+
+Aquinas 限定覆核原三項 blocker、兩項建議及新決策可行性後，未發現新的
+具體 plan blocker。三項 blocker 均在計畫層解除，兩項建議均已納入。
+再次核對 source 確認目前仍是舊行為；不能把計畫要改的內容當成已完成的修正。
+
+落地檢查提醒：兩個 host crate 的 serde_json 依賴都要明示開啟 raw_value
+feature，不能只靠其他 workspace package 的 feature unification 偶然編譯成功。
+主代理將這點明寫進 v2；不是新的架構或阻塞。
+
+准入結論：計畫可執行，但前案 c187df8 的 build/platform/package-only gate
+仍未放行，A/B/C 不能開工。後續仍須獨立 source review、實測、新包與全新
+package-only 遊戲盲評；本輪不替產品或七款遊戲 final gates 背書。
+
+本輪查核僅包含只讀 source/probes/契約、文件相對連結、證據 JSON 格式與
+git diff --check。沒有新增 Rust build/test、平台 run 或 screenshot。

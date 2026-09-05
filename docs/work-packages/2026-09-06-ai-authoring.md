@@ -1,7 +1,9 @@
 # AI authoring 回饋判讀與第一個可交付切片
 
-版本：v2 / plan_rereview_pending。Baseline：`c187df8`（上一輪 asset 修正仍待
+版本：v2 / plan_review_closed, implementation_waiting_predecessor。Baseline：`c187df8`（上一輪 asset 修正仍待
 Rust 回歸／平台重建／封裝盲驗）；本文件不是已交付功能或取代現行契約的規格。
+Luna/max 限定複審未發現未解的具體計畫 blocker，見
+[審查處置](../reviews/2026-09-06-ai-authoring-plan.md)；不代表功能／產品已通過。
 
 ## 判斷，不照單全收
 
@@ -150,8 +152,8 @@ checks），不引入 Scene DTO framework。各 consumer 必須滿足此矩陣�
 | asset_workflow::scene_references（describe） | 移除 text→Value→from_value 路徑，直接共同 parse/validate；typed entity index 產生 reference pointer | 回報引用前；不靠 Value 重序列化假造 line |
 | bundle pack：有／無 asset manifest | 對已配置的 main_scene 無條件先共同 parse/validate；asset reference checks 在其後 | 任何 pack output write 前；不能只有有 manifest 才驗 scene |
 
-Host 保留现有 envelope，scene 欄位用 serde_json `RawValue`（開啟既有依賴的
-raw_value feature）延後 nested parse，無需第二份場景模型。本地已鎖定的
+Host 保留现有 envelope，scene 欄位用 serde_json `RawValue`（兩個 host crate
+各自開啟既有依賴的 raw_value feature）延後 nested parse，無需第二份場景模型。本地已鎖定的
 serde_json 1.0.151 source docs 確認可保留 fragment 格式。完整 envelope 若本身
 不是合法 JSON／其他非 scene 欄位錯誤，仍走既有 host error；不順帶重寫整個 FFI。
 這不要求不同 host 的外層 transport 相同，只要求有效 envelope 中 scene 的
