@@ -485,7 +485,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
         descriptor(
             "ui.setRoot",
             "ui",
-            "發布遊戲端組合的最小 declarative UI tree，供 host renderer、AI 與測試觀察。",
+            "發布遊戲端組合的最小 declarative UI tree，供 host renderer、AI 與測試觀察。設計空間兩軸都是 0..100，且 **y 軸向上**：y=0 是畫面底部、y=100 是頂部，rect 由 y 往上長。",
             "需要讓 Web/native host 顯示遊戲端 ViewModel 組合出的 text/button screen 時。",
             "不要把它當成完整 UI framework；不要放 layout engine、binding registry、平台 widget、輸入路由或遊戲規則。ViewModel、內容、action 意義與流程仍屬遊戲端。",
             vec![parameter(

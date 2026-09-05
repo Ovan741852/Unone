@@ -61,6 +61,10 @@ impl UiAnchor {
 
 /// Logical coordinates for a host-rendered UI element.
 ///
+/// Both axes run 0..100 and **y points up**: y = 0 is the bottom of the screen
+/// and a rect grows upward from its y. Most UI systems are y-down, so this is
+/// the easiest thing for an author who cannot see the screen to get wrong.
+///
 /// The platform host maps this design space to its viewport. The engine does
 /// not know about pixels, DPI, safe areas, fonts, or platform widgets.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq)]

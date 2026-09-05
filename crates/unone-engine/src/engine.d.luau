@@ -66,6 +66,11 @@ export type ObservationApi = {
     set: (key: string, value: ObservationValue) -> (),
 }
 
+-- The UI design space is 0..100 on both axes and **y points UP**: y = 0 is the
+-- bottom of the screen, y = 100 the top, and a rect grows upward from its y.
+-- Most UI systems are y-down, so this is the single easiest thing to get wrong
+-- when you cannot see the screen.
+--
 -- A UI node declares its placement exactly one of two ways.
 --
 -- `rect` is absolute in the 0..100 design space; use it when the layout is not

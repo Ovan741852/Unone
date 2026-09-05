@@ -154,7 +154,11 @@ Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 f
 需要驗證 restore 時，test manifest 可額外提供 `load_save` JSON payload。它在 `Game.start` **之前**就已還原，所以遊戲可以在 `start` 裡用 `api.save.get()` 重建狀態，不必等到第一次 update；輸出也會帶 `save_payload`，但引擎不會替遊戲判斷版本或 migration。
 - tooling/docs：CLI、診斷或教學有噪音，改 protocol/metadata/文件。
 
-若遊戲有對話、戰鬥結果或其他不適合塞進 Entity Transform 的狀態，使用 `api.observation.set(key, value)` 發布 typed ViewModel 的 semantic projection；test assertion 可用 `{"observation":{"key":"view_model","equals":{...}}}` 做完整 JSON equality。需要 host 顯示時，遊戲端以 `api.ui.setRoot(root)` 發布最小 View tree。每個節點的位置**二選一**：
+若遊戲有對話、戰鬥結果或其他不適合塞進 Entity Transform 的狀態，使用 `api.observation.set(key, value)` 發布 typed ViewModel 的 semantic projection；test assertion 可用 `{"observation":{"key":"view_model","equals":{...}}}` 做完整 JSON equality。需要 host 顯示時，遊戲端以 `api.ui.setRoot(root)` 發布最小 View tree。
+
+**設計空間兩軸都是 0..100，而且 y 軸向上**：`y = 0` 是畫面底部、`y = 100` 是頂部，rect 從它的 `y` 往上長。多數 UI 系統是 y 向下，所以這是看不到畫面的作者最容易寫反的一件事——寫反的症狀是上下兩排疊在一起，`ui preview` 的 ASCII 圖會直接顯示出來。
+
+每個節點的位置**二選一**：
 
 - `rect`：0..100 設計空間的絕對座標。適合不是貼邊的版面，例如用三角函數排出來的燈環。
 - `anchor` + `size`（可選 `offset`、`pivot`）：貼邊定位。`anchor` 是九個具名位置之一（`top_left`…`bottom_right`），數字**兩軸都是垂直單位**（畫面高度的百分比），所以同一份宣告在任何螢幕比例都保持形狀與邊距。引擎會依 host 回報的 viewport 解析成 rect，host 收到的仍然是純 rect。
@@ -264,7 +268,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --jso
 
 `asset read` 會由目前 active generation 的已驗證 bundle 取出一筆宣告資產，回報 `size_bytes`、`sha256` 與 `bundle_generation`；加上 `--output` 才會寫檔。它與 Web host 的 `readActiveAsset` 使用同一個 archive 契約與同一組錯誤碼：`BUNDLE_GENERATION_MISMATCH`（尚未安裝／manifest 已變更）、`BUNDLE_CACHE_MISS`、`BUNDLE_CACHE_CORRUPT`、`ASSET_ID_NOT_DECLARED`、`ASSET_NOT_IN_BUNDLE`、`ASSET_ARCHIVE_INVALID`、`ASSET_CONTENT_CORRUPT`。兩端都會另外驗證 archive entry 自己的 sha256，因此同一個 asset id 在 Web 與 native 必須得到相同的 `sha256`；不同就是 bundle 或 host 的問題，不是畫面問題。
 
-引擎只回傳已驗證位元組與事實。解碼、貼圖上傳、下載、重試、快取容量與 CDN／OPFS policy 仍在 host。`game preview` 目前不會讀取 `sprite.asset`，所以 `asset read` 通過不代表 native 貼圖渲染通過。
+引擎只回傳已驗證位元組與事實。解碼、貼圖上傳、下載、重試、快取容量與 CDN／OPFS policy 仍在 host。`game preview` 會由已啟用 generation 解析並解碼 `sprite.asset`，啟動時輸出每筆資產的 verified sha256 與解碼尺寸；但它**還不會把貼圖畫出來**，畫面仍是純色方塊。所以 `asset read` 或 preview 的解碼記錄都不代表 native 貼圖渲染通過。
 
 ## 5. native preview
 
