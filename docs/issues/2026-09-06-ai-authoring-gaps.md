@@ -1,6 +1,6 @@
 # AI authoring：事實與範圍
 
-日期：2026-09-06。狀態：plan_review_pending，不是功能已修好。
+日期：2026-09-06。狀態：plan_rereview_pending，不是功能已修好。
 Baseline source c187df8；CLI4a128d7（init/search/scene 路徑未變）。
 
 ## 可重現問題

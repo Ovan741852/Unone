@@ -1,6 +1,6 @@
 # AI authoring 回饋判讀與第一個可交付切片
 
-版本：v1 / plan_review_pending。Baseline：`c187df8`（上一輪 asset 修正仍待
+版本：v2 / plan_rereview_pending。Baseline：`c187df8`（上一輪 asset 修正仍待
 Rust 回歸／平台重建／封裝盲驗）；本文件不是已交付功能或取代現行契約的規格。
 
 ## 判斷，不照單全收
@@ -28,6 +28,11 @@ init/search/scene 路徑在 c187df8 未變；不宣稱新 asset patch 已編譯�
 0. **先完成既有資產工作流 gate。** c187df8 是明示 WIP，不能在未編譯候選上
    再堆大量功能。D 槽仍約 0.27 GB；清理唯一 incremental cache 的授權待回覆。
    本輪可完成查證、計畫盲審與文件修訂，計畫獲准不等於繞過此依賴開工。
+   退出證據指定為 `docs/evidence/2026-09-06-ai-authoring/predecessor-gate.json`：
+   必須記錄實際 tested commit（c187df8 或修正它的 descendant）、Rust 回歸結果、
+   CLI/Wasm/mobile 各自 build 的 source commit/hash、新 immutable package 的
+   identity/inventory、package-only 盲驗證據與未測平台範圍；前案不得仍是
+   build_blocked。尚未跑的欄位不能填 passed；目前不建立假完成檔案。
 1. **本工作包第一切片：可靠 authoring 起點。** 改 existing init、scene ingestion、
    API search 空結果 feedback；製作由 Luna/max，主代理規劃/整合/驗收。
 2. **後續 engine/host 排序，不是本輪偷偷開工範圍：** 先關閉已開的 2D
@@ -65,21 +70,54 @@ example id、Right 行為、兩份 tests 都是可替換的 starter 檔案，不
 不產生未用到的 asset manifest、美術、empty bundle、UI/save/下載 policy。
 authoring creation 與 bundle activation 分離，不在 init 隱式 pack/install。
 
-成功 report 以實際 files 為準，補 `workflow_scope=new_unmodified_scaffold`、
-每份檔案的 project-relative path/用途，以及 `suggested_next_actions`：
+成功 `EngineResult.value` 固定為 project/root/files，加
+`workflow_scope="new_unmodified_scaffold"`、`suggested_next_actions`。
+root 是檢查過的 absolute path。files 使用專屬 init entry，不改供 inspect 使用的
+ProjectFileStatus；每筆 `{path, role}`，path 為 project-relative `/` 路徑，
+role 分別為 project_config/entry_script/main_scene/bootstrap_idle_test/
+bootstrap_input_test，依 path 排序。只報實際完整寫成的五份檔案。
+每個 next action 的固定欄位為 `{executable, argv, reason, prerequisites}`：
 初始 verify → bundle pack → bundle install --all → bundle inspect。
 每個 action 使用 logical executable=game + argv array（--project 絕對 root、--json）
-與 prerequisite/reason，不拼 shell 字串，不自動執行。文件說明此順序只適用
+與 prerequisites（先行 action 的零起算 index array；第一步 []，之後 [0]/[1]/[2]）
+及人／AI 可讀的 reason，不拼 shell 字串，不自動執行。文件說明此順序只適用
 剛產生且未改內容的 starter；開始新增資產後回到 asset-workflow 的
 pack → verify/strict → install 流程，不能造出先 strict 後首次 pack 的死結。
 這只是小型 command 資料，不抽全域 workflow service/狀態機，也不借用
 AssetWorkflowAction 之名使 project tooling 看起來屬於 asset subsystem。
 
-寫入安全：預先準備 bytes/檢查 root；用 create_new 防覆寫；錯誤要列出已建立
-的 files/directories（effects/facts），不能稱跨檔案 atomic 或零副作用。
-不自動 rollback/delete，失敗時先報真實狀態。不存在 root 的祖先與 canonical
-path 要可定位；在本操作單 writer 假設下防既有 symlink/reparse 路徑逃逸，
-不宣稱能防任意第三方同時替換 filesystem 的 transaction。
+寫入順序與部分失敗固定如下，不做全域 filesystem transaction service：
+
+1. 先驗證 name、準備五份 bytes。root 轉 absolute path；拒絕含 parent `..`
+   component 的路徑，保留一般 `.` 的正常解析。從檔案系統根到目標逐段檢查
+   既有 ancestor 與 root：非 directory、symlink/junction/reparse 均拒絕，
+   包含 dangling link；不能先 canonicalize 而掩蓋原路徑上的 link。
+   root 已存在時必須真正空，列目錄失敗也不能當空。此階段不建立目錄或檔案。
+2. root 不存在時，canonicalize 最近的既存真實 ancestor，再接回已驗證的
+   缺少 components，得到固定 absolute root。只建立該 ancestor→root 的
+   缺少目錄，以及 root 內 scripts/scenes/tests；逐層 create_dir 並記錄。
+   所有五份預定輸出須位於該 root。檔案以 path 排序，逐一 create_new/write_all。
+   在單 writer 假設下拒絕既有路徑逃逸，不宣稱能防另一行程同時置換整棵目錄。
+3. 失敗時 `ok=false/value=null`，diagnostic.facts 固定含 root、phase
+   （preflight/create_directory/create_file/write_file）、failed_path、
+   created_files、created_directories；無副作用時兩清單 []。
+   created_files 每筆 `{absolute_path, project_relative_path, complete}`，
+   在 create_new 成功時就記錄，write_all 成功才 complete=true；寫入途中失敗
+   的空檔／部分檔不可漏報或稱完整。created_directories 每筆
+   `{absolute_path, project_relative_path}`；root 用 "."，root 外的新增
+   ancestors 用 null，root 內用 `/` 相對路徑。两清單各依 absolute_path 排序。
+   path 報告以可供 OS 使用的 absolute path 為準，不把 Windows extended path
+   prefix 隨意裁掉；relative path 才一律 `/`。檢查 path 尚未成功時 root 可 null，
+   failed_path 保留原輸入，不能編造 canonical 結果。
+4. EngineResult.effects 在成功／失敗都列本次真正建立的檔案／目錄（同上排序，
+   固定字串 `created_directory:<absolute_path>`、`created_file:<absolute_path>`）；
+   是否完整由 failure facts 決定。不自動 rollback/delete；retry 不恢復寫入，
+   若留下內容就按非空 root 拒絕並說明需先由作者處理，不建議 force 覆寫。
+
+fixture 使用局部 writer 故障注入：至少涵蓋第一檔 create 前失敗、一檔完整後
+下一檔 create 成功但 write 中途失敗，核對 bytes/complete/effects 與 retry。
+不依賴真實磁碟耗盡，不為測試引入通用 I/O 框架；既有非空 root、link/reparse
+與空 name 的 preflight failure 前後內容 hash 不變。
 
 ## B：共用 scene ingestion 嚴格，不新建 scene editor
 
@@ -87,19 +125,52 @@ path 要可定位；在本操作單 writer 假設下防既有 symlink/reparse �
 rigidbody/camera/physics/animation 等目前 scene authoring 物件逐層納入。
 依既有 typed wire model 與 schema 處理；優先用 serde deny_unknown_fields，
 不是另維護一份 allowed-field 名單或加入通用 JSON Schema runtime。
-共享 Vec2/Vec3 等若也用於其他入口，製作者需核對受影響 caller，新增對應回歸；
-不得為 scene 特製一堆平行 DTO 或意外改變 runtime Lua table 任意欄位的規則。
-若兩個邊界真的需要不同契約，回報主代理處置，而不是默默擴規格。
+明確選擇：SceneFile 可達的 typed JSON 物件與共享 Vec2/Vec3 都採 closed
+wire contract，在 serde model 收緊。這會一併拒絕 InputFrame/PointerInput
+中的 vector 多餘欄位，是有意的契約修正，需同步 input 文件／回歸；不是只修
+scene 的特例。Web/mobile numeric pointer FFI 不經 JSON vector deserialize，
+正常數值路徑不變。其餘 opaque game/save/observation data 不因此全面改 strict，
+Lua 手動讀 table 的 API 不在這次 serde 變更範圍。不製造 SceneVec2 平行 DTO。
 
 entity id 不可空白且同 scene 不可重複。集中在純 scene validation，包含現有
 semantic checks，在 World 修改前拒絕；不得讓後一筆默默覆寫前一筆。
-shared parsing/validation 要覆蓋 disk runtime、payload host、pack/靜態 reference
-的 scene 入口，從同一 SceneFile 契約得到相同拒絕，不在 CLI 補獨有 guard。
+`{}` 與 `{"entities":[]}` 仍是合法空 scene；沒有 main_scene/host scene 的既有
+optional 行為不變。只拒絕 id.trim().is_empty()，不 trim/rewrite 合法 id；
+duplicate 以原字串完全相同判斷，不改跨次 load 的既有 world merge 語意。
+
+只抽一個 raw-text parse + 一個純 semantic validator（重用現有幾何／physics
+checks），不引入 Scene DTO framework。各 consumer 必須滿足此矩陣：
+
+| Consumer | 輸入／共同路徑 | 驗證時點／錯誤 |
+|---|---|---|
+| World::load_scene（CLI/MCP disk run/test/observe 等下游） | 原始 scene text→parse→semantic validate | 修改 World 前；Diagnostic 帶真實 source file |
+| EngineRuntime::load_source* / World::load_scene_data | 已 typed SceneFile→同一 semantic validate | load/start/world mutation 前；typed 值沒有可恢復的 JSON line |
+| Web/mobile HostProject payload | 原 envelope 中 scene 改為 optional raw JSON fragment，再進共同 parse/validate | 建立／取代 runtime 前；scene 失敗走既有 write_diagnostic，不走 plain error |
+| asset::read_scene_references（含 inspect） | 原始 scene text→共同 parse/validate，再取 typed references | 回報有效引用前；保留 scene Diagnostic |
+| asset_workflow::scene_references（describe） | 移除 text→Value→from_value 路徑，直接共同 parse/validate；typed entity index 產生 reference pointer | 回報引用前；不靠 Value 重序列化假造 line |
+| bundle pack：有／無 asset manifest | 對已配置的 main_scene 無條件先共同 parse/validate；asset reference checks 在其後 | 任何 pack output write 前；不能只有有 manifest 才驗 scene |
+
+Host 保留现有 envelope，scene 欄位用 serde_json `RawValue`（開啟既有依賴的
+raw_value feature）延後 nested parse，無需第二份場景模型。本地已鎖定的
+serde_json 1.0.151 source docs 確認可保留 fragment 格式。完整 envelope 若本身
+不是合法 JSON／其他非 scene 欄位錯誤，仍走既有 host error；不順帶重寫整個 FFI。
+這不要求不同 host 的外層 transport 相同，只要求有效 envelope 中 scene 的
+schema/semantic 錯誤共用 diagnostic code/facts（location context 可不同）。
 只抽既有 scene validation，不做場景切換、prefab inheritance、批次 mutation
 或 scene graph transaction。也不新增物理 shape/rotation solver。
 
-語意錯誤至少含 code、source file（若有）、serde line/column、未知欄位與允許
-欄位的 explanation；id 錯誤含 entity_id、index/first_index、JSON pointer。
+parse/schema rejection 統一 SCENE_INVALID；unknown field 的 explanation 保留
+serde 提供的未知欄位及允許欄位，不另維護名單。blank id 為
+SCENE_ENTITY_ID_INVALID，duplicate 為 SCENE_ENTITY_ID_DUPLICATE；id facts
+含 entity_id、index，duplicate 另有 first_index，json_pointer 指向
+/entities/<index>/id。既有 semantic check code 保留，不藉機改名。
+各 scene diagnostic facts 加 source_kind=disk_scene/host_payload_scene/typed_scene、
+location_scope=scene_file/scene_fragment/typed_value，line/column/json_pointer
+沒有證據時為 null。disk source 使用真實 filename；parse line/column 對應原文。
+host source=null，parse line/column 相對 RawValue fragment，另以 pointer_base="/scene"
+表明 envelope 位置，不冒充原檔或整個 payload 的行數。typed source=null。
+id 語意錯誤有 pointer，無 raw token mapping 不捏造行列；syntax/schema parse
+未能精確定位 pointer 時留 null，不為這點增加通用 source-map 系統。
 禁止把 position 猜成 transform 後代修，因為猜錯看起來也會成功。
 不能宣稱本輪實作完整 JSON Schema validator 或涵蓋所有動態 Lua 分支。
 
@@ -113,6 +184,10 @@ facts 標示 search_scope=public_engine_api、query、match_count=0；explanatio
 suggested_actions 提供現有全索引查詢與 systems list；不能捏造近似 API，
 也不能要求呼叫未知名稱的 api describe。命令是固定字串，不插入使用者 query。
 core 共用結果建構，CLI/MCP 不複製同一 warning 規則；不另建 embedding 搜尋或 ontology。
+parity fixtures：query="攻擊" 在 CLI/MCP 相同 core 結果中都是 ok=true、
+API_SEARCH_EMPTY warning、上述三個 facts 與兩個固定 suggestions；query=""
+回完整 index 且無 empty warning，既有有效 term 的結果／排序不變。
+比對解包後 EngineResult，不要求 MCP transport envelope 等於 CLI stdout。
 教學移除「任何 API 找不到都必然 blocker」的絕對說法：先依現有索引拆成
 primitive；企劃確實需要不存在的 engine capability 才立即回報，不自行重造引擎。
 
@@ -139,14 +214,23 @@ primitive；企劃確實需要不存在的 engine capability 才立即回報，�
 3. 新 starter：官方 analyzer types pass、兩份 deterministic tests pass、verify
    不再 TESTS_NOT_CONFIGURED；不同 Right/no-input 的位置有差，修改成錯誤移動量
    時 test 真會 fail。同 seed/input digest 相同。沒有 asset/UI 的狀態明確不適用。
-4. scene：正確 JSON 原行為不變；root/深層 typo/空或duplicate id 拒絕且 world
-   不變；typed runtime/payload host/pack/reference reader 使用共同入口。盲評者
-   不須靠猜欄位、讀 engine source 或自造 scene tool 才能修正。
+4. scene：B 矩陣共用同組 fixture：有效完整場景、合法空 scene、root typo、
+   深層 vector typo、blank id、duplicate id、既有 geometry invalid。typed
+   caller 只測可表示的 semantic cases，不假稱 typed 值可測 unknown JSON。
+   無效輸入後 world/host runtime 不變；pack 有／無 manifest 都不得新增／修改
+   輸出；reference readers 不報假有效。核對 diagnostic code/facts 與真實
+   location scope。另覆蓋 CLI/MCP 的 InputFrame pointer vector JSON
+   多餘欄位拒絕與正確 JSON pass，Web/mobile numeric pointer FFI 原行為 pass。
+   平台無法執行時明示未測，不拿 source review 當 runtime 通過。
 5. 新候選本地 commit 後重建 CLI/Wasm/mobile，產生來源版本一致的新 immutable
    package；hash/inventory 驗證與該候選 source review 均完成。
-6. **全新 package-only Luna/max 盲評**：只給包、玩法企劃與空 output，做一個
-   2D 位置/輸入小遊戲；自行找初始入口、改 scene/Luau、寫不同於 starter 的
-   成敗測試，發佈完整 generation；第一次 typo/no-match/重跑 init 都保留證據。
+6. **全新 package-only Luna/max 盲評**：只給包、[盲測企劃](../validation/ai-authoring-blind-task.md)
+   與空 output；其所有交付證據是必要條件。game-owned player/target、自己的
+   SVG、成功/失敗/停止/restart 測試、一次改壞遊戲規則後 test fail 再還原、
+   空白/Unicode path、repeat-init hash 不變、deep typo/duplicate 拒絕、
+   no-match discovery、完整 generation/read hash 均須實測。
+   starter/bootstrap tests **不計入** game-owned evidence；新 starter 的 verify
+   只稱 onboarding smoke。第一次失敗／發現過程保留原證據。
    立即回報 blocker 後停依賴步驟，可繼續不受影響案例，不給答案或 source。
 7. browser/host 實跑與新截圖有各自 scope：starter 的無 sprite marker 不能
    冒充畫面驗證，真正盲測遊戲的 asset/render 用已驗證 package 能力實測。

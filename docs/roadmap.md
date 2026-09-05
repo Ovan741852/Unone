@@ -4,7 +4,7 @@
 
 ## 判斷標準
 
-1. **一般引擎有的，這個引擎也要有。** 不需要的遊戲用 `systems` 關掉，而不是引擎不提供。
+1. **提供驗證遊戲真正需要的通用引擎機制。** 音訊、碰撞、渲染等必要能力不能丟給遊戲重造；不因別家引擎有某功能就自動納入。不需要的遊戲可用 `systems` 關掉已支援的系統，關閉開關不是增加無必要功能的理由。
 2. **投機性抽象不做。** 指的是照抄別家引擎、對本引擎沒有意義的抽象——例如支援 Unity prefab 或 Cocos2d-x `.csb`。這類需求用**擴充 pipeline** 解決，不進核心契約。基本機制（碰撞事件、摩擦、音訊、旋轉）不適用這條，見[現行資產契約的引擎邊界](asset-workflow.md)。
 3. **缺事實時補契約，不要猜。** 檢查工具只能建立在引擎擁有的事實上；需要猜常數的東西輸出**測量值**而不是判決，見 [Decision 0029](decisions/0029-text-layout-gate.md)。
 4. **可以做成工具的就不要寫成文件。** 降低判斷、降低出錯率。交接流程已由 `game verify` 取代逐條清單。
@@ -26,7 +26,7 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 ## 待辦
 
 新收到的 AI authoring 回饋已逐項核對，見
-[分析與第一切片計畫](work-packages/2026-09-06-ai-authoring.md)（計畫審查中）。
+[分析與第一切片計畫](work-packages/2026-09-06-ai-authoring.md)（v2 限定複審中）。
 `project init`／位置斷言／observation／trace／replay 已存在，不能標成「完全沒有」。
 已重現的缺口是 starter 沒有 tests、API 空搜尋缺指引，以及 scene typo／重複 id
 被靜默接受。先完成既有 asset WIP 的回歸與封裝 gate，再按審查後的計畫推進；
@@ -66,7 +66,7 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 | # | 項目 | 說明 |
 |---|---|---|
 | 11 | 完整 generation 與資產工作流 | `4a128d7` 已實作 `install --all` 與 `asset describe`；修正候選已完成[限定 source review](reviews/2026-09-06-asset-workflow-code.md)。Rust 回歸、新平台建置與封裝盲驗待磁碟空間決策；[工作包](work-packages/2026-09-06-asset-workflow.md) 未驗收，不先標解決 |
-| 12 | `API_SEARCH_EMPTY` 沒有 `suggested_actions` | 交接流程強制的第 4 步對「遊戲領域動詞」必然 0 命中，而診斷說不出「引擎沒有遊戲領域 API」。也沒有 `api list`（目前要猜 `api search ""`） |
+| 12 | `API_SEARCH_EMPTY` 沒有 `suggested_actions` | 玩法動詞可能沒有匹配，不等於缺少引擎能力。現有 `api search ""` 可列完整索引，但缺 help/feedback 指引；[第一切片 C](work-packages/2026-09-06-ai-authoring.md) 將補共同 CLI/MCP 提示，不新增 api list 同義命令 |
 | 13 | `verify` 沒有 host parity gate | package 層已擋下 CLI/wasm 契約不一致（[issue](issues/2026-09-05-package-ships-two-engine-builds.md)），但 `verify` 本身仍只驗證 native build |
 | 14 | Web observations 與共用 digest | 已實作並通過 ABI、純 JS output 和新 wasm 瀏覽器 source-mode smoke；immutable package 發行仍待完成。見 [驗收紀錄](devlog/2026-09-06-digest-integration.md) |
 | 15 | 世界層沒有 ASCII 地圖 | UI 有 `ui preview`，世界層沒有等價工具；憤怒鳥 sprite 畫到畫布外時沒有任何 gate 抓得到（已由 `view_height` 修掉根因，但仍缺檢查） |
