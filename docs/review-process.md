@@ -33,10 +33,12 @@ the engine. Report findings by severity with file/line and concrete fixes.
 
 2026-09-05：Claude CLI `2.1.206` 曾回報 OAuth session expired，後續第 17–27 次 review 都在約 60–70 秒無輸出後中止，這些不算完成。`2.1.260` 的第 28 次 review 已完成；結果與採納項目見 `docs/issues/2026-09-05-claude-cli-review-findings-28.md`。
 
-2026-09-06：第 29 次因 session limit 未完成。使用者批准先由主代理審查並
-提交 `6ab9b60`、之後補 Claude review；已設同任務追蹤，詳見
-`docs/issues/2026-09-06-claude-cli-review-29.md`。不得將此狀態解讀為 review 通過。
+2026-09-06：第 29 次首次因 session limit 未完成，使用者批准先提交。
+現已補完固定 `5ae821e..6ab9b60`：Claude CLI 2.1.260 exit0、無 actionable
+P1/P2；只讀 source/tests，沒有 build/test 實跑。對應追蹤已停止，詳見
+`docs/issues/2026-09-06-claude-cli-review-29.md`；不代表後續變更或產品通過。
 
 第 30 次已完成 `04af786..4a128d7` 只讀審查；結果及主代理的獨立反例見
-`docs/issues/2026-09-06-claude-cli-review-30.md`。它不取代第 29 次補審，
-也不代表後續修正、平台建置或 package-only 盲驗已通過。
+`docs/issues/2026-09-06-claude-cli-review-30.md`。第 29 次已另行完成，
+兩份 review 各自固定範圍；不代表後續修正、平台建置
+或 package-only 盲驗已通過。

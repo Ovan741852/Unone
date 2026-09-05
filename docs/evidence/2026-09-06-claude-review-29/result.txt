@@ -1,0 +1,19 @@
+Confirmed: `step_physics` never reads `entity.rotation`/`entity.scale` — collider geometry stays independent, matching the review's core requirement.
+
+I've covered all changed source in the diff. Findings summary:
+
+## Review #29 — commit `6ab9b60` vs parent `5ae821e`
+
+**Scope reviewed:** `crates/unone-engine/src/{world.rs, runtime.rs, api.rs, lib.rs, engine.d.luau}`, `docs/engine.d.luau`, `docs/scene.schema.json`, `crates/unone-web-live-smoke/src/main.rs`, `web/runner/{main.js, index.html, semantic-output.test.mjs}`, via `git diff`/`git show` only against the two named revisions. No later commits, working tree, or other reviewers' evidence were treated as authoritative — the sprite-center-offset claim in `docs/issues/2026-09-06-web-sprite-center-offset.md` was independently re-verified by diffing the CSS/JS at both revisions rather than trusted as-is.
+
+**P1/P2 findings: none.** I found no actionable defects in the changed implementation:
+
+- `observation_digest` (`runtime.rs`) hashes `serde_json::to_vec(&snapshot)` on an already-produced, unmutated snapshot; a dedicated test (`observation_digest_matches_snapshot_bytes_and_does_not_mutate_snapshot`) confirms read-only behavior and byte-identity with the digest.
+- `run_internal` and `unone_web_tick`/`write_runtime_observation` both compute the digest from the exact same `WorldSnapshot` value that is embedded in the emitted report/output — no separate re-observe call that could race with input state, satisfying the same-frame requirement. `web/runner/main.js`'s `showState()` also reads the single module-level `snapshot` for both `semanticOutput()` and `save_payload`.
+- `Transform2DData`/`SceneEntity.rotation`/`scale` are validated for finiteness (`validate_transform2d`) and strictly-positive scale, both on scene load (pre-mutation, all-entities-validated-before-any-write) and on `set_transform2d`, with tests proving no partial mutation on rejection.
+- `step_physics` never reads `entity.rotation`/`entity.scale` (grep-confirmed), and `visual_transform_does_not_change_physics_position_velocity_or_contacts` plus the runtime-level equivalent test lock in collider/visual independence.
+- Rust struct fields, `engine.d.luau` (both the crate canonical copy and the `docs/` copy), the `api.rs` semantic descriptors, and `docs/scene.schema.json` all agree on `Transform2D { position, rotation, scale }` and `sprite.layer: i32`, including boundary values (i32::MIN/MAX accepted, overflow rejected).
+- `docs/issues/2026-09-06-web-sprite-center-offset.md`'s claim that the DOM sprite center offset predates this commit checks out: `index.html`'s `.unone-asset-sprite` transform and `main.js`'s `bottom`-based positioning are byte-identical between the parent and target revisions.
+- Native/host rotation, scale, and layer-based drawing are absent from this diff, as expected and out of scope — not counted as a defect.
+
+**Limitations:** this is a bounded diff review of one commit; no build/test execution was performed, so only static/textual consistency was checked (tests were read, not run). Host-side rendering of the new visual fields, and the pre-existing DOM sprite-centering bug, remain open items tracked separately and are unaffected by this commit.
