@@ -2,6 +2,7 @@ mod api;
 mod asset;
 mod bundle;
 mod diagnostics;
+mod layout;
 mod platform;
 mod project;
 mod runtime;
@@ -26,6 +27,10 @@ pub use bundle::{
 };
 pub use diagnostics::{
     ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult, SourceLocation,
+};
+pub use layout::{
+    DEFAULT_LAYOUT_COLS, DEFAULT_LAYOUT_ROWS, LayoutFinding, LayoutNode, LayoutReport,
+    draw as draw_layout, inspect as inspect_layout, to_markdown as layout_markdown,
 };
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{

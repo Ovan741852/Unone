@@ -170,6 +170,26 @@ cargo run -p unone-cli -- --json api describe effect.spawn
 
 引擎不評估骨骼、不混合動畫、不回報動畫是否播完、不模擬粒子，也不含任何 Spine／Effekseer 程式碼。遊戲若要「動畫播完才結算」，必須自己以 fixed frame 計算。
 
+## 3.8 讀懂自己的畫面
+
+AI 看不到畫面。其他每一個 gate 都在檢查語意狀態，所以遊戲可以全部通過，同時把控制項疊在一起。把 UI tree 畫成字元格是最便宜的補救：人和模型都讀得懂、確定性夠高可以進測試、不需要 GPU、字型或視窗。
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary ui preview
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary --json ui preview --frames 60 --strict
+```
+
+不帶 `--json` 會輸出 markdown：一張 ASCII 圖、一張節點表、以及 findings。`--frames` 決定先跑幾格再畫（預設 1），`--cols`／`--rows` 調整格線大小。
+
+目前檢查兩件事：
+
+- `UI_NODES_OVERLAP`：兩個節點的 rect 相交。圖上以 `#` 標出，附上重疊的設計空間單位。
+- `UI_TEXT_EXCEEDS_RECT`：文字在該框高之下放不進宣告的寬度。假設 16:9 viewport 與 0.5 字寬比例，是估算而非精確排版。
+
+`--strict` 讓 findings 變成 `ok=false` 與非零 exit code；交接與 release 應該使用它。
+
+它只檢查**結構**：不重疊、放得下。它不會、也不打算判斷畫面好不好看。世界層（sprite、實體位置）目前還沒有對應的文字檢查。
+
 ## 4. 檢查 bundle
 
 ```powershell

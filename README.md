@@ -27,6 +27,7 @@ cargo run -p unone-cli -- --json platform capabilities
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems list
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems set --id physics2d --enabled false
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json api describe entity.setPosition
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d ui preview
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json run --frames 60 --action Right
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json run --frames 2 --input-sequence D:/Projects/Unone_Games/minimal-2d/tests/input-sequence.json

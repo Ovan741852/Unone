@@ -26,6 +26,7 @@ bin/game.exe --project <game-root> --json systems list
 bin/game.exe --project <game-root> --json systems search "<企劃不需要的機制>"
 bin/game.exe --project <game-root> --json asset inspect --strict
 bin/game.exe --project <game-root> --json check --types
+bin/game.exe --project <game-root> ui preview --strict
 ~~~
 
 `project init` 只接受明確的 project name，在空目錄建立 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不會覆蓋既有檔案，也不會替遊戲猜測玩法。設定檔、場景與 deterministic test manifest 的 canonical JSON Schema 分別在 `docs/project.schema.json`、`docs/scene.schema.json` 與 `docs/test.schema.json`。UI rect 固定使用 normalized 0..100 × 0..100 logical design space，host 不可猜測 960×540；`project.unone.json.test_files` 只列出 project-relative `.test.json`；測試支援 fixed frames/seed、semantic input 或 input sequence、opaque `load_save`，以及 entity transform、observation、UI tree assertions。CLI 內建的 `bin/luau-analyze.exe` 會由 `bin/game.exe` 自動找到，因此 `check --types` 不需要額外安裝或設定環境變數。CLI 沒有的能力不能自行發明；先查 api search，找不到就回報。
@@ -49,6 +50,8 @@ bin/game.exe --project <game-root> --json check --types
 資產真的能被 host 取出，必須用 `bin/game.exe --project <game-root> --json bundle install content` 加上 `bin/game.exe --project <game-root> --json asset read --id <asset-id>` 證明：它回報已驗證的 `size_bytes`、`sha256` 與 `bundle_generation`，與 Web host 解析同一個 asset id 的結果必須一致。子代理必須先用 systems list／systems search 決定這款遊戲要用哪些引擎系統，並用 `systems set --id <id> --enabled false` 關掉企劃不需要的機制（例如老虎機、AVG、自走棋通常不需要 physics2d）。未宣告的 system 使用引擎預設；不可自行發明 system id，也不可啟用 status 為 not_implemented 的 system。asset inspect 是作者檢查用的 advisory report；asset inspect --strict 是 handoff/release gate，任何靜態 reference、source、manifest、bundle 或目前不支援的 manifest kind/version 問題都必須 ok=false。bundle pack 也會拒絕未解決的主場景 asset reference。
 
 ## 遇到問題的立即回報協定
+
+**畫面必須用 `ui preview --strict` 檢查過。** 子代理看不到畫面，其他 gate 全部只檢查語意狀態，所以遊戲可以通過每一個測試、同時把控制項疊在一起。`ui preview` 會把 UI tree 畫成字元格並回報 `UI_NODES_OVERLAP` 與 `UI_TEXT_EXCEEDS_RECT`；`--strict` 讓它變成失敗的 gate。它只檢查結構，不判斷美觀。
 
 任何一項下列情況都算 blocker：命令與文件不一致、semantic diagnostic 不足以判斷下一步、API 找不到、typed Luau contract 不成立、同一問題在兩個以上遊戲會重現、host 不能載入／reload／儲存、或企劃需要 engine 未宣告的 primitive。
 

@@ -66,7 +66,8 @@ foreach ($decision in @(
     "0025-asset-gate-and-ai-subagent-handoff.md",
     "0026-host-asset-resolve-contract.md",
     "0027-declared-engine-systems.md",
-    "0028-semantic-presentation-systems.md"
+    "0028-semantic-presentation-systems.md",
+    "0029-text-layout-gate.md"
 )) {
     Copy-PackageFile (Join-Path $engineRoot "docs\decisions\$decision") "docs\decisions\$decision"
 }

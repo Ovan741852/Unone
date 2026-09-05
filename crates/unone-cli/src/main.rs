@@ -50,6 +50,11 @@ enum Command {
         #[command(subcommand)]
         command: ApiCommand,
     },
+    /// Draw the game's UI as text and report structural layout problems.
+    Ui {
+        #[command(subcommand)]
+        command: UiCommand,
+    },
     /// Inspect, search and switch the engine systems this project runs.
     Systems {
         #[command(subcommand)]
@@ -133,6 +138,25 @@ enum AssetCommand {
             help = "Companion project-relative sources this asset needs, such as a Spine atlas"
         )]
         file: Vec<String>,
+    },
+}
+
+#[derive(Debug, Subcommand)]
+enum UiCommand {
+    /// Run the project, then draw the published UI tree as a character grid.
+    Preview {
+        #[arg(long, default_value_t = 1, help = "Frames to run before drawing")]
+        frames: u64,
+        #[arg(long, default_value_t = 42)]
+        seed: u64,
+        #[arg(long)]
+        input_sequence: Option<PathBuf>,
+        #[arg(long, default_value_t = unone_engine::DEFAULT_LAYOUT_COLS)]
+        cols: usize,
+        #[arg(long, default_value_t = unone_engine::DEFAULT_LAYOUT_ROWS)]
+        rows: usize,
+        #[arg(long, help = "Turn structural layout findings into a failing gate")]
+        strict: bool,
     },
 }
 
@@ -262,6 +286,102 @@ fn run() -> Result<ExitCode> {
                     init_asset_manifest(&cli.project, output.as_deref(), new_asset),
                     cli.json,
                 )
+            }
+        },
+        Command::Ui { command } => match command {
+            UiCommand::Preview {
+                frames,
+                seed,
+                input_sequence,
+                cols,
+                rows,
+                strict,
+            } => {
+                let mut runtime = match EngineRuntime::load_with_seed(&cli.project, seed) {
+                    Ok(runtime) => runtime,
+                    Err(diagnostic) => {
+                        return print_result(
+                            EngineResult::<serde_json::Value>::failure(*diagnostic),
+                            cli.json,
+                        );
+                    }
+                };
+                let run = match input_sequence {
+                    Some(path) => {
+                        let sequence = match fs::read_to_string(&path)
+                            .map_err(|error| format!("{}：{}", path.display(), error))
+                            .and_then(|text| {
+                                serde_json::from_str::<Vec<InputFrame>>(&text)
+                                    .map_err(|error| format!("{}：{}", path.display(), error))
+                            }) {
+                            Ok(sequence) => sequence,
+                            Err(error) => {
+                                return print_result(
+                                    EngineResult::<serde_json::Value>::failure(
+                                        unone_engine::Diagnostic::error(
+                                            "INPUT_SEQUENCE_INVALID",
+                                            "無法讀取 input sequence",
+                                            error,
+                                        ),
+                                    ),
+                                    cli.json,
+                                );
+                            }
+                        };
+                        runtime.run_with_input_sequence(frames, seed, &sequence)
+                    }
+                    None => runtime.run(frames, seed),
+                };
+                if !run.ok {
+                    return print_result(run, cli.json);
+                }
+                let Some(tree) = runtime.observe().ui else {
+                    return print_result(
+                        EngineResult::<serde_json::Value>::failure(
+                            unone_engine::Diagnostic::error(
+                                "UI_TREE_NOT_PUBLISHED",
+                                "遊戲還沒有發布 UI tree",
+                                format!(
+                                    "跑了 {frames} frame 之後 observation 沒有 ui；遊戲要先呼叫 api.ui.setRoot。"
+                                ),
+                            ),
+                        ),
+                        cli.json,
+                    );
+                };
+                let report = unone_engine::inspect_layout(&tree, cols, rows);
+                let findings = report.findings.clone();
+                let markdown = unone_engine::layout_markdown(&report);
+                let mut result = EngineResult::success(report);
+                for finding in &findings {
+                    let mut diagnostic = if strict {
+                        unone_engine::Diagnostic::error(
+                            finding.code.clone(),
+                            "UI layout 有結構問題",
+                            finding.detail.clone(),
+                        )
+                    } else {
+                        unone_engine::Diagnostic::warning(
+                            finding.code.clone(),
+                            "UI layout 有結構問題",
+                            finding.detail.clone(),
+                        )
+                    };
+                    diagnostic.facts = serde_json::json!({"nodes": finding.nodes});
+                    result.diagnostics.push(diagnostic);
+                }
+                if strict && !findings.is_empty() {
+                    result.ok = false;
+                }
+                if cli.json {
+                    return print_result(result, true);
+                }
+                println!("{markdown}");
+                Ok(if result.ok {
+                    ExitCode::SUCCESS
+                } else {
+                    ExitCode::from(1)
+                })
             }
         },
         Command::Systems { command } => match command {

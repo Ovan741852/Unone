@@ -224,6 +224,7 @@ fn tool_names() -> Vec<&'static str> {
         "unone_asset_inspect",
         "unone_asset_read",
         "unone_asset_init",
+        "unone_ui_preview",
         "unone_systems_list",
         "unone_systems_search",
         "unone_systems_set",
@@ -306,6 +307,22 @@ fn tool_definitions() -> Vec<Value> {
             })),
             false,
             false,
+        ),
+        tool(
+            "unone_ui_preview",
+            "Draw the UI as text",
+            "Run the project, then draw the published UI tree as a character grid and report structural layout problems: nodes that overlap, and text that cannot fit the box it declares. An AI author cannot see the screen, and every other gate passes while controls sit on top of each other, so read this before claiming a screen is done. It reports structure only and says nothing about whether the screen looks good. Set strict=true for a failing gate.",
+            object_schema(json!({
+                "properties": {
+                    "frames": {"type": "integer", "minimum": 0, "default": 1, "description": "Frames to run before drawing."},
+                    "seed": {"type": "integer", "minimum": 0, "default": 42},
+                    "cols": {"type": "integer", "minimum": 16, "maximum": 400, "description": "Grid columns; defaults to 96."},
+                    "rows": {"type": "integer", "minimum": 8, "maximum": 200, "description": "Grid rows; defaults to 48."},
+                    "strict": {"type": "boolean", "default": false, "description": "Turn layout findings into ok=false."}
+                }
+            })),
+            true,
+            true,
         ),
         tool(
             "unone_systems_list",
@@ -524,6 +541,31 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 file.as_deref(),
                 output.as_deref().map(std::path::Path::new),
             ))
+        }
+        "unone_ui_preview" => {
+            let frames = match optional_u64(arguments, "frames", 1) {
+                Ok(frames) => frames,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let seed = match optional_u64(arguments, "seed", 42) {
+                Ok(seed) => seed,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let cols = match optional_u64(arguments, "cols", unone_engine::DEFAULT_LAYOUT_COLS as u64)
+            {
+                Ok(cols) => cols as usize,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let rows = match optional_u64(arguments, "rows", unone_engine::DEFAULT_LAYOUT_ROWS as u64)
+            {
+                Ok(rows) => rows as usize,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let strict = match optional_bool(arguments, "strict", false) {
+                Ok(strict) => strict,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            tool_result(ui_preview(project, frames, seed, cols, rows, strict))
         }
         "unone_systems_list" => tool_result(inspect_systems(project)),
         "unone_systems_search" => match required_string(arguments, "meaning") {
@@ -751,6 +793,62 @@ fn optional_bool(arguments: &Value, name: &str, default: bool) -> Result<bool, B
     }
 }
 
+/// Run the project and report its UI layout, so a caller can read the screen.
+fn ui_preview(
+    project: &Path,
+    frames: u64,
+    seed: u64,
+    cols: usize,
+    rows: usize,
+    strict: bool,
+) -> EngineResult<unone_engine::LayoutReport> {
+    let mut runtime = match EngineRuntime::load_with_seed(project, seed) {
+        Ok(runtime) => runtime,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let run = runtime.run(frames, seed);
+    if !run.ok {
+        let mut result = EngineResult::<unone_engine::LayoutReport>::failure(Diagnostic::error(
+            "UI_PREVIEW_RUN_FAILED",
+            "跑不完指定 frame 數，因此沒有 UI tree 可畫",
+            "先用 game run 或 game check 找出 runtime 問題。",
+        ));
+        result.diagnostics.extend(run.diagnostics);
+        return result;
+    }
+    let Some(tree) = runtime.observe().ui else {
+        return EngineResult::failure(Diagnostic::error(
+            "UI_TREE_NOT_PUBLISHED",
+            "遊戲還沒有發布 UI tree",
+            format!("跑了 {frames} frame 之後 observation 沒有 ui；遊戲要先呼叫 api.ui.setRoot。"),
+        ));
+    };
+    let report = unone_engine::inspect_layout(&tree, cols, rows);
+    let findings = report.findings.clone();
+    let mut result = EngineResult::success(report);
+    for finding in &findings {
+        let mut diagnostic = if strict {
+            Diagnostic::error(
+                finding.code.clone(),
+                "UI layout 有結構問題",
+                finding.detail.clone(),
+            )
+        } else {
+            Diagnostic::warning(
+                finding.code.clone(),
+                "UI layout 有結構問題",
+                finding.detail.clone(),
+            )
+        };
+        diagnostic.facts = json!({"nodes": finding.nodes});
+        result.diagnostics.push(diagnostic);
+    }
+    if strict && !findings.is_empty() {
+        result.ok = false;
+    }
+    result
+}
+
 fn optional_string_array(
     arguments: &Value,
     name: &str,
@@ -876,7 +974,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 18);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 19);
     }
 
     #[test]
