@@ -1,6 +1,7 @@
 # 資產工作流調整計畫
 
-版本：v1 / plan_review_pending。基準：master `a10d514`。尚未開始功能製作。
+版本：v3 / implementation_in_progress。v1 保留於 `146baeb`；獨立限定再審
+無 unresolved plan blocker，製作已放行，尚非功能驗收通過。
 
 ## 目標與取捨
 
@@ -47,6 +48,8 @@ CLI help、asset inspect/init 的回傳引導到此入口；未宣告 id 時列�
 - `project_root`, `asset`：已驗證的 manifest entry。
 - `authoring`：manifest 的 project-relative path + JSON pointer `/assets/<index>`；
   primary 和每個 companion 的 path、role、exists、size_bytes、sha256（可讀才有）。
+  每個 path 列出 manifest 中同樣使用它的 `shared_with_asset_ids`，包含作為別筆
+  primary 或 companion 的情況；不把 selected asset 的 references 當成全體影響。
   `editing_rules` 說清改內容/改 path/改 scene 的差異，不能產生新美術。
 - `references`：主場景檔案 path + JSON pointer `/entities/<index>/<component>/asset`、
   entity id、component。sprite/mesh3d/animation 都涵蓋，保留實際 array index。
@@ -54,15 +57,21 @@ CLI help、asset inspect/init 的回傳引導到此入口；未宣告 id 時列�
   unreferenced 當成可安全刪除，亦不搜字串假裝做過完整語意分析。
 - `active`：scope=`native_local`、generation、每個檔案的 verified read
   size/hash 或 structured diagnostic；不把失敗壓成 missing/false。
-- `publication`：`matches_authoring: true | false | null` 和 reasons。
+- `publication`：scope=`selected_asset_native_local`、
+  `matches_authoring: true | false | null` 和 reasons。
   只有 active asset-manifest 中的該筆完整 AssetSpec 與作者相同，且 primary +
   所有 companion bytes 的 verified hash 相同，才能 true。無有效 active/讀取
   損壞時為 null 並附原因；可驗證但 bytes/宣告不同時為 false。
   不能用「asset read 成功」「bundle hash 有值」冒充已發佈最新 authoring。
+  這是單筆資產 freshness，不等於所有 bundle、整個遊戲或其他 host 都已同步。
+  result.ok 僅指查詢完成；不把 matches=false/null 改成 true，也不稱為 release gate。
+  current manifest 與 active 不相符時如實傳遞 mismatch，不承諾此版本能解析
+  舊 generation 的全部內容，更不改 read 的權威去湊出可用結果。
 - `required_next_actions`：有順序與原因的資料，命令以 executable=`game` +
   argv array 表示（帶 --project，argv 中 id/path 是單獨參數）。不得把任意
   id/path 拼成可注入 shell 字串。非機械編輯是需 AI 完成的內容步驟，不偽裝成命令。
   每個 file 還附明確 read argv；primary 不帶 --file，companion 帶其完整宣告 path。
+  未就緒的後續步驟標示其 prerequisite，不把整串尚不能執行的動作都標成 ready。
 
 後續命令的保守收斂路徑：補齊/修正作者檔案 → bundle pack → asset inspect
 --strict → bundle install --all → asset describe（再次確認）→ asset read。
@@ -72,23 +81,47 @@ matches_authoring=true 且沒有阻塞時不要求重新打包；不能建議清
 
 安全與錯誤：既有 portable source / symlink containment 規則必須同樣套用到
 primary、companions、manifest 和讀取的 bundle source；不要藉查詢讀專案外 bytes。
+抽取小型共用 project-relative resolver，先做 portable lexical 檢查，再檢查
+現存目標/祖先的 canonical containment。套用於本工作流讀取的 asset/bundle
+manifest、main scene、source/files 與 native local bundle fetch；strict inspect
+和 pack 不得有 companion 檢查落差。不把這次工作擴張成全部 IO API 重寫。
+明確指定的 `asset read --output` 是使用者授權的匯出路徑，不屬於作者來源
+containment；describe 產生的 read argv 一律不附 output。MCP asset read 可寫
+output，因此 readOnlyHint 修成 false；describe 才是 readOnlyHint=true。
 重複 id / 無效 manifest / 不合法 path 要 fail closed。缺 source 時保留可用的
 編輯定位和明確 blocker，不用虛構 hash。檔案修改的競態不承諾交易快照；
 必要時標示觀測時間/一致性限制，下一次 describe 可重新確認。
+不得從不同 generation 拼湊出 true；須固定同一份 active observation 或在查詢
+前後檢查 generation/manifest token，有變更就回報 unknown/inconsistent。
+此保證不等於對任意外部 source writer 的 filesystem transaction。
+native 最新的正式 generation 檔（不含 .part）是唯一 active record；
+最新檔無法讀取/解析時回傳 `BUNDLE_ACTIVE_GENERATION_UNREADABLE`，不靜默
+回退舊 generation。read、inspect、describe 使用同一 loader；缺少 record 與
+record 損壞是不同狀態。描述工具不可使用會吞錯的 Option-only API 假裝成功。
+不新增 active pointer 檔或第二套權威；不承諾多個安裝 writer 的併發交易。
 
 init 回傳 `changed_files`（實際本次寫入，不含未動的 source），並給 describe
-入口；不得新增第二套 asset spec 驗證規則。MCP asset init 的 kind enum 目前
+入口；若原 init 的後續寫入失敗，已發生的寫入仍須出現在 failure effects，不宣稱
+跨檔案交易或零副作用。不得新增第二套 asset spec 驗證規則。MCP asset init 的 kind enum 目前
 漏了已支援的 spine/effekseer，本輪同步，避免輸出流程無法經 MCP 執行。
 
 ## B：完整 generation 一次啟用
 
 沿用 `bundle install <id>` 的子集行為，新增互斥選项 `bundle install --all`
 及 MCP 對等參數。必須恰好選 id 或 all，不能默認擴大為所有 bundle。
+CLI positional id 改為 Option<String>，all 為 bool；CLI/MCP 都經相同 core
+選擇驗證（id-only/all-only 成功，none/both 拒絕），help/schema 同步表達。
 
 所有 manifest roots 共用同一 installed set 和 dependency traversal；所有選中
 bundles 驗證完畢後只寫一次 active generation，不能逐 id 調用 install。
 任一 fetch/hash/dependency failure 不切換 active；已驗證的 cache 檔案可以留下，
 並非整個磁碟 transaction。空或重複 id 的 manifest 拒絕啟用，不產生空 generation。
+「空」包括 bundles=[] 及空白/空字串 id。native id/all 與 Web install 都拒絕
+空集合、空/重複 id、無效 hash/size、缺失/循環依賴；跨 host 使用同一組有效/
+無效 fixture 定義最低共同契約，JS 不透過複製整套 native installer 實現。
+既有 Web normalizeManifest 補缺漏即可。檢查先於 active 寫入，失敗保持原
+active metadata；作者 bundle manifest 已被 pack 更新時，不承諾舊內容仍
+符合新 manifest 可讀，這不是整個發佈流程的 rollback。
 不新增下載器、不加自動清 cache、不改既有分包選擇語意；文件清楚區分 subset/all。
 
 ## C：刪除被取代的規格
@@ -97,6 +130,7 @@ bundles 驗證完畢後只寫一次 active generation，不能逐 id 調用 inst
 資產操作/權威契約。移除被取代的 Decision 0024/0026 檔案並更新所有 current
 docs/packaging links；未被取代的引擎責任邊界移入新契約，不跟著丟掉。
 Decision 0025 的一般盲測/嚴格 gate 原則未全部被取代，保留並修正引用。
+其中只列 texture2d/mesh3d 的過期 kind 文字也必須清除，以 core 支援集合為準。
 同步 ai-workflow、ai-agent-game-handoff、MCP/help、pack-ai-engine；新 package
 只帶現行資產規格。Git 保留歷史，不另留 obsolete spec 副本或 deprecated aliases。
 既有不可變 package 為歷史驗證輸入，不直接覆写；本輪產出新封裝。
@@ -122,5 +156,7 @@ Decision 0025 的一般盲測/嚴格 gate 原則未全部被取代，保留並�
    JSON pointer 真能定位；primary/companion 的缺漏與越界/symlink；metadata-only
    變更不誤判 fresh；active 缺失/落後/損壞；all success/failure/cycle/duplicate/empty；
    CLI/MCP 同契約；舊資產規格與失效連結已移除。
+   額外回歸：同 source 被不同 id 共用、generation 2 損壞不得退回有效的 1、
+   查詢期間 generation 改變不得 fresh=true、Web 拒絕空/重複 id 與空集合。
 8. blind feedback 若需修正，回到明確問題與再測，不以縮小原接受標準當作通過。
    最終只可稱本輪 workflow gate 通過，不改七款總驗收或宣稱 native 貼圖已完成。
