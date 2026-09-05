@@ -49,6 +49,7 @@ Copy-PackageFile (Join-Path $engineRoot "docs\project.schema.json") "docs\projec
 Copy-PackageFile (Join-Path $engineRoot "docs\scene.schema.json") "docs\scene.schema.json"
 Copy-PackageFile (Join-Path $engineRoot "docs\test.schema.json") "docs\test.schema.json"
 Copy-PackageFile (Join-Path $engineRoot "docs\mobile-host-abi.md") "docs\mobile-host-abi.md"
+Copy-PackageFile (Join-Path $engineRoot "docs\mobile-package-host.md") "docs\mobile-package-host.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\platform-toolchain.md") "docs\platform-toolchain.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\review-process.md") "docs\review-process.md"
 foreach ($decision in @(
@@ -75,6 +76,14 @@ foreach ($webFile in @(
 }
 Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.js") "web\runtime\unone_web_live_smoke.js"
 Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.wasm") "web\runtime\unone_web_live_smoke.wasm"
+Copy-PackageFile (Join-Path $engineRoot "scripts\build-android-package.ps1") "scripts\build-android-package.ps1"
+Copy-PackageFile (Join-Path $engineRoot "scripts\run-android-package-smoke.ps1") "scripts\run-android-package-smoke.ps1"
+Copy-PackageFile (Join-Path $engineRoot "platform\android\AndroidManifest.xml") "mobile\android-host\AndroidManifest.xml"
+Copy-PackageFile (Join-Path $engineRoot "platform\android\debug.keystore") "mobile\android-host\debug.keystore"
+Copy-PackageFile (Join-Path $engineRoot "platform\android\build\x86_64-linux-android\dex\classes.dex") "mobile\android-host\classes.dex"
+Copy-PackageFile (Join-Path $engineRoot "platform\android\build\x86_64-linux-android\package\lib\x86_64\libunone_mobile_ffi.so") "mobile\android-host\lib\x86_64\libunone_mobile_ffi.so"
+Copy-PackageFile (Join-Path $engineRoot "platform\android\build\x86_64-linux-android\package\lib\x86_64\libunone_android_host.so") "mobile\android-host\lib\x86_64\libunone_android_host.so"
+Copy-PackageFile (Join-Path $engineRoot "platform\android\build\x86_64-linux-android\package\lib\x86_64\libc++_shared.so") "mobile\android-host\lib\x86_64\libc++_shared.so"
 
 $indexPath = Join-Path $outputRoot "web\runner\index.html"
 $index = [IO.File]::ReadAllText($indexPath)

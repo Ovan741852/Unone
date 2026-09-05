@@ -72,6 +72,8 @@ asset inspect 是作者檢查用的 advisory report；asset inspect --strict 是
 - validation-report.json、README/AI workflow、開發日誌與必要截圖；所有命令都要能從乾淨輸入重跑。
 - 最後回報仍列出未完成的 final-gate 項目與「需要主代理決定」清單。
 
+目前 package 內有 generic Android x86_64 smoke host；命令與限制見 `docs/mobile-package-host.md`。子代理可以用自己的 game output 建 APK 並跑 lifecycle smoke，不需要 engine source。這只證明 Android package/JNI/FFI/lifecycle/runtime startup，不證明 production renderer、asset/bundle content 或 iOS；沒有 emulator/device 或沒有 macOS/Xcode 時，分別保留 host blocker。
+
 ## 最小回報格式
 
 ~~~
