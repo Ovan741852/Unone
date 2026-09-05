@@ -199,7 +199,19 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary --json ui 
 
 不帶 `--json` 會輸出 markdown：一張 ASCII 圖、一張節點表、以及 findings。`--frames` 決定先跑幾格再畫（預設 1），`--cols`／`--rows` 調整格線大小。
 
-目前只有一條 finding：`UI_NODES_OVERLAP`（兩個節點的 rect 相交，圖上以 `#` 標出，附重疊的設計空間單位）。`--strict` 讓它變成 `ok=false` 與非零 exit code；交接與 release 應該使用它。
+`verify` 預設只畫**開場畫面**（1 frame、無輸入），所以勝負畫面不會被檢查。要讓它涵蓋其他畫面，在 `project.unone.json` 宣告 `ui_previews`，方式與宣告 `test_files` 相同：
+
+```json
+"ui_previews": [
+  { "name": "aim",  "frames": 1 },
+  { "name": "win",  "frames": 540, "seed": 42, "input_sequence": "tests/win-sequence.json" },
+  { "name": "lose", "frames": 540, "seed": 42, "input_sequence": "tests/lose-sequence.json" }
+]
+```
+
+每個宣告會變成一個獨立的 `layout:<name>` gate。**每個 step 會列出該畫面實際包含的節點 id**：兩個宣告如果列出一模一樣的節點，那幾乎一定是同一個畫面被跑到兩次，也就是一個什麼都沒證明的 gate。引擎只陳述這個事實，不替你判斷。
+
+目前只有一條 finding：`UI_NODES_OVERLAP`（兩個節點的 rect 相交，圖上以 `#` 標出，附重疊的設計空間單位）。`--strict` 讓它變成 `ok=false` 與非零 exit code；交接與 release 應該使用它。finding 會附上**該往哪個軸、哪個方向移動**的建議，而不只是說兩個框相交。
 
 節點表另外附 `text fit`：文字約佔宣告寬度的幾倍。它假設 16:9 viewport 與 0.5 字寬比例，所以是**測量值不是判決**——超過 1.0 表示 host 必須縮小、換行或裁切，值得看一眼，但引擎不會因此判定失敗。加規則的入場條件見 Decision 0029。
 

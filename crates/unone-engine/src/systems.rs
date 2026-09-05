@@ -392,13 +392,13 @@ fn descriptors() -> Vec<SystemDescriptor> {
         ),
         descriptor(
             "physics2d",
-            "2D 剛體、重力與地面碰撞的 fixed-step 積分。",
+            "2D 剛體的 fixed-step 積分：重力、地面反彈（依 restitution）與圓形碰撞。沒有摩擦力與角速度——落地的物體會保持水平速度一直滑下去，直到遊戲自己減速它。",
             SystemStatus::Available,
             true,
             true,
             vec!["api.physics.applyImpulse"],
             vec!["world.entities[].rigidbody", "world.physics"],
-            "關閉後引擎不再推進任何剛體；RigidBody2D 會保持 scene 的初始值，api.physics 會回報 SYSTEM_DISABLED。",
+            "關閉後引擎不再推進任何剛體；RigidBody2D 會保持 scene 的初始值，api.physics 會回報 SYSTEM_DISABLED。開啟時請注意它模擬的範圍：沒有摩擦、沒有旋轉、沒有碰撞事件，碰撞只解位置與速度。",
             "棋盤、放置、AVG、老虎機這類沒有物理模擬的遊戲；關閉可移除每 frame 的積分成本與非必要的 digest 變動來源。",
         ),
         descriptor(

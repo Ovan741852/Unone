@@ -377,6 +377,7 @@ impl EngineRuntime {
             test_files: Vec::new(),
             bundle_manifest: None,
             asset_manifest: None,
+            ui_previews: Vec::new(),
             systems,
         };
         let paths = ProjectPaths {
@@ -1219,8 +1220,16 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
             let value = lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
             // Anchored nodes resolve against the host's real viewport, so the
             // same declaration lands in the same corner on any screen shape.
-            let tree = UiTree::from_json_for_viewport(value, *ui_aspect.borrow())
-                .map_err(mlua::Error::RuntimeError)?;
+            // Name the vocabulary this build accepts. A host binary that is
+            // older than the CLI fails here, and without this the message sends
+            // the author to debug their game instead of their toolchain.
+            let tree = UiTree::from_json_for_viewport(value, *ui_aspect.borrow()).map_err(
+                |error| {
+                    mlua::Error::RuntimeError(format!(
+                        "{error} — this engine build accepts node placement as                          rect{{x,y,width,height}} or anchor+size (anchors: top_left, top,                          top_right, left, center, right, bottom_left, bottom, bottom_right);                          the design space is 0..100 on both axes with y pointing up"
+                    ))
+                },
+            )?;
             *ui_state.borrow_mut() = Some(tree);
             Ok(())
         })?,

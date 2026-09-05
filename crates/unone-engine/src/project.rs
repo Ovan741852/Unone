@@ -22,6 +22,13 @@ pub struct ProjectConfig {
     pub bundle_manifest: Option<String>,
     #[serde(default)]
     pub asset_manifest: Option<String>,
+    /// Screens `verify` must check the layout of.
+    ///
+    /// Without this only the opening screen is ever drawn, so a broken win or
+    /// lose screen passes every gate. Each entry says how to reach a screen,
+    /// the same way `test_files` says how to reach a state worth asserting.
+    #[serde(default)]
+    pub ui_previews: Vec<UiPreviewSpec>,
     /// Engine systems this game explicitly turns on or off.
     ///
     /// Anything not declared keeps the engine default; the engine rejects
@@ -525,6 +532,27 @@ pub struct AnimationAssertion {
 #[derive(Debug, Clone, Deserialize)]
 pub struct EffectsAssertion {
     pub equals: serde_json::Value,
+}
+
+/// One reachable screen the layout gate should inspect.
+#[derive(Debug, Clone, Deserialize)]
+pub struct UiPreviewSpec {
+    pub name: String,
+    #[serde(default = "default_preview_frames")]
+    pub frames: u64,
+    #[serde(default = "default_preview_seed")]
+    pub seed: u64,
+    /// Project-relative per-frame input replay that reaches this screen.
+    #[serde(default)]
+    pub input_sequence: Option<String>,
+}
+
+fn default_preview_frames() -> u64 {
+    1
+}
+
+fn default_preview_seed() -> u64 {
+    42
 }
 
 #[derive(Debug, Clone, Deserialize)]

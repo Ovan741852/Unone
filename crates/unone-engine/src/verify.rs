@@ -116,7 +116,13 @@ pub fn verify(project_root: impl AsRef<Path>) -> EngineResult<VerifyReport> {
         assets.diagnostics,
     ));
 
-    steps.push(layout_step(project_root));
+    if config.ui_previews.is_empty() {
+        steps.push(layout_step(project_root, None, &paths.root));
+    } else {
+        for preview in &config.ui_previews {
+            steps.push(layout_step(project_root, Some(preview), &paths.root));
+        }
+    }
 
     if paths.test_files.is_empty() {
         steps.push(step(
@@ -201,35 +207,77 @@ pub fn verify(project_root: impl AsRef<Path>) -> EngineResult<VerifyReport> {
     result
 }
 
-/// Run the project one frame and check the screen it publishes.
-fn layout_step(project_root: &Path) -> VerifyStep {
-    const COMMAND: &str = "game ui preview --strict";
-    let mut runtime = match EngineRuntime::load(project_root) {
+/// Run the project to a screen and check the layout it publishes.
+fn layout_step(
+    project_root: &Path,
+    preview: Option<&crate::project::UiPreviewSpec>,
+    root: &Path,
+) -> VerifyStep {
+    let name = match preview {
+        Some(preview) => format!("layout:{}", preview.name),
+        None => "layout".to_string(),
+    };
+    let frames = preview.map(|preview| preview.frames).unwrap_or(1);
+    let seed = preview.map(|preview| preview.seed).unwrap_or(42);
+    let command = match preview.and_then(|preview| preview.input_sequence.as_deref()) {
+        Some(sequence) => format!(
+            "game ui preview --strict --frames {frames} --seed {seed} --input-sequence {sequence}"
+        ),
+        None => format!("game ui preview --strict --frames {frames} --seed {seed}"),
+    };
+    let command = command.as_str();
+    let mut sequence = Vec::new();
+    if let Some(path) = preview.and_then(|preview| preview.input_sequence.as_deref()) {
+        match std::fs::read_to_string(root.join(path)).map_err(|error| error.to_string()).and_then(
+            |text| serde_json::from_str::<Vec<crate::project::InputFrame>>(&text)
+                .map_err(|error| error.to_string()),
+        ) {
+            Ok(frames) => sequence = frames,
+            Err(error) => {
+                return step(
+                    &name,
+                    command,
+                    StepStatus::Failed,
+                    "the declared input sequence could not be read",
+                    vec![Diagnostic::error(
+                        "INPUT_SEQUENCE_INVALID",
+                        "無法讀取 ui_previews 宣告的 input sequence",
+                        format!("{path}：{error}"),
+                    )],
+                );
+            }
+        }
+    }
+    let mut runtime = match EngineRuntime::load_with_seed(project_root, seed) {
         Ok(runtime) => runtime,
         Err(diagnostic) => {
             return step(
-                "layout",
-                COMMAND,
+                &name,
+                command,
                 StepStatus::Failed,
                 "the project could not be loaded to draw its screen",
                 vec![*diagnostic],
             );
         }
     };
-    let run = runtime.run(1, 42);
+    let run = if sequence.is_empty() {
+        runtime.run(frames, seed)
+    } else {
+        runtime.run_with_input_sequence(frames, seed, &sequence)
+    };
     if !run.ok {
         return step(
-            "layout",
-            COMMAND,
+            &name,
+            command,
             StepStatus::Failed,
-            "the project could not run a frame, so it published no screen",
+            "the project could not reach this screen",
             run.diagnostics,
         );
     }
     let Some(tree) = runtime.observe().ui else {
         return step(
-            "layout",
-            COMMAND,
+            &name,
+            command,
             StepStatus::NotApplicable,
             "the game publishes no UI tree",
             Vec::new(),
@@ -246,21 +294,36 @@ fn layout_step(project_root: &Path) -> VerifyStep {
                 finding.detail.clone(),
             );
             diagnostic.facts = serde_json::json!({"nodes": finding.nodes});
+            diagnostic.suggested_actions.push(ActionSuggestion {
+                action: "resolve_layout_finding".to_string(),
+                description: finding.resolution.clone(),
+                command: Some("game ui preview --strict".to_string()),
+            });
             diagnostic
         })
         .collect::<Vec<_>>();
     step(
-        "layout",
-        COMMAND,
+        &name,
+        command,
         if report.readable {
             StepStatus::Passed
         } else {
             StepStatus::Failed
         },
+        // Name the nodes, not just how many. Two declared screens that report
+        // the same node list are almost certainly the same screen reached
+        // twice, which is a gate that proves nothing — but "almost certainly"
+        // is a judgement, so this reports the fact and leaves the call to the
+        // reader.
         format!(
-            "{} nodes, {} structural findings",
-            report.nodes.len(),
-            report.findings.len()
+            "{} findings; nodes: {}",
+            report.findings.len(),
+            report
+                .nodes
+                .iter()
+                .map(|node| node.id.clone())
+                .collect::<Vec<_>>()
+                .join(", ")
         ),
         diagnostics,
     )

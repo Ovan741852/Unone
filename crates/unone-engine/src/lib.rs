@@ -44,7 +44,7 @@ pub use performance::{
 };
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{
-    AnimationAssertion, EffectsAssertion, InputFrame, ObservationAssertion, PointerInput,
+    AnimationAssertion, EffectsAssertion, InputFrame, UiPreviewSpec, ObservationAssertion, PointerInput,
     ProjectConfig, ProjectFileStatus, ProjectInitReport, ProjectInspectReport, ProjectPaths,
     TestAssertion, TestSpec, UiAssertion, init as init_project, inspect as inspect_project,
 };

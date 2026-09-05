@@ -559,6 +559,11 @@ fn run() -> Result<ExitCode> {
                         )
                     };
                     diagnostic.facts = serde_json::json!({"nodes": finding.nodes});
+                    diagnostic.suggested_actions.push(unone_engine::ActionSuggestion {
+                        action: "resolve_layout_finding".to_string(),
+                        description: finding.resolution.clone(),
+                        command: Some("game ui preview --strict".to_string()),
+                    });
                     result.diagnostics.push(diagnostic);
                 }
                 if strict && !findings.is_empty() {

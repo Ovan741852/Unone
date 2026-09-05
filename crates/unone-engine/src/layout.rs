@@ -37,6 +37,10 @@ pub struct LayoutFinding {
     pub code: String,
     pub detail: String,
     pub nodes: Vec<String>,
+    /// The smallest change that clears the finding. Reporting that two boxes
+    /// intersect without naming an axis leaves the author to work out the
+    /// direction, which is exactly the judgement a gate should remove.
+    pub resolution: String,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -121,12 +125,35 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
         for right in tree.children.iter().skip(index + 1) {
             let (_, right_id, right_rect, _, _) = node_parts(right);
             if let Some((x, y)) = overlap(left_rect, right_rect) {
+                // Move along whichever axis needs the smaller change, and say
+                // which way: y grows upward in this design space.
+                let resolution = if x <= y {
+                    let (mover, direction) = if left_rect.x <= right_rect.x {
+                        (right_id, "right")
+                    } else {
+                        (left_id, "right")
+                    };
+                    format!(
+                        "把 '{mover}' 的 x 增加 {x:.1}（往{}），或縮小其中一個的 width。",
+                        if direction == "right" { "右" } else { "左" }
+                    )
+                } else {
+                    let mover = if left_rect.y <= right_rect.y {
+                        right_id
+                    } else {
+                        left_id
+                    };
+                    format!(
+                        "把 '{mover}' 的 y 增加 {y:.1}（往上，本設計空間 y 軸向上），或縮小其中一個的 height。"
+                    )
+                };
                 findings.push(LayoutFinding {
                     code: "UI_NODES_OVERLAP".to_string(),
                     detail: format!(
                         "'{left_id}' 與 '{right_id}' 重疊 {x:.1} x {y:.1}（設計空間單位）。"
                     ),
                     nodes: vec![left_id.clone(), right_id.clone()],
+                    resolution,
                 });
             }
         }
@@ -238,7 +265,10 @@ pub fn to_markdown(report: &LayoutReport) -> String {
     } else {
         out.push_str(&format!("\n### {} findings\n\n", report.findings.len()));
         for finding in &report.findings {
-            out.push_str(&format!("- **{}** {}\n", finding.code, finding.detail));
+            out.push_str(&format!(
+                "- **{}** {} → {}\n",
+                finding.code, finding.detail, finding.resolution
+            ));
         }
     }
     for assumption in &report.assumptions {

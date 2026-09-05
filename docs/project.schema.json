@@ -53,6 +53,39 @@
         "type": "boolean"
       },
       "description": "Engine systems this game explicitly turns on or off. Anything not declared keeps the engine default; unknown ids, systems the runtime requires, and systems with no implementation are rejected. Run `game systems list` for the current set."
+    },
+    "ui_previews": {
+      "type": "array",
+      "description": "Screens `game verify` must check the layout of. Without this only the opening screen is drawn, so a broken win or lose screen passes every gate.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Screen name, used in the verify step name."
+          },
+          "frames": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 1,
+            "description": "Frames to run before drawing."
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 42
+          },
+          "input_sequence": {
+            "type": "string",
+            "description": "Project-relative per-frame input replay that reaches this screen."
+          }
+        }
+      }
     }
   }
 }
