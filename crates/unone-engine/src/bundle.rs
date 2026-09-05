@@ -8,6 +8,7 @@ use std::{
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
+use crate::asset::{AssetManifest, load_for_pack};
 use crate::diagnostics::{Diagnostic, EngineResult};
 use crate::project::ProjectPaths;
 
@@ -41,11 +42,10 @@ pub struct BundlePackReport {
 
 /// Generate the smallest runtime bundle manifest for a project.
 ///
-/// The first packaging boundary intentionally keeps source files as the
-/// bundle payload. Compression, archive layout and asset cooking belong to a
-/// later host/content pipeline once a real game requires them. The engine
-/// still owns the manifest shape and integrity fields used by native, Web and
-/// mobile hosts.
+/// Package the project sources and, when configured, deterministic asset
+/// bundles. The archive is intentionally uncompressed and host-readable: the
+/// engine owns content boundaries and integrity metadata, while each host owns
+/// decoding and GPU/resource lifetime.
 pub fn pack_project(
     project_root: impl AsRef<Path>,
     output_path: Option<&Path>,
@@ -144,6 +144,85 @@ pub fn pack_project(
         ));
     }
 
+    if let Some(asset_manifest_path) = &paths.asset_manifest {
+        let asset_manifest_source = match asset_manifest_path.strip_prefix(&root) {
+            Ok(path) => normalize_relative_path(path),
+            Err(_) => {
+                return EngineResult::failure(Diagnostic::error(
+                    "BUNDLE_SOURCE_OUTSIDE_PROJECT",
+                    "asset manifest 超出專案根目錄",
+                    "asset manifest 必須是專案內的相對路徑。",
+                ));
+            }
+        };
+        if let Err(diagnostic) =
+            validate_pack_source(&root, "asset manifest", &asset_manifest_source)
+        {
+            return EngineResult::failure(*diagnostic);
+        }
+        let asset_manifest = match load_for_pack(&root, asset_manifest_path) {
+            Ok(manifest) => manifest,
+            Err(diagnostic) => return EngineResult::failure(*diagnostic),
+        };
+        if let Err(diagnostic) = validate_pack_asset_references(&paths, &asset_manifest) {
+            return EngineResult::failure(*diagnostic);
+        }
+        if let Err(diagnostic) = validate_generated_asset_bundle_ids(&asset_manifest, &sources) {
+            return EngineResult::failure(*diagnostic);
+        }
+        sources.push((
+            "asset-manifest".to_string(),
+            asset_manifest_source,
+            vec!["project".to_string()],
+        ));
+        let mut grouped = BTreeMap::<String, Vec<(String, Vec<u8>)>>::new();
+        for asset in asset_manifest.assets {
+            let bytes = match fs::read(root.join(&asset.source)) {
+                Ok(bytes) => bytes,
+                Err(error) => {
+                    return EngineResult::failure(Diagnostic::error(
+                        "BUNDLE_ASSET_SOURCE_READ_FAILED",
+                        "無法讀取 asset bundle 來源",
+                        format!("{}：{}", root.join(&asset.source).display(), error),
+                    ));
+                }
+            };
+            grouped
+                .entry(asset.bundle)
+                .or_default()
+                .push((normalize_source_path(&asset.source), bytes));
+        }
+        for (bundle_id, entries) in grouped {
+            let archive = match build_bundle_archive(entries) {
+                Ok(archive) => archive,
+                Err(error) => {
+                    return EngineResult::failure(Diagnostic::error(
+                        "BUNDLE_ASSET_ARCHIVE_FAILED",
+                        "無法建立 asset bundle archive",
+                        error,
+                    ));
+                }
+            };
+            let source = format!("bundles/{bundle_id}.bundle");
+            let path = root.join(&source);
+            let changed = fs::read(&path)
+                .map(|current| current != archive)
+                .unwrap_or(true);
+            if changed && let Err(error) = write_atomic(&path, &archive) {
+                return EngineResult::failure(Diagnostic::error(
+                    "BUNDLE_ASSET_ARCHIVE_WRITE_FAILED",
+                    "無法寫入 asset bundle archive",
+                    error,
+                ));
+            }
+            sources.push((
+                bundle_id,
+                source,
+                vec!["project".to_string(), "asset-manifest".to_string()],
+            ));
+        }
+    }
+
     if config_changed {
         let config_bytes = match serde_json::to_vec_pretty(&config_json) {
             Ok(bytes) => bytes,
@@ -228,6 +307,111 @@ pub fn pack_project(
         project_config_changed: config_changed,
         bundles,
     })
+}
+
+fn validate_generated_asset_bundle_ids(
+    manifest: &AssetManifest,
+    sources: &[(String, String, Vec<String>)],
+) -> Result<(), Box<Diagnostic>> {
+    for asset in &manifest.assets {
+        if sources.iter().any(|(id, _, _)| id == &asset.bundle) || asset.bundle == "asset-manifest"
+        {
+            return Err(Box::new(Diagnostic::error(
+                "BUNDLE_ASSET_ID_COLLISION",
+                "asset bundle id 與既有 bundle 衝突",
+                format!(
+                    "asset '{}' 指向 bundle '{}'，但該 id 已被 project/script/scene 或 asset-manifest 使用。",
+                    asset.id, asset.bundle
+                ),
+            )));
+        }
+    }
+    Ok(())
+}
+
+fn validate_pack_asset_references(
+    paths: &ProjectPaths,
+    manifest: &AssetManifest,
+) -> Result<(), Box<Diagnostic>> {
+    let references = crate::asset::read_scene_references(paths)?;
+    let ids = manifest
+        .assets
+        .iter()
+        .map(|asset| asset.id.as_str())
+        .collect::<BTreeSet<_>>();
+    let missing = references
+        .iter()
+        .filter(|reference| !ids.contains(reference.id.as_str()))
+        .map(|reference| reference.id.clone())
+        .collect::<BTreeSet<_>>();
+    if missing.is_empty() {
+        return Ok(());
+    }
+    let mut diagnostic = Diagnostic::error(
+        "ASSET_REFERENCE_MISSING",
+        "bundle pack 拒絕未解決的場景 asset reference",
+        "靜態主場景中的每個 sprite/mesh3d asset id 都必須先在 asset manifest 宣告；不要打包一個 host 無法可靠解析的專案。",
+    );
+    diagnostic.facts = serde_json::json!({
+        "missing_asset_ids": missing,
+        "static_reference_scope": "main_scene only; assets created or selected by Luau are not statically discoverable",
+    });
+    diagnostic
+        .suggested_actions
+        .push(crate::diagnostics::ActionSuggestion {
+            action: "declare_asset".to_string(),
+            description: "在 asset manifest 為場景引用補上相同 id、source、kind 與 bundle。"
+                .to_string(),
+            command: Some("game asset inspect --strict --json".to_string()),
+        });
+    Err(Box::new(diagnostic))
+}
+
+const BUNDLE_ARCHIVE_MAGIC: &[u8] = b"UNONE-BUNDLE-1\n";
+
+#[derive(Debug, Serialize)]
+struct BundleArchiveHeader {
+    version: u32,
+    files: Vec<BundleArchiveFile>,
+}
+
+#[derive(Debug, Serialize)]
+struct BundleArchiveFile {
+    path: String,
+    offset: u64,
+    size_bytes: u64,
+    sha256: String,
+}
+
+fn build_bundle_archive(mut entries: Vec<(String, Vec<u8>)>) -> Result<Vec<u8>, String> {
+    entries.sort_by(|left, right| left.0.cmp(&right.0));
+    if entries.windows(2).any(|window| window[0].0 == window[1].0) {
+        return Err("asset bundle 內含重複的 source path".to_string());
+    }
+    let mut payload = Vec::new();
+    let mut files = Vec::with_capacity(entries.len());
+    for (path, bytes) in entries {
+        let offset = payload.len() as u64;
+        let size_bytes = bytes.len() as u64;
+        files.push(BundleArchiveFile {
+            path,
+            offset,
+            size_bytes,
+            sha256: digest_bytes(&bytes),
+        });
+        payload.extend_from_slice(&bytes);
+    }
+    let header = serde_json::to_vec(&BundleArchiveHeader { version: 1, files })
+        .map_err(|error| format!("序列化 asset bundle archive header 失敗：{error}"))?;
+    let header_len = u32::try_from(header.len())
+        .map_err(|_| "asset bundle archive header 超過 4 GiB".to_string())?;
+    let mut archive =
+        Vec::with_capacity(BUNDLE_ARCHIVE_MAGIC.len() + 4 + header.len() + payload.len());
+    archive.extend_from_slice(BUNDLE_ARCHIVE_MAGIC);
+    archive.extend_from_slice(&header_len.to_le_bytes());
+    archive.extend_from_slice(&header);
+    archive.extend_from_slice(&payload);
+    Ok(archive)
 }
 
 fn validate_pack_source(root: &Path, label: &str, source: &str) -> Result<(), Box<Diagnostic>> {
@@ -885,7 +1069,8 @@ mod tests {
     use crate::diagnostics::Diagnostic;
 
     use super::{
-        BundleFetcher, BundleManager, BundleManifest, BundleSpec, BundleVerifier, pack_project,
+        BUNDLE_ARCHIVE_MAGIC, BundleFetcher, BundleManager, BundleManifest, BundleSpec,
+        BundleVerifier, pack_project,
     };
 
     #[test]
@@ -949,6 +1134,57 @@ mod tests {
         let third = pack_project(dir.path(), None);
         assert!(third.ok);
         assert_eq!(third.value.unwrap().manifest_version, 2);
+    }
+
+    #[test]
+    fn packs_asset_archive_deterministically_and_declares_generated_bundle() {
+        let dir = tempdir().unwrap();
+        fs::create_dir_all(dir.path().join("scripts")).unwrap();
+        fs::create_dir_all(dir.path().join("scenes")).unwrap();
+        fs::create_dir_all(dir.path().join("assets")).unwrap();
+        fs::write(
+            dir.path().join("project.unone.json"),
+            br#"{"name":"AssetPackFixture","entry_script":"scripts/main.luau","main_scene":"scenes/main.scene.json","asset_manifest":"assets/manifest.json"}"#,
+        )
+        .unwrap();
+        fs::write(dir.path().join("scripts/main.luau"), b"return {}\n").unwrap();
+        fs::write(
+            dir.path().join("scenes/main.scene.json"),
+            br#"{"entities":[{"id":"bird","sprite":{"asset":"asset://bird"}}]}"#,
+        )
+        .unwrap();
+        fs::write(dir.path().join("assets/bird.svg"), b"<svg>bird</svg>").unwrap();
+        fs::write(
+            dir.path().join("assets/manifest.json"),
+            br#"{"version":1,"assets":[{"id":"asset://bird","source":"assets/bird.svg","kind":"texture2d","bundle":"content"}]}"#,
+        )
+        .unwrap();
+
+        let first = pack_project(dir.path(), None);
+        assert!(first.ok);
+        let first = first.value.unwrap();
+        assert_eq!(first.bundles.len(), 5);
+        let content = dir.path().join("bundles/content.bundle");
+        let first_bytes = fs::read(&content).unwrap();
+        assert!(first_bytes.starts_with(BUNDLE_ARCHIVE_MAGIC));
+        let header_len_offset = BUNDLE_ARCHIVE_MAGIC.len();
+        let header_len = u32::from_le_bytes(
+            first_bytes[header_len_offset..header_len_offset + 4]
+                .try_into()
+                .unwrap(),
+        ) as usize;
+        let header_start = header_len_offset + 4;
+        let header: serde_json::Value =
+            serde_json::from_slice(&first_bytes[header_start..header_start + header_len]).unwrap();
+        assert_eq!(header["version"], 1);
+        assert_eq!(header["files"][0]["path"], "assets/bird.svg");
+
+        let second = pack_project(dir.path(), None);
+        assert!(second.ok);
+        let second = second.value.unwrap();
+        assert_eq!(second.manifest_version, 1);
+        assert!(!second.manifest_changed);
+        assert_eq!(first_bytes, fs::read(content).unwrap());
     }
 
     #[test]

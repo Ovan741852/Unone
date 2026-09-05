@@ -9,11 +9,9 @@ $binaryPath = Join-Path $engineRoot 'target/debug/game.exe'
 
 Push-Location $engineRoot
 try {
-    if (-not (Test-Path -LiteralPath $binaryPath -PathType Leaf)) {
-        cargo build -p unone-cli
-        if ($LASTEXITCODE -ne 0) {
-            throw "unone-cli build failed with exit code $LASTEXITCODE"
-        }
+    cargo build -p unone-cli
+    if ($LASTEXITCODE -ne 0) {
+        throw "unone-cli build failed with exit code $LASTEXITCODE"
     }
 
     $messages = @(
@@ -66,7 +64,7 @@ try {
     if ($initialize.result.protocolVersion -ne '2025-11-25') {
         throw "Unexpected negotiated protocol version: $($initialize.result.protocolVersion)"
     }
-    if ($tools.result.tools.Count -ne 12) {
+    if ($tools.result.tools.Count -ne 13) {
         throw "Unexpected MCP tool count: $($tools.result.tools.Count)"
     }
     if ($run.result.isError -ne $false -or $runPayload.ok -ne $true) {

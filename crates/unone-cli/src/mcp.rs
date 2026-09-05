@@ -7,8 +7,9 @@ use std::{
 use anyhow::Result;
 use serde_json::{Map, Value, json};
 use unone_engine::{
-    BundleManager, Diagnostic, EngineResult, EngineRuntime, InputFrame, api_describe, api_search,
-    inspect_assets, inspect_project, pack_project, platform_capabilities,
+    AssetSpec, BundleManager, Diagnostic, EngineResult, EngineRuntime, InputFrame, api_describe,
+    api_search, init_asset_manifest, inspect_assets, inspect_assets_strict, inspect_project,
+    pack_project, platform_capabilities,
 };
 
 const LATEST_PROTOCOL_VERSION: &str = "2025-11-25";
@@ -219,6 +220,7 @@ fn tool_names() -> Vec<&'static str> {
     vec![
         "unone_project_inspect",
         "unone_asset_inspect",
+        "unone_asset_init",
         "unone_platform_capabilities",
         "unone_api_search",
         "unone_api_describe",
@@ -245,10 +247,30 @@ fn tool_definitions() -> Vec<Value> {
         tool(
             "unone_asset_inspect",
             "Inspect asset references",
-            "Compare main-scene sprite and mesh3d asset references with the game-owned asset manifest, source files, and declared bundle ids. Static inspection does not discover assets selected dynamically by Luau.",
-            object_schema(json!({})),
+            "Compare main-scene sprite and mesh3d asset references with the game-owned asset manifest, source files, and declared bundle ids. Static inspection does not discover assets selected dynamically by Luau. Set strict=true for a failing handoff/release gate.",
+            object_schema(json!({
+                "properties": {
+                    "strict": {"type": "boolean", "default": false, "description": "Turn unresolved static references and missing files into ok=false."}
+                }
+            })),
             true,
             true,
+        ),
+        tool(
+            "unone_asset_init",
+            "Initialize asset manifest",
+            "Create an empty version-1 asset manifest or add one explicit asset declaration. This writes only inside the current game project; it never creates or guesses source files.",
+            object_schema(json!({
+                "properties": {
+                    "output": {"type": "string", "description": "Optional manifest path relative to the project root."},
+                    "id": {"type": "string", "description": "Stable asset id; provide with source to append a declaration."},
+                    "source": {"type": "string", "description": "Project-relative source path; provide with id."},
+                    "kind": {"type": "string", "enum": ["texture2d", "mesh3d"], "default": "texture2d"},
+                    "bundle": {"type": "string", "default": "content"}
+                }
+            })),
+            false,
+            false,
         ),
         tool(
             "unone_platform_capabilities",
@@ -401,7 +423,57 @@ fn object_schema(extra: Value) -> Value {
 fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
     match name {
         "unone_project_inspect" => tool_result(inspect_project(project)),
-        "unone_asset_inspect" => tool_result(inspect_assets(project)),
+        "unone_asset_inspect" => match optional_bool(arguments, "strict", false) {
+            Ok(strict) => tool_result(if strict {
+                inspect_assets_strict(project)
+            } else {
+                inspect_assets(project)
+            }),
+            Err(diagnostic) => argument_error(*diagnostic),
+        },
+        "unone_asset_init" => {
+            let output = match optional_string(arguments, "output") {
+                Ok(output) => output,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let id = match optional_string(arguments, "id") {
+                Ok(id) => id,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let source = match optional_string(arguments, "source") {
+                Ok(source) => source,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let kind = match optional_string(arguments, "kind") {
+                Ok(kind) => kind.unwrap_or_else(|| "texture2d".to_string()),
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let bundle = match optional_string(arguments, "bundle") {
+                Ok(bundle) => bundle.unwrap_or_else(|| "content".to_string()),
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let new_asset = match (id, source) {
+                (None, None) => None,
+                (Some(id), Some(source)) => Some(AssetSpec {
+                    id,
+                    source,
+                    kind,
+                    bundle,
+                }),
+                _ => {
+                    return argument_error(Diagnostic::error(
+                        "ASSET_INIT_ARGUMENT_INVALID",
+                        "asset init 的 id 與 source 必須成對提供",
+                        "新增 asset declaration 時同時提供 id 與 source；不帶兩者只建立空 manifest。",
+                    ));
+                }
+            };
+            tool_result(init_asset_manifest(
+                project,
+                output.as_deref().map(Path::new),
+                new_asset,
+            ))
+        }
         "unone_platform_capabilities" => tool_result(platform_capabilities()),
         "unone_api_search" => match required_string(arguments, "meaning") {
             Ok(meaning) => {
@@ -646,7 +718,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 12);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 13);
     }
 
     #[test]

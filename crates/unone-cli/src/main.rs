@@ -3,8 +3,9 @@ use std::{borrow::Cow, fs, path::PathBuf, process::ExitCode, sync::Arc};
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use unone_engine::{
-    BundleManager, Camera3DData, EngineResult, EngineRuntime, InputFrame, Vec2, Vec3,
-    WorldSnapshot, api_describe, api_search, inspect_assets, inspect_project, pack_project,
+    AssetSpec, BundleManager, Camera3DData, EngineResult, EngineRuntime, InputFrame, Vec2, Vec3,
+    WorldSnapshot, api_describe, api_search, init_asset_manifest, inspect_assets,
+    inspect_assets_strict, inspect_project, pack_project,
 };
 use winit::{
     application::ApplicationHandler,
@@ -81,7 +82,23 @@ enum ProjectCommand {
 #[derive(Debug, Subcommand)]
 enum AssetCommand {
     /// Inspect static scene asset references against the game-owned manifest.
-    Inspect,
+    Inspect {
+        #[arg(long, help = "Turn unresolved static references into a failing gate")]
+        strict: bool,
+    },
+    /// Create an empty manifest or add one explicit asset declaration.
+    Init {
+        #[arg(long, help = "Manifest path relative to the project root")]
+        output: Option<PathBuf>,
+        #[arg(long, help = "Stable asset id, for example asset://characters/hero")]
+        id: Option<String>,
+        #[arg(long, help = "Source path relative to the project root")]
+        source: Option<String>,
+        #[arg(long, default_value = "texture2d")]
+        kind: String,
+        #[arg(long, default_value = "content")]
+        bundle: String,
+    },
 }
 
 #[derive(Debug, Subcommand)]
@@ -125,7 +142,59 @@ fn run() -> Result<ExitCode> {
             ProjectCommand::Inspect => print_result(inspect_project(&cli.project), cli.json),
         },
         Command::Asset { command } => match command {
-            AssetCommand::Inspect => print_result(inspect_assets(&cli.project), cli.json),
+            AssetCommand::Inspect { strict } => print_result(
+                if strict {
+                    inspect_assets_strict(&cli.project)
+                } else {
+                    inspect_assets(&cli.project)
+                },
+                cli.json,
+            ),
+            AssetCommand::Init {
+                output,
+                id,
+                source,
+                kind,
+                bundle,
+            } => {
+                let new_asset = match (id, source) {
+                    (None, None) => None,
+                    (Some(id), Some(source)) => Some(AssetSpec {
+                        id,
+                        source,
+                        kind,
+                        bundle,
+                    }),
+                    (None, Some(_)) => {
+                        return print_result(
+                            EngineResult::<serde_json::Value>::failure(
+                                unone_engine::Diagnostic::error(
+                                    "ASSET_INIT_ARGUMENT_INVALID",
+                                    "asset init 的 source 缺少 id",
+                                    "--source 只能和 --id 一起使用；不帶 id 時只建立空 manifest。",
+                                ),
+                            ),
+                            cli.json,
+                        );
+                    }
+                    (Some(_), None) => {
+                        return print_result(
+                            EngineResult::<serde_json::Value>::failure(
+                                unone_engine::Diagnostic::error(
+                                    "ASSET_INIT_ARGUMENT_INVALID",
+                                    "asset init 的 id 缺少 source",
+                                    "新增 asset declaration 時必須同時提供 --id 與 --source。",
+                                ),
+                            ),
+                            cli.json,
+                        );
+                    }
+                };
+                print_result(
+                    init_asset_manifest(&cli.project, output.as_deref(), new_asset),
+                    cli.json,
+                )
+            }
         },
         Command::Api { command } => match command {
             ApiCommand::Search { meaning } => {

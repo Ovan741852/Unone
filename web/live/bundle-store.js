@@ -1,5 +1,15 @@
 const DB_VERSION = 1;
 const DB_NAME = "unone-live-bundles";
+// The current Web C ABI exposes one verifier state per Wasm module. Asset
+// elements can resolve concurrently, so keep begin/write/finish transactions
+// serialized at the host boundary.
+let verifierTail = Promise.resolve();
+
+function withVerifier(operation) {
+  const result = verifierTail.then(operation, operation);
+  verifierTail = result.catch(() => {});
+  return result;
+}
 
 function engineError(code, summary, explanation, facts = {}) {
   const error = new Error(`${code}: ${summary}`);
@@ -81,38 +91,41 @@ function moduleJson(module) {
   return JSON.parse(new TextDecoder().decode(bytes));
 }
 
-function feedChunk(module, chunk) {
+function feedChunk(module, chunk, bundleId = null) {
   const bytes = chunk instanceof Uint8Array ? chunk : new Uint8Array(chunk);
   const pointer = module._unone_web_alloc(bytes.byteLength);
   if (bytes.byteLength > 0) module.HEAPU8.set(bytes, pointer);
   if (module._unone_web_bundle_write(pointer, bytes.byteLength) !== 0) {
     const result = moduleJson(module);
-    throw engineError(result.diagnostic?.code ?? "BUNDLE_VERIFY_FAILED", "bundle chunk verification failed", result.diagnostic?.explanation ?? "The engine rejected a bundle chunk.", result.diagnostic?.facts ?? {});
+    throw engineError(result.diagnostic?.code ?? "BUNDLE_VERIFY_FAILED", "bundle chunk verification failed", result.diagnostic?.explanation ?? result.error ?? "The engine rejected a bundle chunk.", { ...(result.diagnostic?.facts ?? result), bundle_id: bundleId });
   }
 }
 
 async function verifyBlob(module, spec, blob) {
-  const specBytes = new TextEncoder().encode(JSON.stringify(spec));
-  const specPointer = module._unone_web_alloc(specBytes.byteLength);
-  module.HEAPU8.set(specBytes, specPointer);
-  if (module._unone_web_bundle_begin(specPointer, specBytes.byteLength) !== 0) {
-    throw engineError("BUNDLE_VERIFY_FAILED", "bundle verifier could not start", JSON.stringify(moduleJson(module)));
-  }
-  const reader = blob.stream().getReader();
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      feedChunk(module, value);
+  return withVerifier(async () => {
+    const specBytes = new TextEncoder().encode(JSON.stringify(spec));
+    const specPointer = module._unone_web_alloc(specBytes.byteLength);
+    module.HEAPU8.set(specBytes, specPointer);
+    if (module._unone_web_bundle_begin(specPointer, specBytes.byteLength) !== 0) {
+      const result = moduleJson(module);
+      throw engineError(result.diagnostic?.code ?? "BUNDLE_VERIFY_FAILED", "bundle verifier could not start", result.diagnostic?.explanation ?? result.error ?? JSON.stringify(result), result.diagnostic?.facts ?? result);
     }
-  } finally {
-    reader.releaseLock();
-  }
-  if (module._unone_web_bundle_finish() !== 0) {
-    const result = moduleJson(module);
-    throw engineError(result.diagnostic?.code ?? "BUNDLE_VERIFY_FAILED", "bundle verification failed", result.diagnostic?.explanation ?? "The engine rejected the bundle.", result.diagnostic?.facts ?? {});
-  }
-  return moduleJson(module).value;
+    const reader = blob.stream().getReader();
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        feedChunk(module, value, spec.id);
+      }
+    } finally {
+      reader.releaseLock();
+    }
+    if (module._unone_web_bundle_finish() !== 0) {
+      const result = moduleJson(module);
+      throw engineError(result.diagnostic?.code ?? "BUNDLE_VERIFY_FAILED", "bundle verification failed", result.diagnostic?.explanation ?? "The engine rejected the bundle.", result.diagnostic?.facts ?? {});
+    }
+    return moduleJson(module).value;
+  });
 }
 
 async function getBundleRecord(database, sha256) {
@@ -143,27 +156,32 @@ async function fetchBlobAndVerify(module, spec, fetchImpl) {
     await verifyBlob(module, spec, blob);
     return blob;
   }
-  const reader = response.body.getReader();
-  const chunks = [];
-  const specBytes = new TextEncoder().encode(JSON.stringify(spec));
-  const specPointer = module._unone_web_alloc(specBytes.byteLength);
-  module.HEAPU8.set(specBytes, specPointer);
-  if (module._unone_web_bundle_begin(specPointer, specBytes.byteLength) !== 0) throw engineError("BUNDLE_VERIFY_FAILED", "bundle verifier could not start", JSON.stringify(moduleJson(module)));
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      chunks.push(value);
-      feedChunk(module, value);
+  return withVerifier(async () => {
+    const reader = response.body.getReader();
+    const chunks = [];
+    const specBytes = new TextEncoder().encode(JSON.stringify(spec));
+    const specPointer = module._unone_web_alloc(specBytes.byteLength);
+    module.HEAPU8.set(specBytes, specPointer);
+    if (module._unone_web_bundle_begin(specPointer, specBytes.byteLength) !== 0) {
+      const result = moduleJson(module);
+      throw engineError(result.diagnostic?.code ?? "BUNDLE_VERIFY_FAILED", "bundle verifier could not start", result.diagnostic?.explanation ?? result.error ?? JSON.stringify(result), result.diagnostic?.facts ?? result);
     }
-  } finally {
-    reader.releaseLock();
-  }
-  if (module._unone_web_bundle_finish() !== 0) {
-    const result = moduleJson(module);
-    throw engineError(result.diagnostic?.code ?? "BUNDLE_VERIFY_FAILED", "bundle verification failed", result.diagnostic?.explanation ?? "The engine rejected the bundle.", result.diagnostic?.facts ?? {});
-  }
-  return new Blob(chunks);
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        feedChunk(module, value, spec.id);
+      }
+    } finally {
+      reader.releaseLock();
+    }
+    if (module._unone_web_bundle_finish() !== 0) {
+      const result = moduleJson(module);
+      throw engineError(result.diagnostic?.code ?? "BUNDLE_VERIFY_FAILED", "bundle verification failed", result.diagnostic?.explanation ?? "The engine rejected the bundle.", result.diagnostic?.facts ?? {});
+    }
+    return new Blob(chunks);
+  });
 }
 
 /**
@@ -228,4 +246,51 @@ export async function readActiveBundle(generationState, bundleId, module, manife
 export async function readActiveText(generationState, bundleId, module, manifestInput) {
   const blob = await readActiveBundle(generationState, bundleId, module, manifestInput);
   return new TextDecoder().decode(await blob.arrayBuffer());
+}
+
+const ASSET_ARCHIVE_MAGIC = new TextEncoder().encode("UNONE-BUNDLE-1\n");
+
+/**
+ * Read one file from an engine-produced uncompressed asset bundle. The
+ * archive is deliberately a host/content boundary: Rust writes deterministic
+ * bytes and verifies the outer bundle hash; the Web host resolves a file to a
+ * Blob URL and owns its lifetime.
+ */
+export async function readActiveAsset(generationState, asset, module, manifestInput) {
+  if (!asset || typeof asset.bundle !== "string" || typeof asset.source !== "string") {
+    throw engineError("ASSET_SPEC_INVALID", "asset spec is incomplete", "An asset needs source and bundle before a host can resolve it.");
+  }
+  const bundle = await readActiveBundle(generationState, asset.bundle, module, manifestInput);
+  const bytes = new Uint8Array(await bundle.arrayBuffer());
+  const headerLengthOffset = ASSET_ARCHIVE_MAGIC.byteLength;
+  const headerOffset = headerLengthOffset + 4;
+  const matchesMagic = ASSET_ARCHIVE_MAGIC.every((value, index) => bytes[index] === value);
+  if (!matchesMagic || bytes.byteLength < headerOffset) {
+    throw engineError("ASSET_ARCHIVE_INVALID", `asset bundle '${asset.bundle}' is invalid`, "The active bundle is not an engine asset archive.");
+  }
+  const headerLength = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint32(headerLengthOffset, true);
+  const payloadOffset = headerOffset + headerLength;
+  if (payloadOffset > bytes.byteLength) {
+    throw engineError("ASSET_ARCHIVE_INVALID", `asset bundle '${asset.bundle}' has an invalid header`, "The archive header extends beyond the verified bundle bytes.");
+  }
+  let header;
+  try {
+    header = JSON.parse(new TextDecoder().decode(bytes.slice(headerOffset, payloadOffset)));
+  } catch (error) {
+    throw engineError("ASSET_ARCHIVE_INVALID", `asset bundle '${asset.bundle}' has invalid metadata`, `The archive header is not valid JSON: ${error.message}.`);
+  }
+  if (header?.version !== 1 || !Array.isArray(header.files)) {
+    throw engineError("ASSET_ARCHIVE_INVALID", `asset bundle '${asset.bundle}' has an unsupported version`, "Only asset archive version 1 is supported by this host.");
+  }
+  const source = asset.source.replaceAll("\\", "/");
+  const entry = header.files.find((candidate) => candidate?.path === source);
+  if (!entry || !Number.isSafeInteger(entry.offset) || !Number.isSafeInteger(entry.size_bytes) || entry.offset < 0 || entry.size_bytes < 0) {
+    throw engineError("ASSET_NOT_IN_BUNDLE", `asset '${asset.id}' is not in bundle '${asset.bundle}'`, "The asset manifest source does not match an entry in the active archive.", { asset_id: asset.id, source, bundle: asset.bundle });
+  }
+  const start = payloadOffset + entry.offset;
+  const end = start + entry.size_bytes;
+  if (end > bytes.byteLength) {
+    throw engineError("ASSET_ARCHIVE_INVALID", `asset '${asset.id}' has an out-of-range entry`, "The archive metadata points outside the verified bundle bytes.");
+  }
+  return bytes.slice(start, end);
 }

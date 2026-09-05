@@ -12,7 +12,9 @@ pub use api::{
     ApiDescriptor, ApiParameter, ApiSearchReport, describe as api_describe, search as api_search,
 };
 pub use asset::{
-    AssetInspectReport, AssetManifest, AssetReference, AssetSpec, inspect as inspect_assets,
+    AssetInitReport, AssetInspectBlocker, AssetInspectReport, AssetManifest, AssetReference,
+    AssetSpec, StaticReferenceScope, init_asset_manifest, inspect as inspect_assets,
+    inspect_strict as inspect_assets_strict,
 };
 pub use bundle::{
     BundleFetcher, BundleManager, BundleManifest, BundlePackReport, BundleReport, BundleSpec,

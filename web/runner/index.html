@@ -14,6 +14,8 @@
       .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
       #game-shell { position: relative; min-width: 0; }
       canvas { display: block; width: 100%; aspect-ratio: 16 / 9; border: 1px solid #334155; border-radius: 10px; background: #111827; touch-action: none; }
+      #asset-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+      .unone-asset-sprite { position: absolute; object-fit: contain; transform: translate(-50%, -50%); user-select: none; pointer-events: none; }
       #ui-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
       .unone-ui-node { position: absolute; box-sizing: border-box; overflow: hidden; color: #f8fafc; text-align: left; }
       .unone-ui-text { padding: 2px 4px; }
@@ -32,6 +34,7 @@
       <div class="layout">
         <div id="game-shell">
           <canvas id="game" data-testid="game-canvas" aria-label="Unone generic game viewport"></canvas>
+          <div id="asset-layer" data-testid="asset-layer" aria-label="Resolved game assets"></div>
           <div id="ui-layer" data-testid="ui-layer" aria-label="Engine declarative UI"></div>
         </div>
         <aside>
@@ -41,7 +44,7 @@
         </aside>
       </div>
     </main>
-    <script type="module" src="./main.js?v=2"></script>
+    <script type="module" src="./main.js?v=3"></script>
     <script>
       var Module = {
         noInitialRun: true,

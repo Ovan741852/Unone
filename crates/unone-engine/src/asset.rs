@@ -8,10 +8,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     bundle::BundleManifest,
-    diagnostics::{ActionSuggestion, Diagnostic, EngineResult},
+    diagnostics::{ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult},
     project::{ProjectFileStatus, ProjectPaths},
     world::SceneFile,
 };
+
+pub const SUPPORTED_ASSET_MANIFEST_VERSION: u32 = 1;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct AssetManifest {
@@ -50,7 +52,91 @@ pub struct AssetInspectReport {
     pub missing_sources: Vec<String>,
     pub undeclared_bundles: Vec<String>,
     pub unreferenced_asset_ids: Vec<String>,
-    pub static_reference_scope: String,
+    pub static_reference_scope: StaticReferenceScope,
+    pub ready_for_packaging: bool,
+    pub blockers: Vec<AssetInspectBlocker>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct StaticReferenceScope {
+    pub roots_inspected: Vec<String>,
+    pub components_inspected: Vec<String>,
+    pub dynamic_luau_assets_included: bool,
+    pub limitations: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct AssetInspectBlocker {
+    pub code: String,
+    pub items: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct AssetInitReport {
+    pub manifest: String,
+    pub created: bool,
+    pub added_asset: Option<AssetSpec>,
+    pub assets: Vec<AssetSpec>,
+}
+
+pub(crate) fn load_for_pack(root: &Path, path: &Path) -> Result<AssetManifest, Box<Diagnostic>> {
+    let text = fs::read_to_string(path).map_err(|error| {
+        Box::new(Diagnostic::error(
+            "ASSET_MANIFEST_READ_FAILED",
+            "無法讀取 asset manifest",
+            format!("{}：{}", path.display(), error),
+        ))
+    })?;
+    let manifest: AssetManifest = serde_json::from_str(&text).map_err(|error| {
+        Box::new(Diagnostic::error(
+            "ASSET_MANIFEST_INVALID",
+            "asset manifest 不是有效 JSON",
+            format!("{}：{}", path.display(), error),
+        ))
+    })?;
+    if manifest.version != SUPPORTED_ASSET_MANIFEST_VERSION {
+        return Err(Box::new(Diagnostic::error(
+            "ASSET_MANIFEST_VERSION_INVALID",
+            "asset manifest version 無效",
+            format!(
+                "目前只支援 asset manifest version {}，不會把未支援的版本靜默當成目前格式。",
+                SUPPORTED_ASSET_MANIFEST_VERSION
+            ),
+        )));
+    }
+    let mut ids = BTreeSet::new();
+    for asset in &manifest.assets {
+        validate_asset_spec(asset)?;
+        if !ids.insert(asset.id.clone()) {
+            return Err(Box::new(Diagnostic::error(
+                "ASSET_MANIFEST_DUPLICATE_ID",
+                "asset manifest 有重複的 asset id",
+                format!("asset id '{}' 只能宣告一次。", asset.id),
+            )));
+        }
+        let source = root.join(&asset.source);
+        if !source.is_file() {
+            return Err(Box::new(Diagnostic::error(
+                "ASSET_SOURCE_NOT_FOUND",
+                "找不到 asset source",
+                format!(
+                    "asset '{}' 指向 '{}'，但 source 檔案不存在。",
+                    asset.id, asset.source
+                ),
+            )));
+        }
+        if !source_is_within_root(root, &asset.source) {
+            return Err(Box::new(Diagnostic::error(
+                "ASSET_SOURCE_SYMLINK_OUTSIDE_PROJECT",
+                "asset source symlink 超出專案根目錄",
+                format!(
+                    "asset '{}' 的 source '{}' 解析後不在專案根目錄內；禁止透過 symlink 把專案外檔案打進 bundle。",
+                    asset.id, asset.source
+                ),
+            )));
+        }
+    }
+    Ok(manifest)
 }
 
 fn default_manifest_version() -> u32 {
@@ -89,11 +175,22 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
             manifest_version: None,
             assets: Vec::new(),
             references: references.clone(),
-            missing_asset_ids: sorted_unique(references.iter().map(|reference| reference.id.clone())),
+            missing_asset_ids: sorted_unique(
+                references.iter().map(|reference| reference.id.clone()),
+            ),
             missing_sources: Vec::new(),
             undeclared_bundles: Vec::new(),
             unreferenced_asset_ids: Vec::new(),
-            static_reference_scope: "main_scene only; assets created or selected by Luau are not statically discoverable".to_string(),
+            static_reference_scope: static_reference_scope(&paths),
+            ready_for_packaging: references.is_empty(),
+            blockers: if references.is_empty() {
+                Vec::new()
+            } else {
+                vec![AssetInspectBlocker {
+                    code: "ASSET_MANIFEST_MISSING".to_string(),
+                    items: sorted_unique(references.iter().map(|reference| reference.id.clone())),
+                }]
+            },
         };
         let mut result = EngineResult::success(report);
         if !references.is_empty() {
@@ -144,11 +241,14 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
             ));
         }
     };
-    if manifest.version == 0 {
+    if manifest.version != SUPPORTED_ASSET_MANIFEST_VERSION {
         return EngineResult::failure(Diagnostic::error(
             "ASSET_MANIFEST_VERSION_INVALID",
             "asset manifest version 無效",
-            "asset manifest version 必須是大於 0 的整數。",
+            format!(
+                "目前只支援 asset manifest version {}，不會把未支援的版本靜默當成目前格式。",
+                SUPPORTED_ASSET_MANIFEST_VERSION
+            ),
         ));
     }
 
@@ -156,6 +256,18 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
     for asset in &manifest.assets {
         if let Err(diagnostic) = validate_asset_spec(asset) {
             return EngineResult::failure(*diagnostic);
+        }
+        if paths.root.join(&asset.source).is_file()
+            && !source_is_within_root(&paths.root, &asset.source)
+        {
+            return EngineResult::failure(Diagnostic::error(
+                "ASSET_SOURCE_SYMLINK_OUTSIDE_PROJECT",
+                "asset source symlink 超出專案根目錄",
+                format!(
+                    "asset '{}' 的 source '{}' 解析後不在專案根目錄內；禁止 host 或 bundle pack 讀取專案外檔案。",
+                    asset.id, asset.source
+                ),
+            ));
         }
         if by_id.insert(asset.id.clone(), asset).is_some() {
             let mut diagnostic = Diagnostic::error(
@@ -209,13 +321,36 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
         manifest_version: Some(manifest.version),
         assets: manifest.assets,
         references,
-        missing_asset_ids,
-        missing_sources,
-        undeclared_bundles,
+        missing_asset_ids: missing_asset_ids.clone(),
+        missing_sources: missing_sources.clone(),
+        undeclared_bundles: undeclared_bundles.clone(),
         unreferenced_asset_ids,
-        static_reference_scope:
-            "main_scene only; assets created or selected by Luau are not statically discoverable"
-                .to_string(),
+        static_reference_scope: static_reference_scope(&paths),
+        ready_for_packaging: missing_asset_ids.is_empty()
+            && missing_sources.is_empty()
+            && undeclared_bundles.is_empty(),
+        blockers: {
+            let mut blockers = Vec::new();
+            if !missing_asset_ids.is_empty() {
+                blockers.push(AssetInspectBlocker {
+                    code: "ASSET_REFERENCE_MISSING".to_string(),
+                    items: missing_asset_ids.clone(),
+                });
+            }
+            if !missing_sources.is_empty() {
+                blockers.push(AssetInspectBlocker {
+                    code: "ASSET_SOURCE_MISSING".to_string(),
+                    items: missing_sources.clone(),
+                });
+            }
+            if !undeclared_bundles.is_empty() {
+                blockers.push(AssetInspectBlocker {
+                    code: "ASSET_BUNDLE_NOT_DECLARED".to_string(),
+                    items: undeclared_bundles.clone(),
+                });
+            }
+            blockers
+        },
     };
     let mut result = EngineResult::success(report);
     if let Some(report) = result.value.as_ref() {
@@ -230,7 +365,10 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
                 action: "declare_asset".to_string(),
                 description: "在 asset manifest 以相同 id 宣告 source、kind 與 bundle。"
                     .to_string(),
-                command: Some("game asset inspect --json".to_string()),
+                command: Some(
+                    "game asset init --id \"<asset-id>\" --source \"<project-relative-source>\" --json"
+                        .to_string(),
+                ),
             });
             result.diagnostics.push(diagnostic);
         }
@@ -256,6 +394,246 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
     result
 }
 
+/// Create or extend the game's asset manifest without inventing source files.
+///
+/// This is a developer-tool operation. Runtime hosts consume the resulting
+/// JSON contract but do not walk the project or call this function.
+pub fn init_asset_manifest(
+    project_root: impl AsRef<Path>,
+    output_path: Option<&Path>,
+    new_asset: Option<AssetSpec>,
+) -> EngineResult<AssetInitReport> {
+    let (_config, paths) = match ProjectPaths::discover(project_root) {
+        Ok(value) => value,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let root = match fs::canonicalize(&paths.root) {
+        Ok(root) => root,
+        Err(error) => {
+            return EngineResult::failure(Diagnostic::error(
+                "PROJECT_ROOT_NOT_FOUND",
+                "找不到 Unone 專案根目錄",
+                format!("{}：{}", paths.root.display(), error),
+            ));
+        }
+    };
+    let candidate = output_path
+        .map(|path| {
+            if path.is_absolute() {
+                path.to_path_buf()
+            } else {
+                root.join(path)
+            }
+        })
+        .or_else(|| {
+            paths
+                .asset_manifest
+                .as_ref()
+                .map(|path| root.join(relative_path(&paths.root, path)))
+        })
+        .unwrap_or_else(|| root.join("assets/manifest.json"));
+    if !candidate.starts_with(&root) {
+        return EngineResult::failure(Diagnostic::error(
+            "ASSET_MANIFEST_OUTPUT_OUTSIDE_PROJECT",
+            "asset manifest 輸出位置超出專案根目錄",
+            "asset init 只會修改目前遊戲專案內的 manifest 與 project config。",
+        ));
+    }
+    if candidate.exists() && !source_is_within_root(&root, &relative_path(&root, &candidate)) {
+        return EngineResult::failure(Diagnostic::error(
+            "ASSET_MANIFEST_SYMLINK_OUTSIDE_PROJECT",
+            "asset manifest symlink 超出專案根目錄",
+            "不會透過 symlink 修改專案外的 manifest。",
+        ));
+    }
+
+    let mut manifest = if candidate.is_file() {
+        let text = match fs::read_to_string(&candidate) {
+            Ok(text) => text,
+            Err(error) => {
+                return EngineResult::failure(Diagnostic::error(
+                    "ASSET_MANIFEST_READ_FAILED",
+                    "無法讀取 asset manifest",
+                    format!("{}：{}", candidate.display(), error),
+                ));
+            }
+        };
+        match serde_json::from_str::<AssetManifest>(&text) {
+            Ok(manifest) => manifest,
+            Err(error) => {
+                return EngineResult::failure(Diagnostic::error(
+                    "ASSET_MANIFEST_INVALID",
+                    "asset manifest 不是有效 JSON",
+                    format!("{}：{}", candidate.display(), error),
+                ));
+            }
+        }
+    } else {
+        AssetManifest {
+            version: SUPPORTED_ASSET_MANIFEST_VERSION,
+            assets: Vec::new(),
+        }
+    };
+    if manifest.version != SUPPORTED_ASSET_MANIFEST_VERSION {
+        return EngineResult::failure(Diagnostic::error(
+            "ASSET_MANIFEST_VERSION_INVALID",
+            "asset manifest version 無效",
+            format!(
+                "目前只支援 asset manifest version {}。",
+                SUPPORTED_ASSET_MANIFEST_VERSION
+            ),
+        ));
+    }
+    let mut ids = BTreeSet::new();
+    for asset in &manifest.assets {
+        if let Err(diagnostic) = validate_asset_spec(asset) {
+            return EngineResult::failure(*diagnostic);
+        }
+        if !ids.insert(asset.id.clone()) {
+            return EngineResult::failure(Diagnostic::error(
+                "ASSET_MANIFEST_DUPLICATE_ID",
+                "asset manifest 有重複的 asset id",
+                format!("asset id '{}' 只能宣告一次。", asset.id),
+            ));
+        }
+    }
+    if let Some(asset) = &new_asset {
+        if let Err(diagnostic) = validate_asset_spec(asset) {
+            return EngineResult::failure(*diagnostic);
+        }
+        if !ids.insert(asset.id.clone()) {
+            return EngineResult::failure(Diagnostic::error(
+                "ASSET_MANIFEST_DUPLICATE_ID",
+                "asset manifest 已有相同的 asset id",
+                format!(
+                    "asset id '{}' 已存在，避免 asset init 靜默覆蓋既有宣告。",
+                    asset.id
+                ),
+            ));
+        }
+        manifest.assets.push(asset.clone());
+    }
+    let created = !candidate.is_file();
+    let changed = created || new_asset.is_some();
+    if changed {
+        let bytes = match serde_json::to_vec_pretty(&manifest) {
+            Ok(bytes) => bytes,
+            Err(error) => {
+                return EngineResult::failure(Diagnostic::error(
+                    "ASSET_MANIFEST_WRITE_FAILED",
+                    "無法序列化 asset manifest",
+                    error.to_string(),
+                ));
+            }
+        };
+        if let Some(parent) = candidate.parent()
+            && let Err(error) = fs::create_dir_all(parent)
+        {
+            return EngineResult::failure(Diagnostic::error(
+                "ASSET_MANIFEST_WRITE_FAILED",
+                "無法建立 asset manifest 目錄",
+                format!("{}：{}", parent.display(), error),
+            ));
+        }
+        if let Err(error) = fs::write(&candidate, bytes) {
+            return EngineResult::failure(Diagnostic::error(
+                "ASSET_MANIFEST_WRITE_FAILED",
+                "無法寫入 asset manifest",
+                format!("{}：{}", candidate.display(), error),
+            ));
+        }
+    }
+
+    let manifest_relative = relative_path(&root, &candidate);
+    let config_path = root.join("project.unone.json");
+    let config_text = match fs::read_to_string(&config_path) {
+        Ok(text) => text,
+        Err(error) => {
+            return EngineResult::failure(Diagnostic::error(
+                "PROJECT_CONFIG_READ_FAILED",
+                "無法更新 asset manifest 設定",
+                format!("{}：{}", config_path.display(), error),
+            ));
+        }
+    };
+    let mut config_json: serde_json::Value = match serde_json::from_str(&config_text) {
+        Ok(config_json) => config_json,
+        Err(error) => {
+            return EngineResult::failure(Diagnostic::error(
+                "PROJECT_CONFIG_INVALID",
+                "Unone 專案設定不是有效 JSON",
+                error.to_string(),
+            ));
+        }
+    };
+    let Some(config_object) = config_json.as_object_mut() else {
+        return EngineResult::failure(Diagnostic::error(
+            "PROJECT_CONFIG_INVALID",
+            "專案設定必須是 JSON object",
+            "asset init 需要在 project.unone.json 設定 asset_manifest。",
+        ));
+    };
+    let config_changed = config_object
+        .get("asset_manifest")
+        .and_then(|value| value.as_str())
+        != Some(&manifest_relative);
+    if config_changed {
+        config_object.insert(
+            "asset_manifest".to_string(),
+            serde_json::Value::String(manifest_relative.clone()),
+        );
+        let bytes = match serde_json::to_vec_pretty(&config_json) {
+            Ok(bytes) => bytes,
+            Err(error) => {
+                return EngineResult::failure(Diagnostic::error(
+                    "PROJECT_CONFIG_WRITE_FAILED",
+                    "無法序列化專案設定",
+                    error.to_string(),
+                ));
+            }
+        };
+        if let Err(error) = fs::write(config_path, bytes) {
+            return EngineResult::failure(Diagnostic::error(
+                "PROJECT_CONFIG_WRITE_FAILED",
+                "無法更新 asset_manifest 設定",
+                error.to_string(),
+            ));
+        }
+    }
+
+    EngineResult::success(AssetInitReport {
+        manifest: candidate.display().to_string(),
+        created,
+        added_asset: new_asset,
+        assets: manifest.assets,
+    })
+}
+
+/// Turn static asset warnings into a build/CI gate failure.
+///
+/// inspect remains useful while an AI is authoring a project: it returns the
+/// partial report and explains unresolved references. A release or handoff
+/// gate must call this strict form so ok=false cannot be mistaken for a
+/// verified content contract.
+pub fn inspect_strict(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectReport> {
+    let mut result = inspect(project_root);
+    if result.ok {
+        let has_warning = result
+            .diagnostics
+            .iter()
+            .any(|diagnostic| matches!(diagnostic.severity, DiagnosticSeverity::Warning));
+        if has_warning {
+            result.ok = false;
+            for diagnostic in &mut result.diagnostics {
+                if matches!(diagnostic.severity, DiagnosticSeverity::Warning) {
+                    diagnostic.severity = DiagnosticSeverity::Error;
+                }
+            }
+        }
+    }
+    result
+}
+
 fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnostic>> {
     if !looks_like_asset_id(&asset.id) {
         let mut diagnostic = Diagnostic::error(
@@ -269,11 +647,24 @@ fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnostic>> {
         diagnostic.facts = serde_json::json!({"asset_id": asset.id});
         return Err(Box::new(diagnostic));
     }
-    if asset.kind.trim().is_empty() || asset.bundle.trim().is_empty() {
+    if !is_supported_asset_kind(&asset.kind) || asset.bundle.trim().is_empty() {
         return Err(Box::new(Diagnostic::error(
             "ASSET_SPEC_INVALID",
-            "asset spec 缺少 kind 或 bundle",
-            format!("asset '{}' 的 kind 與 bundle 都不可為空。", asset.id),
+            "asset spec 的 kind 或 bundle 無效",
+            format!(
+                "asset '{}' 的 kind 必須是 texture2d 或 mesh3d，bundle 不可為空。",
+                asset.id
+            ),
+        )));
+    }
+    if !is_safe_bundle_id(&asset.bundle) {
+        return Err(Box::new(Diagnostic::error(
+            "ASSET_BUNDLE_ID_INVALID",
+            "asset bundle id 無效",
+            format!(
+                "asset '{}' 的 bundle '{}' 只能包含單一安全名稱，不能包含路徑分隔符。",
+                asset.id, asset.bundle
+            ),
         )));
     }
     if !is_project_relative(&asset.source) {
@@ -289,7 +680,9 @@ fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnostic>> {
     Ok(())
 }
 
-fn read_scene_references(paths: &ProjectPaths) -> Result<Vec<AssetReference>, Box<Diagnostic>> {
+pub(crate) fn read_scene_references(
+    paths: &ProjectPaths,
+) -> Result<Vec<AssetReference>, Box<Diagnostic>> {
     let Some(scene_path) = paths.main_scene.as_deref() else {
         return Ok(Vec::new());
     };
@@ -375,11 +768,49 @@ fn looks_like_asset_id(id: &str) -> bool {
 }
 
 fn is_project_relative(source: &str) -> bool {
+    if source.trim().is_empty() || source.contains('\\') || source.contains(':') {
+        return false;
+    }
     let path = Path::new(source);
     !path.is_absolute()
-        && !path
+        && path
             .components()
-            .any(|component| matches!(component, Component::ParentDir))
+            .all(|component| matches!(component, Component::Normal(_)))
+}
+
+fn source_is_within_root(root: &Path, source: &str) -> bool {
+    let Ok(root) = fs::canonicalize(root) else {
+        return false;
+    };
+    let Ok(path) = fs::canonicalize(root.join(source)) else {
+        return true;
+    };
+    path.starts_with(root)
+}
+
+fn relative_path(root: &Path, path: &Path) -> String {
+    path.strip_prefix(root)
+        .unwrap_or(path)
+        .components()
+        .filter_map(|component| match component {
+            Component::Normal(value) => Some(value.to_string_lossy().into_owned()),
+            _ => None,
+        })
+        .collect::<Vec<_>>()
+        .join("/")
+}
+
+fn is_supported_asset_kind(kind: &str) -> bool {
+    matches!(kind, "texture2d" | "mesh3d")
+}
+
+fn is_safe_bundle_id(bundle: &str) -> bool {
+    bundle != "."
+        && bundle != ".."
+        && !bundle.is_empty()
+        && !bundle.chars().any(|character| {
+            character == '/' || character == '\\' || character == ':' || character.is_whitespace()
+        })
 }
 
 fn sorted_unique(values: impl IntoIterator<Item = String>) -> Vec<String> {
@@ -388,6 +819,28 @@ fn sorted_unique(values: impl IntoIterator<Item = String>) -> Vec<String> {
         .collect::<BTreeSet<_>>()
         .into_iter()
         .collect()
+}
+
+fn static_reference_scope(paths: &ProjectPaths) -> StaticReferenceScope {
+    let mut roots_inspected = vec!["project.unone.json".to_string()];
+    if paths.main_scene.is_some() {
+        roots_inspected.push("main_scene".to_string());
+    }
+    if paths.asset_manifest.is_some() {
+        roots_inspected.push("asset_manifest".to_string());
+    }
+    if paths.bundle_manifest.is_some() {
+        roots_inspected.push("bundle_manifest".to_string());
+    }
+    StaticReferenceScope {
+        roots_inspected,
+        components_inspected: vec!["sprite".to_string(), "mesh3d".to_string()],
+        dynamic_luau_assets_included: false,
+        limitations: vec![
+            "Only main_scene static references are inspected.".to_string(),
+            "Assets created or selected dynamically by Luau are not discoverable here.".to_string(),
+        ],
+    }
 }
 
 fn missing_manifest_diagnostic(references: &[AssetReference]) -> Diagnostic {
@@ -401,7 +854,7 @@ fn missing_manifest_diagnostic(references: &[AssetReference]) -> Diagnostic {
     diagnostic.suggested_actions.push(ActionSuggestion {
         action: "declare_asset_manifest".to_string(),
         description: "在 project.unone.json 加入 asset_manifest，並為每個靜態 asset reference 宣告 source、kind 與 bundle。".to_string(),
-        command: Some("game asset inspect --json".to_string()),
+        command: Some("game asset init --json".to_string()),
     });
     diagnostic
 }
@@ -412,7 +865,7 @@ mod tests {
 
     use tempfile::tempdir;
 
-    use super::inspect;
+    use super::{AssetSpec, init_asset_manifest, inspect, inspect_strict, is_project_relative};
 
     fn write_project(root: &std::path::Path, config: &str, scene: &str) {
         fs::create_dir_all(root.join("scenes")).unwrap();
@@ -434,7 +887,22 @@ mod tests {
             result.value.as_ref().unwrap().missing_asset_ids,
             vec!["asset://bird"]
         );
+        assert!(!result.value.as_ref().unwrap().ready_for_packaging);
+        assert!(
+            !result
+                .value
+                .as_ref()
+                .unwrap()
+                .static_reference_scope
+                .dynamic_luau_assets_included
+        );
         assert_eq!(result.diagnostics[0].code, "ASSET_MANIFEST_MISSING");
+        assert_eq!(
+            result.diagnostics[0].suggested_actions[0]
+                .command
+                .as_deref(),
+            Some("game asset init --json")
+        );
     }
 
     #[test]
@@ -463,5 +931,103 @@ mod tests {
         assert_eq!(report.missing_sources, vec!["assets/bird.svg"]);
         assert_eq!(report.undeclared_bundles, vec!["content"]);
         assert_eq!(result.diagnostics.len(), 2);
+    }
+
+    #[test]
+    fn strict_inspection_turns_unresolved_references_into_a_gate_failure() {
+        let dir = tempdir().unwrap();
+        fs::create_dir_all(dir.path().join("assets")).unwrap();
+        write_project(
+            dir.path(),
+            r#"{"name":"asset-test","main_scene":"scenes/main.scene.json","asset_manifest":"assets/manifest.json"}"#,
+            r#"{"entities":[{"id":"bird","sprite":{"asset":"asset://missing"}}]}"#,
+        );
+        fs::write(
+            dir.path().join("assets/manifest.json"),
+            r#"{"version":1,"assets":[]}"#,
+        )
+        .unwrap();
+        let result = inspect_strict(dir.path());
+        assert!(!result.ok);
+        assert_eq!(result.diagnostics[0].code, "ASSET_REFERENCE_MISSING");
+        assert!(matches!(
+            result.diagnostics[0].severity,
+            crate::diagnostics::DiagnosticSeverity::Error
+        ));
+    }
+
+    #[test]
+    fn rejects_unsupported_manifest_version_and_kind() {
+        let dir = tempdir().unwrap();
+        fs::create_dir_all(dir.path().join("assets")).unwrap();
+        write_project(
+            dir.path(),
+            r#"{"name":"asset-test","main_scene":"scenes/main.scene.json","asset_manifest":"assets/manifest.json"}"#,
+            r#"{"entities":[{"id":"bird","sprite":{"asset":"asset://bird"}}]}"#,
+        );
+        fs::write(dir.path().join("assets/bird.svg"), b"svg").unwrap();
+        fs::write(
+            dir.path().join("assets/manifest.json"),
+            r#"{"version":2,"assets":[{"id":"asset://bird","source":"assets/bird.svg","kind":"texture2d","bundle":"content"}]}"#,
+        )
+        .unwrap();
+        let result = inspect(dir.path());
+        assert!(!result.ok);
+        assert_eq!(result.diagnostics[0].code, "ASSET_MANIFEST_VERSION_INVALID");
+
+        fs::write(
+            dir.path().join("assets/manifest.json"),
+            r#"{"version":1,"assets":[{"id":"asset://bird","source":"assets/bird.svg","kind":"typo","bundle":"content"}]}"#,
+        )
+        .unwrap();
+        let result = inspect(dir.path());
+        assert!(!result.ok);
+        assert_eq!(result.diagnostics[0].code, "ASSET_SPEC_INVALID");
+    }
+
+    #[test]
+    fn rejects_nonportable_asset_source_paths() {
+        assert!(!is_project_relative(""));
+        assert!(!is_project_relative("."));
+        assert!(!is_project_relative(r"assets\bird.svg"));
+        assert!(!is_project_relative("../outside.svg"));
+        assert!(!is_project_relative("C:/outside.svg"));
+        assert!(is_project_relative("assets/bird.svg"));
+    }
+
+    #[test]
+    fn asset_init_creates_contract_and_adds_explicit_declaration() {
+        let dir = tempdir().unwrap();
+        write_project(
+            dir.path(),
+            r#"{"name":"asset-init","main_scene":"scenes/main.scene.json"}"#,
+            r#"{"entities":[]}"#,
+        );
+        let first = init_asset_manifest(dir.path(), None, None);
+        assert!(first.ok);
+        assert!(first.value.as_ref().unwrap().created);
+        let manifest_path = dir.path().join("assets/manifest.json");
+        let manifest: super::AssetManifest =
+            serde_json::from_str(&fs::read_to_string(&manifest_path).unwrap()).unwrap();
+        assert_eq!(manifest.version, 1);
+        assert!(manifest.assets.is_empty());
+        let config: serde_json::Value = serde_json::from_str(
+            &fs::read_to_string(dir.path().join("project.unone.json")).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(config["asset_manifest"], "assets/manifest.json");
+
+        let second = init_asset_manifest(
+            dir.path(),
+            None,
+            Some(AssetSpec {
+                id: "asset://bird".to_string(),
+                source: "assets/bird.svg".to_string(),
+                kind: "texture2d".to_string(),
+                bundle: "content".to_string(),
+            }),
+        );
+        assert!(second.ok, "{:?}", second.diagnostics);
+        assert_eq!(second.value.unwrap().assets.len(), 1);
     }
 }
