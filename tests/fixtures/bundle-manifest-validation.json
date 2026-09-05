@@ -25,6 +25,9 @@
       "version": 1,
       "bundles": []
     },
+    "missing_bundles": {
+      "version": 1
+    },
     "empty_id": {
       "version": 1,
       "bundles": [

@@ -14,6 +14,7 @@ use crate::{
 };
 
 pub const SUPPORTED_ASSET_MANIFEST_VERSION: u32 = 1;
+const ACTIVE_ASSET_MANIFEST_BUNDLE_ID: &str = "asset-manifest";
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct AssetManifest {
@@ -156,6 +157,16 @@ pub struct AssetReadReport {
     pub host_responsibilities: Vec<String>,
 }
 
+/// Verified native-local bytes and their matching active declaration.
+/// This Rust-only value is not a JSON report; decoding remains a host concern.
+#[derive(Debug)]
+pub struct ResolvedAssetBytes {
+    pub project: String,
+    pub asset: AssetSpec,
+    pub bundle_generation: u64,
+    pub bytes: Vec<u8>,
+}
+
 pub(crate) fn load_declared_manifest(paths: &ProjectPaths) -> Result<AssetManifest, Box<Diagnostic>> {
     let Some(manifest_path) = paths.asset_manifest.as_deref() else {
         return Err(Box::new(Diagnostic::error(
@@ -183,6 +194,22 @@ pub(crate) fn load_declared_manifest(paths: &ProjectPaths) -> Result<AssetManife
     Ok(manifest)
 }
 
+pub(crate) fn load_active_asset_manifest(
+    root: &Path,
+    manager: &BundleManager,
+) -> Result<AssetManifest, Box<Diagnostic>> {
+    let bytes = manager.read_active_bundle(ACTIVE_ASSET_MANIFEST_BUNDLE_ID)?;
+    let manifest: AssetManifest = serde_json::from_slice(&bytes).map_err(|error| {
+        Box::new(Diagnostic::error(
+            "ASSET_ACTIVE_MANIFEST_INVALID",
+            "active asset manifest 不是有效 JSON",
+            error.to_string(),
+        ))
+    })?;
+    validate_asset_manifest(root, &manifest)?;
+    Ok(manifest)
+}
+
 /// Load the game-owned asset manifest a host needs before resolving bundles.
 ///
 /// The engine validates only the declaration contract: supported manifest
@@ -203,22 +230,36 @@ pub fn manifest(project_root: impl AsRef<Path>) -> EngineResult<AssetManifest> {
 ///
 /// This is the native half of the cross-host asset contract: the same asset id
 /// must produce the same bytes and digest in the Web host and here. The engine
-/// verifies bundle and archive integrity only; decoding, texture upload,
-/// caching and download policy stay in each host.
+/// verifies the complete active declaration, bundle/archive integrity and the
+/// observation token; decoding, texture upload and download policy stay in each host.
 pub fn read(
     project_root: impl AsRef<Path>,
     asset_id: &str,
     file: Option<&str>,
     output: Option<&Path>,
 ) -> EngineResult<AssetReadReport> {
-    let (config, paths) = match ProjectPaths::discover(project_root) {
-        Ok(value) => value,
-        Err(diagnostic) => return EngineResult::failure(*diagnostic),
-    };
-    let manifest = match load_declared_manifest(&paths) {
-        Ok(manifest) => manifest,
-        Err(diagnostic) => return EngineResult::failure(*diagnostic),
-    };
+    read_with_observation_hook(project_root, asset_id, file, output, || {})
+}
+
+/// Resolve a primary or declared companion with matching authoring/active specs.
+/// A changing manifest or active record fails before bytes reach the caller.
+pub fn resolve_asset_bytes(
+    project_root: impl AsRef<Path>,
+    asset_id: &str,
+    file: Option<&str>,
+) -> Result<ResolvedAssetBytes, Box<Diagnostic>> {
+    resolve_asset_bytes_with_observation_hook(project_root, asset_id, file, || {})
+}
+
+// A private hook makes external host-state changes deterministic in tests.
+fn resolve_asset_bytes_with_observation_hook(
+    project_root: impl AsRef<Path>,
+    asset_id: &str,
+    file: Option<&str>,
+    after_read: impl FnOnce(),
+) -> Result<ResolvedAssetBytes, Box<Diagnostic>> {
+    let (config, paths) = ProjectPaths::discover(project_root)?;
+    let manifest = load_declared_manifest(&paths)?;
     let Some(asset) = manifest
         .assets
         .iter()
@@ -242,18 +283,42 @@ pub fn read(
             description: "列出目前宣告與被場景參照的 asset id。".to_string(),
             command: Some("game asset inspect --json".to_string()),
         });
-        return EngineResult::failure(diagnostic);
+        return Err(Box::new(diagnostic));
     };
-    if let Err(diagnostic) = validate_asset_spec(asset) {
-        return EngineResult::failure(*diagnostic);
+    let manager = BundleManager::from_project(&paths.root)?;
+    let observation_before = manager.observation_token()?;
+    let Some(bundle_generation) = manager.active_generation()? else {
+        return Err(Box::new(Diagnostic::error(
+            "BUNDLE_GENERATION_MISMATCH",
+            "沒有已啟用的 bundle generation",
+            "讀取資產前必須先安裝並啟用一個 generation。",
+        )));
+    };
+    let active_manifest = load_active_asset_manifest(&paths.root, &manager)?;
+    let active_asset = active_manifest
+        .assets
+        .iter()
+        .find(|candidate| candidate.id == asset_id);
+    if active_asset != Some(asset) {
+        let mut diagnostic = Diagnostic::error(
+            "BUNDLE_GENERATION_MISMATCH",
+            "asset 宣告與 active generation 不一致",
+            format!(
+                "active asset-manifest 中 asset '{asset_id}' 的完整宣告必須與作者宣告相同；不會混用作者 metadata 與 active bytes。"
+            ),
+        );
+        diagnostic.facts = serde_json::json!({
+            "asset_id": asset_id,
+            "generation": bundle_generation,
+            "authoring_asset": asset,
+            "active_asset": active_asset,
+        });
+        return Err(Box::new(diagnostic));
     }
-    let manager = match BundleManager::from_project(&paths.root) {
-        Ok(manager) => manager,
-        Err(diagnostic) => return EngineResult::failure(*diagnostic),
-    };
-    let mut resolved = asset.clone();
+    let active_asset = active_asset.expect("the complete active spec matched above");
+    let mut resolved = active_asset.clone();
     if let Some(file) = file {
-        if !asset.files.iter().any(|candidate| candidate == file) {
+        if !active_asset.files.iter().any(|candidate| candidate == file) {
             let mut diagnostic = Diagnostic::error(
                 "ASSET_FILE_NOT_DECLARED",
                 "asset 沒有宣告這個附屬檔案",
@@ -262,25 +327,51 @@ pub fn read(
             diagnostic.facts = serde_json::json!({
                 "asset_id": asset_id,
                 "requested": file,
-                "declared": asset.files,
+                "declared": active_asset.files,
             });
-            return EngineResult::failure(diagnostic);
+            return Err(Box::new(diagnostic));
         }
         resolved.source = file.to_string();
     }
-    let bytes = match manager.read_active_asset(&resolved) {
-        Ok(bytes) => bytes,
-        Err(diagnostic) => return EngineResult::failure(*diagnostic),
-    };
-    let bundle_generation = match manager.active_generation() {
-        Ok(Some(generation)) => generation,
-        Ok(None) => {
-            return EngineResult::failure(Diagnostic::error(
-                "BUNDLE_GENERATION_MISMATCH",
-                "沒有已啟用的 bundle generation",
-                "讀取資產前必須先安裝並啟用一個 generation。",
-            ));
-        }
+    let bytes = manager.read_active_asset(&resolved)?;
+    after_read();
+    let observation_after = manager.observation_token()?;
+    if observation_before != observation_after {
+        let mut diagnostic = Diagnostic::error(
+            "BUNDLE_GENERATION_MISMATCH",
+            "asset read 期間 active observation 發生變更",
+            "bundle manifest 或 active record 在讀取期間改變；無法確認 metadata、generation 與 bytes 屬於同一次觀測，因此未寫出 output。",
+        );
+        diagnostic.facts = serde_json::json!({
+            "asset_id": asset_id,
+            "generation": bundle_generation,
+            "observation_token_before": observation_before,
+            "observation_token_after": observation_after,
+        });
+        return Err(Box::new(diagnostic));
+    }
+    Ok(ResolvedAssetBytes {
+        project: config.name,
+        asset: active_asset.clone(),
+        bundle_generation,
+        bytes,
+    })
+}
+
+fn read_with_observation_hook(
+    project_root: impl AsRef<Path>,
+    asset_id: &str,
+    file: Option<&str>,
+    output: Option<&Path>,
+    after_read: impl FnOnce(),
+) -> EngineResult<AssetReadReport> {
+    let ResolvedAssetBytes {
+        project,
+        asset,
+        bundle_generation,
+        bytes,
+    } = match resolve_asset_bytes_with_observation_hook(project_root, asset_id, file, after_read) {
+        Ok(resolved) => resolved,
         Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
     let mut effects = Vec::new();
@@ -306,7 +397,7 @@ pub fn read(
             effects.push(format!(
                 "asset '{}' ({}) written to {}",
                 asset.id,
-                resolved.source,
+                file.unwrap_or(&asset.source),
                 path.display()
             ));
             Some(path.display().to_string())
@@ -314,8 +405,8 @@ pub fn read(
         None => None,
     };
     let mut result = EngineResult::success(AssetReadReport {
-        project: config.name,
-        asset: asset.clone(),
+        project,
+        asset,
         file: file.map(str::to_string),
         bundle_generation,
         size_bytes: bytes.len() as u64,
@@ -1183,6 +1274,82 @@ fn missing_manifest_diagnostic(references: &[AssetReference]) -> Diagnostic {
 }
 
 #[cfg(test)]
+pub(crate) mod workflow_test_support {
+    use std::{
+        fs,
+        path::{Path, PathBuf},
+    };
+
+    use crate::bundle::{BundleManager, BundleManifest, digest_bytes, pack_project};
+
+    pub fn installed_project() -> tempfile::TempDir {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path();
+        for directory in ["assets", "scripts", "scenes"] {
+            fs::create_dir_all(root.join(directory)).unwrap();
+        }
+        fs::write(
+            root.join("project.unone.json"),
+            r#"{"name":"ActiveAssetRead","entry_script":"scripts/main.luau","main_scene":"scenes/main.scene.json","asset_manifest":"assets/manifest.json","bundle_manifest":"bundles/manifest.json"}"#,
+        ).unwrap();
+        fs::write(root.join("scripts/main.luau"), b"return {}\n").unwrap();
+        fs::write(root.join("scenes/main.scene.json"), br#"{"entities":[]}"#).unwrap();
+        fs::write(
+            root.join("assets/manifest.json"),
+            br#"{"version":1,"assets":[{"id":"asset://a","source":"assets/a.svg","kind":"texture2d","bundle":"content","files":["assets/a.atlas","assets/a.png"]}]}"#,
+        ).unwrap();
+        fs::write(root.join("assets/a.svg"), b"primary").unwrap();
+        fs::write(root.join("assets/a.atlas"), b"atlas").unwrap();
+        fs::write(root.join("assets/a.png"), b"page").unwrap();
+        let packed = pack_project(root, None);
+        assert!(packed.ok, "{packed:?}");
+        let installed = BundleManager::from_project(root)
+            .unwrap()
+            .install("content");
+        assert!(installed.ok, "{installed:?}");
+        dir
+    }
+
+    pub fn bundle_manifest(root: &Path) -> BundleManifest {
+        serde_json::from_slice(&fs::read(root.join("bundles/manifest.json")).unwrap()).unwrap()
+    }
+
+    pub fn cache_path(root: &Path, bundle_id: &str) -> PathBuf {
+        let manifest = bundle_manifest(root);
+        let spec = manifest
+            .bundles
+            .iter()
+            .find(|spec| spec.id == bundle_id)
+            .unwrap();
+        root.join(".unone/cache/bundles")
+            .join(format!("{}.bundle", spec.sha256))
+    }
+
+    // Re-sign and install deliberately invalid inner payloads so tests reach
+    // asset declaration/archive validation after bundle integrity succeeds.
+    pub fn replace_installed_bundle(root: &Path, bundle_id: &str, bytes: &[u8]) {
+        let manager = BundleManager::from_project(root).unwrap();
+        let mut manifest = bundle_manifest(root);
+        let spec = manifest
+            .bundles
+            .iter_mut()
+            .find(|spec| spec.id == bundle_id)
+            .unwrap();
+        spec.source = format!("bundles/test-{bundle_id}.bin");
+        spec.size_bytes = bytes.len() as u64;
+        spec.sha256 = digest_bytes(bytes);
+        fs::write(root.join(&spec.source), bytes).unwrap();
+        fs::write(
+            root.join("bundles/manifest.json"),
+            serde_json::to_vec(&manifest).unwrap(),
+        )
+        .unwrap();
+        let installed = manager.install("content");
+        assert!(installed.ok, "{installed:?}");
+    }
+}
+
+#[cfg(test)]
 mod tests {
     use std::fs;
 
@@ -1193,6 +1360,10 @@ mod tests {
 
     use super::{
         AssetSpec, init_asset_manifest, inspect, inspect_strict, is_project_relative, read,
+        read_with_observation_hook,
+        workflow_test_support::{
+            bundle_manifest, cache_path, installed_project, replace_installed_bundle,
+        },
     };
 
     fn write_project(root: &std::path::Path, config: &str, scene: &str) {
@@ -1482,6 +1653,239 @@ mod tests {
                 .len(),
             1
         );
+    }
+
+    #[test]
+    fn reads_primary_and_companions_with_verified_active_metadata() {
+        let dir = installed_project();
+        let exports = tempdir().unwrap();
+        // Authoring byte changes alone do not authorize a source fallback.
+        fs::write(dir.path().join("assets/a.svg"), b"unpacked-primary").unwrap();
+        fs::write(dir.path().join("assets/a.atlas"), b"unpacked-atlas").unwrap();
+        for (file, expected) in [
+            (None, b"primary".as_slice()),
+            (Some("assets/a.atlas"), b"atlas".as_slice()),
+            (Some("assets/a.png"), b"page".as_slice()),
+        ] {
+            let output = exports.path().join("export.bin");
+            let result = read(dir.path(), "asset://a", file, Some(&output));
+            assert!(result.ok, "{result:?}");
+            let report = result.value.unwrap();
+            assert_eq!(report.asset.kind, "texture2d");
+            assert_eq!(report.asset.source, "assets/a.svg");
+            assert_eq!(report.asset.files, vec!["assets/a.atlas", "assets/a.png"]);
+            assert_eq!(report.file.as_deref(), file);
+            assert_eq!(report.bundle_generation, 1);
+            assert_eq!(report.sha256, crate::bundle::digest_bytes(expected));
+            assert_eq!(report.size_bytes, expected.len() as u64);
+            assert_eq!(fs::read(output).unwrap(), expected);
+        }
+        let undeclared = read(dir.path(), "asset://a", Some("assets/other.png"), None);
+        assert!(!undeclared.ok);
+        assert_eq!(undeclared.diagnostics[0].code, "ASSET_FILE_NOT_DECLARED");
+    }
+
+    #[test]
+    fn read_rejects_every_unpacked_asset_spec_change_before_export() {
+        let dir = installed_project();
+        let manifest_path = dir.path().join("assets/manifest.json");
+        let original: serde_json::Value =
+            serde_json::from_slice(&fs::read(&manifest_path).unwrap()).unwrap();
+        let output = dir.path().join("existing-export.bin");
+        fs::write(&output, b"keep-existing-output").unwrap();
+        let new_output = dir.path().join("uncreated-export/result.bin");
+        for (field, value) in [
+            ("kind", serde_json::json!("spine")),
+            ("source", serde_json::json!("assets/moved.svg")),
+            ("bundle", serde_json::json!("other")),
+            ("files", serde_json::json!([])),
+            (
+                "files",
+                serde_json::json!(["assets/a.atlas", "assets/a.png", "assets/new.png"]),
+            ),
+            (
+                "files",
+                serde_json::json!(["assets/a.png", "assets/a.atlas"]),
+            ),
+        ] {
+            let mut changed = original.clone();
+            changed["assets"][0][field] = value;
+            fs::write(&manifest_path, serde_json::to_vec(&changed).unwrap()).unwrap();
+            for (file, destination) in [(None, &output), (Some("assets/a.atlas"), &new_output)] {
+                let result = read(dir.path(), "asset://a", file, Some(destination));
+                assert!(!result.ok, "{field}: {result:?}");
+                assert!(result.value.is_none());
+                assert!(result.effects.is_empty());
+                assert_eq!(result.diagnostics[0].code, "BUNDLE_GENERATION_MISMATCH");
+                assert_eq!(
+                    result.diagnostics[0].facts["active_asset"],
+                    original["assets"][0]
+                );
+                assert_eq!(fs::read(&output).unwrap(), b"keep-existing-output");
+                assert!(!new_output.parent().unwrap().exists());
+            }
+        }
+    }
+
+    #[test]
+    fn read_validates_missing_and_invalid_active_declarations_before_export() {
+        let valid = serde_json::json!({
+            "id": "asset://a", "source": "assets/a.svg", "kind": "texture2d",
+            "bundle": "content", "files": ["assets/a.atlas", "assets/a.png"]
+        });
+        let mut invalid_kind = valid.clone();
+        invalid_kind["kind"] = serde_json::json!("unknown");
+        let mut unsafe_companion = valid.clone();
+        unsafe_companion["files"] = serde_json::json!(["../outside.png"]);
+        for (bytes, code) in [
+            (b"not-json".to_vec(), "ASSET_ACTIVE_MANIFEST_INVALID"),
+            (
+                serde_json::to_vec(&serde_json::json!({"version":1,"assets":[]})).unwrap(),
+                "BUNDLE_GENERATION_MISMATCH",
+            ),
+            (
+                serde_json::to_vec(
+                    &serde_json::json!({"version":1,"assets":[valid.clone(), valid.clone()]}),
+                )
+                .unwrap(),
+                "ASSET_MANIFEST_DUPLICATE_ID",
+            ),
+            (
+                serde_json::to_vec(&serde_json::json!({"version":1,"assets":[invalid_kind]}))
+                    .unwrap(),
+                "ASSET_SPEC_INVALID",
+            ),
+            (
+                serde_json::to_vec(&serde_json::json!({"version":1,"assets":[unsafe_companion]}))
+                    .unwrap(),
+                "ASSET_SOURCE_OUTSIDE_PROJECT",
+            ),
+            (
+                serde_json::to_vec(&serde_json::json!({"version":2,"assets":[valid]})).unwrap(),
+                "ASSET_MANIFEST_VERSION_INVALID",
+            ),
+        ] {
+            let dir = installed_project();
+            replace_installed_bundle(dir.path(), "asset-manifest", &bytes);
+            let output = dir.path().join("export/result.bin");
+            for file in [None, Some("assets/a.atlas")] {
+                let result = read(dir.path(), "asset://a", file, Some(&output));
+                assert!(!result.ok, "{code}: {result:?}");
+                assert_eq!(result.diagnostics[0].code, code);
+                assert!(result.effects.is_empty());
+                assert!(!output.parent().unwrap().exists());
+            }
+        }
+    }
+
+    #[test]
+    fn read_requires_verified_reserved_manifest_bundle_before_export() {
+        for (failure, code) in [
+            ("missing_bundle", "BUNDLE_NOT_FOUND"),
+            ("cache_miss", "BUNDLE_CACHE_MISS"),
+            ("cache_corrupt", "BUNDLE_CACHE_CORRUPT"),
+        ] {
+            let dir = installed_project();
+            let manager = BundleManager::from_project(dir.path()).unwrap();
+            match failure {
+                "missing_bundle" => {
+                    let mut manifest = bundle_manifest(dir.path());
+                    manifest.bundles.retain(|spec| spec.id != "asset-manifest");
+                    for spec in &mut manifest.bundles {
+                        spec.dependencies.retain(|id| id != "asset-manifest");
+                    }
+                    fs::write(
+                        dir.path().join("bundles/manifest.json"),
+                        serde_json::to_vec(&manifest).unwrap(),
+                    )
+                    .unwrap();
+                    let installed = manager.install("content");
+                    assert!(installed.ok, "{installed:?}");
+                }
+                "cache_miss" => fs::remove_file(cache_path(dir.path(), "asset-manifest")).unwrap(),
+                "cache_corrupt" => {
+                    fs::write(cache_path(dir.path(), "asset-manifest"), b"corrupt").unwrap()
+                }
+                _ => unreachable!(),
+            }
+            let output = dir.path().join("export.bin");
+            fs::write(&output, b"keep-existing-output").unwrap();
+            let result = read(dir.path(), "asset://a", None, Some(&output));
+            assert!(!result.ok, "{failure}: {result:?}");
+            assert_eq!(result.diagnostics[0].code, code);
+            assert!(result.effects.is_empty());
+            assert_eq!(fs::read(&output).unwrap(), b"keep-existing-output");
+        }
+    }
+
+    #[test]
+    fn read_rejects_observation_changes_and_token_errors_before_export() {
+        for change in ["generation", "manifest", "corrupt_record"] {
+            for file in [None, Some("assets/a.atlas")] {
+                let dir = installed_project();
+                let output = dir.path().join("export.bin");
+                fs::write(&output, b"keep-existing-output").unwrap();
+                let result = read_with_observation_hook(
+                    dir.path(),
+                    "asset://a",
+                    file,
+                    Some(&output),
+                    || match change {
+                        "generation" => {
+                            fs::write(dir.path().join("assets/a.svg"), b"new-primary").unwrap();
+                            fs::write(dir.path().join("assets/a.atlas"), b"new-atlas").unwrap();
+                            let packed = pack_project(dir.path(), None);
+                            assert!(packed.ok, "{packed:?}");
+                            let installed = BundleManager::from_project(dir.path())
+                                .unwrap()
+                                .install("content");
+                            assert!(installed.ok, "{installed:?}");
+                        }
+                        "manifest" => {
+                            let path = dir.path().join("bundles/manifest.json");
+                            let mut bytes = fs::read(&path).unwrap();
+                            bytes.push(b'\n');
+                            fs::write(path, bytes).unwrap();
+                        }
+                        "corrupt_record" => {
+                            fs::write(
+                                dir.path().join(
+                                    ".unone/active/bundles/generation-00000000000000000001.json",
+                                ),
+                                b"corrupt",
+                            )
+                            .unwrap();
+                        }
+                        _ => unreachable!(),
+                    },
+                );
+                assert!(!result.ok, "{change}: {result:?}");
+                assert!(result.value.is_none());
+                assert!(result.effects.is_empty());
+                assert_eq!(result.diagnostics.len(), 1);
+                assert_eq!(
+                    result.diagnostics[0].code,
+                    if change == "corrupt_record" {
+                        "BUNDLE_ACTIVE_GENERATION_UNREADABLE"
+                    } else {
+                        "BUNDLE_GENERATION_MISMATCH"
+                    }
+                );
+                assert_eq!(fs::read(&output).unwrap(), b"keep-existing-output");
+                if change == "generation" {
+                    let next = read(dir.path(), "asset://a", file, None);
+                    assert!(next.ok, "{next:?}");
+                    let next = next.value.unwrap();
+                    assert_eq!(next.bundle_generation, 2);
+                    let expected = if file.is_some() {
+                        b"new-atlas".as_slice()
+                    } else {
+                        b"new-primary".as_slice()
+                    };
+                    assert_eq!(next.sha256, crate::bundle::digest_bytes(expected));
+                }
+            }
+        }
     }
 
     #[test]

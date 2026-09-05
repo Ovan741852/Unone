@@ -1,6 +1,7 @@
 # AI 資產維護：從第三方建議到可驗證工作流
 
-日期：2026-09-06。狀態：code_review_in_progress；新封裝暫待磁碟空間決策。
+日期：2026-09-06。狀態：source_review_closed / build_blocked；
+新封裝暫待磁碟空間決策，尚非本輪 gate 通過。
 
 ## 決定做什麼、為什麼
 
@@ -111,3 +112,22 @@ Lagrange 第一版五項：主代理不接受自動 union 已安裝包（會改�
 Web graph/read 與 corrupt pointer guard、native activation/report 順序修正。
 後者主代理以真 Windows Junction 重現「exit 1、effects 空、卻已新增一代」，
 證據與逐項理由均在 code review 紀錄。Bacon 另以 Luna/max 製作 Web 限定切片。
+
+進一步追查 native preview 的既有 caller，也直接拿 authoring spec 去讀 active
+archive。把這個同根因一併接到共用 verified-bytes resolver，確保修正不是只
+發生在 CLI report；不因此增加 renderer 功能。第一版審查處置與反例已本地
+commit `3578616`，尚未編譯的後續 patch 與已驗證候選分開記錄。
+
+Bundle/Web 修正交付後，Lagrange 限定 source-only 覆核未發現新增可證實
+P1/P2；2–5 的修正路徑與 collision guard 已核對。主代理另重跑 Node 5/5，
+不把記憶體 stub 當真瀏覽器驗證。Asset／preview slice 仍在收尾與待覆核。
+
+所有製作者後續已交付；主代理對四個改動 Rust implementation 檔案使用
+rustfmt 的 stdout-only 模式做語法解析，未寫檔／未編譯，diff check 通過。
+這只是 compile 前檢查，不能證明型別／借用／tests 通過。接續建置、保留原
+反例重跑、平台封裝和 package-only 盲驗清單已寫入工作包。
+
+Gauss 後續也完成 asset/preview 限定覆核，未發現新的可證實 P1/P2，沒有
+實跑 Cargo／tests。兩份 source review 已收束；後續修正以明示 WIP 的本地
+checkpoint 保存，不建立新封裝、不把未編譯 Rust 當成通過。D 槽仍約剩
+0.27 GB，未收到快取清理授權、未刪除快取；工作在建置 gate 等待使用者決策。

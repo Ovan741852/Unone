@@ -9,15 +9,14 @@ use serde_json::Value;
 
 use crate::{
     asset::{
-        AssetManifest, AssetSpec, load_declared_manifest, validate_asset_spec,
+        AssetManifest, AssetSpec, load_active_asset_manifest, load_declared_manifest,
+        validate_asset_spec,
     },
     bundle::{BundleManager, digest_bytes, read_asset_from_archive},
     diagnostics::{ActionSuggestion, Diagnostic, EngineResult},
     project::{ProjectPaths, resolve_project_path},
     world::SceneFile,
 };
-
-const ACTIVE_ASSET_MANIFEST_BUNDLE_ID: &str = "asset-manifest";
 
 #[derive(Debug, Clone, Serialize)]
 pub struct AssetDescribeReport {
@@ -435,10 +434,7 @@ fn observe_active(
             let diagnostic = *diagnostic;
             report.diagnostics.push(diagnostic.clone());
             fill_active_failures(&mut report, authoring_files, Some(&diagnostic));
-            return ActiveComparison {
-                report,
-                spec: None,
-            };
+            return ActiveComparison { report, spec: None };
         }
     };
     let before = match manager.observation_token() {
@@ -450,10 +446,7 @@ fn observe_active(
             let diagnostic = *diagnostic;
             report.diagnostics.push(diagnostic.clone());
             fill_active_failures(&mut report, authoring_files, Some(&diagnostic));
-            return ActiveComparison {
-                report,
-                spec: None,
-            };
+            return ActiveComparison { report, spec: None };
         }
     };
     match manager.active_generation() {
@@ -463,33 +456,27 @@ fn observe_active(
 
     let mut active_spec = None;
     if report.generation.is_some() && before.is_some() {
-        match manager.read_active_bundle(ACTIVE_ASSET_MANIFEST_BUNDLE_ID) {
-            Ok(bytes) => match serde_json::from_slice::<AssetManifest>(&bytes) {
-                Ok(manifest) => {
-                    if let Err(diagnostic) = crate::asset::validate_asset_manifest(root, &manifest) {
-                        push_active_diagnostic(&mut report, *diagnostic);
-                    } else if let Some((index, candidate)) = manifest
-                        .assets
-                        .iter()
-                        .enumerate()
-                        .find(|(_, candidate)| candidate.id == selected.id)
-                    {
-                        active_spec = Some(candidate.clone());
-                        report.asset_manifest_json_pointer = Some(format!("/assets/{index}"));
-                    } else {
-                        push_active_diagnostic(&mut report, Diagnostic::error(
+        match load_active_asset_manifest(root, &manager) {
+            Ok(manifest) => {
+                if let Some((index, candidate)) = manifest
+                    .assets
+                    .iter()
+                    .enumerate()
+                    .find(|(_, candidate)| candidate.id == selected.id)
+                {
+                    active_spec = Some(candidate.clone());
+                    report.asset_manifest_json_pointer = Some(format!("/assets/{index}"));
+                } else {
+                    push_active_diagnostic(
+                        &mut report,
+                        Diagnostic::error(
                             "ASSET_ACTIVE_ID_MISSING",
                             "active asset manifest 沒有要求的 asset id",
                             format!("active generation 沒有 asset '{}' 的宣告。", selected.id),
-                        ));
-                    }
+                        ),
+                    );
                 }
-                Err(error) => push_active_diagnostic(&mut report, Diagnostic::error(
-                    "ASSET_ACTIVE_MANIFEST_INVALID",
-                    "active asset manifest 不是有效 JSON",
-                    error.to_string(),
-                )),
-            },
+            }
             Err(diagnostic) => push_active_diagnostic(&mut report, *diagnostic),
         }
     }
@@ -521,14 +508,17 @@ fn observe_active(
                     sha256: Some(digest_bytes(&bytes)),
                     diagnostic: None,
                 }),
-                Err(diagnostic) => report.files.push(AssetActiveFileReport {
-                    path,
-                    role,
-                    verified: false,
-                    size_bytes: None,
-                    sha256: None,
-                    diagnostic: Some(*diagnostic),
-                }),
+                Err(diagnostic) => {
+                    push_active_diagnostic(&mut report, (*diagnostic).clone());
+                    report.files.push(AssetActiveFileReport {
+                        path,
+                        role,
+                        verified: false,
+                        size_bytes: None,
+                        sha256: None,
+                        diagnostic: Some(*diagnostic),
+                    });
+                }
             }
         }
     } else {
@@ -553,19 +543,22 @@ fn observe_active(
     ) {
         (Some(before), Some(after)) if before == after => true,
         (Some(_), Some(_)) => {
-            push_active_diagnostic(&mut report, Diagnostic::error(
-                "ASSET_OBSERVATION_CHANGED",
-                "describe 期間 active observation 發生變更",
-                "查詢不會從不同 generation 拼湊 freshness；請在 host 完成寫入後重新 describe。",
-            ));
+            push_active_diagnostic(
+                &mut report,
+                Diagnostic::error(
+                    "ASSET_OBSERVATION_CHANGED",
+                    "describe 期間 active observation 發生變更",
+                    "查詢不會從不同 generation 拼湊 freshness；請在 host 完成寫入後重新 describe。",
+                ),
+            );
             false
         }
         _ => false,
     };
-        ActiveComparison {
-            report,
-            spec: active_spec,
-        }
+    ActiveComparison {
+        report,
+        spec: active_spec,
+    }
 }
 
 fn fill_active_failures(
@@ -909,6 +902,9 @@ mod tests {
     use tempfile::tempdir;
 
     use crate::{BundleManager, pack_project};
+    use crate::asset::workflow_test_support::{
+        cache_path, installed_project, replace_installed_bundle,
+    };
 
     use super::describe_asset;
 
@@ -1124,6 +1120,93 @@ mod tests {
         assert_eq!(report.required_next_actions[0].action, "authoring_files_ready");
         assert!(!report.required_next_actions[1].ready);
         assert_eq!(report.required_next_actions[1].action, "bundle_pack");
+    }
+
+    #[test]
+    fn active_content_failures_are_discoverable_once_with_file_locations() {
+        for (failure, code, failed_files) in [
+            ("cache_miss", "BUNDLE_CACHE_MISS", 3),
+            ("cache_corrupt", "BUNDLE_CACHE_CORRUPT", 3),
+            ("archive_invalid", "ASSET_ARCHIVE_INVALID", 3),
+            ("entry_missing", "ASSET_NOT_IN_BUNDLE", 1),
+            ("entry_corrupt", "ASSET_CONTENT_CORRUPT", 1),
+        ] {
+            let dir = installed_project();
+            match failure {
+                "cache_miss" => fs::remove_file(cache_path(dir.path(), "content")).unwrap(),
+                "cache_corrupt" => {
+                    fs::write(cache_path(dir.path(), "content"), b"corrupt").unwrap()
+                }
+                "archive_invalid" => {
+                    replace_installed_bundle(dir.path(), "content", b"not-an-archive")
+                }
+                "entry_missing" => {
+                    let path = dir.path().join("assets/manifest.json");
+                    let mut manifest: serde_json::Value =
+                        serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+                    manifest["assets"][0]["files"]
+                        .as_array_mut()
+                        .unwrap()
+                        .push(serde_json::json!("assets/missing-from-archive.png"));
+                    let bytes = serde_json::to_vec(&manifest).unwrap();
+                    fs::write(path, &bytes).unwrap();
+                    fs::write(dir.path().join("assets/missing-from-archive.png"), b"page").unwrap();
+                    replace_installed_bundle(dir.path(), "asset-manifest", &bytes);
+                }
+                "entry_corrupt" => {
+                    let mut archive = BundleManager::from_project(dir.path())
+                        .unwrap()
+                        .read_active_bundle("content")
+                        .unwrap();
+                    *archive.last_mut().unwrap() ^= 1;
+                    replace_installed_bundle(dir.path(), "content", &archive);
+                }
+                _ => unreachable!(),
+            }
+            let result = describe_asset(dir.path(), "asset://a");
+            assert!(result.ok, "{failure}: {result:?}");
+            assert_eq!(result.diagnostics.len(), 1, "{failure}: {result:?}");
+            assert_eq!(result.diagnostics[0].code, code);
+            let report = result.value.unwrap();
+            assert_eq!(report.active.diagnostics.len(), 1);
+            assert_eq!(report.active.diagnostics[0].code, code);
+            assert_eq!(report.publication.matches_authoring, None);
+            assert!(report.active.observation_consistent);
+            let failed = report
+                .active
+                .files
+                .iter()
+                .filter(|file| !file.verified)
+                .collect::<Vec<_>>();
+            assert_eq!(failed.len(), failed_files, "{failure}");
+            for file in failed {
+                assert_eq!(file.diagnostic.as_ref().unwrap().code, code);
+                assert!(
+                    report
+                        .authoring
+                        .files
+                        .iter()
+                        .any(|authoring| authoring.path == file.path)
+                );
+                assert_eq!(file.sha256, None);
+                assert_eq!(file.size_bytes, None);
+                if failure == "entry_missing" {
+                    assert_eq!(file.path, "assets/missing-from-archive.png");
+                    assert_eq!(file.role, "companion");
+                }
+                let output = dir.path().join("export/result.bin");
+                let read = crate::asset::read(
+                    dir.path(),
+                    "asset://a",
+                    (file.role == "companion").then_some(file.path.as_str()),
+                    Some(&output),
+                );
+                assert!(!read.ok, "{failure}: {read:?}");
+                assert_eq!(read.diagnostics[0].code, code);
+                assert!(read.effects.is_empty());
+                assert!(!output.parent().unwrap().exists());
+            }
+        }
     }
 
     #[test]

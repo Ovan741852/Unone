@@ -1,7 +1,7 @@
 # Asset workflow 獨立 code review
 
 日期：2026-09-06。固定候選：`04af786..4a128d7`。
-狀態：findings_under_repair；尚未放行新封裝。
+狀態：source_review_closed / build_validation_pending；尚未放行新封裝。
 
 Reviewer 為未繼承主對話的 Luna/max：Gauss 審 asset/CLI/MCP/current docs/packaging，
 Lagrange 審 bundle/path/Web validation。不得讀前次計畫審查與主代理證據，
@@ -23,6 +23,10 @@ Lagrange 審 bundle/path/Web validation。不得讀前次計畫審查與主代�
    修正為既有 diagnostic collector 去重收集，保留逐 file 的定位。
 
 原 owner Heisenberg 製作修正與回歸；不由 reviewer 自己實作再自行宣告通過。
+主代理追查 callers 發現 native preview `load_textures` 也從 authoring spec
+直接呼叫低階 archive reader。此為同一資料權威問題，讓 report/export 與
+preview 共用一個 verified-bytes resolver，不在 host 複製檢查或讀取两次。
+修正範圍僅限原有讀取路徑，不新增 renderer、decoder 或 runtime AssetManager。
 第一項應核對 baseline 區分既有問題；即使既有仍直接違反本轮 read contract，
 不以「不是這次引入」為由保留混合 metadata。
 
@@ -59,11 +63,30 @@ directory Junction 獨立重現 native finding 5：重裝 a 回 exit 1 /
 
 ## 其他審查與主代理發現
 
+### Gauss 限定覆核
+
+Asset／preview 候選交付後已完成 `4a128d7..工作樹` source-only 覆核：原
+findings 1/2 的反例路徑已封住，共用 resolver 沒有重複讀 archive，diagnostics
+有去重匯總；指定範圍未發現新增可證實 P1/P2。未跑 Cargo／tests，不證明
+新增測試可編譯／通過。兩位 reviewer 的限定覆核均結束，剩餘 gate 明確是
+Rust 實跑、重建平台封裝、real host 與 package-only 盲驗。
+
+### Lagrange 限定覆核
+
+已完成 `4a128d7..候選工作樹` 的 source-only 覆核：2–5 的原反例路徑已處理，
+collision guard 未見明確新問題，subset union 維持撤回；限定範圍未發現新增
+可證實 P1/P2。Reviewer 沒有跑 Cargo／Node／browser。Bacon 與主代理各自
+執行 `node --test web/live/bundle-store.test.mjs` 均 5/5 通過，仍只是
+in-memory IndexedDB／Wasm stub，不是 real-browser transaction gate。
+Rust 新測試與實體檔案系統修後回歸仍待編譯，不將 source-only closed 等同
+驗收通過。這次覆核不包含仍在收尾的 asset／native preview 切片。
+
 Claude [#30](../issues/2026-09-06-claude-cli-review-30.md) 已完成固定候選的
 定期 source review，無 actionable P1/P2；其閱讀包含主代理 evidence，
 與隔離的 code review／package-only 盲驗分開記錄。
 主代理另重現 [pack output/source collision](../issues/2026-09-06-asset-pack-output-collision.md)，
 由原 bundle owner 修正；沒有在 reviewer 第一版前提供該反例。
 
-所有修正後須重新測試、限定覆核，再決定是否產生新不可變封裝與 package-only
+第一版 findings／處置已本地提交 `3578616`。所有修正後須重新測試、限定覆核，
+再決定是否產生新不可變封裝與 package-only
 盲驗。本文件不把任何尚在製作的 patch 記為 passed。

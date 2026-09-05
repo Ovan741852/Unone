@@ -15,7 +15,6 @@ use crate::project::{ProjectPaths, resolve_project_path};
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct BundleManifest {
     pub version: u32,
-    #[serde(default)]
     pub bundles: Vec<BundleSpec>,
 }
 
@@ -346,6 +345,10 @@ pub fn pack_project(
 
     let mut sources = Vec::new();
     let mut generated_archives = BTreeMap::<String, Vec<u8>>::new();
+    let mut authoring_inputs = vec![paths.config.clone(), paths.entry_script.clone()];
+    authoring_inputs.extend(paths.main_scene.iter().cloned());
+    authoring_inputs.extend(paths.test_files.iter().cloned());
+    authoring_inputs.extend(paths.asset_manifest.iter().cloned());
     if let Err(diagnostic) = validate_pack_source(&root, "project config", "project.unone.json") {
         return EngineResult::failure(*diagnostic);
     }
@@ -415,6 +418,7 @@ pub fn pack_project(
                     Ok(path) => path,
                     Err(diagnostic) => return EngineResult::failure(*diagnostic),
                 };
+                authoring_inputs.push(path.clone());
                 let bytes = match fs::read(&path) {
                     Ok(bytes) => bytes,
                     Err(error) => {
@@ -450,6 +454,17 @@ pub fn pack_project(
                 vec!["project".to_string(), "asset-manifest".to_string()],
             ));
         }
+    }
+
+    let mut generated_outputs = vec![manifest_path.clone()];
+    generated_outputs.extend(generated_archives.keys().map(|source| root.join(source)));
+    if let Err(diagnostic) = preflight_pack_outputs(
+        &root,
+        &authoring_inputs,
+        &generated_outputs,
+        config_changed.then_some(paths.config.as_path()),
+    ) {
+        return EngineResult::failure(*diagnostic);
     }
 
     let config_bytes = if config_changed {
@@ -566,6 +581,100 @@ pub fn pack_project(
         project_config_changed: config_changed,
         bundles,
     })
+}
+
+/// Reserve every pack destination before any config, archive or manifest write.
+/// Config replacement is intentional; its temporary file must still be disjoint
+/// from authoring inputs and all other pack destinations.
+fn preflight_pack_outputs(
+    root: &Path,
+    authoring_inputs: &[PathBuf],
+    generated_outputs: &[PathBuf],
+    config_update: Option<&Path>,
+) -> Result<(), Box<Diagnostic>> {
+    let inputs = authoring_inputs
+        .iter()
+        .map(|path| pack_collision_path(root, path).map(|identity| (path, identity)))
+        .collect::<Result<Vec<_>, _>>()?;
+    let mut outputs = Vec::new();
+    for path in generated_outputs {
+        outputs.push(path.clone());
+        outputs.push(PathBuf::from(format!("{}.part", path.display())));
+    }
+    if let Some(config) = config_update {
+        outputs.push(PathBuf::from(format!("{}.part", config.display())));
+    }
+
+    let mut reserved = Vec::<(PathBuf, PathBuf)>::new();
+    for path in outputs {
+        let identity = pack_collision_path(root, &path)?;
+        for (input, input_identity) in &inputs {
+            if identity.starts_with(input_identity) || input_identity.starts_with(&identity) {
+                return Err(pack_output_collision(&path, input, "authoring_input"));
+            }
+        }
+        for (output, output_identity) in &reserved {
+            if identity.starts_with(output_identity) || output_identity.starts_with(&identity) {
+                return Err(pack_output_collision(&path, output, "pack_output"));
+            }
+        }
+        reserved.push((path, identity));
+    }
+    Ok(())
+}
+
+fn pack_output_collision(path: &Path, other: &Path, role: &str) -> Box<Diagnostic> {
+    let mut diagnostic = Diagnostic::error(
+        "BUNDLE_OUTPUT_COLLISION",
+        "bundle pack 輸出位置與專案檔案衝突",
+        format!(
+            "{} 與 {} ({role}) 指向相同或互相包含的路徑；請使用獨立的 pack 輸出位置。",
+            path.display(),
+            other.display()
+        ),
+    );
+    diagnostic.facts = serde_json::json!({
+        "output": path.display().to_string(),
+        "conflicting_path": other.display().to_string(),
+        "conflicting_role": role,
+    });
+    Box::new(diagnostic)
+}
+
+/// Compare existing aliases and not-yet-created descendants in the same
+/// namespace. Containment and dangling-link rejection remain in the resolver.
+fn pack_collision_path(root: &Path, path: &Path) -> Result<PathBuf, Box<Diagnostic>> {
+    let relative = path.strip_prefix(root).map_err(|error| {
+        Box::new(Diagnostic::error(
+            "BUNDLE_OUTPUT_OUTSIDE_PROJECT",
+            "bundle pack 路徑超出專案根目錄",
+            format!("{}：{}", path.display(), error),
+        ))
+    })?;
+    let path = resolve_project_path(root, &normalize_relative_path(relative))?;
+    let resolve_error = |error: std::io::Error| {
+        Box::new(Diagnostic::error(
+            "BUNDLE_OUTPUT_PATH_INVALID",
+            "無法檢查 bundle pack 路徑衝突",
+            format!("{}：{}", path.display(), error),
+        ))
+    };
+    let mut existing = path.as_path();
+    let identity = loop {
+        match fs::symlink_metadata(existing) {
+            Ok(_) => {
+                let canonical = fs::canonicalize(existing).map_err(resolve_error)?;
+                break canonical.join(path.strip_prefix(existing).expect("path ancestor"));
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                existing = existing.parent().ok_or_else(|| resolve_error(error))?;
+            }
+            Err(error) => return Err(resolve_error(error)),
+        }
+    };
+    #[cfg(windows)]
+    let identity = PathBuf::from(identity.as_os_str().to_ascii_lowercase());
+    Ok(identity)
 }
 
 fn validate_generated_asset_bundle_ids(
@@ -1180,6 +1289,19 @@ impl BundleManager {
             Ok(active) => active,
             Err(error) => return EngineResult::failure(active_generation_error(error)),
         };
+        match self.inspect_snapshot(&manifest, active.as_ref().map(|active| &active.record)) {
+            Ok(report) => EngineResult::success(report),
+            Err(diagnostic) => EngineResult::failure(*diagnostic),
+        }
+    }
+
+    /// All report IO happens before activation. Install supplies the same
+    /// validated manifest and selected closure that its new record will contain.
+    fn inspect_snapshot(
+        &self,
+        manifest: &BundleManifest,
+        active: Option<&ActiveGeneration>,
+    ) -> Result<BundleReport, Box<Diagnostic>> {
         let mut valid = true;
         let mut entries = Vec::with_capacity(manifest.bundles.len());
         for spec in &manifest.bundles {
@@ -1193,10 +1315,7 @@ impl BundleManager {
                 ),
                 Err(error) => (false, false, Some(error)),
             };
-            let cache_path = match self.cache_path(spec) {
-                Ok(path) => path,
-                Err(error) => return EngineResult::failure(*error),
-            };
+            let cache_path = self.cache_path(spec)?;
             let cached = cache_path.is_file();
             let cache_valid = cached && self.verify_cache(spec);
             let source_valid = source_exists && size_valid && hash_valid;
@@ -1216,13 +1335,11 @@ impl BundleManager {
                 error,
             });
         }
-        let active_generation = active
-            .as_ref()
-            .map(|value| value.record.generation);
+        let active_generation = active.map(|value| value.generation);
         let active_bundles = active
-            .map(|value| value.record.bundles)
+            .map(|value| value.bundles.clone())
             .unwrap_or_default();
-        EngineResult::success(BundleReport {
+        Ok(BundleReport {
             manifest_version: manifest.version,
             valid,
             entries,
@@ -1307,6 +1424,10 @@ impl BundleManager {
             manifest_version: manifest.version,
             bundles: installed,
         };
+        let report = match self.inspect_snapshot(&manifest, Some(&active)) {
+            Ok(report) => report,
+            Err(diagnostic) => return EngineResult::failure(*diagnostic),
+        };
         if let Err(err) = self.write_generation(&active) {
             return EngineResult::failure(Diagnostic::error(
                 "BUNDLE_ACTIVATE_FAILED",
@@ -1314,12 +1435,10 @@ impl BundleManager {
                 format!("無法建立 active generation：{err}"),
             ));
         }
-        let mut result = self.inspect();
-        if result.ok {
-            result
-                .effects
-                .push(format!("active bundle generation {} created", generation));
-        }
+        let mut result = EngineResult::success(report);
+        result
+            .effects
+            .push(format!("active bundle generation {} created", generation));
         result
     }
 
@@ -1876,7 +1995,12 @@ fn hex_digest(bytes: &[u8]) -> String {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::BTreeMap, fs, io::Cursor, path::Path};
+    use std::{
+        collections::BTreeMap,
+        fs,
+        io::Cursor,
+        path::{Path, PathBuf},
+    };
 
     use tempfile::tempdir;
 
@@ -2058,6 +2182,249 @@ mod tests {
             original_config
         );
         assert!(!dir.path().join("bundles/content.bundle").exists());
+    }
+
+    #[test]
+    fn pack_output_collision_rejects_manifest_over_every_authoring_input_without_writes() {
+        for output in [
+            "project.unone.json",
+            "scripts/main.luau",
+            "scenes/main.scene.json",
+            "tests/smoke.json",
+            "assets/manifest.json",
+            "assets/bird.svg",
+            "assets/bird.atlas",
+        ] {
+            let dir = tempdir().unwrap();
+            write_pack_collision_project(dir.path(), None);
+            assert_pack_collision_without_writes(dir.path(), Some(Path::new(output)));
+        }
+    }
+
+    #[test]
+    fn pack_output_collision_rejects_archives_and_staging_over_authoring_inputs() {
+        for output in ["bundles/content.bundle", "bundles/content.bundle.part"] {
+            for role in [
+                "entry_script",
+                "main_scene",
+                "test_file",
+                "asset_manifest",
+                "primary",
+                "companion",
+            ] {
+                let dir = tempdir().unwrap();
+                write_pack_collision_project(dir.path(), Some((role, output)));
+                assert_pack_collision_without_writes(dir.path(), None);
+            }
+        }
+        for staged_input in ["bundles/manifest.json.part", "project.unone.json.part"] {
+            let dir = tempdir().unwrap();
+            write_pack_collision_project(dir.path(), Some(("companion", staged_input)));
+            assert_pack_collision_without_writes(dir.path(), None);
+        }
+    }
+
+    #[test]
+    fn pack_output_collision_rejects_outputs_sharing_files_or_required_directories() {
+        for output in [
+            "bundles/content.bundle",
+            "bundles/content.bundle.part",
+            "bundles/content.bundle/nested.json",
+            "bundles/content.bundle.part/nested.json",
+            "project.unone.json.part",
+        ] {
+            let dir = tempdir().unwrap();
+            write_pack_collision_project(dir.path(), None);
+            assert_pack_collision_without_writes(dir.path(), Some(Path::new(output)));
+        }
+    }
+
+    #[test]
+    fn pack_output_collision_protects_missing_declared_tests() {
+        let dir = tempdir().unwrap();
+        write_pack_collision_project(dir.path(), None);
+        let config_path = dir.path().join("project.unone.json");
+        let mut config: serde_json::Value =
+            serde_json::from_slice(&fs::read(&config_path).unwrap()).unwrap();
+        config["test_files"] = serde_json::json!(["future/missing-test.json"]);
+        fs::write(config_path, serde_json::to_vec(&config).unwrap()).unwrap();
+        assert_pack_collision_without_writes(
+            dir.path(),
+            Some(Path::new("future/missing-test.json")),
+        );
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn pack_output_collision_compares_windows_case_aliases() {
+        let dir = tempdir().unwrap();
+        write_pack_collision_project(dir.path(), None);
+        assert_pack_collision_without_writes(dir.path(), Some(Path::new("ASSETS/MANIFEST.JSON")));
+        assert_pack_collision_without_writes(dir.path(), Some(Path::new("BUNDLES/CONTENT.BUNDLE")));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn pack_output_collision_compares_symlink_targets_and_missing_descendants() {
+        use std::os::unix::fs::symlink;
+
+        let dir = tempdir().unwrap();
+        write_pack_collision_project(dir.path(), None);
+        symlink(
+            "assets/manifest.json",
+            dir.path().join("manifest-alias.json"),
+        )
+        .unwrap();
+        assert_pack_collision_without_writes(dir.path(), Some(Path::new("manifest-alias.json")));
+        symlink("bundles", dir.path().join("bundle-alias")).unwrap();
+        assert_pack_collision_without_writes(
+            dir.path(),
+            Some(Path::new("bundle-alias/content.bundle")),
+        );
+        symlink(
+            "../assets/bird.atlas",
+            dir.path().join("bundles/content.bundle.part"),
+        )
+        .unwrap();
+        assert_pack_collision_without_writes(dir.path(), None);
+    }
+
+    #[test]
+    fn pack_output_collision_allows_distinct_outputs_and_repacking() {
+        let dir = tempdir().unwrap();
+        write_pack_collision_project(dir.path(), None);
+        let authoring_before = snapshot_pack_tree(dir.path());
+        let output = Some(Path::new("build/custom-manifest.json"));
+        let first = pack_project(dir.path(), output);
+        assert!(first.ok, "{:?}", first.diagnostics);
+        for (path, entry) in authoring_before {
+            if path != Path::new("project.unone.json") && entry.0 == "file" {
+                assert_eq!(fs::read(dir.path().join(path)).unwrap(), entry.1);
+            }
+        }
+        let packed = snapshot_pack_tree(dir.path());
+        let second = pack_project(dir.path(), output);
+        assert!(second.ok, "{:?}", second.diagnostics);
+        assert!(!second.value.unwrap().manifest_changed);
+        assert_eq!(snapshot_pack_tree(dir.path()), packed);
+    }
+
+    fn assert_pack_collision_without_writes(root: &Path, output: Option<&Path>) {
+        let before = snapshot_pack_tree(root);
+        let result = pack_project(root, output);
+        assert!(!result.ok, "output {output:?} unexpectedly succeeded");
+        assert_eq!(
+            result.diagnostics[0].code, "BUNDLE_OUTPUT_COLLISION",
+            "output {output:?}: {:?}",
+            result.diagnostics
+        );
+        assert!(result.effects.is_empty());
+        assert_eq!(
+            snapshot_pack_tree(root),
+            before,
+            "output {output:?} mutated project files"
+        );
+    }
+
+    // Include directories and symlink entries so a failed preflight cannot hide
+    // newly created output directories, temporary files or replaced aliases.
+    fn snapshot_pack_tree(root: &Path) -> BTreeMap<PathBuf, (String, Vec<u8>)> {
+        fn visit(
+            root: &Path,
+            directory: &Path,
+            entries: &mut BTreeMap<PathBuf, (String, Vec<u8>)>,
+        ) {
+            for entry in fs::read_dir(directory).unwrap() {
+                let entry = entry.unwrap();
+                let path = entry.path();
+                let file_type = entry.file_type().unwrap();
+                let value = if file_type.is_symlink() {
+                    (
+                        "link",
+                        fs::read_link(&path)
+                            .unwrap()
+                            .to_string_lossy()
+                            .as_bytes()
+                            .to_vec(),
+                    )
+                } else if file_type.is_dir() {
+                    visit(root, &path, entries);
+                    ("directory", Vec::new())
+                } else {
+                    ("file", fs::read(&path).unwrap())
+                };
+                entries.insert(
+                    path.strip_prefix(root).unwrap().to_path_buf(),
+                    (value.0.to_string(), value.1),
+                );
+            }
+        }
+        let mut entries = BTreeMap::new();
+        visit(root, root, &mut entries);
+        entries
+    }
+
+    fn write_pack_collision_project(root: &Path, relocated_input: Option<(&str, &str)>) {
+        let mut config = serde_json::json!({
+            "name": "PackCollisionFixture",
+            "entry_script": "scripts/main.luau",
+            "main_scene": "scenes/main.scene.json",
+            "test_files": ["tests/smoke.json"],
+            "asset_manifest": "assets/manifest.json",
+            "bundle_manifest": "bundles/previous.json",
+        });
+        let mut assets = serde_json::json!({
+            "version": 1,
+            "assets": [{
+                "id": "asset://bird", "source": "assets/bird.svg", "kind": "texture2d",
+                "bundle": "content", "files": ["assets/bird.atlas"],
+            }],
+        });
+        if let Some((role, path)) = relocated_input {
+            match role {
+                "entry_script" | "main_scene" | "asset_manifest" => config[role] = path.into(),
+                "test_file" => config["test_files"][0] = path.into(),
+                "primary" => assets["assets"][0]["source"] = path.into(),
+                "companion" => assets["assets"][0]["files"][0] = path.into(),
+                _ => panic!("unknown fixture role {role}"),
+            }
+        }
+        let files = [
+            ("project.unone.json", serde_json::to_vec(&config).unwrap()),
+            (
+                config["entry_script"].as_str().unwrap(),
+                b"return {}\n".to_vec(),
+            ),
+            (
+                config["main_scene"].as_str().unwrap(),
+                br#"{"entities":[]}"#.to_vec(),
+            ),
+            (
+                config["test_files"][0].as_str().unwrap(),
+                br#"{"version":1}"#.to_vec(),
+            ),
+            (
+                config["asset_manifest"].as_str().unwrap(),
+                serde_json::to_vec(&assets).unwrap(),
+            ),
+            (
+                assets["assets"][0]["source"].as_str().unwrap(),
+                b"<svg>bird</svg>".to_vec(),
+            ),
+            (
+                assets["assets"][0]["files"][0].as_str().unwrap(),
+                b"bird atlas".to_vec(),
+            ),
+            (
+                "bundles/previous.json",
+                br#"{"version":7,"bundles":[]}"#.to_vec(),
+            ),
+        ];
+        for (relative, bytes) in files {
+            let path = root.join(relative);
+            fs::create_dir_all(path.parent().unwrap()).unwrap();
+            fs::write(path, bytes).unwrap();
+        }
     }
 
     fn write_asset_project(dir: &Path) {
@@ -2402,49 +2769,186 @@ mod tests {
         validate_bundle_manifest(&valid).unwrap();
 
         for (name, value) in fixture["invalid"].as_object().unwrap() {
+            let manifest = serde_json::from_value::<BundleManifest>(value.clone());
             let expected_code = match name.as_str() {
                 "empty_bundles" => "BUNDLE_MANIFEST_EMPTY",
                 "empty_id" | "invalid_hash" | "invalid_size" => "BUNDLE_MANIFEST_INVALID",
                 "duplicate_id" => "BUNDLE_MANIFEST_DUPLICATE_ID",
-                "missing_dependency" => {
-                    "BUNDLE_DEPENDENCY_NOT_FOUND"
-                }
-                "dependency_cycle" => {
-                    "BUNDLE_DEPENDENCY_CYCLE"
-                }
+                "missing_dependency" => "BUNDLE_DEPENDENCY_NOT_FOUND",
+                "dependency_cycle" => "BUNDLE_DEPENDENCY_CYCLE",
+                _ if value.get("bundles").is_none() => "BUNDLE_MANIFEST_INVALID",
                 _ => panic!("missing expected diagnostic code for fixture '{name}'"),
             };
             let directory = tempdir().unwrap();
-            let manifest: BundleManifest = serde_json::from_value(value.clone()).unwrap();
             fs::write(
                 directory.path().join("manifest.json"),
-                serde_json::to_vec(&manifest).unwrap(),
+                serde_json::to_vec(value).unwrap(),
             )
             .unwrap();
             let manager = BundleManager::new(directory.path(), "manifest.json").unwrap();
             let root_id = manifest
-                .bundles
-                .first()
+                .as_ref()
+                .ok()
+                .and_then(|manifest| manifest.bundles.first())
                 .map(|spec| spec.id.as_str())
                 .filter(|id| !id.trim().is_empty())
                 .unwrap_or("probe");
             let mut id_fetcher = MemoryFetcher::new(std::iter::empty());
-            let id_result = manager.install_selected_with_fetcher(
-                Some(root_id),
-                false,
-                &mut id_fetcher,
+            let id_result =
+                manager.install_selected_with_fetcher(Some(root_id), false, &mut id_fetcher);
+            assert!(
+                !id_result.ok,
+                "fixture case '{name}' unexpectedly activated by id"
             );
-            assert!(!id_result.ok, "fixture case '{name}' unexpectedly activated by id");
             assert_eq!(id_result.diagnostics[0].code, expected_code);
-            assert_eq!(id_fetcher.fetches, 0, "fixture case '{name}' fetched before validation");
+            assert_eq!(
+                id_fetcher.fetches, 0,
+                "fixture case '{name}' fetched before validation"
+            );
 
             let mut all_fetcher = MemoryFetcher::new(std::iter::empty());
             let all_result = manager.install_selected_with_fetcher(None, true, &mut all_fetcher);
-            assert!(!all_result.ok, "fixture case '{name}' unexpectedly activated by all");
+            assert!(
+                !all_result.ok,
+                "fixture case '{name}' unexpectedly activated by all"
+            );
             assert_eq!(all_result.diagnostics[0].code, expected_code);
-            assert_eq!(all_fetcher.fetches, 0, "fixture case '{name}' fetched before validation");
+            assert_eq!(
+                all_fetcher.fetches, 0,
+                "fixture case '{name}' fetched before validation"
+            );
             assert!(manager.active_generation().unwrap().is_none());
         }
+    }
+
+    #[test]
+    fn missing_bundles_field_is_invalid_while_empty_array_is_empty() {
+        for (manifest, expected_code) in [
+            (serde_json::json!({"version": 1}), "BUNDLE_MANIFEST_INVALID"),
+            (
+                serde_json::json!({"version": 1, "bundles": []}),
+                "BUNDLE_MANIFEST_EMPTY",
+            ),
+        ] {
+            let dir = tempdir().unwrap();
+            fs::write(
+                dir.path().join("manifest.json"),
+                serde_json::to_vec(&manifest).unwrap(),
+            )
+            .unwrap();
+            let manager = BundleManager::new(dir.path(), "manifest.json").unwrap();
+            let before = snapshot_pack_tree(dir.path());
+            assert_eq!(manager.inspect().diagnostics[0].code, expected_code);
+            for (id, all) in [(Some("base"), false), (None, true)] {
+                let mut fetcher = MemoryFetcher::new(std::iter::empty());
+                let result = manager.install_selected_with_fetcher(id, all, &mut fetcher);
+                assert!(!result.ok);
+                assert_eq!(result.diagnostics[0].code, expected_code);
+                assert!(result.effects.is_empty());
+                assert_eq!(fetcher.fetches, 0);
+            }
+            assert_eq!(snapshot_pack_tree(dir.path()), before);
+        }
+    }
+
+    #[cfg(any(unix, windows))]
+    #[test]
+    fn install_report_rejects_unselected_escaping_cache_before_activation() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tests/fixtures/bundle-manifest-validation.json"
+        ))
+        .unwrap();
+        let mut manifest: BundleManifest =
+            serde_json::from_value(fixture["valid"].clone()).unwrap();
+        for spec in &mut manifest.bundles {
+            spec.dependencies.clear();
+        }
+        let dir = tempdir().unwrap();
+        fs::write(
+            dir.path().join("manifest.json"),
+            serde_json::to_vec(&manifest).unwrap(),
+        )
+        .unwrap();
+        let manager = BundleManager::new(dir.path(), "manifest.json").unwrap();
+        let mut fetcher = MemoryFetcher::one("base", b"base-content");
+        let first = manager.install_with_fetcher("base", &mut fetcher);
+        assert!(first.ok, "{:?}", first.diagnostics);
+        assert_eq!(manager.active_generation().unwrap(), Some(1));
+
+        let unselected = manifest
+            .bundles
+            .iter()
+            .find(|spec| spec.id == "feature")
+            .unwrap();
+        let cache_path = manager.cache_path(unselected).unwrap();
+        let outside = tempdir().unwrap();
+        let target = outside.path().join("feature.bundle");
+        fs::write(&target, b"feature-content").unwrap();
+        #[cfg(unix)]
+        let link_result = std::os::unix::fs::symlink(&target, &cache_path);
+        #[cfg(windows)]
+        let link_result = std::os::windows::fs::symlink_file(&target, &cache_path);
+        if let Err(error) = link_result {
+            #[cfg(windows)]
+            if error.raw_os_error() == Some(1314) {
+                eprintln!(
+                    "SKIP install_report_rejects_unselected_escaping_cache_before_activation: symlink_file failed: {error}"
+                );
+                return;
+            }
+            panic!("create unselected cache symlink: {error}");
+        }
+
+        let before = snapshot_pack_tree(dir.path());
+        let mut retry_fetcher = MemoryFetcher::new(std::iter::empty());
+        let failed = manager.install_with_fetcher("base", &mut retry_fetcher);
+        assert!(!failed.ok);
+        assert_eq!(failed.diagnostics[0].code, "BUNDLE_STORAGE_PATH_UNSAFE");
+        assert!(failed.effects.is_empty());
+        assert_eq!(retry_fetcher.fetches, 0);
+        assert_eq!(manager.active_generation().unwrap(), Some(1));
+        assert_eq!(snapshot_pack_tree(dir.path()), before);
+        assert_eq!(fs::read(&target).unwrap(), b"feature-content");
+    }
+
+    #[test]
+    fn subset_install_reports_committed_generation_without_unioning_previous_roots() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tests/fixtures/bundle-manifest-validation.json"
+        ))
+        .unwrap();
+        let dir = tempdir().unwrap();
+        fs::write(
+            dir.path().join("manifest.json"),
+            serde_json::to_vec(&fixture["valid"]).unwrap(),
+        )
+        .unwrap();
+        let manager = BundleManager::new(dir.path(), "manifest.json").unwrap();
+        let mut fetcher = MemoryFetcher::new([
+            ("base", b"base-content".as_slice()),
+            ("feature", b"feature-content".as_slice()),
+        ]);
+        let first = manager.install_selected_with_fetcher(None, true, &mut fetcher);
+        assert!(first.ok, "{:?}", first.diagnostics);
+        assert_eq!(first.value.unwrap().active_bundles.len(), 2);
+
+        let mut cached_fetcher = MemoryFetcher::new(std::iter::empty());
+        let subset = manager.install_with_fetcher("base", &mut cached_fetcher);
+        assert!(subset.ok, "{:?}", subset.diagnostics);
+        assert_eq!(subset.effects, vec!["active bundle generation 2 created"]);
+        let report = subset.value.unwrap();
+        assert_eq!(report.active_generation, Some(2));
+        assert_eq!(
+            report.active_bundles,
+            BTreeMap::from([("base".to_string(), digest(b"base-content"))])
+        );
+        assert_eq!(cached_fetcher.fetches, 0);
+        assert_eq!(manager.active_generation().unwrap(), Some(2));
+        assert_eq!(manager.read_active_bundle("base").unwrap(), b"base-content");
+        assert_eq!(
+            manager.read_active_bundle("feature").unwrap_err().code,
+            "BUNDLE_GENERATION_MISMATCH"
+        );
     }
 
     #[test]

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
-import { installGeneration } from "./bundle-store.js";
+import { installGeneration, readActiveBundle } from "./bundle-store.js";
 
 const fixture = JSON.parse(await readFile(fileURLToPath(new URL("../../tests/fixtures/bundle-manifest-validation.json", import.meta.url)), "utf8"));
 
@@ -129,10 +129,24 @@ function responseFor(contentById) {
   };
 }
 
+function persistenceSnapshot(database) {
+  const snapshot = (name) => structuredClone([...database.stores.get(name).records.entries()]);
+  return {
+    meta: snapshot("meta"),
+    generations: snapshot("generations"),
+    bundles: [...database.stores.get("bundles").records.entries()].map(([key, value]) => [key, {
+      sha256: value.sha256,
+      size_bytes: value.size_bytes,
+      byte_length: value.bytes?.size ?? value.bytes?.byteLength,
+    }]),
+  };
+}
+
 test("shared validation fixtures reject invalid manifests before activation", async () => {
   globalThis.indexedDB = new FakeIndexedDb();
   const expectedCodes = {
     empty_bundles: "BUNDLE_MANIFEST_EMPTY",
+    missing_bundles: "BUNDLE_MANIFEST_INVALID",
     empty_id: "BUNDLE_MANIFEST_INVALID",
     duplicate_id: "BUNDLE_MANIFEST_DUPLICATE_ID",
     invalid_hash: "BUNDLE_MANIFEST_INVALID",
@@ -180,6 +194,92 @@ test("valid fixture installs every root and keeps one active generation", async 
   assert.equal(second.status, "already_active");
   assert.equal(second.generation, 1);
   assert.equal(fetchCount, 2);
+});
+
+test("read validates an unrelated dependency graph before reading an active base", async () => {
+  globalThis.indexedDB = new FakeIndexedDb();
+  const module = fakeVerifierModule();
+  const contentById = {
+    base: new TextEncoder().encode("base-content"),
+    feature: new TextEncoder().encode("feature-content"),
+  };
+  const active = await installGeneration(fixture.valid, {
+    module,
+    fetchImpl: responseFor(contentById),
+    databaseName: "fixture-read-invalid-graph",
+  });
+  const generationState = { database: active.database, bundles: active.bundles };
+  const base = await readActiveBundle(generationState, "base", module, fixture.valid);
+  assert.deepEqual(new Uint8Array(await base.arrayBuffer()), contentById.base);
+
+  const invalidGraphs = [
+    { name: "missing dependency", dependencies: ["missing"], code: "BUNDLE_DEPENDENCY_NOT_FOUND" },
+    { name: "dependency cycle", dependencies: ["feature"], code: "BUNDLE_DEPENDENCY_CYCLE" },
+  ];
+  for (const { name, dependencies, code } of invalidGraphs) {
+    const manifest = structuredClone(fixture.valid);
+    manifest.bundles.find((spec) => spec.id === "feature").dependencies = dependencies;
+    await assert.rejects(
+      readActiveBundle(generationState, "base", module, manifest),
+      (error) => error?.diagnostic?.code === code,
+      name,
+    );
+  }
+});
+
+test("corrupt active generation metadata fails closed without rewriting persistence", async () => {
+  const corruptions = [
+    {
+      name: "pointer without record",
+      mutate(database, active) {
+        database.stores.get("generations").records.delete(active.generation);
+      },
+    },
+    {
+      name: "invalid pointer",
+      mutate(database) {
+        database.stores.get("meta").records.set("activeGeneration", { key: "activeGeneration", generation: 0 });
+      },
+    },
+    {
+      name: "invalid record identity",
+      mutate(database, active) {
+        const record = database.stores.get("generations").records.get(active.generation);
+        database.stores.get("generations").records.set(active.generation, { ...record, generation: active.generation + 1 });
+      },
+    },
+  ];
+  const contentById = {
+    base: new TextEncoder().encode("base-content"),
+    feature: new TextEncoder().encode("feature-content"),
+  };
+
+  for (const { name, mutate } of corruptions) {
+    globalThis.indexedDB = new FakeIndexedDb();
+    const module = fakeVerifierModule();
+    const active = await installGeneration(fixture.valid, {
+      module,
+      fetchImpl: responseFor(contentById),
+      databaseName: `fixture-corrupt-${name}`,
+    });
+    mutate(active.database, active);
+    const before = persistenceSnapshot(active.database);
+    let fetchCount = 0;
+    await assert.rejects(
+      installGeneration(fixture.valid, {
+        module,
+        fetchImpl: async () => {
+          fetchCount += 1;
+          throw new Error("fetch must not run after active metadata corruption");
+        },
+        databaseName: `fixture-corrupt-${name}`,
+      }),
+      (error) => error?.diagnostic?.code === "BUNDLE_ACTIVE_GENERATION_UNREADABLE",
+      name,
+    );
+    assert.equal(fetchCount, 0, `${name}: no fetch after metadata corruption`);
+    assert.deepEqual(persistenceSnapshot(active.database), before, `${name}: persistence unchanged`);
+  }
 });
 
 test("failed later fetch leaves the previous active generation unchanged", async () => {

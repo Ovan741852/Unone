@@ -1,6 +1,7 @@
 # 資產工作流調整計畫
 
-版本：v3 / code_review_in_progress。v1 保留於 `146baeb`；獨立限定再審
+版本：v3 + code-review corrections / source_review_closed, build_blocked。
+v1 保留於 `146baeb`；獨立限定再審
 無 unresolved plan blocker，製作已放行，尚非功能驗收通過。
 
 ## 目標與取捨
@@ -177,3 +178,24 @@ Decision 0025 的一般盲測/嚴格 gate 原則未全部被取代，保留並�
    查詢期間 generation 改變不得 fresh=true、Web 拒絕空/重複 id 與空集合。
 8. blind feedback 若需修正，回到明確問題與再測，不以縮小原接受標準當作通過。
    最終只可稱本輪 workflow gate 通過，不改七款總驗收或宣稱 native 貼圖已完成。
+
+## 磁碟決策後的接續點
+
+目前所有製作者的修正候選已交付；Bundle/Web 與 asset/preview 的限定
+source-only 覆核皆已完成，未見新增可證實 P1/P2。主代理已做 Rust 語法解析、diff check 與
+Node 5/5（stub）驗證；不把這些稱為 Rust 編譯、Wasm 或 real-browser 通過。
+
+1. 等使用者回覆是否清理唯一指定的 `target/debug/incremental`，不可把
+   async 選項預選視為授權。詳見 disk-pressure issue。沒有自行清 cache。
+2. 若獲准，重新確認 exact target／沒有 active Cargo-rustc-link，再只清
+   該可重建快取並記錄前後磁碟量；不可刪 Games、`.git`、其他 target 或舊封裝。
+3. 依序重跑 workspace tests（明示 Windows link privilege skip）、clippy、
+   CLI build、MCP smoke。用主代理保留的原 probe 重跑 corrupt generation、
+   metadata mismatch、output collision、post-activation Junction 反例。
+   Corrupt-generation／Junction fixture 保持原狀；output 覆寫案保留修前證據，
+   從已記錄的原始 authoring 輸入重建隔離樣本，再確認失敗前後完全未改檔。
+   不以修好損壞 active record、清 cache 或跳過案例來掩蓋修正前後差異。
+4. 凍結已驗證 commit，重新 build wasm/mobile，再產生全新的 immutable package，
+   檢查 source_commit／source_dirty／inventory hash，不用舊平台 binary 冒充。
+5. 全新 Luna/max evaluator 只拿 package、本驗證企劃與空目錄；保留首次 blocker，
+   然後用實際 browser/host 補必要畫面與截圖。七款 final gates 維持原狀。

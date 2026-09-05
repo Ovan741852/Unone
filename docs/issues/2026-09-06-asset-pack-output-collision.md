@@ -1,6 +1,7 @@
 # Bundle pack output 與 authoring input 衝突
 
-日期：2026-09-06。狀態：fix_in_progress；尚未回歸通過。
+日期：2026-09-06。狀態：candidate_delivered / regression_pending；
+限定 source review 已覆核，尚未回歸通過。
 
 ## 重現與影響
 

@@ -19,6 +19,12 @@ bundle reader 與文件都以同一份 engine core 結果為準；舊的資產 r
    只讀符合目前 bundle manifest 與 active hash 的 verified bytes，不 fallback
    到作者 source。
 
+`asset read` 先由 verified `asset-manifest` 比對完整 AssetSpec；作者只改了
+kind、source、bundle 或 files 而尚未發佈時，回報 `BUNDLE_GENERATION_MISMATCH`，
+不把新 metadata 與舊 bytes 混成成功結果。讀取期間 bundle manifest 或 active
+record 改變也先拒絕，不寫 export。若只改 source bytes、AssetSpec 未變，read
+仍可能合法讀到已發佈的舊 bytes；是否最新須看 describe 的 freshness。
+
 `asset describe` 只回答 selected asset 在 `native_local` 是否與 authoring 相符。
 freshness 為 true 不代表所有 bundle、整個遊戲、Web IndexedDB、Android 或
 其他 host 都已同步，也不代表 native/Web renderer 已完成。
@@ -30,7 +36,7 @@ freshness 為 true 不代表所有 bundle、整個遊戲、Web IndexedDB、Andro
 1. **Authoring source** 是唯一可編輯的內容權威：project config 指向的
    manifest、manifest entry、primary 與 companions，以及作者明確寫入的 scene。
 2. **Packaged bundle** 是由 authoring 產生的可驗證輸出：bundle manifest、
-   archive bytes、size/hash 與 dependency metadata 都應重新 pack 取得，不能手改。
+archive bytes、size/hash 與 dependency metadata 都應重新 pack 取得，不能手改。
 3. **Active generation** 是安裝後的本地觀測結果：它只能由 bundle install 啟用，
    不可用 cache、archive 或 active metadata 反向當成 authoring。
 
@@ -45,6 +51,11 @@ bytes 時保留 id，通常不需要改 scene 的引用；修改內容後重新 
 沒有引用不代表 Luau、host 或外部內容沒有動態使用，不能把 unreferenced 當安全刪除。
 同一檔案可被多個 manifest entry 共用；改它會影響所有宣告該檔案的 ids，查詢只
 報告 manifest 可觀測到的共用關係。
+
+pack 的 output manifest、generated archives 及其 `.part` 暫存路徑須與
+authoring inputs 分離，generated outputs 之間也不可碰撞。衝突會在任何
+pack 寫入前回報 `BUNDLE_OUTPUT_COLLISION`；不能把 `--output` 指向現有作者
+manifest 來「替換」它。這不是任意外部 writer 的 filesystem transaction。
 
 ## 宣告格式
 
@@ -115,6 +126,10 @@ asset 的全體影響分析。`reference_scope` 明確標示 `main_scene_only`�
 `selected_asset_native_local`；`asset_spec_matches`、`primary_bytes_match`、
 `companion_bytes_match`、`bytes_match` 與 `matches_authoring` 必須如實保留
 `true`／`false`／`null`，不能把 read 成功或 bundle hash 有值冒充 freshness。
+
+active primary／companion 的讀取失敗除了放在該 file 的 diagnostic，也進入
+去重的 `active.diagnostics` 與頂層 `EngineResult.diagnostics`。client 不必
+深入每個 file 才知道 cache miss 或 archive 錯誤；file 欄位保留精確定位。
 
 `active.asset_manifest_json_pointer` 定位的是已驗證的保留 bundle
 `asset-manifest` 內的 entry，不是作者目前的 manifest 檔案。作者可能搬移
@@ -279,6 +294,12 @@ MCP `unone_bundle_install` 的 schema 以 `oneOf` 表示恰好一種：id 分支
 所有 manifest roots 共用同一個 installed set 與 dependency traversal；任一
 fetch、hash、dependency 或 cycle failure 都保持既有 active metadata。空或重複
 bundle id、無效 hash/size、缺失或循環 dependency 也在 activation 前拒絕。
+
+manifest 的 `bundles` 必須明示為 array：缺欄位為 `BUNDLE_MANIFEST_INVALID`，
+`[]` 為 `BUNDLE_MANIFEST_EMPTY`。native 與 Web 的安裝／active read 都驗證
+完整 dependency graph，不因本次只讀其中一包而忽略其他缺失或循環依賴。
+Web 已有 active pointer 但 record 缺失／無效時，回報
+`BUNDLE_ACTIVE_GENERATION_UNREADABLE`，不是可自動覆寫的「首次安裝」。
 
 ## `asset inspect` 與邊界
 

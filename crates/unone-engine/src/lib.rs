@@ -20,9 +20,9 @@ pub use api::{
 };
 pub use asset::{
     AssetInitReport, AssetInspectBlocker, AssetInspectReport, AssetManifest, AssetReadReport,
-    AssetReference, AssetSpec, StaticReferenceScope, init_asset_manifest,
+    AssetReference, AssetSpec, ResolvedAssetBytes, StaticReferenceScope, init_asset_manifest,
     inspect as inspect_assets, inspect_strict as inspect_assets_strict,
-    manifest as load_asset_manifest, read as read_asset,
+    manifest as load_asset_manifest, read as read_asset, resolve_asset_bytes,
 };
 pub use asset_workflow::{
     AssetActiveFileReport, AssetActiveReport, AssetAuthoringFileReport, AssetAuthoringReport,

@@ -56,7 +56,7 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 
 | # | 項目 | 說明 |
 |---|---|---|
-| 11 | 完整 generation 與資產工作流 | [工作包](work-packages/2026-09-06-asset-workflow.md) 已經獨立計畫再審、製作中：`install --all` 一次啟用全部 roots，`asset describe` 提供來源／引用／發佈狀態與下一步。尚待實作與封裝盲驗，不先標解決 |
+| 11 | 完整 generation 與資產工作流 | `4a128d7` 已實作 `install --all` 與 `asset describe`；修正候選已完成[限定 source review](reviews/2026-09-06-asset-workflow-code.md)。Rust 回歸、新平台建置與封裝盲驗待磁碟空間決策；[工作包](work-packages/2026-09-06-asset-workflow.md) 未驗收，不先標解決 |
 | 12 | `API_SEARCH_EMPTY` 沒有 `suggested_actions` | 交接流程強制的第 4 步對「遊戲領域動詞」必然 0 命中，而診斷說不出「引擎沒有遊戲領域 API」。也沒有 `api list`（目前要猜 `api search ""`） |
 | 13 | `verify` 沒有 host parity gate | package 層已擋下 CLI/wasm 契約不一致（[issue](issues/2026-09-05-package-ships-two-engine-builds.md)），但 `verify` 本身仍只驗證 native build |
 | 14 | Web observations 與共用 digest | 已實作並通過 ABI、純 JS output 和新 wasm 瀏覽器 source-mode smoke；immutable package 發行仍待完成。見 [驗收紀錄](devlog/2026-09-06-digest-integration.md) |
@@ -81,6 +81,9 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 
 ## 驗收
 
-七款遊戲的 final gate 未變：3D 賽車、RTS、放置戰鬥、AVG、自走棋、老虎機、魚機。憤怒鳥是中期壓測，目前 `verify` 四關全過（含三個宣告畫面的 layout gate）。
+七款遊戲的 final gate 未變：3D 賽車、RTS、放置戰鬥、AVG、自走棋、老虎機、魚機。
+憤怒鳥是中期壓測；`4a128d7` CLI 實測 headless verify 6/6 gates 通過，
+不代表最新未驗證 patch、host 畫面或不可變封裝已通過，詳見
+[本輪驗證紀錄](devlog/2026-09-06-asset-workflow.md)。
 
 每加一項能力，順序固定是：**補契約 → 補工具 → 用一款遊戲驗證 → 盲測確認 AI 能自行操作**。

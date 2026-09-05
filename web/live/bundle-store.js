@@ -97,6 +97,11 @@ function dependencyOrder(manifest) {
   return result;
 }
 
+function validateManifestGraph(manifestInput) {
+  const manifest = normalizeManifest(manifestInput);
+  return { manifest, order: dependencyOrder(manifest) };
+}
+
 function moduleJson(module) {
   const pointer = module._unone_web_observation_ptr();
   const length = module._unone_web_observation_len();
@@ -146,12 +151,43 @@ async function getBundleRecord(database, sha256) {
   return requestResult(transaction.objectStore("bundles").get(sha256));
 }
 
+function isRecord(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function isValidGeneration(value) {
+  return Number.isSafeInteger(value) && value > 0;
+}
+
+function isValidBundleMap(value) {
+  if (!isRecord(value) || Object.keys(value).length === 0) return false;
+  return Object.entries(value).every(([id, hash]) => id.trim() !== "" && typeof hash === "string" && /^[0-9a-f]{64}$/.test(hash));
+}
+
+function activeGenerationUnreadable(summary, explanation, facts = {}) {
+  throw engineError("BUNDLE_ACTIVE_GENERATION_UNREADABLE", summary, explanation, facts);
+}
+
 async function getActiveGeneration(database) {
   const transaction = database.transaction("meta", "readonly");
   const pointer = await requestResult(transaction.objectStore("meta").get("activeGeneration"));
-  if (!pointer) return null;
+  if (pointer === undefined) return null;
+  if (!isRecord(pointer) || pointer.key !== "activeGeneration" || !isValidGeneration(pointer.generation)) {
+    activeGenerationUnreadable("active generation pointer is invalid", "The active generation pointer must identify a positive integer generation.");
+  }
   const generationTransaction = database.transaction("generations", "readonly");
-  return requestResult(generationTransaction.objectStore("generations").get(pointer.generation));
+  const record = await requestResult(generationTransaction.objectStore("generations").get(pointer.generation));
+  const validRecord = isRecord(record)
+    && isValidGeneration(record.generation)
+    && record.generation === pointer.generation
+    && Number.isInteger(record.manifest_version)
+    && record.manifest_version >= 0
+    && record.manifest_version <= 0xffffffff
+    && isValidBundleMap(record.bundles);
+  if (!validRecord) {
+    activeGenerationUnreadable("active generation record is missing or invalid", "The active generation pointer must resolve to a valid generation record with matching identity and bundle metadata.", { generation: pointer.generation });
+  }
+  return record;
 }
 
 function sameBundles(left, right) {
@@ -203,10 +239,9 @@ async function fetchBlobAndVerify(module, spec, fetchImpl) {
  * browser persistence and delegates integrity to the Rust/Wasm engine.
  */
 export async function installGeneration(manifestInput, { module, fetchImpl = fetch, databaseName = DB_NAME } = {}) {
-  const manifest = normalizeManifest(manifestInput);
+  const { manifest, order } = validateManifestGraph(manifestInput);
   const database = await openDatabase(databaseName);
   const previous = await getActiveGeneration(database);
-  const order = dependencyOrder(manifest);
   const bundles = Object.fromEntries(order.map((spec) => [spec.id, spec.sha256]));
   if (previous && previous.manifest_version === manifest.version && sameBundles(previous.bundles, bundles)) {
     return { status: "already_active", generation: previous.generation, manifest_version: manifest.version, bundles, database };
@@ -244,7 +279,7 @@ export async function installGeneration(manifestInput, { module, fetchImpl = fet
 }
 
 export async function readActiveBundle(generationState, bundleId, module, manifestInput) {
-  const manifest = normalizeManifest(manifestInput);
+  const { manifest } = validateManifestGraph(manifestInput);
   const spec = manifest.bundles.find((candidate) => candidate.id === bundleId);
   if (!spec) throw engineError("BUNDLE_NOT_FOUND", `bundle '${bundleId}' does not exist`, "The requested bundle is not in the manifest.");
   const hash = generationState.bundles?.[bundleId];
