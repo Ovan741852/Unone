@@ -5,6 +5,7 @@ mod diagnostics;
 mod platform;
 mod project;
 mod runtime;
+mod systems;
 mod ui;
 mod world;
 
@@ -33,6 +34,11 @@ pub use project::{
 };
 pub use runtime::{
     CheckReport, EngineRuntime, RunReport, TestCaseReport, TestSuiteReport, TypeCheckReport,
+};
+pub use systems::{
+    SystemDescriptor, SystemReport, SystemSearchReport, SystemSetReport, SystemSettings,
+    SystemState, SystemStatus, describe as describe_system, inspect as inspect_systems,
+    search as search_systems, set as set_system,
 };
 pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiNode, UiRect, UiTree};
 pub use world::{

@@ -11,7 +11,8 @@ use clap::{Parser, Subcommand};
 use unone_engine::{
     AssetSpec, BundleManager, Camera3DData, EngineResult, EngineRuntime, InputFrame, Vec2, Vec3,
     WorldSnapshot, api_describe, api_search, init_asset_manifest, init_project, inspect_assets,
-    inspect_assets_strict, inspect_project, pack_project, read_asset,
+    inspect_assets_strict, inspect_project, inspect_systems, pack_project, read_asset,
+    search_systems, set_system,
 };
 use winit::{
     application::ApplicationHandler,
@@ -48,6 +49,11 @@ enum Command {
     Api {
         #[command(subcommand)]
         command: ApiCommand,
+    },
+    /// Inspect, search and switch the engine systems this project runs.
+    Systems {
+        #[command(subcommand)]
+        command: SystemsCommand,
     },
     Platform {
         #[command(subcommand)]
@@ -117,6 +123,25 @@ enum AssetCommand {
         kind: String,
         #[arg(long, default_value = "content")]
         bundle: String,
+    },
+}
+
+#[derive(Debug, Subcommand)]
+enum SystemsCommand {
+    /// Report every declared engine system and whether this project runs it.
+    List,
+    /// Find systems by meaning, for example "物理" or "存檔".
+    Search { meaning: String },
+    /// Turn one system on or off in project.unone.json.
+    Set {
+        #[arg(long, help = "System id, for example physics2d")]
+        id: String,
+        #[arg(
+            long,
+            action = clap::ArgAction::Set,
+            help = "true to enable, false to disable"
+        )]
+        enabled: bool,
     },
 }
 
@@ -219,6 +244,31 @@ fn run() -> Result<ExitCode> {
                     init_asset_manifest(&cli.project, output.as_deref(), new_asset),
                     cli.json,
                 )
+            }
+        },
+        Command::Systems { command } => match command {
+            SystemsCommand::List => print_result(inspect_systems(&cli.project), cli.json),
+            SystemsCommand::Search { meaning } => {
+                let matches = search_systems(&meaning);
+                let mut result = EngineResult::success(unone_engine::SystemSearchReport {
+                    query: meaning,
+                    matches,
+                });
+                if result
+                    .value
+                    .as_ref()
+                    .is_some_and(|report| report.matches.is_empty())
+                {
+                    result.diagnostics.push(unone_engine::Diagnostic::warning(
+                        "SYSTEM_SEARCH_EMPTY",
+                        "沒有符合的 system",
+                        "改用其他用途關鍵字，或先執行 game systems list 看完整清單。",
+                    ));
+                }
+                print_result(result, cli.json)
+            }
+            SystemsCommand::Set { id, enabled } => {
+                print_result(set_system(&cli.project, &id, enabled), cli.json)
             }
         },
         Command::Api { command } => match command {

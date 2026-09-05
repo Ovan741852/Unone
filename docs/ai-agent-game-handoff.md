@@ -22,6 +22,8 @@ bin/game.exe --project <game-root> --json project inspect
 bin/game.exe --project <game-root> --json platform capabilities
 bin/game.exe --project <game-root> --json api search "<企劃中的第一個動詞>"
 bin/game.exe --json api describe <實際找到的 API>
+bin/game.exe --project <game-root> --json systems list
+bin/game.exe --project <game-root> --json systems search "<企劃不需要的機制>"
 bin/game.exe --project <game-root> --json asset inspect --strict
 bin/game.exe --project <game-root> --json check --types
 ~~~
@@ -44,7 +46,7 @@ bin/game.exe --project <game-root> --json check --types
 }
 ~~~
 
-資產真的能被 host 取出，必須用 `bin/game.exe --project <game-root> --json bundle install content` 加上 `bin/game.exe --project <game-root> --json asset read --id <asset-id>` 證明：它回報已驗證的 `size_bytes`、`sha256` 與 `bundle_generation`，與 Web host 解析同一個 asset id 的結果必須一致。asset inspect 是作者檢查用的 advisory report；asset inspect --strict 是 handoff/release gate，任何靜態 reference、source、manifest、bundle 或目前不支援的 manifest kind/version 問題都必須 ok=false。bundle pack 也會拒絕未解決的主場景 asset reference。
+資產真的能被 host 取出，必須用 `bin/game.exe --project <game-root> --json bundle install content` 加上 `bin/game.exe --project <game-root> --json asset read --id <asset-id>` 證明：它回報已驗證的 `size_bytes`、`sha256` 與 `bundle_generation`，與 Web host 解析同一個 asset id 的結果必須一致。子代理必須先用 systems list／systems search 決定這款遊戲要用哪些引擎系統，並用 `systems set --id <id> --enabled false` 關掉企劃不需要的機制（例如老虎機、AVG、自走棋通常不需要 physics2d）。未宣告的 system 使用引擎預設；不可自行發明 system id，也不可啟用 status 為 not_implemented 的 system。asset inspect 是作者檢查用的 advisory report；asset inspect --strict 是 handoff/release gate，任何靜態 reference、source、manifest、bundle 或目前不支援的 manifest kind/version 問題都必須 ok=false。bundle pack 也會拒絕未解決的主場景 asset reference。
 
 ## 遇到問題的立即回報協定
 

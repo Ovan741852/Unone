@@ -15,6 +15,7 @@ use sha2::{Digest, Sha256};
 use crate::{
     diagnostics::{ActionSuggestion, Diagnostic, EngineResult, SourceLocation},
     project::{InputFrame, ProjectConfig, ProjectPaths, TestSpec},
+    systems::SystemSettings,
     ui::UiTree,
     world::{SceneFile, Transform3DData, Vec2, Vec3, World, WorldSnapshot},
 };
@@ -149,6 +150,7 @@ struct ScriptStamp {
 pub struct EngineRuntime {
     config: ProjectConfig,
     paths: ProjectPaths,
+    systems: SystemSettings,
     world: Rc<RefCell<World>>,
     input: Rc<RefCell<InputState>>,
     lua: Lua,
@@ -308,6 +310,7 @@ impl EngineRuntime {
             test_files: Vec::new(),
             bundle_manifest: None,
             asset_manifest: None,
+            systems: BTreeMap::new(),
         };
         let paths = ProjectPaths {
             root: PathBuf::from("<memory>"),
@@ -347,8 +350,9 @@ impl EngineRuntime {
             ui: Rc::clone(&ui),
             save_payload: Rc::clone(&save_payload),
         };
+        let systems = SystemSettings::from_config(&config)?;
         let lua = Lua::new();
-        let api = build_api(&lua, &api_state).map_err(|err| {
+        let api = build_api(&lua, &api_state, &systems).map_err(|err| {
             Box::new(Diagnostic::error(
                 "ENGINE_API_BIND_FAILED",
                 "無法建立 Luau Engine API",
@@ -365,6 +369,7 @@ impl EngineRuntime {
         let mut runtime = Self {
             config,
             paths,
+            systems,
             world,
             input,
             lua,
@@ -509,7 +514,9 @@ impl EngineRuntime {
         self.update_fn
             .call::<()>((self.api.clone(), FIXED_DT))
             .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
-        self.world.borrow_mut().step_physics(FIXED_DT);
+        if self.systems.is_enabled("physics2d") {
+            self.world.borrow_mut().step_physics(FIXED_DT);
+        }
         {
             let mut world = self.world.borrow_mut();
             world.frame += 1;
@@ -694,7 +701,7 @@ impl EngineRuntime {
     }
 }
 
-fn build_api(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
+fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Result<Table> {
     let world = Rc::clone(&state.world);
     let input = Rc::clone(&state.input);
     let random = Rc::clone(&state.random);
@@ -1074,14 +1081,46 @@ fn build_api(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     )?;
     api.set("entity", entity)?;
     api.set("input", input_api)?;
-    api.set("random", random_api)?;
-    api.set("physics", physics)?;
-    api.set("camera", camera)?;
-    api.set("camera3d", camera3d)?;
+    api.set("random", disable_if_off(lua, systems, "random", random_api)?)?;
+    api.set("physics", disable_if_off(lua, systems, "physics2d", physics)?)?;
+    api.set("camera", disable_if_off(lua, systems, "camera2d", camera)?)?;
+    api.set("camera3d", disable_if_off(lua, systems, "camera3d", camera3d)?)?;
     api.set("observation", observation_api)?;
-    api.set("ui", ui_api)?;
-    api.set("save", save_api)?;
+    api.set("ui", disable_if_off(lua, systems, "ui", ui_api)?)?;
+    api.set("save", disable_if_off(lua, systems, "save", save_api)?)?;
     Ok(api)
+}
+
+/// Keep a disabled system's API shape, but make every call say why it failed.
+///
+/// Removing the table would surface as "attempt to index nil", which tells a
+/// game author nothing. A disabled call names the system and the switch.
+fn disable_if_off(
+    lua: &Lua,
+    systems: &SystemSettings,
+    system: &'static str,
+    table: Table,
+) -> mlua::Result<Table> {
+    if systems.is_enabled(system) {
+        return Ok(table);
+    }
+    let disabled = lua.create_table()?;
+    let names: Vec<String> = table
+        .pairs::<String, Value>()
+        .filter_map(|pair| pair.ok().map(|(name, _)| name))
+        .collect();
+    for name in names {
+        let message = format!(
+            "SYSTEM_DISABLED: system '{system}' 已在 project.unone.json 停用，因此 api.{name} 無法使用。要使用它請執行 game systems set --id {system} --enabled true。"
+        );
+        disabled.set(
+            name,
+            lua.create_function(move |_, _: mlua::MultiValue| {
+                Err::<(), _>(mlua::Error::RuntimeError(message.clone()))
+            })?,
+        )?;
+    }
+    Ok(disabled)
 }
 
 const MAX_OBSERVATION_DEPTH: usize = 8;
@@ -1481,6 +1520,92 @@ function Game.update(api: EngineApi, dt: number)
 end
 return Game
 "#;
+
+    const PHYSICS_SCRIPT: &str = r#"--!strict
+local Game = {}
+function Game.start(_api) end
+function Game.update(api, _dt)
+    api.physics.applyImpulse("player", {x = 1.0, y = 0.0})
+end
+return Game
+"#;
+
+    fn write_project_with_systems(dir: &std::path::Path, script: &str, systems: &str) {
+        fs::create_dir_all(dir.join("scripts")).unwrap();
+        fs::create_dir_all(dir.join("scenes")).unwrap();
+        fs::write(
+            dir.join("project.unone.json"),
+            format!(
+                r#"{{
+                "name": "SystemsTest",
+                "entry_script": "scripts/main.luau",
+                "main_scene": "scenes/main.scene.json",
+                "systems": {systems}
+            }}"#
+            ),
+        )
+        .unwrap();
+        fs::write(
+            dir.join("scenes/main.scene.json"),
+            r#"{
+            "entities": [{
+                "id": "player",
+                "name": "Player",
+                "transform": {"x": 0.0, "y": 10.0},
+                "rigidbody": {"body_type": "dynamic"}
+            }]
+        }"#,
+        )
+        .unwrap();
+        fs::write(dir.join("scripts/main.luau"), script).unwrap();
+    }
+
+    const IDLE_SCRIPT: &str = r#"--!strict
+local Game = {}
+function Game.start(_api) end
+function Game.update(_api, _dt) end
+return Game
+"#;
+
+    #[test]
+    fn a_disabled_system_stops_stepping_and_says_so_when_called() {
+        let dir = tempdir().unwrap();
+        write_project_with_systems(dir.path(), PHYSICS_SCRIPT, r#"{"physics2d": false}"#);
+        let error = EngineRuntime::load(dir.path()).unwrap().tick().unwrap_err();
+        assert!(
+            error.explanation.contains("SYSTEM_DISABLED"),
+            "{}",
+            error.explanation
+        );
+        assert!(
+            error.explanation.contains("physics2d"),
+            "{}",
+            error.explanation
+        );
+
+        write_project_with_systems(dir.path(), IDLE_SCRIPT, r#"{"physics2d": false}"#);
+        let mut disabled = EngineRuntime::load(dir.path()).unwrap();
+        disabled.run(30, 42);
+        let held = disabled.observe().entities["player"].transform.y;
+        assert!((held - 10.0).abs() < 1e-9, "physics still advanced: {held}");
+
+        write_project_with_systems(dir.path(), IDLE_SCRIPT, "{}");
+        let mut enabled = EngineRuntime::load(dir.path()).unwrap();
+        enabled.run(30, 42);
+        let fallen = enabled.observe().entities["player"].transform.y;
+        assert!(fallen < 10.0, "physics did not advance: {fallen}");
+    }
+
+    #[test]
+    fn an_unknown_system_switch_fails_the_project_load() {
+        let dir = tempdir().unwrap();
+        write_project_with_systems(dir.path(), IDLE_SCRIPT, r#"{"physics4d": false}"#);
+        let error = match EngineRuntime::load(dir.path()) {
+            Ok(_) => panic!("unknown system id was accepted"),
+            Err(error) => error,
+        };
+        assert_eq!(error.code, "SYSTEM_UNKNOWN");
+    }
 
     #[test]
     fn same_seed_and_input_produce_same_observation_digest() {

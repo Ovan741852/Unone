@@ -46,6 +46,24 @@ bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json api describe
 
 需要可重播的遊戲隨機性時使用 `api.random.nextFloat()` 或 `api.random.nextInt(min, max)`。CLI 的 `--seed` 會成為該 runtime 的 Luau random seed；同一個 seed、輸入順序與 random 呼叫順序才保證同一結果。它不是安全隨機數，也不應用於金流或密碼。
 
+## 0.5 決定這個遊戲要用哪些引擎系統
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems list
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems search "物理"
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems set --id physics2d --enabled false
+```
+
+`systems list` 會回報每個 system 的預設值、目前生效值與來源（`default` 或 `project`）、它擁有的 Luau API 與 observation 欄位，以及關閉後會失去什麼。`systems search` 依用途找系統，習慣與 `api search` 相同。決定後用 `systems set` 寫進該遊戲自己的 `project.unone.json`：
+
+```json
+{ "systems": { "physics2d": false } }
+```
+
+未宣告的 system 使用引擎預設。三種情況會直接失敗：`SYSTEM_UNKNOWN`（引擎沒有這個 id，typo 不會被當成關閉）、`SYSTEM_NOT_OPTIONAL`（`world`／`input`／`observation` 不可關閉）、`SYSTEM_NOT_IMPLEMENTED`（只有契約沒有實作，目前是 `spine`、`effekseer`）。
+
+關閉是有實際效果的：`physics2d` 關閉後引擎不再推進剛體；被關閉系統的 Luau API 仍然存在，但呼叫時會回報 `SYSTEM_DISABLED` 並附上重新啟用的命令，不會變成 `attempt to index nil`。`systems` 只決定引擎機制要不要跑，遊戲數值、關卡與內容開關仍屬遊戲端。
+
 ## 1. 先檢查專案
 
 ```powershell

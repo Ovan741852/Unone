@@ -4,7 +4,9 @@
   "title": "Unone project.unone.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["name"],
+  "required": [
+    "name"
+  ],
   "properties": {
     "name": {
       "type": "string",
@@ -18,21 +20,39 @@
       "description": "Project-relative Luau entry script."
     },
     "main_scene": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Optional project-relative JSON scene file."
     },
     "test_files": {
       "type": "array",
-      "items": {"type": "string"},
+      "items": {
+        "type": "string"
+      },
       "description": "Project-relative deterministic test manifest files."
     },
     "bundle_manifest": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Optional project-relative generated bundle manifest."
     },
     "asset_manifest": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Optional project-relative version-1 asset manifest."
+    },
+    "systems": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "description": "Engine systems this game explicitly turns on or off. Anything not declared keeps the engine default; unknown ids, systems the runtime requires, and systems with no implementation are rejected. Run `game systems list` for the current set."
     }
   }
 }

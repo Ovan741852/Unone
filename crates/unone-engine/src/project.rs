@@ -22,6 +22,12 @@ pub struct ProjectConfig {
     pub bundle_manifest: Option<String>,
     #[serde(default)]
     pub asset_manifest: Option<String>,
+    /// Engine systems this game explicitly turns on or off.
+    ///
+    /// Anything not declared keeps the engine default; the engine rejects
+    /// unknown ids instead of treating a typo as a disabled system.
+    #[serde(default)]
+    pub systems: BTreeMap<String, bool>,
 }
 
 fn default_entry_script() -> String {

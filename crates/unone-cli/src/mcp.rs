@@ -9,7 +9,8 @@ use serde_json::{Map, Value, json};
 use unone_engine::{
     AssetSpec, BundleManager, Diagnostic, EngineResult, EngineRuntime, InputFrame, api_describe,
     api_search, init_asset_manifest, init_project, inspect_assets, inspect_assets_strict,
-    inspect_project, pack_project, platform_capabilities, read_asset,
+    inspect_project, inspect_systems, pack_project, platform_capabilities, read_asset,
+    search_systems, set_system,
 };
 
 const LATEST_PROTOCOL_VERSION: &str = "2025-11-25";
@@ -223,6 +224,9 @@ fn tool_names() -> Vec<&'static str> {
         "unone_asset_inspect",
         "unone_asset_read",
         "unone_asset_init",
+        "unone_systems_list",
+        "unone_systems_search",
+        "unone_systems_set",
         "unone_platform_capabilities",
         "unone_api_search",
         "unone_api_describe",
@@ -297,6 +301,41 @@ fn tool_definitions() -> Vec<Value> {
                     "kind": {"type": "string", "enum": ["texture2d", "mesh3d"], "default": "texture2d"},
                     "bundle": {"type": "string", "default": "content"}
                 }
+            })),
+            false,
+            false,
+        ),
+        tool(
+            "unone_systems_list",
+            "List engine systems",
+            "Report every engine system, whether this project runs it, and whether that came from the project config or the engine default. Use it before assuming a capability exists: a system marked not_implemented has a contract but no engine or host implementation.",
+            object_schema(json!({"properties": {}})),
+            true,
+            true,
+        ),
+        tool(
+            "unone_systems_search",
+            "Search engine systems",
+            "Find systems by meaning, for example 物理 or 存檔, so a game can decide what it does not need. Returns what each system provides, what disabling it changes, and when a game would disable it.",
+            object_schema(json!({
+                "properties": {
+                    "meaning": {"type": "string", "description": "What the game needs or wants to drop."}
+                },
+                "required": ["meaning"]
+            })),
+            true,
+            true,
+        ),
+        tool(
+            "unone_systems_set",
+            "Switch an engine system",
+            "Turn one system on or off in the game's own project.unone.json. Unknown ids, systems the runtime requires, and systems with no implementation are rejected with a semantic error instead of being written silently.",
+            object_schema(json!({
+                "properties": {
+                    "id": {"type": "string", "description": "System id, for example physics2d."},
+                    "enabled": {"type": "boolean", "description": "true to enable, false to disable."}
+                },
+                "required": ["id", "enabled"]
             })),
             false,
             false,
@@ -478,6 +517,28 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 &id,
                 output.as_deref().map(std::path::Path::new),
             ))
+        }
+        "unone_systems_list" => tool_result(inspect_systems(project)),
+        "unone_systems_search" => match required_string(arguments, "meaning") {
+            Ok(meaning) => {
+                let matches = search_systems(&meaning);
+                tool_result(EngineResult::success(unone_engine::SystemSearchReport {
+                    query: meaning,
+                    matches,
+                }))
+            }
+            Err(diagnostic) => argument_error(*diagnostic),
+        },
+        "unone_systems_set" => {
+            let id = match required_string(arguments, "id") {
+                Ok(id) => id,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let enabled = match required_bool(arguments, "enabled") {
+                Ok(enabled) => enabled,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            tool_result(set_system(project, &id, enabled))
         }
         "unone_asset_init" => {
             let output = match optional_string(arguments, "output") {
@@ -678,6 +739,17 @@ fn optional_bool(arguments: &Value, name: &str, default: bool) -> Result<bool, B
     }
 }
 
+fn required_bool(arguments: &Value, name: &str) -> Result<bool, Box<Diagnostic>> {
+    match arguments.get(name) {
+        Some(Value::Bool(value)) => Ok(*value),
+        Some(_) | None => Err(Box::new(Diagnostic::error(
+            "MCP_ARGUMENT_INVALID",
+            "工具參數型別錯誤",
+            format!("arguments.{name} 必須是 boolean，且不可省略。"),
+        ))),
+    }
+}
+
 fn optional_u64(arguments: &Value, name: &str, default: u64) -> Result<u64, Box<Diagnostic>> {
     match arguments.get(name) {
         None => Ok(default),
@@ -766,7 +838,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 15);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 18);
     }
 
     #[test]
