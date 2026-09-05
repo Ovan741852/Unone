@@ -45,6 +45,25 @@
         }
       }
     },
+    "scale2d": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "y": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "description": "Visual-only 2D scale. It does not change RigidBody2D parameters or collision resolution."
+    },
     "vec3": {
       "type": "object",
       "additionalProperties": false,
@@ -96,6 +115,13 @@
         },
         "visible": {
           "type": "boolean"
+        },
+        "layer": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "default": 0,
+          "description": "Signed portable 32-bit painter layer. Lower layers draw first. Same-layer order is ascending entity id."
         }
       }
     },
@@ -155,6 +181,18 @@
         },
         "transform": {
           "$ref": "#/$defs/vec2"
+        },
+        "rotation": {
+          "type": "number",
+          "default": 0,
+          "description": "Visual-only 2D rotation in radians, positive counter-clockwise in the y-up world, around the entity centre. It does not affect collision."
+        },
+        "scale": {
+          "$ref": "#/$defs/scale2d",
+          "default": {
+            "x": 1,
+            "y": 1
+          }
         },
         "transform3d": {
           "anyOf": [

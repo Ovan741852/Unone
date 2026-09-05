@@ -18,10 +18,20 @@ use crate::{
     project::{InputFrame, ProjectConfig, ProjectPaths, TestSpec},
     systems::SystemSettings,
     ui::UiTree,
-    world::{SceneFile, Transform3DData, Vec2, Vec3, World, WorldSnapshot},
+    world::{SceneFile, Transform2DData, Transform3DData, Vec2, Vec3, World, WorldSnapshot},
 };
 
 const FIXED_DT: f64 = 1.0 / 60.0;
+
+/// Compute the canonical digest for an already generated observation snapshot.
+///
+/// This is deliberately read-only: it does not observe or advance a runtime,
+/// and it keeps the existing JSON serialization followed by lowercase SHA-256
+/// definition used by `EngineRuntime::run`.
+pub fn observation_digest(snapshot: &WorldSnapshot) -> Result<String, serde_json::Error> {
+    let bytes = serde_json::to_vec(snapshot)?;
+    Ok(format!("sha256:{}", hex_digest(&bytes)))
+}
 
 #[derive(Debug, Clone, Serialize)]
 pub struct CheckReport {
@@ -605,8 +615,16 @@ impl EngineRuntime {
             }
         }
         let world = self.observe();
-        let observation = serde_json::to_vec(&world).unwrap_or_default();
-        let digest = format!("sha256:{}", hex_digest(&observation));
+        let digest = match observation_digest(&world) {
+            Ok(digest) => digest,
+            Err(error) => {
+                return EngineResult::failure(Diagnostic::error(
+                    "OBSERVATION_SERIALIZATION_FAILED",
+                    "無法序列化 observation snapshot",
+                    format!("WorldSnapshot 無法序列化，不能計算 observation digest：{error}"),
+                ));
+            }
+        };
         EngineResult::success(RunReport {
             project: self.config.name.clone(),
             seed,
@@ -916,6 +934,52 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
                 .ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' 不存在。")))?;
             entity.transform = Vec2 { x, y };
             Ok(())
+        })?,
+    )?;
+
+    let get_transform2d_world = Rc::clone(&world);
+    entity.set(
+        "getTransform2D",
+        lua.create_function(move |lua, id: String| {
+            let transform = get_transform2d_world
+                .borrow()
+                .get_transform2d(&id)
+                .map_err(mlua::Error::RuntimeError)?;
+            let result = lua.create_table()?;
+            let position = lua.create_table()?;
+            position.set("x", transform.position.x)?;
+            position.set("y", transform.position.y)?;
+            let scale = lua.create_table()?;
+            scale.set("x", transform.scale.x)?;
+            scale.set("y", transform.scale.y)?;
+            result.set("position", position)?;
+            result.set("rotation", transform.rotation)?;
+            result.set("scale", scale)?;
+            Ok(result)
+        })?,
+    )?;
+
+    let set_transform2d_world = Rc::clone(&world);
+    entity.set(
+        "setTransform2D",
+        lua.create_function(move |_, (id, value): (String, Table)| {
+            let position: Table = value.get("position")?;
+            let scale: Table = value.get("scale")?;
+            let transform = Transform2DData {
+                position: Vec2 {
+                    x: position.get("x")?,
+                    y: position.get("y")?,
+                },
+                rotation: value.get("rotation")?,
+                scale: Vec2 {
+                    x: scale.get("x")?,
+                    y: scale.get("y")?,
+                },
+            };
+            set_transform2d_world
+                .borrow_mut()
+                .set_transform2d(&id, transform)
+                .map_err(mlua::Error::RuntimeError)
         })?,
     )?;
 
@@ -1779,8 +1843,8 @@ mod tests {
 
     use tempfile::tempdir;
 
-    use super::{DeterministicRng, EngineRuntime};
-    use crate::{project::InputFrame, ui::UiTree, world::SceneFile};
+    use super::{DeterministicRng, EngineRuntime, hex_digest, observation_digest};
+    use crate::{project::InputFrame, ui::UiTree, world::{SceneFile, Vec2}};
 
     fn write_project(dir: &std::path::Path, script: &str) {
         fs::create_dir_all(dir.join("scripts")).unwrap();
@@ -2058,6 +2122,155 @@ return Game
         assert_eq!(
             left_report.observation_digest,
             right_report.observation_digest
+        );
+    }
+
+    #[test]
+    fn observation_digest_matches_snapshot_bytes_and_does_not_mutate_snapshot() {
+        let runtime = EngineRuntime::load_source("DigestSmoke", "main.luau", IDLE_SCRIPT, None)
+            .unwrap();
+        let snapshot = runtime.observe();
+        let before = serde_json::to_vec(&snapshot).unwrap();
+
+        let digest = observation_digest(&snapshot).unwrap();
+        assert_eq!(digest, format!("sha256:{}", hex_digest(&before)));
+
+        let after = serde_json::to_vec(&runtime.observe()).unwrap();
+        assert_eq!(after, before, "digesting must be read-only");
+
+        let mut changed = snapshot.clone();
+        changed.frame += 1;
+        assert_ne!(
+            observation_digest(&changed).unwrap(),
+            digest,
+            "different snapshot state must produce a different digest"
+        );
+    }
+
+    #[test]
+    fn two_d_script_api_updates_visual_transform_and_preserves_position_shape() {
+        let scene = serde_json::from_value::<SceneFile>(serde_json::json!({
+            "entities": [{
+                "id": "player",
+                "transform": {"x": 2.0, "y": 3.0},
+                "sprite": {"asset": "asset://player"}
+            }]
+        }))
+        .unwrap();
+        let source = r#"
+local Game = {}
+function Game.start(api)
+    local transform = api.entity.getTransform2D("player")
+    transform.position.x += 1
+    transform.rotation = 1.25
+    transform.scale = { x = 2, y = 0.5 }
+    api.entity.setTransform2D("player", transform)
+end
+function Game.update(_api, _dt) end
+return Game
+"#;
+
+        let runtime = EngineRuntime::load_source("Transform2DSmoke", "main.luau", source, Some(scene))
+            .unwrap();
+        let snapshot = runtime.observe();
+        let player = snapshot.entities.get("player").unwrap();
+
+        assert_eq!(player.transform, Vec2 { x: 3.0, y: 3.0 });
+        assert_eq!(player.rotation, 1.25);
+        assert_eq!(player.scale, Vec2 { x: 2.0, y: 0.5 });
+    }
+
+    #[test]
+    fn visual_transform_changes_snapshot_but_not_same_seed_physics() {
+        let scene = |visual: bool| {
+            let bird_rotation = if visual { 1.25 } else { 0.0 };
+            let bird_scale = if visual {
+                serde_json::json!({"x": 2.0, "y": 0.5})
+            } else {
+                serde_json::json!({"x": 1.0, "y": 1.0})
+            };
+            let pig_rotation = if visual { -0.75 } else { 0.0 };
+            let pig_scale = if visual {
+                serde_json::json!({"x": 0.75, "y": 1.75})
+            } else {
+                serde_json::json!({"x": 1.0, "y": 1.0})
+            };
+            serde_json::from_value::<SceneFile>(serde_json::json!({
+                "physics": {"ground_y": 0.0},
+                "entities": [
+                    {
+                        "id": "bird",
+                        "transform": {"x": 0.0, "y": 3.0},
+                        "rotation": bird_rotation,
+                        "scale": bird_scale,
+                        "sprite": {"asset": "asset://bird"},
+                        "rigidbody": {"body_type": "dynamic", "velocity": {"x": 4.0, "y": 0.0}}
+                    },
+                    {
+                        "id": "pig",
+                        "transform": {"x": 0.8, "y": 3.0},
+                        "rotation": pig_rotation,
+                        "scale": pig_scale,
+                        "sprite": {"asset": "asset://pig"},
+                        "rigidbody": {"body_type": "dynamic"}
+                    }
+                ]
+            }))
+            .unwrap()
+        };
+        let mut baseline = EngineRuntime::load_source_with_seed(
+            "TransformPhysicsBaseline",
+            "main.luau",
+            IDLE_SCRIPT,
+            Some(scene(false)),
+            1337,
+        )
+        .unwrap();
+        let mut visual_only = EngineRuntime::load_source_with_seed(
+            "TransformPhysicsVisualOnly",
+            "main.luau",
+            IDLE_SCRIPT,
+            Some(scene(true)),
+            1337,
+        )
+        .unwrap();
+        let input_sequence = vec![InputFrame::default(); 120];
+
+        let baseline_report = baseline
+            .run_with_input_sequence(120, 1337, &input_sequence)
+            .value
+            .unwrap();
+        let visual_report = visual_only
+            .run_with_input_sequence(120, 1337, &input_sequence)
+            .value
+            .unwrap();
+
+        for id in ["bird", "pig"] {
+            let expected = &baseline_report.world.entities[id];
+            let actual = &visual_report.world.entities[id];
+            assert_eq!(actual.transform, expected.transform, "position for {id}");
+            assert_eq!(
+                actual.rigidbody.as_ref().unwrap().velocity,
+                expected.rigidbody.as_ref().unwrap().velocity,
+                "velocity for {id}"
+            );
+        }
+        assert_eq!(visual_report.world.contacts, baseline_report.world.contacts);
+        assert_eq!(
+            visual_report.world.ground_contacts,
+            baseline_report.world.ground_contacts
+        );
+        assert_ne!(
+            visual_report.world.entities["bird"].rotation,
+            baseline_report.world.entities["bird"].rotation
+        );
+        assert_ne!(
+            visual_report.world.entities["bird"].scale,
+            baseline_report.world.entities["bird"].scale
+        );
+        assert_ne!(
+            visual_report.observation_digest, baseline_report.observation_digest,
+            "full snapshot digest includes visual state, not a physics verdict"
         );
     }
 

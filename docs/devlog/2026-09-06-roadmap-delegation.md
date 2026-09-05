@@ -13,8 +13,12 @@
 物理不隨顯示 rotation/scale 改變；本輪測試須分別驗證物理結果與顯示 snapshot。
 完整依賴與驗收見 `docs/execution-plan.md`。交接文件同步加入使用者決策步驟。
 
-本次尚無新的執行畫面，因此沒有新增或假造遊戲截圖。
+首次派工尚無新的執行畫面；後续 digest 整合已補實測截圖與回歸，見
+`docs/devlog/2026-09-06-digest-integration.md`。
 
-Web 子代理回報 canonical digest 入口不足，已立即詢問使用者是否抽出共用
-Rust 函式；相關接線暫停。問題記於
-`docs/issues/2026-09-06-web-canonical-digest-entrypoint.md`，不影響已核准的 2D 工作。
+Web 子代理回報 canonical digest 入口不足，已立即詢問使用者。使用者答覆
+「抽出」，已指派原 core writer 提供共用 Rust 函式，Web writer 接線。
+問題記於 `docs/issues/2026-09-06-web-canonical-digest-entrypoint.md`。
+
+core 子代理指出派工漏列 embedded canonical 型別檔；已補正至其 API/typing
+寫入範圍，繼續同步 embedded 與 docs 契約。此為派工路徑更正，沒有新增遊戲規格。

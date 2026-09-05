@@ -12,6 +12,7 @@
 
 export type Vec2 = { x: number, y: number }
 export type Vec3 = { x: number, y: number, z: number }
+export type Transform2D = { position: Vec2, rotation: number, scale: Vec2 }
 export type Transform3D = { position: Vec3, rotation: Vec3, scale: Vec3 }
 export type Camera3DTransform = { position: Vec3, target: Vec3, fovDegrees: number }
 
@@ -25,10 +26,14 @@ export type ObservationValue =
 
 export type EntityApi = {
     spawn: (name: string) -> string,
+    despawn: (id: string) -> (),
+    setSpriteVisible: (id: string, visible: boolean) -> (),
     getPosition: (id: string) -> Vec2,
     setPosition: (id: string, position: Vec2) -> (),
     getVelocity: (id: string) -> Vec2,
     setVelocity: (id: string, velocity: Vec2) -> (),
+    getTransform2D: (id: string) -> Transform2D,
+    setTransform2D: (id: string, transform: Transform2D) -> (),
     getTransform3D: (id: string) -> Transform3D,
     setTransform3D: (id: string, transform: Transform3D) -> (),
 }

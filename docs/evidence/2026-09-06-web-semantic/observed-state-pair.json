@@ -1,0 +1,393 @@
+{
+  "scope": "DOM output captured from rebuilt local wasm, source mode; not package-only or whole-game validation",
+  "first": {
+    "project_root": "/Unone_Games/angry-birds-2d/",
+    "renderer": {
+      "available": true
+    },
+    "save_store": {
+      "backend": "indexeddb",
+      "loaded": false
+    },
+    "bundle": null,
+    "assets": {
+      "manifest_version": 1,
+      "count": 3,
+      "resolved": 3
+    },
+    "project": "AngryBirds2D",
+    "observation_digest": "sha256:0ad4e9d6b01d0350493a612dbf09380849b6dd7861beb360cc9e87227ce37cbf",
+    "frame": 2095,
+    "entities": [
+      {
+        "id": "bird",
+        "asset": "asset://characters/bird/red",
+        "size": {
+          "x": 0.8,
+          "y": 0.8
+        },
+        "position": {
+          "x": -8,
+          "y": 2.997278
+        },
+        "transform3d": null,
+        "mesh3d": null
+      },
+      {
+        "id": "block_high",
+        "asset": "asset://structures/wood/block",
+        "size": {
+          "x": 1,
+          "y": 1
+        },
+        "position": {
+          "x": 9.6,
+          "y": 1.491833
+        },
+        "transform3d": null,
+        "mesh3d": null
+      },
+      {
+        "id": "block_low",
+        "asset": "asset://structures/wood/block",
+        "size": {
+          "x": 1,
+          "y": 1
+        },
+        "position": {
+          "x": 9.6,
+          "y": 0.494556
+        },
+        "transform3d": null,
+        "mesh3d": null
+      },
+      {
+        "id": "pig_a",
+        "asset": "asset://characters/pig/basic",
+        "size": {
+          "x": 1,
+          "y": 1
+        },
+        "position": {
+          "x": 5,
+          "y": 0.5
+        },
+        "transform3d": null,
+        "mesh3d": null
+      },
+      {
+        "id": "pig_b",
+        "asset": "asset://characters/pig/basic",
+        "size": {
+          "x": 1,
+          "y": 1
+        },
+        "position": {
+          "x": 8,
+          "y": 0.5
+        },
+        "transform3d": null,
+        "mesh3d": null
+      },
+      {
+        "id": "pig_c",
+        "asset": "asset://characters/pig/basic",
+        "size": {
+          "x": 1,
+          "y": 1
+        },
+        "position": {
+          "x": 11,
+          "y": 0.5
+        },
+        "transform3d": null,
+        "mesh3d": null
+      }
+    ],
+    "camera3d": null,
+    "ui": {
+      "kind": "screen",
+      "id": "angry-birds",
+      "node": "aim",
+      "children": [
+        {
+          "kind": "text",
+          "id": "hud-birds",
+          "rect": {
+            "x": 1.125,
+            "y": 91,
+            "width": 14.625,
+            "height": 7
+          },
+          "text": "BIRDS 3"
+        },
+        {
+          "kind": "text",
+          "id": "hud-status",
+          "rect": {
+            "x": 41.5625,
+            "y": 91,
+            "width": 16.875,
+            "height": 7
+          },
+          "text": "AIM"
+        },
+        {
+          "kind": "text",
+          "id": "hud-pigs",
+          "rect": {
+            "x": 84.25,
+            "y": 91,
+            "width": 14.625,
+            "height": 7
+          },
+          "text": "PIGS 3"
+        },
+        {
+          "kind": "text",
+          "id": "hud-score",
+          "rect": {
+            "x": 2,
+            "y": 2,
+            "width": 30,
+            "height": 8
+          },
+          "text": "SCORE 0"
+        },
+        {
+          "kind": "text",
+          "id": "hud-hint",
+          "rect": {
+            "x": 36,
+            "y": 2,
+            "width": 30,
+            "height": 8
+          },
+          "text": "DRAG THE BIRD"
+        }
+      ]
+    },
+    "pointer": {
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "screen_position": {
+        "x": 0,
+        "y": 0
+      },
+      "down": false
+    },
+    "observations": {
+      "view_model": {
+        "birds_left": 3,
+        "last_event": "ready",
+        "pigs_left": 3,
+        "score": 0,
+        "screen": "aim"
+      }
+    },
+    "save_payload": {
+      "birds_left": 3,
+      "pigs_defeated": {},
+      "score": 0,
+      "screen": "aim",
+      "version": 1
+    }
+  },
+  "second": {
+    "project_root": "/Unone_Games/angry-birds-2d/",
+    "renderer": {
+      "available": true
+    },
+    "save_store": {
+      "backend": "indexeddb",
+      "loaded": false
+    },
+    "bundle": null,
+    "assets": {
+      "manifest_version": 1,
+      "count": 3,
+      "resolved": 3
+    },
+    "project": "AngryBirds2D",
+    "observation_digest": "sha256:1a18f667c225566bbe8223ff1c2e4aac577783334a9d90bd516cb55781aeb4b2",
+    "frame": 12608,
+    "entities": [
+      {
+        "id": "bird",
+        "asset": "asset://characters/bird/red",
+        "size": {
+          "x": 0.8,
+          "y": 0.8
+        },
+        "position": {
+          "x": -8,
+          "y": 2.997278
+        },
+        "transform3d": null,
+        "mesh3d": null
+      },
+      {
+        "id": "block_high",
+        "asset": "asset://structures/wood/block",
+        "size": {
+          "x": 1,
+          "y": 1
+        },
+        "position": {
+          "x": 9.6,
+          "y": 1.491833
+        },
+        "transform3d": null,
+        "mesh3d": null
+      },
+      {
+        "id": "block_low",
+        "asset": "asset://structures/wood/block",
+        "size": {
+          "x": 1,
+          "y": 1
+        },
+        "position": {
+          "x": 9.6,
+          "y": 0.494556
+        },
+        "transform3d": null,
+        "mesh3d": null
+      },
+      {
+        "id": "pig_a",
+        "asset": "asset://characters/pig/basic",
+        "size": {
+          "x": 1,
+          "y": 1
+        },
+        "position": {
+          "x": 5,
+          "y": 0.5
+        },
+        "transform3d": null,
+        "mesh3d": null
+      },
+      {
+        "id": "pig_b",
+        "asset": "asset://characters/pig/basic",
+        "size": {
+          "x": 1,
+          "y": 1
+        },
+        "position": {
+          "x": 8,
+          "y": 0.5
+        },
+        "transform3d": null,
+        "mesh3d": null
+      },
+      {
+        "id": "pig_c",
+        "asset": "asset://characters/pig/basic",
+        "size": {
+          "x": 1,
+          "y": 1
+        },
+        "position": {
+          "x": 11,
+          "y": 0.5
+        },
+        "transform3d": null,
+        "mesh3d": null
+      }
+    ],
+    "camera3d": null,
+    "ui": {
+      "kind": "screen",
+      "id": "angry-birds",
+      "node": "aim",
+      "children": [
+        {
+          "kind": "text",
+          "id": "hud-birds",
+          "rect": {
+            "x": 1.125,
+            "y": 91,
+            "width": 14.625,
+            "height": 7
+          },
+          "text": "BIRDS 3"
+        },
+        {
+          "kind": "text",
+          "id": "hud-status",
+          "rect": {
+            "x": 41.5625,
+            "y": 91,
+            "width": 16.875,
+            "height": 7
+          },
+          "text": "AIM"
+        },
+        {
+          "kind": "text",
+          "id": "hud-pigs",
+          "rect": {
+            "x": 84.25,
+            "y": 91,
+            "width": 14.625,
+            "height": 7
+          },
+          "text": "PIGS 3"
+        },
+        {
+          "kind": "text",
+          "id": "hud-score",
+          "rect": {
+            "x": 2,
+            "y": 2,
+            "width": 30,
+            "height": 8
+          },
+          "text": "SCORE 0"
+        },
+        {
+          "kind": "text",
+          "id": "hud-hint",
+          "rect": {
+            "x": 36,
+            "y": 2,
+            "width": 30,
+            "height": 8
+          },
+          "text": "DRAG THE BIRD"
+        }
+      ]
+    },
+    "pointer": {
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "screen_position": {
+        "x": 0,
+        "y": 0
+      },
+      "down": false
+    },
+    "observations": {
+      "view_model": {
+        "birds_left": 3,
+        "last_event": "ready",
+        "pigs_left": 3,
+        "score": 0,
+        "screen": "aim"
+      }
+    },
+    "save_payload": {
+      "birds_left": 3,
+      "pigs_defeated": {},
+      "score": 0,
+      "screen": "aim",
+      "version": 1
+    }
+  }
+}

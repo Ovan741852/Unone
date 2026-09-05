@@ -50,6 +50,7 @@ pub use project::{
 };
 pub use runtime::{
     CheckReport, EngineRuntime, RunReport, TestCaseReport, TestSuiteReport, TypeCheckReport,
+    observation_digest,
 };
 pub use systems::{
     SystemDescriptor, SystemReport, SystemSearchReport, SystemSetReport, SystemSettings,
@@ -61,5 +62,5 @@ pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiNode, UiRect, UiTree};
 pub use world::{
     AnimationData, AnimationSnapshot, Camera2DData, Contact, Camera3DData, EffectInstance, EntitySnapshot,
     Mesh3DData, PhysicsSettings, RigidBody2DData, RigidBodySnapshot, RigidBodyType, SceneFile,
-    Transform3DData, Vec2, Vec3, WorldSnapshot,
+    Transform2DData, Transform3DData, Vec2, Vec3, WorldSnapshot,
 };

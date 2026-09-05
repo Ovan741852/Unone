@@ -27,6 +27,40 @@ impl Default for Vec3 {
     }
 }
 
+/// The typed 2D transform exposed to Luau.
+///
+/// Scene and snapshot JSON keep `Entity.transform` as the existing `{x, y}`
+/// position and store `rotation`/`scale` as additive sibling fields. The
+/// aggregate is only the API shape, so existing position-only scripts keep
+/// their current data path.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct Transform2DData {
+    #[serde(default)]
+    pub position: Vec2,
+    /// Visual Euler rotation in radians. Positive rotation is
+    /// counter-clockwise in the engine's y-up world.
+    #[serde(default)]
+    pub rotation: f64,
+    /// Visual scale. Both components must be finite and strictly positive;
+    /// mirroring through negative scale is not part of this contract.
+    #[serde(default = "default_scale2d")]
+    pub scale: Vec2,
+}
+
+fn default_scale2d() -> Vec2 {
+    Vec2 { x: 1.0, y: 1.0 }
+}
+
+impl Default for Transform2DData {
+    fn default() -> Self {
+        Self {
+            position: Vec2::default(),
+            rotation: 0.0,
+            scale: default_scale2d(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Transform3DData {
     #[serde(default)]
@@ -222,6 +256,12 @@ pub struct SceneEntity {
     pub name: String,
     #[serde(default)]
     pub transform: Vec2,
+    /// Visual-only 2D rotation in radians around the sprite centre.
+    #[serde(default)]
+    pub rotation: f64,
+    /// Visual-only 2D scale applied to the sprite's declared size.
+    #[serde(default = "default_scale2d")]
+    pub scale: Vec2,
     #[serde(default)]
     pub transform3d: Option<Transform3DData>,
     #[serde(default)]
@@ -294,6 +334,10 @@ pub struct SpriteData {
     pub size: Vec2,
     #[serde(default = "default_true")]
     pub visible: bool,
+    /// Painter layer. Lower layers are drawn first; same-layer order is the
+    /// ascending entity id, which is the portable tie-break used by hosts.
+    #[serde(default)]
+    pub layer: i32,
 }
 
 fn default_sprite_size() -> Vec2 {
@@ -309,6 +353,8 @@ pub struct EntitySnapshot {
     pub id: String,
     pub name: String,
     pub transform: Vec2,
+    pub rotation: f64,
+    pub scale: Vec2,
     pub transform3d: Option<Transform3DData>,
     pub sprite: Option<SpriteData>,
     pub mesh3d: Option<Mesh3DData>,
@@ -362,6 +408,8 @@ pub(crate) struct EntityState {
     pub id: String,
     pub name: String,
     pub transform: Vec2,
+    pub rotation: f64,
+    pub scale: Vec2,
     pub transform3d: Option<Transform3DData>,
     pub sprite: Option<SpriteData>,
     pub mesh3d: Option<Mesh3DData>,
@@ -422,7 +470,6 @@ impl World {
     }
 
     pub(crate) fn load_scene_data(&mut self, scene: SceneFile) -> Result<(), Box<Diagnostic>> {
-        self.physics = scene.physics;
         if scene.camera.zoom <= 0.0 || !scene.camera.zoom.is_finite() {
             return Err(Box::new(Diagnostic::error(
                 "SCENE_CAMERA_INVALID",
@@ -441,9 +488,16 @@ impl World {
                 )));
             }
         }
-        self.camera = scene.camera;
-        self.camera3d = scene.camera3d;
-        for entity in scene.entities {
+        // Validate every entity before changing this world. A malformed visual
+        // transform must not leave behind a partially loaded scene (or a new
+        // camera/physics configuration) if a host retries the load.
+        for entity in &scene.entities {
+            validate_transform2d(
+                entity.transform,
+                entity.rotation,
+                entity.scale,
+                &format!("Entity '{}' Transform2D", entity.id),
+            )?;
             if let Some(transform3d) = &entity.transform3d {
                 validate_vec3(transform3d.position, "Transform3D position")?;
                 validate_vec3(transform3d.rotation, "Transform3D rotation")?;
@@ -473,7 +527,7 @@ impl World {
                     ),
                 )));
             }
-            let rigidbody = entity.rigidbody.map(|body| {
+            if let Some(body) = &entity.rigidbody {
                 if body.mass <= 0.0 || !body.mass.is_finite() {
                     return Err(Box::new(Diagnostic::error(
                         "SCENE_PHYSICS_INVALID",
@@ -495,25 +549,28 @@ impl World {
                         format!("Entity '{}' 的 restitution 必須介於 0 與 1。", entity.id),
                     )));
                 }
-                Ok(RigidBodyState {
-                    body_type: body.body_type,
-                    mass: body.mass,
-                    radius: body.radius,
-                    velocity: body.velocity,
-                    restitution: body.restitution,
-                })
+            }
+        }
+
+        self.physics = scene.physics;
+        self.camera = scene.camera;
+        self.camera3d = scene.camera3d;
+        for entity in scene.entities {
+            let rigidbody = entity.rigidbody.map(|body| RigidBodyState {
+                body_type: body.body_type,
+                mass: body.mass,
+                radius: body.radius,
+                velocity: body.velocity,
+                restitution: body.restitution,
             });
-            let rigidbody = match rigidbody {
-                Some(Ok(body)) => Some(body),
-                Some(Err(diagnostic)) => return Err(diagnostic),
-                None => None,
-            };
             self.entities.insert(
                 entity.id.clone(),
                 EntityState {
                     id: entity.id,
                     name: entity.name,
                     transform: entity.transform,
+                    rotation: entity.rotation,
+                    scale: entity.scale,
                     transform3d: entity.transform3d,
                     sprite: entity.sprite,
                     mesh3d: entity.mesh3d,
@@ -545,6 +602,8 @@ impl World {
                 id: id.clone(),
                 name: name.to_string(),
                 transform: Vec2::default(),
+                rotation: 0.0,
+                scale: default_scale2d(),
                 transform3d: None,
                 sprite: None,
                 mesh3d: None,
@@ -569,6 +628,8 @@ impl World {
                                 x: quantize_observation(entity.transform.x),
                                 y: quantize_observation(entity.transform.y),
                             },
+                            rotation: quantize_observation(entity.rotation),
+                            scale: quantize_vec2(entity.scale),
                             transform3d: entity.transform3d.as_ref().map(|transform| {
                                 Transform3DData {
                                     position: quantize_vec3(transform.position),
@@ -815,6 +876,40 @@ impl World {
             .transform3d
             .clone()
             .ok_or_else(|| format!("Entity '{id}' 沒有 Transform3D。"))
+    }
+
+    pub(crate) fn get_transform2d(&self, id: &str) -> Result<Transform2DData, String> {
+        let entity = self
+            .entities
+            .get(id)
+            .ok_or_else(|| format!("Entity '{id}' 不存在。"))?;
+        Ok(Transform2DData {
+            position: entity.transform,
+            rotation: entity.rotation,
+            scale: entity.scale,
+        })
+    }
+
+    pub(crate) fn set_transform2d(
+        &mut self,
+        id: &str,
+        transform: Transform2DData,
+    ) -> Result<(), String> {
+        validate_transform2d(
+            transform.position,
+            transform.rotation,
+            transform.scale,
+            "Transform2D",
+        )
+        .map_err(|diagnostic| diagnostic.explanation.clone())?;
+        let entity = self
+            .entities
+            .get_mut(id)
+            .ok_or_else(|| format!("Entity '{id}' 不存在。"))?;
+        entity.transform = transform.position;
+        entity.rotation = transform.rotation;
+        entity.scale = transform.scale;
+        Ok(())
     }
 
     pub(crate) fn set_transform3d(
@@ -1078,6 +1173,29 @@ fn validate_vec3(value: Vec3, label: &str) -> Result<(), Box<Diagnostic>> {
     Ok(())
 }
 
+fn validate_transform2d(
+    position: Vec2,
+    rotation: f64,
+    scale: Vec2,
+    label: &str,
+) -> Result<(), Box<Diagnostic>> {
+    if !position.x.is_finite() || !position.y.is_finite() || !rotation.is_finite() {
+        return Err(Box::new(Diagnostic::error(
+            "SCENE_TRANSFORM2D_INVALID",
+            "2D Transform 含有非有限數字",
+            format!("{label} 的 position x/y 與 rotation 必須都是有限數字。"),
+        )));
+    }
+    if scale.x <= 0.0 || scale.y <= 0.0 || !scale.x.is_finite() || !scale.y.is_finite() {
+        return Err(Box::new(Diagnostic::error(
+            "SCENE_TRANSFORM2D_INVALID",
+            "2D Transform 的 scale 無效",
+            format!("{label} scale 的 x、y 必須都是大於 0 的有限數字。"),
+        )));
+    }
+    Ok(())
+}
+
 fn validate_scale3d(scale: Vec3) -> Result<(), Box<Diagnostic>> {
     validate_vec3(scale, "Transform3D scale")?;
     if scale.x <= 0.0 || scale.y <= 0.0 || scale.z <= 0.0 {
@@ -1098,6 +1216,13 @@ fn quantize_vec3(value: Vec3) -> Vec3 {
     }
 }
 
+fn quantize_vec2(value: Vec2) -> Vec2 {
+    Vec2 {
+        x: quantize_observation(value.x),
+        y: quantize_observation(value.y),
+    }
+}
+
 fn quantize_observation(value: f64) -> f64 {
     (value * 1_000_000.0).round() / 1_000_000.0
 }
@@ -1105,7 +1230,8 @@ fn quantize_observation(value: f64) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::{
-        EntityState, PhysicsSettings, RigidBodyState, RigidBodyType, SceneFile, Vec2, World,
+        EntityState, PhysicsSettings, RigidBodyState, RigidBodyType, SceneFile, Transform2DData,
+        Vec2, World,
     };
     use std::collections::BTreeMap;
 
@@ -1131,6 +1257,8 @@ mod tests {
             id: id.to_string(),
             name: id.to_string(),
             transform: Vec2 { x, y },
+            rotation: 0.0,
+            scale: Vec2 { x: 1.0, y: 1.0 },
             transform3d: None,
             sprite: None,
             mesh3d: None,
@@ -1285,6 +1413,217 @@ mod tests {
 
         let sprite = scene.entities[0].sprite.as_ref().unwrap();
         assert_eq!(sprite.size, Vec2 { x: 1.0, y: 1.0 });
+    }
+
+    #[test]
+    fn omitted_2d_visual_fields_keep_position_behavior_and_publish_defaults() {
+        let scene: SceneFile = serde_json::from_str(
+            r#"{"entities":[{"id":"player","transform":{"x":2.0,"y":3.0},"sprite":{"asset":"asset://player"}}]}"#,
+        )
+        .unwrap();
+
+        assert_eq!(scene.entities[0].transform, Vec2 { x: 2.0, y: 3.0 });
+        assert_eq!(scene.entities[0].rotation, 0.0);
+        assert_eq!(scene.entities[0].scale, Vec2 { x: 1.0, y: 1.0 });
+        assert_eq!(scene.entities[0].sprite.as_ref().unwrap().layer, 0);
+
+        let mut world = World::default();
+        world.load_scene_data(scene).unwrap();
+        let player = world.snapshot().entities.remove("player").unwrap();
+
+        assert_eq!(player.transform, Vec2 { x: 2.0, y: 3.0 });
+        assert_eq!(player.rotation, 0.0);
+        assert_eq!(player.scale, Vec2 { x: 1.0, y: 1.0 });
+        assert_eq!(player.sprite.as_ref().unwrap().layer, 0);
+    }
+
+    #[test]
+    fn two_d_visual_fields_are_serialized_and_quantized_without_changing_position() {
+        let scene: SceneFile = serde_json::from_value(serde_json::json!({
+            "entities": [{
+                "id": "player",
+                "transform": {"x": 2.0, "y": 3.0},
+                "rotation": 1.23456789,
+                "scale": {"x": 1.5, "y": 0.75},
+                "sprite": {"asset": "asset://player", "layer": -2147483648}
+            }]
+        }))
+        .unwrap();
+        let mut world = World::default();
+        world.load_scene_data(scene).unwrap();
+
+        let snapshot = world.snapshot();
+        let player = snapshot.entities.get("player").unwrap();
+        assert_eq!(player.transform, Vec2 { x: 2.0, y: 3.0 });
+        assert_eq!(player.rotation, 1.234568);
+        assert_eq!(player.scale, Vec2 { x: 1.5, y: 0.75 });
+        assert_eq!(player.sprite.as_ref().unwrap().layer, i32::MIN);
+
+        let encoded = serde_json::to_value(snapshot).unwrap();
+        assert_eq!(encoded["entities"]["player"]["rotation"], 1.234568);
+        assert_eq!(encoded["entities"]["player"]["scale"]["x"], 1.5);
+        assert_eq!(
+            encoded["entities"]["player"]["sprite"]["layer"],
+            -2147483648i64
+        );
+
+        let max_layer_scene: SceneFile = serde_json::from_value(serde_json::json!({
+            "entities": [{
+                "id": "top",
+                "sprite": {"asset": "asset://top", "layer": 2147483647}
+            }]
+        }))
+        .unwrap();
+        assert_eq!(
+            max_layer_scene.entities[0].sprite.as_ref().unwrap().layer,
+            i32::MAX
+        );
+        let out_of_range = serde_json::from_value::<SceneFile>(serde_json::json!({
+            "entities": [{
+                "id": "invalid",
+                "sprite": {"asset": "asset://invalid", "layer": 2147483648i64}
+            }]
+        }));
+        assert!(
+            out_of_range.is_err(),
+            "layer must remain a portable signed32"
+        );
+    }
+
+    #[test]
+    fn invalid_2d_transform_update_does_not_mutate_entity() {
+        let mut entities = BTreeMap::new();
+        entities.insert(
+            "player".to_string(),
+            entity("player", 2.0, 3.0, dynamic_body(Vec2::default())),
+        );
+        let mut world = world_with(entities);
+        let original = Transform2DData {
+            position: Vec2 { x: 2.0, y: 3.0 },
+            rotation: 0.25,
+            scale: Vec2 { x: 1.5, y: 0.75 },
+        };
+        world.set_transform2d("player", original.clone()).unwrap();
+
+        let invalid = Transform2DData {
+            scale: Vec2 { x: 0.0, y: 1.0 },
+            ..original.clone()
+        };
+        let error = world.set_transform2d("player", invalid).unwrap_err();
+        assert!(error.contains("scale"), "{error}");
+        assert_eq!(world.get_transform2d("player").unwrap(), original);
+
+        let invalid = Transform2DData {
+            rotation: f64::NAN,
+            ..original.clone()
+        };
+        let error = world.set_transform2d("player", invalid).unwrap_err();
+        assert!(error.contains("rotation"), "{error}");
+        assert_eq!(world.get_transform2d("player").unwrap(), original);
+    }
+
+    #[test]
+    fn invalid_2d_scene_transform_does_not_pollute_existing_world() {
+        let mut world = World::default();
+        world
+            .load_scene_data(
+                serde_json::from_value(serde_json::json!({
+                    "physics": {"gravity": {"x": 0.0, "y": -3.0}},
+                    "camera": {"position": {"x": 4.0, "y": 5.0}},
+                    "entities": [{
+                        "id": "player",
+                        "transform": {"x": 2.0, "y": 3.0},
+                        "sprite": {"asset": "asset://player"}
+                    }]
+                }))
+                .unwrap(),
+            )
+            .unwrap();
+        let before = serde_json::to_value(world.snapshot()).unwrap();
+
+        let error = world
+            .load_scene_data(
+                serde_json::from_value(serde_json::json!({
+                    "physics": {"gravity": {"x": 0.0, "y": -99.0}},
+                    "camera": {"position": {"x": 40.0, "y": 50.0}},
+                    "entities": [{
+                        "id": "bad",
+                        "rotation": 0.5,
+                        "scale": {"x": 0.0, "y": 1.0},
+                        "sprite": {"asset": "asset://bad"}
+                    }]
+                }))
+                .unwrap(),
+            )
+            .unwrap_err();
+
+        assert_eq!(error.code, "SCENE_TRANSFORM2D_INVALID");
+        assert_eq!(serde_json::to_value(world.snapshot()).unwrap(), before);
+        assert_eq!(world.physics.gravity, Vec2 { x: 0.0, y: -3.0 });
+        assert_eq!(world.camera.position, Vec2 { x: 4.0, y: 5.0 });
+        assert!(world.entities.contains_key("player"));
+        assert!(!world.entities.contains_key("bad"));
+    }
+
+    #[test]
+    fn visual_transform_does_not_change_physics_position_velocity_or_contacts() {
+        let mut entities = BTreeMap::new();
+        entities.insert(
+            "bird".to_string(),
+            entity("bird", 0.0, 1.0, dynamic_body(Vec2 { x: 4.0, y: 0.0 })),
+        );
+        entities.insert(
+            "pig".to_string(),
+            entity("pig", 0.8, 1.0, dynamic_body(Vec2::default())),
+        );
+
+        let mut baseline = world_with(entities.clone());
+        baseline.physics.ground_y = Some(0.0);
+        let mut visual_only = world_with(entities);
+        visual_only.physics.ground_y = Some(0.0);
+        visual_only.entities.get_mut("bird").unwrap().rotation = 1.25;
+        visual_only.entities.get_mut("bird").unwrap().scale = Vec2 { x: 2.0, y: 0.5 };
+        visual_only.entities.get_mut("pig").unwrap().rotation = -0.75;
+        visual_only.entities.get_mut("pig").unwrap().scale = Vec2 { x: 0.75, y: 1.75 };
+
+        let mut saw_contact = false;
+        let mut saw_ground_contact = false;
+        for frame in 0..120 {
+            baseline.step_physics(1.0 / 60.0);
+            visual_only.step_physics(1.0 / 60.0);
+
+            saw_contact |= !baseline.contacts.is_empty();
+            saw_ground_contact |= !baseline.ground_contacts.is_empty();
+            assert_eq!(visual_only.contacts, baseline.contacts, "contacts at frame {frame}");
+            assert_eq!(
+                visual_only.ground_contacts,
+                baseline.ground_contacts,
+                "ground contacts at frame {frame}"
+            );
+            for id in ["bird", "pig"] {
+                let expected = &baseline.entities[id];
+                let actual = &visual_only.entities[id];
+                assert_eq!(actual.transform, expected.transform, "position for {id} at frame {frame}");
+                assert_eq!(
+                    actual.rigidbody.as_ref().unwrap().velocity,
+                    expected.rigidbody.as_ref().unwrap().velocity,
+                    "velocity for {id} at frame {frame}"
+                );
+            }
+        }
+        assert!(saw_contact, "the regression must exercise an entity contact");
+        assert!(
+            saw_ground_contact,
+            "the regression must exercise a ground contact"
+        );
+        assert_ne!(
+            visual_only.snapshot().entities["bird"].rotation,
+            baseline.snapshot().entities["bird"].rotation
+        );
+        assert_ne!(
+            visual_only.snapshot().entities["bird"].scale,
+            baseline.snapshot().entities["bird"].scale
+        );
     }
 
     #[test]

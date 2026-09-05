@@ -35,6 +35,14 @@ const assetUrls = new Map();
 const assetUrlLoads = new Map();
 const assetElements = new Map();
 
+export function semanticOutput(nextSnapshot, nextPointer = null) {
+  const world = nextSnapshot?.world ?? nextSnapshot ?? {};
+  return {
+    ...semanticSummary(nextSnapshot, nextPointer),
+    observations: world.observations ?? {},
+  };
+}
+
 function readSnapshot() {
   const module = window.Module;
   const pointerAddress = module._unone_web_observation_ptr();
@@ -241,7 +249,7 @@ function showState() {
       count: assetManifest.assets?.length ?? 0,
       resolved: assetUrls.size,
     },
-    ...semanticSummary(snapshot, pointer),
+    ...semanticOutput(snapshot, pointer),
     save_payload: snapshot?.save_payload ?? null,
   }, null, 2);
   renderUi(snapshot);

@@ -30,8 +30,8 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 | # | 項目 | 現況 | 形狀 |
 |---|---|---|---|
 | 1 | **音訊** | 完全沒有。所有驗證遊戲都是靜音的 | 語意層：`api.audio.play(assetId, opts)` / `stop(handle)`，snapshot 發布正在播的音源清單，host 負責解碼與混音。asset kind 加 `audio`。與 Effekseer 同一個模式（[0028](decisions/0028-semantic-presentation-systems.md)） |
-| 2 | **2D transform 只有位置** | 沒有 rotation、沒有 scale。3D 有完整 `Transform3D`，2D 反而沒有 | scene 與 snapshot 的 2D entity 補 `rotation`、`scale`；使用者已確認顯示變換與碰撞體獨立設定（[0034](decisions/0034-independent-2d-colliders.md)），物理暫不加角速度 |
-| 3 | **繪製順序** | 沒有 layer 或 z，host 只能靠 entity id 排序 | sprite 補 `layer`（整數）與同層內的穩定排序規則 |
+| 2 | **2D rotation / scale 的 host 呈現** | core、Luau API、型別與 schema 已完成；host 繪製尚未接線 | 見 [工作包](work-packages/2026-09-06-2d-transform-layer.md)；顯示變換與碰撞體獨立設定（[0034](decisions/0034-independent-2d-colliders.md)），物理暫不加角速度 |
+| 3 | **繪製順序** | core 已有 sprite.layer；host 排序尚未接線 | signed i32 layer ascending，再以 entity id 的 UTF-8 bytes ascending 穩定排序 |
 
 ### P1 — 每個遊戲都在重寫
 
@@ -59,7 +59,7 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 | 11 | `bundle install` 無法一次啟用整個 generation | 每次 install 建立**新的** generation 而非累加，沒有 `--all`；native 因此無法讓 project+script+scene 同時 active。`BUNDLE_NOT_FOUND` 的 `suggested_actions` 也是空的 |
 | 12 | `API_SEARCH_EMPTY` 沒有 `suggested_actions` | 交接流程強制的第 4 步對「遊戲領域動詞」必然 0 命中，而診斷說不出「引擎沒有遊戲領域 API」。也沒有 `api list`（目前要猜 `api search ""`） |
 | 13 | `verify` 沒有 host parity gate | package 層已擋下 CLI/wasm 契約不一致（[issue](issues/2026-09-05-package-ships-two-engine-builds.md)），但 `verify` 本身仍只驗證 native build |
-| 14 | Web runner 不顯示 observations 與 digest | 交接要求用語意狀態舉證，而 ViewModel 正是 Web host 唯一沒顯示的東西 |
+| 14 | Web observations 與共用 digest | 已實作並通過 ABI、純 JS output 和新 wasm 瀏覽器 source-mode smoke；immutable package 發行仍待完成。見 [驗收紀錄](devlog/2026-09-06-digest-integration.md) |
 | 15 | 世界層沒有 ASCII 地圖 | UI 有 `ui preview`，世界層沒有等價工具；憤怒鳥 sprite 畫到畫布外時沒有任何 gate 抓得到（已由 `view_height` 修掉根因，但仍缺檢查） |
 
 ### P4 — 平台

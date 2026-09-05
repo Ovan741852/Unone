@@ -40,13 +40,22 @@
 
 | 工作 | 角色與模型 | 可寫範圍 | 狀態 |
 |---|---|---|---|
-| #14 Web 語意顯示 | 製作：Luna / max | runner main/index、Web ABI snapshot envelope、專屬 regression 與 devlog | canonical digest 公開入口不足；已詢問使用者，相關接線暫停 |
-| #2/#3 core 實作 | 製作：Luna / max | world/runtime/API/lib、Luau 型別、scene schema、專屬工作包與 devlog | 使用者決策已收到，已指派第一段 production code；host 待 core 契約交付後分工 |
+| #14 Web 語意顯示 | 製作：Luna / max | runner main/index、Web ABI snapshot envelope、專屬 regression 與 devlog | 共用 digest 已接線；ABI、純 JS output、新 wasm source-mode smoke 通過，package 待發行 |
+| #2/#3 core 實作 | 製作：Luna / max | world/runtime/API/lib、Luau 型別、scene schema、專屬工作包與 devlog | core/API engine_verified；host 繪製與盲測尚未完成 |
 | 分工/依賴/問題彙整 | 主代理 | 本計畫、交接規則與開發紀錄 | 進行中 |
 
 2026-09-06 使用者已決定：「碰撞體獨立設定」。2D rotation/scale 只影響
 顯示，碰撞形狀與尺寸由碰撞體參數決定。完整邊界和回歸要求見
 [Decision 0034](decisions/0034-independent-2d-colliders.md)。
+
+使用者亦已同意抽出共用 Rust observation digest，保留既有算法。為避免同檔
+衝突，runtime/helper/lib 由 core owner 統一修改；Web owner 只消費公開函式。
+API 型別的實際 canonical 檔案為 `crates/unone-engine/src/engine.d.luau`，
+core owner 須與 `docs/engine.d.luau` 同步；先前派工漏列此路徑已補正。
+
+整合證據見 `docs/devlog/2026-09-06-digest-integration.md`。Claude CLI #29
+額度限制後，使用者已批准先由主代理審查並提交、稍後補做外部 review。
+Web DOM sprite 中心偏移已另記 issue 並詢問是否併入下一段 host，未自行修正。
 
 ## 每個工作包的固定交付
 

@@ -49,6 +49,7 @@ fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Box<
 struct ProjectObservation<'a> {
     project: &'a str,
     world: &'a WorldSnapshot,
+    observation_digest: &'a str,
     save_payload: Option<serde_json::Value>,
 }
 
@@ -56,25 +57,43 @@ fn write_snapshot(
     project: &str,
     snapshot: &WorldSnapshot,
     save_payload: Option<serde_json::Value>,
-) {
+) -> Result<(), String> {
+    let observation_digest = unone_engine::observation_digest(snapshot)
+        .map_err(|error| format!("snapshot digest serialization failed: {error}"))?;
     let observation = ProjectObservation {
         project,
         world: snapshot,
+        observation_digest: &observation_digest,
         save_payload,
     };
-    let bytes = serde_json::to_vec(&observation).unwrap_or_else(|error| {
-        serde_json::to_vec(&serde_json::json!({
-            "error": format!("snapshot serialization failed: {error}"),
-        }))
-        .unwrap_or_default()
-    });
+    let bytes = serde_json::to_vec(&observation)
+        .map_err(|error| format!("snapshot serialization failed: {error}"))?;
     OUTPUT.with(|output| *output.borrow_mut() = bytes);
+    Ok(())
 }
 
-fn write_runtime_snapshot(runtime: &EngineRuntime) {
-    let snapshot = runtime.observe();
+fn publish_snapshot(
+    project: &str,
+    snapshot: &WorldSnapshot,
+    save_payload: Option<serde_json::Value>,
+) -> i32 {
+    match write_snapshot(project, snapshot, save_payload) {
+        Ok(()) => 0,
+        Err(error) => {
+            write_error(error);
+            -1
+        }
+    }
+}
+
+fn write_runtime_observation(runtime: &EngineRuntime, snapshot: &WorldSnapshot) -> i32 {
     let save_payload = runtime.save_payload();
-    PROJECT_NAME.with(|project| write_snapshot(project.borrow().as_str(), &snapshot, save_payload));
+    PROJECT_NAME.with(|project| publish_snapshot(project.borrow().as_str(), snapshot, save_payload))
+}
+
+fn write_runtime_snapshot(runtime: &EngineRuntime) -> i32 {
+    let snapshot = runtime.observe();
+    write_runtime_observation(runtime, &snapshot)
 }
 
 fn write_error(message: impl Into<String>) {
@@ -223,8 +242,7 @@ pub unsafe extern "C" fn unone_web_load_project(
             let save_payload = runtime_value.save_payload();
             RUNTIME.with(|runtime| *runtime.borrow_mut() = Some(runtime_value));
             PROJECT_NAME.with(|project| *project.borrow_mut() = project_name.clone());
-            write_snapshot(&project_name, &snapshot, save_payload);
-            0
+            publish_snapshot(&project_name, &snapshot, save_payload)
         }
         Err(diagnostic) => {
             write_diagnostic(&diagnostic);
@@ -260,8 +278,7 @@ pub unsafe extern "C" fn unone_web_set_save_payload(pointer: *const u8, length: 
             return -1;
         };
         runtime.set_save_payload(Some(payload));
-        write_runtime_snapshot(runtime);
-        0
+        write_runtime_snapshot(runtime)
     })
 }
 
@@ -290,10 +307,7 @@ pub unsafe extern "C" fn unone_web_reload_script(pointer: *const u8, length: usi
             return -1;
         };
         match runtime.reload_source(source) {
-            Ok(()) => {
-                write_runtime_snapshot(runtime);
-                0
-            }
+            Ok(()) => write_runtime_snapshot(runtime),
             Err(diagnostic) => {
                 write_diagnostic(&diagnostic);
                 -1
@@ -391,10 +405,7 @@ pub extern "C" fn unone_web_tick() -> i32 {
                 pointer: Some(pointer),
             });
         match runtime.tick_with_input(&frame) {
-            Ok(_) => {
-                write_runtime_snapshot(runtime);
-                0
-            }
+            Ok(snapshot) => write_runtime_observation(runtime, &snapshot),
             Err(diagnostic) => {
                 write_error(format!("{}: {}", diagnostic.code, diagnostic.explanation));
                 -1
@@ -418,10 +429,10 @@ fn main() {}
 #[cfg(test)]
 mod tests {
     use super::{
-        OUTPUT, unone_web_bundle_begin, unone_web_bundle_finish, unone_web_bundle_write,
-        unone_web_load_project, unone_web_reload_script, unone_web_set_input_frame,
-        unone_web_set_pointer, unone_web_set_save_payload, unone_web_set_screen_pointer,
-        unone_web_tick,
+        EngineRuntime, InputFrame, OUTPUT, SceneFile, unone_web_bundle_begin,
+        unone_web_bundle_finish, unone_web_bundle_write, unone_web_load_project,
+        unone_web_reload_script, unone_web_set_input_frame, unone_web_set_pointer,
+        unone_web_set_save_payload, unone_web_set_screen_pointer, unone_web_tick,
     };
     use serde_json::json;
 
@@ -503,6 +514,40 @@ return Game
         OUTPUT.with(|output| serde_json::from_slice(output.borrow().as_slice()).unwrap())
     }
 
+    fn observation_digest(value: &serde_json::Value) -> String {
+        let digest = value["observation_digest"]
+            .as_str()
+            .expect("snapshot envelope should expose observation_digest");
+        let hex = digest
+            .strip_prefix("sha256:")
+            .expect("observation_digest should use the sha256: prefix");
+        assert_eq!(hex.len(), 64, "observation digest should be 32-byte hex");
+        assert!(
+            hex.chars()
+                .all(|character| character.is_ascii_digit() || ('a'..='f').contains(&character)),
+            "observation digest should use lowercase hex"
+        );
+        digest.to_string()
+    }
+
+    fn cli_runtime() -> EngineRuntime {
+        let scene = serde_json::from_value::<SceneFile>(json!({
+            "entities": [{
+                "id": "web_probe",
+                "transform": {"x": 0.0, "y": 0.0}
+            }]
+        }))
+        .unwrap();
+        EngineRuntime::load_source_with_seed(
+            "NativeAbiTest",
+            "main.luau",
+            PROJECT_SCRIPT,
+            Some(scene),
+            42,
+        )
+        .unwrap()
+    }
+
     #[test]
     fn c_abi_load_tick_and_reload_preserve_runtime_contract() {
         let bundle = b"bundle-content";
@@ -530,26 +575,71 @@ return Game
         let payload = project_payload();
         let loaded = unsafe { unone_web_load_project(payload.as_ptr(), payload.len(), 42) };
         assert_eq!(loaded, 0);
+        let loaded_snapshot = output();
+        assert_eq!(loaded_snapshot["world"]["frame"], json!(0));
+        assert_eq!(loaded_snapshot["world"]["observations"], json!({}));
+        let load_digest = observation_digest(&loaded_snapshot);
 
         unone_web_set_pointer(3.0, 4.0, 1);
         assert_eq!(unone_web_set_screen_pointer(20.0, 15.0), 0);
         assert_eq!(unone_web_tick(), 0);
-        let position = output()["world"]["entities"]["web_probe"]["transform"].clone();
-        assert_eq!(position, json!({"x": 3.0, "y": 4.0}));
+        let tick_snapshot = output();
+        assert_eq!(tick_snapshot["world"]["frame"], json!(1));
         assert_eq!(
-            output()["world"]["observations"]["screen_pointer"],
+            tick_snapshot["world"]["observations"]["screen_pointer"],
             json!({"x": 20, "y": 15})
         );
+        let tick_digest = observation_digest(&tick_snapshot);
+        assert_ne!(
+            tick_digest, load_digest,
+            "changed state should change digest"
+        );
+
+        // The CLI `run --input-sequence` report is produced by this same
+        // public engine runtime; compare its report instead of calculating an
+        // expected hash here.
+        let cli_frame = serde_json::from_value::<InputFrame>(json!({
+            "actions": {},
+            "pointer": {
+                "position": {"x": 3.0, "y": 4.0},
+                "down": true,
+                "screen_position": {"x": 20.0, "y": 15.0}
+            }
+        }))
+        .unwrap();
+        let cli_report = cli_runtime()
+            .run_with_input_sequence(1, 42, &[cli_frame])
+            .value
+            .unwrap();
+        assert_eq!(cli_report.world.frame, 1);
+        assert_eq!(tick_digest, cli_report.observation_digest);
+
+        let position = tick_snapshot["world"]["entities"]["web_probe"]["transform"].clone();
+        assert_eq!(position, json!({"x": 3.0, "y": 4.0}));
 
         let reloaded =
             unsafe { unone_web_reload_script(RELOAD_SCRIPT.as_ptr(), RELOAD_SCRIPT.len()) };
         assert_eq!(reloaded, 0);
+        let reloaded_snapshot = output();
+        assert_eq!(reloaded_snapshot["world"]["frame"], json!(1));
+        assert_eq!(
+            reloaded_snapshot["world"]["observations"],
+            tick_snapshot["world"]["observations"]
+        );
+        assert_eq!(observation_digest(&reloaded_snapshot), tick_digest);
+
         unone_web_set_pointer(3.0, 4.0, 0);
         assert_eq!(unone_web_tick(), 0);
-        assert_eq!(output()["project"], json!("NativeAbiTest"));
-        assert_eq!(output()["world"]["frame"], json!(2));
+        let post_reload_snapshot = output();
+        assert_eq!(post_reload_snapshot["project"], json!("NativeAbiTest"));
+        assert_eq!(post_reload_snapshot["world"]["frame"], json!(2));
+        assert_ne!(
+            observation_digest(&post_reload_snapshot),
+            tick_digest,
+            "post-reload state change should change digest"
+        );
         assert!(
-            output()["world"]["entities"]["web_probe"]["transform"]["x"]
+            post_reload_snapshot["world"]["entities"]["web_probe"]["transform"]["x"]
                 .as_f64()
                 .unwrap()
                 > 3.0
@@ -571,13 +661,17 @@ return Game
         let failure = output();
         assert_eq!(failure["ok"], json!(false));
         assert_eq!(failure["kind"], json!("web_error"));
+        assert!(failure.get("observation_digest").is_none());
         assert!(failure["diagnostic"]["code"].as_str().is_some());
         assert!(failure["diagnostic"]["explanation"].as_str().is_some());
 
         unone_web_set_pointer(7.0, 8.0, 1);
         assert_eq!(unone_web_tick(), 0);
+        let recovered = output();
+        assert_eq!(recovered["world"]["frame"], json!(1));
+        observation_digest(&recovered);
         assert_eq!(
-            output()["world"]["entities"]["web_probe"]["transform"],
+            recovered["world"]["entities"]["web_probe"]["transform"],
             json!({"x": 7.0, "y": 8.0})
         );
     }
