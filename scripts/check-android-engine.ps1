@@ -9,7 +9,16 @@ $ErrorActionPreference = "Stop"
 if ([string]::IsNullOrWhiteSpace($NdkPath)) {
     $androidSdkPath = $env:ANDROID_HOME
     if ([string]::IsNullOrWhiteSpace($androidSdkPath)) {
-        throw "ANDROID_HOME is not set; point it at the Android SDK or pass -NdkPath."
+        $androidSdkPath = $env:ANDROID_SDK_ROOT
+    }
+    if ([string]::IsNullOrWhiteSpace($androidSdkPath)) {
+        $adb = Get-Command adb -ErrorAction SilentlyContinue
+        if ($null -ne $adb) {
+            $androidSdkPath = Split-Path (Split-Path $adb.Source -Parent) -Parent
+        }
+    }
+    if ([string]::IsNullOrWhiteSpace($androidSdkPath)) {
+        throw "ANDROID_HOME/ANDROID_SDK_ROOT is not set and adb is not on PATH; point at the Android SDK or pass -NdkPath."
     }
     $ndkCandidates = Get-ChildItem -LiteralPath (Join-Path $androidSdkPath "ndk") -Directory |
         Where-Object { Test-Path -LiteralPath (Join-Path $_.FullName "toolchains\llvm\prebuilt\windows-x86_64\bin") } |
@@ -52,6 +61,7 @@ foreach ($androidTarget in $Target) {
     [Environment]::SetEnvironmentVariable("CC_$($androidTarget.Replace('-', '_'))", $ccPath, "Process")
     [Environment]::SetEnvironmentVariable("CXX_$($androidTarget.Replace('-', '_'))", $cxxPath, "Process")
     [Environment]::SetEnvironmentVariable("AR_$($androidTarget.Replace('-', '_'))", $arPath, "Process")
+    [Environment]::SetEnvironmentVariable("CARGO_TARGET_$($androidTarget.Replace('-', '_').ToUpper())_LINKER", $ccPath, "Process")
 
     foreach ($packageName in $Package) {
         cargo check -p $packageName --target $androidTarget

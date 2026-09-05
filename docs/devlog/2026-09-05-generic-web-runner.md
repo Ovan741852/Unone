@@ -15,3 +15,5 @@
 接著在瀏覽器保持 3D Racing generation 1 時，將遊戲端啟動 log 改為 `racing_3d_bundle_v2_ready`，再執行 `bundle pack`。manifest version 由 1 變為 2，只有 script hash 改變；project/scene hash 沒變。runner 的 reload 實際啟用 generation 2，讀取 cache 中未變更的 bundle、重新取得並驗證 script，再在同一 runtime 執行 Luau hot reload；native `bundle install script` 也建立 generation 3。修改是 behavior-compatible 的內容變更，3 個 3D Racing deterministic tests 仍通過；完整 asset hot update、失敗回滾的實際遊戲頁面證據仍待補。
 
 依既定流程執行 Claude CLI `2.1.260` 第 24 次 read-only review；約 65 秒沒有任何 stdout/stderr，Ctrl+C 中止，沒有可判讀 findings，故不算 review 通過。詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-24.md`。
+
+之後完成 Android headless host smoke；詳細輸出與 linker/runtime、reload semantics 問題見 `docs/devlog/2026-09-05-android-mobile-smoke.md`。這使 mobile FFI/lifecycle 有 emulator evidence，但不改變七款遊戲的 mobile final gate 尚未通過狀態。

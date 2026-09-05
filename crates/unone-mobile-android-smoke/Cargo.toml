@@ -1,0 +1,13 @@
+[package]
+name = "unone-mobile-android-smoke"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "unone-mobile-android-smoke"
+path = "src/main.rs"
+
+[dependencies]
+serde_json = "1"
+unone-mobile-ffi = { path = "../unone-mobile-ffi" }

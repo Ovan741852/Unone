@@ -5,6 +5,7 @@ members = [
     "crates/unone-web-smoke",
     "crates/unone-web-live-smoke",
     "crates/unone-mobile-ffi",
+    "crates/unone-mobile-android-smoke",
 ]
 resolver = "2"
 
