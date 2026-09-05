@@ -225,6 +225,7 @@ fn tool_names() -> Vec<&'static str> {
         "unone_asset_read",
         "unone_asset_init",
         "unone_verify",
+        "unone_perf",
         "unone_ui_preview",
         "unone_systems_list",
         "unone_systems_search",
@@ -314,6 +315,19 @@ fn tool_definitions() -> Vec<Value> {
             "Run every gate",
             "Run all four gates a game must pass — Luau types, strict asset declarations, screen layout structure, and the deterministic tests — and return one verdict with what each step found. Every step runs even after one fails, so a caller sees the whole picture instead of only the first break. Each step names the single command that reproduces it. Prefer this over running the gates one at a time.",
             object_schema(json!({"properties": {}})),
+            true,
+            true,
+        ),
+        tool(
+            "unone_perf",
+            "Measure frame cost",
+            "Run the project and report where a frame's time goes: script, physics and observe phases with their share, mean/median/p95 frame time, the slowest frame, how many frames missed the fixed timestep budget, the Luau heap size, and what a frame contained. Timings are wall clock and never enter the observation digest, so measuring cannot change what a run means. It reports numbers and never a verdict: fast enough depends on a target the engine does not know.",
+            object_schema(json!({
+                "properties": {
+                    "frames": {"type": "integer", "minimum": 1, "default": 600, "description": "Frames to measure; more frames make the percentiles meaningful."},
+                    "seed": {"type": "integer", "minimum": 0, "default": 42}
+                }
+            })),
             true,
             true,
         ),
@@ -552,6 +566,35 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
             ))
         }
         "unone_verify" => tool_result(unone_engine::verify(project)),
+        "unone_perf" => {
+            let frames = match optional_u64(arguments, "frames", 600) {
+                Ok(frames) => frames,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let seed = match optional_u64(arguments, "seed", 42) {
+                Ok(seed) => seed,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let mut runtime = match EngineRuntime::load_with_seed(project, seed) {
+                Ok(runtime) => runtime,
+                Err(diagnostic) => {
+                    return tool_result(EngineResult::<serde_json::Value>::failure(*diagnostic));
+                }
+            };
+            let run = runtime.run(frames, seed);
+            match run.value {
+                Some(report) => tool_result(EngineResult::success(report.performance)),
+                None => {
+                    let mut result = EngineResult::<serde_json::Value>::failure(Diagnostic::error(
+                        "PERF_RUN_FAILED",
+                        "跑不完指定 frame 數，因此沒有可用的量測",
+                        "先用 game run 或 game verify 找出 runtime 問題。",
+                    ));
+                    result.diagnostics.extend(run.diagnostics);
+                    tool_result(result)
+                }
+            }
+        }
         "unone_ui_preview" => {
             let frames = match optional_u64(arguments, "frames", 1) {
                 Ok(frames) => frames,
@@ -981,7 +1024,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 20);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 21);
     }
 
     #[test]

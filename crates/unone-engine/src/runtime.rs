@@ -14,6 +14,7 @@ use sha2::{Digest, Sha256};
 
 use crate::{
     diagnostics::{ActionSuggestion, Diagnostic, EngineResult, SourceLocation},
+    performance::{FrameCounts, FrameTiming, PerformanceCollector, PerformanceReport, timed},
     project::{InputFrame, ProjectConfig, ProjectPaths, TestSpec},
     systems::SystemSettings,
     ui::UiTree,
@@ -49,6 +50,8 @@ pub struct RunReport {
     pub world: WorldSnapshot,
     pub save_payload: Option<serde_json::Value>,
     pub trace: Vec<TraceEvent>,
+    /// Where the time went. Wall clock, so it is not part of the digest.
+    pub performance: PerformanceReport,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -165,6 +168,7 @@ pub struct EngineRuntime {
     generation: u64,
     last_seen_script_stamp: Option<ScriptStamp>,
     script_source: Option<String>,
+    performance: PerformanceCollector,
 }
 
 impl EngineRuntime {
@@ -460,6 +464,7 @@ impl EngineRuntime {
             generation: 0,
             last_seen_script_stamp: None,
             script_source,
+            performance: PerformanceCollector::default(),
         };
         runtime.load_script(false)?;
         Ok(runtime)
@@ -605,22 +610,61 @@ impl EngineRuntime {
             world,
             save_payload: self.save_payload(),
             trace: self.trace.borrow().clone(),
+            performance: self.performance_report(),
         })
     }
 
     pub fn tick(&mut self) -> Result<WorldSnapshot, Box<Diagnostic>> {
-        self.update_fn
-            .call::<()>((self.api.clone(), FIXED_DT))
-            .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
-        if self.systems.is_enabled("physics2d") {
-            self.world.borrow_mut().step_physics(FIXED_DT);
-        }
+        let started = std::time::Instant::now();
+        let (script, script_time) = timed(|| {
+            self.update_fn
+                .call::<()>((self.api.clone(), FIXED_DT))
+                .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))
+        });
+        script?;
+        let ((), physics_time) = timed(|| {
+            if self.systems.is_enabled("physics2d") {
+                self.world.borrow_mut().step_physics(FIXED_DT);
+            }
+        });
         {
             let mut world = self.world.borrow_mut();
             world.frame += 1;
             world.time_seconds = world.frame as f64 / 60.0;
         }
-        Ok(self.observe())
+        let (snapshot, observe_time) = timed(|| self.observe());
+        self.performance.record(FrameTiming {
+            script: script_time,
+            physics: physics_time,
+            observe: observe_time,
+            total: started.elapsed(),
+        });
+        Ok(snapshot)
+    }
+
+    /// What the last run measured, ready to report.
+    fn performance_report(&self) -> PerformanceReport {
+        let snapshot = self.observe();
+        let counts = FrameCounts {
+            entities: snapshot.entities.len(),
+            rigidbodies: snapshot
+                .entities
+                .values()
+                .filter(|entity| entity.rigidbody.is_some())
+                .count(),
+            ui_nodes: snapshot
+                .ui
+                .as_ref()
+                .map(|tree| tree.children.len())
+                .unwrap_or(0),
+            effects: snapshot.effects.len(),
+            observations: snapshot.observations.len(),
+        };
+        self.performance.report(
+            counts,
+            self.lua.used_memory(),
+            std::time::Duration::from_secs_f64(FIXED_DT),
+        )
     }
 
     pub fn run_tests(project_root: impl AsRef<Path>) -> EngineResult<TestSuiteReport> {

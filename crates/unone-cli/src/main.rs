@@ -52,6 +52,15 @@ enum Command {
     },
     /// Run every gate a game must pass and report one verdict.
     Verify,
+    /// Measure where a frame's time goes.
+    Perf {
+        #[arg(long, default_value_t = 600)]
+        frames: u64,
+        #[arg(long, default_value_t = 42)]
+        seed: u64,
+        #[arg(long)]
+        input_sequence: Option<PathBuf>,
+    },
     /// Draw the game's UI as text and report structural layout problems.
     Ui {
         #[command(subcommand)]
@@ -295,6 +304,57 @@ fn run() -> Result<ExitCode> {
             }
         },
         Command::Verify => print_result(unone_engine::verify(&cli.project), cli.json),
+        Command::Perf {
+            frames,
+            seed,
+            input_sequence,
+        } => {
+            let mut runtime = match EngineRuntime::load_with_seed(&cli.project, seed) {
+                Ok(runtime) => runtime,
+                Err(diagnostic) => {
+                    return print_result(
+                        EngineResult::<serde_json::Value>::failure(*diagnostic),
+                        cli.json,
+                    );
+                }
+            };
+            let run = match input_sequence {
+                Some(path) => {
+                    let sequence = match fs::read_to_string(&path)
+                        .map_err(|error| format!("{}：{}", path.display(), error))
+                        .and_then(|text| {
+                            serde_json::from_str::<Vec<InputFrame>>(&text)
+                                .map_err(|error| format!("{}：{}", path.display(), error))
+                        }) {
+                        Ok(sequence) => sequence,
+                        Err(error) => {
+                            return print_result(
+                                EngineResult::<serde_json::Value>::failure(
+                                    unone_engine::Diagnostic::error(
+                                        "INPUT_SEQUENCE_INVALID",
+                                        "無法讀取 input sequence",
+                                        error,
+                                    ),
+                                ),
+                                cli.json,
+                            );
+                        }
+                    };
+                    runtime.run_with_input_sequence(frames, seed, &sequence)
+                }
+                None => runtime.run(frames, seed),
+            };
+            let Some(report) = run.value.as_ref() else {
+                return print_result(run, cli.json);
+            };
+            if cli.json {
+                let mut result = EngineResult::success(report.performance.clone());
+                result.diagnostics = run.diagnostics;
+                return print_result(result, true);
+            }
+            println!("{}", unone_engine::performance_markdown(&report.performance));
+            Ok(ExitCode::SUCCESS)
+        }
         Command::Ui { command } => match command {
             UiCommand::Preview {
                 frames,

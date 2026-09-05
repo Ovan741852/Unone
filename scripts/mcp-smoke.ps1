@@ -64,7 +64,7 @@ try {
     if ($initialize.result.protocolVersion -ne '2025-11-25') {
         throw "Unexpected negotiated protocol version: $($initialize.result.protocolVersion)"
     }
-    if ($tools.result.tools.Count -ne 20) {
+    if ($tools.result.tools.Count -ne 21) {
         throw "Unexpected MCP tool count: $($tools.result.tools.Count)"
     }
     if ($run.result.isError -ne $false -or $runPayload.ok -ne $true) {

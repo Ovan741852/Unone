@@ -201,6 +201,24 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary --json ui 
 
 它只檢查**結構**：不重疊、放得下。它不會、也不打算判斷畫面好不好看。世界層（sprite、實體位置）目前還沒有對應的文字檢查。
 
+## 3.9 量測效能
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary perf --frames 600 --seed 3
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary --json perf --frames 600
+```
+
+回報一個 frame 的時間去哪了：`script`／`physics`／`observe` 三個階段的總時間、平均與占比，frame time 的 mean／median／p95，最慢的那一格是第幾格與它的階段拆解，超出 fixed timestep 預算的 frame 數，Luau heap 大小，以及一個 frame 裝了多少東西（entity、rigidbody、UI 節點、effect、observation）。
+
+`run --json` 的結果也帶同一份 `performance`。
+
+兩個必須知道的性質：
+
+- **量測是 wall clock，不進 observation digest。** 量效能不會改變一次 run 的意義；同一個 seed 與輸入的 digest 與沒量測時完全相同。
+- **它只給數字，不給判決。** 「夠不夠快」取決於引擎不知道的目標。`frames_over_budget` 是拿 fixed timestep 當參考點的事實，不是及格線。
+
+debug build 量到的是 debug 成本，跨版本比較要比同一種 build。
+
 ## 4. 檢查 bundle
 
 ```powershell
