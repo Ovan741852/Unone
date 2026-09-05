@@ -678,7 +678,7 @@ fn replace_staged_file(staging: &Path, path: &Path) -> Result<(), String> {
     use std::{os::windows::ffi::OsStrExt, ptr};
 
     use windows_sys::Win32::{
-        Foundation::{ERROR_FILE_NOT_FOUND, ERROR_PATH_NOT_FOUND, GetLastError},
+        Foundation::GetLastError,
         Storage::FileSystem::{
             MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH, MoveFileExW,
             REPLACEFILE_WRITE_THROUGH, ReplaceFileW,
@@ -694,9 +694,13 @@ fn replace_staged_file(staging: &Path, path: &Path) -> Result<(), String> {
 
     let staging_wide = wide(staging);
     let path_wide = wide(path);
-    // ReplaceFileW keeps the previous destination until the replacement is
-    // committed. If the destination does not exist, MoveFileExW handles the
-    // first generation with replace and write-through semantics.
+    // ReplaceFileW is preferred because it keeps the previous destination until
+    // the replacement is committed. It is not always available: it needs the
+    // destination to exist, and it returns ACCESS_DENIED on paths where its
+    // backup semantics cannot be satisfied, which is reproducible on ordinary
+    // project directories. MoveFileExW with replace and write-through is the
+    // documented fallback, so try it whenever ReplaceFileW declines, and only
+    // report a failure when both refuse.
     let replaced = unsafe {
         ReplaceFileW(
             path_wide.as_ptr(),
@@ -710,15 +714,7 @@ fn replace_staged_file(staging: &Path, path: &Path) -> Result<(), String> {
     if replaced != 0 {
         return Ok(());
     }
-    let error = unsafe { GetLastError() };
-    if error != ERROR_FILE_NOT_FOUND && error != ERROR_PATH_NOT_FOUND {
-        return Err(format!(
-            "replace '{}' -> '{}' failed: {}",
-            staging.display(),
-            path.display(),
-            std::io::Error::from_raw_os_error(error as i32)
-        ));
-    }
+    let replace_error = unsafe { GetLastError() };
     let moved = unsafe {
         MoveFileExW(
             staging_wide.as_ptr(),
@@ -727,12 +723,13 @@ fn replace_staged_file(staging: &Path, path: &Path) -> Result<(), String> {
         )
     };
     if moved == 0 {
-        let error = unsafe { GetLastError() };
+        let move_error = unsafe { GetLastError() };
         return Err(format!(
-            "rename '{}' -> '{}' failed: {}",
+            "replace '{}' -> '{}' failed: {} (and the rename fallback failed: {})",
             staging.display(),
             path.display(),
-            std::io::Error::from_raw_os_error(error as i32)
+            std::io::Error::from_raw_os_error(replace_error as i32),
+            std::io::Error::from_raw_os_error(move_error as i32)
         ));
     }
     Ok(())
@@ -1622,6 +1619,22 @@ mod tests {
             bundle: "content".to_string(),
             files: Vec::new(),
         }
+    }
+
+    /// Regression: the Windows replace path refused ordinary project
+    /// directories, which broke `bundle pack` on every repack.
+    #[test]
+    fn writing_over_an_existing_file_succeeds_and_keeps_the_new_bytes() {
+        let dir = tempdir().unwrap();
+        let path = dir.path().join("nested/manifest.json");
+        super::write_atomic(&path, b"first").unwrap();
+        assert_eq!(fs::read(&path).unwrap(), b"first");
+        super::write_atomic(&path, b"second").unwrap();
+        assert_eq!(fs::read(&path).unwrap(), b"second");
+        assert!(
+            !path.with_extension("json.part").exists(),
+            "staging file was left behind"
+        );
     }
 
     #[test]

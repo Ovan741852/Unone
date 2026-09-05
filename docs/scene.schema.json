@@ -232,6 +232,12 @@
         },
         "zoom": {
           "type": "number"
+        },
+        "view_height": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "default": 10,
+          "description": "World units visible vertically at zoom 1, centred on position. Visible height is view_height/zoom; visible width is that times the host viewport aspect."
         }
       }
     },

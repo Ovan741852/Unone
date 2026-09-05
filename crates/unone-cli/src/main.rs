@@ -967,13 +967,25 @@ impl Renderer {
         self.surface.configure(&self.device, &self.config);
     }
 
+    /// World units the camera shows, given what the scene declared.
+    fn visible_extent(&self, snapshot: &WorldSnapshot) -> (f64, f64) {
+        let zoom = if snapshot.camera.zoom > 0.0 {
+            snapshot.camera.zoom
+        } else {
+            1.0
+        };
+        let height = snapshot.camera.view_height / zoom;
+        let aspect = f64::from(self.config.width.max(1)) / f64::from(self.config.height.max(1));
+        (height * aspect, height)
+    }
+
     fn screen_to_world(&self, x: f64, y: f64, snapshot: &WorldSnapshot) -> Vec2 {
-        let clip_x = (x / f64::from(self.config.width)) * 2.0 - 1.0;
-        let clip_y = 1.0 - (y / f64::from(self.config.height)) * 2.0;
-        let zoom = snapshot.camera.zoom;
+        let (visible_width, visible_height) = self.visible_extent(snapshot);
+        let view_x = x / f64::from(self.config.width.max(1)) - 0.5;
+        let view_y = 0.5 - y / f64::from(self.config.height.max(1));
         Vec2 {
-            x: snapshot.camera.position.x + (clip_x + 0.8) / (0.2 * zoom),
-            y: snapshot.camera.position.y + (clip_y + 0.1) / (0.2 * zoom),
+            x: snapshot.camera.position.x + view_x * visible_width,
+            y: snapshot.camera.position.y + view_y * visible_height,
         }
     }
 
@@ -982,27 +994,26 @@ impl Renderer {
         if let Some(camera3d) = &snapshot.camera3d {
             self.build_3d_vertices(snapshot, camera3d, &mut vertices);
         } else {
-            let zoom = snapshot.camera.zoom as f32;
+            let (visible_width, visible_height) = self.visible_extent(snapshot);
             for entity in snapshot.entities.values() {
                 if entity.sprite.as_ref().is_some_and(|sprite| !sprite.visible) {
                     continue;
                 }
-                let x = (-0.8
-                    + (entity.transform.x as f32 - snapshot.camera.position.x as f32) * 0.2 * zoom)
-                    .clamp(-0.95, 0.75);
-                let y = (-0.1
-                    + (entity.transform.y as f32 - snapshot.camera.position.y as f32) * 0.2 * zoom)
-                    .clamp(-0.9, 0.7);
-                let (width, height) = entity
+                // Centred on the entity and never clamped, so an entity outside
+                // the camera's declared view is visibly outside it.
+                let size = entity
                     .sprite
                     .as_ref()
-                    .map(|sprite| {
-                        (
-                            (sprite.size.x as f32 * 0.2 * zoom).max(0.01),
-                            (sprite.size.y as f32 * 0.2 * zoom).max(0.01),
-                        )
-                    })
-                    .unwrap_or((0.2, 0.2));
+                    .map(|sprite| (sprite.size.x, sprite.size.y))
+                    .unwrap_or((1.0, 1.0));
+                let width = (size.0 / visible_width * 2.0) as f32;
+                let height = (size.1 / visible_height * 2.0) as f32;
+                let x = ((entity.transform.x - snapshot.camera.position.x) / visible_width * 2.0)
+                    as f32
+                    - width / 2.0;
+                let y = ((entity.transform.y - snapshot.camera.position.y) / visible_height * 2.0)
+                    as f32
+                    - height / 2.0;
                 let color = match entity.rigidbody.as_ref().map(|body| body.body_type) {
                     Some(unone_engine::RigidBodyType::Dynamic) => [0.9, 0.2, 0.15],
                     Some(unone_engine::RigidBodyType::Static) => [0.3, 0.65, 0.9],

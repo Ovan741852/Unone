@@ -26,18 +26,55 @@ export function semanticSummary(snapshot, pointer = null) {
   };
 }
 
+
+/**
+ * Map a world point into the same normalized 0..100 view space the UI uses.
+ *
+ * The camera declares how much world a frame shows, so every host frames a
+ * scene identically instead of inventing its own constants. y points up.
+ */
+export function worldToView(point, camera, aspect) {
+  const visibleHeight = (camera.view_height ?? 10) / (camera.zoom || 1);
+  const visibleWidth = visibleHeight * aspect;
+  return {
+    x: 50 + ((point.x - camera.position.x) / visibleWidth) * 100,
+    y: 50 + ((point.y - camera.position.y) / visibleHeight) * 100,
+  };
+}
+
+/** Inverse of worldToView, for turning a pointer back into world space. */
+export function viewToWorld(view, camera, aspect) {
+  const visibleHeight = (camera.view_height ?? 10) / (camera.zoom || 1);
+  const visibleWidth = visibleHeight * aspect;
+  return {
+    x: camera.position.x + ((view.x - 50) / 100) * visibleWidth,
+    y: camera.position.y + ((view.y - 50) / 100) * visibleHeight,
+  };
+}
+
+/** Size of one world-space extent in view units. */
+export function worldSizeToView(size, camera, aspect) {
+  const visibleHeight = (camera.view_height ?? 10) / (camera.zoom || 1);
+  return {
+    x: (size.x / (visibleHeight * aspect)) * 100,
+    y: (size.y / visibleHeight) * 100,
+  };
+}
+
+function aspectOf(canvas) {
+  const width = canvas.clientWidth || canvas.width || 16;
+  const height = canvas.clientHeight || canvas.height || 9;
+  return width / height;
+}
+
 export function worldFromPointer(canvas, event, snapshot) {
   const world = worldOf(snapshot);
   const rect = canvas.getBoundingClientRect();
-  const x = (event.clientX - rect.left) / rect.width;
-  const y = (event.clientY - rect.top) / rect.height;
-  const clipX = x * 2 - 1;
-  const clipY = 1 - y * 2;
-  const zoom = world.camera.zoom;
-  return {
-    x: world.camera.position.x + (clipX + 0.8) / (0.2 * zoom),
-    y: world.camera.position.y + (clipY + 0.1) / (0.2 * zoom),
+  const view = {
+    x: ((event.clientX - rect.left) / rect.width) * 100,
+    y: (1 - (event.clientY - rect.top) / rect.height) * 100,
   };
+  return viewToWorld(view, world.camera, aspectOf(canvas));
 }
 
 function colorFor(entity) {
@@ -46,18 +83,21 @@ function colorFor(entity) {
   return [0.9, 0.75, 0.2, 1];
 }
 
-function verticesFor(snapshot) {
+function verticesFor(snapshot, aspect) {
   const world = worldOf(snapshot);
   if (world.camera3d) return verticesFor3d(world);
-  const zoom = world.camera.zoom;
-  const camera = world.camera.position;
   const vertices = [];
   for (const entity of Object.values(world.entities)) {
     if (entity.sprite && !entity.sprite.visible) continue;
-    const x = Math.max(-0.95, Math.min(0.75, -0.8 + (entity.transform.x - camera.x) * 0.2 * zoom));
-    const y = Math.max(-0.9, Math.min(0.7, -0.1 + (entity.transform.y - camera.y) * 0.2 * zoom));
-    const width = Math.max(0.01, (entity.sprite?.size.x ?? 1) * 0.2 * zoom);
-    const height = Math.max(0.01, (entity.sprite?.size.y ?? 1) * 0.2 * zoom);
+    // Centred on the entity, and never clamped: an entity outside the view is
+    // drawn outside the view, which is what makes bad framing visible.
+    const size = entity.sprite?.size ?? { x: 1, y: 1 };
+    const view = worldToView(entity.transform, world.camera, aspect);
+    const extent = worldSizeToView(size, world.camera, aspect);
+    const width = extent.x / 50;
+    const height = extent.y / 50;
+    const x = view.x / 50 - 1 - width / 2;
+    const y = view.y / 50 - 1 - height / 2;
     const color = colorFor(entity);
     vertices.push(
       x, y, ...color, x + width, y, ...color, x + width, y + height, ...color,
@@ -221,7 +261,7 @@ export async function createWebGpuRenderer(canvas) {
   let vertexCapacity = 0;
   const draw = (snapshot) => {
     resize();
-    const data = verticesFor(snapshot);
+    const data = verticesFor(snapshot, aspectOf(canvas));
     if (!vertexBuffer || data.byteLength > vertexCapacity) {
       vertexBuffer?.destroy();
       vertexCapacity = Math.max(4, 2 ** Math.ceil(Math.log2(Math.max(4, data.byteLength))));

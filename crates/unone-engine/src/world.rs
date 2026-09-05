@@ -153,10 +153,24 @@ pub struct Camera2DData {
     pub position: Vec2,
     #[serde(default = "default_zoom")]
     pub zoom: f64,
+    /// World units visible vertically at zoom 1, centred on `position`.
+    ///
+    /// Without this a host cannot know how much world a frame shows, so every
+    /// host invented its own constant and the same scene framed differently in
+    /// each one. The visible height is `view_height / zoom`, and the visible
+    /// width is that times the host's viewport aspect.
+    #[serde(default = "default_view_height")]
+    pub view_height: f64,
 }
 
 fn default_zoom() -> f64 {
     1.0
+}
+
+/// Matches the scale every host had hard-coded before the field existed, so a
+/// scene that says nothing keeps the framing it already had.
+fn default_view_height() -> f64 {
+    10.0
 }
 
 impl Default for Camera2DData {
@@ -164,6 +178,7 @@ impl Default for Camera2DData {
         Self {
             position: Vec2::default(),
             zoom: default_zoom(),
+            view_height: default_view_height(),
         }
     }
 }
@@ -554,6 +569,7 @@ impl World {
                     y: quantize_observation(self.camera.position.y),
                 },
                 zoom: quantize_observation(self.camera.zoom),
+                view_height: quantize_observation(self.camera.view_height),
             },
             camera3d: self.camera3d.as_ref().map(|camera| Camera3DData {
                 position: quantize_vec3(camera.position),

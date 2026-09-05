@@ -1,4 +1,4 @@
-import { createWebGpuRenderer, frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=3";
+import { createWebGpuRenderer, frameOf, semanticSummary, worldFromPointer, worldSizeToView, worldToView } from "../shared/webgpu-snapshot.js?v=4";
 import { installGeneration, readActiveAsset, readActiveText } from "../live/bundle-store.js?v=3";
 import { readSave, writeSave } from "./save-store.js?v=1";
 
@@ -159,8 +159,7 @@ function renderAssets(nextSnapshot) {
   if (!world?.camera || !world.entities) return;
   const specs = new Map(assetManifest.assets.map((asset) => [asset.id, asset]));
   const alive = new Set();
-  const zoom = world.camera.zoom;
-  const camera = world.camera.position;
+  const aspect = (canvas.clientWidth || canvas.width || 16) / (canvas.clientHeight || canvas.height || 9);
   for (const entity of Object.values(world.entities)) {
     const sprite = entity.sprite;
     const asset = sprite && specs.get(sprite.asset);
@@ -175,12 +174,14 @@ function renderAssets(nextSnapshot) {
       assetElements.set(entity.id, element);
       assetLayer.appendChild(element);
     }
-    const clipX = -0.8 + (entity.transform.x - camera.x) * 0.2 * zoom;
-    const clipY = -0.1 + (entity.transform.y - camera.y) * 0.2 * zoom;
-    element.style.left = `${(clipX + 1) * 50}%`;
-    element.style.bottom = `${(clipY + 1) * 50}%`;
-    element.style.width = `${sprite.size.x * 10 * zoom}%`;
-    element.style.height = `${sprite.size.y * 10 * zoom}%`;
+    // The same projection the world quads use, so a sprite and its debug quad
+    // never disagree about where an entity is.
+    const view = worldToView(entity.transform, world.camera, aspect);
+    const extent = worldSizeToView(sprite.size, world.camera, aspect);
+    element.style.left = `${view.x}%`;
+    element.style.bottom = `${view.y}%`;
+    element.style.width = `${extent.x}%`;
+    element.style.height = `${extent.y}%`;
     element.dataset.assetId = asset.id;
     if (element.src === "") {
       loadAssetUrl(asset)

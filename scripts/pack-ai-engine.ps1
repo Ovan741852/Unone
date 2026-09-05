@@ -68,7 +68,8 @@ foreach ($decision in @(
     "0027-declared-engine-systems.md",
     "0028-semantic-presentation-systems.md",
     "0029-text-layout-gate.md",
-    "0030-anchored-ui-placement.md"
+    "0030-anchored-ui-placement.md",
+    "0031-camera-view-extent.md"
 )) {
     Copy-PackageFile (Join-Path $engineRoot "docs\decisions\$decision") "docs\decisions\$decision"
 }
