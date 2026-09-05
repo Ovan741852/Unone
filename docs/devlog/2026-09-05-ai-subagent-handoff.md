@@ -9,6 +9,7 @@
 - Added a complete test-manifest example to the handoff/workflow docs so a subagent can configure `test_files` and `game test` without inferring parser behavior.
 - Added a package-contained generic Android x86_64 smoke host and build/run scripts; iOS remains explicitly gated on macOS/Xcode rather than being represented by cross-compile output.
 - Queued Web pointer event snapshots in the generic runner after Fish Machine exposed a fast-click press-edge loss; the fix is recorded in `docs/issues/2026-09-05-web-pointer-edge-queue.md` and awaits delegated regression.
+- Replaced Android smoke's fixed cold-launch delay with a 15-second bounded Activity poll; the original readiness failure and resolution are recorded in `docs/issues/2026-09-05-android-smoke-readiness-race.md`.
 - Added seven final-game plans under D:/Projects/Unone_Games/validation/subagent-plans/; Angry Birds remains the separate engine capability smoke owned by the main task.
 - Added asset init, asset inspect --strict, structured asset readiness/blockers/scope, supported manifest vocabulary and source path containment checks.
 - bundle pack now creates deterministic uncompressed content archives for asset manifests and refuses unresolved static scene references.
