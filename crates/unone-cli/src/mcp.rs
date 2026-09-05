@@ -224,6 +224,7 @@ fn tool_names() -> Vec<&'static str> {
         "unone_asset_inspect",
         "unone_asset_read",
         "unone_asset_init",
+        "unone_verify",
         "unone_ui_preview",
         "unone_systems_list",
         "unone_systems_search",
@@ -307,6 +308,14 @@ fn tool_definitions() -> Vec<Value> {
             })),
             false,
             false,
+        ),
+        tool(
+            "unone_verify",
+            "Run every gate",
+            "Run all four gates a game must pass — Luau types, strict asset declarations, screen layout structure, and the deterministic tests — and return one verdict with what each step found. Every step runs even after one fails, so a caller sees the whole picture instead of only the first break. Each step names the single command that reproduces it. Prefer this over running the gates one at a time.",
+            object_schema(json!({"properties": {}})),
+            true,
+            true,
         ),
         tool(
             "unone_ui_preview",
@@ -542,6 +551,7 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 output.as_deref().map(std::path::Path::new),
             ))
         }
+        "unone_verify" => tool_result(unone_engine::verify(project)),
         "unone_ui_preview" => {
             let frames = match optional_u64(arguments, "frames", 1) {
                 Ok(frames) => frames,
@@ -971,7 +981,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 19);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 20);
     }
 
     #[test]

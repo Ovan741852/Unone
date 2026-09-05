@@ -67,6 +67,14 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json 
 
 ## 1. 先檢查專案
 
+一次跑完全部 gate：
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json verify
+```
+
+`verify` 依序執行 `check --types`、`asset inspect --strict`、`ui preview --strict`、`test`，回傳單一結論與每個步驟的結果；任何一步失敗都不會中斷其他步驟，且每個步驟都附上可單獨重跑的 `command`。以下小節說明各個 gate 單獨使用的方式。
+
 ```powershell
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check --types
 ```

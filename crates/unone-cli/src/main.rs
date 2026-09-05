@@ -50,6 +50,8 @@ enum Command {
         #[command(subcommand)]
         command: ApiCommand,
     },
+    /// Run every gate a game must pass and report one verdict.
+    Verify,
     /// Draw the game's UI as text and report structural layout problems.
     Ui {
         #[command(subcommand)]
@@ -292,6 +294,7 @@ fn run() -> Result<ExitCode> {
                 )
             }
         },
+        Command::Verify => print_result(unone_engine::verify(&cli.project), cli.json),
         Command::Ui { command } => match command {
             UiCommand::Preview {
                 frames,

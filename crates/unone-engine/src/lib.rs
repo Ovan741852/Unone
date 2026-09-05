@@ -8,6 +8,7 @@ mod project;
 mod runtime;
 mod systems;
 mod ui;
+mod verify;
 mod world;
 
 pub use api::{
@@ -46,6 +47,7 @@ pub use systems::{
     SystemState, SystemStatus, describe as describe_system, inspect as inspect_systems,
     search as search_systems, set as set_system,
 };
+pub use verify::{StepStatus, VerifyReport, VerifyStep, verify};
 pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiNode, UiRect, UiTree};
 pub use world::{
     AnimationData, AnimationSnapshot, Camera2DData, Camera3DData, EffectInstance, EntitySnapshot,
