@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unone 驗證遊戲</title>
+    <style>
+      :root { color-scheme: dark; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+      body { margin: 0; min-height: 100vh; background: #0b1020; color: #e5e7eb; }
+      main { width: min(880px, calc(100vw - 32px)); margin: 32px auto 64px; }
+      h1 { margin: 0 0 6px; font-size: 1.3rem; }
+      .lede { color: #9ca3af; margin: 0 0 24px; line-height: 1.6; font-size: .85rem; }
+      .card { display: block; padding: 16px 18px; margin-bottom: 14px; border: 1px solid #334155; border-radius: 10px; background: #111827; color: inherit; text-decoration: none; }
+      .card:hover { border-color: #60a5fa; background: #131c30; }
+      .card h2 { margin: 0 0 4px; font-size: 1.05rem; color: #93c5fd; }
+      .card p { margin: 0 0 6px; font-size: .82rem; line-height: 1.55; color: #cbd5e1; }
+      .meta { font-size: .74rem; color: #94a3b8; }
+      .note { margin-top: 26px; padding: 14px 16px; border: 1px solid #334155; border-radius: 10px; background: #0f172a; font-size: .78rem; line-height: 1.6; color: #cbd5e1; }
+      code { color: #a7f3d0; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Unone 驗證遊戲</h1>
+      <p class="lede">
+        每一個都由同一份 Rust/Luau 引擎驅動：引擎決定模擬結果並發布語意狀態，
+        瀏覽器只負責把它畫出來。從 <code>D:/Projects</code> 執行
+        <code>python -m http.server 8001</code> 後開啟本頁。
+      </p>
+
+      <a class="card" href="./presentation/?project=/Unone_Games/slot-machine/">
+        <h2>老虎機 — Spine / Effekseer 表現層</h2>
+        <p>
+          三軸骨骼由引擎的 animation 狀態驅動（轉動 <code>run</code> → 停下 <code>idle</code>），
+          中獎時依 <code>world.effects</code> 播放 Effekseer 光環。按 Spin 拉一把，Auto 連續play。
+        </p>
+        <p class="meta">需要 WebGL2。不需要 WebGPU。</p>
+      </a>
+
+      <a class="card" href="./runner/?project=/Unone_Games/xiao-mary/&amp;seed=3">
+        <h2>小瑪莉 — 泛用 Web runner</h2>
+        <p>
+          24 燈環、6 種圖案、跑馬燈加速再減速後開獎。整個畫面是引擎驗證過的 UI tree，
+          點圖案押分、Start 開始。這款遊戲由一個只拿到企劃與引擎封裝的子代理盲做。
+        </p>
+        <p class="meta">UI 不需要 GPU；世界層若沒有 WebGPU 會回報 renderer 不可用並繼續執行。</p>
+      </a>
+
+      <a class="card" href="./runner/?project=/Unone_Games/angry-birds-2d/">
+        <h2>憤怒鳥 2D — 泛用 Web runner</h2>
+        <p>2D 物理、pointer 拖曳發射，以及由已驗證 content bundle 解析出的真實 SVG 資產。</p>
+        <p class="meta">世界層需要 WebGPU。</p>
+      </a>
+
+      <div class="note">
+        沒有 WebGPU 的瀏覽器仍可執行語意層：runner 會回報
+        <code>renderer.available=false</code> 並繼續推進模擬、UI 與存檔，
+        只是不畫世界。老虎機的表現層走 WebGL2，不受影響。
+      </div>
+    </main>
+  </body>
+</html>

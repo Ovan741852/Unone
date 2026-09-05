@@ -49,6 +49,18 @@ MCP 只位於 `unone-cli`，不成為 engine core 的依賴；工具結果保留
 
 完整型別檢查使用 `game check --types`。正式 engine package 會把固定版本的官方 `luau-analyze` 放在 `bin/luau-analyze.exe`，由同目錄的 `bin/game.exe` 自動找到；工具不存在時引擎會明確回報錯誤，不會把基本 contract check 說成完整型別檢查。
 
+## 開起來看
+
+從 `D:/Projects` 啟動靜態伺服器後，`http://127.0.0.1:8001/Unone/web/` 是三款驗證遊戲的入口：
+
+```powershell
+python -m http.server 8001
+```
+
+老虎機走 `web/presentation/`（Spine + Effekseer，需要 WebGL2）；小瑪莉與憤怒鳥走 `web/runner/`。
+沒有 WebGPU 的瀏覽器仍可執行語意層：runner 會回報 `renderer.available=false` 並繼續推進模擬、UI 與存檔。
+老虎機的 wasm host 需先執行 `scripts/build-web-live.ps1`。
+
 ## Web 目前狀態
 
 `unone-engine` 已以 `wasm32-unknown-emscripten` 搭配 Emscripten wrapper 通過 library compile，`unone-web-smoke` 也已完成 link、由 host Node（需 `--experimental-wasm-exnref`）執行 60 frames，並由 `web/smoke/index.html` 在瀏覽器實際載入執行。`web/host/` 已驗證 snapshot bridge，`web/live/` 另以窄 C ABI 驗證 browser animation frame、host-provided project payload、script reload、pointer 驅動同一個 Rust/Luau runtime、WebGPU render，以及 sample bundle verify、IndexedDB cache、generation activation 與 cache-only reopen；`web/runner/` 已能讀取 engine 產生的 content archive 並解析真實 SVG asset。這仍不是完整 production asset packaging；mobile host、OPFS/chunked asset streaming、CDN policy 與正式 error transport 仍未完成。
