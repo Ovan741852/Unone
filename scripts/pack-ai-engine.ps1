@@ -74,6 +74,20 @@ $index = $index.Replace("../../target/wasm32-unknown-emscripten/debug/deps/unone
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 [IO.File]::WriteAllText($indexPath, $index, $utf8)
 
+$readme = @"
+# Unone AI engine package
+
+Use this package with exactly one game plan. The game package is the only
+runtime/tool input a game subagent should need. Read docs/ai-agent-game-handoff.md
+before writing game code.
+
+Native command: bin/game.exe
+Web runner: web/runner/index.html
+
+This package contains no validation-game implementation and no engine source.
+"@
+[IO.File]::WriteAllText((Join-Path $outputRoot "README.md"), $readme, $utf8)
+
 $commit = (& git -C $engineRoot rev-parse HEAD).Trim()
 $dirty = (& git -C $engineRoot status --porcelain)
 foreach ($file in Get-ChildItem -LiteralPath $outputRoot -File -Recurse | Sort-Object FullName) {
@@ -94,19 +108,5 @@ $package = [ordered]@{
 }
 $manifestPath = Join-Path $outputRoot "package-manifest.json"
 [IO.File]::WriteAllText($manifestPath, ($package | ConvertTo-Json -Depth 5), $utf8)
-
-$readme = @"
-# Unone AI engine package
-
-Use this package with exactly one game plan. The game package is the only
-runtime/tool input a game subagent should need. Read docs/ai-agent-game-handoff.md
-before writing game code.
-
-Native command: bin/game.exe
-Web runner: web/runner/index.html
-
-This package contains no validation-game implementation and no engine source.
-"@
-[IO.File]::WriteAllText((Join-Path $outputRoot "README.md"), $readme, $utf8)
 
 Write-Output "created immutable AI engine package: $outputRoot"
