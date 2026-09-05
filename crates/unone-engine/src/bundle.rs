@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
 use crate::diagnostics::{Diagnostic, EngineResult};
+use crate::project::ProjectPaths;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct BundleManifest {
@@ -17,7 +18,7 @@ pub struct BundleManifest {
     pub bundles: Vec<BundleSpec>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
 pub struct BundleSpec {
     pub id: String,
     pub version: String,
@@ -26,6 +27,293 @@ pub struct BundleSpec {
     pub size_bytes: u64,
     #[serde(default)]
     pub dependencies: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct BundlePackReport {
+    pub project_root: String,
+    pub manifest_path: String,
+    pub manifest_version: u32,
+    pub manifest_changed: bool,
+    pub project_config_changed: bool,
+    pub bundles: Vec<BundleSpec>,
+}
+
+/// Generate the smallest runtime bundle manifest for a project.
+///
+/// The first packaging boundary intentionally keeps source files as the
+/// bundle payload. Compression, archive layout and asset cooking belong to a
+/// later host/content pipeline once a real game requires them. The engine
+/// still owns the manifest shape and integrity fields used by native, Web and
+/// mobile hosts.
+pub fn pack_project(
+    project_root: impl AsRef<Path>,
+    output_path: Option<&Path>,
+) -> EngineResult<BundlePackReport> {
+    let root = match fs::canonicalize(project_root.as_ref()) {
+        Ok(root) => root,
+        Err(error) => {
+            return EngineResult::failure(Diagnostic::error(
+                "PROJECT_ROOT_NOT_FOUND",
+                "找不到 Unone 專案根目錄",
+                format!("{}：{}", project_root.as_ref().display(), error),
+            ));
+        }
+    };
+    let (config, paths) = match ProjectPaths::discover(&root) {
+        Ok(result) => result,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let manifest_path = output_path
+        .map(|path| {
+            if path.is_absolute() {
+                path.to_path_buf()
+            } else {
+                root.join(path)
+            }
+        })
+        .unwrap_or_else(|| root.join("bundles/manifest.json"));
+    if !manifest_path.starts_with(&root) {
+        return EngineResult::failure(Diagnostic::error(
+            "BUNDLE_OUTPUT_OUTSIDE_PROJECT",
+            "bundle manifest 輸出位置超出專案根目錄",
+            "打包工具只會修改目前遊戲專案內的 manifest 與 project config，避免 AI 工作流誤寫到其他目錄。",
+        ));
+    }
+
+    let manifest_relative = match manifest_path.strip_prefix(&root) {
+        Ok(path) => normalize_relative_path(path),
+        Err(_) => unreachable!("manifest path was checked to be inside project root"),
+    };
+    let mut config_json: serde_json::Value = match fs::read_to_string(&paths.config)
+        .map_err(|error| error.to_string())
+        .and_then(|text| serde_json::from_str(&text).map_err(|error| error.to_string()))
+    {
+        Ok(config) => config,
+        Err(error) => {
+            return EngineResult::failure(Diagnostic::error(
+                "PROJECT_CONFIG_INVALID",
+                "無法準備 bundle 的專案設定",
+                error,
+            ));
+        }
+    };
+    let Some(config_object) = config_json.as_object_mut() else {
+        return EngineResult::failure(Diagnostic::error(
+            "PROJECT_CONFIG_INVALID",
+            "專案設定必須是 JSON object",
+            "bundle pack 需要在 project.unone.json 設定 bundle_manifest。",
+        ));
+    };
+    let config_changed = config_object
+        .get("bundle_manifest")
+        .and_then(|value| value.as_str())
+        != Some(&manifest_relative);
+    if config_changed {
+        config_object.insert(
+            "bundle_manifest".to_string(),
+            serde_json::Value::String(manifest_relative.clone()),
+        );
+    }
+
+    let mut sources = Vec::new();
+    if let Err(diagnostic) = validate_pack_source(&root, "project config", "project.unone.json") {
+        return EngineResult::failure(*diagnostic);
+    }
+    sources.push((
+        "project".to_string(),
+        "project.unone.json".to_string(),
+        Vec::new(),
+    ));
+    if let Err(diagnostic) = validate_pack_source(&root, "entry script", &config.entry_script) {
+        return EngineResult::failure(*diagnostic);
+    }
+    sources.push((
+        "script".to_string(),
+        normalize_source_path(&config.entry_script),
+        vec!["project".to_string()],
+    ));
+    if let Some(scene) = &config.main_scene {
+        if let Err(diagnostic) = validate_pack_source(&root, "main scene", scene) {
+            return EngineResult::failure(*diagnostic);
+        }
+        sources.push((
+            "scene".to_string(),
+            normalize_source_path(scene),
+            vec!["project".to_string()],
+        ));
+    }
+
+    if config_changed {
+        let config_bytes = match serde_json::to_vec_pretty(&config_json) {
+            Ok(bytes) => bytes,
+            Err(error) => {
+                return EngineResult::failure(Diagnostic::error(
+                    "PROJECT_CONFIG_WRITE_FAILED",
+                    "無法序列化 bundle 專案設定",
+                    error.to_string(),
+                ));
+            }
+        };
+        if let Err(error) = write_atomic(&paths.config, &config_bytes) {
+            return EngineResult::failure(Diagnostic::error(
+                "PROJECT_CONFIG_WRITE_FAILED",
+                "無法更新 bundle_manifest 設定",
+                error,
+            ));
+        }
+    }
+
+    let mut bundles = Vec::with_capacity(sources.len());
+    for (id, source, dependencies) in sources {
+        let bytes = match fs::read(root.join(&source)) {
+            Ok(bytes) => bytes,
+            Err(error) => {
+                return EngineResult::failure(Diagnostic::error(
+                    "BUNDLE_SOURCE_READ_FAILED",
+                    "無法讀取 bundle 來源",
+                    format!("{}：{}", root.join(&source).display(), error),
+                ));
+            }
+        };
+        bundles.push(BundleSpec {
+            id,
+            version: "1".to_string(),
+            source,
+            sha256: digest_bytes(&bytes),
+            size_bytes: bytes.len() as u64,
+            dependencies,
+        });
+    }
+
+    let previous = match read_existing_manifest(&manifest_path) {
+        Ok(previous) => previous,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let manifest_version = match previous {
+        Some(previous) if previous.bundles == bundles => previous.version,
+        Some(previous) => previous.version.saturating_add(1).max(1),
+        None => 1,
+    };
+    let manifest = BundleManifest {
+        version: manifest_version,
+        bundles: bundles.clone(),
+    };
+    let manifest_bytes = match serde_json::to_vec_pretty(&manifest) {
+        Ok(bytes) => bytes,
+        Err(error) => {
+            return EngineResult::failure(Diagnostic::error(
+                "BUNDLE_MANIFEST_WRITE_FAILED",
+                "無法序列化 bundle manifest",
+                error.to_string(),
+            ));
+        }
+    };
+    let manifest_changed = fs::read(&manifest_path)
+        .map(|current| current != manifest_bytes)
+        .unwrap_or(true);
+    if manifest_changed && let Err(error) = write_atomic(&manifest_path, &manifest_bytes) {
+        return EngineResult::failure(Diagnostic::error(
+            "BUNDLE_MANIFEST_WRITE_FAILED",
+            "無法寫入 bundle manifest",
+            error,
+        ));
+    }
+
+    EngineResult::success(BundlePackReport {
+        project_root: root.display().to_string(),
+        manifest_path: manifest_path.display().to_string(),
+        manifest_version,
+        manifest_changed,
+        project_config_changed: config_changed,
+        bundles,
+    })
+}
+
+fn validate_pack_source(root: &Path, label: &str, source: &str) -> Result<(), Box<Diagnostic>> {
+    let path = Path::new(source);
+    if path.is_absolute()
+        || path
+            .components()
+            .any(|component| matches!(component, std::path::Component::ParentDir))
+    {
+        return Err(Box::new(Diagnostic::error(
+            "BUNDLE_SOURCE_OUTSIDE_PROJECT",
+            "bundle 來源超出專案根目錄",
+            format!("{label} 的路徑 '{source}' 必須是專案內的相對路徑。"),
+        )));
+    }
+    let path = root.join(path);
+    if !path.is_file() {
+        return Err(Box::new(Diagnostic::error(
+            "BUNDLE_SOURCE_NOT_FOUND",
+            "找不到 bundle 來源",
+            format!(
+                "{label} 指向 '{}'，請先建立檔案或修正 project.unone.json。",
+                path.display()
+            ),
+        )));
+    }
+    Ok(())
+}
+
+fn read_existing_manifest(path: &Path) -> Result<Option<BundleManifest>, Box<Diagnostic>> {
+    match fs::read_to_string(path) {
+        Ok(text) => serde_json::from_str(&text).map(Some).map_err(|error| {
+            Box::new(Diagnostic::error(
+                "BUNDLE_MANIFEST_INVALID",
+                "既有 bundle manifest 不是有效 JSON",
+                format!("{}：{}", path.display(), error),
+            ))
+        }),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+        Err(error) => Err(Box::new(Diagnostic::error(
+            "BUNDLE_MANIFEST_READ_FAILED",
+            "無法讀取既有 bundle manifest",
+            format!("{}：{}", path.display(), error),
+        ))),
+    }
+}
+
+fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), String> {
+    let parent = path
+        .parent()
+        .ok_or_else(|| format!("path '{}' has no parent directory", path.display()))?;
+    fs::create_dir_all(parent)
+        .map_err(|error| format!("create '{}': {error}", parent.display()))?;
+    let staging = PathBuf::from(format!("{}.part", path.display()));
+    let mut file = File::create(&staging)
+        .map_err(|error| format!("create '{}': {error}", staging.display()))?;
+    file.write_all(bytes)
+        .map_err(|error| format!("write '{}': {error}", staging.display()))?;
+    file.flush()
+        .map_err(|error| format!("flush '{}': {error}", staging.display()))?;
+    #[cfg(not(windows))]
+    file.sync_all()
+        .map_err(|error| format!("sync '{}': {error}", staging.display()))?;
+    drop(file);
+    if path.exists() {
+        fs::remove_file(path).map_err(|error| format!("replace '{}': {error}", path.display()))?;
+    }
+    fs::rename(&staging, path).map_err(|error| {
+        format!(
+            "rename '{}' -> '{}': {error}",
+            staging.display(),
+            path.display()
+        )
+    })
+}
+
+fn normalize_relative_path(path: &Path) -> String {
+    path.to_string_lossy().replace('\\', "/")
+}
+
+fn normalize_source_path(source: &str) -> String {
+    normalize_relative_path(Path::new(source))
+}
+
+fn digest_bytes(bytes: &[u8]) -> String {
+    hex_digest(&Sha256::digest(bytes))
 }
 
 /// Host-owned source for a bundle.
@@ -596,7 +884,9 @@ mod tests {
 
     use crate::diagnostics::Diagnostic;
 
-    use super::{BundleFetcher, BundleManager, BundleManifest, BundleSpec, BundleVerifier};
+    use super::{
+        BundleFetcher, BundleManager, BundleManifest, BundleSpec, BundleVerifier, pack_project,
+    };
 
     #[test]
     fn incremental_verifier_accepts_multiple_chunks() {
@@ -616,6 +906,49 @@ mod tests {
         assert_eq!(result.bundle_id, "chunked");
         assert_eq!(result.size_bytes, content.len() as u64);
         assert_eq!(result.sha256, spec.sha256);
+    }
+
+    #[test]
+    fn packs_minimal_project_and_only_increments_version_when_content_changes() {
+        let dir = tempdir().unwrap();
+        fs::create_dir_all(dir.path().join("scripts")).unwrap();
+        fs::create_dir_all(dir.path().join("scenes")).unwrap();
+        fs::write(
+            dir.path().join("project.unone.json"),
+            br#"{"name":"PackFixture","entry_script":"scripts/main.luau","main_scene":"scenes/main.scene.json"}"#,
+        )
+        .unwrap();
+        fs::write(dir.path().join("scripts/main.luau"), b"return {}\n").unwrap();
+        fs::write(
+            dir.path().join("scenes/main.scene.json"),
+            br#"{"entities":[]}"#,
+        )
+        .unwrap();
+
+        let first = pack_project(dir.path(), None);
+        assert!(first.ok);
+        let first = first.value.unwrap();
+        assert_eq!(first.manifest_version, 1);
+        assert!(first.manifest_changed);
+        assert!(first.project_config_changed);
+        assert_eq!(first.bundles.len(), 3);
+        assert!(dir.path().join("bundles/manifest.json").is_file());
+
+        let second = pack_project(dir.path(), None);
+        assert!(second.ok);
+        let second = second.value.unwrap();
+        assert_eq!(second.manifest_version, 1);
+        assert!(!second.manifest_changed);
+        assert!(!second.project_config_changed);
+
+        fs::write(
+            dir.path().join("scripts/main.luau"),
+            b"return {changed=true}\n",
+        )
+        .unwrap();
+        let third = pack_project(dir.path(), None);
+        assert!(third.ok);
+        assert_eq!(third.value.unwrap().manifest_version, 2);
     }
 
     #[test]

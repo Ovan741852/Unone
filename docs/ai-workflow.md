@@ -108,11 +108,14 @@ Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 f
 ## 4. 檢查 bundle
 
 ```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json bundle pack
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json bundle inspect
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json bundle install script
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json bundle inspect
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json bundle install base
 ```
 
-bundle 成功不是只代表檔案存在：要確認 manifest hash、cache hash、active generation、dependencies 與 `available`。引擎的 `BundleFetcher` 只接收 host 提供的 reader，再負責 streaming size/hash verify、staging 與 atomic activation；native CLI 使用 local source，Web/mobile 的 fetch、重試、storage quota 與背景下載政策留在 host adapter。Web sample 的 browser generation/cache smoke 另見 `docs/decisions/0016-bundle-generation-and-browser-storage.md`。
+新專案先用 `bundle pack` 生成最小的 project/script/scene manifest，並自動把 `bundle_manifest` 寫入 `project.unone.json`；內容沒有變更時不增加 manifest version，內容變更時才遞增版本。bundle 成功不是只代表檔案存在：要確認 manifest hash、cache hash、active generation、dependencies 與 `available`。引擎的 `BundleFetcher` 只接收 host 提供的 reader，再負責 streaming size/hash verify、staging 與 atomic activation；native CLI 使用 local source，Web/mobile 的 fetch、重試、storage quota 與背景下載政策留在 host adapter。Web sample 的 browser generation/cache smoke 另見 `docs/decisions/0016-bundle-generation-and-browser-storage.md`。
 
 ## 5. native preview
 
@@ -133,7 +136,7 @@ cargo run -p unone-cli -- --json api describe camera3d.setTarget
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json test
 ```
 
-要驗證實際遊戲專案的 Web host，可從 `D:/Projects` 啟動 `python -m http.server 8001`，再開啟 `http://127.0.0.1:8001/Unone/web/runner/?project=/Unone_Games/3d-racing/`。同一個 runner 也可替換成 `red-alert-rts`、`fish-machine` 或其他 game project。這是 generic host smoke；bundle generation/rollback 仍使用 `web/live/`，沒有 asset CDN 或 production save storage 時不可標記 Web final gate 通過。
+要驗證實際遊戲專案的 Web host，可從 `D:/Projects` 啟動 `python -m http.server 8001`，再開啟 `http://127.0.0.1:8001/Unone/web/runner/?project=/Unone_Games/3d-racing/`。有 bundle manifest 的專案會由同一個 runner 安裝 content-addressed generation、讀取驗證後的 project/script/scene、消費 2D/3D snapshot 與 UI，並可按 `Install / reload active bundle` 重新安裝目前 generation、執行 Luau hot reload；`?bundle=0` 只用於排查 source fallback。這是 generic host smoke；沒有 asset CDN、OPFS/production storage policy、實際 mobile host 與內容變更 hot-update evidence 時，不可標記 Web final gate 通過。
 
 ## 輸出規則
 

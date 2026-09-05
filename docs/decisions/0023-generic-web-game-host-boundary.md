@@ -24,6 +24,7 @@ scalar pointer setter 只夠既有 pointer smoke，不能讓 RTS 的 `Select`、
 
 ## Consequences
 
-- 3D Racing、Red Alert-style RTS、Fish Machine 可以使用同一個 browser runner 做可視化 smoke。
-- Web runner 不處理 CDN、bundle generation 或 production asset streaming；那些維持在 `web/live/` 與平台 host boundary。
+- 七款正式遊戲可以使用同一個 browser runner 做可視化 smoke；有 `bundle_manifest` 的專案會共用 content-addressed generation、IndexedDB cache 與 engine verifier。
+- Web runner 只負責 project-root source URL resolution、fetch/storage adapter 與 host lifecycle；不處理 CDN、OPFS 大檔策略或 production asset streaming。
+- 3D Racing 已驗證 manifest version 1→2、只變更 script hash、project/scene 仍沿用 cache，並在同一個 runtime 執行 script hot reload。
 - 這項證據仍不能把 final gates 改成 passed，因為完整遊戲規則、跨平台 game host、bundle content update、durable storage 與 mobile package/device smoke 尚未齊全。

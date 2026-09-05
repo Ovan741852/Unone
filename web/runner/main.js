@@ -1,4 +1,5 @@
 import { createWebGpuRenderer, frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=3";
+import { installGeneration, readActiveText } from "../live/bundle-store.js?v=1";
 
 const canvas = document.querySelector("#game");
 const uiLayer = document.querySelector("#ui-layer");
@@ -10,8 +11,11 @@ const projectRoot = new URL(requestedProject, location.origin);
 if (!projectRoot.pathname.endsWith("/")) projectRoot.pathname += "/";
 const seed = BigInt(query.get("seed") || "42");
 const saveKey = `unone-runner-save:${projectRoot.pathname}`;
+const bundleDatabaseName = `unone-runner-bundles:${encodeURIComponent(projectRoot.pathname)}`;
 let snapshot = null;
 let renderer = null;
+let bundleManifest = null;
+let generationState = null;
 let pointer = { position: { x: 0, y: 0 }, screen_position: { x: 0, y: 0 }, down: false };
 let heldActions = {};
 let pendingActions = {};
@@ -42,6 +46,39 @@ async function readText(relativePath) {
   const response = await fetch(new URL(relativePath, projectRoot), { cache: "no-store" });
   if (!response.ok) throw new Error(`script request failed: ${response.status} ${relativePath}`);
   return response.text();
+}
+
+async function readManifest(manifestUrl) {
+  const response = await fetch(manifestUrl, { cache: "no-store" });
+  if (!response.ok) throw new Error(`bundle manifest request failed: ${response.status} ${manifestUrl}`);
+  const manifest = await response.json();
+  return {
+    ...manifest,
+    bundles: (manifest.bundles ?? []).map((spec) => ({
+      ...spec,
+      // BundleSpec.source is project-root relative for native and Web. The
+      // host resolves it here instead of making the engine know URL layout.
+      source: new URL(spec.source, projectRoot).href,
+    })),
+  };
+}
+
+async function readPackagedProject(bootstrapConfig) {
+  const manifestPath = query.get("manifest") || bootstrapConfig.bundle_manifest;
+  if (!manifestPath || query.get("bundle") === "0") return null;
+  const manifestUrl = new URL(manifestPath, projectRoot);
+  const manifest = await readManifest(manifestUrl);
+  generationState = await installGeneration(manifest, {
+    module: window.Module,
+    databaseName: bundleDatabaseName,
+  });
+  const config = JSON.parse(await readActiveText(generationState, "project", window.Module, manifest));
+  const script = await readActiveText(generationState, "script", window.Module, manifest);
+  const scene = config.main_scene
+    ? JSON.parse(await readActiveText(generationState, "scene", window.Module, manifest))
+    : null;
+  bundleManifest = { manifest, manifestUrl };
+  return { config, script, scene };
 }
 
 function screenFromPointer(canvasElement, event) {
@@ -75,6 +112,12 @@ function renderUi(nextSnapshot) {
 function showState() {
   output.textContent = JSON.stringify({
     project_root: projectRoot.pathname,
+    bundle: generationState && {
+      status: generationState.status,
+      generation: generationState.generation,
+      manifest_version: generationState.manifest_version,
+      bundles: generationState.bundles,
+    },
     ...semanticSummary(snapshot, pointer),
     save_payload: snapshot?.save_payload ?? null,
   }, null, 2);
@@ -91,9 +134,11 @@ function storeSave() {
 }
 
 async function loadProject() {
-  const config = await readJson("project.unone.json");
-  const script = await readText(config.entry_script);
-  const scene = config.main_scene ? await readJson(config.main_scene) : null;
+  const bootstrapConfig = await readJson("project.unone.json");
+  const packaged = await readPackagedProject(bootstrapConfig);
+  const config = packaged?.config ?? bootstrapConfig;
+  const script = packaged?.script ?? await readText(config.entry_script);
+  const scene = packaged?.scene ?? (config.main_scene ? await readJson(config.main_scene) : null);
   const payload = bridgeBytes(JSON.stringify({ project: config.name, script, scene }));
   if (window.Module._unone_web_load_project(payload.pointerAddress, payload.length, seed) !== 0) {
     const result = readSnapshot();
@@ -108,7 +153,31 @@ async function loadProject() {
     }
     snapshot = readSnapshot();
   }
-  status.textContent = `loaded ${config.name} from ${projectRoot.pathname}`;
+  const mode = packaged ? `bundle generation ${generationState.generation}` : "source files";
+  status.textContent = `loaded ${config.name} from ${projectRoot.pathname} (${mode})`;
+}
+
+async function reloadActiveBundle() {
+  if (!bundleManifest) {
+    status.textContent = "bundle reload skipped: project has no configured bundle manifest";
+    return;
+  }
+  const manifest = await readManifest(bundleManifest.manifestUrl);
+  const nextGeneration = await installGeneration(manifest, {
+    module: window.Module,
+    databaseName: bundleDatabaseName,
+  });
+  const script = await readActiveText(nextGeneration, "script", window.Module, manifest);
+  const input = bridgeBytes(script);
+  if (window.Module._unone_web_reload_script(input.pointerAddress, input.length) !== 0) {
+    const result = readSnapshot();
+    throw new Error(result.error ?? "bundle script reload failed");
+  }
+  generationState = nextGeneration;
+  bundleManifest = { manifest, manifestUrl: bundleManifest.manifestUrl };
+  snapshot = readSnapshot();
+  showState();
+  status.textContent = `bundle generation ${generationState.generation} active; Luau hot reload accepted`;
 }
 
 function step() {
@@ -154,6 +223,10 @@ async function start() {
   if (window.Module._unone_web_init() !== 0) throw new Error("generic host engine init failed");
   await loadProject();
   renderer = await createWebGpuRenderer(canvas);
+  document.querySelector("#bundle-reload")?.addEventListener("click", () => reloadActiveBundle().catch((error) => {
+    status.textContent = `bundle reload failed: ${error.message}`;
+    output.textContent = JSON.stringify({ error: error.message }, null, 2);
+  }));
   uiLayer.addEventListener("click", (event) => queueAction(event.target?.dataset?.action));
   window.addEventListener("keydown", (event) => {
     const action = keyAction(event);

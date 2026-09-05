@@ -11,8 +11,8 @@ pub use api::{
     ApiDescriptor, ApiParameter, ApiSearchReport, describe as api_describe, search as api_search,
 };
 pub use bundle::{
-    BundleFetcher, BundleManager, BundleManifest, BundleReport, BundleSpec, BundleVerification,
-    BundleVerifier,
+    BundleFetcher, BundleManager, BundleManifest, BundlePackReport, BundleReport, BundleSpec,
+    BundleVerification, BundleVerifier, pack_project,
 };
 pub use diagnostics::{
     ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult, SourceLocation,

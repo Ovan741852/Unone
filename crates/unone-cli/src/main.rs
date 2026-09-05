@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use unone_engine::{
     BundleManager, Camera3DData, EngineResult, EngineRuntime, InputFrame, Vec2, Vec3,
-    WorldSnapshot, api_describe, api_search, inspect_project,
+    WorldSnapshot, api_describe, api_search, inspect_project, pack_project,
 };
 use winit::{
     application::ApplicationHandler,
@@ -87,8 +87,15 @@ enum PlatformCommand {
 
 #[derive(Debug, Subcommand)]
 enum BundleCommand {
+    /// Generate the minimal project/script/scene manifest and configure the project.
+    Pack {
+        #[arg(long, help = "Manifest path relative to the project root")]
+        output: Option<PathBuf>,
+    },
     Inspect,
-    Install { id: String },
+    Install {
+        id: String,
+    },
 }
 
 fn main() -> ExitCode {
@@ -238,6 +245,9 @@ fn run() -> Result<ExitCode> {
         }
         Command::Preview { watch } => preview(&cli.project, watch),
         Command::Bundle { command } => {
+            if let BundleCommand::Pack { output } = command {
+                return print_result(pack_project(&cli.project, output.as_deref()), cli.json);
+            }
             let manager = match BundleManager::from_project(&cli.project) {
                 Ok(manager) => manager,
                 Err(diagnostic) => {
@@ -248,6 +258,7 @@ fn run() -> Result<ExitCode> {
                 }
             };
             match command {
+                BundleCommand::Pack { .. } => unreachable!("bundle pack was handled above"),
                 BundleCommand::Inspect => print_result(manager.inspect(), cli.json),
                 BundleCommand::Install { id } => print_result(manager.install(&id), cli.json),
             }

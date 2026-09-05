@@ -8,7 +8,7 @@ use anyhow::Result;
 use serde_json::{Map, Value, json};
 use unone_engine::{
     BundleManager, Diagnostic, EngineResult, EngineRuntime, InputFrame, api_describe, api_search,
-    inspect_project, platform_capabilities,
+    inspect_project, pack_project, platform_capabilities,
 };
 
 const LATEST_PROTOCOL_VERSION: &str = "2025-11-25";
@@ -224,6 +224,7 @@ fn tool_names() -> Vec<&'static str> {
         "unone_run",
         "unone_test",
         "unone_observe",
+        "unone_bundle_pack",
         "unone_bundle_inspect",
         "unone_bundle_install",
     ]
@@ -319,6 +320,18 @@ fn tool_definitions() -> Vec<Value> {
             object_schema(json!({})),
             true,
             true,
+        ),
+        tool(
+            "unone_bundle_pack",
+            "Pack project bundles",
+            "Generate the minimal project/script/scene bundle manifest, update project.unone.json, and return content hashes and the manifest version.",
+            object_schema(json!({
+                "properties": {
+                    "output": {"type": "string", "description": "Optional manifest path relative to the project root."}
+                }
+            })),
+            false,
+            false,
         ),
         tool(
             "unone_bundle_inspect",
@@ -432,6 +445,10 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
         "unone_observe" => match EngineRuntime::load(project) {
             Ok(runtime) => tool_result(EngineResult::success(runtime.observe())),
             Err(diagnostic) => tool_result(EngineResult::<Value>::failure(*diagnostic)),
+        },
+        "unone_bundle_pack" => match optional_string(arguments, "output") {
+            Ok(output) => tool_result(pack_project(project, output.as_deref().map(Path::new))),
+            Err(diagnostic) => argument_error(*diagnostic),
         },
         "unone_bundle_inspect" => match BundleManager::from_project(project) {
             Ok(manager) => tool_result(manager.inspect()),
@@ -618,7 +635,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 10);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 11);
     }
 
     #[test]
