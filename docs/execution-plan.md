@@ -23,7 +23,7 @@
 
 | 批次 | Roadmap 項目 | 交付與依賴 | 驗收重點 |
 |---|---|---|---|
-| A：2D 表現 | #2 rotation/scale、#3 sprite layer | 同一工作包處理 world、Luau、schema、已有 2D host；碰撞關係先問使用者 | 固定單位/方向/pivot、穩定排序、replay/reload、跨 host 顯示；憤怒鳥或魚機驗證 |
+| A：2D 表現 | #2 rotation/scale、#3 sprite layer | 同一工作包處理 world、Luau、schema、已有 2D host；使用者已決定碰撞體獨立設定（Decision 0034） | 固定單位/方向/pivot、穩定排序、replay/reload、跨 host 顯示；憤怒鳥或魚機驗證 |
 | A 的獨立工具工作 | #14 Web observations/digest | 公開同一 frame 的引擎語意資料；不能另造 JS hash 規則 | load/tick/reload 可觀測、digest 定義相同、無 GPU 可讀 |
 | B：音訊 | #1 | 先定 play/stop/handle/音量/loop/停止時機與 reload 契約，再接 audio asset 與 host | 語意狀態可重播；host 真正播放/停止有證據，缺少 host 不可標完整支援 |
 | C：完整交接工具 | #11 generation install、#12 API discovery、#13 parity、#15 world preview | 完整 generation、可採取行動的診斷與 API 列表，作為之後盲測的共同入口 | 一次啟用完整 generation、失敗保留有效版本、相同 replay 的 host 比對、世界視野可檢查 |
@@ -40,13 +40,13 @@
 
 | 工作 | 角色與模型 | 可寫範圍 | 狀態 |
 |---|---|---|---|
-| #14 Web 語意顯示 | 製作：Luna / max | runner main/index、Web ABI snapshot envelope、專屬 regression 與 devlog | 已指派；待回報 |
-| #2/#3 契約準備 | 製作：Luna / max | `docs/work-packages/2026-09-06-2d-transform-layer.md` | 已指派文件；production code 等使用者決策 |
+| #14 Web 語意顯示 | 製作：Luna / max | runner main/index、Web ABI snapshot envelope、專屬 regression 與 devlog | canonical digest 公開入口不足；已詢問使用者，相關接線暫停 |
+| #2/#3 core 實作 | 製作：Luna / max | world/runtime/API/lib、Luau 型別、scene schema、專屬工作包與 devlog | 使用者決策已收到，已指派第一段 production code；host 待 core 契約交付後分工 |
 | 分工/依賴/問題彙整 | 主代理 | 本計畫、交接規則與開發紀錄 | 進行中 |
 
-待使用者決定：2D rotation/scale 是否只影響顯示、碰撞體由獨立參數設定，
-或也改變碰撞體。目前只有圓形碰撞體，非等比縮放不能假設仍是同一個圓。
-決策前不實作依賴這個選擇的行為。
+2026-09-06 使用者已決定：「碰撞體獨立設定」。2D rotation/scale 只影響
+顯示，碰撞形狀與尺寸由碰撞體參數決定。完整邊界和回歸要求見
+[Decision 0034](decisions/0034-independent-2d-colliders.md)。
 
 ## 每個工作包的固定交付
 

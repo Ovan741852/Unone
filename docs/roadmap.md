@@ -30,7 +30,7 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 | # | 項目 | 現況 | 形狀 |
 |---|---|---|---|
 | 1 | **音訊** | 完全沒有。所有驗證遊戲都是靜音的 | 語意層：`api.audio.play(assetId, opts)` / `stop(handle)`，snapshot 發布正在播的音源清單，host 負責解碼與混音。asset kind 加 `audio`。與 Effekseer 同一個模式（[0028](decisions/0028-semantic-presentation-systems.md)） |
-| 2 | **2D transform 只有位置** | 沒有 rotation、沒有 scale。3D 有完整 `Transform3D`，2D 反而沒有 | scene 與 snapshot 的 2D entity 補 `rotation`、`scale`；物理暫不加角速度（明說） |
+| 2 | **2D transform 只有位置** | 沒有 rotation、沒有 scale。3D 有完整 `Transform3D`，2D 反而沒有 | scene 與 snapshot 的 2D entity 補 `rotation`、`scale`；使用者已確認顯示變換與碰撞體獨立設定（[0034](decisions/0034-independent-2d-colliders.md)），物理暫不加角速度 |
 | 3 | **繪製順序** | 沒有 layer 或 z，host 只能靠 entity id 排序 | sprite 補 `layer`（整數）與同層內的穩定排序規則 |
 
 ### P1 — 每個遊戲都在重寫
