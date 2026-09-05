@@ -1,5 +1,6 @@
 import { createWebGpuRenderer, frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=3";
 import { installGeneration, readActiveText } from "../live/bundle-store.js?v=1";
+import { readSave, writeSave } from "./save-store.js?v=1";
 
 const canvas = document.querySelector("#game");
 const uiLayer = document.querySelector("#ui-layer");
@@ -10,7 +11,7 @@ const requestedProject = query.get("project") || "/Unone_Games/3d-racing/";
 const projectRoot = new URL(requestedProject, location.origin);
 if (!projectRoot.pathname.endsWith("/")) projectRoot.pathname += "/";
 const seed = BigInt(query.get("seed") || "42");
-const saveKey = `unone-runner-save:${projectRoot.pathname}`;
+const saveProjectKey = projectRoot.pathname;
 const bundleDatabaseName = `unone-runner-bundles:${encodeURIComponent(projectRoot.pathname)}`;
 let snapshot = null;
 let renderer = null;
@@ -20,6 +21,10 @@ let pointer = { position: { x: 0, y: 0 }, screen_position: { x: 0, y: 0 }, down:
 let heldActions = {};
 let pendingActions = {};
 let renderedUi = null;
+let loadedSave = false;
+let lastStoredSaveText = null;
+let pendingSaveText = null;
+let saveWrite = Promise.resolve();
 
 function readSnapshot() {
   const module = window.Module;
@@ -34,6 +39,24 @@ function bridgeBytes(text) {
   const pointerAddress = window.Module._unone_web_alloc(bytes.length);
   window.Module.HEAPU8.set(bytes, pointerAddress);
   return { pointerAddress, length: bytes.length };
+}
+
+function bridgeError(result, fallback) {
+  const diagnostic = result?.diagnostic ?? null;
+  const message = diagnostic
+    ? `${diagnostic.code}: ${diagnostic.explanation}`
+    : (result?.error ?? fallback);
+  const error = new Error(message);
+  error.diagnostic = diagnostic;
+  return error;
+}
+
+function showFailure(error) {
+  status.textContent = `failed: ${error.message}`;
+  output.textContent = JSON.stringify({
+    error: error.message,
+    diagnostic: error.diagnostic ?? null,
+  }, null, 2);
 }
 
 async function readJson(relativePath) {
@@ -112,6 +135,7 @@ function renderUi(nextSnapshot) {
 function showState() {
   output.textContent = JSON.stringify({
     project_root: projectRoot.pathname,
+    save_store: { backend: "indexeddb", loaded: loadedSave },
     bundle: generationState && {
       status: generationState.status,
       generation: generationState.generation,
@@ -130,7 +154,19 @@ function queueAction(action) {
 
 function storeSave() {
   const payload = snapshot?.save_payload;
-  if (payload != null) localStorage.setItem(saveKey, JSON.stringify(payload));
+  if (payload == null) return;
+  const serialized = JSON.stringify(payload);
+  if (serialized === lastStoredSaveText || serialized === pendingSaveText) return;
+  pendingSaveText = serialized;
+  saveWrite = saveWrite.then(async () => {
+    const next = pendingSaveText;
+    pendingSaveText = null;
+    if (next == null) return;
+    await writeSave(saveProjectKey, JSON.parse(next));
+    lastStoredSaveText = next;
+  }).catch((error) => {
+    status.textContent = `save store failed: ${error.message}`;
+  });
 }
 
 async function loadProject() {
@@ -141,13 +177,13 @@ async function loadProject() {
   const scene = packaged?.scene ?? (config.main_scene ? await readJson(config.main_scene) : null);
   const payload = bridgeBytes(JSON.stringify({ project: config.name, script, scene }));
   if (window.Module._unone_web_load_project(payload.pointerAddress, payload.length, seed) !== 0) {
-    const result = readSnapshot();
-    throw new Error(result.error ?? "generic project load failed");
+    throw bridgeError(readSnapshot(), "generic project load failed");
   }
   snapshot = readSnapshot();
-  const stored = localStorage.getItem(saveKey);
+  const stored = await readSave(saveProjectKey);
   if (stored != null) {
-    const savePayload = bridgeBytes(stored);
+    loadedSave = true;
+    const savePayload = bridgeBytes(JSON.stringify(stored));
     if (window.Module._unone_web_set_save_payload(savePayload.pointerAddress, savePayload.length) !== 0) {
       throw new Error("stored save payload was rejected by the engine");
     }
@@ -170,8 +206,7 @@ async function reloadActiveBundle() {
   const script = await readActiveText(nextGeneration, "script", window.Module, manifest);
   const input = bridgeBytes(script);
   if (window.Module._unone_web_reload_script(input.pointerAddress, input.length) !== 0) {
-    const result = readSnapshot();
-    throw new Error(result.error ?? "bundle script reload failed");
+    throw bridgeError(readSnapshot(), "bundle script reload failed");
   }
   generationState = nextGeneration;
   bundleManifest = { manifest, manifestUrl: bundleManifest.manifestUrl };
@@ -225,7 +260,10 @@ async function start() {
   renderer = await createWebGpuRenderer(canvas);
   document.querySelector("#bundle-reload")?.addEventListener("click", () => reloadActiveBundle().catch((error) => {
     status.textContent = `bundle reload failed: ${error.message}`;
-    output.textContent = JSON.stringify({ error: error.message }, null, 2);
+    output.textContent = JSON.stringify({
+      error: error.message,
+      diagnostic: error.diagnostic ?? null,
+    }, null, 2);
   }));
   uiLayer.addEventListener("click", (event) => queueAction(event.target?.dataset?.action));
   window.addEventListener("keydown", (event) => {
@@ -251,11 +289,5 @@ async function start() {
   window.requestAnimationFrame(step);
 }
 
-window.addEventListener("unone-runtime-ready", () => start().catch((error) => {
-  status.textContent = `failed: ${error.message}`;
-  output.textContent = JSON.stringify({ error: error.message }, null, 2);
-}));
-if (window.unoneRuntimeReady) start().catch((error) => {
-  status.textContent = `failed: ${error.message}`;
-  output.textContent = JSON.stringify({ error: error.message }, null, 2);
-});
+window.addEventListener("unone-runtime-ready", () => start().catch(showFailure));
+if (window.unoneRuntimeReady) start().catch(showFailure);

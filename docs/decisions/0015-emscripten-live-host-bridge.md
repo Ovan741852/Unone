@@ -33,6 +33,6 @@ ABI 只傳 primitive 與 UTF-8 JSON：project load 接收 host payload，observa
 - snapshot pointer 在下一次 tick 前有效；host 必須立即 copy JSON bytes，不可保留 engine memory pointer。
 - project/script payload pointer 只在對應 call 期間有效；Rust 端以 `unsafe extern "C"` 明確標示這個 FFI 前置條件，host 負責 buffer validity 與 length。
 - ABI 中的 Rust `u64`（例如 seed）在 JavaScript 端必須以 `BigInt` 傳入，例如 `42n`；host 不可用可能失去精度的 Number。
-- ABI 的錯誤以 return code + JSON error payload 回報，避免把 Rust panic 或內部型別暴露給 AI/host。
+- ABI 的錯誤以 return code + JSON error payload 回報；可歸因於 engine/runtime 的失敗使用完整 `Diagnostic`（`code`、`explanation`、`severity`、`scope`、`hints`），一般 host 失敗才使用 plain `error`。這讓 AI/host 得到可行動的語意，不暴露 Rust panic 或內部型別。
 - bundle verifier 可以重複 `begin → write* → finish`；host 必須在 `finish` 成功前不把內容放入 active generation，驗證失敗只能保留上一代。
 - 新增一個 smoke binary 是驗證工具，不是把 Web 平台功能變成 engine core；真實遊戲使用前仍需先完成通用 host loader。

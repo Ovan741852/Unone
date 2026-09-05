@@ -2,8 +2,8 @@ use std::{cell::RefCell, collections::BTreeMap};
 
 use serde::{Deserialize, Serialize};
 use unone_engine::{
-    BundleSpec, BundleVerifier, EngineRuntime, InputFrame, PointerInput, SceneFile, Vec2,
-    WorldSnapshot,
+    BundleSpec, BundleVerifier, Diagnostic, EngineRuntime, InputFrame, PointerInput, SceneFile,
+    Vec2, WorldSnapshot,
 };
 
 thread_local! {
@@ -30,7 +30,7 @@ struct HostProject {
     scene: Option<SceneFile>,
 }
 
-fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, String> {
+fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Box<Diagnostic>> {
     EngineRuntime::load_source_with_seed(
         project.project,
         "main.luau",
@@ -38,7 +38,6 @@ fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Stri
         project.scene,
         seed,
     )
-    .map_err(|diagnostic| format!("{}: {}", diagnostic.code, diagnostic.explanation))
 }
 
 #[derive(Debug, Serialize)]
@@ -74,12 +73,20 @@ fn write_runtime_snapshot(runtime: &EngineRuntime) {
 }
 
 fn write_error(message: impl Into<String>) {
-    let value = serde_json::json!({"error": message.into()});
+    let value = serde_json::json!({
+        "ok": false,
+        "kind": "web_error",
+        "error": message.into(),
+    });
     OUTPUT.with(|output| *output.borrow_mut() = serde_json::to_vec(&value).unwrap_or_default());
 }
 
 fn write_diagnostic(diagnostic: &unone_engine::Diagnostic) {
-    let value = serde_json::json!({"ok": false, "diagnostic": diagnostic});
+    let value = serde_json::json!({
+        "ok": false,
+        "kind": "web_error",
+        "diagnostic": diagnostic,
+    });
     OUTPUT.with(|output| *output.borrow_mut() = serde_json::to_vec(&value).unwrap_or_default());
 }
 
@@ -214,8 +221,8 @@ pub unsafe extern "C" fn unone_web_load_project(
             write_snapshot(&project_name, &snapshot, save_payload);
             0
         }
-        Err(error) => {
-            write_error(error);
+        Err(diagnostic) => {
+            write_diagnostic(&diagnostic);
             -1
         }
     }
@@ -283,7 +290,7 @@ pub unsafe extern "C" fn unone_web_reload_script(pointer: *const u8, length: usi
                 0
             }
             Err(diagnostic) => {
-                write_error(format!("{}: {}", diagnostic.code, diagnostic.explanation));
+                write_diagnostic(&diagnostic);
                 -1
             }
         }
@@ -520,6 +527,32 @@ return Game
                 .as_f64()
                 .unwrap()
                 > 3.0
+        );
+    }
+
+    #[test]
+    fn c_abi_reload_failure_preserves_semantic_diagnostic_and_previous_runtime() {
+        let payload = project_payload();
+        assert_eq!(
+            unsafe { unone_web_load_project(payload.as_ptr(), payload.len(), 42) },
+            0
+        );
+        let invalid_source = b"return {";
+        assert_eq!(
+            unsafe { unone_web_reload_script(invalid_source.as_ptr(), invalid_source.len()) },
+            -1
+        );
+        let failure = output();
+        assert_eq!(failure["ok"], json!(false));
+        assert_eq!(failure["kind"], json!("web_error"));
+        assert!(failure["diagnostic"]["code"].as_str().is_some());
+        assert!(failure["diagnostic"]["explanation"].as_str().is_some());
+
+        unone_web_set_pointer(7.0, 8.0, 1);
+        assert_eq!(unone_web_tick(), 0);
+        assert_eq!(
+            output()["world"]["entities"]["web_probe"]["transform"],
+            json!({"x": 7.0, "y": 8.0})
         );
     }
 

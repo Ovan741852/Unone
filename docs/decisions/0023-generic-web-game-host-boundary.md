@@ -15,7 +15,7 @@
 - host 將 payload 交給既有 `unone_web_load_project`，不另建一套 simulation。
 - host 每 frame 送完整 `InputFrame`；Rust/Wasm 用同一個 `tick_with_input` contract。
 - host 消費 `WorldSnapshot` 的 2D/3D entity、semantic observation 與最小 UI tree。
-- localStorage 只作本機 smoke 的 save adapter；遊戲 schema/version/migration 仍由遊戲端，production storage 仍由平台 host。
+- runner 以每個 project 獨立的 IndexedDB save store 做 durable host smoke；遊戲 schema/version/migration 仍由遊戲端，production storage 仍由平台 host。
 - Web 端 3D 目前只渲染無 asset 依賴的 debug cubes，與 native preview 同屬 runtime contract evidence，不宣稱 production renderer。
 
 ## Why the input API changed
@@ -27,4 +27,5 @@ scalar pointer setter 只夠既有 pointer smoke，不能讓 RTS 的 `Select`、
 - 七款正式遊戲可以使用同一個 browser runner 做可視化 smoke；有 `bundle_manifest` 的專案會共用 content-addressed generation、IndexedDB cache 與 engine verifier。
 - Web runner 只負責 project-root source URL resolution、fetch/storage adapter 與 host lifecycle；不處理 CDN、OPFS 大檔策略或 production asset streaming。
 - 3D Racing 已驗證 manifest version 1→2、只變更 script hash、project/scene 仍沿用 cache，並在同一個 runtime 執行 script hot reload。
-- 這項證據仍不能把 final gates 改成 passed，因為完整遊戲規則、跨平台 game host、bundle content update、durable storage 與 mobile package/device smoke 尚未齊全。
+- Web bridge 的 runtime/load/reload failure 會保留結構化 `Diagnostic`；這改善 AI 可診斷性，但不等於遊戲內容或平台 final gate 通過。
+- 這項證據仍不能把 final gates 改成 passed，因為完整遊戲規則、跨平台 game host、production bundle content update、production storage policy 與 mobile package/device smoke 尚未齊全。

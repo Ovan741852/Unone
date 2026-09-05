@@ -136,7 +136,7 @@ cargo run -p unone-cli -- --json api describe camera3d.setTarget
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json test
 ```
 
-要驗證實際遊戲專案的 Web host，可從 `D:/Projects` 啟動 `python -m http.server 8001`，再開啟 `http://127.0.0.1:8001/Unone/web/runner/?project=/Unone_Games/3d-racing/`。有 bundle manifest 的專案會由同一個 runner 安裝 content-addressed generation、讀取驗證後的 project/script/scene、消費 2D/3D snapshot 與 UI，並可按 `Install / reload active bundle` 重新安裝目前 generation、執行 Luau hot reload；`?bundle=0` 只用於排查 source fallback。這是 generic host smoke；沒有 asset CDN、OPFS/production storage policy、實際 mobile host 與內容變更 hot-update evidence 時，不可標記 Web final gate 通過。
+要驗證實際遊戲專案的 Web host，可從 `D:/Projects` 啟動 `python -m http.server 8001`，再開啟 `http://127.0.0.1:8001/Unone/web/runner/?project=/Unone_Games/3d-racing/`。有 bundle manifest 的專案會由同一個 runner 安裝 content-addressed generation、讀取驗證後的 project/script/scene、消費 2D/3D snapshot 與 UI，並可按 `Install / reload active bundle` 重新安裝目前 generation、執行 Luau hot reload；save payload 會以 project-isolated IndexedDB store 持久化，輸出 `save_store.loaded` 讓 AI 確認是否真的載入；`?bundle=0` 只用於排查 source fallback。這是 generic host smoke；沒有 asset CDN、OPFS/production quota policy、實際 mobile host 與內容變更 hot-update evidence 時，不可標記 Web final gate 通過。
 
 ## 輸出規則
 

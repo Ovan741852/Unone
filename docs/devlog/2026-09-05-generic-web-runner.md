@@ -16,4 +16,8 @@
 
 依既定流程執行 Claude CLI `2.1.260` 第 24 次 read-only review；約 65 秒沒有任何 stdout/stderr，Ctrl+C 中止，沒有可判讀 findings，故不算 review 通過。詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-24.md`。
 
+針對 Web semantic diagnostic transport 與 IndexedDB save store 再執行第 25 次 read-only review；約 60 秒仍無 stdout/stderr，Ctrl+C 中止，故同樣不算 review 通過。詳見 `docs/issues/2026-09-05-claude-cli-review-timeout-25.md`。
+
 之後完成 Android headless host smoke；詳細輸出與 linker/runtime、reload semantics 問題見 `docs/devlog/2026-09-05-android-mobile-smoke.md`。這使 mobile FFI/lifecycle 有 emulator evidence，但不改變七款遊戲的 mobile final gate 尚未通過狀態。
+
+最後補上 Web ABI 的 semantic diagnostic transport：load/reload 失敗現在保留 engine `Diagnostic`，generic runner 顯示 `code`、`explanation` 與可用 hints；失敗 reload 的 Rust regression test 也確認舊 runtime 繼續可 tick。這解決的是 host/ABI 可觀測性缺口，不代表完整遊戲或 production Web gate 已完成；問題邊界記錄於 `docs/issues/2026-09-05-web-semantic-diagnostic-transport.md`。
