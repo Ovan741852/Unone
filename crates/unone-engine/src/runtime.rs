@@ -1292,6 +1292,18 @@ fn analyzer_path() -> PathBuf {
     if let Ok(path) = env::var("UNONE_LUAU_ANALYZER") {
         return PathBuf::from(path);
     }
+    if let Ok(executable) = env::current_exe()
+        && let Some(bin_dir) = executable.parent()
+    {
+        let packaged_tool = bin_dir.join(if cfg!(windows) {
+            "luau-analyze.exe"
+        } else {
+            "luau-analyze"
+        });
+        if packaged_tool.is_file() {
+            return packaged_tool;
+        }
+    }
     let local_tool = env::current_dir()
         .ok()
         .map(|root| root.join(".toolcache/luau-0.734/luau-analyze.exe"));

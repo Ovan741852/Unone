@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unone.dev/schema/project.schema.json",
+  "title": "Unone project.unone.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable game project name."
+    },
+    "entry_script": {
+      "type": "string",
+      "minLength": 1,
+      "default": "scripts/main.luau",
+      "description": "Project-relative Luau entry script."
+    },
+    "main_scene": {
+      "type": ["string", "null"],
+      "description": "Optional project-relative JSON scene file."
+    },
+    "test_files": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Project-relative deterministic test manifest files."
+    },
+    "bundle_manifest": {
+      "type": ["string", "null"],
+      "description": "Optional project-relative generated bundle manifest."
+    },
+    "asset_manifest": {
+      "type": ["string", "null"],
+      "description": "Optional project-relative version-1 asset manifest."
+    }
+  }
+}

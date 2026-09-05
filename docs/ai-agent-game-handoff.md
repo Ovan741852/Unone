@@ -7,25 +7,26 @@
 每個任務只提供：
 
 1. 一份 GAME_PLAN.md，只描述該款遊戲的玩法閉環、必要畫面、語意 action、可重播測試與驗收 evidence。
-2. 一份 immutable engine package：game.exe、engine.d.luau、CLI/MCP 操作文件、Web runner/wasm host 與必要的 engine decision 文件。
+2. 一份 immutable engine package：`bin/game.exe`、同目錄的 `bin/luau-analyze.exe`、`docs/engine.d.luau`、CLI/MCP 操作文件、JSON schemas、Web runner/wasm host 與必要的 engine decision 文件。
 3. 一個乾淨的 game output directory。不可把其他驗證遊戲的程式碼當範本，也不可直接修改 engine source。
 
 遊戲端擁有玩法規則、數值、資料 catalog、ViewModel、View tree、hit-test、save schema/migration 與內容。engine 只擁有 fixed tick、input、ECS/world primitive、Luau 執行／reload、observation/UI/save transport、bundle integrity 與平台 host boundary。
 
 ## 第一個動作：先學會引擎
 
-在修改遊戲前，子代理必須依序執行並保留 JSON 結果：
+在修改遊戲前，子代理必須先在自己的空 output directory 執行一次 project init，再依序執行並保留 JSON 結果。所有命令都從 package root 執行，CLI 路徑固定是 `bin/game.exe`：
 
 ~~~
-game.exe --project <game-root> --json project inspect
-game.exe --project <game-root> --json platform capabilities
-game.exe --project <game-root> --json api search "<企劃中的第一個動詞>"
-game.exe --json api describe <實際找到的 API>
-game.exe --project <game-root> --json asset inspect --strict
-game.exe --project <game-root> --json check --types
+bin/game.exe --project <game-root> --json project init --name "<企劃名稱>"
+bin/game.exe --project <game-root> --json project inspect
+bin/game.exe --project <game-root> --json platform capabilities
+bin/game.exe --project <game-root> --json api search "<企劃中的第一個動詞>"
+bin/game.exe --json api describe <實際找到的 API>
+bin/game.exe --project <game-root> --json asset inspect --strict
+bin/game.exe --project <game-root> --json check --types
 ~~~
 
-若 project 尚未存在，先建立最小 project.unone.json、scripts/main.luau、tests/，再重跑上述流程。CLI 沒有的能力不能自行發明；先查 api search，找不到就回報。
+`project init` 只接受明確的 project name，在空目錄建立 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不會覆蓋既有檔案，也不會替遊戲猜測玩法。設定檔與場景的 canonical JSON Schema 分別在 `docs/project.schema.json` 與 `docs/scene.schema.json`。CLI 內建的 `bin/luau-analyze.exe` 會由 `bin/game.exe` 自動找到，因此 `check --types` 不需要額外安裝或設定環境變數。CLI 沒有的能力不能自行發明；先查 api search，找不到就回報。
 
 asset inspect 是作者檢查用的 advisory report；asset inspect --strict 是 handoff/release gate，任何靜態 reference、source、manifest、bundle 或目前不支援的 manifest kind/version 問題都必須 ok=false。bundle pack 也會拒絕未解決的主場景 asset reference。
 

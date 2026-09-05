@@ -23,13 +23,21 @@ cargo run -p unone-cli -- --json platform capabilities
 
 先讀 `target_family`、`project_loaders`、`hot_reload_modes` 與 `pending_host_work`。`wasm` 的 capabilities 仍是 binary-level 資訊；目前 Web live 的 browser/WebGPU/bundle storage 證據來自 `web/live/` smoke，不要把 library compile 或單一 smoke fixture 推論成完整 Web 發布包。
 
-## 0. 先取得專案與 API 語意
+## 0. 先建立或取得專案與 API 語意
+
+子代理只拿到 engine package 與企劃時，先在自己的 game output directory 建立 scaffold：
 
 ```powershell
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json project inspect
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json asset inspect
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json api search "move entity"
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json api describe entity.setPosition
+bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json project init --name "<game-name>"
+```
+
+`project init` 只建立最小的 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不覆蓋既有檔案。可直接使用 package 內的 [project.schema.json](project.schema.json) 與 [scene.schema.json](scene.schema.json) 驗證格式；它們是目前 canonical authoring contract。
+
+```powershell
+bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json project inspect
+bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json asset inspect
+bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json api search "move entity"
+bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json api describe entity.setPosition
 ```
 
 `project inspect` 回報引擎看見的設定與檔案事實；`api search` 是依用途找能力；`api describe` 會回傳參數、回傳值、side effects、frame semantics、常見錯誤、範例與相關 API。AI 應先讀這些資料，再修改遊戲腳本，不要猜測 API。
@@ -44,7 +52,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json ap
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check --types
 ```
 
-`check` 保證 Luau syntax 與 Engine entrypoint contract；它會確認入口腳本回傳 `Game` table，且有 `start` / `update` function。`--!strict` 會被回報為 contract metadata。加上 `--types` 才會呼叫官方 `luau-analyze`；若工具不存在，命令會回傳 `LUAU_ANALYZER_NOT_FOUND`，不會把缺少型別檢查的狀態藏起來。`UNONE_LUAU_ANALYZER` 可指定 analyzer 可執行檔路徑。
+`check` 保證 Luau syntax 與 Engine entrypoint contract；它會確認入口腳本回傳 `Game` table，且有 `start` / `update` function。`--!strict` 會被回報為 contract metadata。加上 `--types` 才會呼叫官方 `luau-analyze`；engine package 的 `bin/game.exe` 會自動尋找同目錄的 `bin/luau-analyze.exe`。若自行開發 engine 或替換工具，可用 `UNONE_LUAU_ANALYZER` 指定 analyzer 可執行檔路徑；工具不存在時，命令會回傳 `LUAU_ANALYZER_NOT_FOUND`，不會把缺少型別檢查的狀態藏起來。
 
 若只要驗證 runtime contract，可移除 `--types`。本機可用官方 Luau release 的 Windows binary，或先設定：
 

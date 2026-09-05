@@ -43,7 +43,7 @@ MCP 只位於 `unone-cli`，不成為 engine core 的依賴；工具結果保留
 
 目前已驗證：Luau entrypoint、`--!strict` contract、官方 `luau-analyze` adapter、headless fixed timestep、deterministic 2D rigid body／重力／地面碰撞、Camera2D state、逐 frame input replay、共用的 `tick_with_input` host boundary、seeded Luau random、seed/input observation digest、failed reload fallback、scene Sprite size validation、與遊戲命名無關的 native wgpu preview、`preview --watch` 腳本熱更、JSON test manifest、bundle hash/cache/activation，以及最小 asset reference inspect 契約。
 
-完整型別檢查使用 `game check --types`，需要另外安裝並固定版本的官方 `luau-analyze`；工具不存在時引擎會明確回報錯誤，不會把基本 contract check 說成完整型別檢查。
+完整型別檢查使用 `game check --types`。正式 engine package 會把固定版本的官方 `luau-analyze` 放在 `bin/luau-analyze.exe`，由同目錄的 `bin/game.exe` 自動找到；工具不存在時引擎會明確回報錯誤，不會把基本 contract check 說成完整型別檢查。
 
 ## Web 目前狀態
 

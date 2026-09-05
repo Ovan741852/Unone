@@ -8,8 +8,8 @@ use anyhow::Result;
 use serde_json::{Map, Value, json};
 use unone_engine::{
     AssetSpec, BundleManager, Diagnostic, EngineResult, EngineRuntime, InputFrame, api_describe,
-    api_search, init_asset_manifest, inspect_assets, inspect_assets_strict, inspect_project,
-    pack_project, platform_capabilities,
+    api_search, init_asset_manifest, init_project, inspect_assets, inspect_assets_strict,
+    inspect_project, pack_project, platform_capabilities,
 };
 
 const LATEST_PROTOCOL_VERSION: &str = "2025-11-25";
@@ -219,6 +219,7 @@ fn handle_message(message: Value, project: &Path, state: &mut ProtocolState) -> 
 fn tool_names() -> Vec<&'static str> {
     vec![
         "unone_project_inspect",
+        "unone_project_init",
         "unone_asset_inspect",
         "unone_asset_init",
         "unone_platform_capabilities",
@@ -243,6 +244,19 @@ fn tool_definitions() -> Vec<Value> {
             object_schema(json!({})),
             true,
             true,
+        ),
+        tool(
+            "unone_project_init",
+            "Initialize project scaffold",
+            "Create a minimal valid project.unone.json, strict Luau entry script and empty main scene in an empty directory. This writes only the current project root and never overwrites existing project files.",
+            object_schema(json!({
+                "properties": {
+                    "name": {"type": "string", "description": "Project name written to project.unone.json."}
+                },
+                "required": ["name"]
+            })),
+            false,
+            false,
         ),
         tool(
             "unone_asset_inspect",
@@ -423,6 +437,10 @@ fn object_schema(extra: Value) -> Value {
 fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
     match name {
         "unone_project_inspect" => tool_result(inspect_project(project)),
+        "unone_project_init" => match required_string(arguments, "name") {
+            Ok(name) => tool_result(init_project(project, &name)),
+            Err(diagnostic) => argument_error(*diagnostic),
+        },
         "unone_asset_inspect" => match optional_bool(arguments, "strict", false) {
             Ok(strict) => tool_result(if strict {
                 inspect_assets_strict(project)
@@ -718,7 +736,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 13);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 14);
     }
 
     #[test]

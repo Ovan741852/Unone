@@ -26,8 +26,8 @@ pub use diagnostics::{
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{
     InputFrame, ObservationAssertion, PointerInput, ProjectConfig, ProjectFileStatus,
-    ProjectInspectReport, ProjectPaths, TestAssertion, TestSpec, UiAssertion,
-    inspect as inspect_project,
+    ProjectInitReport, ProjectInspectReport, ProjectPaths, TestAssertion, TestSpec, UiAssertion,
+    init as init_project, inspect as inspect_project,
 };
 pub use runtime::{
     CheckReport, EngineRuntime, RunReport, TestCaseReport, TestSuiteReport, TypeCheckReport,

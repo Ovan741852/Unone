@@ -6,10 +6,14 @@ $ErrorActionPreference = "Stop"
 $engineRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
 $outputRoot = [IO.Path]::GetFullPath($OutputPath)
 $cliPath = Join-Path $engineRoot "target\debug\game.exe"
+$analyzerPath = Join-Path $engineRoot ".toolcache\luau-0.734\luau-analyze.exe"
 $webBuildRoot = Join-Path $engineRoot "target\wasm32-unknown-emscripten\debug\deps"
 
 if (-not (Test-Path -LiteralPath $cliPath -PathType Leaf)) {
     throw "Missing $cliPath. Run cargo build -p unone-cli first."
+}
+if (-not (Test-Path -LiteralPath $analyzerPath -PathType Leaf)) {
+    throw "Missing $analyzerPath. Install/build the pinned official luau-analyze before packaging."
 }
 foreach ($path in @(
     (Join-Path $webBuildRoot "unone_web_live_smoke.js"),
@@ -37,9 +41,12 @@ function Copy-PackageFile {
 }
 
 Copy-PackageFile $cliPath "bin\game.exe"
+Copy-PackageFile $analyzerPath "bin\luau-analyze.exe"
 Copy-PackageFile (Join-Path $engineRoot "docs\ai-agent-game-handoff.md") "docs\ai-agent-game-handoff.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\ai-workflow.md") "docs\ai-workflow.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\engine.d.luau") "docs\engine.d.luau"
+Copy-PackageFile (Join-Path $engineRoot "docs\project.schema.json") "docs\project.schema.json"
+Copy-PackageFile (Join-Path $engineRoot "docs\scene.schema.json") "docs\scene.schema.json"
 Copy-PackageFile (Join-Path $engineRoot "docs\mobile-host-abi.md") "docs\mobile-host-abi.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\platform-toolchain.md") "docs\platform-toolchain.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\review-process.md") "docs\review-process.md"
@@ -82,6 +89,7 @@ runtime/tool input a game subagent should need. Read docs/ai-agent-game-handoff.
 before writing game code.
 
 Native command: bin/game.exe
+Luau analyzer: bin/luau-analyze.exe (game check --types finds it automatically)
 Web runner: web/runner/index.html
 
 This package contains no validation-game implementation and no engine source.

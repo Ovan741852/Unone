@@ -8,6 +8,7 @@ const uiLayer = document.querySelector("#ui-layer");
 const status = document.querySelector("#status");
 const output = document.querySelector("#output");
 const query = new URLSearchParams(location.search);
+const DEFAULT_ENTRY_SCRIPT = "scripts/main.luau";
 const requestedProject = query.get("project") || "/Unone_Games/3d-racing/";
 const projectRoot = new URL(requestedProject, location.origin);
 if (!projectRoot.pathname.endsWith("/")) projectRoot.pathname += "/";
@@ -267,7 +268,7 @@ async function loadProject() {
   const bootstrapConfig = await readJson("project.unone.json");
   const packaged = await readPackagedProject(bootstrapConfig);
   const config = packaged?.config ?? bootstrapConfig;
-  const script = packaged?.script ?? await readText(config.entry_script);
+  const script = packaged?.script ?? await readText(config.entry_script ?? DEFAULT_ENTRY_SCRIPT);
   const scene = packaged?.scene ?? (config.main_scene ? await readJson(config.main_scene) : null);
   assetManifest = packaged?.assetManifest
     ?? (config.asset_manifest ? await readJson(config.asset_manifest) : null);

@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use unone_engine::{
     AssetSpec, BundleManager, Camera3DData, EngineResult, EngineRuntime, InputFrame, Vec2, Vec3,
-    WorldSnapshot, api_describe, api_search, init_asset_manifest, inspect_assets,
+    WorldSnapshot, api_describe, api_search, init_asset_manifest, init_project, inspect_assets,
     inspect_assets_strict, inspect_project, pack_project,
 };
 use winit::{
@@ -77,6 +77,11 @@ enum Command {
 #[derive(Debug, Subcommand)]
 enum ProjectCommand {
     Inspect,
+    /// Create a minimal valid project scaffold without game-specific rules.
+    Init {
+        #[arg(long, help = "Project name written to project.unone.json")]
+        name: String,
+    },
 }
 
 #[derive(Debug, Subcommand)]
@@ -140,6 +145,9 @@ fn run() -> Result<ExitCode> {
     match cli.command {
         Command::Project { command } => match command {
             ProjectCommand::Inspect => print_result(inspect_project(&cli.project), cli.json),
+            ProjectCommand::Init { name } => {
+                print_result(init_project(&cli.project, &name), cli.json)
+            }
         },
         Command::Asset { command } => match command {
             AssetCommand::Inspect { strict } => print_result(

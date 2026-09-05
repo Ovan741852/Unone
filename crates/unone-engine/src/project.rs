@@ -57,6 +57,13 @@ pub struct ProjectInspectReport {
     pub asset_manifest: Option<ProjectFileStatus>,
 }
 
+#[derive(Debug, Clone, Serialize)]
+pub struct ProjectInitReport {
+    pub project: String,
+    pub root: String,
+    pub files: Vec<ProjectFileStatus>,
+}
+
 impl ProjectPaths {
     pub fn discover(root: impl AsRef<Path>) -> Result<(ProjectConfig, Self), Box<Diagnostic>> {
         let root = root.as_ref().to_path_buf();
@@ -97,6 +104,100 @@ impl ProjectPaths {
             },
         ))
     }
+}
+
+/// Bootstrap a minimal, valid game project without adding game-specific rules.
+///
+/// This is a developer-tool operation. It gives an AI a canonical project
+/// schema and entrypoint instead of requiring it to infer required fields.
+pub fn init(project_root: impl AsRef<Path>, name: &str) -> EngineResult<ProjectInitReport> {
+    if name.trim().is_empty() {
+        return EngineResult::failure(Diagnostic::error(
+            "PROJECT_INIT_NAME_INVALID",
+            "project name 不可為空",
+            "請提供一個非空的 --name；project init 不會替 AI 猜測專案名稱。",
+        ));
+    }
+    let root = project_root.as_ref().to_path_buf();
+    if root.exists() && !root.is_dir() {
+        return EngineResult::failure(Diagnostic::error(
+            "PROJECT_ROOT_INVALID",
+            "project root 不是目錄",
+            format!("{} 必須是目錄。", root.display()),
+        ));
+    }
+    if let Err(error) = fs::create_dir_all(&root) {
+        return EngineResult::failure(Diagnostic::error(
+            "PROJECT_ROOT_CREATE_FAILED",
+            "無法建立 project root",
+            format!("{}：{}", root.display(), error),
+        ));
+    }
+    let config_path = root.join("project.unone.json");
+    let script_path = root.join("scripts/main.luau");
+    let scene_path = root.join("scenes/main.scene.json");
+    let files = [&config_path, &script_path, &scene_path];
+    if let Some(existing) = files.iter().find(|path| path.is_file()) {
+        return EngineResult::failure(Diagnostic::error(
+            "PROJECT_ALREADY_EXISTS",
+            "project init 不會覆蓋既有專案檔案",
+            format!(
+                "{} 已存在；請使用新的空目錄，或手動修改既有 project。",
+                existing.display()
+            ),
+        ));
+    }
+    if let Err(error) = fs::create_dir_all(root.join("scripts")) {
+        return EngineResult::failure(Diagnostic::error(
+            "PROJECT_INIT_WRITE_FAILED",
+            "無法建立 scripts 目錄",
+            error.to_string(),
+        ));
+    }
+    if let Err(error) = fs::create_dir_all(root.join("scenes")) {
+        return EngineResult::failure(Diagnostic::error(
+            "PROJECT_INIT_WRITE_FAILED",
+            "無法建立 scenes 目錄",
+            error.to_string(),
+        ));
+    }
+    let config = serde_json::json!({
+        "name": name,
+        "entry_script": "scripts/main.luau",
+        "main_scene": "scenes/main.scene.json",
+        "test_files": []
+    });
+    let writes = [
+        (
+            &config_path,
+            serde_json::to_vec_pretty(&config).unwrap_or_default(),
+        ),
+        (
+            &script_path,
+            b"--!strict\n\
+type EngineApi = any\n\
+local Game = {}\n\
+function Game.start(_api: EngineApi) end\n\
+function Game.update(_api: EngineApi, _dt: number) end\n\
+return Game\n"
+                .to_vec(),
+        ),
+        (&scene_path, b"{\n  \"entities\": []\n}\n".to_vec()),
+    ];
+    for (path, bytes) in writes {
+        if let Err(error) = fs::write(path, bytes) {
+            return EngineResult::failure(Diagnostic::error(
+                "PROJECT_INIT_WRITE_FAILED",
+                "無法寫入 project scaffold",
+                format!("{}：{}", path.display(), error),
+            ));
+        }
+    }
+    EngineResult::success(ProjectInitReport {
+        project: name.to_string(),
+        root: root.display().to_string(),
+        files: files.iter().map(|path| file_status(path)).collect(),
+    })
 }
 
 pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<ProjectInspectReport> {
@@ -161,6 +262,43 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<ProjectInspectRep
         }
     }
     result
+}
+
+#[cfg(test)]
+mod tests {
+    use tempfile::tempdir;
+
+    use super::{init, inspect};
+
+    #[test]
+    fn init_creates_a_valid_minimal_project() {
+        let directory = tempdir().expect("temp project directory");
+        let result = init(directory.path(), "ai-smoke");
+        assert!(result.ok);
+        let report = result.value.expect("init report");
+        assert_eq!(report.project, "ai-smoke");
+        assert!(report.files.iter().all(|file| file.exists));
+
+        let inspected = inspect(directory.path());
+        assert!(inspected.ok);
+        let report = inspected.value.expect("inspect report");
+        assert!(report.entry_script.exists);
+        assert!(report.main_scene.expect("main scene").exists);
+    }
+
+    #[test]
+    fn init_never_overwrites_an_existing_project_file() {
+        let directory = tempdir().expect("temp project directory");
+        std::fs::write(directory.path().join("project.unone.json"), "{}").expect("seed file");
+
+        let result = init(directory.path(), "should-not-overwrite");
+        assert!(!result.ok);
+        assert_eq!(result.diagnostics[0].code, "PROJECT_ALREADY_EXISTS");
+        assert_eq!(
+            std::fs::read_to_string(directory.path().join("project.unone.json")).unwrap(),
+            "{}"
+        );
+    }
 }
 
 fn file_status(path: &Path) -> ProjectFileStatus {

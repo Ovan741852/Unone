@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unone.dev/schema/scene.schema.json",
+  "title": "Unone scene JSON",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "entities": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/entity"}
+    },
+    "physics": {"$ref": "#/$defs/physics"},
+    "camera": {"$ref": "#/$defs/camera2d"},
+    "camera3d": {
+      "anyOf": [
+        {"$ref": "#/$defs/camera3d"},
+        {"type": "null"}
+      ]
+    }
+  },
+  "$defs": {
+    "vec2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {
+        "x": {"type": "number"},
+        "y": {"type": "number"}
+      }
+    },
+    "vec3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": {"type": "number"},
+        "y": {"type": "number"},
+        "z": {"type": "number"}
+      }
+    },
+    "transform3d": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {"$ref": "#/$defs/vec3"},
+        "rotation": {"$ref": "#/$defs/vec3"},
+        "scale": {"$ref": "#/$defs/vec3"}
+      }
+    },
+    "sprite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset"],
+      "properties": {
+        "asset": {"type": "string", "minLength": 1},
+        "size": {"$ref": "#/$defs/vec2"},
+        "visible": {"type": "boolean"}
+      }
+    },
+    "mesh3d": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset"],
+      "properties": {
+        "asset": {"type": "string", "minLength": 1},
+        "visible": {"type": "boolean"}
+      }
+    },
+    "rigidbody": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "body_type": {"enum": ["dynamic", "static"]},
+        "mass": {"type": "number"},
+        "radius": {"type": "number"},
+        "velocity": {"$ref": "#/$defs/vec2"},
+        "restitution": {"type": "number"}
+      }
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "name": {"type": "string"},
+        "transform": {"$ref": "#/$defs/vec2"},
+        "transform3d": {
+          "anyOf": [
+            {"$ref": "#/$defs/transform3d"},
+            {"type": "null"}
+          ]
+        },
+        "sprite": {
+          "anyOf": [
+            {"$ref": "#/$defs/sprite"},
+            {"type": "null"}
+          ]
+        },
+        "mesh3d": {
+          "anyOf": [
+            {"$ref": "#/$defs/mesh3d"},
+            {"type": "null"}
+          ]
+        },
+        "rigidbody": {
+          "anyOf": [
+            {"$ref": "#/$defs/rigidbody"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "physics": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "gravity": {"$ref": "#/$defs/vec2"},
+        "ground_y": {"type": ["number", "null"]}
+      }
+    },
+    "camera2d": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {"$ref": "#/$defs/vec2"},
+        "zoom": {"type": "number"}
+      }
+    },
+    "camera3d": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {"$ref": "#/$defs/vec3"},
+        "target": {"$ref": "#/$defs/vec3"},
+        "fov_degrees": {"type": "number"}
+      }
+    }
+  }
+}

@@ -11,6 +11,7 @@ AI 需要知道 asset inspect 的 warning 是否阻止打包，也需要能只�
 - manifest version 固定為 1；asset kind 目前只有 texture2d、mesh3d。新增 kind 必須先更新 engine/host contract，不接受 typo 或未知版本的靜默 fallback。
 - asset init 是唯一最小的 manifest bootstrap/append tool；它不建立、猜測或下載 source。
 - AssetManifest/AssetSpec 是跨平台資料 contract。filesystem discovery、canonical path、CLI/MCP inspect 與 init 是 developer-tool operation；Web/mobile host 不需要走 project filesystem。
+- `project init`、`docs/project.schema.json` 與 `docs/scene.schema.json` 是 package 內的 canonical scaffold/authoring contract；子代理不需要從其他遊戲反推 JSON 格式。正式 package 將 pinned `luau-analyze` 放在 CLI 同目錄，讓 `check --types` 可在隔離輸入中直接執行。
 - 每一個子代理只拿 immutable engine package 與一份 game plan。遇到 API、文件、host、跨遊戲或架構 blocker 必須立即回報主代理並留下 blocker record，再繼續不受影響的工作。
 
 ## Rejected
