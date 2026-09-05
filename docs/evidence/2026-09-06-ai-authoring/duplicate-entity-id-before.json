@@ -1,0 +1,92 @@
+{
+  "scope": "Main-agent self-owned small C:/Temp scene fixture; built4a128d7 CLI, unchanged scene ingestion atc187df8; no user project mutated.",
+  "input": {
+    "entities": [
+      {
+        "id": "marker",
+        "transform": {
+          "x": 1,
+          "y": 0
+        }
+      },
+      {
+        "id": "marker",
+        "transform": {
+          "x": 9,
+          "y": 4
+        }
+      }
+    ]
+  },
+  "exit_code": 0,
+  "result": {
+    "ok": true,
+    "value": {
+      "project": "AAA scene contract baseline",
+      "seed": 42,
+      "status": "completed",
+      "frames": 0,
+      "observation_digest": "sha256:1e167a4ce6dc68983b362cedcf249f97ef5682b24a48e5c350fe9e6a414818bb",
+      "world": {
+        "frame": 0,
+        "time_seconds": 0,
+        "camera": {
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "zoom": 1,
+          "view_height": 10
+        },
+        "entities": {
+          "marker": {
+            "id": "marker",
+            "name": "",
+            "transform": {
+              "x": 9,
+              "y": 4
+            },
+            "rotation": 0,
+            "scale": {
+              "x": 1,
+              "y": 1
+            },
+            "transform3d": null,
+            "sprite": null,
+            "mesh3d": null,
+            "rigidbody": null
+          }
+        },
+        "observations": {}
+      },
+      "save_payload": null,
+      "trace": [],
+      "performance": {
+        "frames": 0,
+        "total_ms": 0,
+        "mean_frame_ms": 0,
+        "median_frame_ms": 0,
+        "p95_frame_ms": 0,
+        "slowest_frame": null,
+        "sustained_fps": 0,
+        "frame_budget_ms": 16.667,
+        "frames_over_budget": 0,
+        "phases": [],
+        "counts": {
+          "entities": 1,
+          "rigidbodies": 0,
+          "ui_nodes": 0,
+          "effects": 0,
+          "observations": 0
+        },
+        "luau_memory_bytes": 424568,
+        "notes": [
+          "no frames were run"
+        ]
+      }
+    },
+    "diagnostics": [],
+    "effects": []
+  },
+  "finding": "Duplicate IDs accepted; second entry silently replaces first entity."
+}

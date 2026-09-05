@@ -25,6 +25,13 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 
 ## 待辦
 
+新收到的 AI authoring 回饋已逐項核對，見
+[分析與第一切片計畫](work-packages/2026-09-06-ai-authoring.md)（計畫審查中）。
+`project init`／位置斷言／observation／trace／replay 已存在，不能標成「完全沒有」。
+已重現的缺口是 starter 沒有 tests、API 空搜尋缺指引，以及 scene typo／重複 id
+被靜默接受。先完成既有 asset WIP 的回歸與封裝 gate，再按審查後的計畫推進；
+不因此把下列音訊／host/3D 缺口視為已解決，也不新增整套 prefab/editor。
+
 ### P0 — 遊戲做不出來
 
 | # | 項目 | 現況 | 形狀 |
@@ -49,6 +56,8 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 | 8 | **擴充 pipeline** | 沒有。外部格式無處可去 | project 宣告 import 步驟，把外部檔案轉成引擎的 scene/asset 格式；產物再走同一套 `verify`。引擎不學外部格式語意。這是 prefab/csb 類需求的正解 |
 | 9 | **非圓形碰撞體** | 只有圓 + 一條地平線；方塊是用圓近似的 | AABB 與線段，先做能表達現有驗證遊戲的最小集合 |
 | 10 | **多點觸控 / 手勢** | 只有單一 pointer | 多 pointer id；手勢留給遊戲端 |
+| 21 | **可靠的 authoring 起點** | 有 init，但三檔 scaffold 無 tests；scene typo／重複 id 可假成功 | [限定計畫](work-packages/2026-09-06-ai-authoring.md) 審查中，強化 existing init 與 shared scene ingestion，不另造 scene CRUD 框架 |
+| 22 | **通用 sprite frame animation** | 已有 Spine 語意動畫，不等於 sprite frame/UV animation | 根據 2D 遊戲需求另做 fixed-tick frame/state 與 host frame/UV 呈現，不先做 timeline editor |
 
 ### P3 — 盲測回報但未修
 
