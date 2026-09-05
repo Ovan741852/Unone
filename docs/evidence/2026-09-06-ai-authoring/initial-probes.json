@@ -1,0 +1,213 @@
+{
+  "scope": "Read-only checks and self-owned small C:/Temp probes. No source build, no user game edits. Existing CLI is4a128d7, these init/search/scene code paths unchanged at c187df8.",
+  "onboarding": {
+    "binary_sha256": "79320A5DBB89C4081E3D02A7CC996C46BB65C85F5F0A9B3668CD1227338DEC61",
+    "source_scope": "Built 4a128d7 CLI; project init and API search unchanged at c187df8",
+    "project": "C:/Temp/unone-aaa-onboarding-baseline-20260906",
+    "init_exit": 0,
+    "init": {
+      "ok": true,
+      "value": {
+        "project": "AAA onboarding baseline",
+        "root": "C:/Temp/unone-aaa-onboarding-baseline-20260906",
+        "files": [
+          {
+            "path": "C:/Temp/unone-aaa-onboarding-baseline-20260906\\project.unone.json",
+            "exists": true
+          },
+          {
+            "path": "C:/Temp/unone-aaa-onboarding-baseline-20260906\\scripts/main.luau",
+            "exists": true
+          },
+          {
+            "path": "C:/Temp/unone-aaa-onboarding-baseline-20260906\\scenes/main.scene.json",
+            "exists": true
+          }
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    },
+    "verify_exit": 1,
+    "verify": {
+      "ok": false,
+      "value": {
+        "project": "AAA onboarding baseline",
+        "steps": [
+          {
+            "name": "types",
+            "status": "passed",
+            "summary": "entrypoints [\"start\", \"update\"], strict_mode true",
+            "command": "game check --types",
+            "diagnostics": []
+          },
+          {
+            "name": "assets",
+            "status": "passed",
+            "summary": "0 declared, 0 scene references, ready_for_packaging true",
+            "command": "game asset inspect --strict",
+            "diagnostics": []
+          },
+          {
+            "name": "layout",
+            "status": "not_applicable",
+            "summary": "the game publishes no UI tree",
+            "command": "game ui preview --strict --frames 1 --seed 42",
+            "diagnostics": []
+          },
+          {
+            "name": "tests",
+            "status": "failed",
+            "summary": "the project declares no test files",
+            "command": "game test",
+            "diagnostics": [
+              {
+                "code": "TESTS_NOT_CONFIGURED",
+                "severity": "ERROR",
+                "summary": "專案沒有設定測試檔",
+                "explanation": "verify 要求可重播的 deterministic 測試；沒有測試就沒有通過的依據。",
+                "facts": {},
+                "likely_causes": [],
+                "suggested_actions": [
+                  {
+                    "action": "add_test_files",
+                    "description": "在 project.unone.json 的 test_files 加入 .test.json 檔案。",
+                    "command": "game project inspect --json"
+                  }
+                ],
+                "source": null
+              }
+            ]
+          }
+        ],
+        "passed": 2,
+        "failed": 1,
+        "not_applicable": 1
+      },
+      "diagnostics": [
+        {
+          "code": "VERIFY_FAILED",
+          "severity": "ERROR",
+          "summary": "有 gate 沒有通過",
+          "explanation": "1 個步驟失敗；每個步驟的 command 欄位可以單獨重跑。",
+          "facts": {
+            "failed_steps": [
+              "tests"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [],
+          "source": null
+        }
+      ],
+      "effects": [
+        "verify ran 4 gates: 2 passed, 1 failed, 1 not applicable"
+      ]
+    },
+    "search_exit": 0,
+    "search": {
+      "ok": true,
+      "value": {
+        "query": "攻擊",
+        "matches": []
+      },
+      "diagnostics": [
+        {
+          "code": "API_SEARCH_EMPTY",
+          "severity": "WARNING",
+          "summary": "沒有找到符合語意的 Engine API",
+          "explanation": "搜尋只涵蓋目前公開的最小 API；請改用更具體的動詞或先查看 project inspect。",
+          "facts": {},
+          "likely_causes": [],
+          "suggested_actions": [],
+          "source": null
+        }
+      ],
+      "effects": []
+    }
+  },
+  "scene_typo": {
+    "input": {
+      "entities": [
+        {
+          "id": "marker",
+          "position": {
+            "x": 9,
+            "y": 4
+          }
+        }
+      ]
+    },
+    "exit_code": 0,
+    "result": {
+      "ok": true,
+      "value": {
+        "project": "AAA scene contract baseline",
+        "seed": 42,
+        "status": "completed",
+        "frames": 0,
+        "observation_digest": "sha256:e8bad95f3b57afc89ed2ceaeff40ff3c6886082ef46c2507de7763062e924c07",
+        "world": {
+          "frame": 0,
+          "time_seconds": 0,
+          "camera": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "zoom": 1,
+            "view_height": 10
+          },
+          "entities": {
+            "marker": {
+              "id": "marker",
+              "name": "",
+              "transform": {
+                "x": 0,
+                "y": 0
+              },
+              "rotation": 0,
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "transform3d": null,
+              "sprite": null,
+              "mesh3d": null,
+              "rigidbody": null
+            }
+          },
+          "observations": {}
+        },
+        "save_payload": null,
+        "trace": [],
+        "performance": {
+          "frames": 0,
+          "total_ms": 0,
+          "mean_frame_ms": 0,
+          "median_frame_ms": 0,
+          "p95_frame_ms": 0,
+          "slowest_frame": null,
+          "sustained_fps": 0,
+          "frame_budget_ms": 16.667,
+          "frames_over_budget": 0,
+          "phases": [],
+          "counts": {
+            "entities": 1,
+            "rigidbodies": 0,
+            "ui_nodes": 0,
+            "effects": 0,
+            "observations": 0
+          },
+          "luau_memory_bytes": 424568,
+          "notes": [
+            "no frames were run"
+          ]
+        }
+      },
+      "diagnostics": [],
+      "effects": []
+    },
+    "finding": "Unknown scene field position silently ignored. Correct field is transform; command succeeded at origin without diagnostics."
+  }
+}
