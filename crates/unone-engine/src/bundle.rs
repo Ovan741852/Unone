@@ -177,20 +177,26 @@ pub fn pack_project(
         ));
         let mut grouped = BTreeMap::<String, Vec<(String, Vec<u8>)>>::new();
         for asset in asset_manifest.assets {
-            let bytes = match fs::read(root.join(&asset.source)) {
-                Ok(bytes) => bytes,
-                Err(error) => {
-                    return EngineResult::failure(Diagnostic::error(
-                        "BUNDLE_ASSET_SOURCE_READ_FAILED",
-                        "無法讀取 asset bundle 來源",
-                        format!("{}：{}", root.join(&asset.source).display(), error),
-                    ));
-                }
-            };
-            grouped
-                .entry(asset.bundle)
-                .or_default()
-                .push((normalize_source_path(&asset.source), bytes));
+            // A Spine skeleton without its atlas, or an effect without its
+            // textures, is not usable content: companion files ship in the
+            // same archive as the source they belong to.
+            let sources = std::iter::once(asset.source.clone()).chain(asset.files.iter().cloned());
+            for source in sources {
+                let bytes = match fs::read(root.join(&source)) {
+                    Ok(bytes) => bytes,
+                    Err(error) => {
+                        return EngineResult::failure(Diagnostic::error(
+                            "BUNDLE_ASSET_SOURCE_READ_FAILED",
+                            "無法讀取 asset bundle 來源",
+                            format!("{}：{}", root.join(&source).display(), error),
+                        ));
+                    }
+                };
+                grouped
+                    .entry(asset.bundle.clone())
+                    .or_default()
+                    .push((normalize_source_path(&source), bytes));
+            }
         }
         for (bundle_id, entries) in grouped {
             let archive = match build_bundle_archive(entries) {
@@ -1442,6 +1448,7 @@ mod tests {
             source: "assets/bird.svg".to_string(),
             kind: "texture2d".to_string(),
             bundle: "content".to_string(),
+            files: Vec::new(),
         }
     }
 

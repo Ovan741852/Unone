@@ -65,6 +65,33 @@ export type SaveApi = {
     get: () -> ObservationValue,
 }
 
+export type AnimationOptions = {
+    asset: string?,
+    loop: boolean?,
+    speed: number?,
+}
+
+-- Semantic skeletal animation state. The engine stores the selection; the
+-- host runs the Spine runtime. Requires system "spine".
+export type AnimationApi = {
+    play: (id: string, name: string, options: AnimationOptions?) -> (),
+    stop: (id: string) -> (),
+}
+
+export type EffectOptions = {
+    x: number?,
+    y: number?,
+    scale: number?,
+    rotation: number?,
+}
+
+-- Semantic effect events. The engine stores live instances; the host runs the
+-- Effekseer runtime. Requires system "effekseer".
+export type EffectApi = {
+    spawn: (asset: string, options: EffectOptions?) -> string,
+    stop: (handle: string) -> boolean,
+}
+
 export type EngineApi = {
     entity: EntityApi,
     input: InputApi,
@@ -75,6 +102,8 @@ export type EngineApi = {
     observation: ObservationApi,
     ui: UiApi,
     save: SaveApi,
+    animation: AnimationApi,
+    effect: EffectApi,
     log: (message: string) -> (),
 }
 

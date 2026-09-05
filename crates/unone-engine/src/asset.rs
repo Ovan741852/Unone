@@ -31,6 +31,11 @@ pub struct AssetSpec {
     pub kind: String,
     #[serde(default = "default_asset_bundle")]
     pub bundle: String,
+    /// Extra project-relative sources this asset cannot be used without, such
+    /// as a Spine atlas and its texture pages. They are packed into the same
+    /// bundle; the engine does not parse them.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub files: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -135,6 +140,26 @@ pub(crate) fn load_for_pack(root: &Path, path: &Path) -> Result<AssetManifest, B
                 ),
             )));
         }
+        for file in &asset.files {
+            let companion = root.join(file);
+            if !companion.is_file() {
+                return Err(Box::new(Diagnostic::error(
+                    "ASSET_SOURCE_NOT_FOUND",
+                    "找不到 asset 附屬檔案",
+                    format!("asset '{}' 需要 '{file}'，但檔案不存在。", asset.id),
+                )));
+            }
+            if !source_is_within_root(root, file) {
+                return Err(Box::new(Diagnostic::error(
+                    "ASSET_SOURCE_SYMLINK_OUTSIDE_PROJECT",
+                    "asset 附屬檔案 symlink 超出專案根目錄",
+                    format!(
+                        "asset '{}' 的 '{file}' 解析後不在專案根目錄內。",
+                        asset.id
+                    ),
+                )));
+            }
+        }
     }
     Ok(manifest)
 }
@@ -155,6 +180,9 @@ fn default_asset_bundle() -> String {
 pub struct AssetReadReport {
     pub project: String,
     pub asset: AssetSpec,
+    /// Companion file that was read, when the request was not for the source.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub file: Option<String>,
     pub bundle_generation: u64,
     pub size_bytes: u64,
     pub sha256: String,
@@ -227,6 +255,7 @@ pub fn manifest(project_root: impl AsRef<Path>) -> EngineResult<AssetManifest> {
 pub fn read(
     project_root: impl AsRef<Path>,
     asset_id: &str,
+    file: Option<&str>,
     output: Option<&Path>,
 ) -> EngineResult<AssetReadReport> {
     let (config, paths) = match ProjectPaths::discover(project_root) {
@@ -269,7 +298,24 @@ pub fn read(
         Ok(manager) => manager,
         Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
-    let bytes = match manager.read_active_asset(asset) {
+    let mut resolved = asset.clone();
+    if let Some(file) = file {
+        if !asset.files.iter().any(|candidate| candidate == file) {
+            let mut diagnostic = Diagnostic::error(
+                "ASSET_FILE_NOT_DECLARED",
+                "asset 沒有宣告這個附屬檔案",
+                format!("asset '{asset_id}' 的 files 沒有 '{file}'；引擎不會讀取未宣告的內容。"),
+            );
+            diagnostic.facts = serde_json::json!({
+                "asset_id": asset_id,
+                "requested": file,
+                "declared": asset.files,
+            });
+            return EngineResult::failure(diagnostic);
+        }
+        resolved.source = file.to_string();
+    }
+    let bytes = match manager.read_active_asset(&resolved) {
         Ok(bytes) => bytes,
         Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
@@ -300,7 +346,12 @@ pub fn read(
                     format!("{}：{}", path.display(), error),
                 ));
             }
-            effects.push(format!("asset '{}' written to {}", asset.id, path.display()));
+            effects.push(format!(
+                "asset '{}' ({}) written to {}",
+                asset.id,
+                resolved.source,
+                path.display()
+            ));
             Some(path.display().to_string())
         }
         None => None,
@@ -308,6 +359,7 @@ pub fn read(
     let mut result = EngineResult::success(AssetReadReport {
         project: config.name,
         asset: asset.clone(),
+        file: file.map(str::to_string),
         bundle_generation,
         size_bytes: bytes.len() as u64,
         sha256: digest_bytes(&bytes),
@@ -461,12 +513,15 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
             .filter(|reference| !by_id.contains_key(&reference.id))
             .map(|reference| reference.id.clone()),
     );
-    let missing_sources = manifest
-        .assets
-        .iter()
-        .filter(|asset| !paths.root.join(&asset.source).is_file())
-        .map(|asset| asset.source.clone())
-        .collect::<Vec<_>>();
+    let missing_sources = sorted_unique(
+        manifest
+            .assets
+            .iter()
+            .flat_map(|asset| {
+                std::iter::once(asset.source.clone()).chain(asset.files.iter().cloned())
+            })
+            .filter(|source| !paths.root.join(source).is_file()),
+    );
     let undeclared_bundles = sorted_unique(
         manifest
             .assets
@@ -823,7 +878,7 @@ fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnostic>> {
             "ASSET_SPEC_INVALID",
             "asset spec 的 kind 或 bundle 無效",
             format!(
-                "asset '{}' 的 kind 必須是 texture2d 或 mesh3d，bundle 不可為空。",
+                "asset '{}' 的 kind 必須是 texture2d、mesh3d、spine 或 effekseer，bundle 不可為空。",
                 asset.id
             ),
         )));
@@ -847,6 +902,25 @@ fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnostic>> {
                 asset.id, asset.source
             ),
         )));
+    }
+    for file in &asset.files {
+        if !is_project_relative(file) {
+            return Err(Box::new(Diagnostic::error(
+                "ASSET_SOURCE_OUTSIDE_PROJECT",
+                "asset 附屬檔案超出專案根目錄",
+                format!(
+                    "asset '{}' 的 files 項目 '{file}' 必須是專案內的相對路徑。",
+                    asset.id
+                ),
+            )));
+        }
+        if *file == asset.source {
+            return Err(Box::new(Diagnostic::error(
+                "ASSET_SPEC_INVALID",
+                "asset 附屬檔案重複宣告了 source",
+                format!("asset '{}' 的 files 不可再列出 source 本身。", asset.id),
+            )));
+        }
     }
     Ok(())
 }
@@ -883,8 +957,15 @@ pub(crate) fn read_scene_references(
         if let Some(mesh3d) = entity.mesh3d {
             references.push(AssetReference {
                 id: mesh3d.asset,
-                entity: entity.id,
+                entity: entity.id.clone(),
                 component: "mesh3d".to_string(),
+            });
+        }
+        if let Some(animation) = entity.animation {
+            references.push(AssetReference {
+                id: animation.asset,
+                entity: entity.id,
+                component: "animation".to_string(),
             });
         }
     }
@@ -972,7 +1053,7 @@ fn relative_path(root: &Path, path: &Path) -> String {
 }
 
 fn is_supported_asset_kind(kind: &str) -> bool {
-    matches!(kind, "texture2d" | "mesh3d")
+    matches!(kind, "texture2d" | "mesh3d" | "spine" | "effekseer")
 }
 
 fn is_safe_bundle_id(bundle: &str) -> bool {
@@ -1005,11 +1086,17 @@ fn static_reference_scope(paths: &ProjectPaths) -> StaticReferenceScope {
     }
     StaticReferenceScope {
         roots_inspected,
-        components_inspected: vec!["sprite".to_string(), "mesh3d".to_string()],
+        components_inspected: vec![
+            "sprite".to_string(),
+            "mesh3d".to_string(),
+            "animation".to_string(),
+        ],
         dynamic_luau_assets_included: false,
         limitations: vec![
             "Only main_scene static references are inspected.".to_string(),
             "Assets created or selected dynamically by Luau are not discoverable here.".to_string(),
+            "Effect assets are spawned from Luau, so they are never a static scene reference."
+                .to_string(),
         ],
     }
 }
@@ -1200,6 +1287,7 @@ mod tests {
                 source: "assets/bird.svg".to_string(),
                 kind: "texture2d".to_string(),
                 bundle: "content".to_string(),
+                files: Vec::new(),
             }),
         );
         assert!(second.ok, "{:?}", second.diagnostics);
@@ -1226,7 +1314,7 @@ mod tests {
         .unwrap();
         assert!(pack_project(dir.path(), None).ok);
 
-        let before_install = read(dir.path(), "asset://bird", None);
+        let before_install = read(dir.path(), "asset://bird", None, None);
         assert!(!before_install.ok);
         assert_eq!(
             before_install.diagnostics[0].code,
@@ -1241,7 +1329,7 @@ mod tests {
         );
 
         let output = dir.path().join("out/bird.svg");
-        let result = read(dir.path(), "asset://bird", Some(&output));
+        let result = read(dir.path(), "asset://bird", None, Some(&output));
         assert!(result.ok, "{:?}", result.diagnostics);
         let report = result.value.unwrap();
         assert_eq!(report.asset.id, "asset://bird");
@@ -1253,7 +1341,7 @@ mod tests {
         );
         assert_eq!(fs::read(&output).unwrap(), b"<svg>bird</svg>");
 
-        let unknown = read(dir.path(), "asset://missing", None);
+        let unknown = read(dir.path(), "asset://missing", None, None);
         assert!(!unknown.ok);
         assert_eq!(unknown.diagnostics[0].code, "ASSET_ID_NOT_DECLARED");
     }

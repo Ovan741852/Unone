@@ -20,6 +20,9 @@ use crate::{
 pub enum SystemStatus {
     /// Implemented in the engine and usable now.
     Available,
+    /// The engine side exists, but the runtime that draws it lives in a host
+    /// that has not implemented it yet.
+    HostRequired,
     /// The contract exists, but no host renders or executes it yet.
     NotImplemented,
 }
@@ -452,25 +455,25 @@ fn descriptors() -> Vec<SystemDescriptor> {
         ),
         descriptor(
             "spine",
-            "Spine 骨骼動畫：遊戲只發布語意動畫狀態，host 執行 Spine runtime。",
-            SystemStatus::NotImplemented,
+            "Spine 骨骼動畫：遊戲發布語意動畫狀態，host 執行 Spine runtime。",
+            SystemStatus::HostRequired,
             false,
             true,
-            vec![],
-            vec![],
-            "目前沒有任何引擎或 host 實作；啟用會被視為設定錯誤。",
-            "需要骨骼動畫時；實作前必須先定義 asset kind 與 host runtime 契約。",
+            vec!["api.animation.play", "api.animation.stop"],
+            vec!["world.entities[].animation"],
+            "關閉後 api.animation 會回報 SYSTEM_DISABLED，scene 宣告的 animation 仍會出現在 snapshot。",
+            "沒有骨骼動畫的遊戲；這是預設關閉的系統。目前沒有任何 host 會畫出 Spine 骨骼，引擎只負責傳輸與 determinism。",
         ),
         descriptor(
             "effekseer",
-            "Effekseer 特效：遊戲只發布語意特效事件，host 執行 Effekseer runtime。",
-            SystemStatus::NotImplemented,
+            "Effekseer 特效：遊戲發布語意特效事件，host 執行 Effekseer runtime。",
+            SystemStatus::HostRequired,
             false,
             true,
-            vec![],
-            vec![],
-            "目前沒有任何引擎或 host 實作；啟用會被視為設定錯誤。",
-            "需要粒子特效時；實作前必須先定義 asset kind 與 host runtime 契約。",
+            vec!["api.effect.spawn", "api.effect.stop"],
+            vec!["world.effects"],
+            "關閉後 api.effect 會回報 SYSTEM_DISABLED，snapshot 不會有任何 effect。",
+            "沒有粒子特效的遊戲；這是預設關閉的系統。目前沒有任何 host 會模擬或畫出粒子，引擎只負責傳輸與 determinism。",
         ),
     ]
 }
@@ -516,10 +519,11 @@ mod tests {
             "SYSTEM_NOT_OPTIONAL"
         );
 
-        let unimplemented = BTreeMap::from([("spine".to_string(), true)]);
-        assert_eq!(
-            SystemSettings::resolve(&unimplemented).unwrap_err().code,
-            "SYSTEM_NOT_IMPLEMENTED"
+        let host_required = BTreeMap::from([("spine".to_string(), true)]);
+        assert!(
+            SystemSettings::resolve(&host_required)
+                .unwrap()
+                .is_enabled("spine")
         );
     }
 

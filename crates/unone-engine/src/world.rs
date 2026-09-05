@@ -201,6 +201,43 @@ pub struct SceneEntity {
     pub mesh3d: Option<Mesh3DData>,
     #[serde(default)]
     pub rigidbody: Option<RigidBody2DData>,
+    #[serde(default)]
+    pub animation: Option<AnimationData>,
+}
+
+/// Skeletal animation state an entity publishes for a host to play.
+///
+/// The engine stores which clip is selected and since which frame; it does not
+/// evaluate bones, meshes or blending. The only declared asset kind for this
+/// today is Spine, and the host owns that runtime.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AnimationData {
+    pub asset: String,
+    pub animation: String,
+    #[serde(default = "default_true", rename = "loop")]
+    pub looping: bool,
+    #[serde(default = "default_speed")]
+    pub speed: f64,
+}
+
+fn default_speed() -> f64 {
+    1.0
+}
+
+/// A game that leaks effect handles should fail loudly, not grow forever.
+const MAX_LIVE_EFFECTS: usize = 256;
+
+/// One live effect instance the game asked a host to play.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct EffectInstance {
+    pub handle: String,
+    pub asset: String,
+    pub position: Vec2,
+    pub scale: f64,
+    pub rotation: f64,
+    /// Frame the effect was spawned on, so a host can start it at the right
+    /// point after a reload or a late join.
+    pub started_frame: u64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -229,6 +266,18 @@ pub struct EntitySnapshot {
     pub sprite: Option<SpriteData>,
     pub mesh3d: Option<Mesh3DData>,
     pub rigidbody: Option<RigidBodySnapshot>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub animation: Option<AnimationSnapshot>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct AnimationSnapshot {
+    pub asset: String,
+    pub animation: String,
+    #[serde(rename = "loop")]
+    pub looping: bool,
+    pub speed: f64,
+    pub started_frame: u64,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -251,6 +300,8 @@ pub struct WorldSnapshot {
     pub observations: BTreeMap<String, serde_json::Value>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ui: Option<crate::ui::UiTree>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub effects: Vec<EffectInstance>,
 }
 
 #[derive(Debug, Clone)]
@@ -262,6 +313,16 @@ pub(crate) struct EntityState {
     pub sprite: Option<SpriteData>,
     pub mesh3d: Option<Mesh3DData>,
     pub rigidbody: Option<RigidBodyState>,
+    pub animation: Option<AnimationState>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct AnimationState {
+    pub asset: String,
+    pub animation: String,
+    pub looping: bool,
+    pub speed: f64,
+    pub started_frame: u64,
 }
 
 #[derive(Debug, Clone)]
@@ -281,6 +342,8 @@ pub(crate) struct World {
     pub physics: PhysicsSettings,
     pub camera: Camera2DData,
     pub camera3d: Option<Camera3DData>,
+    pub effects: Vec<EffectInstance>,
+    next_effect_handle: u64,
 }
 
 impl World {
@@ -398,6 +461,13 @@ impl World {
                     transform3d: entity.transform3d,
                     sprite: entity.sprite,
                     mesh3d: entity.mesh3d,
+                    animation: entity.animation.map(|animation| AnimationState {
+                        asset: animation.asset,
+                        animation: animation.animation,
+                        looping: animation.looping,
+                        speed: animation.speed,
+                        started_frame: self.frame,
+                    }),
                     rigidbody,
                 },
             );
@@ -423,6 +493,7 @@ impl World {
                 sprite: None,
                 mesh3d: None,
                 rigidbody: None,
+                animation: None,
             },
         );
         id
@@ -461,6 +532,15 @@ impl World {
                                 },
                                 restitution: quantize_observation(body.restitution),
                             }),
+                            animation: entity.animation.as_ref().map(|animation| {
+                                AnimationSnapshot {
+                                    asset: animation.asset.clone(),
+                                    animation: animation.animation.clone(),
+                                    looping: animation.looping,
+                                    speed: quantize_observation(animation.speed),
+                                    started_frame: animation.started_frame,
+                                }
+                            }),
                         },
                     )
                 })
@@ -483,7 +563,128 @@ impl World {
             entities,
             observations: BTreeMap::new(),
             ui: None,
+            effects: self
+                .effects
+                .iter()
+                .map(|effect| EffectInstance {
+                    handle: effect.handle.clone(),
+                    asset: effect.asset.clone(),
+                    position: Vec2 {
+                        x: quantize_observation(effect.position.x),
+                        y: quantize_observation(effect.position.y),
+                    },
+                    scale: quantize_observation(effect.scale),
+                    rotation: quantize_observation(effect.rotation),
+                    started_frame: effect.started_frame,
+                })
+                .collect(),
         }
+    }
+
+    /// Select the animation clip an entity publishes to the host.
+    pub(crate) fn play_animation(
+        &mut self,
+        id: &str,
+        animation: &str,
+        asset: Option<String>,
+        looping: Option<bool>,
+        speed: Option<f64>,
+    ) -> Result<(), String> {
+        let frame = self.frame;
+        let Some(entity) = self.entities.get_mut(id) else {
+            return Err(format!("Entity '{id}' 不存在，無法播放動畫。"));
+        };
+        if animation.trim().is_empty() {
+            return Err("animation 名稱不可為空。".to_string());
+        }
+        let speed = speed.unwrap_or(1.0);
+        if !speed.is_finite() || speed <= 0.0 {
+            return Err("animation speed 必須是大於 0 的有限數字。".to_string());
+        }
+        let asset = match (asset, entity.animation.as_ref()) {
+            (Some(asset), _) => asset,
+            (None, Some(existing)) => existing.asset.clone(),
+            (None, None) => {
+                return Err(format!(
+                    "Entity '{id}' 沒有 scene 宣告的 animation asset，play 必須提供 asset。"
+                ));
+            }
+        };
+        if asset.trim().is_empty() {
+            return Err("animation asset 不可為空。".to_string());
+        }
+        let looping = looping.unwrap_or(true);
+        let unchanged = entity.animation.as_ref().is_some_and(|current| {
+            current.asset == asset
+                && current.animation == animation
+                && current.looping == looping
+                && (current.speed - speed).abs() < f64::EPSILON
+        });
+        if unchanged {
+            return Ok(());
+        }
+        entity.animation = Some(AnimationState {
+            asset,
+            animation: animation.to_string(),
+            looping,
+            speed,
+            started_frame: frame,
+        });
+        Ok(())
+    }
+
+    pub(crate) fn stop_animation(&mut self, id: &str) -> Result<(), String> {
+        let Some(entity) = self.entities.get_mut(id) else {
+            return Err(format!("Entity '{id}' 不存在，無法停止動畫。"));
+        };
+        entity.animation = None;
+        Ok(())
+    }
+
+    /// Register one live effect instance for the host to play.
+    pub(crate) fn spawn_effect(
+        &mut self,
+        asset: &str,
+        position: Vec2,
+        scale: Option<f64>,
+        rotation: Option<f64>,
+    ) -> Result<String, String> {
+        if asset.trim().is_empty() {
+            return Err("effect asset 不可為空。".to_string());
+        }
+        let scale = scale.unwrap_or(1.0);
+        let rotation = rotation.unwrap_or(0.0);
+        if !scale.is_finite() || scale <= 0.0 {
+            return Err("effect scale 必須是大於 0 的有限數字。".to_string());
+        }
+        if !rotation.is_finite() {
+            return Err("effect rotation 必須是有限數字。".to_string());
+        }
+        if !position.x.is_finite() || !position.y.is_finite() {
+            return Err("effect position 必須是有限數字。".to_string());
+        }
+        if self.effects.len() >= MAX_LIVE_EFFECTS {
+            return Err(format!(
+                "同時存在的 effect 不可超過 {MAX_LIVE_EFFECTS} 個；請先停止不再需要的 effect。"
+            ));
+        }
+        self.next_effect_handle += 1;
+        let handle = format!("effect-{}", self.next_effect_handle);
+        self.effects.push(EffectInstance {
+            handle: handle.clone(),
+            asset: asset.to_string(),
+            position,
+            scale,
+            rotation,
+            started_frame: self.frame,
+        });
+        Ok(handle)
+    }
+
+    pub(crate) fn stop_effect(&mut self, handle: &str) -> Result<bool, String> {
+        let before = self.effects.len();
+        self.effects.retain(|effect| effect.handle != handle);
+        Ok(self.effects.len() != before)
     }
 
     pub(crate) fn get_camera_position(&self) -> Vec2 {
@@ -805,6 +1006,7 @@ mod tests {
             sprite: None,
             mesh3d: None,
             rigidbody: Some(rigidbody),
+            animation: None,
         }
     }
 
@@ -819,6 +1021,8 @@ mod tests {
             },
             camera: super::Camera2DData::default(),
             camera3d: None,
+            effects: Vec::new(),
+            next_effect_handle: 0,
         }
     }
 

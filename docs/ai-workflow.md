@@ -147,6 +147,25 @@ Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 f
 
 需要存檔時使用 `api.save.set(value)`／`api.save.get()`，payload 由遊戲端定義版本與 migration；引擎只做 JSON-like transport，host 負責檔案／平台儲存。不要把 observation 當 save，也不要在引擎增加 save slot、cloud sync 或遊戲專用 schema。
 
+## 3.5 骨骼動畫與特效（Spine／Effekseer）
+
+這兩個系統預設關閉，狀態是 `host_required`：引擎這一半可用，但目前沒有任何 host 會畫出骨骼或粒子。需要時先開啟：
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems set --id spine --enabled true
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems set --id effekseer --enabled true
+cargo run -p unone-cli -- --json api describe animation.play
+cargo run -p unone-cli -- --json api describe effect.spawn
+```
+
+遊戲以 `api.animation.play(id, name, {loop = true, speed = 2.0})` 選擇某個 Entity 要播的片段，snapshot 的 `world.entities[].animation` 會帶 `started_frame`；重複播放同一組 asset/name/loop/speed 不會重設它，host 因此不會每 frame 重新開始。`api.effect.spawn(asset, {x = 0, y = 1})` 回傳 handle，`world.effects` 是目前存在的特效實例，handle 依建立順序決定，同時上限 256 個。scene 也可以直接宣告 entity 的 `animation`。
+
+資產方面，asset manifest 支援 kind `spine` 與 `effekseer`，並以 `files` 宣告不可缺少的附屬來源（Spine 的 atlas 與 texture page）。它們與 source 打進同一個 bundle，可用 `asset read --id <id> --file <declared file>` 取出；未宣告的檔案回報 `ASSET_FILE_NOT_DECLARED`。
+
+測試用 `{"animation": {"entity": "reel-3", "equals": {...}}}` 與 `{"effects": {"equals": [...]}}` 做完整 JSON equality，表現狀態因此可被 assertion，不必看畫面。
+
+引擎不評估骨骼、不混合動畫、不回報動畫是否播完、不模擬粒子，也不含任何 Spine／Effekseer 程式碼。遊戲若要「動畫播完才結算」，必須自己以 fixed frame 計算。
+
 ## 4. 檢查 bundle
 
 ```powershell

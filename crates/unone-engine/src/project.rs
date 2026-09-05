@@ -373,6 +373,23 @@ pub struct TestAssertion {
     pub observation: Option<ObservationAssertion>,
     #[serde(default)]
     pub ui: Option<UiAssertion>,
+    #[serde(default)]
+    pub animation: Option<AnimationAssertion>,
+    #[serde(default)]
+    pub effects: Option<EffectsAssertion>,
+}
+
+/// Full equality against one entity's published animation state.
+#[derive(Debug, Clone, Deserialize)]
+pub struct AnimationAssertion {
+    pub entity: String,
+    pub equals: serde_json::Value,
+}
+
+/// Full equality against the live effect list a host would be playing.
+#[derive(Debug, Clone, Deserialize)]
+pub struct EffectsAssertion {
+    pub equals: serde_json::Value,
 }
 
 #[derive(Debug, Clone, Deserialize)]

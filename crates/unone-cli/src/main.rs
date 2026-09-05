@@ -108,6 +108,11 @@ enum AssetCommand {
     Read {
         #[arg(long, help = "Declared asset id, for example asset://characters/hero")]
         id: String,
+        #[arg(
+            long,
+            help = "Read one declared companion file instead of the asset source"
+        )]
+        file: Option<String>,
         #[arg(long, help = "Write the verified asset bytes to this path")]
         output: Option<PathBuf>,
     },
@@ -123,6 +128,11 @@ enum AssetCommand {
         kind: String,
         #[arg(long, default_value = "content")]
         bundle: String,
+        #[arg(
+            long,
+            help = "Companion project-relative sources this asset needs, such as a Spine atlas"
+        )]
+        file: Vec<String>,
     },
 }
 
@@ -197,15 +207,17 @@ fn run() -> Result<ExitCode> {
                 },
                 cli.json,
             ),
-            AssetCommand::Read { id, output } => {
-                print_result(read_asset(&cli.project, &id, output.as_deref()), cli.json)
-            }
+            AssetCommand::Read { id, file, output } => print_result(
+                read_asset(&cli.project, &id, file.as_deref(), output.as_deref()),
+                cli.json,
+            ),
             AssetCommand::Init {
                 output,
                 id,
                 source,
                 kind,
                 bundle,
+                file,
             } => {
                 let new_asset = match (id, source) {
                     (None, None) => None,
@@ -214,6 +226,7 @@ fn run() -> Result<ExitCode> {
                         source,
                         kind,
                         bundle,
+                        files: file,
                     }),
                     (None, Some(_)) => {
                         return print_result(

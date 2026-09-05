@@ -281,6 +281,7 @@ fn tool_definitions() -> Vec<Value> {
             "Resolve one declared asset id from the project's active bundle generation and report its verified size and sha256. The engine verifies bundle and archive entry integrity only; decoding, texture upload, download policy and cache quota stay in each host. Provide output to also write the verified bytes to a file.",
             object_schema(json!({
                 "properties": {
+                    "file": {"type": "string", "description": "Read one declared companion file (from the asset's files list) instead of the asset source."},
                     "id": {"type": "string", "description": "Declared asset id, for example asset://characters/hero."},
                     "output": {"type": "string", "description": "Optional path that receives the verified asset bytes."}
                 },
@@ -296,6 +297,7 @@ fn tool_definitions() -> Vec<Value> {
             object_schema(json!({
                 "properties": {
                     "output": {"type": "string", "description": "Optional manifest path relative to the project root."},
+                    "files": {"type": "array", "items": {"type": "string"}, "description": "Companion project-relative sources this asset cannot be used without, such as a Spine atlas and its texture pages."},
                     "id": {"type": "string", "description": "Stable asset id; provide with source to append a declaration."},
                     "source": {"type": "string", "description": "Project-relative source path; provide with id."},
                     "kind": {"type": "string", "enum": ["texture2d", "mesh3d"], "default": "texture2d"},
@@ -512,9 +514,14 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 Ok(output) => output,
                 Err(diagnostic) => return argument_error(*diagnostic),
             };
+            let file = match optional_string(arguments, "file") {
+                Ok(file) => file,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
             tool_result(read_asset(
                 project,
                 &id,
+                file.as_deref(),
                 output.as_deref().map(std::path::Path::new),
             ))
         }
@@ -561,6 +568,10 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 Ok(bundle) => bundle.unwrap_or_else(|| "content".to_string()),
                 Err(diagnostic) => return argument_error(*diagnostic),
             };
+            let files = match optional_string_array(arguments, "files") {
+                Ok(files) => files,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
             let new_asset = match (id, source) {
                 (None, None) => None,
                 (Some(id), Some(source)) => Some(AssetSpec {
@@ -568,6 +579,7 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                     source,
                     kind,
                     bundle,
+                    files,
                 }),
                 _ => {
                     return argument_error(Diagnostic::error(
@@ -735,6 +747,32 @@ fn optional_bool(arguments: &Value, name: &str, default: bool) -> Result<bool, B
             "MCP_ARGUMENT_INVALID",
             "工具參數型別錯誤",
             format!("arguments.{name} 必須是 boolean。"),
+        ))),
+    }
+}
+
+fn optional_string_array(
+    arguments: &Value,
+    name: &str,
+) -> Result<Vec<String>, Box<Diagnostic>> {
+    match arguments.get(name) {
+        None | Some(Value::Null) => Ok(Vec::new()),
+        Some(Value::Array(values)) => values
+            .iter()
+            .map(|value| {
+                value.as_str().map(str::to_string).ok_or_else(|| {
+                    Box::new(Diagnostic::error(
+                        "MCP_ARGUMENT_INVALID",
+                        "工具參數型別錯誤",
+                        format!("arguments.{name} 的每個項目都必須是字串。"),
+                    ))
+                })
+            })
+            .collect(),
+        Some(_) => Err(Box::new(Diagnostic::error(
+            "MCP_ARGUMENT_INVALID",
+            "工具參數型別錯誤",
+            format!("arguments.{name} 必須是字串陣列。"),
         ))),
     }
 }

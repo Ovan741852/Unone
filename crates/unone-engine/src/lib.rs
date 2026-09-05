@@ -28,7 +28,7 @@ pub use diagnostics::{
 };
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{
-    InputFrame, ObservationAssertion, PointerInput, ProjectConfig, ProjectFileStatus,
+    AnimationAssertion, EffectsAssertion, InputFrame, ObservationAssertion, PointerInput, ProjectConfig, ProjectFileStatus,
     ProjectInitReport, ProjectInspectReport, ProjectPaths, TestAssertion, TestSpec, UiAssertion,
     init as init_project, inspect as inspect_project,
 };
@@ -42,6 +42,7 @@ pub use systems::{
 };
 pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiNode, UiRect, UiTree};
 pub use world::{
-    Camera2DData, Camera3DData, EntitySnapshot, Mesh3DData, PhysicsSettings, RigidBody2DData,
-    RigidBodySnapshot, RigidBodyType, SceneFile, Transform3DData, Vec2, Vec3, WorldSnapshot,
+    AnimationData, AnimationSnapshot, Camera2DData, Camera3DData, EffectInstance, EntitySnapshot,
+    Mesh3DData, PhysicsSettings, RigidBody2DData, RigidBodySnapshot, RigidBodyType, SceneFile,
+    Transform3DData, Vec2, Vec3, WorldSnapshot,
 };

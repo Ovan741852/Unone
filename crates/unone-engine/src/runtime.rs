@@ -1079,6 +1079,69 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
             json_to_lua(lua, value)
         })?,
     )?;
+    let animation_api = lua.create_table()?;
+    let play_world = Rc::clone(&world);
+    animation_api.set(
+        "play",
+        lua.create_function(move |_, (id, name, options): (String, String, Option<Table>)| {
+            let (asset, looping, speed) = match options {
+                Some(options) => (
+                    options.get::<Option<String>>("asset")?,
+                    options.get::<Option<bool>>("loop")?,
+                    options.get::<Option<f64>>("speed")?,
+                ),
+                None => (None, None, None),
+            };
+            play_world
+                .borrow_mut()
+                .play_animation(&id, &name, asset, looping, speed)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+    let stop_animation_world = Rc::clone(&world);
+    animation_api.set(
+        "stop",
+        lua.create_function(move |_, id: String| {
+            stop_animation_world
+                .borrow_mut()
+                .stop_animation(&id)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+
+    let effect_api = lua.create_table()?;
+    let spawn_world = Rc::clone(&world);
+    effect_api.set(
+        "spawn",
+        lua.create_function(move |_, (asset, options): (String, Option<Table>)| {
+            let (position, scale, rotation) = match options {
+                Some(options) => (
+                    Vec2 {
+                        x: options.get::<Option<f64>>("x")?.unwrap_or(0.0),
+                        y: options.get::<Option<f64>>("y")?.unwrap_or(0.0),
+                    },
+                    options.get::<Option<f64>>("scale")?,
+                    options.get::<Option<f64>>("rotation")?,
+                ),
+                None => (Vec2::default(), None, None),
+            };
+            spawn_world
+                .borrow_mut()
+                .spawn_effect(&asset, position, scale, rotation)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+    let stop_effect_world = Rc::clone(&world);
+    effect_api.set(
+        "stop",
+        lua.create_function(move |_, handle: String| {
+            stop_effect_world
+                .borrow_mut()
+                .stop_effect(&handle)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+
     api.set("entity", entity)?;
     api.set("input", input_api)?;
     api.set("random", disable_if_off(lua, systems, "random", random_api)?)?;
@@ -1088,6 +1151,14 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
     api.set("observation", observation_api)?;
     api.set("ui", disable_if_off(lua, systems, "ui", ui_api)?)?;
     api.set("save", disable_if_off(lua, systems, "save", save_api)?)?;
+    api.set(
+        "animation",
+        disable_if_off(lua, systems, "spine", animation_api)?,
+    )?;
+    api.set(
+        "effect",
+        disable_if_off(lua, systems, "effekseer", effect_api)?,
+    )?;
     Ok(api)
 }
 
@@ -1412,6 +1483,32 @@ fn evaluate_assertion(
         }
         return Ok(());
     }
+    if let Some(animation) = &assertion.animation {
+        let entity = world
+            .entities
+            .get(&animation.entity)
+            .ok_or_else(|| format!("Entity '{}' 不存在。", animation.entity))?;
+        let actual = serde_json::to_value(&entity.animation)
+            .map_err(|error| format!("無法序列化 animation 狀態：{error}"))?;
+        if actual != animation.equals {
+            return Err(format!(
+                "Entity '{}' 的 animation = {actual}，不等於預期 {}。",
+                animation.entity, animation.equals
+            ));
+        }
+        return Ok(());
+    }
+    if let Some(effects) = &assertion.effects {
+        let actual = serde_json::to_value(&world.effects)
+            .map_err(|error| format!("無法序列化 effects：{error}"))?;
+        if actual != effects.equals {
+            return Err(format!(
+                "effects = {actual}，不等於預期 {}。",
+                effects.equals
+            ));
+        }
+        return Ok(());
+    }
     if let Some(observation) = &assertion.observation {
         let actual = world
             .observations
@@ -1594,6 +1691,60 @@ return Game
         enabled.run(30, 42);
         let fallen = enabled.observe().entities["player"].transform.y;
         assert!(fallen < 10.0, "physics did not advance: {fallen}");
+    }
+
+    const PRESENTATION_SCRIPT: &str = r#"--!strict
+local Game = {}
+local handle: string? = nil
+function Game.start(_api) end
+function Game.update(api, _dt)
+    api.animation.play("player", "spin", {asset = "spine://reel", loop = false, speed = 2.0})
+    if handle == nil then
+        handle = api.effect.spawn("effekseer://win", {x = 1.0, y = 2.0, scale = 1.5})
+    end
+end
+return Game
+"#;
+
+    #[test]
+    fn animation_and_effect_state_reach_the_snapshot_for_a_host_to_play() {
+        let dir = tempdir().unwrap();
+        write_project_with_systems(
+            dir.path(),
+            PRESENTATION_SCRIPT,
+            r#"{"spine": true, "effekseer": true}"#,
+        );
+        let mut runtime = EngineRuntime::load(dir.path()).unwrap();
+        runtime.run(3, 42);
+        let snapshot = runtime.observe();
+
+        let animation = snapshot.entities["player"].animation.as_ref().unwrap();
+        assert_eq!(animation.asset, "spine://reel");
+        assert_eq!(animation.animation, "spin");
+        assert!(!animation.looping);
+        assert!((animation.speed - 2.0).abs() < f64::EPSILON);
+        // Replaying the same clip must not restart it every frame.
+        assert_eq!(animation.started_frame, 0);
+
+        assert_eq!(snapshot.effects.len(), 1);
+        let effect = &snapshot.effects[0];
+        assert_eq!(effect.handle, "effect-1");
+        assert_eq!(effect.asset, "effekseer://win");
+        assert!((effect.position.x - 1.0).abs() < f64::EPSILON);
+        assert!((effect.scale - 1.5).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn presentation_systems_are_off_until_a_game_declares_them() {
+        let dir = tempdir().unwrap();
+        write_project_with_systems(dir.path(), PRESENTATION_SCRIPT, "{}");
+        let error = EngineRuntime::load(dir.path()).unwrap().tick().unwrap_err();
+        assert!(
+            error.explanation.contains("SYSTEM_DISABLED"),
+            "{}",
+            error.explanation
+        );
+        assert!(error.explanation.contains("spine"), "{}", error.explanation);
     }
 
     #[test]
