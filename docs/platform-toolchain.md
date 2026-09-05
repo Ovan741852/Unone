@@ -59,7 +59,7 @@ python -m http.server 8000
 
 ## Mobile host 盤點
 
-目前 engine core 不依賴 UIKit、Android View 或 JNI；mobile host 應沿用 `EngineRuntime::tick_with_input`，由平台 adapter 負責 lifecycle、surface、safe area、touch、storage 與 package/update policy。這台 Windows 已用 Android NDK `27.1.12297006` 成功 cross-check `unone-engine` 與 `unone-mobile-ffi` 的 `aarch64-linux-android`、`x86_64-linux-android`，並以 `Pixel_8` API 34 emulator 通過 headless `unone-mobile-android-smoke` lifecycle/FFI smoke；沒有 Gradle 與 Apple `xcodebuild`，所以 APK/UI/GPU package、實際遊戲 mobile smoke 與 iOS host 仍未完成。完整責任邊界與驗收項目見 `docs/decisions/0017-mobile-host-lifecycle-boundary.md`，盤點細節見 `docs/issues/2026-09-05-mobile-host-toolchain-audit.md`。
+目前 engine core 不依賴 UIKit、Android View 或 JNI；mobile host 應沿用 `EngineRuntime::tick_with_input`，由平台 adapter 負責 lifecycle、surface、safe area、touch、storage 與 package/update policy。這台 Windows 已用 Android NDK `27.1.12297006` 成功 cross-check `unone-engine` 與 `unone-mobile-ffi` 的 `aarch64-linux-android`、`x86_64-linux-android`，以 `Pixel_8` API 34 emulator 通過 headless `unone-mobile-android-smoke`，並以同一 FFI 建立可安裝的 x86_64 debug APK，驗證 project payload、Canvas host、前景 Activity、process、pause/resume lifecycle 與觸控可視化。沒有 Gradle 與 Apple `xcodebuild`，所以 production Android renderer/asset/bundle host、七款遊戲的 mobile smoke 與 iOS host 仍未完成。完整責任邊界與驗收項目見 `docs/decisions/0017-mobile-host-lifecycle-boundary.md`，盤點細節見 `docs/issues/2026-09-05-mobile-host-toolchain-audit.md`。
 
 Android engine/host-adapter cross-check 可用：
 
@@ -68,11 +68,18 @@ Android engine/host-adapter cross-check 可用：
 .\scripts\run-android-mobile-smoke.ps1
 ```
 
-前者驗證 engine/adapter 可被 Android target 編譯；後者需要一個 connected device/emulator，會執行 headless C ABI host smoke。兩者都不會建立 APK，也不會取代 Android UI/GPU renderer、實際遊戲內容或 production lifecycle smoke。
+前者驗證 engine/adapter 可被 Android target 編譯；`run-android-mobile-smoke.ps1` 執行 headless C ABI host smoke；`build-android-apk.ps1`／`run-android-apk-smoke.ps1` 會建立並在 emulator 安裝真正 APK，驗證最小 Java/Canvas/JNI host 與 lifecycle。這個 APK host 仍不取代 Android production GPU renderer、實際資產/ bundle、正式遊戲內容或 release signing。
+
+APK host smoke 可用：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File D:/Projects/Unone/scripts/build-android-apk.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File D:/Projects/Unone/scripts/run-android-apk-smoke.ps1
+```
 
 ## 尚未完成
 
 - CI 尚未固定下載 Emscripten SDK 的來源與 checksum。
 - `unone-web-smoke` 與 `web/smoke/index.html` 已驗證 Emscripten memory-source runtime；`web/live/index.html` 另已驗證窄 C ABI、WebGPU live loop、browser input、bundle verifier、IndexedDB generation/cache 與 script hot update。兩者都不是完整 Web 發布頁面。
-- 大型 asset 的 OPFS/chunked storage writer、CDN policy、背景下載、production error transport、APK/UI/GPU mobile host 與 iOS host 尚未完成；Android headless FFI lifecycle smoke 已通過。
+- 大型 asset 的 OPFS/chunked storage writer、CDN policy、背景下載、production Android GPU/asset/bundle host 與 iOS host 尚未完成；Android headless FFI 與最小 APK host lifecycle smoke 已通過。
 - 這裡的 `cargo check`／smoke artifact 不等於完整 Web 發布包。

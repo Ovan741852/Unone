@@ -8,4 +8,4 @@ API 34 x86_64 `Pixel_8` AVD（`emulator-5554`）實際通過：初始化、載�
 
 中途先遇到 `cc not found` 與 `libc++_shared.so not found`，已分別記錄並修正 linker/runtime 部署；另修正 harness 對 reload 會自動呼叫 `Game.start` 的錯誤假設。細節見 `docs/issues/2026-09-05-android-smoke-linker.md` 與 `docs/issues/2026-09-05-mobile-reload-start-semantics.md`。
 
-這是 Android headless FFI/runtime host smoke，不是 APK、Android UI/GPU renderer、實際七款遊戲 bundle 或 production lifecycle 通過。Windows 沒有 `xcodebuild`，iOS host 仍待 macOS/Xcode 環境。
+這一段記錄的是 Android headless FFI/runtime host smoke，不是 APK、Android production UI/GPU renderer、實際七款遊戲 bundle 或 production lifecycle 通過。後續的最小 APK host smoke 另記於 `docs/devlog/2026-09-05-android-apk-host.md`；Windows 沒有 `xcodebuild`，iOS host 仍待 macOS/Xcode 環境。

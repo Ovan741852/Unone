@@ -1,7 +1,7 @@
 # Decision 0017：Mobile lifecycle 由 host 驅動，engine 維持可重播 runtime
 
 - 日期：2026-09-05
-- 狀態：accepted（host contract；實機 smoke pending）
+- 狀態：accepted（Android headless + 最小 APK host smoke；production Android/iOS pending）
 
 ## Context
 
@@ -19,7 +19,7 @@ mobile host 只提供 platform adapter，使用與 Web/native 相同的 engine b
 
 ## Acceptance
 
-同一份 Luau scene 至少要通過：冷啟動、pause/resume、surface recreation、旋轉/safe-area resize、觸控 pointer normalization、cache-only bundle load、失敗 hot update 保留上一代，以及 headless replay digest 對照。`unone-mobile-ffi` 的 native contract tests 先驗證 lifecycle、surface descriptor、scalar pointer bridge 與 script reload；pointer normalization、bundle cache/update、package 與實機 lifecycle 仍必須由 Android/iOS host smoke 補證據。沒有 iOS/Android 實機或 emulator 證據時，只能標記 contract drafted，不能標記平台完成。
+同一份 Luau scene 至少要通過：冷啟動、pause/resume、surface recreation、旋轉/safe-area resize、觸控 pointer normalization、cache-only bundle load、失敗 hot update 保留上一代，以及 headless replay digest 對照。`unone-mobile-ffi` 的 native contract tests 與 Android headless harness 已驗證 lifecycle、surface descriptor、scalar pointer bridge 與 script reload；最小 Android APK host 另已在 API 34 `Pixel_8` 驗證 project payload、Canvas entity snapshot、前景 Activity、process、pause/resume 與觸控可視化。Android production renderer/assets/bundle policy、七款遊戲的 mobile smoke 與 iOS host 仍未完成，不能標記 mobile product 完成。
 
 ## Consequences
 
