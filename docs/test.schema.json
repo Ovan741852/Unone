@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unone.dev/schema/test.schema.json",
+  "title": "Unone deterministic test manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable test case name."
+    },
+    "frames": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 60,
+      "description": "Number of fixed 60 Hz simulation frames."
+    },
+    "seed": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 42,
+      "description": "Deterministic Luau random seed."
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": {"type": "boolean"},
+      "description": "Semantic actions held for the whole test run."
+    },
+    "input_sequence": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/inputFrame"},
+      "description": "Optional per-frame semantic input replay."
+    },
+    "load_save": {
+      "description": "Opaque game-owned JSON save payload injected before the first tick."
+    },
+    "assertions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/assertion"},
+      "description": "Assertions evaluated against the final WorldSnapshot."
+    }
+  },
+  "$defs": {
+    "vec2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {
+        "x": {"type": "number"},
+        "y": {"type": "number"}
+      }
+    },
+    "pointer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["position"],
+      "properties": {
+        "position": {"$ref": "#/$defs/vec2"},
+        "down": {"type": "boolean", "default": false},
+        "screen_position": {"$ref": "#/$defs/vec2"}
+      }
+    },
+    "inputFrame": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "actions": {
+          "type": "object",
+          "additionalProperties": {"type": "boolean"}
+        },
+        "pointer": {
+          "anyOf": [
+            {"$ref": "#/$defs/pointer"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "observationAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "equals"],
+      "properties": {
+        "key": {"type": "string", "minLength": 1},
+        "equals": {}
+      }
+    },
+    "uiNode": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "id", "rect", "text"],
+          "properties": {
+            "kind": {"const": "text"},
+            "id": {"type": "string", "minLength": 1},
+            "rect": {"$ref": "#/$defs/rect"},
+            "text": {"type": "string"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "id", "rect", "text", "action"],
+          "properties": {
+            "kind": {"const": "button"},
+            "id": {"type": "string", "minLength": 1},
+            "rect": {"$ref": "#/$defs/rect"},
+            "text": {"type": "string"},
+            "action": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "rect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": {"type": "number"},
+        "y": {"type": "number"},
+        "width": {"type": "number"},
+        "height": {"type": "number"}
+      }
+    },
+    "uiTree": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "node", "children"],
+      "properties": {
+        "kind": {"const": "screen"},
+        "id": {"type": "string", "minLength": 1},
+        "node": {"type": "string", "minLength": 1},
+        "children": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/uiNode"}
+        }
+      }
+    },
+    "uiAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["equals"],
+      "properties": {
+        "equals": {"$ref": "#/$defs/uiTree"}
+      }
+    },
+    "assertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity": {"type": "string", "minLength": 1},
+        "field": {"enum": ["transform.x", "transform.y"]},
+        "equals": {"type": "number"},
+        "greater_than": {"type": "number"},
+        "less_than": {"type": "number"},
+        "observation": {"$ref": "#/$defs/observationAssertion"},
+        "ui": {"$ref": "#/$defs/uiAssertion"}
+      },
+      "oneOf": [
+        {
+          "required": ["observation"],
+          "not": {"anyOf": [{"required": ["ui"]}, {"required": ["entity"]}, {"required": ["field"]}]}
+        },
+        {
+          "required": ["ui"],
+          "not": {"anyOf": [{"required": ["observation"]}, {"required": ["entity"]}, {"required": ["field"]}]}
+        },
+        {
+          "required": ["entity", "field"],
+          "not": {"anyOf": [{"required": ["observation"]}, {"required": ["ui"]}]}
+        }
+      ]
+    }
+  }
+}

@@ -7,7 +7,7 @@
 每個任務只提供：
 
 1. 一份 GAME_PLAN.md，只描述該款遊戲的玩法閉環、必要畫面、語意 action、可重播測試與驗收 evidence。
-2. 一份 immutable engine package：`bin/game.exe`、同目錄的 `bin/luau-analyze.exe`、`docs/engine.d.luau`、CLI/MCP 操作文件、JSON schemas、Web runner/wasm host 與必要的 engine decision 文件。
+2. 一份 immutable engine package：`bin/game.exe`、同目錄的 `bin/luau-analyze.exe`、`docs/engine.d.luau`、CLI/MCP 操作文件、`project.schema.json`／`scene.schema.json`／`test.schema.json`、Web runner/wasm host 與必要的 engine decision 文件。
 3. 一個乾淨的 game output directory。不可把其他驗證遊戲的程式碼當範本，也不可直接修改 engine source。
 
 遊戲端擁有玩法規則、數值、資料 catalog、ViewModel、View tree、hit-test、save schema/migration 與內容。engine 只擁有 fixed tick、input、ECS/world primitive、Luau 執行／reload、observation/UI/save transport、bundle integrity 與平台 host boundary。
@@ -26,7 +26,23 @@ bin/game.exe --project <game-root> --json asset inspect --strict
 bin/game.exe --project <game-root> --json check --types
 ~~~
 
-`project init` 只接受明確的 project name，在空目錄建立 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不會覆蓋既有檔案，也不會替遊戲猜測玩法。設定檔與場景的 canonical JSON Schema 分別在 `docs/project.schema.json` 與 `docs/scene.schema.json`。CLI 內建的 `bin/luau-analyze.exe` 會由 `bin/game.exe` 自動找到，因此 `check --types` 不需要額外安裝或設定環境變數。CLI 沒有的能力不能自行發明；先查 api search，找不到就回報。
+`project init` 只接受明確的 project name，在空目錄建立 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不會覆蓋既有檔案，也不會替遊戲猜測玩法。設定檔、場景與 deterministic test manifest 的 canonical JSON Schema 分別在 `docs/project.schema.json`、`docs/scene.schema.json` 與 `docs/test.schema.json`。`project.unone.json.test_files` 只列出 project-relative `.test.json`；測試支援 fixed frames/seed、semantic input 或 input sequence、opaque `load_save`，以及 entity transform、observation、UI tree assertions。CLI 內建的 `bin/luau-analyze.exe` 會由 `bin/game.exe` 自動找到，因此 `check --types` 不需要額外安裝或設定環境變數。CLI 沒有的能力不能自行發明；先查 api search，找不到就回報。
+
+最小測試檔範例（完整 schema 仍以 `docs/test.schema.json` 為準）：
+
+~~~json
+{
+  "name": "replayable opening action",
+  "frames": 3,
+  "seed": 42,
+  "input_sequence": [{"actions": {"Confirm": true}}, {"actions": {}}, {"actions": {}}],
+  "load_save": {"version": 1},
+  "assertions": [
+    {"observation": {"key": "view_model", "equals": {"screen": "opening", "step": 1}}},
+    {"entity": "player", "field": "transform.x", "greater_than": -100.0}
+  ]
+}
+~~~
 
 asset inspect 是作者檢查用的 advisory report；asset inspect --strict 是 handoff/release gate，任何靜態 reference、source、manifest、bundle 或目前不支援的 manifest kind/version 問題都必須 ok=false。bundle pack 也會拒絕未解決的主場景 asset reference。
 

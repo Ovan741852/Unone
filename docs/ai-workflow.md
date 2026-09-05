@@ -31,7 +31,7 @@ cargo run -p unone-cli -- --json platform capabilities
 bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json project init --name "<game-name>"
 ```
 
-`project init` 只建立最小的 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不覆蓋既有檔案。可直接使用 package 內的 [project.schema.json](project.schema.json) 與 [scene.schema.json](scene.schema.json) 驗證格式；它們是目前 canonical authoring contract。
+`project init` 只建立最小的 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不覆蓋既有檔案。可直接使用 package 內的 [project.schema.json](project.schema.json)、[scene.schema.json](scene.schema.json) 與 [test.schema.json](test.schema.json) 驗證格式；它們是目前 canonical authoring contract。
 
 ```powershell
 bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json project inspect
@@ -53,6 +53,10 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json ch
 ```
 
 `check` 保證 Luau syntax 與 Engine entrypoint contract；它會確認入口腳本回傳 `Game` table，且有 `start` / `update` function。`--!strict` 會被回報為 contract metadata。加上 `--types` 才會呼叫官方 `luau-analyze`；engine package 的 `bin/game.exe` 會自動尋找同目錄的 `bin/luau-analyze.exe`。若自行開發 engine 或替換工具，可用 `UNONE_LUAU_ANALYZER` 指定 analyzer 可執行檔路徑；工具不存在時，命令會回傳 `LUAU_ANALYZER_NOT_FOUND`，不會把缺少型別檢查的狀態藏起來。
+
+`.test.json` 的完整欄位與 assertion 結構以 package 內的 `test.schema.json` 為準；`game test` 會把每個 test file 當成一個獨立 deterministic case，最後回傳 observation digest、save payload 與 assertion failures。不要把 UI screenshot 當成 test assertion。
+
+例如 `project.unone.json` 可設定 `"test_files": ["tests/opening.test.json"]`，而 test file 由 `name`、可選 `frames`/`seed`/`input`/`input_sequence`/`load_save` 與 `assertions` 組成。assertion 三選一：`observation` 做完整 JSON value 比對、`ui` 做完整 flat UI tree 比對，或 `entity` + `field`（目前 `transform.x`／`transform.y`）做數值比較。
 
 若只要驗證 runtime contract，可移除 `--types`。本機可用官方 Luau release 的 Windows binary，或先設定：
 

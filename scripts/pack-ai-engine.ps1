@@ -47,6 +47,7 @@ Copy-PackageFile (Join-Path $engineRoot "docs\ai-workflow.md") "docs\ai-workflow
 Copy-PackageFile (Join-Path $engineRoot "docs\engine.d.luau") "docs\engine.d.luau"
 Copy-PackageFile (Join-Path $engineRoot "docs\project.schema.json") "docs\project.schema.json"
 Copy-PackageFile (Join-Path $engineRoot "docs\scene.schema.json") "docs\scene.schema.json"
+Copy-PackageFile (Join-Path $engineRoot "docs\test.schema.json") "docs\test.schema.json"
 Copy-PackageFile (Join-Path $engineRoot "docs\mobile-host-abi.md") "docs\mobile-host-abi.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\platform-toolchain.md") "docs\platform-toolchain.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\review-process.md") "docs\review-process.md"
