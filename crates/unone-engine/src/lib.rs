@@ -32,7 +32,7 @@ pub use project::{
 pub use runtime::{
     CheckReport, EngineRuntime, RunReport, TestCaseReport, TestSuiteReport, TypeCheckReport,
 };
-pub use ui::{UiNode, UiRect, UiTree};
+pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiNode, UiRect, UiTree};
 pub use world::{
     Camera2DData, Camera3DData, EntitySnapshot, Mesh3DData, PhysicsSettings, RigidBody2DData,
     RigidBodySnapshot, RigidBodyType, SceneFile, Transform3DData, Vec2, Vec3, WorldSnapshot,

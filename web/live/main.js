@@ -10,6 +10,7 @@ const bundleUpdateButton = document.querySelector("#bundle-update");
 let snapshot = null;
 let renderer = null;
 let pointer = { position: { x: 0, y: 0 }, screen_position: { x: 0, y: 0 }, down: false };
+let pendingPointerFrames = [];
 let started = false;
 let reloadNotice = null;
 let manifest = null;
@@ -122,9 +123,19 @@ async function updateBundle() {
   showState();
 }
 
+function queuePointerFrame(nextPointer, kind) {
+  const last = pendingPointerFrames[pendingPointerFrames.length - 1];
+  if (kind === "move" && last?.kind === "move") {
+    last.pointer = nextPointer;
+    return;
+  }
+  pendingPointerFrames.push({ kind, pointer: nextPointer });
+}
+
 function step() {
-  window.Module._unone_web_set_pointer(pointer.position.x, pointer.position.y, pointer.down ? 1 : 0);
-  if (window.Module._unone_web_set_screen_pointer(pointer.screen_position.x, pointer.screen_position.y) !== 0) {
+  const framePointer = pendingPointerFrames.shift()?.pointer ?? pointer;
+  window.Module._unone_web_set_pointer(framePointer.position.x, framePointer.position.y, framePointer.down ? 1 : 0);
+  if (window.Module._unone_web_set_screen_pointer(framePointer.screen_position.x, framePointer.screen_position.y) !== 0) {
     throw new Error("live engine screen pointer update failed");
   }
   if (window.Module._unone_web_tick() !== 0) throw new Error("live engine tick failed");
@@ -152,13 +163,20 @@ async function start() {
   canvas.addEventListener("pointerdown", (event) => {
     canvas.setPointerCapture(event.pointerId);
     pointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: true };
+    queuePointerFrame(pointer, "edge");
   });
   canvas.addEventListener("pointermove", (event) => {
-    if (event.buttons & 1) pointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: true };
+    if (event.buttons & 1) {
+      pointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: true };
+      queuePointerFrame(pointer, "move");
+    }
   });
-  canvas.addEventListener("pointerup", (event) => {
+  const releasePointer = (event) => {
     pointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: false };
-  });
+    queuePointerFrame(pointer, "edge");
+  };
+  canvas.addEventListener("pointerup", releasePointer);
+  canvas.addEventListener("pointercancel", releasePointer);
   showState();
   await reloadScriptFromActiveBundle();
   window.requestAnimationFrame(step);

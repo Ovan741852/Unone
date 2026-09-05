@@ -2,6 +2,11 @@ use std::collections::BTreeSet;
 
 use serde::{Deserialize, Serialize};
 
+/// The cross-platform UI design space. Hosts map this normalized space to
+/// their viewport, pixels, DPI and safe area.
+pub const UI_DESIGN_WIDTH: f64 = 100.0;
+pub const UI_DESIGN_HEIGHT: f64 = 100.0;
+
 /// Logical coordinates for a host-rendered UI element.
 ///
 /// The platform host maps this design space to its viewport. The engine does
@@ -160,6 +165,16 @@ fn validate_rect(rect: UiRect) -> Result<(), String> {
     if rect.width <= 0.0 || rect.height <= 0.0 {
         return Err("ui.setRoot rect width and height must be greater than zero".to_string());
     }
+    if rect.x < 0.0
+        || rect.y < 0.0
+        || rect.x + rect.width > UI_DESIGN_WIDTH
+        || rect.y + rect.height > UI_DESIGN_HEIGHT
+    {
+        return Err(format!(
+            "ui.setRoot rect must stay inside the normalized 0..100 design space (x={}, y={}, width={}, height={})",
+            rect.x, rect.y, rect.width, rect.height
+        ));
+    }
     Ok(())
 }
 
@@ -234,6 +249,15 @@ mod tests {
         }))
         .unwrap_err();
         assert!(invalid_rect.contains("greater than zero"));
+
+        let outside_design_space = UiTree::from_json(serde_json::json!({
+            "kind": "screen",
+            "id": "screen",
+            "node": "main",
+            "children": [{"kind": "text", "id": "text", "rect": {"x": 960, "y": 0, "width": 10, "height": 1}, "text": "bad"}]
+        }))
+        .unwrap_err();
+        assert!(outside_design_space.contains("normalized 0..100"));
     }
 
     #[test]

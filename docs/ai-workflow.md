@@ -31,7 +31,7 @@ cargo run -p unone-cli -- --json platform capabilities
 bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json project init --name "<game-name>"
 ```
 
-`project init` 只建立最小的 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不覆蓋既有檔案。可直接使用 package 內的 [project.schema.json](project.schema.json)、[scene.schema.json](scene.schema.json) 與 [test.schema.json](test.schema.json) 驗證格式；它們是目前 canonical authoring contract。
+`project init` 只建立最小的 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不覆蓋既有檔案。可直接使用 package 內的 [project.schema.json](project.schema.json)、[scene.schema.json](scene.schema.json) 與 [test.schema.json](test.schema.json) 驗證格式；它們是目前 canonical authoring contract。UI `rect` 固定是 normalized 0..100 × 0..100 logical design space，Web/native host 只做 viewport/DPI/safe-area 映射，遊戲不可寫 960×540 或其他未宣告尺度。
 
 ```powershell
 bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json project inspect
@@ -108,7 +108,7 @@ AI 應優先讀 `world`、`observation_digest`、`diagnostics`，再看 screensh
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json run --frames 4 --seed 42 --input-sequence D:/Projects/Unone_Games/minimal-2d/tests/input-sequence.json
 ```
 
-`--action` 與 `--input-sequence` 互斥；sequence 不足的 frame 會清空 actions 與 pointer down 狀態。`pointer.position` 是 world space；需要 UI 點擊時可另提供 `pointer.screen_position`，兩者都由 adapter 正規化，遊戲腳本不讀 key code、像素、DPI 或 safe-area 座標。未提供 `screen_position` 時，engine 明確以 `position` 作為 headless fallback。
+`--action` 與 `--input-sequence` 互斥；sequence 不足的 frame 會清空 actions 與 pointer down 狀態。`pointer.position` 是 world space；需要 UI 點擊時可另提供 `pointer.screen_position`，兩者都由 adapter 正規化到 normalized 0..100 UI space，遊戲腳本不讀 key code、像素、DPI 或 safe-area 座標。未提供 `screen_position` 時，engine 明確以 `position` 作為 headless fallback。
 
 ## 3. 執行測試
 

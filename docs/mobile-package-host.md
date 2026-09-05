@@ -7,7 +7,8 @@ game implementation.
 
 The current shipped APK host target is `x86_64` for an emulator. It loads the
 game's `project.unone.json`, entry script (defaulting to `scripts/main.luau`),
-and main scene through the same `unone-mobile-ffi` ABI. The host proves package
+and main scene through the same `unone-mobile-ffi` ABI. It normalizes UI input
+to the engine's 0..100 logical design space. The host proves package
 load, JNI boundary, input/lifecycle process, pause/resume, and semantic runtime
 startup. Its Canvas drawing is still smoke-only: it is not the production
 renderer, asset decoder, CDN/bundle downloader, or final content presentation.

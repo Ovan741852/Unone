@@ -302,11 +302,11 @@ fn descriptors() -> Vec<ApiDescriptor> {
         descriptor(
             "input.getScreenPointerPosition",
             "input",
-            "讀取 platform adapter 已轉換成 logical UI space 的 pointer position。",
+            "讀取 platform adapter 已轉換成 normalized 0..100 × 0..100 logical UI space 的 pointer position。",
             "需要由遊戲端對 declarative UI button 做 hit-test，或需要把觸控位置映射到遊戲自己的 UI design space 時。",
-            "不要在 Luau 自行處理螢幕像素、device scale、DPI 或 safe area；host 應先正規化成跨平台 logical UI coordinates。",
+            "不要在 Luau 自行處理螢幕像素、device scale、DPI 或 safe area；host 應先正規化成 0..100 跨平台 logical UI coordinates。",
             vec![],
-            "Vec2：目前 pointer 的 logical screen/UI position。",
+            "Vec2：目前 pointer 的 normalized 0..100 logical screen/UI position。",
             vec!["讀取目前 frame 的 screen-space pointer snapshot"],
             "同一個 update 期間結果穩定；headless test 可直接注入 screen_position，未提供時由 world position 作為明確 fallback。",
             vec![],
@@ -395,7 +395,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec![parameter(
                 "root",
                 "UiTree",
-                "一個 screen root，含 flat text/button children、logical rect 與 button action。",
+                "一個 screen root，含 flat text/button children、0..100 normalized logical rect 與 button action。",
             )],
             "()：成功時沒有額外資料。",
             vec!["替換目前 frame 的遊戲端 UI tree"],
@@ -403,7 +403,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec![
                 "root kind 必須是 screen",
                 "child kind 目前只支援 text 與 button",
-                "node id 不可重複，rect width/height 必須是大於 0 的有限數字",
+                "node id 不可重複，rect 必須是 0..100 design space 內大於 0 的有限數字",
             ],
             "api.ui.setRoot({ kind = \"screen\", id = \"dialogue\", node = \"intro\", children = {} })",
             vec!["observation.set", "input.getScreenPointerPosition"],

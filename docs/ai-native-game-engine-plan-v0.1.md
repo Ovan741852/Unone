@@ -110,7 +110,7 @@ Luau 不應看見 raw pointer、Rust lifetime、wgpu handle、ECS archetype 或 
 - `game check` 同時回傳 parser、typecheck、lint 與 runtime contract 問題。
 - `api.observation.set` 提供有限制的 JSON-like semantic projection；typed game ViewModel 只在明確 serialization boundary 轉出，test 可直接 assertion observation。
 - `api.save.set/get` 提供同樣受限的 opaque JSON-like save payload transport；遊戲端負責 schema/version/migration，host 負責平台 storage，引擎不做 save slot、cloud sync 或遊戲專用 persistence。
-- `api.ui.setRoot` 只驗證／傳輸遊戲端組合的 flat `screen/text/button` tree；logical UI 座標由 host 正規化，engine 不做 layout、binding、widget 或遊戲規則。
+- `api.ui.setRoot` 只驗證／傳輸遊戲端組合的 flat `screen/text/button` tree；UI rect 固定使用 normalized 0..100 × 0..100 logical space，由 host 映射到 viewport，engine 不做 layout、binding、widget 或遊戲規則。
 - 不在第一版設計「未來可換任意語言」的 public abstraction；Rust 內部保留 `ScriptHost` 邊界即可。
 
 建議遊戲結構：
