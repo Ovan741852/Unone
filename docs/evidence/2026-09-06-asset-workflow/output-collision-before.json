@@ -1,0 +1,102 @@
+{
+  "scope": "Main-agent reproduction in an isolated, generated probe; no user game files changed.",
+  "commit": "4a128d7",
+  "cli_sha256": "79320a5dbb89c4081e3d02a7cc996c46bb65c85f5f0a9b3668cd1227338dec61",
+  "project": "D:/Projects/Unone/artifacts/asset-workflow-output-collision-20260906",
+  "argv": [
+    "--project",
+    "D:/Projects/Unone/artifacts/asset-workflow-output-collision-20260906",
+    "--json",
+    "bundle",
+    "pack",
+    "--output",
+    "assets/manifest.json"
+  ],
+  "before": {
+    "path": "assets/manifest.json",
+    "sha256": "f80c42fc083e340c2dff2eda5fa65146ea0b574d29882d7d8da9d972fbfa7a87",
+    "size_bytes": 176,
+    "content": {
+      "version": 1,
+      "assets": [
+        {
+          "id": "asset://probe/collision",
+          "source": "assets/hero.svg",
+          "kind": "texture2d",
+          "bundle": "content"
+        }
+      ]
+    }
+  },
+  "exit_code": 0,
+  "result": {
+    "ok": true,
+    "value": {
+      "project_root": "\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-output-collision-20260906",
+      "manifest_path": "\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-output-collision-20260906\\assets\\manifest.json",
+      "manifest_version": 2,
+      "manifest_changed": true,
+      "project_config_changed": true,
+      "bundles": [
+        {
+          "id": "project",
+          "version": "1",
+          "source": "project.unone.json",
+          "sha256": "673253d20dd3d703b1b917582961d02aa508f89e696afb6125ad98eede4a0069",
+          "size_bytes": 233,
+          "dependencies": []
+        },
+        {
+          "id": "script",
+          "version": "1",
+          "source": "scripts/main.luau",
+          "sha256": "265672234f0249e49e71040ac492ded61257a4c5109a5bb74562a47503987ea3",
+          "size_bytes": 3424,
+          "dependencies": [
+            "project"
+          ]
+        },
+        {
+          "id": "scene",
+          "version": "1",
+          "source": "scenes/main.scene.json",
+          "sha256": "e4121e3df9b7a052c0f9273974567381f3209ae6bc5b1a85f1ab403480304ad5",
+          "size_bytes": 21,
+          "dependencies": [
+            "project"
+          ]
+        },
+        {
+          "id": "asset-manifest",
+          "version": "1",
+          "source": "assets/manifest.json",
+          "sha256": "f80c42fc083e340c2dff2eda5fa65146ea0b574d29882d7d8da9d972fbfa7a87",
+          "size_bytes": 176,
+          "dependencies": [
+            "project"
+          ]
+        },
+        {
+          "id": "content",
+          "version": "1",
+          "source": "bundles/content.bundle",
+          "sha256": "622a85de5f6fe1d5a9cbb366bc80eab0fdb1de93ea2436b1d9035623977d6154",
+          "size_bytes": 286,
+          "dependencies": [
+            "project",
+            "asset-manifest"
+          ]
+        }
+      ]
+    },
+    "diagnostics": [],
+    "effects": []
+  },
+  "after": {
+    "path": "assets/manifest.json",
+    "sha256": "d1233d9c4d14486da65bec07950e52e30d834917f1f0c40b72fea289fa3c364a",
+    "format": "BundleManifest version 2; authoring assets declarations overwritten"
+  },
+  "finding": "Pack output can alias authoring input; path containment alone does not prevent destructive source overwrite.",
+  "negative_control": "--output scripts/main.luau was rejected as invalid bundle-manifest JSON without changing that script; no script overwrite was demonstrated."
+}

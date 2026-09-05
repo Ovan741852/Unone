@@ -36,3 +36,7 @@ the engine. Report findings by severity with file/line and concrete fixes.
 2026-09-06：第 29 次因 session limit 未完成。使用者批准先由主代理審查並
 提交 `6ab9b60`、之後補 Claude review；已設同任務追蹤，詳見
 `docs/issues/2026-09-06-claude-cli-review-29.md`。不得將此狀態解讀為 review 通過。
+
+第 30 次已完成 `04af786..4a128d7` 只讀審查；結果及主代理的獨立反例見
+`docs/issues/2026-09-06-claude-cli-review-30.md`。它不取代第 29 次補審，
+也不代表後續修正、平台建置或 package-only 盲驗已通過。

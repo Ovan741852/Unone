@@ -46,7 +46,9 @@
 候選 CLI 已對原樣本回報 `BUNDLE_ACTIVE_GENERATION_UNREADABLE`，不讀舊代；
 失敗 install 前後最新 active record hash 均為
 `fe7f9c36c004d540147652629f8aa958734d10ffb687e0aa08cc6dd3cf63decc`。
-同原因重複三次的 describe 雜訊已交回 owner 移除，見[候選修正後證據](../evidence/2026-09-06-asset-workflow/generation-corruption-after.json)。
+同原因重複三次的 describe 雜訊已由 owner 移除，`4a128d7` CLI 再測確認每份
+diagnostics collection 僅一項；affected file 仍保留該結構化原因，
+見[候選修正後證據](../evidence/2026-09-06-asset-workflow/generation-corruption-after.json)。
 
 其他主代理候選驗證：
 
@@ -92,3 +94,20 @@ symlink 覆蓋。主代理另實跑的 Junction 檢查見前述證據。clippy -
 封裝前重建遇到 linker PDB 失敗，單獨重試 CLI build 成功，但 D 槽只餘約
 0.27 GB，後續平台 build/package 未放行。已詢問是否只清理可重建增量快取，
 詳見[環境問題紀錄](../issues/2026-09-06-build-disk-pressure.md)。
+
+Claude CLI 2.1.260 的 [review #30](../issues/2026-09-06-claude-cli-review-30.md)
+已完成固定 `04af786..4a128d7` 只讀審查，回報無 actionable P1/P2；未執行測試，
+不取代盲驗，也不抵銷 #29。主代理另外用小型 probe 發現
+[pack output 能覆寫 authoring asset manifest](../issues/2026-09-06-asset-pack-output-collision.md)，
+已交原 owner 做寫入前 guard 和回歸，不能因 review 無 finding 就忽略實際反例。
+
+Gauss 的[獨立 code review](../reviews/2026-09-06-asset-workflow-code.md)第一版
+提出 read 混用 metadata/bytes 與 file 錯誤未進頂層 diagnostics；主代理重現／
+核對後採納，交 Heisenberg 修正。這些是共用引擎資料與診斷契約問題，不要求
+範例遊戲自行判斷或包一層 workaround。完整回歸仍受磁碟空間決策限制。
+
+Lagrange 第一版五項：主代理不接受自動 union 已安裝包（會改變明確 subset
+語意），reviewer 核對 current contract 後撤回。接受缺欄位診斷一致性的小修、
+Web graph/read 與 corrupt pointer guard、native activation/report 順序修正。
+後者主代理以真 Windows Junction 重現「exit 1、effects 空、卻已新增一代」，
+證據與逐項理由均在 code review 紀錄。Bacon 另以 Luna/max 製作 Web 限定切片。

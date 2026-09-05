@@ -1,0 +1,50 @@
+{
+  "scope": "Main-agent independent reproduction after Gauss finding, on self-owned probe. Only authoring kind changed texture2d->spine; restored after capture. No pack/install or user game change.",
+  "commit": "4a128d7",
+  "cli_sha256": "79320a5dbb89c4081e3d02a7cc996c46bb65c85f5f0a9b3668cd1227338dec61",
+  "read_exit_code": 0,
+  "read": {
+    "ok": true,
+    "value": {
+      "project": "Asset publication main probe",
+      "asset": {
+        "id": "asset://probe/blue",
+        "source": "assets/probe.svg",
+        "kind": "spine",
+        "bundle": "content"
+      },
+      "bundle_generation": 2,
+      "size_bytes": 117,
+      "sha256": "0aa6ff31b75b616d7705ea2eba9ddd5d35ea3aa8d3b6ad1c62de19352859ba8c",
+      "output": null,
+      "host_responsibilities": [
+        "decode 與 GPU 資源生命週期屬於 host",
+        "下載、重試、快取容量與 CDN policy 屬於 host",
+        "engine 只驗證 bundle 與 archive entry 的完整性"
+      ]
+    },
+    "diagnostics": [],
+    "effects": []
+  },
+  "describe_exit_code": 0,
+  "describe": {
+    "active_asset": {
+      "id": "asset://probe/blue",
+      "source": "assets/probe.svg",
+      "kind": "texture2d",
+      "bundle": "content"
+    },
+    "generation": 2,
+    "publication": {
+      "scope": "selected_asset_native_local",
+      "matches_authoring": false,
+      "asset_spec_matches": false,
+      "primary_bytes_match": null,
+      "companion_bytes_match": null,
+      "bytes_match": null,
+      "reasons": [
+        "active AssetSpec differs from the authoring manifest"
+      ]
+    }
+  }
+}

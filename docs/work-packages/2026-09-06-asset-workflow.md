@@ -79,6 +79,11 @@ CLI help、asset inspect/init 的回傳引導到此入口；未宣告 id 時列�
 matches_authoring=true 且沒有阻塞時不要求重新打包；不能建議清除整份 cache。
 查詢本身不執行這些步驟、不寫檔，也不把 read.output 指回 source。
 
+Code review 階段補入已重現的必要 guard：pack 的 generated manifest／archives
+及其相關 staging output 不得與 authoring inputs 衝突，寫入前統一檢查。
+例如 `--output assets/manifest.json` 不可因路徑在專案內就覆寫作者宣告。
+此為來源權威的資料完整性保護，不新增匯入器或全域 IO transaction。
+
 安全與錯誤：既有 portable source / symlink containment 規則必須同樣套用到
 primary、companions、manifest 和讀取的 bundle source；不要藉查詢讀專案外 bytes。
 抽取小型共用 project-relative resolver，先做 portable lexical 檢查，再檢查
@@ -99,6 +104,12 @@ native 最新的正式 generation 檔（不含 .part）是唯一 active record�
 回退舊 generation。read、inspect、describe 使用同一 loader；缺少 record 與
 record 損壞是不同狀態。描述工具不可使用會吞錯的 Option-only API 假裝成功。
 不新增 active pointer 檔或第二套權威；不承諾多個安裝 writer 的併發交易。
+
+Code blind review 補強：`asset read` 回傳的 AssetSpec 與 verified bytes 必須
+取自同一 active observation；先比對 authoring 與 active 宣告，不符即回傳
+`BUNDLE_GENERATION_MISMATCH`，禁止把新 kind/files 配上舊 bytes。
+觀測不一致／讀取失敗先於 export 寫入；describe 的 file-level failure 同時
+進入去重的 active／top-level diagnostics，不能只靠深入 file 欄位找原因。
 
 init 回傳 `changed_files`（實際本次寫入，不含未動的 source），並給 describe
 入口；若原 init 的後續寫入失敗，已發生的寫入仍須出現在 failure effects，不宣稱
@@ -123,6 +134,12 @@ bundles 驗證完畢後只寫一次 active generation，不能逐 id 調用 inst
 active metadata；作者 bundle manifest 已被 pack 更新時，不承諾舊內容仍
 符合新 manifest 可讀，這不是整個發佈流程的 rollback。
 不新增下載器、不加自動清 cache、不改既有分包選擇語意；文件清楚區分 subset/all。
+
+Code review 限定補強：缺少 bundles 欄位兩 host 均視為 INVALID；明示 [] 為
+EMPTY。Web read 與 install 同樣檢查完整 graph；已有 active pointer 但 record
+缺失／無效，明確 UNREADABLE，不當 first install。Native install 的 report
+可失敗檢查須先於 active 寫入，不能已啟用後才回報不含 effects 的 failure。
+不採納自動 union 舊 active entries；獨立 reviewer 已依现行契約撤回該建議。
 
 ## C：刪除被取代的規格
 

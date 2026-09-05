@@ -265,6 +265,10 @@ CLI 的 `id` 是 optional positional argument，`all` 是 bool flag；core 只�
 | `bundle install <id> --all` | `BUNDLE_SELECTION_INVALID`；不建立 generation |
 | `bundle install ""` | `BUNDLE_SELECTION_INVALID`；空 id 不算選擇 |
 
+每次啟用的集合只由這次選擇決定，不會自動累加前一代的其他包。
+例如先 install A 再 install 無依賴的 B，第二代只含 B；需要同時啟用所有包
+時使用 `--all`，不要把多次單包 install 當作累加操作。
+
 MCP `unone_bundle_install` 的 schema 以 `oneOf` 表示恰好一種：id 分支允許
 `all` 缺省或 `false`，all 分支要求 `all:true` 且不得有 id；handler 仍會對
 `id`/`all` 做嚴格 string/boolean parsing，再傳入同一個

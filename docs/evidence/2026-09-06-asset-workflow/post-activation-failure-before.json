@@ -1,0 +1,66 @@
+{
+  "scope": "Main-agent independent reproduction of Lagrange finding5. Real Windows directory Junction, self-owned generated project and outside sentinel directory; no user games changed.",
+  "commit": "4a128d7",
+  "cli_sha256": "79320a5dbb89c4081e3d02a7cc996c46bb65c85f5f0a9b3668cd1227338dec61",
+  "operation": "bundle install a",
+  "junction": {
+    "path": "D:\\Projects\\Unone\\artifacts\\asset-workflow-post-activation-probe-20260906\\.unone\\cache\\bundles\\c0cde77fa8fef97d476c10aad3d2d54fcc2f336140d073651c2dcccf1e379fd6.bundle",
+    "link_type": "Junction",
+    "target": "D:\\Projects\\Unone\\artifacts\\asset-workflow-post-activation-outside-20260906"
+  },
+  "before": [
+    {
+      "name": "generation-00000000000000000001.json",
+      "sha256": "03B85CED6D40FFB81D4F893354B2D046B753D11A80B1127FA2862F08772CBF39",
+      "record": {
+        "generation": 1,
+        "manifest_version": 1,
+        "bundles": {
+          "a": "06f961b802bc46ee168555f066d28f4f0e9afdf3f88174c1ee6f9de004fc30a0"
+        }
+      }
+    }
+  ],
+  "exit_code": 1,
+  "result": {
+    "ok": false,
+    "value": null,
+    "diagnostics": [
+      {
+        "code": "BUNDLE_STORAGE_PATH_UNSAFE",
+        "severity": "ERROR",
+        "summary": "bundle cache 路徑不安全",
+        "explanation": "bundle cache：'.unone/cache/bundles/c0cde77fa8fef97d476c10aad3d2d54fcc2f336140d073651c2dcccf1e379fd6.bundle' 解析到 '\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-post-activation-outside-20260906'，不在專案根目錄 '\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-post-activation-probe-20260906' 內。",
+        "facts": {},
+        "likely_causes": [],
+        "suggested_actions": [],
+        "source": null
+      }
+    ],
+    "effects": []
+  },
+  "after": [
+    {
+      "name": "generation-00000000000000000001.json",
+      "sha256": "03B85CED6D40FFB81D4F893354B2D046B753D11A80B1127FA2862F08772CBF39",
+      "record": {
+        "generation": 1,
+        "manifest_version": 1,
+        "bundles": {
+          "a": "06f961b802bc46ee168555f066d28f4f0e9afdf3f88174c1ee6f9de004fc30a0"
+        }
+      }
+    },
+    {
+      "name": "generation-00000000000000000002.json",
+      "sha256": "82DF4969A77EC25E91F3784CC3486033B5FC385CFA7B061D62694BE6A7A2B615",
+      "record": {
+        "generation": 2,
+        "manifest_version": 1,
+        "bundles": {
+          "a": "06f961b802bc46ee168555f066d28f4f0e9afdf3f88174c1ee6f9de004fc30a0"
+        }
+      }
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 {
-  "scope": "main-agent same baseline fixture, rebuilt candidate CLI; not final package verification",
+  "scope": "main-agent same baseline fixture, candidate4a128d7 CLI; not final package verification",
+  "commit": "4a128d7",
+  "cli_sha256": "79320a5dbb89c4081e3d02a7cc996c46bb65c85f5f0a9b3668cd1227338dec61",
   "read": {
     "exit_code": 1,
     "result": {
@@ -46,5 +48,5 @@
       "prerequisites": []
     }
   },
-  "remaining_at_capture": "describe repeats the same diagnostic three times; returned to implementation owner before final verification"
+  "recheck": "Candidate4a128d7 recheck: top-level and active diagnostics collections each contain one BUNDLE_ACTIVE_GENERATION_UNREADABLE, not three duplicate entries. The affected file retains its structured cause. No fallback to generation1."
 }
