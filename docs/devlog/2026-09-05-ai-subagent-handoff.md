@@ -11,6 +11,12 @@
 - Generic Web runner resolves real packaged SVG assets. Concurrent asset resolution exposed and fixed the shared Wasm verifier race.
 - Generic Web source mode now uses the same `scripts/main.luau` default as the Rust project loader when `entry_script` is omitted.
 
+## Self-contained package evidence
+
+- Commit `d5ee39a` produced `D:/Projects/Unone/artifacts/unone-engine-package-d5ee39a` with `source_dirty=false` and 27 hashed files.
+- The package-only smoke created a project with `bin/game.exe project init`, then passed `bin/game.exe check --types` using the bundled `bin/luau-analyze.exe` automatically.
+- The package Web runner passed both packaged Angry Birds content (`generation=2`, 3/3 assets resolved) and source mode with `entry_script` omitted; the browser reached a running frame in both cases. Existing browser evidence remains in `docs/devlog/2026-09-05-web-browser-runtime-smoke.png` and the Android screenshots remain in this directory.
+
 ## Evidence
 
 - cargo test --workspace: 37 engine/runtime tests plus platform package tests passed.
