@@ -462,7 +462,7 @@ fn descriptors() -> Vec<SystemDescriptor> {
             vec!["api.animation.play", "api.animation.stop"],
             vec!["world.entities[].animation"],
             "關閉後 api.animation 會回報 SYSTEM_DISABLED，scene 宣告的 animation 仍會出現在 snapshot。",
-            "沒有骨骼動畫的遊戲；這是預設關閉的系統。目前沒有任何 host 會畫出 Spine 骨骼，引擎只負責傳輸與 determinism。",
+            "沒有骨骼動畫的遊戲；這是預設關閉的系統。目前只有 web/presentation 這個 Web host 會以 spine-webgl 播放，native preview 與 Android host 都不會；引擎只負責傳輸與 determinism。",
         ),
         descriptor(
             "effekseer",
@@ -473,7 +473,7 @@ fn descriptors() -> Vec<SystemDescriptor> {
             vec!["api.effect.spawn", "api.effect.stop"],
             vec!["world.effects"],
             "關閉後 api.effect 會回報 SYSTEM_DISABLED，snapshot 不會有任何 effect。",
-            "沒有粒子特效的遊戲；這是預設關閉的系統。目前沒有任何 host 會模擬或畫出粒子，引擎只負責傳輸與 determinism。",
+            "沒有粒子特效的遊戲；這是預設關閉的系統。目前只有 web/presentation 這個 Web host 會以 Effekseer for WebGL 播放，native preview 與 Android host 都不會；引擎只負責傳輸與 determinism。",
         ),
     ]
 }

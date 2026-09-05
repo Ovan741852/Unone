@@ -28,15 +28,20 @@ struct HostProject {
     script: String,
     #[serde(default)]
     scene: Option<SceneFile>,
+    /// Engine systems this project declares, exactly as project.unone.json
+    /// would declare them for a file-backed project.
+    #[serde(default)]
+    systems: BTreeMap<String, bool>,
 }
 
 fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Box<Diagnostic>> {
-    EngineRuntime::load_source_with_seed(
+    EngineRuntime::load_source_with_systems(
         project.project,
         "main.luau",
         project.script,
         project.scene,
         seed,
+        project.systems,
     )
 }
 

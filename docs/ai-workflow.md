@@ -164,6 +164,8 @@ cargo run -p unone-cli -- --json api describe effect.spawn
 
 測試用 `{"animation": {"entity": "reel-3", "equals": {...}}}` 與 `{"effects": {"equals": [...]}}` 做完整 JSON equality，表現狀態因此可被 assertion，不必看畫面。
 
+要看到它們實際播放，使用 `web/presentation/`：先跑 `scripts/build-web-live.ps1`，從 `D:/Projects` 啟動 `python -m http.server 8001`，再開 `http://127.0.0.1:8001/Unone/web/presentation/?project=/Unone_Games/slot-machine/`。它以 spine-webgl 與 Effekseer for WebGL 播放同一份 snapshot；native preview 與 Android host 目前都不會畫。vendored runtime 與授權條件見 `web/vendor/README.md`（Spine 需要授權，Effekseer 是 MIT）。
+
 引擎不評估骨骼、不混合動畫、不回報動畫是否播完、不模擬粒子，也不含任何 Spine／Effekseer 程式碼。遊戲若要「動畫播完才結算」，必須自己以 fixed frame 計算。
 
 ## 4. 檢查 bundle

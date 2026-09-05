@@ -302,6 +302,29 @@ impl EngineRuntime {
         scene: Option<SceneFile>,
         seed: u64,
     ) -> Result<Self, Box<Diagnostic>> {
+        Self::load_source_with_systems(
+            project_name,
+            script_name,
+            source,
+            scene,
+            seed,
+            BTreeMap::new(),
+        )
+    }
+
+    /// Load an in-memory project that declares its own engine systems.
+    ///
+    /// Web and mobile hosts receive a project payload instead of a directory,
+    /// so they need the same `systems` switches a file-backed project gets.
+    /// Unknown or impossible switches fail here, exactly as they do on disk.
+    pub fn load_source_with_systems(
+        project_name: impl Into<String>,
+        script_name: impl Into<String>,
+        source: impl Into<String>,
+        scene: Option<SceneFile>,
+        seed: u64,
+        systems: BTreeMap<String, bool>,
+    ) -> Result<Self, Box<Diagnostic>> {
         let script_name = script_name.into();
         let config = ProjectConfig {
             name: project_name.into(),
@@ -310,7 +333,7 @@ impl EngineRuntime {
             test_files: Vec::new(),
             bundle_manifest: None,
             asset_manifest: None,
-            systems: BTreeMap::new(),
+            systems,
         };
         let paths = ProjectPaths {
             root: PathBuf::from("<memory>"),

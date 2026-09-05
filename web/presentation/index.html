@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unone presentation host</title>
+    <style>
+      :root { color-scheme: dark; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+      body { margin: 0; min-height: 100vh; background: #0b1020; color: #e5e7eb; }
+      main { width: min(1180px, calc(100vw - 32px)); margin: 20px auto; }
+      h1 { margin: 0 0 4px; font-size: 1.2rem; }
+      .note { color: #9ca3af; margin: 0 0 12px; font-size: .82rem; line-height: 1.5; }
+      #status { color: #93c5fd; margin: 0 0 10px; }
+      .layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+      #stage { position: relative; min-width: 0; }
+      canvas { display: block; width: 100%; aspect-ratio: 16 / 9; border: 1px solid #334155; border-radius: 10px; background: #0f172a; }
+      #ui-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+      .unone-ui-node { position: absolute; box-sizing: border-box; overflow: hidden; color: #f8fafc; }
+      .unone-ui-text { padding: 2px 6px; font-size: clamp(.7rem, 1.6vw, 1rem); }
+      .unone-ui-button { padding: 2px 6px; border: 1px solid #93c5fd; border-radius: 5px; background: rgba(30, 64, 175, .8); color: #f8fafc; font: inherit; }
+      aside { padding: 14px; border: 1px solid #334155; border-radius: 10px; background: #111827; }
+      h2 { margin: 0 0 8px; font-size: .95rem; }
+      button { margin: 0 8px 12px 0; padding: 7px 12px; border: 1px solid #475569; border-radius: 6px; background: #1e293b; color: #e5e7eb; font: inherit; cursor: pointer; }
+      button:disabled { cursor: not-allowed; opacity: .5; }
+      pre { min-height: 10rem; max-height: 24rem; margin: 0; overflow: auto; white-space: pre-wrap; color: #a7f3d0; font-size: .78rem; }
+      @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Unone presentation host</h1>
+      <p id="status" data-testid="status">waiting for Emscripten runtime…</p>
+      <p class="note">
+        Rust/Luau owns the fixed-tick simulation and publishes semantic state; this page owns the runtimes that draw it.
+        Reel skeletons come from spine-webgl, the win burst from Effekseer for WebGL. Nothing here decides the game result.
+      </p>
+      <div class="layout">
+        <div id="stage">
+          <canvas id="game" data-testid="game-canvas" aria-label="Unone presentation preview"></canvas>
+          <div id="ui-layer" data-testid="ui-layer"></div>
+        </div>
+        <aside>
+          <h2>Engine state</h2>
+          <button id="spin" data-testid="spin" disabled>Spin</button>
+          <button id="auto" data-testid="auto" disabled>Auto</button>
+          <pre id="output" data-testid="output"></pre>
+        </aside>
+      </div>
+    </main>
+    <script src="../vendor/spine/spine-webgl.js"></script>
+    <script src="../vendor/effekseer/effekseer.js"></script>
+    <script>
+      var Module = {
+        noInitialRun: true,
+        onRuntimeInitialized: function () {
+          window.unoneRuntimeReady = true;
+          window.dispatchEvent(new Event("unone-runtime-ready"));
+        }
+      };
+    </script>
+    <script src="../../target/wasm32-unknown-emscripten/debug/deps/unone_web_live_smoke.js"></script>
+    <script type="module" src="./main.js?v=1"></script>
+  </body>
+</html>

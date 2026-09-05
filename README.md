@@ -45,7 +45,7 @@ target/debug/game.exe --project D:/Projects/Unone_Games/minimal-2d mcp
 
 MCP 只位於 `unone-cli`，不成為 engine core 的依賴；工具結果保留完整 `EngineResult` JSON 與語意化 diagnostics。
 
-目前已驗證：Luau entrypoint、`--!strict` contract、官方 `luau-analyze` adapter、headless fixed timestep、deterministic 2D rigid body／重力／地面碰撞、Camera2D state、逐 frame input replay、共用的 `tick_with_input` host boundary、seeded Luau random、seed/input observation digest、failed reload fallback、scene Sprite size validation、與遊戲命名無關的 native wgpu preview、`preview --watch` 腳本熱更、JSON test manifest、bundle hash/cache/activation、最小 asset reference inspect 契約，由已啟用 generation 解析單一資產並回報 verified sha256 的 host 契約（Rust 與 Web host 共用同一份 archive 格式與錯誤碼），由遊戲宣告要不要跑哪些引擎系統的 `systems` 契約，以及 Spine／Effekseer 的語意表現層（引擎只傳輸動畫選擇與特效事件，host 執行 runtime；目前沒有任何 host 會畫出它們）。
+目前已驗證：Luau entrypoint、`--!strict` contract、官方 `luau-analyze` adapter、headless fixed timestep、deterministic 2D rigid body／重力／地面碰撞、Camera2D state、逐 frame input replay、共用的 `tick_with_input` host boundary、seeded Luau random、seed/input observation digest、failed reload fallback、scene Sprite size validation、與遊戲命名無關的 native wgpu preview、`preview --watch` 腳本熱更、JSON test manifest、bundle hash/cache/activation、最小 asset reference inspect 契約，由已啟用 generation 解析單一資產並回報 verified sha256 的 host 契約（Rust 與 Web host 共用同一份 archive 格式與錯誤碼），由遊戲宣告要不要跑哪些引擎系統的 `systems` 契約，以及 Spine／Effekseer 的語意表現層（引擎只傳輸動畫選擇與特效事件，host 執行 runtime）。`web/presentation/` 已用 spine-webgl 與 Effekseer for WebGL 實際播放老虎機的同一份 snapshot；native preview 與 Android host 仍不會畫。
 
 完整型別檢查使用 `game check --types`。正式 engine package 會把固定版本的官方 `luau-analyze` 放在 `bin/luau-analyze.exe`，由同目錄的 `bin/game.exe` 自動找到；工具不存在時引擎會明確回報錯誤，不會把基本 contract check 說成完整型別檢查。
 
