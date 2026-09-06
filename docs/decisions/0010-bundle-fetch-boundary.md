@@ -1,24 +1,24 @@
-# Decision 0010：Bundle 來源由 host 提供，驗證與啟用留在引擎
+# Decision 0010: The Host Provides Bundle Sources; Validation and Activation Stay in the Engine
 
-- 日期：2026-09-05
-- 狀態：accepted
+- Date: 2026-09-05
+- Status: accepted
 
 ## Context
 
-Bundle 需要同時支援 native、Web、iOS 與 Android。若讓引擎直接依賴 HTTP、CDN、browser cache 或 mobile storage，會把平台政策與營運服務混進 engine core，也會讓 headless test 難以重播。
+Bundles must support native, Web, iOS, and Android at the same time. If the engine directly depends on HTTP, a CDN, browser cache, or mobile storage, platform policy and operational services would leak into the engine core, and headless tests would become difficult to replay.
 
 ## Decision
 
-`BundleManager::install_with_fetcher` 接受 host 實作的 `BundleFetcher`。host 決定如何取得 `Read` source；引擎只負責：
+`BundleManager::install_with_fetcher` accepts a host-provided `BundleFetcher`. The host decides how to obtain the `Read` source; the engine is responsible only for:
 
-- 依賴解析與循環診斷
-- 64 KiB streaming size/SHA-256 驗證
-- `.part` staging、flush/sync 與 cache commit
-- generation activation 與失敗時保留上一個 active generation
-- 透過 `inspect` 回報 source、cache 與 available 狀態
+- dependency resolution and cycle diagnostics
+- 64 KiB streaming size/SHA-256 verification
+- `.part` staging, flush/sync, and cache commit
+- generation activation and retaining the previous active generation on failure
+- reporting source, cache, and available status through `inspect`
 
-native CLI 的 local file fetcher 是一個 adapter；Web/mobile 可在引擎外完成 fetch、解密或持久化，再提供 reader。第一版不在引擎內建 HTTP client、CDN、P2P、差分更新或下載排程。
+The native CLI's local-file fetcher is an adapter; Web/mobile may fetch, decrypt, or persist content outside the engine and then provide a reader. The first version does not build an HTTP client, CDN, P2P, delta updates, or download scheduling into the engine.
 
 ## Consequences
 
-同一套完整性與回滾規則可跨 host 重用，也能測試「遠端 source 不存在但 cache 可用」與「新內容損壞不切換」；host 仍需自行處理網路重試、權限、背景下載與 storage quota。未來若需要非檔案 cache，應替換 host/storage adapter，不改遊戲端 Luau API。
+The same integrity and rollback rules can be reused across hosts, including tests for “the remote source is missing but the cache is usable” and “corrupt new content does not switch generations.” Hosts still handle network retries, permissions, background downloads, and storage quotas themselves. If a non-file cache is needed later, replace the host/storage adapter without changing the game-side Luau API.

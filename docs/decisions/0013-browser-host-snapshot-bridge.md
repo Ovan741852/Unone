@@ -1,29 +1,29 @@
-# Decision 0013：Browser host 先接 engine snapshot，再接 live frame loop
+# Decision 0013: Connect the Browser Host to an Engine Snapshot Before a Live Frame Loop
 
-- 日期：2026-09-05
-- 狀態：accepted（snapshot layer；live follow-up 見 0015/0016）
+- Date: 2026-09-05
+- Status: accepted (snapshot layer; see 0015/0016 for live follow-up)
 
 ## Context
 
-`unone-engine` 已能編譯成 Emscripten library，且一次性 Web runtime smoke 已能在瀏覽器執行；但目前沒有把 Rust runtime 的 frame loop、瀏覽器事件與 WebGPU canvas 接在一起的穩定 ABI。若此時把 `wgpu`、瀏覽器 DOM、fetch、Cache Storage 與 Emscripten glue 直接放進 engine core，會同時引入多個尚未驗證的生命週期與平台耦合。
+`unone-engine` can already compile as an Emscripten library, and a one-shot Web runtime smoke test can already run in a browser; however, there is not yet a stable ABI connecting the Rust runtime's frame loop, browser events, and a WebGPU canvas. Putting `wgpu`, the browser DOM, fetch, Cache Storage, and Emscripten glue directly into the engine core now would introduce several unvalidated lifecycle and platform couplings at once.
 
 ## Decision
 
-第一個 WebGPU host slice 使用 `game run --json` 產出的 `WorldSnapshot` 作為明確 bridge contract：
+The first WebGPU host slice uses the `WorldSnapshot` produced by `game run --json` as an explicit bridge contract:
 
-- engine/CLI 產出可序列化的 world state；
-- browser host 擁有 WebGPU adapter/device/canvas 與 render loop；
-- browser host 把 pointer event 轉成與 native 相同的 world-space `{ position, down }` semantic frame；
-- snapshot 來源、fetch 與後續 storage/cache 政策留在 host，不加入 engine core；
-- 以 `scripts/export-web-host-snapshot.ps1` 重新產生 fixture，避免手工複製 state。
+- the engine/CLI produces serializable world state;
+- the browser host owns the WebGPU adapter/device/canvas and render loop;
+- the browser host converts pointer events into the same world-space `{ position, down }` semantic frame as native;
+- the host retains snapshot sourcing, fetching, and later storage/cache policy instead of adding them to the engine core;
+- regenerate the fixture with `scripts/export-web-host-snapshot.ps1` rather than copying state by hand.
 
-這一版明確不宣稱 live WASM game loop、browser input 已驅動 Rust simulation，或 Web storage adapter 已完成。那些需求要在 bridge contract 穩定後，另做可測量的長生命週期切片。
+This version explicitly does not claim a live WASM game loop, browser input driving the Rust simulation, or a completed Web storage adapter. Those requirements need a separately measurable long-lived slice after the bridge contract is stable.
 
 ## Consequences
 
-- 可以先獨立驗證 engine snapshot → WebGPU rendering、canvas resize 與 semantic pointer conversion。
-- native 與 Web 共用資料契約，而不是共用不適合所有 host 的視窗實作。
-- 目前 snapshot 與 runtime 是兩個時間點；不能把本頁的 pointer event 當成遊戲 simulation input。
-- 只有當 live loop 的 ABI、reload safe point 與 host ownership 有測試證據後，才把它提煉為正式 Web runtime API。
+- Engine snapshot → WebGPU rendering, canvas resize, and semantic pointer conversion can be validated independently first.
+- Native and Web share a data contract instead of sharing a window implementation unsuitable for every host.
+- The current snapshot and runtime are at two different points in time; do not treat the pointer event in this document as game simulation input.
+- Promote this into a formal Web runtime API only after the live-loop ABI, reload safe point, and host ownership have test evidence.
 
-後續已由 `0015-emscripten-live-host-bridge.md` 接上 live WASM frame loop，並由 `0016-bundle-generation-and-browser-storage.md` 接上 sample bundle/cache/generation smoke；本決策仍只定義 snapshot layer，不應被解讀為完整 Web runtime 狀態。
+The later `0015-emscripten-live-host-bridge.md` connects a live WASM frame loop, and `0016-bundle-generation-and-browser-storage.md` connects sample bundle/cache/generation smoke; this decision still defines only the snapshot layer and must not be read as the complete Web runtime state.

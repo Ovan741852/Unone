@@ -1,25 +1,25 @@
-# Decision 0006：先做可驗證的最小 2D physics mechanism
+# Decision 0006: Start with a Verifiable Minimal 2D Physics Mechanism
 
-## 決策
+## Decision
 
-第一個 physics slice 只提供引擎機制：
+The first physics slice provides only engine mechanisms:
 
-- dynamic／static 圓形 RigidBody2D
-- gravity、固定 timestep、速度與位置整合
-- optional ground plane
-- deterministic circle collision resolution
-- Luau 的 `getVelocity`、`setVelocity`、`physics.applyImpulse`
+- dynamic/static circular RigidBody2D
+- gravity, a fixed timestep, and velocity/position integration
+- an optional ground plane
+- deterministic circle-collision resolution
+- Luau's `getVelocity`, `setVelocity`, and `physics.applyImpulse`
 
-Bird、彈弓、trajectory、豬、木箱、關卡規則與勝負條件全部留在 `Unone_Games`。
+Birds, slingshots, trajectories, pigs, wooden boxes, level rules, and win/loss conditions all stay in `Unone_Games`.
 
-## 為何現在需要
+## Why This Is Needed Now
 
-2D physics 是憤怒鳥驗證的第一個跨遊戲機制，也可重用於平台遊戲、彈珠、碰撞式 UI 或其他物理玩法。沒有它，現有 transform demo 不能證明引擎能承擔真實遊戲。
+2D physics is the first cross-game mechanism needed for Angry Birds validation, and it can also be reused for platform games, pinball, collision-based UI, or other physics-based gameplay. Without it, the existing transform demo cannot prove that the engine can support a real game.
 
-## 明確不做
+## Explicitly Not Doing
 
-本 slice 不預先做 friction、joints、polygon mesh、continuous collision detection、spatial index、network rollback 或完整物理材質系統。若真實驗證遊戲在效能或正確性上被同一問題阻塞，再以測試證據擴充；不在遊戲端各自打補丁。
+This slice does not preemptively build friction, joints, polygon meshes, continuous collision detection, a spatial index, network rollback, or a complete physical-material system. If a real validation game is blocked by the same performance or correctness problem, expand the system using test evidence; do not patch each game independently.
 
-## 可變更性
+## Changeability
 
-Scene 的 physics settings 與 RigidBody2D data 是 source JSON；Luau 只呼叫語意 API。未來替換 solver 時，保留 scene／script 的語意欄位與 observation contract，solver 細節不暴露給遊戲端。若這個 boundary 被兩個遊戲證明錯誤，可直接拆掉重做，沒有舊 API 相容承諾。
+The Scene's physics settings and RigidBody2D data are source JSON; Luau calls only semantic APIs. If the solver is replaced later, preserve the scene/script semantic fields and observation contract, without exposing solver details to the game side. If two games prove this boundary wrong, it may be dismantled and rebuilt directly; there is no promise of old API compatibility.

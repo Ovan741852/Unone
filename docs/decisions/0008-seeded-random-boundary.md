@@ -1,17 +1,17 @@
-# Decision 0008：seeded random 是引擎 primitive，隨機規則留在遊戲端
+# Decision 0008: Seeded Random Is an Engine Primitive; Random Rules Stay in the Game
 
 ## Context
 
-長期驗證包含自走棋、老虎機、魚機與放置戰鬥；AI 需要能重播同一個 seed 與輸入。原本 `RunReport.seed` 只記錄 metadata，並沒有真的影響 runtime。
+The long-term validation set includes an auto battler, a slot machine, a fish arcade game, and idle combat; AI needs to replay the same seed and input. Originally, `RunReport.seed` recorded only metadata and did not actually affect the runtime.
 
 ## Decision
 
-- Rust runtime 持有 deterministic RNG state，seed 在 runtime 建立時注入。
-- Luau 只看到 `api.random.nextFloat()` 與 `api.random.nextInt(min, max)`。
-- `nextInt` 是包含兩端的整數範圍，拒絕 `min > max`，並用 rejection sampling 避免 modulo bias。
-- 分布、抽卡權重、slot reel、魚群規則與遊戲結果判定留在 Luau；引擎不提供遊戲專用 random system。
-- 相同 seed、input sequence 與 random call order 才是 deterministic replay 的必要條件。
+- The Rust runtime owns deterministic RNG state, and the seed is injected when the runtime is created.
+- Luau sees only `api.random.nextFloat()` and `api.random.nextInt(min, max)`.
+- `nextInt` is an inclusive integer range, rejects `min > max`, and uses rejection sampling to avoid modulo bias.
+- Distributions, draw weights, slot reels, fish-school rules, and game-outcome decisions stay in Luau; the engine does not provide a game-specific random system.
+- The same seed, input sequence, and random-call order are all required for deterministic replay.
 
 ## Consequence
 
-這讓 headless tests 可以驗證隨機遊戲規則，又不把各遊戲的機率設計塞進 engine。未來若加入 network 或非同步工作，仍需把 scheduling／network mock 納入 deterministic contract；不能只依靠 seed。
+Headless tests can validate random-game rules without putting each game's probability design into the engine. If networking or asynchronous work is added later, scheduling/network mocks must also be included in the deterministic contract; seed alone is not sufficient.

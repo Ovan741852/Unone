@@ -1,17 +1,17 @@
-# Decision 0009：pointer 以 world-space snapshot 進入遊戲層
+# Decision 0009: Pointer Input Enters the Game Layer as a World-Space Snapshot
 
 ## Context
 
-Angry Birds 需要拖曳與放開；iOS、Android、Web、native 的 pointer event、螢幕像素、device scale 與多點觸控細節不同。若讓 Luau 直接讀平台座標，遊戲規則會被平台污染，也難以 deterministic replay。
+Angry Birds needs dragging and release; pointer events, screen pixels, device scale, and multitouch details differ across iOS, Android, Web, and native. If Luau reads platform coordinates directly, game rules become polluted by platform details and deterministic replay becomes difficult.
 
 ## Decision
 
-- platform adapter 將主要 pointer／觸控轉成 engine world space。
-- Luau 只讀 `input.getPointerPosition()` 與 `input.isPointerDown()`。
-- headless `InputFrame` 用 `actions` 與可選的 `{ position, down }` 表達同一份 snapshot。
-- 未提供 frame 會清空 action 與 pointer down；pointer position 保留最後座標但不再表示按下，避免 sticky input。
-- 多點觸控、gesture、滑鼠按鍵差異留在 platform adapter；需要遊戲語意時由遊戲端使用 named action。
+- The platform adapter converts the primary pointer/touch input into engine world space.
+- Luau reads only `input.getPointerPosition()` and `input.isPointerDown()`.
+- Headless `InputFrame` expresses the same snapshot with `actions` and an optional `{ position, down }`.
+- An omitted frame clears actions and pointer-down state; pointer position retains its last coordinate but no longer means that the pointer is down, preventing sticky input.
+- Multitouch, gestures, and mouse-button differences stay in the platform adapter; when game semantics are needed, the game side uses named actions.
 
 ## Consequence
 
-拖曳玩法可用同一份 sequence 在 native、Web 與 headless replay；引擎不需要知道 Angry Birds 的 sling 規則。未來若驗證遊戲需要多指手勢，先在 adapter 增加明確的 semantic action 或額外 snapshot schema，不把原始 platform event 直接暴露給 Luau。
+Drag gameplay can use the same sequence for native, Web, and headless replay; the engine does not need to know Angry Birds' sling rules. If a validation game later needs multi-finger gestures, first add an explicit semantic action or an additional snapshot schema in the adapter; do not expose raw platform events directly to Luau.

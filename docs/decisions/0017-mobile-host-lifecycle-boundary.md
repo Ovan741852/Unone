@@ -1,26 +1,26 @@
-# Decision 0017：Mobile lifecycle 由 host 驅動，engine 維持可重播 runtime
+# Decision 0017: The Host Drives Mobile Lifecycle; the Engine Remains Replayable
 
-- 日期：2026-09-05
-- 狀態：accepted（Android headless + 最小 APK host smoke；production Android/iOS pending）
+- Date: 2026-09-05
+- Status: accepted (Android headless + minimal APK host smoke; production Android/iOS pending)
 
 ## Context
 
-iOS 與 Android 會暫停、恢復、重建 surface、改變 safe area、切換觸控狀態與限制背景執行；這些不是遊戲規則，也不能直接放進 `unone-engine`。另一方面，若兩個 mobile host 各自維護一套 frame/input semantics，native、Web 與 headless replay 會再次分叉。
+iOS and Android pause, resume, recreate surfaces, change safe areas, switch touch states, and restrict background execution; these are not game rules and must not be placed directly in `unone-engine`. Conversely, if two mobile hosts each maintain their own frame/input semantics, native, Web, and headless replay will diverge again.
 
 ## Decision
 
-mobile host 只提供 platform adapter，使用與 Web/native 相同的 engine boundary：
+The mobile host provides only a platform adapter, using the same engine boundary as Web/native:
 
-- host 負責 app lifecycle、window/surface、safe area、device scale、touch normalization、platform storage、permission、audio device 與 package/update policy。
-- engine 負責 `EngineRuntime`、fixed-step simulation、world state、Luau、semantic diagnostics、bundle integrity primitive 與 `tick_with_input`。
-- 每次 host frame 先送已正規化的 `InputFrame`，再呼叫一個 fixed tick；pause 時停止送 tick，但不偷偷改變 simulation time。resume 時由 host 選擇丟棄過期 wall-clock 或按明確的 catch-up budget 重播，不把不受控的 elapsed time 傳進遊戲規則。
-- surface recreate 只重建 renderer/resource binding，不能重建遊戲 session；bundle generation 只有在 safe point 成功驗證後才 apply，失敗保留上一代。
-- 第一版 mobile FFI 只需要 `init/load`, `resize/surface_lost`, `set_input_frame`, scalar `set_pointer/set_action`, `tick`, `observe`, `pause/resume` 的窄 adapter；另提供與既有 runtime 相同的 `reload_script`。不把 UIKit、Android View、JNI、Objective-C object 或 GPU handle 暴露給 Luau。ABI 與生命週期順序記錄於 `docs/mobile-host-abi.md`。
+- The host owns app lifecycle, window/surface, safe area, device scale, touch normalization, platform storage, permissions, the audio device, and package/update policy.
+- The engine owns `EngineRuntime`, fixed-step simulation, world state, Luau, semantic diagnostics, the bundle-integrity primitive, and `tick_with_input`.
+- Each host frame first sends a normalized `InputFrame` and then calls one fixed tick; while paused, stop sending ticks without silently changing simulation time. On resume, the host chooses either to discard stale wall-clock time or replay it under an explicit catch-up budget; do not pass uncontrolled elapsed time into game rules.
+- Surface recreation rebuilds only renderer/resource bindings and must not rebuild the game session; apply a bundle generation only after successful verification at a safe point, retaining the previous generation on failure.
+- The first mobile FFI needs only a narrow adapter for `init/load`, `resize/surface_lost`, `set_input_frame`, scalar `set_pointer/set_action`, `tick`, `observe`, and `pause/resume`; it also provides `reload_script` matching the existing runtime. Do not expose UIKit, Android View, JNI, Objective-C objects, or GPU handles to Luau. Record ABI and lifecycle ordering in `docs/mobile-host-abi.md`.
 
 ## Acceptance
 
-同一份 Luau scene 至少要通過：冷啟動、pause/resume、surface recreation、旋轉/safe-area resize、觸控 pointer normalization、cache-only bundle load、失敗 hot update 保留上一代，以及 headless replay digest 對照。`unone-mobile-ffi` 的 native contract tests 與 Android headless harness 已驗證 lifecycle、surface descriptor、scalar pointer bridge 與 script reload；最小 Android APK host 另已在 API 34 `Pixel_8` 驗證 project payload、Canvas entity snapshot、前景 Activity、process、pause/resume 與觸控可視化。Android production renderer/assets/bundle policy、七款遊戲的 mobile smoke 與 iOS host 仍未完成，不能標記 mobile product 完成。
+The same Luau Scene must pass at least cold start, pause/resume, surface recreation, rotation/safe-area resize, touch pointer normalization, cache-only bundle load, failed hot update retaining the previous generation, and headless replay digest comparison. The `unone-mobile-ffi` native contract tests and Android headless harness have validated lifecycle, surface descriptors, the scalar pointer bridge, and script reload; the minimal Android APK host has additionally validated the project payload, Canvas entity snapshot, foreground Activity, process, pause/resume, and touch visualization on API 34 `Pixel_8`. The Android production renderer/assets/bundle policy, mobile smoke for the seven games, and the iOS host remain unfinished; do not mark the mobile product complete.
 
 ## Consequences
 
-不為 mobile 建立第二套遊戲 API；host 差異集中在 adapter。真正遇到 audio、background fetch、push 或 OS-specific permission 時，才增加 host capability，不在 engine core 預先塞入平台服務。
+Do not create a second game API for mobile; concentrate host differences in the adapter. Add host capabilities only when real needs such as audio, background fetch, push, or OS-specific permissions arise; do not preload platform services into the engine core.

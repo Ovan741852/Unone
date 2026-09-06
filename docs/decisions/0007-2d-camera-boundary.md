@@ -1,13 +1,13 @@
-# Decision 0007：Camera2D 由引擎持有，follow policy 留在 Luau
+# Decision 0007: The Engine Owns Camera2D; Follow Policy Stays in Luau
 
-## 決策
+## Decision
 
-引擎持有 active Camera2D 的 position 與 zoom，並將 camera state 交給 renderer；Luau 透過 `camera.getPosition`、`camera.setPosition`、`camera.getZoom`、`camera.setZoom` 操作語意狀態。角色跟隨、鏡頭邊界、關卡切鏡與震動策略由遊戲端 Luau 決定。
+The engine owns the active Camera2D's position and zoom and passes camera state to the renderer; Luau operates on the semantic state through `camera.getPosition`, `camera.setPosition`, `camera.getZoom`, and `camera.setZoom`. Character following, camera bounds, level cuts, and shake policy are decided by game-side Luau.
 
-## 原因
+## Rationale
 
-Camera projection 是跨遊戲、跨平台的引擎機制；follow target 與鏡頭劇情是遊戲政策。這個分界能讓 Angry Birds、AVG 與 RTS 使用同一個 camera contract，又不把特定遊戲的 player id 或鏡頭流程寫進 renderer。
+Camera projection is an engine mechanism shared across games and platforms; the follow target and camera narrative are game policy. This boundary lets Angry Birds, AVG, and RTS use the same camera contract without putting a specific game's player id or camera flow into the renderer.
 
-## 最小範圍
+## Minimal Scope
 
-目前只做單一 Camera2D、position、zoom 與 renderer 投影。多 camera、cinematic timeline、shake preset、3D camera 與 editor gizmo 要等驗證遊戲實際阻塞再加入。
+For now, provide only one Camera2D, position, zoom, and renderer projection. Add multiple cameras, a cinematic timeline, shake presets, a 3D camera, or editor gizmos only when a validation game is actually blocked by them.

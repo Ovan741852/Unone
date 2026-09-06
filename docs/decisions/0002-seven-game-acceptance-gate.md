@@ -1,30 +1,30 @@
-# ADR 0002：七種遊戲是引擎的正式驗收 gate
+# ADR 0002: Seven Game Categories Are the Engine's Formal Acceptance Gate
 
-日期：2026-09-05  
-狀態：accepted
+Date: 2026-09-05  
+Status: accepted
 
-## 決策
+## Decision
 
-Unone 只有在以下七類遊戲都完成可玩的驗證版本，且各自通過功能、deterministic test、AI 開發閉環、平台 smoke test 與開發紀錄要求後，才算長期目標完成：
+Unone's long-term goal is complete only after all seven game categories below have playable validation versions and each has passed the functional, deterministic-test, AI development-loop, platform-smoke-test, and development-record requirements:
 
-1. 3D 賽車
-2. 紅色警戒式 RTS
-3. 刀塔傳奇式放置戰鬥
-4. AVG 戀愛遊戲
-5. 自走棋
-6. 老虎機
-7. 魚機
+1. 3D racing
+2. Red Alert-style RTS
+3. Dota Legends-style idle combat
+4. AVG dating game
+5. Auto battler
+6. Slot machine
+7. Fish arcade game
 
-憤怒鳥 2D 是中期的第一個驗證遊戲，不是最終通過條件。
+Angry Birds 2D is the first mid-term validation game, not a final acceptance condition.
 
-## 通過證據
+## Passing Evidence
 
-每款遊戲要有：可重建專案、主要玩法、至少一條 headless regression test、AI 可操作的 inspect/edit/reload/run/observe/diagnose 閉環、對應平台 smoke test，以及附截圖的 devlog/issue records。
+Each game must have a rebuildable project, its core gameplay, at least one headless regression test, an AI-operable inspect/edit/reload/run/observe/diagnose loop, a smoke test on the corresponding platform, and devlog/issue records with screenshots.
 
-## 原因
+## Rationale
 
-七類遊戲涵蓋 2D physics、資料驅動流程、數值模擬、RNG、board rules、大量 Entity、RTS/networking 與 3D/車輛物理。逐項通過才能證明這是遊戲引擎，而不是只適合單一 demo 的腳本框架。
+The seven categories cover 2D physics, data-driven flow, numerical simulation, RNG, board rules, large numbers of Entities, RTS/networking, and 3D/vehicle physics. Passing them individually is what proves this is a game engine rather than a scripting framework suited only to one demo.
 
-## 重新檢視條件
+## Reconsideration Conditions
 
-若某類遊戲的範圍需要重大縮減，必須記錄可接受的「驗證版本」定義與仍未驗證的能力；不能把未完成項目標成通過。
+If the scope of a game category must be substantially reduced, record the acceptable definition of its “validation version” and the capabilities that remain unvalidated; do not label unfinished work as passed.

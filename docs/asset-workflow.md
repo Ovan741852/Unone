@@ -1,68 +1,84 @@
 # Asset workflow contract
 
-這是目前唯一有效的資產操作與引擎邊界契約。CLI、MCP、native local
-bundle reader 與文件都以同一份 engine core 結果為準；舊的資產 reference
-與 host resolve decision 已移除，Git 歷史仍保留它們的過往紀錄。
+This is the only currently valid contract for asset operations and engine
+boundaries. The CLI, MCP, native-local bundle reader, and documentation all
+follow the same engine-core results. The old asset-reference and host-resolve
+decisions have been removed; Git history retains their historical record.
 
-## 先分清三種狀態
+## Distinguish three states first
 
-資產工作流有三個不同的權威來源：
+The asset workflow has three distinct authorities:
 
-1. **Authoring** 是遊戲專案內的 `project.unone.json`、asset manifest、
-   primary source 與 manifest 宣告的 companion files。manifest entry 的
-   `id`、`source`、`kind`、`bundle`、`files` 是作者契約；scene 只用同一個
-   stable id 控制放置與表現。
-2. **Packaged** 是 `bundle pack` 從作者檔案產生的 bundle manifest、hash
-   與 archive。不能手改 archive 或 cache 代替修改 source；pack 也不會
-   自動啟用新的 generation。
-3. **Active** 是 native local 明確安裝後的一份 generation。`asset read`
-   只讀符合目前 bundle manifest 與 active hash 的 verified bytes，不 fallback
-   到作者 source。
+1. **Authoring** is the game's `project.unone.json`, asset manifest,
+   primary source, and manifest-declared companion files. The manifest entry's
+   `id`, `source`, `kind`, `bundle`, and `files` are the authoring contract; the
+   scene uses the same stable ID for placement and presentation.
+2. **Packaged** is the bundle manifest, hash, and archive produced by
+   `bundle pack` from authoring files. Do not edit an archive or cache
+   instead of changing the source; packing also does not automatically activate
+   a new generation.
+3. **Active** is a generation explicitly installed locally by the native host.
+   `asset read` reads only verified bytes that match the current bundle
+   manifest and active hash; it does not fall back to the authoring source.
 
-`asset read` 先由 verified `asset-manifest` 比對完整 AssetSpec；作者只改了
-kind、source、bundle 或 files 而尚未發佈時，回報 `BUNDLE_GENERATION_MISMATCH`，
-不把新 metadata 與舊 bytes 混成成功結果。讀取期間 bundle manifest 或 active
-record 改變也先拒絕，不寫 export。若只改 source bytes、AssetSpec 未變，read
-仍可能合法讀到已發佈的舊 bytes；是否最新須看 describe 的 freshness。
+`asset read` first compares the complete AssetSpec with the verified
+`asset-manifest`. If the author changes only kind, source, bundle, or files
+without publishing, it reports `BUNDLE_GENERATION_MISMATCH` rather than mixing new metadata
+with old bytes as a successful result. If the bundle manifest or active record
+changes during a read, the read is rejected and no export is written. If only
+the source bytes change while the AssetSpec remains unchanged, read may
+legitimately return the already-published old bytes; use describe freshness to
+determine whether they are current.
 
-`asset describe` 只回答 selected asset 在 `native_local` 是否與 authoring 相符。
-freshness 為 true 不代表所有 bundle、整個遊戲、Web IndexedDB、Android 或
-其他 host 都已同步，也不代表 native/Web renderer 已完成。
+`asset describe` answers only whether the selected asset matches authoring
+in `native_local`. A true freshness result does not mean that every bundle,
+the whole game, Web IndexedDB, Android, or another host is synchronized, and it
+does not mean that the native or Web renderer is complete.
 
-## 權威層級與 stable id 編輯規則
+## Authority levels and stable-id editing rules
 
-權威由上游到下游固定排列：
+The authorities are ordered from upstream to downstream:
 
-1. **Authoring source** 是唯一可編輯的內容權威：project config 指向的
-   manifest、manifest entry、primary 與 companions，以及作者明確寫入的 scene。
-2. **Packaged bundle** 是由 authoring 產生的可驗證輸出：bundle manifest、
-archive bytes、size/hash 與 dependency metadata 都應重新 pack 取得，不能手改。
-3. **Active generation** 是安裝後的本地觀測結果：它只能由 bundle install 啟用，
-   不可用 cache、archive 或 active metadata 反向當成 authoring。
+1. **Authoring source** is the only editable content authority: the manifest
+   selected by project config, its entries, primary and companion files, and
+   the scene explicitly written by the author.
+2. **Packaged bundle** is the verifiable output produced from authoring:
+   re-create its bundle manifest, archive bytes, size/hash, and dependency
+   metadata with pack; do not edit them by hand.
+3. **Active generation** is the local observation after installation. It can be
+   activated only by bundle install; cache, archive, or active metadata cannot
+   be treated as authoring in reverse.
 
-穩定 id 是 scene 與 host 尋找資產的連接點。替換同一 id 的 source 或 companion
-bytes 時保留 id，通常不需要改 scene 的引用；修改內容後重新 pack、strict inspect
-與安裝，再以 `asset describe --id` 核對 `matches_authoring`，最後 read verified bytes。
-read 成功不代表 authoring freshness；只改 source bytes 且尚未 pack 時可能讀到舊 active
-bytes，但 pack 已改變該 bundle hash 而未安裝時，read 會拒絕 manifest／active 不一致。
-若搬移 source 或 companion，才修改 manifest 的 `source`／`files`
-路徑，仍保留 stable id。scene 的 size、pivot、碰撞體與放置是獨立的 scene 編輯，
-引擎不會因 source 替換自動改寫它們。
+The stable ID connects scene references with host asset lookup. When replacing
+source or companion bytes for the same ID, preserve the ID; scene references
+usually do not need to change. After changing content, repack, run strict
+inspection, install, check `matches_authoring` with `asset describe --id`, and finally read
+the verified bytes. A successful read does not prove authoring freshness. If
+only source bytes changed and the bundle has not been repacked, read may return
+old active bytes; if packing changed the bundle hash but it has not been
+installed, read rejects the manifest/active mismatch. If a source or companion
+moves, change the manifest's `source`/`files` path while preserving the stable ID.
+Scene size, pivot, collision shapes, and placement are separate scene edits; the
+engine does not rewrite them when a source is replaced.
 
-新增資產要先建立實際內容，再以 `asset init` 加入 declaration；init 不會產生、
-下載或猜測美術。刪除或真正 rename id 不由本輪工具自動改寫引用：靜態 main scene
-沒有引用不代表 Luau、host 或外部內容沒有動態使用，不能把 unreferenced 當安全刪除。
-同一檔案可被多個 manifest entry 共用；改它會影響所有宣告該檔案的 ids，查詢只
-報告 manifest 可觀測到的共用關係。
+To add an asset, create the actual content first, then add the declaration with
+`asset init`; init does not create, download, or guess art. The current tools do not
+automatically rewrite references when an ID is deleted or truly renamed: a
+static main scene with no reference does not prove that Luau, a host, or
+external content does not use it dynamically, so unreferenced does not mean
+safe to delete. One file may be shared by multiple manifest entries; changing
+it affects every ID that declares the file, and queries report only the sharing
+relationships observable from the manifest.
 
-pack 的 output manifest、generated archives 及其 `.part` 暫存路徑須與
-authoring inputs 分離，generated outputs 之間也不可碰撞。衝突會在任何
-pack 寫入前回報 `BUNDLE_OUTPUT_COLLISION`；不能把 `--output` 指向現有作者
-manifest 來「替換」它。這不是任意外部 writer 的 filesystem transaction。
+Pack output manifests, generated archives, and their `.part` temporary paths
+must be separate from authoring inputs, and generated outputs must not collide
+with one another. A collision reports `BUNDLE_OUTPUT_COLLISION` before any pack write; do not
+point `--output` at an existing authoring manifest to “replace” it. This is
+not a filesystem transaction for arbitrary external writers.
 
-## 宣告格式
+## Declaration format
 
-`project.unone.json` 指向一份 asset manifest：
+`project.unone.json` points to an asset manifest:
 
 ```json
 {
@@ -79,14 +95,15 @@ manifest 來「替換」它。這不是任意外部 writer 的 filesystem transa
 }
 ```
 
-目前 core 支援的 `kind` 是 `texture2d`、`mesh3d`、`spine`、`effekseer`。
-`files` 是不可缺少的 project-relative companion sources，例如 Spine atlas
-與 texture pages；引擎不猜格式、不解碼，也不替作者建立美術內容。
+The core currently supports `texture2d`, `mesh3d`, `spine`, and `effekseer` as
+`kind` values. `files` contains required project-relative companion sources,
+such as Spine atlases and texture pages; the engine does not guess formats,
+decode them, or create art for the author.
 
-## 工具入口
+## Tool entry points
 
-CLI 與 MCP 都是 Developer Protocol 的薄 client，實際檢查與選擇規則由
-engine core 共用：
+The CLI and MCP are thin clients of the Developer Protocol; the engine core
+provides the actual inspection and selection rules:
 
 ```powershell
 game --project <game-root> --json asset inspect
@@ -99,48 +116,57 @@ game --project <game-root> --json bundle install <bundle-id>
 game --project <game-root> --json bundle install --all
 ```
 
-MCP 對應工具是 `unone_asset_inspect`、`unone_asset_describe`、
-`unone_asset_read`、`unone_asset_init`、`unone_bundle_pack`、
-`unone_bundle_inspect` 與 `unone_bundle_install`。可用工具與參數以 `tools/list`
-為準，不以固定工具數量決定能力；`unone_asset_describe` 是 read-only，`unone_asset_read` 則是
-`readOnlyHint=false`，因為傳入 output 時可能寫檔。
+The corresponding MCP tools are `unone_asset_inspect`, `unone_asset_describe`,
+`unone_asset_read`, `unone_asset_init`, `unone_bundle_pack`,
+`unone_bundle_inspect`, and `unone_bundle_install`. Use `tools/list` as the
+authority for available tools and parameters; do not infer capability from a
+fixed tool count. `unone_asset_describe` is read-only, while `unone_asset_read` has
+`readOnlyHint=false` because passing output may write a file.
 
 ### `asset describe`
 
-`game asset describe --id <id>` 對單一已宣告 id 做聚焦查詢，不重做完整
-`asset inspect` gate，也不默默讀取所有資產 bytes。它會把 authoring 的 manifest
-定位與宣告檔案、主場景靜態引用、native-local active observation、selected-asset
-publication freshness 與 ordered next actions 放在同一份 `EngineResult`；`ok`
-只表示查詢完成，freshness 為 false 或 unknown 時不得自行改成 true。
+`game asset describe --id <id>` performs a focused query for one declared ID. It
+does not repeat the full `asset inspect` gate or silently read every asset's bytes. It puts
+the authoring manifest location and declared files, main-scene static
+references, the native-local active observation, selected-asset publication
+freshness, and ordered next actions into one `EngineResult`. `ok` means only that
+the query completed; do not turn false or unknown freshness into true.
 
-目前 `AssetDescribeReport` 的 serialized shape 包含 `project_root`、`asset`、
-`authoring`、`references`、`reference_scope`、`active`、`publication` 與
-`required_next_actions`。`authoring` 的 manifest 欄位是 `manifest_path` 與
-`manifest_json_pointer`；files 逐一指出 primary／companion 的 role、exists、
-可讀時的 size/hash、`shared_with_asset_ids`，以及必要時的 structured diagnostic。
-引用欄位保留主場景的 path、`json_pointer`、id、entity、component 與實際 array
-index，涵蓋 `sprite`、`mesh3d`、`animation`；它不是任意字串搜尋，也不是 selected
-asset 的全體影響分析。`reference_scope` 明確標示 `main_scene_only`，以及 Luau
-動態建立／選擇的 id 未被檢查；不把 unreferenced 當成可安全刪除。
+The serialized shape of `AssetDescribeReport` currently includes `project_root`, `asset`,
+`authoring`, `references`, `reference_scope`, `active`, `publication`, and
+`required_next_actions`. The manifest fields under `authoring` are `manifest_path` and
+`manifest_json_pointer`. Each file entry identifies the primary/companion role,
+existence, readable size/hash, `shared_with_asset_ids`, and a structured diagnostic
+when needed. Reference fields retain the main-scene path, `json_pointer`, ID,
+entity, component, and actual array index for `sprite`, `mesh3d`, and `animation`. This is
+not arbitrary string search or a complete impact analysis for the selected asset.
+`reference_scope` explicitly marks `main_scene_only` and states that IDs dynamically
+created or selected by Luau are not inspected; do not treat unreferenced as
+safe to delete.
 
-`active` 的 scope 是 `native_local`，並回報 generation、active manifest entry、
-每個 primary／companion 的 verified 狀態與 size/hash、structured diagnostics、
-以及 observation token 前後是否一致。`publication` 的 scope 是
-`selected_asset_native_local`；`asset_spec_matches`、`primary_bytes_match`、
-`companion_bytes_match`、`bytes_match` 與 `matches_authoring` 必須如實保留
-`true`／`false`／`null`，不能把 read 成功或 bundle hash 有值冒充 freshness。
+The scope of `active` is `native_local`. It reports the generation, active
+manifest entry, verified status and size/hash for each primary/companion, structured
+diagnostics, and whether the observation token stayed consistent. The scope of
+`publication` is `selected_asset_native_local`. Preserve `asset_spec_matches`,
+`primary_bytes_match`, `companion_bytes_match`, `bytes_match`, and
+`matches_authoring` exactly as `true`/`false`/`null`; a successful read or a
+non-empty bundle hash is not evidence of freshness.
 
-active primary／companion 的讀取失敗除了放在該 file 的 diagnostic，也進入
-去重的 `active.diagnostics` 與頂層 `EngineResult.diagnostics`。client 不必
-深入每個 file 才知道 cache miss 或 archive 錯誤；file 欄位保留精確定位。
+Read failures for active primary/companion files appear in the file's
+diagnostic and also in the deduplicated `active.diagnostics` and top-level
+`EngineResult.diagnostics`. A client does not need to inspect every file to learn
+about a cache miss or archive error; the file field preserves precise location.
 
-`active.asset_manifest_json_pointer` 定位的是已驗證的保留 bundle
-`asset-manifest` 內的 entry，不是作者目前的 manifest 檔案。作者可能搬移
-manifest 卻還没打包；因此 active 不提供由 authoring path 推測出來的檔案路徑。
+`active.asset_manifest_json_pointer` locates the entry in the verified retained
+bundle's `asset-manifest`, not the author's current manifest file. The author may
+move the manifest without repacking, so active does not provide file paths
+inferred from the authoring path.
 
-成功查詢的最小 shape（省略 optional diagnostics）如下；實際值以 core result 為準：
+The following is the minimum shape for a successful query (optional diagnostics
+omitted); use the core result as the source of actual values:
 
-`AssetSpec.files` 為空時會依 core 的 serde 設定省略；authoring/active file 狀態仍由各自的 `files` 陣列表達。
+When `AssetSpec.files` is empty, core serde settings may omit it; authoring and
+active file status is still represented by each side's `files` array.
 
 ```json
 {
@@ -230,125 +256,168 @@ manifest 卻還没打包；因此 active 不提供由 authoring path 推測出�
 }
 ```
 
-缺 source、companion、active record、cache 或 archive bytes 時，結果應保留可用
-的定位與 structured diagnostic，不把錯誤壓成 missing 或 false。最新正式 active
-generation 無法讀取時回報 `BUNDLE_ACTIVE_GENERATION_UNREADABLE`，不靜默退回較舊
-generation。查詢期間 manifest 或 generation 改變時不得回報 freshness true，應
-重新 describe。
+When source, companion, active-record, cache, or archive bytes are missing, the
+result must retain the available location and structured diagnostic rather than
+collapsing the error into missing or false. If the latest formal active
+generation cannot be read, report `BUNDLE_ACTIVE_GENERATION_UNREADABLE` and do not silently
+fall back to an older generation. If the manifest or generation changes during a
+query, do not report true freshness; run describe again.
 
-後續命令以 `AssetWorkflowAction` 的 `action`、`kind`、`reason`、`executable`、
-`argv`、`ready`、`status`、`prerequisites` 表示。`executable: "game"` 是邏輯
-CLI 名稱，不要求 blind AI 猜 PATH 或安裝 alias；使用 immutable package 時，
-固定把它解析成該 package 的 `bin/game.exe`。`argv` 每項保留 core 產生的原值，
-交給 subprocess argument list 執行，不拼接 shell 字串；因此特殊字元、空白與
-asset id/path 不會被重新解析。primary 的 read argv 不帶 `--file`；companion 的
-read argv 帶完整宣告的 `--file`。非機械的美術編輯步驟會標為 AI／作者工作，不
-偽裝成命令；describe 本身不執行 pack、inspect、install 或 read。
+Follow-up commands are represented by the `action`, `kind`, `reason`, `executable`,
+`argv`, `ready`, `status`, and `prerequisites` fields of
+`AssetWorkflowAction`. `executable: "game"` is a logical CLI name; blind AI is not
+expected to guess PATH or an installed alias. When using an immutable package,
+resolve it to that package's `bin/game.exe`. Preserve each core-generated `argv` item
+as-is and execute it through a subprocess argument list rather than
+concatenating a shell string; special characters, spaces, and asset IDs/paths
+therefore are not reparsed. The primary read argv has no `--file`; a companion
+read argv includes its complete declared `--file`. Non-mechanical art-editing steps
+are marked as AI/author work rather than disguised as commands. Describe itself
+does not run pack, inspect, install, or read.
 
-## 新資產 bootstrap 順序
+## New asset bootstrap order
 
-新資產不從「只 install content」開始；先建立作者內容，再宣告、打包、驗證、
-啟用並查詢：
+New assets do not start with “install content only”. Create the authoring
+content first, then declare, pack, validate, activate, and query it:
 
-1. AI 或作者在 project root 建立實際 primary bytes，以及所有 companion bytes。
-2. 用 `game asset init --id <id> --source <project-relative-source>` 宣告
-    manifest entry；`asset init` 只寫 manifest/project config，不建立或猜測
-    圖片、模型、Spine 或 Effekseer 檔案。初始化後先看回傳的 `changed_files`；
-    成功新增 asset 時才會提供 `describe_argv`；沒有 `new_asset` 時該 optional
-    欄位會省略，不會虛構 `<asset-id>`。若部分寫入後失敗，failure effects 會
-    如實列出已發生的變更。
-3. 用 `game bundle pack` 從 authoring files 產生／更新 bundle manifest、hash
-   與 archive。
-4. 用 `game asset inspect --strict` 驗證主場景靜態引用、manifest、source、
-   companion、bundle 與支援的 kind/version。
-5. 用 `game bundle install --all` 一次驗證並啟用完整 generation；若只需一個
-   bundle，才使用 `game bundle install <id>`。所有選中 roots 驗證完成後只寫
-   一份 active generation。
-6. 再用 `game asset describe --id <id>` 確認 authoring、active 與
-   `matches_authoring`，最後用 `game asset read --id <id>` 取得 verified bytes。
+1. AI or the author creates the actual primary bytes and all companion bytes in
+   the project root.
+2. Declare the manifest entry with
+   `game asset init --id <id> --source <project-relative-source>`.
+   `asset init` writes only the manifest/project config; it does not create or
+   guess image, model, Spine, or Effekseer files. Inspect the returned
+   `changed_files` first. `describe_argv` is provided only when a new asset is
+   successfully added; when there is no `new_asset`, the optional field is omitted
+   rather than fabricating `<asset-id>`. If a partial write fails, failure effects
+   list the changes that actually occurred.
+3. Run `game bundle pack` to produce or update the bundle manifest, hash, and
+   archive from authoring files.
+4. Use `game verify` as the aggregate author gate; its assets step already runs
+   strict `asset inspect --strict`. When diagnosing asset authoring in isolation
+   before the aggregate gate, use the focused `game asset inspect --strict` command.
+5. Use `game bundle install --all` to validate and activate the complete generation
+   once. Use `game bundle install <id>` only when one bundle is required. After
+   all selected roots are validated, write only one active generation.
+6. Then use `game asset describe --id <id>` to confirm authoring, active state, and
+   `matches_authoring`, and finally use `game asset read --id <id>` to obtain
+   verified bytes.
 
-asset read 的 `--output` 是使用者明確授權的匯出路徑；它不是 source resolver，
-也不會讓 describe 的 read argv 帶 output。
+The `--output` argument for asset read is an export path explicitly authorized by
+the user. It is not a source resolver, and it does not cause describe's read
+argv to include output.
 
-## bundle install 選擇契約
+## bundle install selection contract
 
-CLI 的 `id` 是 optional positional argument，`all` 是 bool flag；core 只接受
-以下兩種選擇：
+The CLI's `id` is an optional positional argument and `all` is a boolean
+flag; core accepts only the following two selections:
 
-| 參數 | 結果 |
+| Arguments | Result |
 |---|---|
-| `bundle install <id>` | 安裝該 id 及 dependency closure |
-| `bundle install --all` | 安裝 manifest 的所有 roots 及 dependency closure |
-| `bundle install` | `BUNDLE_SELECTION_INVALID`；不建立 generation |
-| `bundle install <id> --all` | `BUNDLE_SELECTION_INVALID`；不建立 generation |
-| `bundle install ""` | `BUNDLE_SELECTION_INVALID`；空 id 不算選擇 |
+| `bundle install <id>` | Install that ID and its dependency closure |
+| `bundle install --all` | Install all manifest roots and their dependency closure |
+| `bundle install` | `BUNDLE_SELECTION_INVALID`; do not create a generation |
+| `bundle install <id> --all` | `BUNDLE_SELECTION_INVALID`; do not create a generation |
+| `bundle install ""` | `BUNDLE_SELECTION_INVALID`; an empty ID is not a selection |
 
-每次啟用的集合只由這次選擇決定，不會自動累加前一代的其他包。
-例如先 install A 再 install 無依賴的 B，第二代只含 B；需要同時啟用所有包
-時使用 `--all`，不要把多次單包 install 當作累加操作。
+Each activation set is determined only by the current selection; it does not
+automatically accumulate other bundles from the previous generation. For
+example, install A and then an independent B, and the second generation contains
+only B. Use `--all` when all bundles must be active; do not treat repeated
+single-bundle installs as an accumulating operation.
 
-MCP `unone_bundle_install` 的 schema 以 `oneOf` 表示恰好一種：id 分支允許
-`all` 缺省或 `false`，all 分支要求 `all:true` 且不得有 id；handler 仍會對
-`id`/`all` 做嚴格 string/boolean parsing，再傳入同一個
-`install_selected(id.as_deref(), all)`。因此 `{"id":"content","all":false}`
-與 id-only 完全同義；`{}`、`{"all":false}`、`{"id":"content","all":true}`
-會得到相同 core semantic selection error。錯誤不得切換 active generation。
+The MCP `unone_bundle_install` schema uses `oneOf` to require exactly one
+selection: the ID branch permits omitted `all` or `false`, while the all branch
+requires `all:true` and forbids ID. The handler still performs strict
+string/boolean parsing for `id`/`all`, then passes the values to the same
+`install_selected(id.as_deref(), all)`. Therefore
+`{"id":"content","all":false}` is exactly equivalent to ID-only; `{}`,
+`{"all":false}`, and `{"id":"content","all":true}` produce the same core semantic
+selection error. An error must not switch the active generation.
 
-所有 manifest roots 共用同一個 installed set 與 dependency traversal；任一
-fetch、hash、dependency 或 cycle failure 都保持既有 active metadata。空或重複
-bundle id、無效 hash/size、缺失或循環 dependency 也在 activation 前拒絕。
+All manifest roots share one installed set and dependency traversal. Any fetch,
+hash, dependency, or cycle failure preserves the existing active metadata. Empty
+or duplicate bundle IDs, invalid hash/size values, and missing or cyclic
+dependencies are also rejected before activation.
 
-manifest 的 `bundles` 必須明示為 array：缺欄位為 `BUNDLE_MANIFEST_INVALID`，
-`[]` 為 `BUNDLE_MANIFEST_EMPTY`。native 與 Web 的安裝／active read 都驗證
-完整 dependency graph，不因本次只讀其中一包而忽略其他缺失或循環依賴。
-Web 已有 active pointer 但 record 缺失／無效時，回報
-`BUNDLE_ACTIVE_GENERATION_UNREADABLE`，不是可自動覆寫的「首次安裝」。
+The manifest's `bundles` field must be explicitly an array: a missing field is
+`BUNDLE_MANIFEST_INVALID`, while `[]` is `BUNDLE_MANIFEST_EMPTY`. Native and Web
+installation/active reads validate the complete dependency graph; they do not
+ignore another missing or cyclic dependency just because this operation reads
+only one bundle.
+When Web already has an active pointer but its record is missing or invalid,
+report `BUNDLE_ACTIVE_GENERATION_UNREADABLE`; this is not an automatically overwritable
+“first installation”.
 
-## `asset inspect` 與邊界
+## `asset inspect` and boundaries
 
-`asset inspect` 是全體 manifest／scene 的 authoring advisory；需要 handoff、CI
-或 release gate 時用 `--strict`。它檢查主場景 `sprite`、`mesh3d`、`animation`
-的靜態引用，不檢查 Luau 動態建立或選擇的 id。`unreferenced_asset_ids` 不等於
-可安全刪除：動態字串、host 或外部內容仍可能使用它。
+`asset inspect` is an authoring advisory for the complete manifest/scene. Use
+`game verify` as the aggregate author gate; its assets step already runs strict
+inspection. Use standalone `asset inspect --strict` for focused asset diagnosis or
+publication verification, not as a duplicate gate when `verify` is the selected entry
+point. It checks static references from main-scene `sprite`, `mesh3d`, and `animation`
+components, but not IDs dynamically created or selected by Luau.
+`unreferenced_asset_ids` does not mean safe to delete: dynamic strings, a host, or
+external content may still use them.
 
-引擎只負責宣告驗證、archive integrity、native local verified read 與
-generation activation；不負責影像／模型解碼、GPU resource lifetime、下載、
-重試、cache quota、CDN、runtime asset lease 或遊戲 catalog。Web IndexedDB、
-native `.unone` 與其他 host storage 是不同的 active scope；native CLI 啟用
-不代表 Web 已啟用。`asset read` 通過也不等於 native 貼圖渲染或 Web/mobile
-正式 host gate 通過。
+The engine is responsible only for declaration validation, archive integrity,
+native-local verified reads, and generation activation. It does not own
+image/model decoding, GPU resource lifetime, downloading, retries, cache quota,
+CDN, runtime asset leases, or a game catalog. Web IndexedDB, native `.unone`, and
+other host storage are different active scopes; native CLI activation does not
+mean Web activation. Passing `asset read` does not prove native texture rendering or a
+formal Web/mobile host gate.
 
-安全路徑規則同樣套用在 manifest、scene、primary、companions、bundle manifest
-與 native local bundle fetch：先做 portable lexical 檢查，再檢查現存目標與
-祖先的 canonical containment。project 外 absolute path、`..`、反斜線、越界
-symlink、重複 asset id、未知 kind/version 都 fail closed。
+The Web slice is Web-first: mobile validation is a separate deferred track and
+is not required for Web validation. Web CDN, OPFS/production quota, and
+content-change hot-update evidence must still be collected separately when
+claiming the Web final gate.
 
-## 錯誤恢復與不變條件
+Safe-path rules also apply to the manifest, scene, primary files, companions,
+bundle manifest, and native-local bundle fetch: perform portable lexical checks
+first, then check canonical containment for existing targets and ancestors.
+Absolute paths outside the project, `..`, backslashes, escaping symlinks,
+duplicate asset IDs, and unknown kinds/versions all fail closed.
 
-依錯誤所在層級恢復，不用清 cache 或 fallback source 來掩蓋問題：
+## Error recovery and invariants
 
-- authoring 缺 manifest、source 或 companion：建立／修正作者檔案與 declaration，
-  再跑 pack。查詢可以提供定位，但不替作者生成 bytes。
-- pack 或 `asset inspect --strict` 失敗：先修 manifest、path、kind/version、
-  靜態 reference 或實際檔案，再重新 pack；不要安裝未通過的內容。
-- 最新正式 active record 損壞或無法解析時，`install`、`describe` 與 `read` 都必須
-  fail closed 並回報 `BUNDLE_ACTIVE_GENERATION_UNREADABLE`。這是 host/operator 的
-  manual prerequisite：依診斷檢查並修復 record，或從可信備份復原；沒有可信備份
-  就回報 blocker。不要清 cache、刪除整份 `.unone`、退回較舊 generation，或篡造
-  active generation 來假裝恢復；修 source、pack 或 strict 都不能修好壞掉的 record。
-- cache 或 archive bytes 損壞、或 active 尚未包含最新 authoring／bundle manifest：
-  依 structured diagnostic 修正 authoring source 後走
-  `pack → strict → install --all → describe → read`；這條路徑不跨越 active record
-  損壞的 manual prerequisite，也不從不同 generation 拼湊結果。
-- `bundle install` 的 fetch、hash、size、dependency、cycle 或 activation 失敗：
-  既有 active generation 與 metadata 保持不變，已驗證的 cache 可以留下但不代表
-  它已 active。這只是本次 activation 的保護，不是整個發布流程的 rollback；若
-  authoring bundle manifest 已更新，舊 active 可能已不符合新 manifest 而無法 read，
-  仍須依上一步重新發布。
-- `asset read --output` 是使用者明確授權的匯出寫入，與 authoring source 的
-  project containment 分開；describe 建議的 read 命令不附 output。
+Recover at the layer where the error occurred; do not hide the problem by
+clearing the cache or falling back to the source:
 
-每次查詢的 freshness 只涵蓋 selected asset 的 native-local observation。generation
-或 manifest 在觀測期間變動時，不能回報 fresh；重新執行 describe/read 取得新的
-一致觀測。Web 的 IndexedDB、native `.unone`、mobile 或其他 host 各自安裝與驗證，
-不能用 CLI 結果代替跨 host 證據。
+- authoring is missing a manifest, source, or companion: create or fix the
+  authoring files and declaration, then run pack. A query can provide
+  locations, but it does not generate bytes for the author.
+- pack or `asset inspect --strict` fails: fix the manifest, path,
+  kind/version, static reference, or actual files first, then repack; do not
+  install content that did not pass.
+- If the latest formal active record is damaged or cannot be parsed,
+  `install`, `describe`, and `read` must fail closed and report
+  `BUNDLE_ACTIVE_GENERATION_UNREADABLE`. This is a manual prerequisite for the
+  host/operator: inspect and repair the record from diagnostics, or restore it
+  from a trusted backup; report a blocker when no trusted backup exists. Do not
+  clear the cache, delete the entire `.unone` directory, roll back to an older
+  generation, or fabricate an active generation to pretend recovery. Fixing
+  the source, packing, or strict inspection cannot repair a damaged record.
+- If cache or archive bytes are damaged, or active does not yet contain the
+  latest authoring/bundle manifest, use the structured diagnostic to fix the
+  authoring source and follow
+  `pack → strict → install --all → describe → read`. This path does not bypass
+  the manual prerequisite for a damaged active record and does not splice
+  results from different generations.
+- If `bundle install` fails during fetch, hash, size, dependency, cycle, or
+  activation, preserve the existing active generation and metadata. Verified
+  cache may remain, but that does not mean it is active. This protects the
+  current activation only; it is not a rollback for the entire publication
+  process. If the authoring bundle manifest was updated, the old active
+  generation may no longer satisfy the new manifest and may not be readable;
+  republish through the preceding path.
+- `asset read --output` is an export write explicitly authorized by the
+  user and is separate from authoring-source project containment; describe's
+  suggested read command does not include output.
+
+Each query's freshness covers only the selected asset's native-local
+observation. If the generation or manifest changes during observation, do not
+report it as fresh; run describe/read again for a consistent observation. Web
+IndexedDB, native `.unone`, mobile, and other hosts each install and validate
+independently, and CLI results cannot substitute for cross-host evidence. Mobile
+validation remains a separate deferred track and is not a prerequisite for the
+Web slice.

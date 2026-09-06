@@ -1,33 +1,36 @@
 # Unone
 
-Unone 是 AI-native 遊戲引擎原型：Rust 負責遊戲引擎機制，Luau 負責遊戲規則與內容。引擎目前仍在早期開發，最終必須通過七類遊戲驗證，才算完成長期目標。
+Unone is an AI-native game engine prototype: Rust owns engine mechanisms, while Luau owns game rules and content. The engine is still in early development; its long-term goal is complete only after seven game validations pass.
 
-## 工作區
+## Workspace
 
-- Engine：`D:/Projects/Unone`
-- Validation games：`D:/Projects/Unone_Games`
-- 引擎 roadmap：[docs/roadmap.md](docs/roadmap.md)
-- 技術草案：[docs/ai-native-game-engine-plan-v0.1.md](docs/ai-native-game-engine-plan-v0.1.md)
-- AI CLI 流程：[docs/ai-workflow.md](docs/ai-workflow.md)
-- 資產工作流現行契約：[docs/asset-workflow.md](docs/asset-workflow.md)
-- Code review 流程：[docs/review-process.md](docs/review-process.md)
-- 平台 toolchain：[docs/platform-toolchain.md](docs/platform-toolchain.md)
+- Engine: `D:/Projects/Unone`
+- Validation games: `D:/Projects/Unone_Games`
+- Engine roadmap: [docs/roadmap.md](docs/roadmap.md)
+- Technical plan: [docs/ai-native-game-engine-plan-v0.1.md](docs/ai-native-game-engine-plan-v0.1.md)
+- AI CLI workflow: [docs/ai-workflow.md](docs/ai-workflow.md)
+- Current asset workflow contract: [docs/asset-workflow.md](docs/asset-workflow.md)
+- Code review workflow: [docs/review-process.md](docs/review-process.md)
+- Platform toolchain: [docs/platform-toolchain.md](docs/platform-toolchain.md)
 
-## 目前可執行的垂直切片
+## Current executable vertical slice
 
-新遊戲使用既有 `game --project <new-or-empty-directory> --json project init --name <name>`。
-它產生五檔 headless starter（含 idle／Right 輸入兩個測試），並回傳可直接交給
-subprocess 的下一步 argv。企劃／engine package 放在 output 外；init 成功後才 git init。
-starter 通過不代表遊戲完成；請換成自己的玩法與測試。完整寫入／錯誤／scene
-嚴格輸入契約見 [AI 開發流程](docs/ai-workflow.md)。搜尋沒有匹配時可用
-`game api search ""` 讀完整公開索引，不必另找 api list 或猜方法名。
+New games use the existing `game --project <new-or-empty-directory> --json project init --name <name>`.
+It creates a five-file headless starter, including idle and Right-input tests, and returns
+next-step argv that can be passed directly to a subprocess. Keep the game plan and engine
+package outside the output directory; run git init only after init succeeds. Passing the
+starter does not mean the game is complete; replace it with your own gameplay and tests.
+The complete write, failure, and scene-input contracts are in the [AI development workflow](docs/ai-workflow.md).
+When a search has no matches, use `game api search ""` to read the complete public index;
+there is no need to find another api list or guess method names.
 
-在 engine workspace 執行：
+Run these from the engine workspace:
 
 ```powershell
 cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json project inspect
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json verify
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json asset inspect
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json asset inspect --strict
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json bundle install --all
@@ -45,50 +48,54 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json te
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview --watch
 ```
 
-AI host 也可以使用同一個 Developer Protocol 的 MCP stdio 薄轉接：
+Use verify as the aggregate author gate: it covers the typed check, strict asset
+inspection, UI layout, and tests. The standalone asset inspect --strict command
+above is for focused asset diagnosis or publication verification, not an
+additional gate when verify is the selected entry point.
+An AI host can also use the same Developer Protocol through a thin MCP stdio adapter:
 
 ```powershell
 cargo build -p unone-cli
 target/debug/game.exe --project D:/Projects/Unone_Games/minimal-2d mcp
-# 驗證 lifecycle、tools discovery、deterministic run 與語意錯誤
+# Validate lifecycle, tool discovery, deterministic run, and semantic errors
 .\scripts\mcp-smoke.ps1
 ```
 
-MCP 只位於 `unone-cli`，不成為 engine core 的依賴；工具結果保留完整 `EngineResult` JSON 與語意化 diagnostics。
+MCP exists only in `unone-cli`; it is not an engine-core dependency. Tool results retain the complete `EngineResult` JSON and semantic diagnostics.
 
-目前已驗證：Luau entrypoint、`--!strict` contract、官方 `luau-analyze` adapter、headless fixed timestep、deterministic 2D rigid body／重力／地面碰撞、Camera2D state、逐 frame input replay、共用的 `tick_with_input` host boundary、seeded Luau random、seed/input observation digest、failed reload fallback、scene Sprite size validation、與遊戲命名無關的 native wgpu preview、`preview --watch` 腳本熱更、JSON test manifest、bundle hash/cache/activation、資產工作流的 manifest／引用／active generation 查詢、由已啟用 generation 解析單一資產並回報 verified sha256 的 host 契約（Rust 與 Web host 共用同一份 archive 格式與錯誤碼），由遊戲宣告要不要跑哪些引擎系統的 `systems` 契約，以及 Spine／Effekseer 的語意表現層（引擎只傳輸動畫選擇與特效事件，host 執行 runtime）。`web/presentation/` 已用 spine-webgl 與 Effekseer for WebGL 實際播放老虎機的同一份 snapshot；native preview 與 Android host 仍不會畫。
+The current documented capability coverage includes Luau entrypoints, the `--!strict` contract, the official `luau-analyze` adapter, a headless fixed timestep, deterministic 2D rigid-body gravity/ground collision, Camera2D state, frame-by-frame input replay, the shared `tick_with_input` host boundary, seeded Luau random, seed/input observation digests, failed-reload fallback, scene Sprite size validation, a game-name-independent native wgpu preview, `preview --watch` script hot reload, JSON test manifests, bundle hash/cache/activation, asset-manifest/reference/active-generation queries, the host contract for resolving one asset from an active generation and reporting its verified sha256 (Rust and Web hosts share one archive format and error-code set), the `systems` contract for game-controlled engine-system selection, and the Spine/Effekseer semantic presentation layer (the engine transports animation selections and effect events; the host runs the runtime). `web/presentation/` has played the same slot-machine snapshot with spine-webgl and Effekseer for WebGL; native preview and the Android host still do not draw it.
 
-完整型別檢查使用 `game check --types`。正式 engine package 會把固定版本的官方 `luau-analyze` 放在 `bin/luau-analyze.exe`，由同目錄的 `bin/game.exe` 自動找到；工具不存在時引擎會明確回報錯誤，不會把基本 contract check 說成完整型別檢查。
+For complete type checking, use `game check --types`. A formal engine package places a pinned official `luau-analyze` at `bin/luau-analyze.exe`, which the `bin/game.exe` beside it finds automatically. If the tool is missing, the engine reports an explicit error instead of describing the basic contract check as complete type checking.
 
-## 開起來看
+## Open it and look
 
-從 `D:/Projects` 啟動靜態伺服器後，`http://127.0.0.1:8001/Unone/web/` 是三款驗證遊戲的入口：
+From `D:/Projects`, start a static server; `http://127.0.0.1:8001/Unone/web/` is the entry point for the three validation games:
 
 ```powershell
 python -m http.server 8001
 ```
 
-老虎機走 `web/presentation/`（Spine + Effekseer，需要 WebGL2）；小瑪莉與憤怒鳥走 `web/runner/`。
-沒有 WebGPU 的瀏覽器仍可執行語意層：runner 會回報 `renderer.available=false` 並繼續推進模擬、UI 與存檔。
-老虎機的 wasm host 需先執行 `scripts/build-web-live.ps1`。
+The slot machine uses `web/presentation/` (Spine + Effekseer, requiring WebGL2); Xiao Mary and Angry Birds use `web/runner/`.
+A browser without WebGPU can still run the semantic layer: the runner reports `renderer.available=false` and continues simulation, UI, and save execution.
+The slot-machine wasm host must first run `scripts/build-web-live.ps1`.
 
-## Web 目前狀態
+## Current Web status
 
-`unone-engine` 已以 `wasm32-unknown-emscripten` 搭配 Emscripten wrapper 通過 library compile，`unone-web-smoke` 也已完成 link、由 host Node（需 `--experimental-wasm-exnref`）執行 60 frames，並由 `web/smoke/index.html` 在瀏覽器實際載入執行。`web/host/` 已驗證 snapshot bridge，`web/live/` 另以窄 C ABI 驗證 browser animation frame、host-provided project payload、script reload、pointer 驅動同一個 Rust/Luau runtime、WebGPU render，以及 sample bundle verify、IndexedDB cache、generation activation 與 cache-only reopen；`web/runner/` 已能讀取 engine 產生的 content archive 並解析真實 SVG asset。這仍不是完整 production asset packaging；mobile host、OPFS/chunked asset streaming、CDN policy 與正式 error transport 仍未完成。
+`unone-engine` has passed a library compile with `wasm32-unknown-emscripten` and an Emscripten wrapper. `unone-web-smoke` has also completed linking, run 60 frames under host Node (requiring `--experimental-wasm-exnref`), and been loaded by `web/smoke/index.html` in a browser. `web/host/` covers the snapshot bridge; `web/live/` additionally covers browser animation frames, host-provided project payloads, script reload, pointer-driven execution of the same Rust/Luau runtime, WebGPU rendering, and sample bundle verification, IndexedDB caching, generation activation, and cache-only reopen. `web/runner/` can read engine-produced content archives and parse a real SVG asset. This is still not complete production asset packaging; OPFS/chunked asset streaming, CDN policy, and formal error transport remain unfinished.
 
-Android preflight 已用 NDK `27.1.12297006` 通過 `unone-engine` 與最小 `unone-mobile-ffi` adapter 的 `aarch64-linux-android`、`x86_64-linux-android` cross-compile；這不等於 APK、emulator/device 或 mobile lifecycle 通過。ABI 說明見 [docs/mobile-host-abi.md](docs/mobile-host-abi.md)。
+Android preflight has passed an engine and minimal `unone-mobile-ffi` adapter cross-compile for `aarch64-linux-android` and `x86_64-linux-android` using NDK `27.1.12297006`; this is not APK, emulator/device, or mobile-lifecycle evidence. See [docs/mobile-host-abi.md](docs/mobile-host-abi.md) for the ABI description. Mobile validation is a separate deferred track and is not a prerequisite for the Web slice; Android/iOS host and lifecycle evidence will be added when those hosts are explicitly exercised.
 
-## 邊界
+## Boundaries
 
-引擎只提供必要的遊戲機制。遊戲規則、數值、ViewModel、UI flow、內容 catalog、下載時機與營運服務留在遊戲專案或服務端。UI 會採 MVVM；ECS + systems 負責高頻模擬。
+The engine provides only necessary game mechanisms. Game rules, numbers, ViewModels, UI flow, content catalogs, download timing, and operational services stay in the game project or service layer. UI follows MVVM; ECS + systems handle high-frequency simulation.
 
-Bundle 的第一版只包含 manifest、依賴、host-provided fetch、streaming hash 驗證、content-addressed cache、staging 與 generation activation；不包含 CDN、P2P、差分更新或遠端腳本執行。fetch、重試與平台 storage policy 不進 engine core。
+The first Bundle version contains only a manifest, dependencies, host-provided fetch, streaming hash verification, content-addressed cache, staging, and generation activation. It does not include CDN, P2P, differential updates, or remote script execution. Fetch, retry, and platform-storage policy stay out of engine core.
 
-## 驗證遊戲
+## Validation games
 
-中期先在 `D:/Projects/Unone_Games/` 用憤怒鳥 2D 壓測 2D physics、camera、input replay、scene/prefab、asset、UI、hot reload、headless test 與 AI 教學。最終驗收仍包括 3D 賽車、紅色警戒式 RTS、放置戰鬥、AVG、自走棋、老虎機與魚機。
+In the medium term, use `D:/Projects/Unone_Games/` and Angry Birds 2D to stress 2D physics, camera, input replay, scene/prefab, assets, UI, hot reload, headless tests, and AI teaching. Long-term acceptance still includes 3D Racing, Red Alert-style RTS, Dota-style Idle Battle, AVG Romance, Auto Chess, Slot Machine, and Fish Machine.
 
-正式 gate 以 `D:/Projects/Unone_Games/validation/acceptance-matrix.json` 為準；可用以下命令檢查，任何一個 gate 未完成都會以非零狀態回報：
+The formal gate is defined by `D:/Projects/Unone_Games/validation/acceptance-matrix.json`. Use the following command to check it; any incomplete gate returns a non-zero status:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File D:/Projects/Unone/scripts/validate-game-matrix.ps1 -MatrixPath D:/Projects/Unone_Games/validation/acceptance-matrix.json

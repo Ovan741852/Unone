@@ -1,24 +1,24 @@
-# ADR 0004：MVVM 用於 UI/presentation，不統一整個引擎
+# ADR 0004: Use MVVM for UI/Presentation, Not for the Entire Engine
 
-日期：2026-09-05  
-狀態：accepted
+Date: 2026-09-05  
+Status: accepted
 
-## 決策
+## Decision
 
-Unone 採混合架構：ECS + systems 負責高頻遊戲模擬；Luau MVVM 負責 UI、畫面流程、對話、商店、任務面板等 presentation。引擎只提供最小 UI node、binding、observable/command primitive；ViewModel 由遊戲業務端定義。
+Unone uses a hybrid architecture: ECS + systems handle high-frequency game simulation; Luau MVVM handles UI, screen flow, dialogue, shops, quest panels, and other presentation. The engine provides only minimal UI-node, binding, observable, and command primitives; the game business side defines the ViewModel.
 
-## 原因
+## Rationale
 
-MVVM 的明確 state → projection → view 邊界適合 AI inspect、typed context、command generation 與測試；但把 physics、transform、Entity simulation 也包成 ViewModel 會增加同步、分配與生命週期複雜度，偏離遊戲引擎的必要責任。
+MVVM's explicit state → projection → view boundary suits AI inspection, typed context, command generation, and testing. However, wrapping physics, transforms, and Entity simulation in ViewModels would add synchronization, allocation, and lifecycle complexity, moving away from the responsibilities a game engine actually needs.
 
-## 邊界規則
+## Boundary Rules
 
-- View 不直接修改 ECS 或執行遊戲規則。
-- ViewModel 是 Luau 的 typed、可序列化 presentation projection。
-- Commands 必須有名稱、輸入、前置條件、結果與 diagnostics。
-- Binding 必須明確宣告且可清除；不做全域 magic two-way binding。
-- 引擎不擁有遊戲的 ViewModel、screen flow 或 domain state schema。
+- A View does not directly modify ECS or execute game rules.
+- A ViewModel is a typed, serializable Luau presentation projection.
+- Commands must have a name, inputs, prerequisites, results, and diagnostics.
+- Bindings must be explicitly declared and removable; do not build global magic two-way binding.
+- The engine does not own the game's ViewModels, screen flow, or domain-state schema.
 
-## 重新檢視條件
+## Reconsideration Conditions
 
-若三個以上驗證遊戲證明相同 UI binding/command 問題反覆出現，才擴充 engine UI primitive；若只是單一商店、對話或戀愛流程，留在遊戲端。
+Expand the engine UI primitives only if three or more validation games demonstrate the same recurring UI binding/command problem; if it is only a single shop, dialogue, or dating flow, keep it on the game side.

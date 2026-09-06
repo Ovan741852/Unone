@@ -1,26 +1,26 @@
-# Decision 0011：MCP 是 CLI/Developer Protocol 的薄轉接，不進引擎
+# Decision 0011: MCP Is a Thin CLI/Developer Protocol Adapter, Not Part of the Engine
 
-- 日期：2026-09-05
-- 狀態：accepted
+- Date: 2026-09-05
+- Status: accepted
 
 ## Context
 
-AI 可以直接使用 `game --json`，但部分 AI host 以 MCP tools discovery 與 tool call 作為標準入口。若 MCP 自己重做 project loading、run、test 或 diagnostics，CLI 與 MCP 很快會產生不同語意。
+AI can use `game --json` directly, but some AI hosts use MCP tool discovery and tool calls as their standard entry point. If MCP reimplemented project loading, run, test, or diagnostics, the CLI and MCP would quickly acquire different semantics.
 
 ## Decision
 
-新增 `game mcp` stdio server，第一版只做 MCP lifecycle 與 tools primitive：
+Add a `game mcp` stdio server whose first version provides only MCP lifecycle and tool primitives:
 
-- `initialize`／`notifications/initialized`／`ping`
-- `tools/list` 的 deterministic tool definitions
-- `tools/call` 對應既有 project inspect、API metadata、check、run、test、observe、platform 與 bundle operations
-- engine result 原封不動包在 MCP text content；`EngineResult.ok == false` 對應 `CallToolResult.isError == true`
+- `initialize`/`notifications/initialized`/`ping`
+- deterministic tool definitions for `tools/list`
+- `tools/call` mappings for the existing project inspect, API metadata, check, run, test, observe, platform, and bundle operations
+- wrap engine results unchanged in MCP text content; map `EngineResult.ok == false` to `CallToolResult.isError == true`
 
-MCP adapter 放在 `unone-cli`，不讓 `unone-engine` 依賴 MCP SDK、JSON-RPC transport 或 AI host。stdio stdout 只輸出 MCP JSON；診斷、facts、likely_causes、suggested_actions、world 與 observation digest 不被轉成只有自由文字的訊息。
+Keep the MCP adapter in `unone-cli`; do not make `unone-engine` depend on an MCP SDK, JSON-RPC transport, or AI host. stdio stdout emits only MCP JSON; diagnostics, facts, likely_causes, suggested_actions, world, and observation digests are not reduced to free-text-only messages.
 
 ## Consequences
 
-AI host 可以 discovery 並呼叫既有能力，CLI 與 MCP 的結果語意相同。第一版不做 MCP resources、prompts、tasks、Streamable HTTP、長生命週期遊戲 session 或自動修改 source；需要持續 preview 時仍使用 `game preview --watch`。工具 schema 先由 adapter 明確維護，待 public metadata 穩定且真的出現重複維護成本時，再建立生成器。
+An AI host can discover and call existing capabilities, with the CLI and MCP sharing result semantics. The first version does not provide MCP resources, prompts, tasks, Streamable HTTP, long-lived game sessions, or automatic source modification; use `game preview --watch` for continuous preview. The adapter maintains the tool schema explicitly first; build a generator only after public metadata is stable and repeated maintenance cost actually appears.
 
 ## References
 
