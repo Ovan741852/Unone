@@ -280,10 +280,13 @@ function renderUi(world) {
   uiLayer.replaceChildren();
   if (!ui) return;
   for (const node of ui.children ?? []) {
-    const element = document.createElement("div");
+    // A button the game published has to be pressable, or the only way to play
+    // is the host's own debug controls.
+    const element = document.createElement(node.kind === "button" ? "button" : "div");
     element.className = `unone-ui-node unone-ui-${node.kind}`;
     element.textContent = node.text;
     element.dataset.nodeId = node.id;
+    if (node.kind === "button" && node.action) element.dataset.action = node.action;
     element.style.left = `${node.rect.x}%`;
     element.style.bottom = `${node.rect.y}%`;
     element.style.width = `${node.rect.width}%`;
@@ -444,6 +447,11 @@ async function start() {
     spinButton.disabled = false;
     autoButton.disabled = false;
     spinButton.addEventListener("click", () => pressAction("Spin"));
+    // The game's own buttons carry the action they mean; the host only forwards it.
+    uiLayer.addEventListener("click", (event) => {
+      const action = event.target?.dataset?.action;
+      if (action) pressAction(action);
+    });
     window.unoneHost = { pressAction, stepOnce: step, record };
     autoButton.addEventListener("click", () => {
       autoPlay = !autoPlay;
