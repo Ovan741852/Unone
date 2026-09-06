@@ -69,7 +69,8 @@ foreach ($decision in @(
     "0030-anchored-ui-placement.md",
     "0031-camera-view-extent.md",
     "0032-frame-cost-observation.md",
-    "0033-replay-diff.md"
+    "0033-replay-diff.md",
+    "0034-independent-2d-colliders.md"
 )) {
     Copy-PackageFile (Join-Path $engineRoot "docs\decisions\$decision") "docs\decisions\$decision"
 }
@@ -78,7 +79,19 @@ foreach ($webFile in @(
     "web\runner\index.html",
     "web\runner\save-store.js",
     "web\shared\webgpu-snapshot.js",
-    "web\live\bundle-store.js"
+    "web\live\bundle-store.js",
+    # The presentation host is the only one that plays Spine, Effekseer and
+    # audio. Without it a packaged agent can enable those systems and never
+    # see or hear the result, which reads as "the engine does nothing".
+    "web\presentation\main.js",
+    "web\presentation\index.html",
+    "web\presentation\README.md",
+    "web\vendor\README.md",
+    "web\vendor\spine\spine-webgl.js",
+    "web\vendor\spine\LICENSE",
+    "web\vendor\effekseer\effekseer.js",
+    "web\vendor\effekseer\effekseer.wasm",
+    "web\vendor\effekseer\LICENSE"
 )) {
     Copy-PackageFile (Join-Path $engineRoot $webFile) $webFile
 }
@@ -86,11 +99,15 @@ Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.js") "web\runtim
 Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.wasm") "web\runtime\unone_web_live_smoke.wasm"
 Copy-PackageFile (Join-Path $engineRoot "scripts\verify-ai-engine-package.ps1") "scripts\verify-ai-engine-package.ps1"
 
-$indexPath = Join-Path $outputRoot "web\runner\index.html"
-$index = [IO.File]::ReadAllText($indexPath)
-$index = $index.Replace("../../target/wasm32-unknown-emscripten/debug/deps/unone_web_live_smoke.js", "../runtime/unone_web_live_smoke.js")
 $utf8 = New-Object System.Text.UTF8Encoding($false)
-[IO.File]::WriteAllText($indexPath, $index, $utf8)
+# Both hosts load the runtime from the repo build directory in place; in a
+# package it lives beside them.
+foreach ($hostIndex in @("web\runner\index.html", "web\presentation\index.html")) {
+    $indexPath = Join-Path $outputRoot $hostIndex
+    $index = [IO.File]::ReadAllText($indexPath)
+    $index = $index.Replace("../../target/wasm32-unknown-emscripten/debug/deps/unone_web_live_smoke.js", "../runtime/unone_web_live_smoke.js")
+    [IO.File]::WriteAllText($indexPath, $index, $utf8)
+}
 
 $readme = @"
 # Unone AI engine package
@@ -102,6 +119,8 @@ before writing game code.
 Native command: bin/game.exe
 Luau analyzer: bin/luau-analyze.exe (game check --types finds it automatically)
 Web runner: web/runner/index.html
+Presentation host: web/presentation/index.html (Spine, Effekseer and audio;
+the generic runner draws none of those)
 
 This is a Web-first package. Android package binaries and Android smoke
 scripts are intentionally not included; Android packaging is a later host task.
