@@ -1,0 +1,47 @@
+{
+  "source_commit": "63ee13279e5e9c06f338b95c0c3971e0ee2a6fb7",
+  "cli_build": "passed",
+  "wasm_build": "passed",
+  "android_x86_64_ffi_jni_java_dex_build": "passed",
+  "android_device": "not_run",
+  "ios": "not_run",
+  "note": "libc++ shared is previously staged unchanged NDK input; Java emitted source8 bootstrap warning. No directory deletion.",
+  "files": [
+    {
+      "path": "target/debug/game.exe",
+      "size_bytes": 37062144,
+      "sha256": "c19a49af9f415642ab3429c9b715ee37cea8ffc2922ab65eb3ab928c2f58478d"
+    },
+    {
+      "path": "target/wasm32-unknown-emscripten/debug/deps/unone_web_live_smoke.js",
+      "size_bytes": 195447,
+      "sha256": "20fc616519b905fd3a941d389841823464f05b9ac7f6e9abba590b286a8541d0"
+    },
+    {
+      "path": "target/wasm32-unknown-emscripten/debug/deps/unone_web_live_smoke.wasm",
+      "size_bytes": 32485318,
+      "sha256": "6c3b8ca97eb79dfeb19970d6cf093da3915eb0a47924d8c3f0c6ad3cbcd48ad9"
+    },
+    {
+      "path": "platform/android/build/x86_64-linux-android/package/lib/x86_64/libunone_mobile_ffi.so",
+      "size_bytes": 35769672,
+      "sha256": "9ba745fd3f8809ceb8e6209c8f4bc658329c3ccb550392b077bcf505b02fe232"
+    },
+    {
+      "path": "platform/android/build/x86_64-linux-android/package/lib/x86_64/libunone_android_host.so",
+      "size_bytes": 9496,
+      "sha256": "e58333c9016be6899be1caaeeb2b764afcafc72f68cdd99d82d5194c21211b11"
+    },
+    {
+      "path": "platform/android/build/x86_64-linux-android/package/lib/x86_64/libc++_shared.so",
+      "size_bytes": 1617608,
+      "sha256": "220f048039aab19e58132614392ff8e607ea2c3c2ddca26fa021455adbac4383"
+    },
+    {
+      "path": "platform/android/build/x86_64-linux-android/dex/classes.dex",
+      "size_bytes": 10344,
+      "sha256": "21cbdf4047bd5d635303e7d9ea3f8e291471cc46b327fa2fa69db68f7a9c1de8"
+    }
+  ]
+}
+

@@ -1,0 +1,102 @@
+{
+  "ok": true,
+  "value": {
+    "project": "DotPathProbe",
+    "root": "\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game",
+    "files": [
+      {
+        "path": "project.unone.json",
+        "role": "project_config"
+      },
+      {
+        "path": "scenes/main.scene.json",
+        "role": "main_scene"
+      },
+      {
+        "path": "scripts/main.luau",
+        "role": "entry_script"
+      },
+      {
+        "path": "tests/bootstrap-idle.test.json",
+        "role": "bootstrap_idle_test"
+      },
+      {
+        "path": "tests/bootstrap-input.test.json",
+        "role": "bootstrap_input_test"
+      }
+    ],
+    "workflow_scope": "new_unmodified_scaffold",
+    "suggested_next_actions": [
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game",
+          "--json",
+          "verify"
+        ],
+        "reason": "先驗證剛產生且尚未修改的五檔 starter；這只確認 onboarding smoke。",
+        "prerequisites": []
+      },
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game",
+          "--json",
+          "bundle",
+          "pack"
+        ],
+        "reason": "verify 後才建立 bundle；init 不會隱式 pack 或啟用 bundle。",
+        "prerequisites": [
+          0
+        ]
+      },
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game",
+          "--json",
+          "bundle",
+          "install",
+          "--all"
+        ],
+        "reason": "pack 完成後啟用 manifest 宣告的全部 bundle；此步仍由作者明確執行。",
+        "prerequisites": [
+          1
+        ]
+      },
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game",
+          "--json",
+          "bundle",
+          "inspect"
+        ],
+        "reason": "install 後檢視目前 active bundle；新增資產後應回到既有 pack → verify/strict → install 流程。",
+        "prerequisites": [
+          2
+        ]
+      }
+    ]
+  },
+  "diagnostics": [],
+  "effects": [
+    "created_directory:\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd",
+    "created_directory:\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new",
+    "created_directory:\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game",
+    "created_file:\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game\\project.unone.json",
+    "created_directory:\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game\\scenes",
+    "created_file:\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game\\scenes\\main.scene.json",
+    "created_directory:\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game\\scripts",
+    "created_file:\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game\\scripts\\main.luau",
+    "created_directory:\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game\\tests",
+    "created_file:\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game\\tests\\bootstrap-idle.test.json",
+    "created_file:\\\\?\\C:\\temp\\unone-dot-probe-0449fabf9aef4a9088002ffa5f7aabdd\\new\\game\\tests\\bootstrap-input.test.json"
+  ]
+}
+ACTUAL_EXIT_CODE=0
+

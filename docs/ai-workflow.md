@@ -38,6 +38,8 @@ bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json project init
 .git 或 GAME_PLAN.md 也會拒絕。企劃、引擎包放在 output 外，git init 在成功建立
 專案後再做。不提供 force／覆寫／合併模式，拒絕 `..` 路徑及 symlink/junction/reparse
 root 或祖先；一般 `.` 與空白／Unicode 路徑可用。
+這是單一作者寫入情境下的路徑防誤用；不是抵禦其他行程在檢查與寫入之間
+惡意置換祖先目錄的 filesystem transaction。不要對同一 output 同時執行多個 writer。
 
 只建立五個遊戲端檔案：
 
