@@ -103,3 +103,14 @@ Node六項回歸成功；移動test-only SceneFile import後clippy all-targets -
 
 建立本地candidate checkpoint後重建CLI/Wasm/mobile；Newton source review與新Claude
 source review仍進行中。封裝及新的遊戲盲評未完成，不標authoring交付或七款passed。
+
+969da77（docs-only descendant of63ee132）產生新的46檔immutablepackage，manifest
+sha256=3192ccd2329be113318d1828a91406036c9437a838b625cdda3dbdef63ebf77b，source_dirty=false。
+主代理starterWeb實跑renderer可用、三包hash與native相同、example在0/0；無asset/UI，
+只證明starterruntime，截圖starter-web.png不當成遊戲美術驗收。首次開頁早於fixture
+複製，屬主代理setup順序問題；複製後reload成功，不歸咎engine。
+
+Newton最終回報P2：API_SEARCH_EMPTY的systems提示未帶project。主代理從engine包
+目錄重現PROJECT_CONFIG_NOT_FOUND。因此停住新遊戲盲評交接、向使用者確認project
+context/structured argv窄修。保留包不覆寫，修後重建新包。不是把165tests全綠當作
+使用流程通過。完整問題與取捨见issues/2026-09-06-api-search-project-context.md。

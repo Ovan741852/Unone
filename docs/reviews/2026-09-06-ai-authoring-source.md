@@ -1,7 +1,7 @@
 # AI authoring source review
 
-候選：63ee132（相對64a702a）。狀態：Claude審查完成、Luna/max A/C審查待回覆；
-不等於package-only驗收完成。
+候選：63ee132（相對64a702a）。狀態：Claude與Luna/max A/C source review完成，
+Luna發現P2 project context遺失，主代理實測確認；需修正，不等於package-only驗收完成。
 
 ## Claude CLI
 
@@ -27,3 +27,12 @@ test-only SceneFile import移至test module。CLI exit0；下列為實際stdout�
 主代理額外actualjunction probe根/祖先皆拒絕且未寫入target。Clippy workspace
 all-targets -D warnings exit0，Node6項回歸成功。starter回傳4步argv原樣實跑成功。
 證據在../evidence/2026-09-06-ai-authoring。不以此冒充新遊戲盲評或平台finalgate。
+
+## Luna/max Newton independent A/C review
+
+全新context，只讀A/C source與current契約，不讀歷次review/devlog。最終指出
+api.rs90-104建議systems list未帶呼叫project，從包目錄執行讀不到遊戲config。
+主代理實際包內CLI exit1 PROJECT_CONFIG_NOT_FOUND，採納為workflow問題，見
+../issues/2026-09-06-api-search-project-context.md。未解之前不派下游game blind。
+Normal-dot疑點由主代理真實CLI測試排除、reviewer撤回；沒有其他具證據A/C缺陷。
+Reviewer沒有跑build/test、不涵蓋B；不把有限source review寫成全引擎背書。
