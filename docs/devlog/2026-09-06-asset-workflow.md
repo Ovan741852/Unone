@@ -1,7 +1,7 @@
 # AI 資產維護：從第三方建議到可驗證工作流
 
-日期：2026-09-06。狀態：source_review_closed / build_blocked；
-新封裝待解除磁碟空間阻塞，尚非本輪 gate 通過。
+日期：2026-09-06。狀態：source_review_closed / platform_and_blind_validation_in_progress；
+磁碟空間已恢復，Rust回歸完成，新封裝／盲評仍未通過。
 
 ## 決定做什麼、為什麼
 
@@ -140,3 +140,17 @@ Cargo/rustc/link；但實際刪除命令被工具以 `blocked by policy` 在啟�
 再次唯讀確認目錄仍存在；沒有刪除，也沒有啟動原訂 Cargo 測試或新功能製作。
 本次授權已記錄，不重問同一份許可；請使用者手動清理唯一指定快取後接續。
 不以其他 shell／刪除方式繞過工具限制，也不把尚未執行的 build/盲評列成完成。
+
+## 使用者手動清理後續作
+
+已確認 incremental 目錄內0檔案、D可用約4.48GiB；暫時關閉增量編譯、單一
+Cargo工作，沒有改全域設定。b70e58b（code與c187df8相同）workspace138
+harness successes，兩項 Windows symbolic-link 權限案例明示skip；clippy與
+CLI重建、6個JS tests完成。原真實 Junction 失敗安裝不再產生第三代；損壞
+generation2 不退回1；metadata mismatch在export前拒絕；output collision
+拒絕後整個fixture樹hash不變。完整CLI/MCP describe結果相同且verified read
+hash符合作者bytes。見[接續證據](../evidence/2026-09-06-asset-workflow/resumed-regressions.json)。
+
+Hooke（全新Luna/max）負責序列Web/Android產物重建；只生成產物，不改功能、
+不跑會刪整份Android build目錄的script、不刪舊封裝。新包完成後再給全新
+package-only evaluator；此處尚無新增畫面或盲評成功宣稱。

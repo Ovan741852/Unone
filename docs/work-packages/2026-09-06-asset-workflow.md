@@ -1,6 +1,6 @@
 # 資產工作流調整計畫
 
-版本：v3 + code-review corrections / source_review_closed, build_blocked。
+版本：v3 + code-review corrections / source_review_closed, platform_and_blind_validation_in_progress。
 v1 保留於 `146baeb`；獨立限定再審
 無 unresolved plan blocker，製作已放行，尚非功能驗收通過。
 
@@ -185,11 +185,8 @@ Decision 0025 的一般盲測/嚴格 gate 原則未全部被取代，保留並�
 source-only 覆核皆已完成，未見新增可證實 P1/P2。主代理已做 Rust 語法解析、diff check 與
 Node 5/5（stub）驗證；不把這些稱為 Rust 編譯、Wasm 或 real-browser 通過。
 
-1. 使用者已明確批准只清理 `target/debug/incremental`。主代理完成 exact
-   target／ancestor／children reparse 與 active build 的唯讀檢查。
-2. 刪除命令被工具執行政策拒絕，沒有刪除任何快取或啟動 Cargo；需使用者
-   手動清理唯一指定目錄後再量測空間。詳見 disk-pressure issue；不繞過
-   政策、不刪 Games、`.git`、其他 target 或舊封裝。
+1. 使用者已手動清理指定 incremental；主代理確認目錄內0 files、D槽約4.48GiB。
+2. 以 process-only 關閉增量編譯／單一建置工作序列接續，不再清理其他資料。
 3. 依序重跑 workspace tests（明示 Windows link privilege skip）、clippy、
    CLI build、MCP smoke。用主代理保留的原 probe 重跑 corrupt generation、
    metadata mismatch、output collision、post-activation Junction 反例。
@@ -200,3 +197,9 @@ Node 5/5（stub）驗證；不把這些稱為 Rust 編譯、Wasm 或 real-browse
    檢查 source_commit／source_dirty／inventory hash，不用舊平台 binary 冒充。
 5. 全新 Luna/max evaluator 只拿 package、本驗證企劃與空目錄；保留首次 blocker，
    然後用實際 browser/host 補必要畫面與截圖。七款 final gates 維持原狀。
+
+接續實測：[resumed-regressions](../evidence/2026-09-06-asset-workflow/resumed-regressions.json)。
+workspace 138 harness successes（含兩個 Windows privilege skip，不能算符號連結
+覆蓋）、clippy、CLI build、6個JS tests 完成；原 corrupt generation／真實
+Junction／metadata mismatch／獨立 collision fixture 都已符合拒絕與無副作用要求。
+CLI/MCP describe 完整結果相同。尚不是新封裝或 real-browser 盲驗通過。

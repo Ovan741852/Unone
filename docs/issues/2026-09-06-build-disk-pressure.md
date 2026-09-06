@@ -1,6 +1,16 @@
 # 封裝前 D 槽空間不足與 linker PDB 失敗
 
-日期：2026-09-06。狀態：cleanup_authorized_but_execution_policy_blocked。
+日期：2026-09-06。狀態：space_recovered_build_resumed。
+
+## 目前狀態
+
+使用者回覆已手動刪除快取後，主代理再次確認 incremental 目錄仍存在但檔案
+數為 0；D 槽可用 4,816,281,600 bytes（約4.48GiB），無 active build。
+已用 process-only CARGO_INCREMENTAL=0／CARGO_BUILD_JOBS=1 接續建置，
+不更動全域 Cargo 設定、不再刪任何目錄。Rust tests／clippy／CLI build
+已完成；詳見 resumed-regressions 證據。平台重建與封裝盲驗仍各自驗證。
+
+以下為先前阻塞歷史，不代表仍缺空間或仍需使用者清理。
 
 ## 已確認事實
 

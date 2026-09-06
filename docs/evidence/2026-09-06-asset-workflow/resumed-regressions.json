@@ -1,0 +1,224 @@
+{
+  "source_commit": "b70e58b7d80a9c26a360b9e53e8f5402e37cb4cf",
+  "scope": "Main-agent regression after user cleared incremental cache; no package-only or browser claim",
+  "build_environment": {
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "1"
+  },
+  "workspace_tests": {
+    "exit_code": 0,
+    "harness_successes": 138,
+    "cli": 11,
+    "engine": 115,
+    "mobile": 8,
+    "web": 4,
+    "windows_permission_skips": [
+      "install_report_rejects_unselected_escaping_cache_before_activation",
+      "resolver_rejects_dangling_symlink_and_missing_linked_ancestor"
+    ],
+    "skip_reason": "Windows os error 1314; not counted as symlink coverage"
+  },
+  "clippy": {
+    "exit_code": 0,
+    "args": [
+      "--workspace",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ]
+  },
+  "cli_build": {
+    "exit_code": 0
+  },
+  "node_tests": {
+    "exit_code": 0,
+    "tests": 6,
+    "scope": "bundle-store fake IndexedDB/Wasm stub plus semantic-output JS; not real browser"
+  },
+  "probes": {
+    "SourceCommit": "b70e58b7d80a9c26a360b9e53e8f5402e37cb4cf",
+    "CliSha256": "63F16C552235543563E83221E14196A60AECF3A3CE5970C03FCB882ECF8FE049",
+    "CorruptGeneration": {
+      "ReadExit": 1,
+      "Read": {
+        "ok": false,
+        "value": null,
+        "diagnostics": [
+          {
+            "code": "BUNDLE_ACTIVE_GENERATION_UNREADABLE",
+            "severity": "ERROR",
+            "summary": "無法讀取 active bundle generation",
+            "explanation": "\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-main-probe-20260906\\.unone\\active\\bundles\\generation-00000000000000000002.json：expected value at line 2 column 17",
+            "facts": {
+              "active_record_policy": "latest formal generation only; corrupt records do not fall back"
+            },
+            "likely_causes": [],
+            "suggested_actions": [],
+            "source": null
+          }
+        ],
+        "effects": []
+      },
+      "ActiveUnchanged": true,
+      "InstallExit": 1,
+      "Install": {
+        "ok": false,
+        "value": null,
+        "diagnostics": [
+          {
+            "code": "BUNDLE_ACTIVE_GENERATION_UNREADABLE",
+            "severity": "ERROR",
+            "summary": "無法讀取 active bundle generation",
+            "explanation": "\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-main-probe-20260906\\.unone\\active\\bundles\\generation-00000000000000000002.json：expected value at line 2 column 17",
+            "facts": {
+              "active_record_policy": "latest formal generation only; corrupt records do not fall back"
+            },
+            "likely_causes": [],
+            "suggested_actions": [],
+            "source": null
+          }
+        ],
+        "effects": []
+      }
+    },
+    "PostActivationJunction": {
+      "After": [
+        {
+          "Path": "D:\\Projects\\Unone\\artifacts\\asset-workflow-post-activation-probe-20260906\\.unone\\active\\bundles\\generation-00000000000000000001.json",
+          "Size": 142,
+          "Sha256": "03B85CED6D40FFB81D4F893354B2D046B753D11A80B1127FA2862F08772CBF39"
+        },
+        {
+          "Path": "D:\\Projects\\Unone\\artifacts\\asset-workflow-post-activation-probe-20260906\\.unone\\active\\bundles\\generation-00000000000000000002.json",
+          "Size": 142,
+          "Sha256": "82DF4969A77EC25E91F3784CC3486033B5FC385CFA7B061D62694BE6A7A2B615"
+        }
+      ],
+      "Result": {
+        "ok": false,
+        "value": null,
+        "diagnostics": [
+          {
+            "code": "BUNDLE_STORAGE_PATH_UNSAFE",
+            "severity": "ERROR",
+            "summary": "bundle cache 路徑不安全",
+            "explanation": "bundle cache：'.unone/cache/bundles/c0cde77fa8fef97d476c10aad3d2d54fcc2f336140d073651c2dcccf1e379fd6.bundle' 解析到 '\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-post-activation-outside-20260906'，不在專案根目錄 '\\\\?\\D:\\Projects\\Unone\\artifacts\\asset-workflow-post-activation-probe-20260906' 內。",
+            "facts": {},
+            "likely_causes": [],
+            "suggested_actions": [],
+            "source": null
+          }
+        ],
+        "effects": []
+      },
+      "ActiveUnchanged": true,
+      "Exit": 1,
+      "Before": [
+        {
+          "Path": "D:\\Projects\\Unone\\artifacts\\asset-workflow-post-activation-probe-20260906\\.unone\\active\\bundles\\generation-00000000000000000001.json",
+          "Size": 142,
+          "Sha256": "03B85CED6D40FFB81D4F893354B2D046B753D11A80B1127FA2862F08772CBF39"
+        },
+        {
+          "Path": "D:\\Projects\\Unone\\artifacts\\asset-workflow-post-activation-probe-20260906\\.unone\\active\\bundles\\generation-00000000000000000002.json",
+          "Size": 142,
+          "Sha256": "82DF4969A77EC25E91F3784CC3486033B5FC385CFA7B061D62694BE6A7A2B615"
+        }
+      ]
+    },
+    "OutputCollision": {
+      "Result": {
+        "ok": false,
+        "value": null,
+        "diagnostics": [
+          {
+            "code": "BUNDLE_OUTPUT_COLLISION",
+            "severity": "ERROR",
+            "summary": "bundle pack 輸出位置與專案檔案衝突",
+            "explanation": "\\\\?\\C:\\temp\\unone-collision-regression-20260906\\assets\\manifest.json 與 \\\\?\\C:\\temp\\unone-collision-regression-20260906\\assets\\manifest.json (authoring_input) 指向相同或互相包含的路徑；請使用獨立的 pack 輸出位置。",
+            "facts": {
+              "conflicting_path": "\\\\?\\C:\\temp\\unone-collision-regression-20260906\\assets\\manifest.json",
+              "conflicting_role": "authoring_input",
+              "output": "\\\\?\\C:\\temp\\unone-collision-regression-20260906\\assets\\manifest.json"
+            },
+            "likely_causes": [],
+            "suggested_actions": [],
+            "source": null
+          }
+        ],
+        "effects": []
+      },
+      "Exit": 1,
+      "WholeTreeUnchanged": true
+    }
+  },
+  "metadata": {
+    "ReadExit": 1,
+    "Read": {
+      "ok": false,
+      "value": null,
+      "diagnostics": [
+        {
+          "code": "BUNDLE_GENERATION_MISMATCH",
+          "severity": "ERROR",
+          "summary": "asset 宣告與 active generation 不一致",
+          "explanation": "active asset-manifest 中 asset 'asset://probe/blue' 的完整宣告必須與作者宣告相同；不會混用作者 metadata 與 active bytes。",
+          "facts": {
+            "active_asset": {
+              "bundle": "content",
+              "id": "asset://probe/blue",
+              "kind": "texture2d",
+              "source": "assets/probe.svg"
+            },
+            "asset_id": "asset://probe/blue",
+            "authoring_asset": {
+              "bundle": "content",
+              "id": "asset://probe/blue",
+              "kind": "spine",
+              "source": "assets/probe.svg"
+            },
+            "generation": 2
+          },
+          "likely_causes": [],
+          "suggested_actions": [],
+          "source": null
+        }
+      ],
+      "effects": []
+    },
+    "Publication": {
+      "scope": "selected_asset_native_local",
+      "matches_authoring": false,
+      "asset_spec_matches": false,
+      "primary_bytes_match": null,
+      "companion_bytes_match": null,
+      "bytes_match": null,
+      "reasons": [
+        "active AssetSpec differs from the authoring manifest"
+      ]
+    },
+    "ExportExists": false
+  },
+  "mcp": {
+    "ProcessExit": 0,
+    "Stderr": "",
+    "ReplyCount": 3,
+    "DescribeEqual": true,
+    "DescribeOk": true,
+    "ReadOk": true,
+    "Publication": {
+      "scope": "selected_asset_native_local",
+      "matches_authoring": true,
+      "asset_spec_matches": true,
+      "primary_bytes_match": true,
+      "companion_bytes_match": true,
+      "bytes_match": true,
+      "reasons": [
+        "active AssetSpec and primary/companion verified bytes match authoring"
+      ]
+    },
+    "ReadSha256": "0aa6ff31b75b616d7705ea2eba9ddd5d35ea3aa8d3b6ad1c62de19352859ba8c",
+    "SourceSha256": "0aa6ff31b75b616d7705ea2eba9ddd5d35ea3aa8d3b6ad1c62de19352859ba8c"
+  }
+}

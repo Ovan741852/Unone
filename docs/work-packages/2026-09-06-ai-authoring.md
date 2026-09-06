@@ -28,9 +28,9 @@ init/search/scene 路徑在 c187df8 未變；不宣稱新 asset patch 已編譯�
 ## 本輪推進順序與 gate
 
 0. **先完成既有資產工作流 gate。** c187df8 是明示 WIP，不能在未編譯候選上
-   再堆大量功能。D 槽仍約 0.27 GB；使用者已批准清理唯一 incremental cache，
-   但工具在執行前拒絕刪除命令，需手動清理；不是仍在等待使用者授權。
-   本輪可完成查證、計畫盲審與文件修訂，計畫獲准不等於繞過此依賴開工。
+   再堆大量功能。使用者已手動清空 incremental，D 槽確認恢復約4.48GiB；
+   前案 Rust/clippy/CLI 已接續驗證，平台重建與封裝盲驗仍待關閉。
+   計畫獲准不等於繞過此依賴開工。
    退出證據指定為 `docs/evidence/2026-09-06-ai-authoring/predecessor-gate.json`：
    必須記錄實際 tested commit（c187df8 或修正它的 descendant）、Rust 回歸結果、
    CLI/Wasm/mobile 各自 build 的 source commit/hash、新 immutable package 的
