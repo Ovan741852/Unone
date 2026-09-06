@@ -6,20 +6,52 @@ export function frameOf(snapshot) {
   return worldOf(snapshot).frame;
 }
 
+const utf8Encoder = new TextEncoder();
+
+function entityId(entity) {
+  return String(entity?.id ?? "");
+}
+
+function spriteLayer(entity) {
+  return entity?.sprite?.layer ?? 0;
+}
+
+/** Compare identifiers by their UTF-8 bytes, never by locale or JS key order. */
+export function compareUtf8Ids(left, right) {
+  const leftBytes = utf8Encoder.encode(String(left ?? ""));
+  const rightBytes = utf8Encoder.encode(String(right ?? ""));
+  const length = Math.min(leftBytes.length, rightBytes.length);
+  for (let index = 0; index < length; index += 1) {
+    if (leftBytes[index] !== rightBytes[index]) return leftBytes[index] - rightBytes[index];
+  }
+  return leftBytes.length - rightBytes.length;
+}
+
+/** Sort ordinary sprites by the shared signed layer and UTF-8 id contract. */
+export function compareSpriteEntities(left, right) {
+  const layerDifference = spriteLayer(left) - spriteLayer(right);
+  return layerDifference || compareUtf8Ids(entityId(left), entityId(right));
+}
+
 export function semanticSummary(snapshot, pointer = null) {
   const world = worldOf(snapshot);
   return {
     project: snapshot.project ?? "engine-snapshot",
     observation_digest: snapshot.observation_digest ?? null,
     frame: world.frame,
-    entities: Object.values(world.entities).map((entity) => ({
-      id: entity.id,
-      asset: entity.sprite?.asset ?? null,
-      size: entity.sprite?.size ?? null,
-      position: entity.transform,
-      transform3d: entity.transform3d ?? null,
-      mesh3d: entity.mesh3d ?? null,
-    })),
+    entities: Object.values(world.entities ?? {})
+      .sort(compareSpriteEntities)
+      .map((entity) => ({
+        id: entity.id,
+        asset: entity.sprite?.asset ?? null,
+        size: entity.sprite?.size ?? null,
+        rotation: entity.rotation ?? 0,
+        scale: entity.scale ?? { x: 1, y: 1 },
+        layer: entity.sprite ? (entity.sprite.layer ?? 0) : null,
+        position: entity.transform,
+        transform3d: entity.transform3d ?? null,
+        mesh3d: entity.mesh3d ?? null,
+      })),
     camera3d: world.camera3d ?? null,
     ui: world.ui ?? null,
     pointer,
@@ -53,11 +85,11 @@ export function viewToWorld(view, camera, aspect) {
 }
 
 /** Size of one world-space extent in view units. */
-export function worldSizeToView(size, camera, aspect) {
+export function worldSizeToView(size, camera, aspect, scale = { x: 1, y: 1 }) {
   const visibleHeight = (camera.view_height ?? 10) / (camera.zoom || 1);
   return {
-    x: (size.x / (visibleHeight * aspect)) * 100,
-    y: (size.y / visibleHeight) * 100,
+    x: ((size.x * (scale?.x ?? 1)) / (visibleHeight * aspect)) * 100,
+    y: ((size.y * (scale?.y ?? 1)) / visibleHeight) * 100,
   };
 }
 
@@ -83,26 +115,56 @@ function colorFor(entity) {
   return [0.9, 0.75, 0.2, 1];
 }
 
-function verticesFor(snapshot, aspect) {
+function rotate2d(point, rotation) {
+  const sin = Math.sin(rotation);
+  const cos = Math.cos(rotation);
+  return {
+    x: point.x * cos - point.y * sin,
+    y: point.x * sin + point.y * cos,
+  };
+}
+
+function worldSpriteCorners(entity) {
+  const size = entity.sprite?.size ?? { x: 1, y: 1 };
+  const scale = entity.scale ?? { x: 1, y: 1 };
+  const half = {
+    x: size.x * (scale.x ?? 1) * 0.5,
+    y: size.y * (scale.y ?? 1) * 0.5,
+  };
+  const rotation = entity.rotation ?? 0;
+  const local = [
+    { x: -half.x, y: -half.y },
+    { x: half.x, y: -half.y },
+    { x: half.x, y: half.y },
+    { x: -half.x, y: half.y },
+  ];
+  return local.map((point) => {
+    const rotated = rotate2d(point, rotation);
+    return {
+      x: entity.transform.x + rotated.x,
+      y: entity.transform.y + rotated.y,
+    };
+  });
+}
+
+export function verticesFor(snapshot, aspect, options = {}) {
   const world = worldOf(snapshot);
   if (world.camera3d) return verticesFor3d(world);
   const vertices = [];
-  for (const entity of Object.values(world.entities)) {
-    if (entity.sprite && !entity.sprite.visible) continue;
-    // Centred on the entity, and never clamped: an entity outside the view is
-    // drawn outside the view, which is what makes bad framing visible.
-    const size = entity.sprite?.size ?? { x: 1, y: 1 };
-    const view = worldToView(entity.transform, world.camera, aspect);
-    const extent = worldSizeToView(size, world.camera, aspect);
-    const width = extent.x / 50;
-    const height = extent.y / 50;
-    const x = view.x / 50 - 1 - width / 2;
-    const y = view.y / 50 - 1 - height / 2;
+  const entities = Object.values(world.entities ?? {})
+    .filter((entity) => !(entity.sprite && !entity.sprite.visible))
+    .sort(compareSpriteEntities);
+  for (const entity of entities) {
+    if (options?.suppress2dSprites && entity.sprite) continue;
+    // Transform the visual rectangle in world space before projecting it. An
+    // entity outside the view stays outside the view, making bad framing visible.
+    const corners = worldSpriteCorners(entity).map((point) => worldToView(point, world.camera, aspect));
+    const clipCorners = corners.map((point) => ({ x: point.x / 50 - 1, y: point.y / 50 - 1 }));
     const color = colorFor(entity);
-    vertices.push(
-      x, y, ...color, x + width, y, ...color, x + width, y + height, ...color,
-      x, y, ...color, x + width, y + height, ...color, x, y + height, ...color,
-    );
+    for (const index of [0, 1, 2, 0, 2, 3]) {
+      const point = clipCorners[index];
+      vertices.push(point.x, point.y, ...color);
+    }
   }
   return new Float32Array(vertices);
 }
@@ -214,7 +276,7 @@ function verticesFor3d(world) {
   return new Float32Array(vertices);
 }
 
-export async function createWebGpuRenderer(canvas) {
+export async function createWebGpuRenderer(canvas, options = {}) {
   if (!navigator.gpu) throw new Error("WebGPU is not available in this browser");
   const adapter = await navigator.gpu.requestAdapter();
   if (!adapter) throw new Error("WebGPU adapter is not available");
@@ -261,7 +323,7 @@ export async function createWebGpuRenderer(canvas) {
   let vertexCapacity = 0;
   const draw = (snapshot) => {
     resize();
-    const data = verticesFor(snapshot, aspectOf(canvas));
+    const data = verticesFor(snapshot, aspectOf(canvas), options);
     if (!vertexBuffer || data.byteLength > vertexCapacity) {
       vertexBuffer?.destroy();
       vertexCapacity = Math.max(4, 2 ** Math.ceil(Math.log2(Math.max(4, data.byteLength))));

@@ -1,6 +1,7 @@
-import { createWebGpuRenderer, frameOf, semanticSummary, worldFromPointer, worldSizeToView, worldToView } from "../shared/webgpu-snapshot.js?v=4";
+import { createWebGpuRenderer, frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=5";
 import { installGeneration, readActiveAsset, readActiveText } from "../live/bundle-store.js?v=3";
 import { readSave, writeSave } from "./save-store.js?v=1";
+import { createSpriteLayer } from "./sprite-layer.js?v=1";
 
 const canvas = document.querySelector("#game");
 const assetLayer = document.querySelector("#asset-layer");
@@ -33,7 +34,7 @@ let saveWrite = Promise.resolve();
 let assetManifest = null;
 const assetUrls = new Map();
 const assetUrlLoads = new Map();
-const assetElements = new Map();
+let reportedAssetErrors = [];
 
 export function semanticOutput(nextSnapshot, nextPointer = null) {
   const world = nextSnapshot?.world ?? nextSnapshot ?? {};
@@ -137,8 +138,8 @@ function releaseAssetUrls() {
   for (const url of assetUrls.values()) URL.revokeObjectURL(url);
   assetUrls.clear();
   assetUrlLoads.clear();
-  assetElements.clear();
-  assetLayer?.replaceChildren();
+  spriteLayer.clear();
+  reportedAssetErrors = [];
 }
 
 function loadAssetUrl(asset) {
@@ -161,49 +162,14 @@ function loadAssetUrl(asset) {
   return load;
 }
 
-function renderAssets(nextSnapshot) {
-  if (!assetLayer || !assetManifest?.assets) return;
-  const world = nextSnapshot?.world ?? nextSnapshot;
-  if (!world?.camera || !world.entities) return;
-  const specs = new Map(assetManifest.assets.map((asset) => [asset.id, asset]));
-  const alive = new Set();
-  const aspect = (canvas.clientWidth || canvas.width || 16) / (canvas.clientHeight || canvas.height || 9);
-  for (const entity of Object.values(world.entities)) {
-    const sprite = entity.sprite;
-    const asset = sprite && specs.get(sprite.asset);
-    if (!asset || sprite.visible === false) continue;
-    alive.add(entity.id);
-    let element = assetElements.get(entity.id);
-    if (!element) {
-      element = document.createElement("img");
-      element.className = "unone-asset-sprite";
-      element.draggable = false;
-      element.alt = entity.name || entity.id;
-      assetElements.set(entity.id, element);
-      assetLayer.appendChild(element);
-    }
-    // The same projection the world quads use, so a sprite and its debug quad
-    // never disagree about where an entity is.
-    const view = worldToView(entity.transform, world.camera, aspect);
-    const extent = worldSizeToView(sprite.size, world.camera, aspect);
-    element.style.left = `${view.x}%`;
-    element.style.bottom = `${view.y}%`;
-    element.style.width = `${extent.x}%`;
-    element.style.height = `${extent.y}%`;
-    element.dataset.assetId = asset.id;
-    if (element.src === "") {
-      loadAssetUrl(asset)
-        .then((url) => { element.src = url; })
-        .catch(showFailure);
-    }
-  }
-  for (const [entityId, element] of assetElements) {
-    if (!alive.has(entityId)) {
-      element.remove();
-      assetElements.delete(entityId);
-    }
-  }
-}
+const spriteLayer = createSpriteLayer({
+  element: assetLayer,
+  loadAssetUrl,
+  onAssetErrors: (errors) => {
+    reportedAssetErrors = errors;
+    if (snapshot) writeOutput();
+  },
+});
 
 function screenFromPointer(canvasElement, event) {
   const rect = canvasElement.getBoundingClientRect();
@@ -233,7 +199,7 @@ function renderUi(nextSnapshot) {
   }
 }
 
-function showState() {
+function writeOutput() {
   output.textContent = JSON.stringify({
     project_root: projectRoot.pathname,
     renderer: rendererError ? { available: false, error: rendererError } : { available: true },
@@ -249,11 +215,16 @@ function showState() {
       count: assetManifest.assets?.length ?? 0,
       resolved: assetUrls.size,
     },
+    asset_errors: reportedAssetErrors,
     ...semanticOutput(snapshot, pointer),
     save_payload: snapshot?.save_payload ?? null,
   }, null, 2);
+}
+
+function showState() {
   renderUi(snapshot);
-  renderAssets(snapshot);
+  spriteLayer.render(snapshot, assetManifest, canvas);
+  writeOutput();
 }
 
 function queueAction(action) {
@@ -352,33 +323,39 @@ function syncViewportAspect() {
 }
 
 function step() {
-  const actions = { ...heldActions, ...pendingActions };
-  pendingActions = {};
-  const framePointer = pendingPointerFrames.shift()?.pointer ?? pointer;
-  window.Module._unone_web_set_pointer(framePointer.position.x, framePointer.position.y, framePointer.down ? 1 : 0);
-  if (window.Module._unone_web_set_screen_pointer(framePointer.screen_position.x, framePointer.screen_position.y) !== 0) {
-    throw new Error("generic host screen pointer update failed");
+  try {
+    const actions = { ...heldActions, ...pendingActions };
+    pendingActions = {};
+    const framePointer = pendingPointerFrames.shift()?.pointer ?? pointer;
+    window.Module._unone_web_set_pointer(framePointer.position.x, framePointer.position.y, framePointer.down ? 1 : 0);
+    if (window.Module._unone_web_set_screen_pointer(framePointer.screen_position.x, framePointer.screen_position.y) !== 0) {
+      throw new Error("generic host screen pointer update failed");
+    }
+    for (const [action, isDown] of Object.entries(actions)) {
+      if (isDown) queueAction(action);
+    }
+    const frameActions = { ...pendingActions };
+    pendingActions = {};
+    const inputPayload = JSON.stringify({ actions: frameActions, pointer: framePointer });
+    const input = bridgeBytes(inputPayload);
+    if (window.Module._unone_web_set_input_frame(input.pointerAddress, input.length) !== 0) {
+      throw new Error("generic host input frame update failed");
+    }
+    syncViewportAspect();
+    if (window.Module._unone_web_tick() !== 0) {
+      throw bridgeError(readSnapshot(), "generic host tick failed");
+    }
+    snapshot = readSnapshot();
+    storeSave();
+    renderer?.draw(snapshot);
+    showState();
+    status.textContent = rendererError
+      ? `running ${projectRoot.pathname} / frame ${frameOf(snapshot)} — no renderer: ${rendererError}`
+      : `running ${projectRoot.pathname} / frame ${frameOf(snapshot)}`;
+    window.requestAnimationFrame(step);
+  } catch (error) {
+    showFailure(error);
   }
-  for (const [action, isDown] of Object.entries(actions)) {
-    if (isDown) queueAction(action);
-  }
-  const frameActions = { ...pendingActions };
-  pendingActions = {};
-  const inputPayload = JSON.stringify({ actions: frameActions, pointer: framePointer });
-  const input = bridgeBytes(inputPayload);
-  if (window.Module._unone_web_set_input_frame(input.pointerAddress, input.length) !== 0) {
-    throw new Error("generic host input frame update failed");
-  }
-  syncViewportAspect();
-  if (window.Module._unone_web_tick() !== 0) throw new Error("generic host tick failed");
-  snapshot = readSnapshot();
-  storeSave();
-  renderer?.draw(snapshot);
-  showState();
-  status.textContent = rendererError
-    ? `running ${projectRoot.pathname} / frame ${frameOf(snapshot)} — no renderer: ${rendererError}`
-    : `running ${projectRoot.pathname} / frame ${frameOf(snapshot)}`;
-  window.requestAnimationFrame(step);
 }
 
 function keyAction(event) {
@@ -402,7 +379,7 @@ async function start() {
   // already computed before anything is drawn, so a renderer failure degrades
   // to "no picture" instead of stopping the loop.
   try {
-    renderer = await createWebGpuRenderer(canvas);
+    renderer = await createWebGpuRenderer(canvas, { suppress2dSprites: true });
   } catch (error) {
     renderer = null;
     rendererError = error.message ?? String(error);
