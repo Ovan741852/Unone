@@ -1,0 +1,63 @@
+{
+  "ok": true,
+  "value": {
+    "project_root": "\\\\?\\C:\\temp\\unone-asset-gate-20260906\\evidence\\rerun-20260906",
+    "manifest_path": "\\\\?\\C:\\temp\\unone-asset-gate-20260906\\evidence\\rerun-20260906\\bundles\\manifest.json",
+    "manifest_version": 2,
+    "manifest_changed": false,
+    "project_config_changed": false,
+    "bundles": [
+      {
+        "id": "project",
+        "version": "1",
+        "source": "project.unone.json",
+        "sha256": "5b3f18c9ca323470cf8beb6932b27d5fa0a6c901a0e92d1977198a412ab0116d",
+        "size_bytes": 239,
+        "dependencies": []
+      },
+      {
+        "id": "script",
+        "version": "1",
+        "source": "scripts/main.luau",
+        "sha256": "265672234f0249e49e71040ac492ded61257a4c5109a5bb74562a47503987ea3",
+        "size_bytes": 3424,
+        "dependencies": [
+          "project"
+        ]
+      },
+      {
+        "id": "scene",
+        "version": "1",
+        "source": "scenes/main.scene.json",
+        "sha256": "e4121e3df9b7a052c0f9273974567381f3209ae6bc5b1a85f1ab403480304ad5",
+        "size_bytes": 21,
+        "dependencies": [
+          "project"
+        ]
+      },
+      {
+        "id": "asset-manifest",
+        "version": "1",
+        "source": "assets/manifest.json",
+        "sha256": "9242402da5d6e27b15b3707cc97c8bc9513eb7197bbb80fdc9a6c4db247b126f",
+        "size_bytes": 368,
+        "dependencies": [
+          "project"
+        ]
+      },
+      {
+        "id": "rerun",
+        "version": "1",
+        "source": "bundles/rerun.bundle",
+        "sha256": "b62946aebc6bb1b82af6f5c996eb958a64e4cf3ef8584a5c37b9dd1dfd807ad8",
+        "size_bytes": 857,
+        "dependencies": [
+          "project",
+          "asset-manifest"
+        ]
+      }
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

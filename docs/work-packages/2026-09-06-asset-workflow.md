@@ -1,6 +1,8 @@
 # 資產工作流調整計畫
 
-版本：v3 + code-review corrections / source_review_closed, platform_and_blind_validation_in_progress。
+版本：v3 + code-review corrections / scoped_validation_closed。
+範圍與未測平台見 `../evidence/2026-09-06-ai-authoring/predecessor-gate.json`；
+首輪盲評raw保存缺口保留，另有重跑與主代理獨立失敗保護證據，不宣稱七款遊戲通過。
 v1 保留於 `146baeb`；獨立限定再審
 無 unresolved plan blocker，製作已放行，尚非功能驗收通過。
 

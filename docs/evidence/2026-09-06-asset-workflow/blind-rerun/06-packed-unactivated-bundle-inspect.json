@@ -1,0 +1,74 @@
+{
+  "ok": true,
+  "value": {
+    "manifest_version": 2,
+    "valid": true,
+    "entries": [
+      {
+        "id": "project",
+        "source": "project.unone.json",
+        "source_exists": true,
+        "size_valid": true,
+        "hash_valid": true,
+        "cached": true,
+        "cache_valid": true,
+        "available": true,
+        "error": null
+      },
+      {
+        "id": "script",
+        "source": "scripts/main.luau",
+        "source_exists": true,
+        "size_valid": true,
+        "hash_valid": true,
+        "cached": true,
+        "cache_valid": true,
+        "available": true,
+        "error": null
+      },
+      {
+        "id": "scene",
+        "source": "scenes/main.scene.json",
+        "source_exists": true,
+        "size_valid": true,
+        "hash_valid": true,
+        "cached": true,
+        "cache_valid": true,
+        "available": true,
+        "error": null
+      },
+      {
+        "id": "asset-manifest",
+        "source": "assets/manifest.json",
+        "source_exists": true,
+        "size_valid": true,
+        "hash_valid": true,
+        "cached": true,
+        "cache_valid": true,
+        "available": true,
+        "error": null
+      },
+      {
+        "id": "rerun",
+        "source": "bundles/rerun.bundle",
+        "source_exists": true,
+        "size_valid": true,
+        "hash_valid": true,
+        "cached": false,
+        "cache_valid": false,
+        "available": true,
+        "error": null
+      }
+    ],
+    "active_generation": 1,
+    "active_bundles": {
+      "asset-manifest": "9242402da5d6e27b15b3707cc97c8bc9513eb7197bbb80fdc9a6c4db247b126f",
+      "project": "5b3f18c9ca323470cf8beb6932b27d5fa0a6c901a0e92d1977198a412ab0116d",
+      "rerun": "1e2acc2f5de7d7687c50719f32752c193b9e1f4c893a51d4605ddfdd0871be59",
+      "scene": "e4121e3df9b7a052c0f9273974567381f3209ae6bc5b1a85f1ab403480304ad5",
+      "script": "265672234f0249e49e71040ac492ded61257a4c5109a5bb74562a47503987ea3"
+    }
+  },
+  "diagnostics": [],
+  "effects": []
+}

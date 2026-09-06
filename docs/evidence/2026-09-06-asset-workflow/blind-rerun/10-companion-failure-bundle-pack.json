@@ -1,0 +1,17 @@
+{
+  "ok": false,
+  "value": null,
+  "diagnostics": [
+    {
+      "code": "ASSET_SOURCE_NOT_FOUND",
+      "severity": "ERROR",
+      "summary": "找不到 asset 附屬檔案",
+      "explanation": "asset 'asset://rerun/rig' 需要 'assets/rerun-rig.atlas'，但檔案不存在。",
+      "facts": {},
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": []
+}

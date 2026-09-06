@@ -1,0 +1,81 @@
+{
+  "scope": "Independent main-agent reproduction, not first blind run",
+  "fixture": "C:/Temp/unone-asset-gate-20260906/browser-probe",
+  "mutation": "Temporarily add a nonexistent companion declaration with apply_patch, run packaged CLI bundle pack, compare entire .unone and bundles file sets/hashes, restore declaration",
+  "before": [
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\.unone\\active\\bundles\\generation-00000000000000000001.json",
+      "hash": "AFB804C08B633715E99668C76351FF8EA0C70D9B66BA001359179F2B4FD106CD"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\.unone\\cache\\bundles\\265672234f0249e49e71040ac492ded61257a4c5109a5bb74562a47503987ea3.bundle",
+      "hash": "265672234F0249E49E71040AC492DED61257A4C5109A5BB74562A47503987EA3"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\.unone\\cache\\bundles\\44cfc6574d8f3d38d1144cc3c75f920d6b288b9a51ecbcfee01d40eac9541952.bundle",
+      "hash": "44CFC6574D8F3D38D1144CC3C75F920D6B288B9A51ECBCFEE01D40EAC9541952"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\.unone\\cache\\bundles\\a13821458892fb8010a25d8f32c39964b58f7e32dc273bf075e17c340e86f628.bundle",
+      "hash": "A13821458892FB8010A25D8F32C39964B58F7E32DC273BF075E17C340E86F628"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\.unone\\cache\\bundles\\a361498ef846669e0bfe772e77f96a1cb2ada89c81df4b02de6b7a3e57d2a847.bundle",
+      "hash": "A361498EF846669E0BFE772E77F96A1CB2ADA89C81DF4B02DE6B7A3E57D2A847"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\.unone\\cache\\bundles\\d78a81b1acfd0d0c92fce655d575b7a36dda675c33c4d40b6e1d1bbc16d43041.bundle",
+      "hash": "D78A81B1ACFD0D0C92FCE655D575B7A36DDA675C33C4D40B6E1D1BBC16D43041"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\bundles\\content.bundle",
+      "hash": "A361498EF846669E0BFE772E77F96A1CB2ADA89C81DF4B02DE6B7A3E57D2A847"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\bundles\\manifest.json",
+      "hash": "9C9DB355858B41DA5916C658F2BE3B951B1D4A10E4629200A58DC2B359D29A07"
+    }
+  ],
+  "after": [
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\.unone\\active\\bundles\\generation-00000000000000000001.json",
+      "hash": "AFB804C08B633715E99668C76351FF8EA0C70D9B66BA001359179F2B4FD106CD"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\.unone\\cache\\bundles\\265672234f0249e49e71040ac492ded61257a4c5109a5bb74562a47503987ea3.bundle",
+      "hash": "265672234F0249E49E71040AC492DED61257A4C5109A5BB74562A47503987EA3"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\.unone\\cache\\bundles\\44cfc6574d8f3d38d1144cc3c75f920d6b288b9a51ecbcfee01d40eac9541952.bundle",
+      "hash": "44CFC6574D8F3D38D1144CC3C75F920D6B288B9A51ECBCFEE01D40EAC9541952"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\.unone\\cache\\bundles\\a13821458892fb8010a25d8f32c39964b58f7e32dc273bf075e17c340e86f628.bundle",
+      "hash": "A13821458892FB8010A25D8F32C39964B58F7E32DC273BF075E17C340E86F628"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\.unone\\cache\\bundles\\a361498ef846669e0bfe772e77f96a1cb2ada89c81df4b02de6b7a3e57d2a847.bundle",
+      "hash": "A361498EF846669E0BFE772E77F96A1CB2ADA89C81DF4B02DE6B7A3E57D2A847"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\.unone\\cache\\bundles\\d78a81b1acfd0d0c92fce655d575b7a36dda675c33c4d40b6e1d1bbc16d43041.bundle",
+      "hash": "D78A81B1ACFD0D0C92FCE655D575B7A36DDA675C33C4D40B6E1D1BBC16D43041"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\bundles\\content.bundle",
+      "hash": "A361498EF846669E0BFE772E77F96A1CB2ADA89C81DF4B02DE6B7A3E57D2A847"
+    },
+    {
+      "path": "C:\\temp\\unone-asset-gate-20260906\\browser-probe\\bundles\\manifest.json",
+      "hash": "9C9DB355858B41DA5916C658F2BE3B951B1D4A10E4629200A58DC2B359D29A07"
+    }
+  ],
+  "unchanged": true,
+  "command_result": {
+    "chunk_id": "e03416",
+    "wall_time_seconds": 0.197759,
+    "exit_code": 1,
+    "original_token_count": 108,
+    "output": "{\n  \"ok\": false,\n  \"value\": null,\n  \"diagnostics\": [\n    {\n      \"code\": \"ASSET_SOURCE_NOT_FOUND\",\n      \"severity\": \"ERROR\",\n      \"summary\": \"找不到 asset 附屬檔案\",\n      \"explanation\": \"asset 'asset://web/probe' 需要 'assets/intentionally-missing-companion.test'，但檔案不存在。\",\n      \"facts\": {},\n      \"likely_causes\": [],\n      \"suggested_actions\": [],\n      \"source\": null\n    }\n  ],\n  \"effects\": []\n}\n"
+  }
+}

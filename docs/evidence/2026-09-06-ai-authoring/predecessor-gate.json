@@ -1,0 +1,28 @@
+{
+  "status": "released_for_authoring_implementation",
+  "date": "2026-09-06",
+  "tested_source_commit": "b70e58b7d80a9c26a360b9e53e8f5402e37cb4cf",
+  "code_equivalence": "c187df8 asset corrections; b70e58b through fe8d122 differ only in docs, not compiled input",
+  "package_source_commit": "fe8d122bb9f9684670ad16233e0036d98e003dcc",
+  "package_manifest_sha256": "21d623cb07454028e118085a04e640090e47b903387fe46f4557b52dceb09c67",
+  "package_inventory_files": 46,
+  "package_verification": "passed",
+  "rust": {"workspace_exit_code":0,"harness_successes":138,"permission_skips":2,"clippy_exit_code":0,"cli_build_exit_code":0},
+  "platform_builds": {"wasm":"passed","android_x86_64_ffi_jni_dex":"passed"},
+  "source_review": "Luna limited source review and Claude CLI31 completed; no new actionable P1/P2",
+  "build_hash_evidence": "../2026-09-06-asset-workflow/platform-and-browser.json",
+  "regression_evidence": "../2026-09-06-asset-workflow/resumed-regressions.json",
+  "blind_assessment": {
+    "agent":"01a074a4-3691-73a1-a8d8-4457994efb51",
+    "scope":"package-only asset maintenance, not game acceptance",
+    "report":"../2026-09-06-asset-workflow/blind-evaluator/validation-report.json",
+    "main_review":"../2026-09-06-asset-workflow/blind-main-review.json",
+    "rerun_raw":"../2026-09-06-asset-workflow/blind-rerun/",
+    "known_recording_gap":"First-run full stage JSON/before-generation hash were not durably saved. Summary is retained as summary; rerun raw never relabeled as first run.",
+    "independent_failure_check":"../2026-09-06-asset-workflow/main-companion-failure.json"
+  },
+  "main_verification":"12 handoff file hashes match; packaged CLI verify4/4 and tests2/2; read matches hero hash; native6 bundles valid; actual Web6 bundle hashes match, 2 textures resolved; companion pack failure preserves entire cache/bundle file sets and hashes",
+  "teaching_noise":"source docs fixed in 7af0bdc; new authoring package blind assessment must verify onboarding improvement",
+  "not_passed":["Android device runtime","iOS","production rendering including known sprite center offset","real Spine/Effekseer playback","seven-game final gates"],
+  "release_reason":"Compiled corrections, functional package-only maintenance and independent native/browser checks completed. Historical logging gap remains explicit, with independent reproduction evidence; no remaining asset behavior blocker to authoring work."
+}

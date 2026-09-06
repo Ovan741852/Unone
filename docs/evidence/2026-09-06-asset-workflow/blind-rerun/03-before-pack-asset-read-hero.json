@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "value": {
+    "project": "asset maintenance evidence rerun",
+    "asset": {
+      "id": "asset://rerun/hero",
+      "source": "assets/rerun-hero.svg",
+      "kind": "texture2d",
+      "bundle": "rerun"
+    },
+    "bundle_generation": 1,
+    "size_bytes": 231,
+    "sha256": "4d84d960377b6529096e19f15337a050aabd9fb8dc3087d161b93ef0ee6b3e69",
+    "output": null,
+    "host_responsibilities": [
+      "decode 與 GPU 資源生命週期屬於 host",
+      "下載、重試、快取容量與 CDN policy 屬於 host",
+      "engine 只驗證 bundle 與 archive entry 的完整性"
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

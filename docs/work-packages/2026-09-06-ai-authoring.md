@@ -1,7 +1,8 @@
 # AI authoring 回饋判讀與第一個可交付切片
 
-版本：v2 / plan_review_closed, implementation_waiting_predecessor。Baseline：`c187df8`（上一輪 asset 修正仍待
-Rust 回歸／平台重建／封裝盲驗）；本文件不是已交付功能或取代現行契約的規格。
+版本：v2 / plan_review_closed, implementation_in_progress。Baseline：`c187df8`；
+上一輪 asset build／封裝與限定驗證已關閉，見 predecessor-gate.json。
+本文件不是已交付功能或取代現行契約的規格。
 Luna/max 限定複審未發現未解的具體計畫 blocker，見
 [審查處置](../reviews/2026-09-06-ai-authoring-plan.md)；不代表功能／產品已通過。
 
@@ -29,13 +30,13 @@ init/search/scene 路徑在 c187df8 未變；不宣稱新 asset patch 已編譯�
 
 0. **先完成既有資產工作流 gate。** c187df8 是明示 WIP，不能在未編譯候選上
    再堆大量功能。使用者已手動清空 incremental，D 槽確認恢復約4.48GiB；
-   前案 Rust/clippy/CLI 已接續驗證，平台重建與封裝盲驗仍待關閉。
+   前案 Rust/clippy/CLI、平台重建、封裝盲驗與主代理覆核已完成。
    計畫獲准不等於繞過此依賴開工。
    退出證據指定為 `docs/evidence/2026-09-06-ai-authoring/predecessor-gate.json`：
    必須記錄實際 tested commit（c187df8 或修正它的 descendant）、Rust 回歸結果、
    CLI/Wasm/mobile 各自 build 的 source commit/hash、新 immutable package 的
    identity/inventory、package-only 盲驗證據與未測平台範圍；前案不得仍是
-   build_blocked。尚未跑的欄位不能填 passed；目前不建立假完成檔案。
+   build_blocked。證據已建立；首輪raw紀錄缺口與重跑證據明確分開，未測平台不填passed。
 1. **本工作包第一切片：可靠 authoring 起點。** 改 existing init、scene ingestion、
    API search 空結果 feedback；製作由 Luna/max，主代理規劃/整合/驗收。
 2. **後續 engine/host 排序，不是本輪偷偷開工範圍：** 先關閉已開的 2D

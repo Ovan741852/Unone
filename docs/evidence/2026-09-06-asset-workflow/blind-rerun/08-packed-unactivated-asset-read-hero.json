@@ -1,0 +1,28 @@
+{
+  "ok": false,
+  "value": null,
+  "diagnostics": [
+    {
+      "code": "BUNDLE_GENERATION_MISMATCH",
+      "severity": "ERROR",
+      "summary": "bundle 不屬於目前啟用的 generation",
+      "explanation": "bundle 'rerun' 的 manifest 雜湊與 active generation 不一致；不會讀取未啟用的內容。",
+      "facts": {
+        "active_sha256": "1e2acc2f5de7d7687c50719f32752c193b9e1f4c893a51d4605ddfdd0871be59",
+        "bundle_id": "rerun",
+        "generation": 1,
+        "manifest_sha256": "b62946aebc6bb1b82af6f5c996eb958a64e4cf3ef8584a5c37b9dd1dfd807ad8"
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "install_bundle",
+          "description": "重新安裝 bundle 'rerun' 以啟用目前 manifest。",
+          "command": "game bundle install rerun"
+        }
+      ],
+      "source": null
+    }
+  ],
+  "effects": []
+}

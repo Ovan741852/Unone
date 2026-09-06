@@ -1,0 +1,265 @@
+{
+  "ok": true,
+  "value": {
+    "project_root": "\\\\?\\C:\\temp\\unone-asset-gate-20260906\\evidence\\rerun-20260906",
+    "asset": {
+      "id": "asset://rerun/rig",
+      "source": "assets/rerun-rig.json",
+      "kind": "spine",
+      "bundle": "rerun",
+      "files": [
+        "assets/rerun-rig.atlas"
+      ]
+    },
+    "authoring": {
+      "manifest_path": "assets/manifest.json",
+      "manifest_json_pointer": "/assets/1",
+      "files": [
+        {
+          "path": "assets/rerun-rig.json",
+          "role": "primary",
+          "exists": true,
+          "size_bytes": 67,
+          "sha256": "873844d85f8e4fc09a48ce0bd0319a13cea76e4c35c39f56eea0eb0904126952",
+          "shared_with_asset_ids": []
+        },
+        {
+          "path": "assets/rerun-rig.atlas",
+          "role": "companion",
+          "exists": false,
+          "size_bytes": null,
+          "sha256": null,
+          "shared_with_asset_ids": [],
+          "diagnostic": {
+            "code": "ASSET_SOURCE_NOT_FOUND",
+            "severity": "WARNING",
+            "summary": "找不到 asset authoring 檔案",
+            "explanation": "asset 'asset://rerun/rig' 需要 'assets/rerun-rig.atlas'，但檔案不存在。",
+            "facts": {},
+            "likely_causes": [],
+            "suggested_actions": [],
+            "source": null
+          }
+        }
+      ],
+      "editing_rules": [
+        "編輯內容時修改 primary 或 companion 的 source bytes；asset id 與 scene 引用保持不變。",
+        "搬移檔案時修改同一份 manifest entry 的 source/files path，再重新 pack；不要手改 archive 或 cache。",
+        "修改 scene 只影響放置與表現；本查詢不會自動改 size、pivot、碰撞體或動態 Luau 引用。",
+        "asset init 只宣告 source/files，不會產生或猜測新的美術內容。"
+      ]
+    },
+    "references": [],
+    "reference_scope": {
+      "scope": "main_scene_only",
+      "roots_inspected": [
+        "scenes/main.scene.json"
+      ],
+      "components_inspected": [
+        "sprite",
+        "mesh3d",
+        "animation"
+      ],
+      "dynamic_luau_assets_included": false,
+      "limitations": [
+        "Only the configured main scene is inspected for static asset references.",
+        "Dynamic asset ids selected or created by Luau are not inspected.",
+        "An unreferenced asset is not thereby safe to remove; dynamic references may exist."
+      ]
+    },
+    "active": {
+      "scope": "native_local",
+      "generation": 2,
+      "asset_manifest_json_pointer": "/assets/1",
+      "asset": {
+        "id": "asset://rerun/rig",
+        "source": "assets/rerun-rig.json",
+        "kind": "spine",
+        "bundle": "rerun",
+        "files": [
+          "assets/rerun-rig.atlas"
+        ]
+      },
+      "files": [
+        {
+          "path": "assets/rerun-rig.json",
+          "role": "primary",
+          "verified": true,
+          "size_bytes": 67,
+          "sha256": "873844d85f8e4fc09a48ce0bd0319a13cea76e4c35c39f56eea0eb0904126952"
+        },
+        {
+          "path": "assets/rerun-rig.atlas",
+          "role": "companion",
+          "verified": true,
+          "size_bytes": 48,
+          "sha256": "befba2e98286af15a751938854d010dffd5d70de4827cd26eac6e0cb2f32886f"
+        }
+      ],
+      "diagnostics": [],
+      "observation_token_before": "2f741255e329c45aee85a83ba28273ccbcc381cafcb4e9b943e808b5402dabc1",
+      "observation_token_after": "2f741255e329c45aee85a83ba28273ccbcc381cafcb4e9b943e808b5402dabc1",
+      "observation_consistent": true
+    },
+    "publication": {
+      "scope": "selected_asset_native_local",
+      "matches_authoring": null,
+      "asset_spec_matches": true,
+      "primary_bytes_match": null,
+      "companion_bytes_match": null,
+      "bytes_match": null,
+      "reasons": [
+        "one or more authoring primary/companion files cannot be verified"
+      ]
+    },
+    "required_next_actions": [
+      {
+        "action": "authoring_files_ready",
+        "kind": "manual",
+        "reason": "先由 AI/作者補齊或修正 primary 與 companion authoring files；init 不會產生美術。",
+        "executable": null,
+        "argv": [],
+        "ready": true,
+        "status": "manual_required",
+        "prerequisites": []
+      },
+      {
+        "action": "bundle_pack",
+        "kind": "command",
+        "reason": "重新從目前 authoring manifest/source 產生 bundle；pack 是首次建立或內容變更後的第一個機械步驟，不以 strict 互相卡住。",
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\temp\\unone-asset-gate-20260906\\evidence\\rerun-20260906",
+          "bundle",
+          "pack",
+          "--json"
+        ],
+        "ready": false,
+        "status": "blocked",
+        "prerequisites": [
+          "authoring_files_ready"
+        ]
+      },
+      {
+        "action": "asset_inspect_strict",
+        "kind": "command",
+        "reason": "pack 後確認靜態 main-scene references、manifest source 與 bundle 宣告；dynamic Luau references 仍不在 scope。",
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\temp\\unone-asset-gate-20260906\\evidence\\rerun-20260906",
+          "asset",
+          "inspect",
+          "--strict",
+          "--json"
+        ],
+        "ready": false,
+        "status": "blocked",
+        "prerequisites": [
+          "authoring_files_ready",
+          "bundle_pack"
+        ]
+      },
+      {
+        "action": "bundle_install_all",
+        "kind": "command",
+        "reason": "strict inspect 通過後，一次啟用完整 generation；查詢不會逐 bundle 安裝或自行清 cache。",
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\temp\\unone-asset-gate-20260906\\evidence\\rerun-20260906",
+          "bundle",
+          "install",
+          "--all",
+          "--json"
+        ],
+        "ready": false,
+        "status": "blocked",
+        "prerequisites": [
+          "authoring_files_ready",
+          "bundle_pack",
+          "asset_inspect_strict"
+        ]
+      },
+      {
+        "action": "asset_describe",
+        "kind": "command",
+        "reason": "啟用後重新固定同一 native-local observation，確認 AssetSpec 與 primary/companion bytes freshness。",
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\temp\\unone-asset-gate-20260906\\evidence\\rerun-20260906",
+          "asset",
+          "describe",
+          "--id",
+          "asset://rerun/rig",
+          "--json"
+        ],
+        "ready": false,
+        "status": "blocked",
+        "prerequisites": [
+          "authoring_files_ready",
+          "bundle_pack",
+          "asset_inspect_strict",
+          "bundle_install_all"
+        ]
+      },
+      {
+        "action": "asset_read_primary",
+        "kind": "command",
+        "reason": "只讀取已確認的 native-local verified bytes；describe argv 不帶 output，不把 read export 當成 authoring source。",
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\temp\\unone-asset-gate-20260906\\evidence\\rerun-20260906",
+          "asset",
+          "read",
+          "--id",
+          "asset://rerun/rig",
+          "--json"
+        ],
+        "ready": false,
+        "status": "blocked",
+        "prerequisites": [
+          "asset_describe"
+        ]
+      },
+      {
+        "action": "asset_read_companion",
+        "kind": "command",
+        "reason": "只讀取已確認的 native-local verified bytes；describe argv 不帶 output，不把 read export 當成 authoring source。",
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\temp\\unone-asset-gate-20260906\\evidence\\rerun-20260906",
+          "asset",
+          "read",
+          "--id",
+          "asset://rerun/rig",
+          "--file",
+          "assets/rerun-rig.atlas",
+          "--json"
+        ],
+        "ready": false,
+        "status": "blocked",
+        "prerequisites": [
+          "asset_describe"
+        ]
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "ASSET_SOURCE_NOT_FOUND",
+      "severity": "WARNING",
+      "summary": "找不到 asset authoring 檔案",
+      "explanation": "asset 'asset://rerun/rig' 需要 'assets/rerun-rig.atlas'，但檔案不存在。",
+      "facts": {},
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": []
+}

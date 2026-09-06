@@ -1,0 +1,63 @@
+{
+  "ok": true,
+  "value": {
+    "project": "asset maintenance evidence rerun",
+    "manifest": {
+      "path": "\\\\?\\C:\\temp\\unone-asset-gate-20260906\\evidence\\rerun-20260906\\assets\\manifest.json",
+      "exists": true
+    },
+    "bundle_manifest": {
+      "path": "\\\\?\\C:\\temp\\unone-asset-gate-20260906\\evidence\\rerun-20260906\\bundles\\manifest.json",
+      "exists": true
+    },
+    "manifest_version": 1,
+    "assets": [
+      {
+        "id": "asset://rerun/hero",
+        "source": "assets/rerun-hero.svg",
+        "kind": "texture2d",
+        "bundle": "rerun"
+      },
+      {
+        "id": "asset://rerun/rig",
+        "source": "assets/rerun-rig.json",
+        "kind": "spine",
+        "bundle": "rerun",
+        "files": [
+          "assets/rerun-rig.atlas"
+        ]
+      }
+    ],
+    "references": [],
+    "missing_asset_ids": [],
+    "missing_sources": [],
+    "undeclared_bundles": [],
+    "unreferenced_asset_ids": [
+      "asset://rerun/hero",
+      "asset://rerun/rig"
+    ],
+    "static_reference_scope": {
+      "roots_inspected": [
+        "project.unone.json",
+        "main_scene",
+        "asset_manifest",
+        "bundle_manifest"
+      ],
+      "components_inspected": [
+        "sprite",
+        "mesh3d",
+        "animation"
+      ],
+      "dynamic_luau_assets_included": false,
+      "limitations": [
+        "Only main_scene static references are inspected.",
+        "Assets created or selected dynamically by Luau are not discoverable here.",
+        "Effect assets are spawned from Luau, so they are never a static scene reference."
+      ]
+    },
+    "ready_for_packaging": true,
+    "blockers": []
+  },
+  "diagnostics": [],
+  "effects": []
+}
