@@ -1,10 +1,10 @@
-# Issue：`verify` 的 types step 會間歇性假失敗
+# Issue：型別 gate 對每個專案都假通過（追查間歇假失敗時發現）
 
 日期：2026-09-06
 
 ## 狀態
 
-open
+fixed（假通過已修並補上回歸測試）／間歇假失敗仍 open
 
 ## 分類
 
@@ -34,6 +34,44 @@ tooling-docs
 
 實際：同一份未修改的專案，`verify` 偶爾回報型別失敗，而 `check --types`
 永遠通過。
+
+## 追查時發現更嚴重的問題：型別 gate 對每個專案都假通過
+
+追查間歇假失敗時發現：`check --types` 對**任何**專案都會通過，包含刻意寫壞的。
+
+在 slot-machine 的 `main.luau` 放一個確定的型別錯誤
+（`local credits: number = "three"`），`check --types` 仍回報
+`ok: true`、`passed: true`、`output: ""`。
+
+### 根因
+
+引擎傳給 analyzer 的是 `fs::canonicalize` 的結果，也就是 Windows 的
+**extended-length 路徑** `\\?\D:\...`。實測同一個帶錯誤的檔案：
+
+| 傳入的路徑形式 | exit | 輸出 |
+|---|---|---|
+| `C:/...`（一般） | 1 | 完整 TypeError |
+| `\\?\C:\...`（引擎實際傳的） | **0** | **空** |
+
+luau-analyze 打不開這個形式，於是什麼都沒做就回傳 0。而 exit 0 的意思是
+「沒有發現問題」，所以整個型別 gate 靜默通過。
+
+### 為什麼沒被發現
+
+**因為沒有任何測試證明這個 gate 還能失敗。** 本輪稍早手動做過負向控制
+（呼叫不存在的 API 會被擋），但那次是在對話中臨時做的，沒有留下測試。之後
+路徑處理改動讓它退化，沒有任何東西會響。
+
+### 修正
+
+1. `analyzer_argument()` 在呼叫 analyzer 前去掉 `\\?\` 與 `\\?\UNC\` 前綴。
+2. 補上**會失敗的回歸測試**：拿一個確定有型別錯誤的腳本、用
+   `fs::canonicalize` 過的路徑（也就是引擎真正傳的形式）跑完整流程，必須得到
+   `LUAU_TYPECHECK_FAILED` 且輸出含 `TypeError`。找不到 analyzer 時明確 skip。
+3. 另補 `analyzer_argument` 的純函式測試。
+
+驗證：注入型別錯誤後回報 `LUAU_TYPECHECK_FAILED` 並附 `main.luau:97.25-97.31:
+TypeError: Expected this to be 'number'...`；還原後三款遊戲的 `types` 全部 passed。
 
 ## 重現嘗試：50 次 0 失敗
 
