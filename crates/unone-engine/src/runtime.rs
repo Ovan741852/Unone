@@ -1972,14 +1972,15 @@ fn analyzer_path() -> PathBuf {
     if let Ok(path) = env::var("UNONE_LUAU_ANALYZER") {
         return PathBuf::from(path);
     }
+    let tool_name = if cfg!(windows) {
+        "luau-analyze.exe"
+    } else {
+        "luau-analyze"
+    };
     if let Ok(executable) = env::current_exe()
         && let Some(bin_dir) = executable.parent()
     {
-        let packaged_tool = bin_dir.join(if cfg!(windows) {
-            "luau-analyze.exe"
-        } else {
-            "luau-analyze"
-        });
+        let packaged_tool = bin_dir.join(tool_name);
         if packaged_tool.is_file() {
             return packaged_tool;
         }
@@ -1990,7 +1991,7 @@ fn analyzer_path() -> PathBuf {
     // "analyzer not found" that depends on where they happened to be.
     if let Ok(cwd) = env::current_dir() {
         for root in cwd.ancestors() {
-            let candidate = root.join(".toolcache/luau-0.734/luau-analyze.exe");
+            let candidate = root.join(".toolcache/luau-0.734").join(tool_name);
             if candidate.is_file() {
                 return candidate;
             }

@@ -11,9 +11,11 @@ Prerequisites:
 
 - **Rust** — `rust-toolchain.toml` pins the channel and targets, so `rustup`
   installs the right one on first build. Nothing else to choose.
-- **PowerShell** — the scripts here are `.ps1`.
+- **PowerShell** — most scripts here are `.ps1`. The one you need to get
+  started also has a `.sh` version.
 - **Python 3** — only for `python -m http.server`, to look at the Web hosts.
-- **Emscripten** — only if you want the Web runtime. Setup is in
+- **Emscripten** — only if you want the Web runtime. Point
+  `UNONE_EMSDK_ROOT` at it; setup and the verified version are in
   [docs/platform-toolchain.md](docs/platform-toolchain.md). Skip it until you
   need a browser.
 
@@ -26,6 +28,7 @@ cargo build -p unone-cli
 # committed (decision 0005). Without it `verify`'s types gate fails, so fetch
 # the pinned build once; the script checks the download against a recorded hash.
 powershell -File scripts/install-luau-analyze.ps1
+# not PowerShell? sh scripts/install-luau-analyze.sh  (Linux, macOS, Git Bash)
 
 cargo test --workspace
 ```

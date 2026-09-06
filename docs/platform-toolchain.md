@@ -11,9 +11,36 @@ cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
 ```
 
+## 型別檢查工具
+
+`game check --types` 需要官方 `luau-analyze`。它是開發期工具，刻意不進 repo
+（[Decision 0005](decisions/0005-luau-analyzer-toolchain.md)），所以 clone 下來
+要先裝一次；腳本會對 pinned 0.734 的下載內容比對記錄下來的 sha256，不合就中止：
+
+```powershell
+powershell -File scripts/install-luau-analyze.ps1
+```
+
+```sh
+sh scripts/install-luau-analyze.sh   # Linux、macOS、Git Bash
+```
+
+裝好之後 CLI 從 repo 內任何一層目錄都找得到它。已經有自己的 analyzer 就設
+`UNONE_LUAU_ANALYZER` 指過去，不需要跑這支腳本。
+
+三個平台的 hash 都是從官方 release 下載後在本機算出來的，但**只有 Windows 那顆
+真的被執行過**；Linux 與 macOS 的壓縮檔只做了下載與內容雜湊，沒有跑過。
+
 ## Web library compile
 
-目前已在 Windows 以 Emscripten 3.1.39 wrapper 驗證 vendored Luau 能編譯。SDK 路徑應由開發機或 CI 注入，不寫入 Cargo config：
+目前已在 Windows 以 Emscripten 3.1.39 wrapper 驗證 vendored Luau 能編譯。SDK 路徑應由開發機或 CI 注入，不寫入 Cargo config。
+
+`scripts/build-web-live.ps1` 依序讀 `-EmsdkRoot` 參數、`UNONE_EMSDK_ROOT`、
+`EMSDK`；都沒有時只會採用本機那個確實存在的 Unity WebGL BuildTools 路徑，否則
+直接報「沒有 Emscripten」並指回這份文件——它以前把那個路徑寫死，在別台機器上
+會設出無效的環境變數，然後以一個看不懂的 linker 錯誤收場。
+
+手動設定的完整內容：
 
 ```powershell
 $UnoneEmsdkRoot = 'D:/path/to/emsdk'

@@ -1,7 +1,44 @@
+
+param(
+    # Where Emscripten lives. Defaults to $env:UNONE_EMSDK_ROOT, then $env:EMSDK.
+    [string]$EmsdkRoot = $(if ($env:UNONE_EMSDK_ROOT) { $env:UNONE_EMSDK_ROOT } elseif ($env:EMSDK) { $env:EMSDK } else { '' })
+)
+
 $ErrorActionPreference = 'Stop'
 
-$emsdkRoot = 'C:\Program Files\Unity\Hub\Editor\6000.0.47f1\Editor\Data\PlaybackEngines\WebGLSupport\BuildTools\Emscripten'
+# The SDK path belongs to the machine, not to this repository. It used to be one
+# hardcoded Unity install path, so on any other machine this script set bogus
+# environment variables and the failure surfaced as a confusing linker error
+# rather than "you do not have Emscripten".
+if (-not $EmsdkRoot) {
+    # One known local layout, used only when it actually exists.
+    $unityEmscripten = 'C:\Program Files\Unity\Hub\Editor\6000.0.47f1\Editor\Data\PlaybackEngines\WebGLSupport\BuildTools\Emscripten'
+    if (Test-Path -LiteralPath $unityEmscripten -PathType Container) {
+        $EmsdkRoot = $unityEmscripten
+    }
+}
+if (-not $EmsdkRoot) {
+    throw @'
+Emscripten not found. The Web runtime needs it; native development does not.
+
+Set one of these to your emsdk (or Unity WebGL BuildTools) directory and re-run:
+  $env:UNONE_EMSDK_ROOT = 'D:/path/to/emsdk'
+  $env:EMSDK            = 'D:/path/to/emsdk'
+or pass it directly:
+  powershell -File scripts/build-web-live.ps1 -EmsdkRoot D:/path/to/emsdk
+
+Setup and the verified Emscripten version are in docs/platform-toolchain.md.
+'@
+}
+if (-not (Test-Path -LiteralPath $EmsdkRoot -PathType Container)) {
+    throw "Emscripten root does not exist: $EmsdkRoot. See docs/platform-toolchain.md."
+}
+
+$emsdkRoot = [IO.Path]::GetFullPath($EmsdkRoot)
 $emscriptenRoot = Join-Path $emsdkRoot 'emscripten'
+if (-not (Test-Path -LiteralPath (Join-Path $emscriptenRoot 'emcc.bat') -PathType Leaf)) {
+    throw "No emcc.bat under $emscriptenRoot. That does not look like an Emscripten install; see docs/platform-toolchain.md."
+}
 $env:EMSDK = $emsdkRoot
 $env:EM_CONFIG = Join-Path $emsdkRoot '.emscripten'
 $env:EMSDK_PYTHON = Join-Path $emsdkRoot 'python\python.exe'
