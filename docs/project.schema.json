@@ -54,6 +54,55 @@
       },
       "description": "Engine systems this game explicitly turns on or off. Anything not declared keeps the engine default; unknown ids, systems the runtime requires, and systems with no implementation are rejected. Run `game systems list` for the current set."
     },
+    "audio": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Sound categories and the rules between them. Undeclared means no rules, not no sound: a game can play and loop without ever naming a category. Categories exist to say what happens *between* sounds, which is the part the engine owns.",
+      "properties": {
+        "categories": {
+          "type": "object",
+          "description": "Category name to rules. The engine does not name bgm or sfx; the taxonomy is the game's.",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "exclusive": {
+                "type": "boolean",
+                "default": false,
+                "description": "Only one loop in this category plays at a time; starting another begins stopping the previous one."
+              },
+              "fade_in_frames": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "description": "Frames a loop in this category spends in the fading_in phase. The engine counts the frames; the host does the gain ramp."
+              },
+              "fade_out_frames": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "description": "Frames a stopped loop stays in the observation, marked fading_out, before the engine retires it."
+              },
+              "max_concurrent": {
+                "description": "Reserved name, not implemented in this build. Declaring it is an error (AUDIO_RULE_NOT_IMPLEMENTED) rather than a silent no-op."
+              },
+              "on_limit": {
+                "description": "Reserved name, not implemented in this build."
+              },
+              "ducking": {
+                "description": "Reserved name, not implemented in this build."
+              },
+              "priority": {
+                "description": "Reserved name, not implemented in this build."
+              },
+              "exclusive_group": {
+                "description": "Reserved name, not implemented in this build."
+              }
+            }
+          }
+        }
+      }
+    },
     "ui_previews": {
       "type": "array",
       "description": "Screens `game verify` must check the layout of. Without this only the opening screen is drawn, so a broken win or lose screen passes every gate.",
@@ -83,6 +132,57 @@
           "input_sequence": {
             "type": "string",
             "description": "Project-relative per-frame input replay that reaches this screen."
+          }
+        }
+      }
+    },
+    "verify": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Which gates `game verify` runs, in what order, and which of them are advisory. Undeclared means the engine's default order (types, assets, layout, tests) with every gate required. A skipped gate has to be a written decision: an empty list, an unknown id and a duplicate are all errors.",
+      "properties": {
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "description": "The gates to run, in order. Each entry is either the gate id or an object naming it.",
+          "items": {
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "types",
+                  "assets",
+                  "layout",
+                  "tests"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "step"
+                ],
+                "properties": {
+                  "step": {
+                    "type": "string",
+                    "enum": [
+                      "types",
+                      "assets",
+                      "layout",
+                      "tests"
+                    ]
+                  },
+                  "required": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "false makes the gate advisory: a failure is reported in full and named in the run's effect line, but does not fail the run."
+                  },
+                  "command": {
+                    "description": "Reserved name for a project-owned command as a gate. Not implemented in this build; declaring it is an error (VERIFY_STEP_NOT_IMPLEMENTED) rather than a step that silently never runs."
+                  }
+                }
+              }
+            ]
           }
         }
       }

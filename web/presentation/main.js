@@ -4,6 +4,10 @@
 // which animation clip each entity plays and which effect instances are live.
 // This file owns the two runtimes that turn that into pixels — spine-webgl and
 // Effekseer for WebGL — plus their asset lifetimes. It never decides a result.
+//
+// It also owns playback for the audio the engine asked for. The engine decides
+// which sound starts, which one an exclusive category stops, and how far into a
+// fade each frame is; this file only decodes, mixes and sets a gain.
 
 const statusLine = document.querySelector("#status");
 const output = document.querySelector("#output");
@@ -31,6 +35,7 @@ let snapshot = null;
 let assets = null;
 let spineState = null;
 let effekseerState = null;
+let audioState = null;
 let renderedUi = null;
 let pendingActions = new Map();
 let autoPlay = false;
@@ -121,6 +126,9 @@ async function loadProject() {
       // The same switches project.unone.json declares on disk. Without them the
       // engine would report SYSTEM_DISABLED for animation and effect calls.
       systems: config.systems ?? {},
+      // And the same audio categories, or the browser runs the game with no
+      // category rules: no exclusive track switch, no fades.
+      audio: config.audio ?? null,
     })
   );
   if (window.Module._unone_web_load_project(payload.address, payload.length, 42n) !== 0) {
@@ -270,6 +278,139 @@ function drawEffects() {
   context.draw();
 }
 
+// --- Audio -----------------------------------------------------------------
+
+// Every "audio" asset the manifest declares, decoded once up front.
+//
+// A missing or undecodable clip is reported rather than silently skipped: an
+// engine that says a sound played and a page that quietly plays nothing is the
+// one audio bug nothing else can catch.
+async function createAudio(manifest, config) {
+  const declared = (manifest?.assets ?? []).filter((asset) => asset.kind === "audio");
+  if (declared.length === 0) return null;
+  // The declared bus levels. The engine only publishes the mix once the game
+  // has moved one of them, so the starting levels come from the project.
+  const declaredLevels = Object.fromEntries(
+    Object.entries(config?.audio?.categories ?? {}).map(([name, rules]) => [
+      name,
+      rules.volume ?? 1,
+    ])
+  );
+  const context = new (window.AudioContext ?? window.webkitAudioContext)();
+  const master = context.createGain();
+  master.connect(context.destination);
+  const buffers = new Map();
+  const failures = [];
+  await Promise.all(
+    declared.map(async (asset) => {
+      try {
+        const response = await fetch(new URL(asset.source, projectRoot));
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        buffers.set(asset.id, await context.decodeAudioData(await response.arrayBuffer()));
+      } catch (error) {
+        failures.push(`${asset.id}: ${error.message ?? error}`);
+      }
+    })
+  );
+  return { context, master, buffers, declaredLevels, live: new Map(), failures, missing: new Set() };
+}
+
+function audioBuffer(assetId) {
+  const buffer = audioState.buffers.get(assetId);
+  if (buffer) return buffer;
+  if (!audioState.missing.has(assetId)) {
+    audioState.missing.add(assetId);
+    console.warn(`audio asset '${assetId}' is not declared in the asset manifest`);
+  }
+  return null;
+}
+
+// The bus level a sound in this category is played at, the way a mixer group
+// multiplies into a source's own volume.
+function busGain(world, category) {
+  const mix = world.audio_mix ?? null;
+  const master = mix?.master ?? 1;
+  if (!category) return master;
+  const level =
+    mix?.categories?.[category] ?? audioState.declaredLevels[category] ?? 1;
+  return master * level;
+}
+
+// How loud this loop should be right now.
+//
+// The engine publishes the phase and how many frames into it we are, so the
+// host never has to schedule a ramp or guess when a fade ends — it reads the
+// gain off the frame it is drawing.
+function loopGain(world, source) {
+  if (source.paused) return 0;
+  const bus = source.volume * busGain(world, source.category);
+  if (source.phase_frames === 0) return bus;
+  const elapsed = Math.min(
+    Math.max(world.frame - source.phase_started_frame, 0),
+    source.phase_frames
+  );
+  const progress = elapsed / source.phase_frames;
+  if (source.phase === "fading_in") return bus * progress;
+  if (source.phase === "fading_out") return bus * (1 - progress);
+  return bus;
+}
+
+// The engine owns which sounds exist; this only mirrors that decision.
+function syncAudio(world) {
+  if (!audioState || audioState.context.state !== "running") return;
+  const context = audioState.context;
+
+  for (const event of world.audio_events ?? []) {
+    if (event.kind !== "play" || event.loop) continue;
+    const buffer = audioBuffer(event.asset);
+    if (!buffer) continue;
+    const node = context.createBufferSource();
+    node.buffer = buffer;
+    node.playbackRate.value = event.speed;
+    const gain = context.createGain();
+    gain.gain.value = event.volume * busGain(world, event.category);
+    node.connect(gain).connect(audioState.master);
+    node.start();
+  }
+
+  const live = new Map((world.audio_loops ?? []).map((source) => [source.handle, source]));
+  for (const [handle, playing] of [...audioState.live]) {
+    if (live.has(handle)) continue;
+    playing.node.stop();
+    audioState.live.delete(handle);
+  }
+  for (const [handle, source] of live) {
+    let playing = audioState.live.get(handle);
+    if (!playing) {
+      const buffer = audioBuffer(source.asset);
+      if (!buffer) continue;
+      const node = context.createBufferSource();
+      node.buffer = buffer;
+      node.loop = true;
+      node.playbackRate.value = source.speed;
+      const gain = context.createGain();
+      node.connect(gain).connect(audioState.master);
+      node.start();
+      playing = { node, gain };
+      audioState.live.set(handle, playing);
+    }
+    playing.gain.gain.value = loopGain(world, source);
+  }
+}
+
+// Browsers keep an AudioContext suspended until a real gesture. The game stays
+// playable while it is locked; this only unlocks it when the player acts.
+function unlockAudio() {
+  if (audioState && audioState.context.state === "suspended") audioState.context.resume();
+}
+
+function audioStatus(world) {
+  if (!audioState) return "no audio assets";
+  if (audioState.failures.length > 0) return `audio load failed: ${audioState.failures.join("; ")}`;
+  if (audioState.context.state !== "running") return "audio locked until you click";
+  return `audio loops ${world.audio_loops?.length ?? 0}`;
+}
+
 // --- UI, input and the frame loop -----------------------------------------
 
 function renderUi(world) {
@@ -359,6 +500,7 @@ function step() {
   }
   syncSpineActors(world);
   syncEffects(world);
+  syncAudio(world);
   drawSpine(1 / 60);
   drawEffects();
   renderUi(world);
@@ -377,11 +519,17 @@ function step() {
           ])
       ),
       effects: (world.effects ?? []).map((effect) => `${effect.handle} ${effect.asset}`),
+      audio_events: (world.audio_events ?? []).map(
+        (event) => `${event.kind} ${event.asset}${event.loop ? " (loop)" : ""}`
+      ),
+      audio_loops: (world.audio_loops ?? []).map(
+        (source) => `${source.handle} ${source.asset} ${source.phase}`
+      ),
     },
     null,
     2
   );
-  statusLine.textContent = `engine frame ${world.frame} — spine actors ${spineState?.actors.size ?? 0}, effects ${world.effects?.length ?? 0}`;
+  statusLine.textContent = `engine frame ${world.frame} — spine actors ${spineState?.actors.size ?? 0}, effects ${world.effects?.length ?? 0}, ${audioStatus(world)}`;
   if (!recording) scheduleFrame(step);
 }
 
@@ -436,14 +584,18 @@ async function record({ frames = 180, width = 960, height = 540, every = 2, endp
 async function start() {
   try {
     if (window.Module._unone_web_init() !== 0) throw new Error("engine init failed");
-    const { manifest } = await loadProject();
+    const { config, manifest } = await loadProject();
     resizeCanvas();
     spineState = await createSpine(assetByKind(manifest, "spine"));
     effekseerState = await createEffekseer(
       assetByKind(manifest, "effekseer"),
       spineState?.context?.gl ?? canvas.getContext("webgl2")
     );
+    audioState = await createAudio(manifest, config);
     assets = manifest;
+    // Any click counts as the gesture that unlocks playback, including the ones
+    // the game's own buttons already handle.
+    document.addEventListener("pointerdown", unlockAudio);
     spinButton.disabled = false;
     autoButton.disabled = false;
     spinButton.addEventListener("click", () => pressAction("Spin"));
@@ -452,7 +604,28 @@ async function start() {
       const action = event.target?.dataset?.action;
       if (action) pressAction(action);
     });
-    window.unoneHost = { pressAction, stepOnce: step, record };
+    window.unoneHost = {
+      pressAction,
+      stepOnce: step,
+      record,
+      unlockAudio,
+      // A page cannot be asked whether it is audible, so it reports what it can
+      // check: which clips decoded, what the context is doing, and the gain it
+      // set for each live loop.
+      audioReport: () =>
+        audioState === null
+          ? { assets: 0 }
+          : {
+              assets: audioState.buffers.size,
+              failures: audioState.failures,
+              missing: [...audioState.missing],
+              state: audioState.context.state,
+              live: [...audioState.live].map(([handle, playing]) => ({
+                handle,
+                gain: playing.gain.gain.value,
+              })),
+            },
+    };
     autoButton.addEventListener("click", () => {
       autoPlay = !autoPlay;
       autoCooldown = 0;

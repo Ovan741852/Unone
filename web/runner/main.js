@@ -265,7 +265,18 @@ async function loadProject() {
   const scene = packaged?.scene ?? (config.main_scene ? await readJson(config.main_scene) : null);
   assetManifest = packaged?.assetManifest
     ?? (config.asset_manifest ? await readJson(config.asset_manifest) : null);
-  const payload = bridgeBytes(JSON.stringify({ project: config.name, script, scene }));
+  // The project's own declarations have to travel with it. Without them this
+  // host runs a different game than the CLI does: systems the project turned
+  // off stay on, and audio categories have no rules.
+  const payload = bridgeBytes(
+    JSON.stringify({
+      project: config.name,
+      script,
+      scene,
+      systems: config.systems ?? {},
+      audio: config.audio ?? null,
+    })
+  );
   if (window.Module._unone_web_load_project(payload.pointerAddress, payload.length, seed) !== 0) {
     throw bridgeError(readSnapshot(), "generic project load failed");
   }

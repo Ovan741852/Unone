@@ -126,6 +126,35 @@ export type EffectApi = {
     stop: (handle: string) -> boolean,
 }
 
+export type AudioOptions = {
+    volume: number?,
+    speed: number?,
+    category: string?,
+    x: number?,
+    y: number?,
+    -- Attach the sound to an entity; the engine keeps it on that entity and
+    -- stops it when the entity is gone.
+    entity: string?,
+}
+
+-- Semantic audio requests. The engine owns which sound starts, which one a
+-- category switch stops, and the exact frame a fade ends; the host decodes and
+-- mixes. Requires system "audio".
+export type AudioApi = {
+    play: (asset: string, options: AudioOptions?) -> string,
+    loop: (asset: string, options: AudioOptions?) -> string,
+    stop: (handle: string) -> boolean,
+    stopAll: () -> number,
+    pause: (handle: string) -> boolean,
+    resume: (handle: string) -> boolean,
+    pauseAll: () -> number,
+    resumeAll: () -> number,
+    setMasterVolume: (volume: number) -> (),
+    getMasterVolume: () -> number,
+    setCategoryVolume: (category: string, volume: number) -> (),
+    getCategoryVolume: (category: string) -> number,
+}
+
 export type EngineApi = {
     entity: EntityApi,
     input: InputApi,
@@ -138,6 +167,7 @@ export type EngineApi = {
     save: SaveApi,
     animation: AnimationApi,
     effect: EffectApi,
+    audio: AudioApi,
     log: (message: string) -> (),
 }
 

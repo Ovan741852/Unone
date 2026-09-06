@@ -1031,7 +1031,7 @@ pub(crate) fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnosti
             "ASSET_SPEC_INVALID",
             "asset spec 的 kind 或 bundle 無效",
             format!(
-                "asset '{}' 的 kind 必須是 texture2d、mesh3d、spine 或 effekseer，bundle 不可為空。",
+                "asset '{}' 的 kind 必須是 texture2d、mesh3d、spine、effekseer 或 audio，bundle 不可為空。",
                 asset.id
             ),
         )));
@@ -1199,7 +1199,7 @@ fn is_project_relative(source: &str) -> bool {
 }
 
 fn is_supported_asset_kind(kind: &str) -> bool {
-    matches!(kind, "texture2d" | "mesh3d" | "spine" | "effekseer")
+    matches!(kind, "texture2d" | "mesh3d" | "spine" | "effekseer" | "audio")
 }
 
 fn is_safe_bundle_id(bundle: &str) -> bool {

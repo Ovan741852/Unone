@@ -35,6 +35,11 @@ struct HostProject {
     /// would declare them for a file-backed project.
     #[serde(default)]
     systems: BTreeMap<String, bool>,
+    /// Audio categories and their rules, exactly as project.unone.json declares
+    /// them. Without this the browser runs the same game with no category
+    /// rules at all: no exclusive track switch, no fades.
+    #[serde(default)]
+    audio: Option<unone_engine::AudioConfig>,
 }
 
 fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Box<Diagnostic>> {
@@ -43,14 +48,16 @@ fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Box<
         .as_deref()
         .map(|raw| parse_scene_fragment(raw.get()))
         .transpose()?;
-    EngineRuntime::load_source_with_systems(
-        project.project,
-        "main.luau",
-        project.script,
+    EngineRuntime::load_source_project(unone_engine::SourceProject {
+        name: project.project,
+        script_name: "main.luau".to_string(),
+        source: project.script,
         scene,
         seed,
-        project.systems,
-    )
+        systems: project.systems,
+        audio: project.audio,
+        ..unone_engine::SourceProject::default()
+    })
 }
 
 #[derive(Debug, Serialize)]

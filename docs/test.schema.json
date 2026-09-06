@@ -289,6 +289,9 @@
         },
         "effects": {
           "$ref": "#/$defs/effectsAssertion"
+        },
+        "audio": {
+          "$ref": "#/$defs/audioAssertion"
         }
       },
       "oneOf": [
@@ -321,6 +324,11 @@
               {
                 "required": [
                   "ui"
+                ]
+              },
+              {
+                "required": [
+                  "audio"
                 ]
               }
             ]
@@ -356,6 +364,11 @@
                 "required": [
                   "observation"
                 ]
+              },
+              {
+                "required": [
+                  "audio"
+                ]
               }
             ]
           }
@@ -389,6 +402,11 @@
               {
                 "required": [
                   "ui"
+                ]
+              },
+              {
+                "required": [
+                  "audio"
                 ]
               }
             ]
@@ -424,6 +442,11 @@
                 "required": [
                   "ui"
                 ]
+              },
+              {
+                "required": [
+                  "audio"
+                ]
               }
             ]
           }
@@ -454,6 +477,50 @@
                 "required": [
                   "ui"
                 ]
+              },
+              {
+                "required": [
+                  "audio"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "required": [
+            "audio"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "animation"
+                ]
+              },
+              {
+                "required": [
+                  "effects"
+                ]
+              },
+              {
+                "required": [
+                  "entity"
+                ]
+              },
+              {
+                "required": [
+                  "field"
+                ]
+              },
+              {
+                "required": [
+                  "observation"
+                ]
+              },
+              {
+                "required": [
+                  "ui"
+                ]
               }
             ]
           }
@@ -463,51 +530,120 @@
         {
           "if": {
             "anyOf": [
-              {"required": ["observation"]},
-              {"required": ["ui"]},
-              {"required": ["animation"]},
-              {"required": ["effects"]}
+              {
+                "required": [
+                  "observation"
+                ]
+              },
+              {
+                "required": [
+                  "ui"
+                ]
+              },
+              {
+                "required": [
+                  "animation"
+                ]
+              },
+              {
+                "required": [
+                  "effects"
+                ]
+              },
+              {
+                "required": [
+                  "audio"
+                ]
+              }
             ]
           },
           "then": {
             "not": {
               "anyOf": [
-                {"required": ["equals"]},
-                {"required": ["greater_than"]},
-                {"required": ["less_than"]}
+                {
+                  "required": [
+                    "equals"
+                  ]
+                },
+                {
+                  "required": [
+                    "greater_than"
+                  ]
+                },
+                {
+                  "required": [
+                    "less_than"
+                  ]
+                }
               ]
             }
           }
         },
         {
-          "if": {"required": ["entity"]},
+          "if": {
+            "required": [
+              "entity"
+            ]
+          },
           "then": {
-            "required": ["field"],
+            "required": [
+              "field"
+            ],
             "oneOf": [
               {
-                "required": ["equals"],
+                "required": [
+                  "equals"
+                ],
                 "not": {
                   "anyOf": [
-                    {"required": ["greater_than"]},
-                    {"required": ["less_than"]}
+                    {
+                      "required": [
+                        "greater_than"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "less_than"
+                      ]
+                    }
                   ]
                 }
               },
               {
-                "required": ["greater_than"],
+                "required": [
+                  "greater_than"
+                ],
                 "not": {
                   "anyOf": [
-                    {"required": ["equals"]},
-                    {"required": ["less_than"]}
+                    {
+                      "required": [
+                        "equals"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "less_than"
+                      ]
+                    }
                   ]
                 }
               },
               {
-                "required": ["less_than"],
+                "required": [
+                  "less_than"
+                ],
                 "not": {
                   "anyOf": [
-                    {"required": ["equals"]},
-                    {"required": ["greater_than"]}
+                    {
+                      "required": [
+                        "equals"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "greater_than"
+                      ]
+                    }
                   ]
                 }
               }
@@ -548,6 +684,20 @@
         }
       },
       "description": "The engine transports these events; the host runs the Effekseer runtime. Requires system \"effekseer\"."
+    },
+    "audioAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "description": "Full equality against what the game asked to be heard. events is what was fired on the asserted frame; loops is what should still be playing. Provide at least one, or the assertion checks nothing.",
+      "properties": {
+        "events": {
+          "description": "Full equality against world.audio_events for the asserted frame."
+        },
+        "loops": {
+          "description": "Full equality against world.audio_loops, the loops a host should currently be playing."
+        }
+      }
     }
   }
 }

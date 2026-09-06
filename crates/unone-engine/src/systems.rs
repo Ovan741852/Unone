@@ -461,6 +461,22 @@ fn descriptors() -> Vec<SystemDescriptor> {
             "沒有存檔的關卡驗證或 demo。",
         ),
         descriptor(
+            "audio",
+            "音效與 BGM：遊戲發布語意音訊事件與 loop 狀態，host 負責解碼與混音。",
+            SystemStatus::HostRequired,
+            true,
+            true,
+            vec![
+                "api.audio.play",
+                "api.audio.loop",
+                "api.audio.stop",
+                "api.audio.stopAll",
+            ],
+            vec!["world.audio_events", "world.audio_loops"],
+            "關閉後 api.audio 會回報 SYSTEM_DISABLED，snapshot 不會有任何音訊事件或 loop。",
+            "完全不出聲的遊戲，或只想比對畫面的驗證專案。分類規則（exclusive／淡入淡出）由引擎決定並進 digest；實際發聲由 host 執行，目前只有 web/presentation 這個 Web host 會播放。",
+        ),
+        descriptor(
             "spine",
             "Spine 骨骼動畫：遊戲發布語意動畫狀態，host 執行 Spine runtime。",
             SystemStatus::HostRequired,

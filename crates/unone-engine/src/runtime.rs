@@ -13,6 +13,7 @@ use serde::Serialize;
 use sha2::{Digest, Sha256};
 
 use crate::{
+    audio::AudioOptions,
     diagnostics::{ActionSuggestion, Diagnostic, EngineResult, SourceLocation},
     performance::{FrameCounts, FrameTiming, PerformanceCollector, PerformanceReport, timed},
     project::{InputFrame, ProjectConfig, ProjectPaths, TestSpec},
@@ -31,6 +32,23 @@ const FIXED_DT: f64 = 1.0 / 60.0;
 pub fn observation_digest(snapshot: &WorldSnapshot) -> Result<String, serde_json::Error> {
     let bytes = serde_json::to_vec(snapshot)?;
     Ok(format!("sha256:{}", hex_digest(&bytes)))
+}
+
+/// A project a host assembled from bytes it fetched itself.
+///
+/// Defaults match a file-backed project that declares nothing, so a host adds
+/// only what it actually has.
+#[derive(Debug, Default)]
+pub struct SourceProject {
+    pub name: String,
+    /// Defaults to `main.luau` when empty; only names the script in diagnostics.
+    pub script_name: String,
+    pub source: String,
+    pub scene: Option<SceneFile>,
+    pub seed: u64,
+    pub systems: BTreeMap<String, bool>,
+    pub restored_save: Option<serde_json::Value>,
+    pub audio: Option<crate::audio::AudioConfig>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -368,7 +386,7 @@ impl EngineRuntime {
     /// Load a host-provided project with its systems and a restored save.
     #[allow(
         clippy::too_many_arguments,
-        reason = "one host entry point, no config struct yet"
+        reason = "kept for existing callers; new declarations go on SourceProject"
     )]
     pub fn load_source_with_options(
         project_name: impl Into<String>,
@@ -379,9 +397,43 @@ impl EngineRuntime {
         systems: BTreeMap<String, bool>,
         restored_save: Option<serde_json::Value>,
     ) -> Result<Self, Box<Diagnostic>> {
-        let script_name = script_name.into();
-        let config = ProjectConfig {
+        Self::load_source_project(SourceProject {
             name: project_name.into(),
+            script_name: script_name.into(),
+            source: source.into(),
+            scene,
+            seed,
+            systems,
+            restored_save,
+            ..SourceProject::default()
+        })
+    }
+
+    /// Load a project a host assembled itself, declaration by declaration.
+    ///
+    /// Every project-level declaration a file-backed game can make has to reach
+    /// a host-loaded game too, or the same game behaves differently on Web than
+    /// on disk — the exact failure that made audio categories do nothing in the
+    /// browser. New declarations belong on `SourceProject`, not on another
+    /// positional argument.
+    pub fn load_source_project(project: SourceProject) -> Result<Self, Box<Diagnostic>> {
+        let SourceProject {
+            name,
+            script_name,
+            source,
+            scene,
+            seed,
+            systems,
+            restored_save,
+            audio,
+        } = project;
+        let script_name = if script_name.is_empty() {
+            "main.luau".to_string()
+        } else {
+            script_name
+        };
+        let config = ProjectConfig {
+            name,
             entry_script: script_name.clone(),
             main_scene: None,
             test_files: Vec::new(),
@@ -389,6 +441,8 @@ impl EngineRuntime {
             asset_manifest: None,
             ui_previews: Vec::new(),
             systems,
+            verify: None,
+            audio,
         };
         let paths = ProjectPaths {
             root: PathBuf::from("<memory>"),
@@ -403,14 +457,7 @@ impl EngineRuntime {
         if let Some(scene) = scene {
             world.borrow_mut().load_scene_data(scene)?;
         }
-        Self::with_world(
-            config,
-            paths,
-            world,
-            Some(source.into()),
-            seed,
-            restored_save,
-        )
+        Self::with_world(config, paths, world, Some(source), seed, restored_save)
     }
 
     fn with_world(
@@ -443,6 +490,19 @@ impl EngineRuntime {
             save_payload: Rc::clone(&save_payload),
         };
         let systems = SystemSettings::from_config(&config)?;
+        if let Some(audio) = &config.audio {
+            // A declared rule this build does not act on is a configuration
+            // error, not a no-op: a game that believes it configured ducking
+            // and got silence has no way to find out.
+            audio.validate().map_err(|explanation| {
+                Box::new(Diagnostic::error(
+                    "AUDIO_RULE_NOT_IMPLEMENTED",
+                    "project.unone.json 宣告了本 build 未實作的音訊規則",
+                    explanation,
+                ))
+            })?;
+            world.borrow_mut().audio.config = audio.clone();
+        }
         let lua = Lua::new();
         let api = build_api(&lua, &api_state, &systems).map_err(|err| {
             Box::new(Diagnostic::error(
@@ -640,6 +700,11 @@ impl EngineRuntime {
 
     pub fn tick(&mut self) -> Result<WorldSnapshot, Box<Diagnostic>> {
         let started = std::time::Instant::now();
+        {
+            let mut world = self.world.borrow_mut();
+            let frame = world.frame;
+            world.audio.begin_frame(frame);
+        }
         let (script, script_time) = timed(|| {
             self.update_fn
                 .call::<()>((self.api.clone(), FIXED_DT))
@@ -653,10 +718,18 @@ impl EngineRuntime {
         });
         {
             let mut world = self.world.borrow_mut();
+            // Before the frame advances, so an attached source is observed at
+            // the position its entity actually holds this frame.
+            world.follow_audio_entities();
             world.frame += 1;
             world.time_seconds = world.frame as f64 / 60.0;
         }
         let (snapshot, observe_time) = timed(|| self.observe());
+        {
+            let mut world = self.world.borrow_mut();
+            let frame = world.frame;
+            world.audio.end_frame(frame);
+        }
         self.performance.record(FrameTiming {
             script: script_time,
             physics: physics_time,
@@ -1403,6 +1476,121 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
         })?,
     )?;
 
+    let audio_api = lua.create_table()?;
+    let play_audio_world = Rc::clone(&world);
+    audio_api.set(
+        "play",
+        lua.create_function(move |_, (asset, options): (String, Option<Table>)| {
+            let options = audio_options(options)?;
+            let mut world = play_audio_world.borrow_mut();
+            let frame = world.frame;
+            world
+                .audio
+                .play(&asset, &options, frame)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+    let loop_audio_world = Rc::clone(&world);
+    audio_api.set(
+        "loop",
+        lua.create_function(move |_, (asset, options): (String, Option<Table>)| {
+            let options = audio_options(options)?;
+            let mut world = loop_audio_world.borrow_mut();
+            let frame = world.frame;
+            world
+                .audio
+                .start_loop(&asset, &options, frame)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+    let stop_audio_world = Rc::clone(&world);
+    audio_api.set(
+        "stop",
+        lua.create_function(move |_, handle: String| {
+            let mut world = stop_audio_world.borrow_mut();
+            let frame = world.frame;
+            Ok(world.audio.stop(&handle, frame))
+        })?,
+    )?;
+    let stop_all_audio_world = Rc::clone(&world);
+    audio_api.set(
+        "stopAll",
+        lua.create_function(move |_, ()| {
+            let mut world = stop_all_audio_world.borrow_mut();
+            let frame = world.frame;
+            Ok(world.audio.stop_all(frame) as i64)
+        })?,
+    )?;
+
+    let pause_audio_world = Rc::clone(&world);
+    audio_api.set(
+        "pause",
+        lua.create_function(move |_, handle: String| {
+            Ok(pause_audio_world.borrow_mut().audio.set_paused(&handle, true))
+        })?,
+    )?;
+    let resume_audio_world = Rc::clone(&world);
+    audio_api.set(
+        "resume",
+        lua.create_function(move |_, handle: String| {
+            Ok(resume_audio_world
+                .borrow_mut()
+                .audio
+                .set_paused(&handle, false))
+        })?,
+    )?;
+    let pause_all_audio_world = Rc::clone(&world);
+    audio_api.set(
+        "pauseAll",
+        lua.create_function(move |_, ()| {
+            Ok(pause_all_audio_world.borrow_mut().audio.set_all_paused(true) as i64)
+        })?,
+    )?;
+    let resume_all_audio_world = Rc::clone(&world);
+    audio_api.set(
+        "resumeAll",
+        lua.create_function(move |_, ()| {
+            Ok(resume_all_audio_world
+                .borrow_mut()
+                .audio
+                .set_all_paused(false) as i64)
+        })?,
+    )?;
+    let set_master_world = Rc::clone(&world);
+    audio_api.set(
+        "setMasterVolume",
+        lua.create_function(move |_, volume: f64| {
+            set_master_world
+                .borrow_mut()
+                .audio
+                .set_master_volume(volume)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+    let get_master_world = Rc::clone(&world);
+    audio_api.set(
+        "getMasterVolume",
+        lua.create_function(move |_, ()| Ok(get_master_world.borrow().audio.master_volume()))?,
+    )?;
+    let set_category_world = Rc::clone(&world);
+    audio_api.set(
+        "setCategoryVolume",
+        lua.create_function(move |_, (category, volume): (String, f64)| {
+            set_category_world
+                .borrow_mut()
+                .audio
+                .set_category_volume(&category, volume)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+    let get_category_world = Rc::clone(&world);
+    audio_api.set(
+        "getCategoryVolume",
+        lua.create_function(move |_, category: String| {
+            Ok(get_category_world.borrow().audio.category_volume(&category))
+        })?,
+    )?;
+
     api.set("entity", entity)?;
     api.set("input", input_api)?;
     api.set(
@@ -1429,7 +1617,34 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
         "effect",
         disable_if_off(lua, systems, "effekseer", effect_api)?,
     )?;
+    api.set("audio", disable_if_off(lua, systems, "audio", audio_api)?)?;
     Ok(api)
+}
+
+/// Read the option table a game passes to `api.audio.*`.
+///
+/// A missing table means "defaults", not an error: the common call is a bare
+/// `api.audio.play("sfx://click")`.
+fn audio_options(options: Option<Table>) -> mlua::Result<AudioOptions> {
+    let Some(options) = options else {
+        return Ok(AudioOptions::default());
+    };
+    let x = options.get::<Option<f64>>("x")?;
+    let y = options.get::<Option<f64>>("y")?;
+    let position = match (x, y) {
+        (None, None) => None,
+        (x, y) => Some(Vec2 {
+            x: x.unwrap_or(0.0),
+            y: y.unwrap_or(0.0),
+        }),
+    };
+    Ok(AudioOptions {
+        volume: options.get::<Option<f64>>("volume")?,
+        speed: options.get::<Option<f64>>("speed")?,
+        category: options.get::<Option<String>>("category")?,
+        position,
+        entity: options.get::<Option<String>>("entity")?,
+    })
 }
 
 /// Keep a disabled system's API shape, but make every call say why it failed.
@@ -1850,6 +2065,27 @@ fn evaluate_assertion(
                 "effects = {actual}, does not equal expected {}.",
                 effects.equals
             ));
+        }
+        return Ok(());
+    }
+    if let Some(audio) = &assertion.audio {
+        if let Some(expected) = &audio.events {
+            let actual = serde_json::to_value(&world.audio_events)
+                .map_err(|error| format!("Unable to serialize audio events: {error}"))?;
+            if actual != *expected {
+                return Err(format!(
+                    "audio events = {actual}, does not equal expected {expected}."
+                ));
+            }
+        }
+        if let Some(expected) = &audio.loops {
+            let actual = serde_json::to_value(&world.audio_loops)
+                .map_err(|error| format!("Unable to serialize audio loops: {error}"))?;
+            if actual != *expected {
+                return Err(format!(
+                    "audio loops = {actual}, does not equal expected {expected}."
+                ));
+            }
         }
         return Ok(());
     }
@@ -2803,6 +3039,190 @@ return Game
         let different_digest = different.run(3, 8).value.unwrap().observation_digest;
         assert_eq!(left_digest, right_digest);
         assert_ne!(left_digest, different_digest);
+    }
+
+    fn write_audio_project(dir: &std::path::Path, script: &str, audio: &str) {
+        fs::create_dir_all(dir.join("scripts")).unwrap();
+        fs::write(
+            dir.join("project.unone.json"),
+            format!(
+                r#"{{
+                "name": "AudioTest",
+                "entry_script": "scripts/main.luau",
+                "audio": {audio}
+            }}"#
+            ),
+        )
+        .unwrap();
+        fs::write(dir.join("scripts/main.luau"), script).unwrap();
+    }
+
+    /// A sound fired in `start` has no frame of its own to be observed on, so
+    /// clearing events before the first observation would lose it silently.
+    #[test]
+    fn a_sound_fired_in_start_is_still_heard_on_the_first_frame() {
+        let dir = tempdir().unwrap();
+        write_audio_project(
+            dir.path(),
+            r#"--!strict
+local Game = {}
+function Game.start(api)
+    api.audio.play("sfx://boot")
+    api.audio.loop("music://lobby", {category = "bgm"})
+end
+function Game.update(_api, _dt) end
+return Game
+"#,
+            r#"{"categories": {"bgm": {"exclusive": true, "fade_out_frames": 30}}}"#,
+        );
+        let mut runtime = EngineRuntime::load(dir.path()).unwrap();
+
+        let first = runtime.tick().unwrap();
+        assert_eq!(first.audio_events.len(), 2, "{:?}", first.audio_events);
+        assert_eq!(first.audio_events[0].asset, "sfx://boot");
+        assert!(!first.audio_events[0].looping);
+        assert_eq!(first.audio_loops.len(), 1);
+        assert_eq!(first.audio_loops[0].phase, crate::audio::AudioPhase::Playing);
+
+        let second = runtime.tick().unwrap();
+        assert!(
+            second.audio_events.is_empty(),
+            "an event belongs to one frame only: {:?}",
+            second.audio_events
+        );
+        assert_eq!(
+            second.audio_loops.len(),
+            1,
+            "a loop is state and survives the frame"
+        );
+    }
+
+    /// The rule a game cannot implement itself: the engine decides which track
+    /// survives the switch and on which frame the old one leaves.
+    #[test]
+    fn an_exclusive_switch_and_its_fade_are_decided_by_the_engine() {
+        let dir = tempdir().unwrap();
+        write_audio_project(
+            dir.path(),
+            r#"--!strict
+local Game = {}
+local frame = 0
+function Game.start(api)
+    api.audio.loop("music://lobby", {category = "bgm"})
+end
+function Game.update(api, _dt)
+    frame += 1
+    if frame == 2 then
+        api.audio.loop("music://game", {category = "bgm"})
+    end
+end
+return Game
+"#,
+            r#"{"categories": {"bgm": {"exclusive": true, "fade_out_frames": 3}}}"#,
+        );
+        let mut runtime = EngineRuntime::load(dir.path()).unwrap();
+
+        runtime.tick().unwrap();
+        let switched = runtime.tick().unwrap();
+        assert_eq!(switched.audio_loops.len(), 2, "the old track is still fading");
+        assert_eq!(
+            switched.audio_loops[0].phase,
+            crate::audio::AudioPhase::FadingOut
+        );
+        assert_eq!(switched.audio_loops[0].asset, "music://lobby");
+        assert_eq!(switched.audio_loops[1].asset, "music://game");
+
+        let mut assets = Vec::new();
+        for _ in 0..4 {
+            assets.push(
+                runtime
+                    .tick()
+                    .unwrap()
+                    .audio_loops
+                    .iter()
+                    .map(|source| source.asset.clone())
+                    .collect::<Vec<_>>(),
+            );
+        }
+        assert_eq!(
+            assets,
+            vec![
+                vec!["music://lobby".to_string(), "music://game".to_string()],
+                vec!["music://lobby".to_string(), "music://game".to_string()],
+                vec!["music://game".to_string()],
+                vec!["music://game".to_string()],
+            ],
+            "the fade must last exactly its declared 3 frames"
+        );
+    }
+
+    /// Adding audio must not change what a silent game observes, or every
+    /// existing baseline digest breaks for no reason.
+    #[test]
+    fn a_game_that_makes_no_sound_observes_exactly_what_it_did_before() {
+        let mut runtime =
+            EngineRuntime::load_source("SilentSmoke", "main.luau", IDLE_SCRIPT, None).unwrap();
+        let snapshot = runtime.tick().unwrap();
+        let json = serde_json::to_string(&snapshot).unwrap();
+        assert!(!json.contains("audio_events"), "{json}");
+        assert!(!json.contains("audio_loops"), "{json}");
+    }
+
+    /// A rule this build reserves but does not act on must fail the load; a
+    /// game that believes it configured ducking has no way to find out.
+    #[test]
+    fn a_reserved_audio_rule_fails_the_load_and_names_what_is_implemented() {
+        let dir = tempdir().unwrap();
+        write_audio_project(
+            dir.path(),
+            IDLE_SCRIPT,
+            r#"{"categories": {"sfx": {"ducking": true}}}"#,
+        );
+        let error = match EngineRuntime::load(dir.path()) {
+            Ok(_) => panic!("a reserved rule must not load"),
+            Err(error) => error,
+        };
+        assert_eq!(error.code, "AUDIO_RULE_NOT_IMPLEMENTED");
+        assert!(error.explanation.contains("ducking"), "{}", error.explanation);
+        assert!(
+            error.explanation.contains("fade_out_frames"),
+            "{}",
+            error.explanation
+        );
+    }
+
+    #[test]
+    fn a_disabled_audio_system_says_which_switch_turned_it_off() {
+        let dir = tempdir().unwrap();
+        fs::create_dir_all(dir.path().join("scripts")).unwrap();
+        fs::write(
+            dir.path().join("project.unone.json"),
+            r#"{
+                "name": "AudioOff",
+                "entry_script": "scripts/main.luau",
+                "systems": {"audio": false}
+            }"#,
+        )
+        .unwrap();
+        fs::write(
+            dir.path().join("scripts/main.luau"),
+            r#"--!strict
+local Game = {}
+function Game.start(_api) end
+function Game.update(api, _dt)
+    api.audio.play("sfx://click")
+end
+return Game
+"#,
+        )
+        .unwrap();
+        let error = EngineRuntime::load(dir.path()).unwrap().tick().unwrap_err();
+        assert!(
+            error.explanation.contains("SYSTEM_DISABLED")
+                && error.explanation.contains("--id audio"),
+            "{}",
+            error.explanation
+        );
     }
 
     #[test]

@@ -1,4 +1,5 @@
 mod api;
+mod audio;
 mod asset;
 mod asset_workflow;
 mod bundle;
@@ -30,6 +31,10 @@ pub use asset_workflow::{
     AssetDescribeReference, AssetDescribeReport, AssetPublicationReport, AssetReferenceScope,
     AssetWorkflowAction, describe_asset,
 };
+pub use audio::{
+    AudioBus, AudioCategory, AudioConfig, AudioEvent, AudioEventKind, AudioLoop, AudioOptions,
+    AudioPhase, IMPLEMENTED_AUDIO_RULES, MAX_LIVE_AUDIO_LOOPS,
+};
 pub use bundle::{
     ASSET_ARCHIVE_VERSION, AssetArchiveEntry, BundleFetcher, BundleManager, BundleManifest,
     BundlePackReport, BundleReport, BundleSpec, BundleVerification, BundleVerifier, pack_project,
@@ -51,14 +56,14 @@ pub use performance::{
 };
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{
-    AnimationAssertion, EffectsAssertion, InputFrame, UiPreviewSpec, ObservationAssertion, PointerInput,
+    AnimationAssertion, AudioAssertion, EffectsAssertion, InputFrame, UiPreviewSpec, ObservationAssertion, PointerInput,
     ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile, ProjectInitReport,
     ProjectInspectReport, ProjectPaths,
     TestAssertion, TestSpec, UiAssertion, init as init_project, inspect as inspect_project,
 };
 pub use runtime::{
-    CheckReport, EngineRuntime, RunReport, TestCaseReport, TestSuiteReport, TypeCheckReport,
-    observation_digest,
+    CheckReport, EngineRuntime, RunReport, SourceProject, TestCaseReport, TestSuiteReport,
+    TypeCheckReport, observation_digest,
 };
 pub use scene::parse_scene_fragment;
 pub use systems::{
@@ -66,7 +71,7 @@ pub use systems::{
     SystemState, SystemStatus, describe as describe_system, inspect as inspect_systems,
     search as search_systems, set as set_system,
 };
-pub use verify::{StepStatus, VerifyReport, VerifyStep, verify};
+pub use verify::{DEFAULT_VERIFY_STEPS, StepStatus, VerifyReport, VerifyStep, verify};
 pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiNode, UiRect, UiTree};
 pub use world::{
     AnimationData, AnimationSnapshot, Camera2DData, Contact, Camera3DData, EffectInstance, EntitySnapshot,

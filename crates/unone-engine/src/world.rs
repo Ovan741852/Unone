@@ -3,6 +3,7 @@ use std::{collections::BTreeMap, fs, path::Path};
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    audio::{AudioBus, AudioEvent, AudioLoop, AudioMix},
     diagnostics::Diagnostic,
     scene::{parse_scene_file, validate_typed_scene},
 };
@@ -417,6 +418,16 @@ pub struct WorldSnapshot {
     /// Bodies resting on or striking the ground plane this frame.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub ground_contacts: Vec<String>,
+    /// Sounds the game asked for on this frame.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub audio_events: Vec<AudioEvent>,
+    /// Loops the host should currently be playing.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub audio_loops: Vec<AudioLoop>,
+    /// Bus levels, present only once the game has moved one off its declared
+    /// default. A game that never touches the mix observes what it always did.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub audio_mix: Option<AudioMix>,
 }
 
 #[derive(Debug, Clone)]
@@ -464,6 +475,7 @@ pub(crate) struct World {
     /// Contacts from the most recent physics step, rebuilt every frame.
     pub contacts: Vec<Contact>,
     pub ground_contacts: Vec<String>,
+    pub audio: AudioBus,
 }
 
 impl World {
@@ -641,7 +653,59 @@ impl World {
                 })
                 .collect(),
             ground_contacts: self.ground_contacts.clone(),
+            audio_events: self
+                .audio
+                .events
+                .iter()
+                .map(|event| AudioEvent {
+                    volume: quantize_observation(event.volume),
+                    speed: quantize_observation(event.speed),
+                    position: event.position.map(quantize_vec2),
+                    ..event.clone()
+                })
+                .collect(),
+            audio_loops: self
+                .audio
+                .loops
+                .iter()
+                .map(|source| AudioLoop {
+                    volume: quantize_observation(source.volume),
+                    speed: quantize_observation(source.speed),
+                    position: source.position.map(quantize_vec2),
+                    ..source.clone()
+                })
+                .collect(),
+            audio_mix: {
+                let mix = self.audio.mix();
+                (!mix.is_default(&self.audio.config)).then(|| AudioMix {
+                    master: quantize_observation(mix.master),
+                    categories: mix
+                        .categories
+                        .into_iter()
+                        .map(|(name, level)| (name, quantize_observation(level)))
+                        .collect(),
+                })
+            },
         }
+    }
+
+    /// Keep entity-attached sounds on their entity for this frame.
+    ///
+    /// The engine owns this because it owns where entities are; a game that had
+    /// to write it would re-read every position every frame and still get the
+    /// despawn case wrong.
+    pub(crate) fn follow_audio_entities(&mut self) {
+        if self.audio.loops.iter().all(|source| source.entity.is_none()) {
+            return;
+        }
+        let positions: BTreeMap<String, Vec2> = self
+            .entities
+            .iter()
+            .map(|(id, entity)| (id.clone(), entity.transform))
+            .collect();
+        let frame = self.frame;
+        self.audio
+            .follow_entities(frame, |id| positions.get(id).copied());
     }
 
     /// Remove an entity and everything attached to it.
@@ -1160,8 +1224,8 @@ fn quantize_observation(value: f64) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::{
-        EntityState, PhysicsSettings, RigidBodyState, RigidBodyType, SceneFile, Transform2DData,
-        Vec2, World,
+        AudioBus, EntityState, PhysicsSettings, RigidBodyState, RigidBodyType, SceneFile,
+        Transform2DData, Vec2, World,
     };
     use std::collections::BTreeMap;
 
@@ -1214,6 +1278,7 @@ mod tests {
             next_effect_handle: 0,
             contacts: Vec::new(),
             ground_contacts: Vec::new(),
+            audio: AudioBus::default(),
         }
     }
 

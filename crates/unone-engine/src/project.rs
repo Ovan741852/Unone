@@ -36,6 +36,19 @@ pub struct ProjectConfig {
     /// unknown ids instead of treating a typo as a disabled system.
     #[serde(default)]
     pub systems: BTreeMap<String, bool>,
+    /// Which gates `verify` runs, in what order, and which of them are
+    /// advisory.
+    ///
+    /// Undeclared means the engine's default order with every gate required.
+    #[serde(default)]
+    pub verify: Option<VerifyConfig>,
+    /// Sound categories and the rules between them.
+    ///
+    /// Undeclared means no rules, not no sound: a game can still play and loop
+    /// without ever naming a category. Categories exist to say what happens
+    /// *between* sounds, which is the part the engine owns.
+    #[serde(default)]
+    pub audio: Option<crate::audio::AudioConfig>,
 }
 
 fn default_entry_script() -> String {
@@ -1756,7 +1769,72 @@ fn path_string(path: &Path) -> String {
     path.to_string_lossy().into_owned()
 }
 
+/// The gates this project wants `verify` to run.
+///
+/// The default order is the engine's opinion, not a law. A project that draws
+/// no screen, or that is mid-way through acquiring assets, should be able to
+/// say so once in its config rather than teaching its author to read past a
+/// red line — a gate people learn to ignore is worse than a gate that says it
+/// is advisory.
 #[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct VerifyConfig {
+    #[serde(default)]
+    pub steps: Vec<VerifyStepSpec>,
+}
+
+/// One declared gate: either the bare id, or the id with its settings.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(untagged)]
+pub enum VerifyStepSpec {
+    Name(String),
+    Detailed(VerifyStepDetail),
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct VerifyStepDetail {
+    pub step: String,
+    /// A failing advisory gate is reported and does not fail the run.
+    #[serde(default = "default_true_flag")]
+    pub required: bool,
+    /// Reserved: a project-owned command as a gate. Declaring it is an error in
+    /// this build rather than a step that silently never runs.
+    #[serde(default)]
+    pub command: Option<serde_json::Value>,
+}
+
+fn default_true_flag() -> bool {
+    true
+}
+
+impl VerifyStepSpec {
+    pub fn step(&self) -> &str {
+        match self {
+            Self::Name(name) => name,
+            Self::Detailed(detail) => &detail.step,
+        }
+    }
+
+    pub fn required(&self) -> bool {
+        match self {
+            Self::Name(_) => true,
+            Self::Detailed(detail) => detail.required,
+        }
+    }
+
+    pub fn reserved_command(&self) -> bool {
+        matches!(self, Self::Detailed(detail) if detail.command.is_some())
+    }
+}
+
+/// One test case, one file.
+///
+/// Unknown keys are rejected: a test file with a misspelled or invented key
+/// used to load with that key ignored, so a file whose assertions lived under
+/// the wrong name passed green while checking nothing.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct TestSpec {
     pub name: String,
     #[serde(default = "default_test_frames")]
@@ -1819,6 +1897,8 @@ pub struct TestAssertion {
     pub animation: Option<AnimationAssertion>,
     #[serde(default)]
     pub effects: Option<EffectsAssertion>,
+    #[serde(default)]
+    pub audio: Option<AudioAssertion>,
 }
 
 impl TestAssertion {
@@ -1828,6 +1908,7 @@ impl TestAssertion {
             self.ui.is_some(),
             self.animation.is_some(),
             self.effects.is_some(),
+            self.audio.is_some(),
             self.entity.is_some() || self.field.is_some(),
         ]
         .into_iter()
@@ -1835,11 +1916,14 @@ impl TestAssertion {
         .count();
         if target_count != 1 {
             return Err(
-                "Assertion 必須且只能提供 observation、ui、animation、effects 或 entity/field 其中一種目標。"
+                "Assertion 必須且只能提供 observation、ui、animation、effects、audio 或 entity/field 其中一種目標。"
                 .to_string(),
             );
         }
-        if (self.ui.is_some() || self.animation.is_some() || self.effects.is_some())
+        if (self.ui.is_some()
+            || self.animation.is_some()
+            || self.effects.is_some()
+            || self.audio.is_some())
             && self.has_numeric_comparator()
         {
             return Err(
@@ -1859,6 +1943,15 @@ impl TestAssertion {
             && animation.entity.trim().is_empty()
         {
             return Err("Animation assertion 的 entity 不可為空。".to_string());
+        }
+        if let Some(audio) = &self.audio
+            && audio.events.is_none()
+            && audio.loops.is_none()
+        {
+            return Err(
+                "Audio assertion 必須提供 events 或 loops 其中至少一項，否則它不檢查任何東西。"
+                    .to_string(),
+            );
         }
         if self.entity.is_some() || self.field.is_some() {
             if self
@@ -1912,6 +2005,20 @@ pub struct AnimationAssertion {
 #[derive(Debug, Clone, Deserialize)]
 pub struct EffectsAssertion {
     pub equals: serde_json::Value,
+}
+
+/// Full equality against what the game asked to be heard.
+///
+/// `events` is what was fired on the asserted frame; `loops` is what should
+/// still be playing. They are separate because a test usually cares about one
+/// or the other: "the reel stopped and made a noise" is an event, "the music
+/// survived the win screen" is a loop.
+#[derive(Debug, Clone, Deserialize)]
+pub struct AudioAssertion {
+    #[serde(default)]
+    pub events: Option<serde_json::Value>,
+    #[serde(default)]
+    pub loops: Option<serde_json::Value>,
 }
 
 /// One reachable screen the layout gate should inspect.
