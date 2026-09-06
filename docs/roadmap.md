@@ -98,6 +98,23 @@ Stable IDs are retained for existing references, not a competing priority order.
 | 19 | iOS host | ABI exists; implementation and device evidence are absent. |
 | 20 | Large asset delivery | Whole-bundle loading remains; production streaming/CDN/OPFS/quota policies are not implemented. |
 
+## Localization
+
+The engine has no string table concept at all — a gap the slot machine product
+plan surfaced, not a blind run. Decision: ship one language now and put the seam
+in the contract, so adding a language later is a new file rather than a rewrite
+of every display string. UI nodes may carry `text_key` plus named params instead
+of a literal; the engine resolves at `ui.setRoot`, so hosts, the layout gate and
+existing `ui` assertions are unchanged. A missing key is an error, never a
+fallback to the key itself. Observation values stay untranslated: they are state
+tokens, not display text. See the
+[work package](work-packages/2026-09-06-localization-seam.md).
+
+The payoff is deferred but concrete: text length varies by language, so the same
+layout can pass in one and overlap in another. Once a second table exists the
+layout gate only needs to loop over locales, and no game code changes — provided
+the strings are in a table now.
+
 ## Deliberate exclusions
 
 - No imitation Unity prefab/Cocos scene model; external formats belong in imports.
