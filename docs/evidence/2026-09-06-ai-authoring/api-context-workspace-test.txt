@@ -1,0 +1,242 @@
+Command: cargo test --workspace -- --nocapture
+CARGO_INCREMENTAL=0 CARGO_BUILD_JOBS=1
+UNONE_LUAU_ANALYZER=D:/Projects/Unone/.toolcache/luau-0.734/luau-analyze.exe
+Exit code: 0. 168 harness tests; 3 Windows privilege-dependent internal skips retained.
+Initial compile-start chunk not included. Final code verified additionally by workspace all-targets clippy -D warnings exit0.
+   Compiling unone-cli v0.1.0 (D:\Projects\Unone\crates\unone-cli)
+   Compiling unone-web-live-smoke v0.1.0 (D:\Projects\Unone\crates\unone-web-live-smoke)
+   Compiling unone-web-smoke v0.1.0 (D:\Projects\Unone\crates\unone-web-smoke)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 27.21s
+     Running unittests src\main.rs (target\debug\deps\game-8b45f17c5de3fab1.exe)
+
+running 11 tests
+test assets::tests::reports_source_formats_this_host_cannot_decode ... ok
+test mcp::tests::bundle_install_arguments_keep_id_false_and_all_false_meanings ... ok
+test mcp::tests::bundle_install_arguments_reject_wrong_types ... ok
+test mcp::tests::unknown_method_returns_json_rpc_error ... ok
+test mcp::tests::tool_definitions_are_deterministic_and_semantic ... ok
+test mcp::tests::run_rejects_conflicting_input_modes_with_semantic_tool_error ... ok
+test assets::tests::decodes_svg_into_premultiplied_rgba ... ok
+test mcp::tests::initialize_requires_initialized_notification_before_tools ... ok
+test tests::bundle_install_cli_preserves_all_selection_shapes_for_core ... ok
+test assets::tests::loads_verified_active_svg_without_reading_unpacked_source_bytes ... ok
+test assets::tests::rejects_authoring_metadata_changes_before_host_texture_decode ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s
+
+     Running tests\api_search_contract.rs (target\debug\deps\api_search_contract-d5b9b09724c480bc.exe)
+
+running 6 tests
+test empty_query_returns_the_full_index_without_empty_warning ... ok
+test no_match_contract_has_fixed_facts_and_discovery_actions ... ok
+test nonexistent_project_keeps_search_global_and_blocks_only_systems_action ... ok
+test invalid_project_keeps_matching_and_full_index_global_but_blocks_no_match_systems ... ok
+test systems_action_is_bound_to_the_caller_project_across_cwds ... ok
+test cli_and_mcp_unpacked_results_have_parity_for_no_match_and_full_index ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.45s
+
+     Running tests\authoring_transport_contract.rs (target\debug\deps\authoring_transport_contract-fd7405b6e580688d.exe)
+
+running 1 test
+test project_init_and_pointer_input_transport_contract ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s
+
+     Running unittests src\lib.rs (target\debug\deps\unone_engine-80161ebc01f3ba1e.exe)
+
+running 134 tests
+test asset::tests::rejects_nonportable_asset_source_paths ... ok
+test api::tests::matching_query_keeps_existing_search_results_without_diagnostic ... ok
+test api::tests::empty_query_is_the_complete_index_without_empty_warning ... ok
+test api::tests::the_type_contract_covers_every_documented_api ... ok
+test api::tests::no_match_keeps_success_and_has_fixed_discovery_guidance ... ok
+test bundle::tests::accepts_only_portable_project_relative_bundle_sources ... ok
+test asset::tests::asset_init_reports_a_manifest_write_when_the_followup_config_write_fails ... ok
+test asset::tests::reports_scene_references_without_inventing_sources ... ok
+test asset::tests::strict_inspection_turns_unresolved_references_into_a_gate_failure ... ok
+test asset::tests::empty_asset_init_reports_actual_writes_without_inventing_a_describe_id ... ok
+test bundle::tests::incremental_verifier_accepts_multiple_chunks ... ok
+test asset::tests::companion_path_safety_is_shared_by_inspect_and_pack ... ok
+test asset::tests::asset_init_creates_contract_and_adds_explicit_declaration ... ok
+test asset::tests::duplicate_ids_fail_closed_for_manifest_read_and_describe ... ok
+test asset::tests::rejects_unsupported_manifest_version_and_kind ... ok
+test asset::tests::validates_sources_and_bundle_ids ... ok
+test bundle::tests::detects_tampered_bundle_before_install ... ok
+test asset_workflow::tests::missing_authoring_source_stays_describable_and_blocks_mechanical_actions ... ok
+test bundle::tests::missing_bundles_field_is_invalid_while_empty_array_is_empty ... ok
+test bundle::tests::newest_corrupt_formal_generation_is_not_skipped ... ok
+test bundle::tests::observation_token_includes_manifest_and_active_record_state ... ok
+test bundle::tests::host_fetcher_can_install_without_local_source ... ok
+SKIP install_report_rejects_unselected_escaping_cache_before_activation: symlink_file failed: 用戶端沒有這項特殊權限。 (os error 1314)
+test bundle::tests::failed_host_fetch_keeps_previous_active_generation ... ok
+test bundle::tests::install_report_rejects_unselected_escaping_cache_before_activation ... ok
+test bundle::tests::host_fetcher_installs_url_sources_for_all_roots ... ok
+test bundle::tests::pack_rejects_invalid_main_scene_without_asset_manifest_before_writes ... ok
+test asset_workflow::tests::keeps_special_project_paths_and_asset_ids_as_argv_values ... ok
+test bundle::tests::installs_verified_bundle_and_dependencies ... ok
+test bundle::tests::pack_output_collision_protects_missing_declared_tests ... ok
+test bundle::tests::pack_output_collision_compares_windows_case_aliases ... ok
+test bundle::tests::pack_output_collision_allows_distinct_outputs_and_repacking ... ok
+test bundle::tests::packs_asset_archive_deterministically_and_declares_generated_bundle ... ok
+test bundle::tests::packs_minimal_project_and_only_increments_version_when_content_changes ... ok
+test bundle::tests::rejects_archive_reads_that_are_not_declared_or_not_an_archive ... ok
+test bundle::tests::reads_packed_asset_bytes_back_out_of_the_archive ... ok
+test layout::tests::a_clean_screen_reports_no_findings_and_draws_its_boxes ... ok
+test layout::tests::overlapping_nodes_are_reported_and_marked_in_the_picture ... ok
+test layout::tests::text_fullness_is_measured_but_never_becomes_a_finding ... ok
+test performance::tests::an_empty_run_reports_nothing_rather_than_dividing_by_zero ... ok
+test performance::tests::it_counts_frames_that_missed_the_fixed_timestep_budget ... ok
+test performance::tests::it_names_the_phase_that_costs_the_most_and_the_worst_frame ... ok
+test bundle::tests::rejects_archive_content_that_does_not_match_its_entry_digest ... ok
+test bundle::tests::selected_install_requires_exactly_one_root_mode_and_all_is_one_generation ... ok
+test diff::tests::an_unchanged_project_replays_identically ... ok
+test diff::tests::a_changed_project_names_the_first_frame_and_the_field ... ok
+test bundle::tests::writing_over_an_existing_file_succeeds_and_keeps_the_new_bytes ... ok
+test project::tests::init_create_failure_reports_directories_and_no_files ... ok
+test project::tests::init_rejects_a_file_as_root_without_touching_it ... ok
+SKIP init_rejects_windows_reparse_roots_and_ancestors: symlink_dir failed: 用戶端沒有這項特殊權限。 (os error 1314) (kind=Uncategorized)
+test project::tests::init_rejects_windows_reparse_roots_and_ancestors ... ok
+test bundle::tests::validation_failure_does_not_leave_generated_outputs_or_config_mutation ... ok
+test bundle::tests::shared_manifest_fixture_has_matching_native_validation_failures ... ok
+SKIP resolver_rejects_dangling_symlink_and_missing_linked_ancestor: symlink_dir failed: 用戶端沒有這項特殊權限。 (os error 1314) (kind=Uncategorized)
+test project::tests::resolver_rejects_dangling_symlink_and_missing_linked_ancestor ... ok
+test project::tests::test_assertions_reject_ambiguous_targets_and_comparators ... ok
+test project::tests::resolver_returns_canonical_path_for_existing_contained_directory ... ok
+test project::tests::resolver_returns_safe_missing_leaf_and_rejects_lexical_escape ... ok
+test asset::tests::reads_declared_asset_from_the_active_generation_and_reports_its_digest ... ok
+test asset_workflow::tests::describes_selected_references_with_real_indexes_and_shared_paths_readonly ... ok
+test project::tests::init_creates_the_five_file_starter_and_structured_actions ... ok
+test project::tests::init_mid_write_failure_tracks_partial_file_and_retry_is_no_overwrite ... ok
+test runtime::tests::memory_runtime_runs_without_project_files ... ok
+test runtime::tests::observation_digest_matches_snapshot_bytes_and_does_not_mutate_snapshot ... ok
+test bundle::tests::subset_install_reports_committed_generation_without_unioning_previous_roots ... ok
+test runtime::tests::observation_rejects_integers_outside_portable_range ... ok
+test runtime::tests::observation_rejects_non_serializable_values_with_runtime_diagnostic ... ok
+test runtime::tests::observation_state_serializes_typed_view_model_for_ai ... ok
+test runtime::tests::random_int_is_inclusive_and_rejects_invalid_range ... ok
+test runtime::tests::an_unknown_system_switch_fails_the_project_load ... ok
+test runtime::tests::input_sequence_is_relative_to_run_and_clears_missing_frames ... ok
+test project::tests::generated_bootstrap_tests_run_and_wrong_movement_amount_fails ... ok
+test runtime::tests::a_restored_save_is_visible_inside_game_start ... ok
+test runtime::tests::save_payload_round_trips_between_host_and_luau ... ok
+test runtime::tests::animation_and_effect_state_reach_the_snapshot_for_a_host_to_play ... ok
+test runtime::tests::failed_reload_keeps_previous_script_running ... ok
+test runtime::tests::three_d_script_api_updates_transform_and_camera_without_game_specific_rules ... ok
+test runtime::tests::seed_controls_luau_random_sequence ... ok
+test runtime::tests::two_d_script_api_updates_visual_transform_and_preserves_position_shape ... ok
+test runtime::tests::ui_set_root_rejects_unknown_nodes_with_runtime_diagnostic ... ok
+test scene::tests::accepts_empty_scene_shapes ... ok
+test runtime::tests::ui_set_root_validates_and_exposes_host_render_contract ... ok
+test scene::tests::disk_parse_keeps_real_filename_and_fragment_locations ... ok
+test project::tests::init_rejects_parent_component_but_accepts_dot_and_unicode_paths ... ok
+test scene::tests::rejects_blank_and_duplicate_ids_without_rewriting_ids ... ok
+test scene::tests::shared_vec2_contract_rejects_extra_input_pointer_fields ... ok
+test scene::tests::rejects_unknown_root_and_deep_vector_fields_with_context ... ok
+test runtime::tests::presentation_systems_are_off_until_a_game_declares_them ... ok
+test scene::tests::typed_runtime_rejects_semantic_negative_fixture_matrix ... ok
+test scene::tests::typed_id_failure_happens_before_world_mutation ... ok
+test scene::tests::typed_validation_uses_typed_location_without_source_file ... ok
+test runtime::tests::visual_transform_changes_snapshot_but_not_same_seed_physics ... ok
+test systems::tests::defaults_follow_the_engine_declaration ... ok
+test systems::tests::finds_systems_by_meaning ... ok
+test ui::tests::a_centered_node_is_centered ... ok
+test systems::tests::resolves_declared_switches_and_rejects_impossible_ones ... ok
+test ui::tests::node_types_have_stable_typed_shape ... ok
+test ui::tests::an_anchored_node_keeps_its_corner_and_proportions_on_any_aspect ... ok
+test ui::tests::placement_must_be_declared_exactly_once ... ok
+test project::tests::init_rejects_empty_name_nonempty_root_and_repeat_without_mutation ... ok
+test ui::tests::validates_and_serializes_the_minimal_flat_tree ... ok
+test ui::tests::rejects_duplicate_ids_and_invalid_rectangles ... ok
+test world::tests::a_resolved_collision_is_published_as_a_contact ... ok
+test world::tests::despawn_removes_the_entity_and_its_contacts ... ok
+test world::tests::dynamic_body_falls_and_stops_on_ground ... ok
+test world::tests::dynamic_body_resolves_against_static_circle ... ok
+test world::tests::ground_friction_stops_a_landed_body_sliding_forever ... ok
+test world::tests::invalid_2d_transform_update_does_not_mutate_entity ... ok
+test world::tests::invalid_2d_scene_transform_does_not_pollute_existing_world ... ok
+test world::tests::invalid_sprite_size_is_rejected_with_semantic_diagnostic ... ok
+test world::tests::loads_minimal_3d_scene_and_exposes_quantized_snapshot ... ok
+test runtime::tests::reload_if_changed_swaps_script_and_preserves_world_state ... ok
+test world::tests::rejects_invalid_3d_scale_with_semantic_diagnostic ... ok
+test world::tests::sprite_size_defaults_to_unit_dimensions ... ok
+test world::tests::omitted_2d_visual_fields_keep_position_behavior_and_publish_defaults ... ok
+test world::tests::two_d_visual_fields_are_serialized_and_quantized_without_changing_position ... ok
+test world::tests::visual_transform_does_not_change_physics_position_velocity_or_contacts ... ok
+test runtime::tests::a_disabled_system_stops_stepping_and_says_so_when_called ... ok
+test asset_workflow::tests::reports_uninstalled_and_repacked_but_not_activated_as_not_fresh ... ok
+test runtime::tests::tick_with_input_is_the_shared_host_frame_boundary ... ok
+test asset_workflow::tests::metadata_only_asset_spec_change_is_not_reported_as_fresh ... ok
+test runtime::tests::same_seed_and_input_produce_same_observation_digest ... ok
+test bundle::tests::reads_assets_only_from_an_activated_generation ... ok
+test runtime::tests::the_host_viewport_shape_decides_where_an_anchored_node_lands ... ok
+test asset::tests::reads_primary_and_companions_with_verified_active_metadata ... ok
+test asset_workflow::tests::corrupt_latest_active_record_has_one_diagnostic_and_no_repair_loop ... ok
+test verify::tests::every_gate_runs_even_after_one_fails ... ok
+test verify::tests::the_gates_a_project_owns_pass_when_the_project_is_sound ... ok
+test bundle::tests::pack_output_collision_rejects_outputs_sharing_files_or_required_directories ... ok
+test asset::tests::read_rejects_every_unpacked_asset_spec_change_before_export ... ok
+test bundle::tests::pack_output_collision_rejects_manifest_over_every_authoring_input_without_writes ... ok
+test asset::tests::read_requires_verified_reserved_manifest_bundle_before_export ... ok
+test scene::tests::all_disk_consumers_reject_the_shared_negative_fixture_matrix ... ok
+test bundle::tests::pack_output_collision_rejects_archives_and_staging_over_authoring_inputs ... ok
+test asset::tests::read_rejects_observation_changes_and_token_errors_before_export ... ok
+test asset_workflow::tests::active_content_failures_are_discoverable_once_with_file_locations ... ok
+test asset::tests::read_validates_missing_and_invalid_active_declarations_before_export ... ok
+
+test result: ok. 134 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.93s
+
+     Running unittests src\main.rs (target\debug\deps\unone_mobile_android_smoke-b3cf1e6394f034a8.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\lib.rs (target\debug\deps\unone_mobile_ffi-031d315413794655.exe)
+
+running 10 tests
+test tests::invalid_surface_returns_semantic_diagnostic ... ok
+test tests::bundle_verifier_uses_shared_integrity_contract ... ok
+test tests::failed_bundle_verification_is_semantic_and_consumes_verifier ... ok
+test tests::c_abi_scene_fragment_uses_shared_diagnostic_context ... ok
+test tests::screen_pointer_bridge_keeps_ui_space_separate_from_world_space ... ok
+test tests::save_payload_bridge_injects_json_before_tick ... ok
+test tests::semantic_input_frame_replaces_actions_for_one_tick ... ok
+test tests::lifecycle_surface_and_pause_resume_preserve_session ... ok
+test tests::script_reload_preserves_world_and_failed_reload_is_explained ... ok
+test tests::c_abi_rejects_negative_scene_fixture_matrix ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src\main.rs (target\debug\deps\unone_web_live_smoke-2441a96dae78bebb.exe)
+
+running 6 tests
+test tests::c_abi_scene_fragment_uses_shared_diagnostic_context ... ok
+test tests::c_abi_save_payload_reaches_luau_and_snapshot ... ok
+test tests::c_abi_complete_input_frame_replaces_scalar_pointer_for_one_tick ... ok
+test tests::c_abi_reload_failure_preserves_semantic_diagnostic_and_previous_runtime ... ok
+test tests::c_abi_load_tick_and_reload_preserve_runtime_contract ... ok
+test tests::c_abi_rejects_negative_scene_fixture_matrix ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src\main.rs (target\debug\deps\unone_web_smoke-5610464ecf45bfca.exe)
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests unone_engine
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests unone_mobile_ffi
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+

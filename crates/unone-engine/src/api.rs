@@ -1,6 +1,9 @@
+use std::path::Path;
+
 use serde::Serialize;
 
 use crate::diagnostics::{ActionSuggestion, Diagnostic, EngineResult};
+use crate::{project::ProjectPaths, systems::SystemSettings};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ApiParameter {
@@ -29,6 +32,17 @@ pub struct ApiDescriptor {
 pub struct ApiSearchReport {
     pub query: String,
     pub matches: Vec<ApiDescriptor>,
+    pub suggested_next_actions: Vec<ApiSearchAction>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ApiSearchAction {
+    pub action: String,
+    pub ready: bool,
+    pub executable: Option<String>,
+    pub argv: Option<Vec<String>>,
+    pub reason: String,
+    pub diagnostic: Option<Diagnostic>,
 }
 
 /// The canonical Luau type contract for the engine API.
@@ -64,11 +78,15 @@ pub fn search(query: &str) -> Vec<ApiDescriptor> {
 /// An empty query is intentionally a complete index request. A non-empty
 /// query with no matches is still a successful search: gameplay verbs may be
 /// game-owned composition rather than a missing engine primitive.
-pub fn api_search_result(query: &str) -> EngineResult<ApiSearchReport> {
+pub fn api_search_result(
+    project_root: impl AsRef<Path>,
+    query: &str,
+) -> EngineResult<ApiSearchReport> {
     let matches = search(query);
     let mut result = EngineResult::success(ApiSearchReport {
         query: query.to_string(),
         matches,
+        suggested_next_actions: Vec::new(),
     });
 
     if !query.trim().is_empty()
@@ -90,20 +108,78 @@ pub fn api_search_result(query: &str) -> EngineResult<ApiSearchReport> {
         diagnostic.suggested_actions = vec![
             ActionSuggestion {
                 action: "search_api_index".to_string(),
-                description: "列出目前公開的完整 Engine API 索引；空字串查詢會回傳全部 API。"
+                description: "使用 value.suggested_next_actions 中 action=search_api_index 的 structured executable/argv，列出完整 Engine API 索引。"
                     .to_string(),
-                command: Some("game api search \"\" --json".to_string()),
+                command: None,
             },
             ActionSuggestion {
                 action: "list_systems".to_string(),
-                description: "列出引擎宣告的 systems 與其可用狀態。".to_string(),
-                command: Some("game systems list --json".to_string()),
+                description: "使用 value.suggested_next_actions 中 action=list_systems 的 structured executable/argv；它會綁定本次 caller project，若 project 不可用則保持 not ready。"
+                    .to_string(),
+                command: None,
             },
         ];
+        if let Some(report) = result.value.as_mut() {
+            report.suggested_next_actions = suggested_next_actions(project_root.as_ref());
+        }
         result.diagnostics.push(diagnostic);
     }
 
     result
+}
+
+fn suggested_next_actions(project_root: &Path) -> Vec<ApiSearchAction> {
+    let full_index = ApiSearchAction {
+        action: "search_api_index".to_string(),
+        ready: true,
+        executable: Some("game".to_string()),
+        argv: Some(vec![
+            "api".to_string(),
+            "search".to_string(),
+            String::new(),
+            "--json".to_string(),
+        ]),
+        reason: "查詢完整公開 Engine API 索引；這個查詢不需要 project context。".to_string(),
+        diagnostic: None,
+    };
+
+    let systems = match ProjectPaths::discover(project_root) {
+        Ok((config, paths)) => match SystemSettings::from_config(&config) {
+            Ok(_) => {
+                let canonical_project = paths.root.to_string_lossy().into_owned();
+                ApiSearchAction {
+                    action: "list_systems".to_string(),
+                    ready: true,
+                    executable: Some("game".to_string()),
+                    argv: Some(vec![
+                        "--project".to_string(),
+                        canonical_project,
+                        "--json".to_string(),
+                        "systems".to_string(),
+                        "list".to_string(),
+                    ]),
+                    reason: "列出本次 caller project 實際啟用的 systems；argv 已綁定 canonical project root。"
+                        .to_string(),
+                    diagnostic: None,
+                }
+            }
+            Err(diagnostic) => blocked_systems_action(*diagnostic),
+        },
+        Err(diagnostic) => blocked_systems_action(*diagnostic),
+    };
+
+    vec![full_index, systems]
+}
+
+fn blocked_systems_action(diagnostic: Diagnostic) -> ApiSearchAction {
+    ApiSearchAction {
+        action: "list_systems".to_string(),
+        ready: false,
+        executable: None,
+        argv: None,
+        reason: diagnostic.explanation.clone(),
+        diagnostic: Some(diagnostic),
+    }
 }
 
 pub fn describe(name: &str) -> Option<ApiDescriptor> {
@@ -767,11 +843,13 @@ fn descriptor(
 
 #[cfg(test)]
 mod tests {
+    use std::path::Path;
+
     use super::{api_search_result, descriptors, search, typings};
 
     #[test]
     fn empty_query_is_the_complete_index_without_empty_warning() {
-        let result = api_search_result("");
+        let result = api_search_result(Path::new("missing-project"), "");
         let report = result.value.expect("search should return a report");
 
         assert!(result.ok);
@@ -779,11 +857,12 @@ mod tests {
         assert_eq!(report.query, "");
         assert_eq!(report.matches.len(), search("").len());
         assert!(!report.matches.is_empty());
+        assert!(report.suggested_next_actions.is_empty());
     }
 
     #[test]
     fn no_match_keeps_success_and_has_fixed_discovery_guidance() {
-        let result = api_search_result("攻擊");
+        let result = api_search_result(Path::new("missing-project"), "攻擊");
         let report = result
             .value
             .as_ref()
@@ -819,28 +898,40 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec!["search_api_index", "list_systems"]
         );
-        assert_eq!(
-            diagnostic.suggested_actions[0].command.as_deref(),
-            Some("game api search \"\" --json")
+        assert!(
+            diagnostic
+                .suggested_actions
+                .iter()
+                .all(|action| action.command.is_none())
         );
+
+        assert_eq!(report.suggested_next_actions.len(), 2);
+        let full_index = &report.suggested_next_actions[0];
+        assert_eq!(full_index.action, "search_api_index");
+        assert!(full_index.ready);
+        assert_eq!(full_index.executable.as_deref(), Some("game"));
         assert_eq!(
-            diagnostic.suggested_actions[1].command.as_deref(),
-            Some("game systems list --json")
+            full_index.argv.as_ref().expect("full index should have argv"),
+            &vec![
+                "api".to_string(),
+                "search".to_string(),
+                String::new(),
+                "--json".to_string(),
+            ]
         );
-        for action in &diagnostic.suggested_actions {
-            assert!(
-                !action
-                    .command
-                    .as_deref()
-                    .unwrap_or_default()
-                    .contains("攻擊")
-            );
-        }
+
+        let systems = &report.suggested_next_actions[1];
+        assert_eq!(systems.action, "list_systems");
+        assert!(!systems.ready);
+        assert!(systems.executable.is_none());
+        assert!(systems.argv.is_none());
+        assert!(!systems.reason.is_empty());
+        assert!(systems.diagnostic.is_some());
     }
 
     #[test]
     fn matching_query_keeps_existing_search_results_without_diagnostic() {
-        let result = api_search_result("position");
+        let result = api_search_result(Path::new("missing-project"), "position");
 
         assert!(result.ok);
         assert!(
@@ -852,6 +943,14 @@ mod tests {
                 .is_empty()
         );
         assert!(result.diagnostics.is_empty());
+        assert!(
+            result
+                .value
+                .as_ref()
+                .expect("search should return a report")
+                .suggested_next_actions
+                .is_empty()
+        );
     }
 
     /// Every documented API must have a Luau type, or `check --types` silently

@@ -66,7 +66,7 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 | # | 項目 | 說明 |
 |---|---|---|
 | 11 | 完整 generation 與資產工作流 | 修正候選已通過 Rust/clippy、新 CLI/Wasm/Android 編譯、封裝維護盲評與主代理 native/Web 限定覆核。見[退出證據](evidence/2026-09-06-ai-authoring/predecessor-gate.json)；首輪raw保存缺口及未測平台明列，不等於全平台熱更／七款遊戲通過 |
-| 12 | `API_SEARCH_EMPTY` 沒有 `suggested_actions` | 玩法動詞可能沒有匹配，不等於缺少引擎能力。現有 `api search ""` 可列完整索引，但缺 help/feedback 指引；[第一切片 C](work-packages/2026-09-06-ai-authoring.md) 將補共同 CLI/MCP 提示，不新增 api list 同義命令 |
+| 12 | API 搜尋後續操作的 project context | 已補共同 CLI/MCP structured actions 與跨cwd回歸；全域索引不依賴project，systems action綁定caller root。正做修正後覆核／新包盲評，見[已批准窄修](issues/2026-09-06-api-search-project-context.md)，不新增api list同義命令 |
 | 13 | `verify` 沒有 host parity gate | package 層已擋下 CLI/wasm 契約不一致（[issue](issues/2026-09-05-package-ships-two-engine-builds.md)），但 `verify` 本身仍只驗證 native build |
 | 14 | Web observations 與共用 digest | 已實作並通過 ABI、純 JS output 和新 wasm 瀏覽器 source-mode smoke；immutable package 發行仍待完成。見 [驗收紀錄](devlog/2026-09-06-digest-integration.md) |
 | 15 | 世界層沒有 ASCII 地圖 | UI 有 `ui preview`，世界層沒有等價工具；憤怒鳥 sprite 畫到畫布外時沒有任何 gate 抓得到（已由 `view_height` 修掉根因，但仍缺檢查） |

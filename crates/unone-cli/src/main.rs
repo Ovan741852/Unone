@@ -624,7 +624,9 @@ fn run() -> Result<ExitCode> {
             }
         },
         Command::Api { command } => match command {
-            ApiCommand::Search { meaning } => print_result(api_search_result(&meaning), cli.json),
+            ApiCommand::Search { meaning } => {
+                print_result(api_search_result(&cli.project, &meaning), cli.json)
+            }
             ApiCommand::Typings { output } => {
                 let types = unone_engine::api_typings();
                 let Some(path) = output else {

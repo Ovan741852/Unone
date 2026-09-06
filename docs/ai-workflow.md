@@ -88,8 +88,18 @@ bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json api describe
 `api search ""` 列完整公開索引（subprocess argv 最後一項是空字串，不是省略参数）；
 MCP 的 `unone_api_search` 使用 `meaning=""`。無匹配仍是成功查詢，附
 `API_SEARCH_EMPTY` warning、search_scope=public_engine_api、query、match_count=0，
-並提供完整索引與 systems list 的固定提示；玩法動詞可能是遊戲端組合，
+並在 value.suggested_next_actions 提供完整索引與 systems list 的結構化提示；玩法動詞可能是遊戲端組合，
 無匹配不證明引擎缺能力。CLI／MCP 使用同一 core 結果，transport envelope 不相同。
+
+每筆 API search action 為 `{action,ready,executable,argv,reason,diagnostic}`。
+只執行 ready=true 的 action；logical executable=game 解析成包內 bin/game.exe，
+argv 原樣交 subprocess，不拼 shell。完整索引 action 的 argv 保留真正空字串；
+systems action 明確帶原呼叫者經檢查的 absolute project，不依執行時 cwd 選專案。
+project 不可用時搜尋仍成功，systems action 的 ready=false、executable/argv=null，
+diagnostic 保留原因；先修正該專案條件再重新搜尋，不改用其他目錄的 project。
+diagnostic.suggested_actions 只作說明，command=null，不提供第二套shell命令。
+有匹配或完整索引查詢不附 no-match actions。ready 是查詢當時的條件，不保證之後
+project 未被別的 writer 修改；執行 action 後仍須檢查實際結果。
 
 ### 場景輸入與錯誤位置
 

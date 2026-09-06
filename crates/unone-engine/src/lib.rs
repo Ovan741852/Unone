@@ -16,8 +16,8 @@ mod verify;
 mod world;
 
 pub use api::{
-    ApiDescriptor, ApiParameter, ApiSearchReport, describe as api_describe, search as api_search,
-    api_search_result, typings as api_typings,
+    ApiDescriptor, ApiParameter, ApiSearchAction, ApiSearchReport, describe as api_describe,
+    search as api_search, api_search_result, typings as api_typings,
 };
 pub use asset::{
     AssetInitReport, AssetInspectBlocker, AssetInspectReport, AssetManifest, AssetReadReport,

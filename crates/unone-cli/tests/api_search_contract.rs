@@ -1,10 +1,17 @@
-use std::io::Write;
-use std::process::{Command, Stdio};
+use std::{
+    fs,
+    io::Write,
+    path::{Path, PathBuf},
+    process::{Command, Stdio},
+    time::{SystemTime, UNIX_EPOCH},
+};
 
 use serde_json::{Value, json};
 
-fn cli_search(query: &str) -> Value {
+fn cli_search(project_root: &Path, query: &str) -> Value {
     let output = Command::new(env!("CARGO_BIN_EXE_game"))
+        .arg("--project")
+        .arg(project_root)
         .args(["--json", "api", "search", query])
         .output()
         .expect("CLI api search should start");
@@ -16,8 +23,10 @@ fn cli_search(query: &str) -> Value {
     serde_json::from_slice(&output.stdout).expect("CLI should emit EngineResult JSON")
 }
 
-fn mcp_search(query: &str) -> Value {
+fn mcp_search(project_root: &Path, query: &str) -> Value {
     let mut child = Command::new(env!("CARGO_BIN_EXE_game"))
+        .arg("--project")
+        .arg(project_root)
         .arg("mcp")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -85,12 +94,105 @@ fn mcp_search(query: &str) -> Value {
     serde_json::from_str(text).expect("MCP tool text should contain EngineResult JSON")
 }
 
+fn unique_fixture_root(label: &str) -> PathBuf {
+    let nonce = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("system clock should be after the Unix epoch")
+        .as_nanos();
+    let root = std::env::temp_dir().join(format!(
+        "unone api search {label} 測試 {} {nonce}",
+        std::process::id()
+    ));
+    assert!(root.is_absolute());
+    assert!(root.to_string_lossy().contains(' '));
+    root
+}
+
+fn init_fixture(project_root: &Path, name: &str) {
+    let output = Command::new(env!("CARGO_BIN_EXE_game"))
+        .arg("--project")
+        .arg(project_root)
+        .args(["--json", "project", "init", "--name", name])
+        .output()
+        .expect("project init should start");
+    assert!(
+        output.status.success(),
+        "project init failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let result: Value =
+        serde_json::from_slice(&output.stdout).expect("project init should emit JSON");
+    assert_eq!(result["ok"], true, "project init result: {result}");
+}
+
+fn set_physics2d(project_root: &Path, enabled: bool) {
+    let config_path = project_root.join("project.unone.json");
+    let mut config: Value = serde_json::from_str(
+        &fs::read_to_string(&config_path).expect("fixture project config should be readable"),
+    )
+    .expect("fixture project config should be JSON");
+    config["systems"] = json!({"physics2d": enabled});
+    fs::write(
+        config_path,
+        serde_json::to_vec_pretty(&config).expect("fixture project config should serialize"),
+    )
+    .expect("fixture project config should be writable");
+}
+
+fn suggested_action<'a>(result: &'a Value, action: &str) -> &'a Value {
+    result["value"]["suggested_next_actions"]
+        .as_array()
+        .expect("API search report should contain suggested_next_actions")
+        .iter()
+        .find(|candidate| candidate["action"] == action)
+        .unwrap_or_else(|| panic!("missing suggested action {action:?} in {result}"))
+}
+
+fn action_argv(action: &Value) -> Vec<String> {
+    action["argv"]
+        .as_array()
+        .expect("ready action should contain argv")
+        .iter()
+        .map(|argument| {
+            argument
+                .as_str()
+                .expect("structured argv entries should be strings")
+                .to_string()
+        })
+        .collect()
+}
+
+fn assert_action_readiness(action: &Value) {
+    let ready = action["ready"]
+        .as_bool()
+        .expect("suggested action should declare ready");
+    if ready {
+        assert!(action["executable"].is_string());
+        assert!(action["argv"].is_array());
+        assert!(action["diagnostic"].is_null());
+    } else {
+        assert!(action["executable"].is_null());
+        assert!(action["argv"].is_null());
+        assert!(action["diagnostic"].is_object());
+    }
+}
+
+fn assert_all_action_readiness(result: &Value) {
+    for action in result["value"]["suggested_next_actions"]
+        .as_array()
+        .expect("API search report should contain suggested_next_actions")
+    {
+        assert_action_readiness(action);
+    }
+}
+
 #[test]
 fn cli_and_mcp_unpacked_results_have_parity_for_no_match_and_full_index() {
-    for query in ["攻擊", ""] {
+    let project_root = unique_fixture_root("parity");
+    for query in ["攻擊", "", "position"] {
         assert_eq!(
-            cli_search(query),
-            mcp_search(query),
+            cli_search(&project_root, query),
+            mcp_search(&project_root, query),
             "CLI and MCP EngineResult mismatch for query {query:?}"
         );
     }
@@ -98,7 +200,8 @@ fn cli_and_mcp_unpacked_results_have_parity_for_no_match_and_full_index() {
 
 #[test]
 fn no_match_contract_has_fixed_facts_and_discovery_actions() {
-    let result = cli_search("攻擊");
+    let project_root = unique_fixture_root("no-match");
+    let result = cli_search(&project_root, "攻擊");
 
     assert_eq!(result["ok"], true);
     assert_eq!(result["value"]["query"], "攻擊");
@@ -120,21 +223,158 @@ fn no_match_contract_has_fixed_facts_and_discovery_actions() {
             .len(),
         2
     );
-    assert_eq!(
-        result["diagnostics"][0]["suggested_actions"][0]["command"],
-        "game api search \"\" --json"
+    assert!(
+        result["diagnostics"][0]["suggested_actions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|action| action["command"].is_null())
     );
-    assert_eq!(
-        result["diagnostics"][0]["suggested_actions"][1]["command"],
-        "game systems list --json"
+
+    let full_index = suggested_action(&result, "search_api_index");
+    assert_all_action_readiness(&result);
+    assert_eq!(full_index["ready"], true);
+    assert_eq!(full_index["executable"], "game");
+    assert!(action_argv(full_index).iter().any(|argument| argument.is_empty()));
+
+    let systems = suggested_action(&result, "list_systems");
+    assert_eq!(systems["ready"], false);
+    assert!(systems["executable"].is_null());
+    assert!(systems["argv"].is_null());
+    assert!(
+        systems["reason"]
+            .as_str()
+            .is_some_and(|reason| !reason.is_empty())
     );
+    assert!(systems["diagnostic"].is_object());
 }
 
 #[test]
 fn empty_query_returns_the_full_index_without_empty_warning() {
-    let result = cli_search("");
+    let project_root = unique_fixture_root("empty");
+    let result = cli_search(&project_root, "");
 
     assert_eq!(result["ok"], true);
     assert!(!result["value"]["matches"].as_array().unwrap().is_empty());
     assert_eq!(result["diagnostics"], json!([]));
+    assert_eq!(result["value"]["suggested_next_actions"], json!([]));
+}
+
+#[test]
+fn systems_action_is_bound_to_the_caller_project_across_cwds() {
+    let target_root = unique_fixture_root("target project");
+    let unrelated_root = unique_fixture_root("unrelated project");
+    init_fixture(&target_root, "target-project");
+    init_fixture(&unrelated_root, "unrelated-project");
+    set_physics2d(&target_root, false);
+    set_physics2d(&unrelated_root, true);
+
+    for query in ["攻擊", "", "position"] {
+        assert_eq!(
+            cli_search(&target_root, query),
+            mcp_search(&target_root, query),
+            "CLI/MCP results must match for the same target project and query {query:?}"
+        );
+    }
+    let cli_result = cli_search(&target_root, "攻擊");
+
+    let systems_action = suggested_action(&cli_result, "list_systems");
+    assert_all_action_readiness(&cli_result);
+    assert_eq!(systems_action["ready"], true);
+    assert_eq!(systems_action["executable"], "game");
+    let argv = action_argv(systems_action);
+    assert_eq!(argv.first().map(String::as_str), Some("--project"));
+    assert_eq!(
+        fs::canonicalize(&argv[1]).expect("emitted project root should exist"),
+        fs::canonicalize(&target_root).expect("target fixture root should exist")
+    );
+
+    let output = Command::new(env!("CARGO_BIN_EXE_game"))
+        .args(&argv)
+        .current_dir(&unrelated_root)
+        .output()
+        .expect("emitted systems argv should start from an unrelated cwd");
+    assert!(
+        output.status.success(),
+        "emitted systems argv failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let systems_result: Value =
+        serde_json::from_slice(&output.stdout).expect("systems command should emit JSON");
+    assert_eq!(systems_result["ok"], true);
+    assert_eq!(systems_result["value"]["project"], "target-project");
+    let physics2d = systems_result["value"]["systems"]
+        .as_array()
+        .expect("systems report should contain systems")
+        .iter()
+        .find(|system| system["id"] == "physics2d")
+        .expect("systems report should include physics2d");
+    assert_eq!(physics2d["enabled"], false);
+    assert_eq!(physics2d["source"], "project");
+}
+
+#[test]
+fn nonexistent_project_keeps_search_global_and_blocks_only_systems_action() {
+    let missing_root = unique_fixture_root("missing project");
+    assert!(!missing_root.exists());
+
+    let no_match = cli_search(&missing_root, "攻擊");
+    let mcp_no_match = mcp_search(&missing_root, "攻擊");
+    assert_eq!(no_match, mcp_no_match, "CLI/MCP blocked action must match");
+    assert_eq!(no_match["ok"], true);
+    assert_all_action_readiness(&no_match);
+
+    let full_index = suggested_action(&no_match, "search_api_index");
+    assert_eq!(full_index["ready"], true);
+    assert!(action_argv(full_index).iter().any(|argument| argument.is_empty()));
+    let systems = suggested_action(&no_match, "list_systems");
+    assert_eq!(systems["ready"], false);
+    assert!(systems["executable"].is_null());
+    assert!(systems["argv"].is_null());
+    assert_eq!(systems["reason"], systems["diagnostic"]["explanation"]);
+    assert!(systems["diagnostic"]["code"].is_string());
+
+    let full_query = cli_search(&missing_root, "");
+    assert_eq!(full_query["ok"], true);
+    assert_eq!(full_query["diagnostics"], json!([]));
+    assert_eq!(full_query["value"]["suggested_next_actions"], json!([]));
+    assert!(
+        !full_query["value"]["matches"]
+            .as_array()
+            .expect("full index should contain matches")
+            .is_empty()
+    );
+}
+
+#[test]
+fn invalid_project_keeps_matching_and_full_index_global_but_blocks_no_match_systems() {
+    let invalid_root = unique_fixture_root("invalid project");
+    fs::create_dir_all(&invalid_root).expect("invalid fixture root should be creatable");
+    fs::write(
+        invalid_root.join("project.unone.json"),
+        br#"{"name":"invalid-project","systems":{"not-a-real-system":true}}"#,
+    )
+    .expect("invalid fixture config should be writable");
+
+    for query in ["", "position"] {
+        let result = cli_search(&invalid_root, query);
+        assert_eq!(result["ok"], true);
+        assert_eq!(result["diagnostics"], json!([]));
+        assert_eq!(result["value"]["suggested_next_actions"], json!([]));
+        assert!(
+            !result["value"]["matches"]
+                .as_array()
+                .expect("global search should return a match array")
+                .is_empty()
+        );
+    }
+
+    let result = cli_search(&invalid_root, "攻擊");
+    assert_eq!(result["ok"], true);
+    assert_eq!(result["diagnostics"][0]["code"], "API_SEARCH_EMPTY");
+    assert_all_action_readiness(&result);
+    let systems = suggested_action(&result, "list_systems");
+    assert_eq!(systems["ready"], false);
+    assert_eq!(systems["diagnostic"]["code"], "SYSTEM_UNKNOWN");
+    assert_eq!(systems["reason"], systems["diagnostic"]["explanation"]);
 }

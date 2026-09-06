@@ -1,0 +1,65 @@
+{
+  "package_source": "969da7756606a5c5f5358a47c34c7e3ef5589c80",
+  "cwd": "C:\\temp\\unone-authoring-gate-20260906\\engine",
+  "target_project": "C:/Temp/unone-authoring-gate-20260906/browser-probe",
+  "search_exit": 0,
+  "search": {
+    "ok": true,
+    "value": {
+      "query": "攻擊",
+      "matches": []
+    },
+    "diagnostics": [
+      {
+        "code": "API_SEARCH_EMPTY",
+        "severity": "WARNING",
+        "summary": "沒有找到符合語意的 Engine API",
+        "explanation": "這次搜尋沒有匹配公開 Engine API；玩法動詞可能是 game-owned composition，無匹配不能證明引擎缺少能力。先查看完整 API 索引與 systems，再判斷是否真的需要新的 engine capability。",
+        "facts": {
+          "match_count": 0,
+          "query": "攻擊",
+          "search_scope": "public_engine_api"
+        },
+        "likely_causes": [],
+        "suggested_actions": [
+          {
+            "action": "search_api_index",
+            "description": "列出目前公開的完整 Engine API 索引；空字串查詢會回傳全部 API。",
+            "command": "game api search \"\" --json"
+          },
+          {
+            "action": "list_systems",
+            "description": "列出引擎宣告的 systems 與其可用狀態。",
+            "command": "game systems list --json"
+          }
+        ],
+        "source": null
+      }
+    ],
+    "effects": []
+  },
+  "followup_argv": [
+    "systems",
+    "list",
+    "--json"
+  ],
+  "followup_exit": 1,
+  "followup": {
+    "ok": false,
+    "value": null,
+    "diagnostics": [
+      {
+        "code": "PROJECT_CONFIG_NOT_FOUND",
+        "severity": "ERROR",
+        "summary": "找不到 Unone 專案設定",
+        "explanation": "無法讀取 \\\\?\\C:\\temp\\unone-authoring-gate-20260906\\engine\\project.unone.json：系統找不到指定的檔案。 (os error 2)",
+        "facts": {},
+        "likely_causes": [],
+        "suggested_actions": [],
+        "source": null
+      }
+    ],
+    "effects": []
+  }
+}
+

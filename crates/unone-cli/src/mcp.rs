@@ -421,7 +421,7 @@ fn tool_definitions() -> Vec<Value> {
         tool(
             "unone_api_search",
             "Search engine API by meaning",
-            "Find the smallest public engine API matching a natural-language need. Pass meaning=\"\" to list the complete public engine API index. A non-empty no-match search remains successful and explains how to inspect primitives and systems before assuming an engine capability is missing. Results include purpose, when_not_to_use, side effects, frame semantics, errors, and examples.",
+            "Find the smallest public engine API matching a natural-language need. Pass meaning=\"\" to list the complete public engine API index. A non-empty no-match search remains successful and explains how to inspect primitives and systems before assuming an engine capability is missing; inspect value.suggested_next_actions for structured executable/argv, with project-dependent actions bound to this caller project or marked not ready. Results include purpose, when_not_to_use, side effects, frame semantics, errors, and examples.",
             object_schema(json!({
                 "properties": {
                     "meaning": {"type": "string", "description": "Natural-language intent, such as move an entity or read pointer input."}
@@ -745,7 +745,7 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
         }
         "unone_platform_capabilities" => tool_result(platform_capabilities()),
         "unone_api_search" => match required_string(arguments, "meaning") {
-            Ok(meaning) => tool_result(api_search_result(&meaning)),
+            Ok(meaning) => tool_result(api_search_result(project, &meaning)),
             Err(diagnostic) => argument_error(*diagnostic),
         },
         "unone_api_describe" => match required_string(arguments, "name") {

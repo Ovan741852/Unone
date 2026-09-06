@@ -114,3 +114,20 @@ Newton最終回報P2：API_SEARCH_EMPTY的systems提示未帶project。主代理
 目錄重現PROJECT_CONFIG_NOT_FOUND。因此停住新遊戲盲評交接、向使用者確認project
 context/structured argv窄修。保留包不覆寫，修後重建新包。不是把165tests全綠當作
 使用流程通過。完整問題與取捨见issues/2026-09-06-api-search-project-context.md。
+
+## Project-context correction approved
+
+使用者回覆「做」，由Luna/max Meitner窄修shared API result與CLI/MCP caller context。
+選擇專屬ApiSearchAction，不擴大所有ActionSuggestion，也不加全域workflow框架。
+保留global API查詢，systems下一步使用absolute project的executable/argv；專案不可用
+只讓該action未就緒，保留structured diagnostic，不把search本身改成失敗。
+回歸必須從另一個有效專案cwd實際執行，證明不是兩個transport一起回同樣的錯提示。
+舊包969da77保留、不覆寫、不當成cache清除。current錯誤規格原地替換，歷史紀錄留Git。
+使用者再確認紀錄／防誤刪：created_files不是刪除授權；失敗現場、不可變包、使用者
+檔案均不得以「清cache」名義刪除。只在確知歸屬且符合授權時做必要清理。
+
+修正後主代理workspace168個harness tests成功（3個Windows privilege內部skip明列），
+clippy all-targets -D warnings成功。獨立main probe建立target physics2d=false與
+unrelated cwd physics2d=true，原樣執行emitted argv，正確取得IntendedTarget/false。
+before/after完整JSON與可重跑probe腳本保存於evidence；不是只驗兩端都輸出相同字串。
+獨立Luna/max Chandrasekhar源碼盲評及Claude CLI短範圍review進行中，未宣稱完成。

@@ -185,13 +185,21 @@ id 語意錯誤有 pointer，無 raw token mapping 不捏造行列；syntax/sche
 API_SEARCH_EMPTY 保留成功查詢 + warning（無匹配不是 engine 壞掉），但
 facts 標示 search_scope=public_engine_api、query、match_count=0；explanation
 提醒玩法動詞可能是 game-owned composition，無匹配不能證明引擎缺少能力。
-suggested_actions 提供現有全索引查詢與 systems list；不能捏造近似 API，
-也不能要求呼叫未知名稱的 api describe。命令是固定字串，不插入使用者 query。
+value.suggested_next_actions 提供現有全索引查詢與 systems list 的結構化
+executable/argv；不能捏造近似 API，也不能要求呼叫未知名稱的 api describe。
+全索引 argv 保留真正空字串；systems action 綁定呼叫者經檢查的 absolute project，
+不可依執行時cwd找另一個project。沒有可用project時，API搜尋仍成功，systems
+action標示未就緒並保留底層structured diagnostic，不提供可執行命令。
+不把project/query拼進shell字串。原no-match diagnostic的command字串移除，
+說明指向同一份report actions，不保留已知會遺失project的舊規格。
 core 共用結果建構，CLI/MCP 不複製同一 warning 規則；不另建 embedding 搜尋或 ontology。
 parity fixtures：query="攻擊" 在 CLI/MCP 相同 core 結果中都是 ok=true、
-API_SEARCH_EMPTY warning、上述三個 facts 與兩個固定 suggestions；query=""
+API_SEARCH_EMPTY warning、上述三個 facts 與相同context的兩個structured actions；query=""
 回完整 index 且無 empty warning，既有有效 term 的結果／排序不變。
 比對解包後 EngineResult，不要求 MCP transport envelope 等於 CLI stdout。
+加跨cwd實跑argv：target設physics2d=false、另一個cwd專案設true，證明提示讀到target
+而不是cwd；含真正空白/Unicode路徑。不存在或無效project不能阻斷globalAPI索引。
+這是使用者批准的P2窄修，不擴張成全域workflow framework。
 教學移除「任何 API 找不到都必然 blocker」的絕對說法：先依現有索引拆成
 primitive；企劃確實需要不存在的 engine capability 才立即回報，不自行重造引擎。
 
