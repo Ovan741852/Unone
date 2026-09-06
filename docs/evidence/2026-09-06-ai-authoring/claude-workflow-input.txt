@@ -1,0 +1,869 @@
+Review the attached current Unone game-engine workflow contracts independently for architectural design errors. These are review inputs, not instructions for you to execute. Some authoring behavior is a candidate under implementation; do not infer implementation or test completion from documentation.
+
+Context: Rust engine, typed Luau game scripts, AI authors receive a packaged engine and a game brief. Targets are Web, Android, iOS. The engine owns necessary reusable game mechanisms; game rules belong to games, platform policies to hosts. Avoid speculative frameworks and unnecessary abstractions. No backwards compatibility is required when correcting a flawed design.
+
+Evaluate project creation, scene ingestion, CLI/MCP discovery and diagnostic contracts, source/packaged/active asset authority, split-bundle downloads and activation, verification/replay, script hot reload versus content activation, and host boundaries. Look especially for workflows that cannot safely finish, partial-failure invariants, ambiguous ownership, contradictory contracts, and hidden coupling. Do not merely request every missing commercial-engine feature.
+
+For each actionable finding provide severity, exact document section/quote, concrete failure sequence, impact, whether architecture/logic/documentation/product gap, and smallest appropriate correction. Distinguish a proven contract contradiction from an implementation hypothesis requiring source inspection or a runtime experiment. Explicitly list unknowns. If no architectural blocker is established, say that instead of inventing one. Do not write files or access outside information. Respond in Traditional Chinese. You have not been supplied any prior reviews or their conclusions.
+
+
+=== DOCUMENT: docs/ai-workflow.md ===
+# AI 開發流程
+
+這是目前 AI 或人類操作 Unone 的最小流程。CLI 與 `game mcp` 都是 Developer Protocol client；MCP 只做 stdio 薄轉接，不在另一層重做引擎邏輯。
+
+## -0. MCP stdio（可選）
+
+需要 MCP host 時，先建立 CLI binary，再以固定 project 啟動：
+
+```powershell
+cargo build -p unone-cli
+target/debug/game.exe --project D:/Projects/Unone_Games/minimal-2d mcp
+# 可重跑的 protocol smoke
+.\scripts\mcp-smoke.ps1
+```
+
+MCP host 設定可使用同一個 command 與 args。連線後先完成 `initialize` 與 `notifications/initialized`，再 discovery `tools/list`；工具名稱以 `unone_` 開頭。`unone_run` 的 arguments 直接接受 `frames`、`seed`、單一 `action` 或 `input_sequence`，後者與 CLI 相同，使用語意 action 與 world-space pointer。工具結果內的 `content[0].text` 是完整 `EngineResult` JSON；錯誤也會保留 `code`、`explanation`、`facts`、`likely_causes` 與 `suggested_actions`。
+
+資產工具的唯一現行契約是 [asset-workflow.md](asset-workflow.md)；MCP discovery 應包含 `unone_asset_describe`，總工具數為 23。需要單筆資產的編輯定位、引用、native-local active 與 freshness 時使用 describe，不用把 `asset inspect` 或 `asset read` 的結果自行拼成另一套規格。
+
+## -1. 先確認平台能力
+
+```powershell
+cargo run -p unone-cli -- --json platform capabilities
+```
+
+先讀 `target_family`、`project_loaders`、`hot_reload_modes` 與 `pending_host_work`。`wasm` 的 capabilities 仍是 binary-level 資訊；目前 Web live 的 browser/WebGPU/bundle storage 證據來自 `web/live/` smoke，不要把 library compile 或單一 smoke fixture 推論成完整 Web 發布包。
+
+## 0. 先建立或取得專案與 API 語意
+
+子代理只拿到 engine package 與企劃時，先在自己的 game output directory 建立 scaffold：
+
+```powershell
+powershell -File scripts/verify-ai-engine-package.ps1 -PackagePath .
+bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json project init --name "<game-name>"
+```
+
+`project init` 只接受不存在或真正空的 output directory 與非空名稱；即使只有
+.git 或 GAME_PLAN.md 也會拒絕。企劃、引擎包放在 output 外，git init 在成功建立
+專案後再做。不提供 force／覆寫／合併模式，拒絕 `..` 路徑及 symlink/junction/reparse
+root 或祖先；一般 `.` 與空白／Unicode 路徑可用。
+
+只建立五個遊戲端檔案：
+
+| 檔案 | 用途 |
+|---|---|
+| project.unone.json | 宣告 script、scene、兩個 tests |
+| scripts/main.luau | 內嵌 EngineApi strict types；按住 Right 以 dt 移動 example |
+| scenes/main.scene.json | 無圖片、非剛體的 example，初始 x/y=0 |
+| tests/bootstrap-idle.test.json | 60 frames／seed42，無輸入位置保持0 |
+| tests/bootstrap-input.test.json | 60 frames／seed42，Right 後 x=1、y=0 |
+
+這是 headless onboarding smoke，不是你的玩法驗收。example、Right 與示範 tests
+都可由遊戲替換；移除 example 時同步換掉示範 tests。不要把 bootstrap 綠燈當
+遊戲測試，也不因 starter 無圖片而宣稱畫面正常。init 不產生美術、UI、save、
+asset manifest 或 bundle，也不隱式 pack/install。
+
+結果含 absolute `root`、按 path 排序的 `files[{path,role}]`、
+`workflow_scope=new_unmodified_scaffold` 與 `suggested_next_actions`。
+每個 action 是 `{executable,argv,reason,prerequisites}`：logical executable=game，
+包內解析成 bin/game.exe；argv 直接交 subprocess argument list，不拼 shell。
+prerequisites 是先行 action 的零起算 index。
+未修改 starter 的順序為 verify → bundle pack → bundle install --all → bundle inspect；
+新增資產後依 [asset-workflow.md](asset-workflow.md) 先準備 bytes、宣告、pack，再 strict／verify、install。
+
+部分寫入失敗時不自動刪檔或 rollback：diagnostic facts 的 phase、failed_path、
+created_files（complete 區分完整／部分）、created_directories 與 effects 反映實際
+建立內容。先檢查記錄並由作者處理；留下內容後再次 init 會拒絕，不是 resume。
+
+格式見 [project.schema.json](project.schema.json)、[scene.schema.json](scene.schema.json)
+與 [test.schema.json](test.schema.json)。UI rect 使用 0..100 × 0..100 logical design space，
+不是 960×540；不需要 UI 的企劃不必建立 UI tree。
+
+```powershell
+bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json project inspect
+bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json asset inspect
+bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json api search "move entity"
+bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json api describe entity.setPosition
+```
+
+`project inspect` 回報引擎看見的設定與檔案事實；`api search` 是依用途找能力；`api describe` 會回傳參數、回傳值、side effects、frame semantics、常見錯誤、範例與相關 API。AI 應先讀這些資料，再修改遊戲腳本，不要猜測 API。
+
+`api search ""` 列完整公開索引（subprocess argv 最後一項是空字串，不是省略参数）；
+MCP 的 `unone_api_search` 使用 `meaning=""`。無匹配仍是成功查詢，附
+`API_SEARCH_EMPTY` warning、search_scope=public_engine_api、query、match_count=0，
+並提供完整索引與 systems list 的固定提示；玩法動詞可能是遊戲端組合，
+無匹配不證明引擎缺能力。CLI／MCP 使用同一 core 結果，transport envelope 不相同。
+
+### 場景輸入與錯誤位置
+
+scene JSON 的 root 與巢狀 typed objects 拒絕未知欄位；entity id 不可空白、
+同一 scene 內不可重複。合法 id 不會被 trim 或改名；空 scene `{}`／entities=[] 合法。
+拼錯 position 不會猜成 transform。disk run／test、asset inspect／describe、pack
+（即使沒有 asset manifest）及 Web/mobile scene payload 都共用檢查；驗證失敗不先
+修改 world，也不先寫 pack output。這不是 scene editor、完整 JSON Schema runtime
+或任意 Luau 動態分支驗證；跨次 load 的既有合併行為不因此改變。
+
+parse／未知欄位使用 SCENE_INVALID；空白／重複 id 分別為
+SCENE_ENTITY_ID_INVALID／SCENE_ENTITY_ID_DUPLICATE。facts 中 disk_scene 的
+line/column 對原 scene file；host_payload_scene 的位置對 `/scene` raw fragment，
+source=null、pointer_base=/scene；typed_scene 無原始 JSON 行列。沒有可靠位置
+就回 null，不能把 fragment 行號當整份 host payload 行號。ID 語意錯誤的
+json_pointer 指向 /entities/<index>/id，duplicate 另有 first_index。
+
+共用 Vec2/Vec3 的 JSON 也拒絕多餘欄位，包括 InputFrame pointer position；
+Web/mobile numeric pointer FFI 原數值參數不變。opaque save／observation game data
+及 Luau 手動讀 table 不在這次 serde 嚴格欄位檢查範圍。
+
+`asset inspect` 會列出主場景的靜態 `sprite`／`mesh3d`／`animation` asset reference，並對照遊戲端 `asset_manifest` 的 id、project-relative source、companion files 與 bundle。它是 authoring 時的 advisory report；交接、CI 或 release 必須使用 `asset inspect --strict`，讓 `ASSET_MANIFEST_MISSING`、`ASSET_REFERENCE_MISSING`、`ASSET_SOURCE_MISSING` 與 `ASSET_BUNDLE_NOT_DECLARED` 變成 `ok=false`。目前 manifest version 是 1，kind 支援 `texture2d`、`mesh3d`、`spine`、`effekseer`；未知版本、typo 或不安全路徑不會靜默當成可用格式。需要單筆資產的 authoring path、JSON pointer、引用、active generation、publication freshness 與下一步時改用 `asset describe --id <id>`，詳見[資產工作流契約](asset-workflow.md)。它不會假裝能發現 Luau 動態選 asset，也不會代替 host 做下載、解碼或 GPU 資源管理。若沒有任何 scene asset reference，沒有 manifest 也不算錯誤。
+
+需要可重播的遊戲隨機性時使用 `api.random.nextFloat()` 或 `api.random.nextInt(min, max)`。CLI 的 `--seed` 會成為該 runtime 的 Luau random seed；同一個 seed、輸入順序與 random 呼叫順序才保證同一結果。它不是安全隨機數，也不應用於金流或密碼。
+
+## 0.5 決定這個遊戲要用哪些引擎系統
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems list
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems search "物理"
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems set --id physics2d --enabled false
+```
+
+`systems list` 會回報每個 system 的預設值、目前生效值與來源（`default` 或 `project`）、它擁有的 Luau API 與 observation 欄位，以及關閉後會失去什麼。`systems search` 依用途找系統，習慣與 `api search` 相同。決定後用 `systems set` 寫進該遊戲自己的 `project.unone.json`：
+
+```json
+{ "systems": { "physics2d": false } }
+```
+
+未宣告的 system 使用引擎預設。三種情況會直接失敗：`SYSTEM_UNKNOWN`（引擎沒有這個 id，typo 不會被當成關閉）、`SYSTEM_NOT_OPTIONAL`（`world`／`input`／`observation` 不可關閉）、`SYSTEM_NOT_IMPLEMENTED`（只有契約沒有實作，目前是 `spine`、`effekseer`）。
+
+關閉是有實際效果的：`physics2d` 關閉後引擎不再推進剛體；被關閉系統的 Luau API 仍然存在，但呼叫時會回報 `SYSTEM_DISABLED` 並附上重新啟用的命令，不會變成 `attempt to index nil`。`systems` 只決定引擎機制要不要跑，遊戲數值、關卡與內容開關仍屬遊戲端。
+
+## 1. 先檢查專案
+
+一次跑完全部 gate：
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json verify
+```
+
+`verify` 依序執行 `check --types`、`asset inspect --strict`、UI `layout` gate 與 `test`，回傳單一結論與每個步驟的結果；有 UI 時，`layout` gate 以 `ui preview --strict` 檢查，沒有發布 UI 時結果為 `not_applicable`。UI 與 save 都只按 GAME_PLAN 需要適用，不應為了 gate 額外建立；任何一步失敗都不會中斷其他步驟，且每個步驟都附上可單獨重跑的 `command`。以下小節說明各個 gate 單獨使用的方式。
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check --types
+```
+
+`project init` 產生的入口腳本會**內嵌引擎的 Luau 型別契約**，因此 `check --types` 真的會擋下不存在的 API（引擎 runtime 沒有 module require，單檔遊戲必須自帶型別）。引擎升級後用 `game api typings --output <path>` 取得最新契約，或 `game api typings` 直接印出來。型別契約與 API 索引由測試保證不會漂移。
+
+`check` 保證 Luau syntax 與 Engine entrypoint contract；它會確認入口腳本回傳 `Game` table，且有 `start` / `update` function。`--!strict` 會被回報為 contract metadata。加上 `--types` 才會呼叫官方 `luau-analyze`；engine package 的 `bin/game.exe` 會自動尋找同目錄的 `bin/luau-analyze.exe`。若自行開發 engine 或替換工具，可用 `UNONE_LUAU_ANALYZER` 指定 analyzer 可執行檔路徑；工具不存在時，命令會回傳 `LUAU_ANALYZER_NOT_FOUND`，不會把缺少型別檢查的狀態藏起來。
+
+`.test.json` 的完整欄位與 assertion 結構以 package 內的 `test.schema.json` 為準；`game test` 會把每個 test file 當成一個獨立 deterministic case，最後回傳 observation digest、save payload 與 assertion failures；save／restore 欄位只在 GAME_PLAN 需要存檔時使用。不要把 UI screenshot 當成 test assertion。
+
+例如 `project.unone.json` 可設定 `"test_files": ["tests/opening.test.json"]`，而 test file 由 `name`、可選 `frames`/`seed`/`input`/`input_sequence`/`load_save` 與 `assertions` 組成；`load_save` 只在 GAME_PLAN 需要驗證 restore 時使用。assertion 三選一：`observation` 做完整 JSON value 比對、`ui` 做完整 flat UI tree 比對，或 `entity` + `field`（目前 `transform.x`／`transform.y`）做數值比較。
+
+若只要驗證 runtime contract，可移除 `--types`。本機可用官方 Luau release 的 Windows binary，或先設定：
+
+```powershell
+$env:UNONE_LUAU_ANALYZER = 'D:/tools/luau-analyze.exe'
+```
+
+## 1.5 mobile host contract
+
+Android/iOS host 先以 `unone-mobile-ffi` 的窄 ABI 驗證 lifecycle，不要在遊戲腳本處理 JNI、UIKit、View、螢幕像素或 safe area：
+
+```powershell
+cargo test -p unone-mobile-ffi
+.\scripts\check-android-engine.ps1
+```
+
+native host 的基本順序是 `init → resize → load_project → set_pointer/set_action → tick → observe → pause → surface_lost/resize → resume → tick → shutdown`。`pause` 期間不送 tick；`resume` 不把過期 wall-clock 偷塞進 simulation。ABI 的 JSON observation、C header 與 ownership 規則見 `docs/mobile-host-abi.md`。這些命令只驗證 adapter contract 與 Android cross-compile，沒有 APK、emulator/device 或 iOS 實機證據時，不得標記 mobile 完成。
+
+在 Windows 若 Android SDK build-tools 與 JDK 已可用，可再驗證最小 APK host：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File D:/Projects/Unone/scripts/build-android-apk.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File D:/Projects/Unone/scripts/run-android-apk-smoke.ps1
+```
+
+這會把指定遊戲的 project/script/scene 放入 APK，由 Java/Canvas host 讀取並透過 `unone-mobile-ffi` 執行；它只證明 package/JNI/lifecycle/input 邊界，不代表 production Android renderer、asset/bundle 或正式遊戲 gate。
+
+## 2. 跑 deterministic simulation
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json run --frames 60 --seed 42 --action Right
+```
+
+AI 應優先讀 `world`、`observation_digest`、`diagnostics`，再看 screenshot。相同 project、seed、frames 與 input 應產生相同 digest；不要用畫面像不像取代 state assertion。
+
+要重播逐 frame input，可使用 JSON 陣列。每 frame 明確分成語意 actions 與可選的 world-space pointer：
+
+```json
+[
+  {"actions": {"Right": true}},
+  {"actions": {"Right": true}},
+  {"actions": {}},
+  {"actions": {"Right": false}},
+  {"pointer": {"position": {"x": 2, "y": 1}, "down": true}}
+]
+```
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json run --frames 4 --seed 42 --input-sequence D:/Projects/Unone_Games/minimal-2d/tests/input-sequence.json
+```
+
+`--action` 與 `--input-sequence` 互斥；sequence 不足的 frame 會清空 actions 與 pointer down 狀態。`pointer.position` 是 world space；需要 UI 點擊時可另提供 `pointer.screen_position`，兩者都由 adapter 正規化到 normalized 0..100 UI space，遊戲腳本不讀 key code、像素、DPI 或 safe-area 座標。未提供 `screen_position` 時，engine 明確以 `position` 作為 headless fallback。
+
+## 3. 執行測試
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json test
+```
+
+Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 frame `input_sequence` 與 assertion。每個 `input_sequence` frame 可包含 `actions` 與 `pointer`；未提供的 frame 會清空 action 與 pointer down 狀態，避免 sticky input。測試失敗時要先判斷是：
+
+- game logic：改 `Unone_Games` 的 Luau 或內容。
+- engine contract：改引擎、測試與文件。
+- architecture：重複阻塞多個遊戲或無法支援平台/reload，改架構。
+
+需要驗證 restore 時，test manifest 可額外提供 `load_save` JSON payload。它在 `Game.start` **之前**就已還原，所以遊戲可以在 `start` 裡用 `api.save.get()` 重建狀態，不必等到第一次 update；輸出也會帶 `save_payload`，但引擎不會替遊戲判斷版本或 migration。
+- tooling/docs：CLI、診斷或教學有噪音，改 protocol/metadata/文件。
+
+若遊戲有對話、戰鬥結果或其他不適合塞進 Entity Transform 的狀態，使用 `api.observation.set(key, value)` 發布 typed ViewModel 的 semantic projection；test assertion 可用 `{"observation":{"key":"view_model","equals":{...}}}` 做完整 JSON equality。只有 GAME_PLAN 需要 host 顯示時，遊戲端才以 `api.ui.setRoot(root)` 發布最小 View tree。
+
+**設計空間兩軸都是 0..100，而且 y 軸向上**：`y = 0` 是畫面底部、`y = 100` 是頂部，rect 從它的 `y` 往上長。多數 UI 系統是 y 向下，所以這是看不到畫面的作者最容易寫反的一件事——寫反的症狀是上下兩排疊在一起，`ui preview` 的 ASCII 圖會直接顯示出來。
+
+每個節點的位置**二選一**：
+
+- `rect`：0..100 設計空間的絕對座標。適合不是貼邊的版面，例如用三角函數排出來的燈環。
+- `anchor` + `size`（可選 `offset`、`pivot`）：貼邊定位。`anchor` 是九個具名位置之一（`top_left`…`bottom_right`），數字**兩軸都是垂直單位**（畫面高度的百分比），所以同一份宣告在任何螢幕比例都保持形狀與邊距。引擎會依 host 回報的 viewport 解析成 rect，host 收到的仍然是純 rect。
+
+兩者同時宣告或都不宣告都會被拒絕。headless 測試使用 16:9 參考比例；host 用 `unone_web_set_viewport_aspect` 回報實際比例，test 可用 `{"ui":{"equals":{...}}}` assertion。ViewModel、View、hit-test 與 action 意義仍屬遊戲端；engine 只驗證／傳輸 tree，host 處理 viewport 與實際 render。
+
+只有 GAME_PLAN 需要存檔時，才使用 `api.save.set(value)`／`api.save.get()`；payload 由遊戲端定義版本與 migration；引擎只做 JSON-like transport，host 負責檔案／平台儲存。不要把 observation 當 save，也不要在引擎增加 save slot、cloud sync 或遊戲專用 schema。
+
+## 3.5 骨骼動畫與特效（Spine／Effekseer）
+
+這兩個系統預設關閉，狀態是 `host_required`：引擎這一半可用，但目前沒有任何 host 會畫出骨骼或粒子。需要時先開啟：
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems set --id spine --enabled true
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems set --id effekseer --enabled true
+cargo run -p unone-cli -- --json api describe animation.play
+cargo run -p unone-cli -- --json api describe effect.spawn
+```
+
+遊戲以 `api.animation.play(id, name, {loop = true, speed = 2.0})` 選擇某個 Entity 要播的片段，snapshot 的 `world.entities[].animation` 會帶 `started_frame`；重複播放同一組 asset/name/loop/speed 不會重設它，host 因此不會每 frame 重新開始。`api.effect.spawn(asset, {x = 0, y = 1})` 回傳 handle，`world.effects` 是目前存在的特效實例，handle 依建立順序決定，同時上限 256 個。scene 也可以直接宣告 entity 的 `animation`。
+
+資產方面，asset manifest 支援 kind `spine` 與 `effekseer`，並以 `files` 宣告不可缺少的附屬來源（Spine 的 atlas 與 texture page）。它們與 source 打進同一個 bundle，可用 `asset read --id <id> --file <declared file>` 取出；未宣告的檔案回報 `ASSET_FILE_NOT_DECLARED`。
+
+測試用 `{"animation": {"entity": "reel-3", "equals": {...}}}` 與 `{"effects": {"equals": [...]}}` 做完整 JSON equality，表現狀態因此可被 assertion，不必看畫面。
+
+要看到它們實際播放，使用 `web/presentation/`：先跑 `scripts/build-web-live.ps1`，從 `D:/Projects` 啟動 `python -m http.server 8001`，再開 `http://127.0.0.1:8001/Unone/web/presentation/?project=/Unone_Games/slot-machine/`。它以 spine-webgl 與 Effekseer for WebGL 播放同一份 snapshot；native preview 與 Android host 目前都不會畫。vendored runtime 與授權條件見 `web/vendor/README.md`（Spine 需要授權，Effekseer 是 MIT）。
+
+引擎不評估骨骼、不混合動畫、不回報動畫是否播完、不模擬粒子，也不含任何 Spine／Effekseer 程式碼。遊戲若要「動畫播完才結算」，必須自己以 fixed frame 計算。
+
+## 3.8 讀懂自己的畫面（企劃需要 UI 時）
+
+headless 觀測不等於實際畫面驗證。只有 GAME_PLAN 需要 UI 時才發布 UI tree 並使用以下 preview；沒有 UI 的專案在 `verify` 的 layout gate 會得到 `not_applicable`，不要為了 gate 額外建立 UI 或 save。對有 UI 的專案，把 UI tree 畫成字元格可供人和模型診斷，確定性夠高可以進測試，不需要 GPU、字型或視窗；實際 host 畫面仍須另驗。
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary ui preview
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary --json ui preview --frames 60 --strict
+```
+
+不帶 `--json` 會輸出 markdown：一張 ASCII 圖、一張節點表、以及 findings。`--frames` 決定先跑幾格再畫（預設 1），`--cols`／`--rows` 調整格線大小。
+
+對有 UI 的專案，`verify` 預設只畫**開場畫面**（1 frame、無輸入），所以勝負畫面不會被檢查。要讓它涵蓋其他畫面，在 `project.unone.json` 宣告 `ui_previews`，方式與宣告 `test_files` 相同：
+
+```json
+"ui_previews": [
+  { "name": "aim",  "frames": 1 },
+  { "name": "win",  "frames": 540, "seed": 42, "input_sequence": "tests/win-sequence.json" },
+  { "name": "lose", "frames": 540, "seed": 42, "input_sequence": "tests/lose-sequence.json" }
+]
+```
+
+每個宣告會變成一個獨立的 `layout:<name>` gate。**每個 step 會列出該畫面實際包含的節點 id**：兩個宣告如果列出一模一樣的節點，那幾乎一定是同一個畫面被跑到兩次，也就是一個什麼都沒證明的 gate。引擎只陳述這個事實，不替你判斷。
+
+目前只有一條 finding：`UI_NODES_OVERLAP`（兩個節點的 rect 相交，圖上以 `#` 標出，附重疊的設計空間單位）。對有 UI 的專案，`--strict` 讓它變成 `ok=false` 與非零 exit code；交接與 release 應該使用它。沒有 UI 的專案在 `verify` 是 `not_applicable`；直接執行 `ui preview --strict` 仍可能回 `UI_TREE_NOT_PUBLISHED`，不需要為此新增 UI。finding 會附上**該往哪個軸、哪個方向移動**的建議，而不只是說兩個框相交。
+
+節點表另外附 `text fit`：文字約佔宣告寬度的幾倍。它假設 16:9 viewport 與 0.5 字寬比例，所以是**測量值不是判決**——超過 1.0 表示 host 必須縮小、換行或裁切，值得看一眼，但引擎不會因此判定失敗。加規則的入場條件見 Decision 0029。
+
+它只檢查**結構**：不重疊、放得下。它不會、也不打算判斷畫面好不好看。世界層（sprite、實體位置）目前還沒有對應的文字檢查。
+
+## 3.7 找出一次改動改了什麼
+
+digest 變了只代表「有東西不一樣」，它不指名 frame、不指名欄位、也不指名數值。錄一份基準，改完之後重播比對：
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json replay record --output baseline.json --frames 90 --seed 42 --input-sequence tests/spin-sequence.json
+# ...修改遊戲...
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine replay diff --baseline baseline.json
+```
+
+回報**第一個開始不同的 frame**，以及那一格所有差異欄位的 dotted path：
+
+```text
+## Replay diverged at frame 59 of 90
+
+| field | baseline | current |
+| entities.reel-3.animation.animation | "run" | "idle" |
+| observations.view_model.last_win | 0 | 1 |
+| ui.children[3].text | "2" | "4" |
+```
+
+只對**第一個**分歧 frame 做欄位比對：之後每一格都會繼承這個差異，全部列出只會把原因埋在雜訊裡。錄製檔不含任何 wall-clock 時間，所以換一台慢的機器不會被誤判成差異。
+
+## 3.9 量測效能
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary perf --frames 600 --seed 3
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary --json perf --frames 600
+```
+
+回報一個 frame 的時間去哪了：`script`／`physics`／`observe` 三個階段的總時間、平均與占比，frame time 的 mean／median／p95，最慢的那一格是第幾格與它的階段拆解，超出 fixed timestep 預算的 frame 數，Luau heap 大小，以及一個 frame 裝了多少東西（entity、rigidbody、UI 節點、effect、observation）。
+
+`run --json` 的結果也帶同一份 `performance`。
+
+兩個必須知道的性質：
+
+- **量測是 wall clock，不進 observation digest。** 量效能不會改變一次 run 的意義；同一個 seed 與輸入的 digest 與沒量測時完全相同。
+- **它只給數字，不給判決。** 「夠不夠快」取決於引擎不知道的目標。`frames_over_budget` 是拿 fixed timestep 當參考點的事實，不是及格線。
+
+debug build 量到的是 debug 成本，跨版本比較要比同一種 build。
+
+## 4. 檢查 bundle
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json bundle pack
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json bundle inspect
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json bundle install script
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json bundle inspect
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json bundle install --all
+```
+
+新專案先用 `bundle pack` 生成最小的 project/script/scene manifest；若有 asset manifest，它還會產生 deterministic、未壓縮的 content bundle，並拒絕未解決的主場景 asset reference。工具會自動把 `bundle_manifest` 寫入 `project.unone.json`；內容沒有變更時不增加 manifest version，內容變更時才遞增版本。bundle 成功不是只代表檔案存在：要確認 manifest hash、cache hash、active generation、dependencies 與 `available`。需要整個 generation 時使用 `bundle install --all`；只需一個 bundle 時使用 `bundle install <id>`，不要把單包 install 當成全量啟用。引擎的 `BundleFetcher` 只接收 host 提供的 reader，再負責 streaming size/hash verify、staging 與 atomic activation；native CLI 使用 local source，Web/mobile 的 fetch、重試、storage quota 與背景下載政策留在 host adapter。Web generic runner 會由 verified content bundle 解析 image asset，並將 URL lifetime 留在 host；production CDN、OPFS、大檔 streaming 與 quota policy 仍不是 engine core。Web sample 的 browser generation/cache smoke 另見 `docs/decisions/0016-bundle-generation-and-browser-storage.md`。
+
+## 4.5 建立、發佈並查證資產
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset init --id asset://characters/bird/red --source assets/characters/bird/red.svg
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json bundle pack
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset inspect --strict
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json bundle install --all
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset describe --id asset://characters/bird/red
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset read --id asset://characters/bird/red
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset read --id asset://characters/bird/red --output D:/tmp/red.svg
+```
+
+上面的順序是「先建立實際 source／companion bytes，再 `asset init` 宣告，接著 `pack`、strict inspect、`install --all`、describe、read」。`asset init` 是 append-only，只能為新 id 新增 declaration；修改既有 stable id 時，直接編輯原 manifest entry 的 `source`／`files`（及必要的其他宣告欄位），保留 id，不透過 `asset init` 變更既有 entry。它不產生圖片或其他美術；它回報本次實際變更的 `changed_files`，若後續寫入失敗則 failure effects 仍會列出已發生的寫入。替換同一 stable id 的 source 不需改 scene 引用；搬移 source 或 companion 才修改 manifest path；scene 的 size/pivot/放置是另一個作者變更。
+
+`asset describe --id` 是單筆唯讀 workflow query，回報 manifest entry、primary/companion path、role、exists、可讀時的 size/hash、shared paths、主場景 JSON pointer、`main_scene_only` 的 static scope、`native_local` active verified files、`selected_asset_native_local` 的 `matches_authoring` 與 ordered `required_next_actions`。`matches_authoring=true` 只表示這筆資產的 active bytes 與 authoring 相同，不等於所有遊戲內容、其他 host 或整個 release 已更新；`false`／`null` 也不能被當成 true。缺 manifest、source 或 companion 時修正 authoring，再依序 pack、strict、install、describe、read。若最新正式 active record 損壞，`install`、`describe`、`read` 都會 fail closed；這是 host/operator 依診斷從可信備份修復的 manual prerequisite，沒有備份就回報 blocker，不能清 cache、刪 `.unone`、退回舊 generation 或篡造 record。只有 cache/archive 損壞或 authoring bundle manifest 尚未發布的落後，才走 `pack → strict → install --all → describe → read`。
+
+`asset read` 會由目前 active generation 的已驗證 bundle 取出一筆宣告資產，回報 `size_bytes`、`sha256` 與 `bundle_generation`；加上 `--output` 才會寫檔。它與 Web host 的 `readActiveAsset` 使用同一個 archive 契約與同一組錯誤碼：`BUNDLE_GENERATION_MISMATCH`（尚未安裝／manifest 已變更）、`BUNDLE_CACHE_MISS`、`BUNDLE_CACHE_CORRUPT`、`ASSET_ID_NOT_DECLARED`、`ASSET_NOT_IN_BUNDLE`、`ASSET_ARCHIVE_INVALID`、`ASSET_CONTENT_CORRUPT`。兩端都會另外驗證 archive entry 自己的 sha256，因此同一個 asset id 在 Web 與 native 必須得到相同的 `sha256`；不同就是 bundle 或 host 的問題，不是畫面問題。完整欄位與 safe path 規則見[資產工作流契約](asset-workflow.md)。
+
+引擎只回傳已驗證位元組與事實。解碼、貼圖上傳、下載、重試、快取容量與 CDN／OPFS policy 仍在 host。`game preview` 會由已啟用 generation 解析並解碼 `sprite.asset`，啟動時輸出每筆資產的 verified sha256 與解碼尺寸；但它**還不會把貼圖畫出來**，畫面仍是純色方塊。所以 `asset read` 或 preview 的解碼記錄都不代表 native 貼圖渲染通過。
+
+## 5. native preview
+
+```powershell
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview --watch
+```
+
+`--watch` 會在檔案 metadata 變更後，於下一個等待 frame 嘗試載入入口 Luau。成功會保留 Rust-owned world state 並切換腳本 generation；失敗會輸出語意診斷，繼續使用上一份可運作腳本，直到檔案再次變更。方向鍵或 A/D 會更新 Luau input。Escape 或關閉視窗結束。這個 preview 是 runtime smoke client，不是 Editor。
+
+不帶 `--watch` 也可以啟動一次性的 native preview；AI 需要快速修改與觀察時使用 `--watch`。
+
+3D 專案使用 `Transform3D`／`Camera3D` 的 semantic API；先查語意再寫腳本：
+
+```powershell
+cargo run -p unone-cli -- --json api describe entity.getTransform3D
+cargo run -p unone-cli -- --json api describe entity.setTransform3D
+cargo run -p unone-cli -- --json api describe camera3d.setTarget
+cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json test
+```
+
+要驗證實際遊戲專案的 Web host，可從 `D:/Projects` 啟動 `python -m http.server 8001`，再開啟 `http://127.0.0.1:8001/Unone/web/runner/?project=/Unone_Games/3d-racing/`。有 bundle manifest 的專案會由同一個 runner 安裝 content-addressed generation、讀取驗證後的 project/script/scene、消費 2D/3D snapshot 與 UI，並可按 `Install / reload active bundle` 重新安裝目前 generation、執行 Luau hot reload；遊戲有發布 save payload 時，host 會將它以 project-isolated IndexedDB store 持久化，輸出 `save_store.loaded` 讓 AI 確認是否真的載入；`?bundle=0` 只用於排查 source fallback。這是 generic host smoke；沒有 asset CDN、OPFS/production quota policy、實際 mobile host 與內容變更 hot-update evidence 時，不可標記 Web final gate 通過。
+
+## 輸出規則
+
+- 需要 machine action 時使用 `--json`。
+- `facts` 是引擎觀測到的事實；`likely_causes` 是推論；`suggested_actions` 必須能對應下一個 CLI/protocol action。
+- 預設 trace 只記錄語意事件，不記錄每一幀，避免 AI context 被噪音淹沒。
+- `run` 會保留 runtime load／reload 期間的 lifecycle trace，例如 `api.log` 與 `script_reloaded`；這些事件不是逐 frame telemetry。
+- 任何教學命令若不能在乾淨 checkout 重跑，必須修文件或建立 issue，不保留錯誤說法。
+
+
+=== DOCUMENT: docs/asset-workflow.md ===
+# Asset workflow contract
+
+這是目前唯一有效的資產操作與引擎邊界契約。CLI、MCP、native local
+bundle reader 與文件都以同一份 engine core 結果為準；舊的資產 reference
+與 host resolve decision 已移除，Git 歷史仍保留它們的過往紀錄。
+
+## 先分清三種狀態
+
+資產工作流有三個不同的權威來源：
+
+1. **Authoring** 是遊戲專案內的 `project.unone.json`、asset manifest、
+   primary source 與 manifest 宣告的 companion files。manifest entry 的
+   `id`、`source`、`kind`、`bundle`、`files` 是作者契約；scene 只用同一個
+   stable id 控制放置與表現。
+2. **Packaged** 是 `bundle pack` 從作者檔案產生的 bundle manifest、hash
+   與 archive。不能手改 archive 或 cache 代替修改 source；pack 也不會
+   自動啟用新的 generation。
+3. **Active** 是 native local 明確安裝後的一份 generation。`asset read`
+   只讀符合目前 bundle manifest 與 active hash 的 verified bytes，不 fallback
+   到作者 source。
+
+`asset read` 先由 verified `asset-manifest` 比對完整 AssetSpec；作者只改了
+kind、source、bundle 或 files 而尚未發佈時，回報 `BUNDLE_GENERATION_MISMATCH`，
+不把新 metadata 與舊 bytes 混成成功結果。讀取期間 bundle manifest 或 active
+record 改變也先拒絕，不寫 export。若只改 source bytes、AssetSpec 未變，read
+仍可能合法讀到已發佈的舊 bytes；是否最新須看 describe 的 freshness。
+
+`asset describe` 只回答 selected asset 在 `native_local` 是否與 authoring 相符。
+freshness 為 true 不代表所有 bundle、整個遊戲、Web IndexedDB、Android 或
+其他 host 都已同步，也不代表 native/Web renderer 已完成。
+
+## 權威層級與 stable id 編輯規則
+
+權威由上游到下游固定排列：
+
+1. **Authoring source** 是唯一可編輯的內容權威：project config 指向的
+   manifest、manifest entry、primary 與 companions，以及作者明確寫入的 scene。
+2. **Packaged bundle** 是由 authoring 產生的可驗證輸出：bundle manifest、
+archive bytes、size/hash 與 dependency metadata 都應重新 pack 取得，不能手改。
+3. **Active generation** 是安裝後的本地觀測結果：它只能由 bundle install 啟用，
+   不可用 cache、archive 或 active metadata 反向當成 authoring。
+
+穩定 id 是 scene 與 host 尋找資產的連接點。替換同一 id 的 source 或 companion
+bytes 時保留 id，通常不需要改 scene 的引用；修改內容後重新 pack、strict inspect
+與安裝即可。若搬移 source 或 companion，才修改 manifest 的 `source`／`files`
+路徑，仍保留 stable id。scene 的 size、pivot、碰撞體與放置是獨立的 scene 編輯，
+引擎不會因 source 替換自動改寫它們。
+
+新增資產要先建立實際內容，再以 `asset init` 加入 declaration；init 不會產生、
+下載或猜測美術。刪除或真正 rename id 不由本輪工具自動改寫引用：靜態 main scene
+沒有引用不代表 Luau、host 或外部內容沒有動態使用，不能把 unreferenced 當安全刪除。
+同一檔案可被多個 manifest entry 共用；改它會影響所有宣告該檔案的 ids，查詢只
+報告 manifest 可觀測到的共用關係。
+
+pack 的 output manifest、generated archives 及其 `.part` 暫存路徑須與
+authoring inputs 分離，generated outputs 之間也不可碰撞。衝突會在任何
+pack 寫入前回報 `BUNDLE_OUTPUT_COLLISION`；不能把 `--output` 指向現有作者
+manifest 來「替換」它。這不是任意外部 writer 的 filesystem transaction。
+
+## 宣告格式
+
+`project.unone.json` 指向一份 asset manifest：
+
+```json
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "asset://characters/hero",
+      "source": "assets/characters/hero.svg",
+      "kind": "texture2d",
+      "bundle": "content",
+      "files": []
+    }
+  ]
+}
+```
+
+目前 core 支援的 `kind` 是 `texture2d`、`mesh3d`、`spine`、`effekseer`。
+`files` 是不可缺少的 project-relative companion sources，例如 Spine atlas
+與 texture pages；引擎不猜格式、不解碼，也不替作者建立美術內容。
+
+## 工具入口
+
+CLI 與 MCP 都是 Developer Protocol 的薄 client，實際檢查與選擇規則由
+engine core 共用：
+
+```powershell
+game --project <game-root> --json asset inspect
+game --project <game-root> --json asset inspect --strict
+game --project <game-root> --json asset describe --id <asset-id>
+game --project <game-root> --json asset read --id <asset-id>
+game --project <game-root> --json asset read --id <asset-id> --file <declared-companion>
+game --project <game-root> --json bundle pack
+game --project <game-root> --json bundle install <bundle-id>
+game --project <game-root> --json bundle install --all
+```
+
+MCP 對應工具是 `unone_asset_inspect`、`unone_asset_describe`、
+`unone_asset_read`、`unone_asset_init`、`unone_bundle_pack`、
+`unone_bundle_inspect` 與 `unone_bundle_install`。`tools/list` 應回報 23 個
+工具；`unone_asset_describe` 是 read-only，`unone_asset_read` 則是
+`readOnlyHint=false`，因為傳入 output 時可能寫檔。
+
+### `asset describe`
+
+`game asset describe --id <id>` 對單一已宣告 id 做聚焦查詢，不重做完整
+`asset inspect` gate，也不默默讀取所有資產 bytes。它會把 authoring 的 manifest
+定位與宣告檔案、主場景靜態引用、native-local active observation、selected-asset
+publication freshness 與 ordered next actions 放在同一份 `EngineResult`；`ok`
+只表示查詢完成，freshness 為 false 或 unknown 時不得自行改成 true。
+
+目前 `AssetDescribeReport` 的 serialized shape 包含 `project_root`、`asset`、
+`authoring`、`references`、`reference_scope`、`active`、`publication` 與
+`required_next_actions`。`authoring` 的 manifest 欄位是 `manifest_path` 與
+`manifest_json_pointer`；files 逐一指出 primary／companion 的 role、exists、
+可讀時的 size/hash、`shared_with_asset_ids`，以及必要時的 structured diagnostic。
+引用欄位保留主場景的 path、`json_pointer`、id、entity、component 與實際 array
+index，涵蓋 `sprite`、`mesh3d`、`animation`；它不是任意字串搜尋，也不是 selected
+asset 的全體影響分析。`reference_scope` 明確標示 `main_scene_only`，以及 Luau
+動態建立／選擇的 id 未被檢查；不把 unreferenced 當成可安全刪除。
+
+`active` 的 scope 是 `native_local`，並回報 generation、active manifest entry、
+每個 primary／companion 的 verified 狀態與 size/hash、structured diagnostics、
+以及 observation token 前後是否一致。`publication` 的 scope 是
+`selected_asset_native_local`；`asset_spec_matches`、`primary_bytes_match`、
+`companion_bytes_match`、`bytes_match` 與 `matches_authoring` 必須如實保留
+`true`／`false`／`null`，不能把 read 成功或 bundle hash 有值冒充 freshness。
+
+active primary／companion 的讀取失敗除了放在該 file 的 diagnostic，也進入
+去重的 `active.diagnostics` 與頂層 `EngineResult.diagnostics`。client 不必
+深入每個 file 才知道 cache miss 或 archive 錯誤；file 欄位保留精確定位。
+
+`active.asset_manifest_json_pointer` 定位的是已驗證的保留 bundle
+`asset-manifest` 內的 entry，不是作者目前的 manifest 檔案。作者可能搬移
+manifest 卻還没打包；因此 active 不提供由 authoring path 推測出來的檔案路徑。
+
+成功查詢的最小 shape（省略 optional diagnostics）如下；實際值以 core result 為準：
+
+`AssetSpec.files` 為空時會依 core 的 serde 設定省略；authoring/active file 狀態仍由各自的 `files` 陣列表達。
+
+```json
+{
+  "project_root": "<absolute-project-root>",
+  "asset": {
+    "id": "asset://characters/hero",
+    "source": "assets/characters/hero.svg",
+    "kind": "texture2d",
+    "bundle": "content"
+  },
+  "authoring": {
+    "manifest_path": "assets/manifest.json",
+    "manifest_json_pointer": "/assets/0",
+    "files": [
+      {
+        "path": "assets/characters/hero.svg",
+        "role": "primary",
+        "exists": true,
+        "size_bytes": 123,
+        "sha256": "<sha256>",
+        "shared_with_asset_ids": []
+      }
+    ],
+    "editing_rules": ["<engine-provided editing rules>"]
+  },
+  "references": [
+    {
+      "path": "scenes/main.scene.json",
+      "json_pointer": "/entities/0/sprite/asset",
+      "id": "asset://characters/hero",
+      "entity": "player",
+      "component": "sprite"
+    }
+  ],
+  "reference_scope": {
+    "scope": "main_scene_only",
+    "roots_inspected": ["scenes/main.scene.json"],
+    "components_inspected": ["sprite", "mesh3d", "animation"],
+    "dynamic_luau_assets_included": false,
+    "limitations": ["<engine-provided limitations>"]
+  },
+  "active": {
+    "scope": "native_local",
+    "generation": 3,
+    "asset_manifest_json_pointer": "/assets/0",
+    "asset": {
+      "id": "asset://characters/hero",
+      "source": "assets/characters/hero.svg",
+      "kind": "texture2d",
+      "bundle": "content"
+    },
+    "files": [
+      {
+        "path": "assets/characters/hero.svg",
+        "role": "primary",
+        "verified": true,
+        "size_bytes": 123,
+        "sha256": "<sha256>"
+      }
+    ],
+    "diagnostics": [],
+    "observation_token_before": "<token>",
+    "observation_token_after": "<token>",
+    "observation_consistent": true
+  },
+  "publication": {
+    "scope": "selected_asset_native_local",
+    "matches_authoring": true,
+    "asset_spec_matches": true,
+    "primary_bytes_match": true,
+    "companion_bytes_match": true,
+    "bytes_match": true,
+    "reasons": []
+  },
+  "required_next_actions": [
+    {
+      "action": "asset_read_primary",
+      "kind": "command",
+      "reason": "<engine-provided reason>",
+      "executable": "game",
+      "argv": ["--project", "<absolute-project-root>", "asset", "read", "--id", "asset://characters/hero", "--json"],
+      "ready": true,
+      "status": "ready",
+      "prerequisites": []
+    }
+  ]
+}
+```
+
+缺 source、companion、active record、cache 或 archive bytes 時，結果應保留可用
+的定位與 structured diagnostic，不把錯誤壓成 missing 或 false。最新正式 active
+generation 無法讀取時回報 `BUNDLE_ACTIVE_GENERATION_UNREADABLE`，不靜默退回較舊
+generation。查詢期間 manifest 或 generation 改變時不得回報 freshness true，應
+重新 describe。
+
+後續命令以 `AssetWorkflowAction` 的 `action`、`kind`、`reason`、`executable`、
+`argv`、`ready`、`status`、`prerequisites` 表示。`executable: "game"` 是邏輯
+CLI 名稱，不要求 blind AI 猜 PATH 或安裝 alias；使用 immutable package 時，
+固定把它解析成該 package 的 `bin/game.exe`。`argv` 每項保留 core 產生的原值，
+交給 subprocess argument list 執行，不拼接 shell 字串；因此特殊字元、空白與
+asset id/path 不會被重新解析。primary 的 read argv 不帶 `--file`；companion 的
+read argv 帶完整宣告的 `--file`。非機械的美術編輯步驟會標為 AI／作者工作，不
+偽裝成命令；describe 本身不執行 pack、inspect、install 或 read。
+
+## 新資產 bootstrap 順序
+
+新資產不從「只 install content」開始；先建立作者內容，再宣告、打包、驗證、
+啟用並查詢：
+
+1. AI 或作者在 project root 建立實際 primary bytes，以及所有 companion bytes。
+2. 用 `game asset init --id <id> --source <project-relative-source>` 宣告
+    manifest entry；`asset init` 只寫 manifest/project config，不建立或猜測
+    圖片、模型、Spine 或 Effekseer 檔案。初始化後先看回傳的 `changed_files`；
+    成功新增 asset 時才會提供 `describe_argv`；沒有 `new_asset` 時該 optional
+    欄位會省略，不會虛構 `<asset-id>`。若部分寫入後失敗，failure effects 會
+    如實列出已發生的變更。
+3. 用 `game bundle pack` 從 authoring files 產生／更新 bundle manifest、hash
+   與 archive。
+4. 用 `game asset inspect --strict` 驗證主場景靜態引用、manifest、source、
+   companion、bundle 與支援的 kind/version。
+5. 用 `game bundle install --all` 一次驗證並啟用完整 generation；若只需一個
+   bundle，才使用 `game bundle install <id>`。所有選中 roots 驗證完成後只寫
+   一份 active generation。
+6. 再用 `game asset describe --id <id>` 確認 authoring、active 與
+   `matches_authoring`，最後用 `game asset read --id <id>` 取得 verified bytes。
+
+asset read 的 `--output` 是使用者明確授權的匯出路徑；它不是 source resolver，
+也不會讓 describe 的 read argv 帶 output。
+
+## bundle install 選擇契約
+
+CLI 的 `id` 是 optional positional argument，`all` 是 bool flag；core 只接受
+以下兩種選擇：
+
+| 參數 | 結果 |
+|---|---|
+| `bundle install <id>` | 安裝該 id 及 dependency closure |
+| `bundle install --all` | 安裝 manifest 的所有 roots 及 dependency closure |
+| `bundle install` | `BUNDLE_SELECTION_INVALID`；不建立 generation |
+| `bundle install <id> --all` | `BUNDLE_SELECTION_INVALID`；不建立 generation |
+| `bundle install ""` | `BUNDLE_SELECTION_INVALID`；空 id 不算選擇 |
+
+每次啟用的集合只由這次選擇決定，不會自動累加前一代的其他包。
+例如先 install A 再 install 無依賴的 B，第二代只含 B；需要同時啟用所有包
+時使用 `--all`，不要把多次單包 install 當作累加操作。
+
+MCP `unone_bundle_install` 的 schema 以 `oneOf` 表示恰好一種：id 分支允許
+`all` 缺省或 `false`，all 分支要求 `all:true` 且不得有 id；handler 仍會對
+`id`/`all` 做嚴格 string/boolean parsing，再傳入同一個
+`install_selected(id.as_deref(), all)`。因此 `{"id":"content","all":false}`
+與 id-only 完全同義；`{}`、`{"all":false}`、`{"id":"content","all":true}`
+會得到相同 core semantic selection error。錯誤不得切換 active generation。
+
+所有 manifest roots 共用同一個 installed set 與 dependency traversal；任一
+fetch、hash、dependency 或 cycle failure 都保持既有 active metadata。空或重複
+bundle id、無效 hash/size、缺失或循環 dependency 也在 activation 前拒絕。
+
+manifest 的 `bundles` 必須明示為 array：缺欄位為 `BUNDLE_MANIFEST_INVALID`，
+`[]` 為 `BUNDLE_MANIFEST_EMPTY`。native 與 Web 的安裝／active read 都驗證
+完整 dependency graph，不因本次只讀其中一包而忽略其他缺失或循環依賴。
+Web 已有 active pointer 但 record 缺失／無效時，回報
+`BUNDLE_ACTIVE_GENERATION_UNREADABLE`，不是可自動覆寫的「首次安裝」。
+
+## `asset inspect` 與邊界
+
+`asset inspect` 是全體 manifest／scene 的 authoring advisory；需要 handoff、CI
+或 release gate 時用 `--strict`。它檢查主場景 `sprite`、`mesh3d`、`animation`
+的靜態引用，不檢查 Luau 動態建立或選擇的 id。`unreferenced_asset_ids` 不等於
+可安全刪除：動態字串、host 或外部內容仍可能使用它。
+
+引擎只負責宣告驗證、archive integrity、native local verified read 與
+generation activation；不負責影像／模型解碼、GPU resource lifetime、下載、
+重試、cache quota、CDN、runtime asset lease 或遊戲 catalog。Web IndexedDB、
+native `.unone` 與其他 host storage 是不同的 active scope；native CLI 啟用
+不代表 Web 已啟用。`asset read` 通過也不等於 native 貼圖渲染或 Web/mobile
+正式 host gate 通過。
+
+安全路徑規則同樣套用在 manifest、scene、primary、companions、bundle manifest
+與 native local bundle fetch：先做 portable lexical 檢查，再檢查現存目標與
+祖先的 canonical containment。project 外 absolute path、`..`、反斜線、越界
+symlink、重複 asset id、未知 kind/version 都 fail closed。
+
+## 錯誤恢復與不變條件
+
+依錯誤所在層級恢復，不用清 cache 或 fallback source 來掩蓋問題：
+
+- authoring 缺 manifest、source 或 companion：建立／修正作者檔案與 declaration，
+  再跑 pack。查詢可以提供定位，但不替作者生成 bytes。
+- pack 或 `asset inspect --strict` 失敗：先修 manifest、path、kind/version、
+  靜態 reference 或實際檔案，再重新 pack；不要安裝未通過的內容。
+- 最新正式 active record 損壞或無法解析時，`install`、`describe` 與 `read` 都必須
+  fail closed 並回報 `BUNDLE_ACTIVE_GENERATION_UNREADABLE`。這是 host/operator 的
+  manual prerequisite：依診斷檢查並修復 record，或從可信備份復原；沒有可信備份
+  就回報 blocker。不要清 cache、刪除整份 `.unone`、退回較舊 generation，或篡造
+  active generation 來假裝恢復；修 source、pack 或 strict 都不能修好壞掉的 record。
+- cache 或 archive bytes 損壞、或 active 尚未包含最新 authoring／bundle manifest：
+  依 structured diagnostic 修正 authoring source 後走
+  `pack → strict → install --all → describe → read`；這條路徑不跨越 active record
+  損壞的 manual prerequisite，也不從不同 generation 拼湊結果。
+- `bundle install` 的 fetch、hash、size、dependency、cycle 或 activation 失敗：
+  既有 active generation 與 metadata 保持不變，已驗證的 cache 可以留下但不代表
+  它已 active。這只是本次 activation 的保護，不是整個發布流程的 rollback；若
+  authoring bundle manifest 已更新，舊 active 可能已不符合新 manifest 而無法 read，
+  仍須依上一步重新發布。
+- `asset read --output` 是使用者明確授權的匯出寫入，與 authoring source 的
+  project containment 分開；describe 建議的 read 命令不附 output。
+
+每次查詢的 freshness 只涵蓋 selected asset 的 native-local observation。generation
+或 manifest 在觀測期間變動時，不能回報 fresh；重新執行 describe/read 取得新的
+一致觀測。Web 的 IndexedDB、native `.unone`、mobile 或其他 host 各自安裝與驗證，
+不能用 CLI 結果代替跨 host 證據。
+
+
+=== DOCUMENT: docs/mobile-host-abi.md ===
+# Mobile host ABI
+
+`unone-mobile-ffi` is the small C ABI adapter shared by Android and iOS hosts. It is not a second engine and it does not own UIKit, JNI, Android Views, GPU handles, storage, CDN, permissions or game rules.
+
+## Host ownership
+
+The host owns:
+
+- app lifecycle and thread serialization;
+- native surface creation and destruction;
+- device scale, safe-area measurement and touch normalization;
+- bundle fetch/cache/update policy;
+- package, permission, audio-device and background policy.
+
+The adapter owns only the bridge to `EngineRuntime`:
+
+- one opaque session;
+- host-normalized `InputFrame` delivery;
+- fixed-step tick and semantic observation;
+- opaque JSON-like save payload injection and observation;
+- pause/resume without wall-clock catch-up;
+- surface descriptor bookkeeping without resetting the runtime;
+- Luau source reload with engine-state preservation.
+- shared bundle size/SHA-256 verification; the host still owns storage and generation activation.
+
+Include `crates/unone-mobile-ffi/include/unone_mobile.h` from the native wrapper. The host must serialize calls for one session and keep the observation pointer alive only until the next mutating call on that session.
+
+## Lifecycle sequence
+
+Scene fragments in project JSON use the same strict scene parser and semantic
+validator as disk loading: unknown nested fields and blank/duplicate entity ids
+are rejected before replacing the runtime. Scene diagnostics retain the existing
+structured error channel. Their source is null; line/column are relative to the
+scene fragment, with `source_kind=host_payload_scene`,
+`location_scope=scene_fragment` and `pointer_base=/scene`, not the full envelope.
+Malformed outer envelopes still use the existing host parse-error path.
+
+```text
+init
+  → resize (surface available)
+  → load_project
+  → optional set_save_payload
+  → set_pointer / set_action / set_input_frame
+  → tick → observe
+  → pause
+  → surface_lost / resize (rotation or recreation)
+  → resume
+  → tick → observe
+  → shutdown
+```
+
+When paused, `tick` returns success with `event=tick_skipped`, `reason=paused`, and the same world frame. Resume does not replay elapsed wall-clock time; the host decides when to submit the next normal frame. Surface loss never destroys the loaded project or world.
+
+## Bundle update sequence
+
+The host downloads into its own staging area, feeds bounded chunks through `bundle_begin → bundle_write* → bundle_finish`, and commits the staged bytes plus a new generation only after `bundle_finish` returns success:
+
+```text
+host fetch → host staging
+                 ↓ chunks
+        mobile bundle verifier
+                 ↓ verified
+       host atomic cache/generation activate
+```
+
+The ABI intentionally does not expose a filesystem, IndexedDB, OPFS, Android storage API, iOS URLSession, CDN, retry policy or active-generation pointer. A failed verification leaves host state untouched; cache-only reopen and rollback remain host smoke requirements. The repository's Android headless smoke only exercises this ABI and lifecycle contract; it is not an APK or a GPU/UI host.
+
+`set_pointer` and `set_action` are scalar/event paths for native input. The host must normalize raw touch coordinates into the engine's world-space pointer before calling them. `set_screen_pointer` optionally supplies a separate normalized 0..100 × 0..100 logical UI coordinate after `set_pointer`; the host owns pixel, DPI and safe-area conversion. `set_input_frame` accepts the same semantic JSON shape used by headless/Web replay and is useful for automation and contract tests. The adapter consumes pending input at the next tick, so an action is not silently sticky across frames.
+
+## Observation and errors
+
+Successful calls produce semantic JSON with `kind=mobile_observation`, `event`, `lifecycle`, `project`, `surface`, and optional `world`. Failure produces `kind=mobile_error` with either a message or the full engine diagnostic (`code`, `severity`, `explanation`, `facts`, `likely_causes`, and `suggested_actions`).
+
+`unone_mobile_set_save_payload` injects a host-loaded JSON payload before a tick. A successful tick returns the latest `save_payload` alongside `world`; the game owns schema/version/migration and the host owns durable storage.
+
+The ABI does not expose raw Rust or GPU objects. If a future mobile requirement needs a new capability, first reproduce it in a validation game; add the smallest host/adapter contract only when the need is shared.
+
+
+=== DOCUMENT: docs/decisions/0016-bundle-generation-and-browser-storage.md ===
+# Decision 0016：Bundle generation 與瀏覽器儲存由 host 管理
+
+- 日期：2026-09-05
+- 狀態：accepted
+
+## Context
+
+同一個遊戲內容要在 native、Web、iOS 與 Android 使用，但平台的 fetch、重試、權限、storage quota、背景下載與檔案 API 不相同。若把這些政策放進 `unone-engine`，引擎會變成下載器，而且 headless replay 會被平台狀態污染。
+
+## Decision
+
+分成兩層：
+
+- engine 提供 `BundleVerifier`，以 `begin → update(chunk)* → finish` 統一 size/SHA-256 規則；native `BundleManager` 仍負責依賴解析、`.part` staging、cache commit 與 atomic generation rename。
+- Web host 的 `bundle-store.js` 負責 fetch、依賴順序、IndexedDB content-addressed cache、cache hit re-verify 與 generation transaction。所有內容驗證完成後，才同時寫入 bundle records、generation record 與 `activeGeneration` pointer；任何 fetch、驗證或 transaction 失敗都不改變上一代 active pointer。
+
+內容 hot update 的順序固定為：
+
+```text
+fetch / cache lookup
+        ↓
+bounded Rust verification
+        ↓
+host staging + dependency resolution
+        ↓
+one storage transaction activates generation
+        ↓
+engine safe-point source/content apply
+```
+
+`reload_source` 是腳本 hot reload，保留 Rust-owned world state；generation activation 是內容版本切換，兩者不混成「任意檔案立即替換」。sample 以 v1/v2 script bundle 驗證這個差異：v2 只下載變更 script，active 後才呼叫同一 runtime 的 source reload。
+
+## Consequences
+
+- browser storage 不進 engine core；mobile 可用同一 manifest/hash/generation 語意接自己的 filesystem/key-value adapter。
+- cache key 是 content hash，不是 URL 或版本字串；URL 變更但 bytes 相同不會重複下載。
+- active pointer 是 rollback 邊界；舊 generation 不立即刪除，待 ref-count/引用追蹤與 quota policy 成熟後再回收。
+- smoke host 目前用 `Blob` 收集已驗證 response 再寫 IndexedDB，這是可測試的最小實作，不是大型 asset 的最終 streaming storage。production 需要 OPFS、chunk store 或平台 native streaming writer，避免單一 bundle 同時佔用 response、驗證與 storage 的峰值記憶體。
+- 不做 P2P、差分 patch、遠端腳本執行、原生 plugin 熱插拔、CDN 選路或下載排程；這些屬於 host/營運層，只有多個驗證遊戲證明需要才另立決策。
+
+
