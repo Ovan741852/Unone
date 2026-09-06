@@ -25,6 +25,9 @@ use crate::{
 pub enum StepStatus {
     Passed,
     Failed,
+    /// The gate found something, but the project declared it advisory. Reported
+    /// in full; does not fail the run.
+    Advisory,
     /// The project does not use this capability, so there is nothing to check.
     NotApplicable,
 }
@@ -45,8 +48,20 @@ pub struct VerifyReport {
     pub steps: Vec<VerifyStep>,
     pub passed: usize,
     pub failed: usize,
+    #[serde(skip_serializing_if = "usize_is_zero")]
+    pub advisory: usize,
     pub not_applicable: usize,
+    /// Where the step order came from: `default` or `project`.
+    pub step_source: String,
 }
+
+fn usize_is_zero(value: &usize) -> bool {
+    *value == 0
+}
+
+/// The gates this build knows, in the order it runs them when a project says
+/// nothing.
+pub const DEFAULT_VERIFY_STEPS: [&str; 4] = ["types", "assets", "layout", "tests"];
 
 fn step(
     name: &str,
@@ -74,17 +89,119 @@ pub fn verify(project_root: impl AsRef<Path>) -> EngineResult<VerifyReport> {
         Ok(value) => value,
         Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
+    let plan = match resolve_plan(config.verify.as_ref()) {
+        Ok(plan) => plan,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
+    let step_source = if config.verify.is_some() {
+        "project"
+    } else {
+        "default"
+    };
     let mut steps = Vec::new();
 
+    for (name, required) in &plan {
+        match name.as_str() {
+            "types" => steps.push(types_step(project_root, *required)),
+            "assets" => steps.push(assets_step(project_root, *required)),
+            "layout" => {
+                if config.ui_previews.is_empty() {
+                    steps.push(layout_step(project_root, None, &paths.root, *required));
+                } else {
+                    for preview in &config.ui_previews {
+                        steps.push(layout_step(
+                            project_root,
+                            Some(preview),
+                            &paths.root,
+                            *required,
+                        ));
+                    }
+                }
+            }
+            "tests" => steps.push(tests_step(project_root, &paths, *required)),
+            _ => unreachable!("resolve_plan rejects unknown ids"),
+        }
+    }
+
+    finish(config.name, steps, step_source)
+}
+
+/// Which gates to run, and whether each one may fail without failing the run.
+///
+/// The default order is the engine's opinion, not a law. What the engine does
+/// keep is that a skipped gate has to be a written decision: an empty list, an
+/// unknown id and a duplicate are all errors, so no gate goes missing quietly.
+fn resolve_plan(
+    declared: Option<&crate::project::VerifyConfig>,
+) -> Result<Vec<(String, bool)>, Box<Diagnostic>> {
+    let Some(declared) = declared else {
+        return Ok(DEFAULT_VERIFY_STEPS
+            .iter()
+            .map(|name| ((*name).to_string(), true))
+            .collect());
+    };
+    if declared.steps.is_empty() {
+        let mut diagnostic = Diagnostic::error(
+            "VERIFY_STEPS_EMPTY",
+            "verify 宣告了一份空的 gate 清單",
+            "宣告 verify.steps 卻一個 gate 都沒有，等於關掉全部驗證但仍然回報通過。要放寬個別 gate 請用 required: false；要用預設順序請把整段移除。".to_string(),
+        );
+        diagnostic.facts = serde_json::json!({ "available": DEFAULT_VERIFY_STEPS });
+        return Err(Box::new(diagnostic));
+    }
+    let mut plan: Vec<(String, bool)> = Vec::new();
+    for spec in &declared.steps {
+        let name = spec.step().to_string();
+        if spec.reserved_command() {
+            return Err(Box::new(Diagnostic::error(
+                "VERIFY_STEP_NOT_IMPLEMENTED",
+                "verify 的 command step 尚未實作",
+                format!(
+                    "gate '{name}' 宣告了 command：專案自帶命令的擴充點已保留名稱，但本 build 沒有實作，宣告它不會執行任何東西，因此視為設定錯誤。"
+                ),
+            )));
+        }
+        if !DEFAULT_VERIFY_STEPS.contains(&name.as_str()) {
+            let mut diagnostic = Diagnostic::error(
+                "VERIFY_STEP_UNKNOWN",
+                "verify 宣告了引擎沒有的 gate",
+                format!("引擎沒有 gate '{name}'；不會把 typo 當成少跑一個 gate。"),
+            );
+            diagnostic.facts = serde_json::json!({
+                "step": name,
+                "available": DEFAULT_VERIFY_STEPS,
+            });
+            return Err(Box::new(diagnostic));
+        }
+        if plan.iter().any(|(existing, _)| *existing == name) {
+            return Err(Box::new(Diagnostic::error(
+                "VERIFY_STEP_DUPLICATED",
+                "verify 宣告了重複的 gate",
+                format!(
+                    "gate '{name}' 宣告了不只一次；同一個 gate 跑兩次不會多驗證任何東西，只會讓報告不好讀。"
+                ),
+            )));
+        }
+        plan.push((name, spec.required()));
+    }
+    Ok(plan)
+}
+
+/// A failing gate the project declared advisory is reported, not fatal.
+fn resolve_status(ok: bool, required: bool) -> StepStatus {
+    match (ok, required) {
+        (true, _) => StepStatus::Passed,
+        (false, true) => StepStatus::Failed,
+        (false, false) => StepStatus::Advisory,
+    }
+}
+
+fn types_step(project_root: &Path, required: bool) -> VerifyStep {
     let types = EngineRuntime::check_with_types(project_root);
-    steps.push(step(
+    step(
         "types",
         "game check --types",
-        if types.ok {
-            StepStatus::Passed
-        } else {
-            StepStatus::Failed
-        },
+        resolve_status(types.ok, required),
         match types.value.as_ref() {
             Some(report) if types.ok => format!(
                 "entrypoints {:?}, strict_mode {}",
@@ -93,17 +210,15 @@ pub fn verify(project_root: impl AsRef<Path>) -> EngineResult<VerifyReport> {
             _ => "the entry script did not pass the Luau contract or type check".to_string(),
         },
         types.diagnostics,
-    ));
+    )
+}
 
+fn assets_step(project_root: &Path, required: bool) -> VerifyStep {
     let assets = asset::inspect_strict(project_root);
-    steps.push(step(
+    step(
         "assets",
         "game asset inspect --strict",
-        if assets.ok {
-            StepStatus::Passed
-        } else {
-            StepStatus::Failed
-        },
+        resolve_status(assets.ok, required),
         match assets.value.as_ref() {
             Some(report) => format!(
                 "{} declared, {} scene references, ready_for_packaging {}",
@@ -114,46 +229,37 @@ pub fn verify(project_root: impl AsRef<Path>) -> EngineResult<VerifyReport> {
             None => "asset declarations could not be inspected".to_string(),
         },
         assets.diagnostics,
-    ));
+    )
+}
 
-    if config.ui_previews.is_empty() {
-        steps.push(layout_step(project_root, None, &paths.root));
-    } else {
-        for preview in &config.ui_previews {
-            steps.push(layout_step(project_root, Some(preview), &paths.root));
-        }
-    }
-
+fn tests_step(project_root: &Path, paths: &ProjectPaths, required: bool) -> VerifyStep {
     if paths.test_files.is_empty() {
-        steps.push(step(
+        return step(
             "tests",
             "game test",
-            StepStatus::Failed,
+            resolve_status(false, required),
             "the project declares no test files",
             vec![tests_missing_diagnostic()],
-        ));
-    } else {
-        let tests = EngineRuntime::run_tests(project_root);
-        let summary = match tests.value.as_ref() {
-            Some(report) => {
-                let passed = report.cases.iter().filter(|case| case.passed).count();
-                format!("{passed}/{} deterministic cases passed", report.cases.len())
-            }
-            None => "the test suite could not run".to_string(),
-        };
-        steps.push(step(
-            "tests",
-            "game test",
-            if tests.ok {
-                StepStatus::Passed
-            } else {
-                StepStatus::Failed
-            },
-            summary,
-            tests.diagnostics,
-        ));
+        );
     }
+    let tests = EngineRuntime::run_tests(project_root);
+    let summary = match tests.value.as_ref() {
+        Some(report) => {
+            let passed = report.cases.iter().filter(|case| case.passed).count();
+            format!("{passed}/{} deterministic cases passed", report.cases.len())
+        }
+        None => "the test suite could not run".to_string(),
+    };
+    step(
+        "tests",
+        "game test",
+        resolve_status(tests.ok, required),
+        summary,
+        tests.diagnostics,
+    )
+}
 
+fn finish(project: String, steps: Vec<VerifyStep>, step_source: &str) -> EngineResult<VerifyReport> {
     let failed = steps
         .iter()
         .filter(|step| step.status == StepStatus::Failed)
@@ -162,17 +268,23 @@ pub fn verify(project_root: impl AsRef<Path>) -> EngineResult<VerifyReport> {
         .iter()
         .filter(|step| step.status == StepStatus::Passed)
         .count();
+    let advisory = steps
+        .iter()
+        .filter(|step| step.status == StepStatus::Advisory)
+        .count();
     let not_applicable = steps
         .iter()
         .filter(|step| step.status == StepStatus::NotApplicable)
         .count();
 
     let report = VerifyReport {
-        project: config.name,
+        project,
         steps,
         passed,
         failed,
+        advisory,
         not_applicable,
+        step_source: step_source.to_string(),
     };
     let mut result = if failed == 0 {
         EngineResult::success(report)
@@ -196,9 +308,28 @@ pub fn verify(project_root: impl AsRef<Path>) -> EngineResult<VerifyReport> {
         result
     };
     if let Some(report) = result.value.as_ref() {
+        // Name the advisory gates in the effect line rather than leaving them
+        // in the step list: a run that is green only because something was
+        // declared advisory should say so where a reader cannot miss it.
+        let advisory = if report.advisory > 0 {
+            format!(
+                ", {} advisory ({})",
+                report.advisory,
+                report
+                    .steps
+                    .iter()
+                    .filter(|step| step.status == StepStatus::Advisory)
+                    .map(|step| step.name.clone())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            )
+        } else {
+            String::new()
+        };
         result.effects.push(format!(
-            "verify ran {} gates: {} passed, {} failed, {} not applicable",
+            "verify ran {} gates in the {} order: {} passed, {} failed{advisory}, {} not applicable",
             report.steps.len(),
+            report.step_source,
             report.passed,
             report.failed,
             report.not_applicable
@@ -212,6 +343,7 @@ fn layout_step(
     project_root: &Path,
     preview: Option<&crate::project::UiPreviewSpec>,
     root: &Path,
+    required: bool,
 ) -> VerifyStep {
     let name = match preview {
         Some(preview) => format!("layout:{}", preview.name),
@@ -237,7 +369,7 @@ fn layout_step(
                 return step(
                     &name,
                     command,
-                    StepStatus::Failed,
+                    resolve_status(false, required),
                     "the declared input sequence could not be read",
                     vec![Diagnostic::error(
                         "INPUT_SEQUENCE_INVALID",
@@ -254,7 +386,7 @@ fn layout_step(
             return step(
                 &name,
                 command,
-                StepStatus::Failed,
+                resolve_status(false, required),
                 "the project could not be loaded to draw its screen",
                 vec![*diagnostic],
             );
@@ -269,7 +401,7 @@ fn layout_step(
         return step(
             &name,
             command,
-            StepStatus::Failed,
+            resolve_status(false, required),
             "the project could not reach this screen",
             run.diagnostics,
         );
@@ -305,11 +437,7 @@ fn layout_step(
     step(
         &name,
         command,
-        if report.readable {
-            StepStatus::Passed
-        } else {
-            StepStatus::Failed
-        },
+        resolve_status(report.readable, required),
         // Name the nodes, not just how many. Two declared screens that report
         // the same node list are almost certainly the same screen reached
         // twice, which is a gate that proves nothing — but "almost certainly"
@@ -388,6 +516,7 @@ return Game
         // Four gates, always, so an author sees the whole picture at once.
         let names: Vec<&str> = report.steps.iter().map(|step| step.name.as_str()).collect();
         assert_eq!(names, vec!["types", "assets", "layout", "tests"]);
+        assert_eq!(report.step_source, "default");
         assert!(!result.ok, "a project without tests must not pass");
         assert_eq!(
             report
@@ -410,6 +539,64 @@ return Game
         );
         // Every step names the command that reproduces it alone.
         assert!(report.steps.iter().all(|step| !step.command.is_empty()));
+    }
+
+    /// The point of the whole feature: a project decides its own order and
+    /// which gates may fail, and the engine still refuses to lose one quietly.
+    #[test]
+    fn a_project_owns_its_gate_order_and_which_gates_are_advisory() {
+        let dir = tempdir().unwrap();
+        fs::create_dir_all(dir.path().join("scripts")).unwrap();
+        fs::write(dir.path().join("scripts/main.luau"), GOOD_SCRIPT).unwrap();
+        let write_config = |verify: &str| {
+            fs::write(
+                dir.path().join("project.unone.json"),
+                format!(
+                    r#"{{"name": "VerifyPlan", "entry_script": "scripts/main.luau", "verify": {verify}}}"#
+                ),
+            )
+            .unwrap();
+        };
+
+        // Reordered, and the missing tests declared advisory.
+        write_config(r#"{"steps": ["assets", {"step": "tests", "required": false}]}"#);
+        let result = verify(dir.path());
+        let report = result.value.as_ref().expect("verify reports its steps");
+        let names: Vec<&str> = report.steps.iter().map(|step| step.name.as_str()).collect();
+        assert_eq!(names, vec!["assets", "tests"]);
+        assert_eq!(report.step_source, "project");
+        assert_eq!(report.advisory, 1);
+        assert!(
+            result.ok,
+            "an advisory gate must not fail the run: {:?}",
+            result.diagnostics
+        );
+        assert!(
+            result.effects.iter().any(|effect| effect.contains("advisory (tests)")),
+            "the run must say which gate was let through: {:?}",
+            result.effects
+        );
+        // Advisory means reported, not hidden.
+        assert!(!report.steps[1].diagnostics.is_empty());
+
+        // The same gate, required, fails the run.
+        write_config(r#"{"steps": ["tests"]}"#);
+        assert!(!verify(dir.path()).ok);
+
+        for (declared, code) in [
+            (r#"{"steps": []}"#, "VERIFY_STEPS_EMPTY"),
+            (r#"{"steps": ["typechecks"]}"#, "VERIFY_STEP_UNKNOWN"),
+            (r#"{"steps": ["tests", "tests"]}"#, "VERIFY_STEP_DUPLICATED"),
+            (
+                r#"{"steps": [{"step": "tests", "command": "npm test"}]}"#,
+                "VERIFY_STEP_NOT_IMPLEMENTED",
+            ),
+        ] {
+            write_config(declared);
+            let result = verify(dir.path());
+            assert!(!result.ok, "{declared} must be refused");
+            assert_eq!(result.diagnostics[0].code, code, "{declared}");
+        }
     }
 
     /// The types step needs the official analyzer, which a bare `cargo test`
