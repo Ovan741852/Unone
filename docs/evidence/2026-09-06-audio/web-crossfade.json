@@ -1,0 +1,45 @@
+{
+  "captured": "2026-09-06",
+  "host": "web/presentation",
+  "url": "http://127.0.0.1:8001/Unone/web/presentation/?project=/Unone/docs/evidence/2026-09-06-audio/project/",
+  "what_this_shows": "A real cross-fade in a real browser. The engine decided which track survives the exclusive switch and how far into each fade every frame is; the page only multiplied that out into a gain. Checked against the declaration: bgm has fade_out_frames 60 and fade_in_frames 30, and both sources start at volume 0.6. At frame 189, 10 frames into the fade-out, 0.6 * (1 - 10/60) = 0.5; the fade-in is 10 frames into 30, 0.6 * 10/30 = 0.2. Both match.",
+  "audio_report": {
+    "assets_decoded": 3,
+    "decode_failures": [],
+    "assets_missing_from_manifest": [],
+    "audio_context_state": "running"
+  },
+  "samples": [
+    {
+      "frame": 189,
+      "loops": ["audio-1 audio://lobby fading_out", "audio-6 audio://game fading_in"],
+      "host_gains": [0.5, 0.2]
+    },
+    {
+      "frame": 202,
+      "loops": ["audio-1 audio://lobby fading_out", "audio-6 audio://game fading_in"],
+      "host_gains": [0.37, 0.46]
+    },
+    {
+      "frame": 215,
+      "loops": ["audio-1 audio://lobby fading_out", "audio-6 audio://game playing"],
+      "host_gains": [0.24, 0.6]
+    },
+    {
+      "frame": 227,
+      "loops": ["audio-1 audio://lobby fading_out", "audio-6 audio://game playing"],
+      "host_gains": [0.12, 0.6]
+    },
+    {
+      "frame": 445,
+      "loops": ["audio-6 audio://game playing"],
+      "host_gains": [0.6],
+      "note": "the fade ended and the engine retired the source; the host stopped its node"
+    }
+  ],
+  "not_evidence_of": [
+    "that a person heard it: no one listened, and no recording was taken",
+    "native or Android audio, which is not implemented at all",
+    "any licensed audio asset; the three clips here are tones generated for this test"
+  ]
+}

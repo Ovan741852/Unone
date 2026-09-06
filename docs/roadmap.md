@@ -46,11 +46,16 @@ execution. Their capability sets are not equivalent.
 2. Complete ordinary 2D rotation, scale and painter order on Web first.
    Core/schema/Luau already expose these fields. Fix the Web DOM center
    offset in this same slice. Preserve independent colliders.
-3. Deliver minimal Web audio through a reviewed lifecycle contract and actual host
-   playback. Intent snapshots are not proof of audible output. Contract planned in
-   the [audio work package](work-packages/2026-09-06-audio.md): one-shot events
-   rebuilt per frame, looping sources with handles, and declared categories
-   carrying engine-owned rules so a fade-out on track change is frame-exact.
+3. ~~Deliver minimal Web audio through a reviewed lifecycle contract and actual host
+   playback.~~ **Delivered**: `api.audio.play` / `loop` / `stop` / `stopAll`,
+   `world.audio_events` and `world.audio_loops`, project-declared categories with
+   `exclusive` and frame-exact fades, and playback in `web/presentation`. See the
+   [audio work package](work-packages/2026-09-06-audio.md), plus the bus volumes,
+   pause/resume and entity-attached sources every shipping engine has. A real
+   cross-fade was measured in the browser:
+   [evidence](evidence/2026-09-06-audio/). What is still missing is a person
+   actually hearing it on a real game with licensed assets, and native/Android
+   hosts remain silent.
 
 Android implementation, rebuilding and device validation follow Web and are not
 exit conditions for this slice. Native parity is also deferred, not implied.
@@ -66,7 +71,7 @@ Stable IDs are retained for existing references, not a competing priority order.
 | ID | Capability | Current gap / smallest useful scope |
 |---|---|---|
 | 2, 3 | 2D transforms and painter order | Host wiring pending: positive finite scale, centered radians, signed i32 layer then UTF-8 ID byte order. See [contract](work-packages/2026-09-06-2d-transform-layer.md) and [independent colliders](decisions/0034-independent-2d-colliders.md). No angular physics. |
-| 1 | Audio | Not implemented. Deterministic intent in core; decoding/device playback in host. Define handles, volume, loop, completion, reload and disabled-system behavior first. |
+| 1 | Audio | **Core and Web host delivered**, including bus volumes, pause/resume and entity-attached sources. Remaining: native and Android playback, and the reserved category rules (`max_concurrent`, `on_limit`, `ducking`, `priority`, `exclusive_group`), which today fail the load rather than doing nothing. |
 | 4 | Timers/tween | Games currently count frames. Consider fixed-frame mechanisms from concrete needs; no coroutine framework. |
 | 5 | Scene switching | Only main_scene loads. Define runtime state ownership and save relationships first. |
 | 6 | Physics queries | Contacts exist, raycast/region queries do not. Return deterministically ordered hits. |

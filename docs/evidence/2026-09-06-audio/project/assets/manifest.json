@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "assets": [
+    { "id": "audio://click", "source": "assets/audio/click.wav", "kind": "audio", "bundle": "content" },
+    { "id": "audio://lobby", "source": "assets/audio/lobby.wav", "kind": "audio", "bundle": "content" },
+    { "id": "audio://game", "source": "assets/audio/game.wav", "kind": "audio", "bundle": "content" }
+  ]
+}

@@ -85,7 +85,7 @@ Parsing and unknown-field failures use `SCENE_INVALID`; blank and duplicate ids 
 
 JSON for shared Vec2/Vec3 values also rejects extra fields, including an InputFrame pointer position. Web/mobile numeric pointer FFI parameters are unchanged. Opaque save/observation game data and manually read Luau tables are outside this serde strict-field-checking scope.
 
-`asset inspect` lists static `sprite` / `mesh3d` / `animation` asset references in the main scene and compares them with the game-owned `asset_manifest` ids, project-relative sources, companion files, and bundle. It is an authoring-time advisory report. For handoff, CI, or release, use the aggregate `verify` entry point, whose assets step already runs `asset inspect --strict`. Use standalone `asset inspect --strict` for focused asset diagnosis or publication verification; it turns `ASSET_MANIFEST_MISSING`, `ASSET_REFERENCE_MISSING`, `ASSET_SOURCE_MISSING`, and `ASSET_BUNDLE_NOT_DECLARED` into `ok=false`. The manifest version is currently 1, and supported kinds are `texture2d`, `mesh3d`, `spine`, and `effekseer`; an unknown version, typo, or unsafe path is not silently treated as usable. For one asset's authoring path, JSON pointer, references, active generation, publication freshness, and next actions, use `asset describe --id <id>`; see the [asset workflow contract](asset-workflow.md). It does not pretend to discover assets selected dynamically by Luau and does not replace the host's download, decoding, or GPU-resource responsibilities. If there are no scene asset references, the absence of a manifest is not an error.
+`asset inspect` lists static `sprite` / `mesh3d` / `animation` asset references in the main scene and compares them with the game-owned `asset_manifest` ids, project-relative sources, companion files, and bundle. It is an authoring-time advisory report. For handoff, CI, or release, use the aggregate `verify` entry point, whose assets step already runs `asset inspect --strict`. Use standalone `asset inspect --strict` for focused asset diagnosis or publication verification; it turns `ASSET_MANIFEST_MISSING`, `ASSET_REFERENCE_MISSING`, `ASSET_SOURCE_MISSING`, and `ASSET_BUNDLE_NOT_DECLARED` into `ok=false`. The manifest version is currently 1, and supported kinds are `texture2d`, `mesh3d`, `spine`, `effekseer`, and `audio`; an unknown version, typo, or unsafe path is not silently treated as usable. For one asset's authoring path, JSON pointer, references, active generation, publication freshness, and next actions, use `asset describe --id <id>`; see the [asset workflow contract](asset-workflow.md). It does not pretend to discover assets selected dynamically by Luau and does not replace the host's download, decoding, or GPU-resource responsibilities. If there are no scene asset references, the absence of a manifest is not an error.
 
 For replayable game randomness, use `api.random.nextFloat()` or `api.random.nextInt(min, max)`. The CLI `--seed` becomes that runtime's Luau random seed; the same seed, input order, and random-call order are required for the same result. It is not a secure random source and must not be used for payments or secrets.
 
@@ -116,6 +116,38 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json 
 ```
 
 `verify` runs `check --types`, the strict `asset inspect --strict` step, the UI `layout` gate, and `test`, then returns one verdict plus each step's result. For a project with UI, the `layout` gate uses `ui preview --strict`; without published UI it is `not_applicable`. UI and save are applicable only when required by `GAME_PLAN`; do not create them just for a gate. A failed step does not stop the remaining steps, and each step includes a standalone `command`. The sections below describe individual gates when a focused query is useful; do not add a duplicate strict asset gate when `verify` is the selected entry point.
+
+### The gate order is a default, not a law
+
+The order above is what runs when the project says nothing. A project can
+declare its own in `project.unone.json`:
+
+```json
+"verify": {
+  "steps": [
+    "types",
+    { "step": "assets", "required": false },
+    "tests"
+  ]
+}
+```
+
+- Order is the declared order, and only the declared gates run.
+- `required: false` makes a gate **advisory**: it still runs, its diagnostics
+  are still reported in full, its status is `advisory` instead of `failed`, and
+  the run's effect line names it — but it does not fail the run. Use it for a
+  gate that is genuinely not ready yet (assets still being acquired), not to get
+  a green line. A gate people learn to read past is worse than one that says
+  out loud that it was let through.
+- A gate cannot go missing quietly: an empty `steps`, an unknown id and a
+  duplicate are each an error (`VERIFY_STEPS_EMPTY`, `VERIFY_STEP_UNKNOWN`,
+  `VERIFY_STEP_DUPLICATED`).
+- The report says where the order came from in `step_source`: `default` or
+  `project`.
+
+`{ "step": ..., "command": ... }` is the reserved shape for a project-owned
+command as a gate. It is **not implemented in this build**, and declaring it
+fails with `VERIFY_STEP_NOT_IMPLEMENTED` rather than silently never running.
 
 ```powershell
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check --types
@@ -231,6 +263,90 @@ Tests can use `{"animation": {"entity": "reel-3", "equals": {...}}}` and `{"effe
 To see them play, use `web/presentation/`: first run `scripts/build-web-live.ps1`, start `python -m http.server 8001` from `D:/Projects`, and open `http://127.0.0.1:8001/Unone/web/presentation/?project=/Unone_Games/slot-machine/`. It plays the same snapshot with spine-webgl and Effekseer for WebGL; native preview and the Android host currently do not render them. Vendored runtime and licensing requirements are documented in `web/vendor/README.md` (Spine requires a license; Effekseer is MIT).
 
 The engine does not evaluate skeletons, blend animations, report whether an animation has completed, simulate particles, or contain Spine/Effekseer code. If the game needs to settle only after an animation finishes, it must calculate that from fixed frames itself.
+
+## 3.6 Sound
+
+`audio` is on by default and has status `host_required`: the engine decides what
+should be heard and publishes it, `web/presentation` decodes and mixes it. The
+native preview and the Android host are silent, so a green Web run is not
+cross-platform audio evidence.
+
+```powershell
+cargo run -p unone-cli -- --json api describe audio.loop
+```
+
+One-shots and loops are published differently, and the difference matters:
+
+- `api.audio.play(asset, options?)` fires a one-shot. It appears in
+  `world.audio_events` for exactly one frame and is gone from the next, like a
+  contact. The engine never learns when the clip finished — that would need a
+  decoder or a duration constant it cannot verify — so nothing reports back.
+- `api.audio.loop(asset, options?)` returns a handle and appears in
+  `world.audio_loops` until `api.audio.stop(handle)` or `api.audio.stopAll()`,
+  like an effect. At most 64 loops may be live at once.
+
+`options` takes `volume` (0–1), `speed` (>0), `category`, and `x`/`y` for a
+positional sound the host may pan on.
+
+### Categories are the part the engine owns
+
+The engine does not name `bgm` or `sfx`; the taxonomy is the game's. What it
+owns is what happens **between** sounds, declared in `project.unone.json`:
+
+```json
+"audio": {
+  "categories": {
+    "bgm": { "exclusive": true, "fade_in_frames": 30, "fade_out_frames": 30 }
+  }
+}
+```
+
+`exclusive` means starting a loop in that category begins stopping the ones
+already in it. A fade is counted in frames by the engine, so a stopped loop
+stays in `world.audio_loops` marked `fading_out` for exactly
+`fade_out_frames` more frames and then leaves — the same frame in every replay.
+Each loop publishes `phase`, `phase_started_frame` and `phase_frames`, so a host
+reads the gain off the frame it is drawing instead of scheduling a ramp.
+
+`max_concurrent`, `on_limit`, `ducking`, `priority` and `exclusive_group` are
+**reserved names this build does not implement**. Declaring one fails the load
+with `AUDIO_RULE_NOT_IMPLEMENTED` rather than doing nothing quietly.
+
+The asset manifest takes an `audio` kind. Tests assert sound without listening:
+
+```json
+{"audio": {"events": [...]}}
+{"audio": {"loops": [...]}}
+```
+
+A game that never calls `api.audio` observes exactly what it did before these
+fields existed — both are omitted from the snapshot, so existing digests are
+unchanged.
+
+### The parts every engine has
+
+- **Bus volumes.** A category is also a mixer group: it has a `volume`, and
+  `api.audio.setCategoryVolume(name, v)` / `api.audio.setMasterVolume(v)` move it
+  at runtime — the two sliders on a settings screen. The host multiplies source
+  volume by category level by master level. The mix is published as `audio_mix`
+  **only once it leaves its declared default**, so a game that never touches it
+  observes what it always did.
+- **Pause.** `api.audio.pause(handle)` / `resume` / `pauseAll` / `resumeAll`. A
+  paused loop is still there and still holds its place in a fade: the deadline
+  moves with it, so leaving a pause menu continues from exactly where it stopped.
+  Pause is not stop; a paused loop still counts against the 64 and still needs a
+  stop.
+- **A sound attached to an entity.** Pass `entity` in the options and the engine
+  keeps the source on that entity's position every frame, and stops it when the
+  entity is gone — leaving it playing where the entity used to be is the
+  behaviour nobody wants and everybody has to write around.
+
+There is deliberately no mute switch: remembering the volume you had before is
+game state, not engine state.
+
+The engine does not decode, mix, resample, apply attenuation, or know a clip's
+length, and it never reports whether a sound is audible: a muted player is still
+in the same game state.
 
 ## 3.8 Understand the screen (when the game plan requires UI)
 

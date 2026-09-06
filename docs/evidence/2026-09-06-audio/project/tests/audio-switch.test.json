@@ -1,0 +1,67 @@
+{
+  "name": "an exclusive switch stops the previous track and both fades are frame-exact",
+  "frames": 180,
+  "seed": 42,
+  "assertions": [
+    {
+      "audio": {
+        "events": [
+          {
+            "kind": "play",
+            "handle": "audio-5",
+            "asset": "audio://click",
+            "category": "sfx",
+            "volume": 1.0,
+            "speed": 1.0,
+            "loop": false,
+            "frame": 179
+          },
+          {
+            "kind": "stop",
+            "handle": "audio-1",
+            "asset": "audio://lobby",
+            "category": "bgm",
+            "volume": 0.6,
+            "speed": 1.0,
+            "loop": true,
+            "frame": 179
+          },
+          {
+            "kind": "play",
+            "handle": "audio-6",
+            "asset": "audio://game",
+            "category": "bgm",
+            "volume": 0.6,
+            "speed": 1.0,
+            "loop": true,
+            "frame": 179
+          }
+        ],
+        "loops": [
+          {
+            "handle": "audio-1",
+            "asset": "audio://lobby",
+            "category": "bgm",
+            "volume": 0.6,
+            "speed": 1.0,
+            "started_frame": 0,
+            "phase": "fading_out",
+            "phase_started_frame": 179,
+            "phase_frames": 60
+          },
+          {
+            "handle": "audio-6",
+            "asset": "audio://game",
+            "category": "bgm",
+            "volume": 0.6,
+            "speed": 1.0,
+            "started_frame": 179,
+            "phase": "fading_in",
+            "phase_started_frame": 179,
+            "phase_frames": 30
+          }
+        ]
+      }
+    }
+  ]
+}

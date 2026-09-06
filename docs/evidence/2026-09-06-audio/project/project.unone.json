@@ -1,0 +1,24 @@
+{
+  "asset_manifest": "assets/manifest.json",
+  "audio": {
+    "categories": {
+      "bgm": {
+        "exclusive": true,
+        "fade_in_frames": 30,
+        "fade_out_frames": 60
+      },
+      "sfx": {}
+    }
+  },
+  "bundle_manifest": "bundles/manifest.json",
+  "entry_script": "scripts/main.luau",
+  "name": "AudioEvidence",
+  "systems": {
+    "camera3d": false,
+    "physics2d": false
+  },
+  "test_files": [
+    "tests/audio-start.test.json",
+    "tests/audio-switch.test.json"
+  ]
+}

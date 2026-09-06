@@ -1,0 +1,24 @@
+{
+  "name": "start plays a one-shot and fades a looping track in",
+  "frames": 1,
+  "seed": 42,
+  "assertions": [
+    {
+      "audio": {
+        "loops": [
+          {
+            "handle": "audio-1",
+            "asset": "audio://lobby",
+            "category": "bgm",
+            "volume": 0.6,
+            "speed": 1.0,
+            "started_frame": 0,
+            "phase": "fading_in",
+            "phase_started_frame": 0,
+            "phase_frames": 30
+          }
+        ]
+      }
+    }
+  ]
+}
