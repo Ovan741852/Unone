@@ -139,7 +139,7 @@ impl DeterministicRng {
     fn next_int(&mut self, min: i64, max: i64) -> Result<i64, String> {
         if min > max {
             return Err(format!(
-                "random.nextInt 的 min ({min}) 不能大於 max ({max})。"
+                "random.nextInt min ({min}) must not exceed max ({max})."
             ));
         }
         let range = (max as i128 - min as i128 + 1) as u128;
@@ -192,7 +192,7 @@ impl EngineRuntime {
             Err(err) => {
                 return EngineResult::failure(Diagnostic::error(
                     "SCRIPT_READ_FAILED",
-                    "無法讀取入口腳本",
+                    "Unable to read entry script",
                     format!("{}：{}", paths.entry_script.display(), err),
                 ));
             }
@@ -211,8 +211,8 @@ impl EngineRuntime {
             _ => {
                 return EngineResult::failure(Diagnostic::error(
                     "SCRIPT_ENTRY_INVALID",
-                    "入口腳本必須回傳 Game table",
-                    "入口腳本最後必須 return 一個包含 start 與 update function 的 table。",
+                    "Entry script must return a Game table",
+                    "The entry script must return a table containing start and update functions.",
                 ));
             }
         };
@@ -223,9 +223,9 @@ impl EngineRuntime {
                 Ok(_) => {
                     return EngineResult::failure(Diagnostic::error(
                         "SCRIPT_ENTRYPOINT_INVALID",
-                        format!("Game.{name} 不是 function"),
+                        format!("Game.{name} is not a function"),
                         format!(
-                            "引擎需要 Game.{name}(api{}) 才能執行專案。",
+                            "The engine requires Game.{name}(api{}) to run the project.",
                             if name == "update" { ", dt" } else { "" }
                         ),
                     ));
@@ -250,8 +250,8 @@ impl EngineRuntime {
         if !strict_mode {
             result.diagnostics.push(Diagnostic::warning(
                 "STRICT_MODE_NOT_ENABLED",
-                "入口腳本未啟用 strict mode",
-                "目前只完成 Luau 語法與 Engine entrypoint contract 檢查；加入 --!strict 才能讓型別分析更早回報問題。",
+                "Entry script does not enable strict mode",
+                "Only Luau syntax and the Engine entrypoint contract are checked currently; add --!strict so type analysis can report problems earlier.",
             ));
         }
         result
@@ -447,14 +447,14 @@ impl EngineRuntime {
         let api = build_api(&lua, &api_state, &systems).map_err(|err| {
             Box::new(Diagnostic::error(
                 "ENGINE_API_BIND_FAILED",
-                "無法建立 Luau Engine API",
+                "Unable to create the Luau Engine API",
                 err.to_string(),
             ))
         })?;
         let placeholder = lua.create_function(|_, _: ()| Ok(())).map_err(|err| {
             Box::new(Diagnostic::error(
                 "ENGINE_INIT_FAILED",
-                "無法初始化 Luau runtime",
+                "Unable to initialize the Luau runtime",
                 err.to_string(),
             ))
         })?;
@@ -489,8 +489,8 @@ impl EngineRuntime {
         if !aspect.is_finite() || aspect <= 0.0 {
             return Err(Box::new(Diagnostic::error(
                 "VIEWPORT_ASPECT_INVALID",
-                "viewport aspect 必須是大於 0 的有限數字",
-                format!("host 傳入了 {aspect}；引擎不會用它推算 UI 版面。"),
+                "viewport aspect must be a finite number greater than 0",
+                format!("The host provided {aspect}; the engine will not infer UI layout from it."),
             )));
         }
         *self.viewport_aspect.borrow_mut() = aspect;
@@ -620,8 +620,8 @@ impl EngineRuntime {
             Err(error) => {
                 return EngineResult::failure(Diagnostic::error(
                     "OBSERVATION_SERIALIZATION_FAILED",
-                    "無法序列化 observation snapshot",
-                    format!("WorldSnapshot 無法序列化，不能計算 observation digest：{error}"),
+                    "Unable to serialize observation snapshot",
+                    format!("WorldSnapshot could not be serialized, so the observation digest cannot be computed: {error}"),
                 ));
             }
         };
@@ -699,8 +699,8 @@ impl EngineRuntime {
         if paths.test_files.is_empty() {
             return EngineResult::failure(Diagnostic::error(
                 "TESTS_NOT_CONFIGURED",
-                "專案沒有設定測試檔",
-                "請在 project.unone.json 的 test_files 陣列加入 .test.json 檔案。",
+                "The project has no test files configured",
+                "Add .test.json files to the test_files array in project.unone.json.",
             ));
         }
         let mut cases = Vec::new();
@@ -710,7 +710,7 @@ impl EngineRuntime {
                 Err(err) => {
                     return EngineResult::failure(Diagnostic::error(
                         "TEST_READ_FAILED",
-                        "無法讀取測試檔",
+                        "Unable to read test file",
                         format!("{}：{}", test_path.display(), err),
                     ));
                 }
@@ -720,7 +720,7 @@ impl EngineRuntime {
                 Err(err) => {
                     return EngineResult::failure(Diagnostic::error(
                         "TEST_INVALID",
-                        "測試檔不是有效 JSON",
+                        "Test file is not valid JSON",
                         format!("{}：{}", test_path.display(), err),
                     ));
                 }
@@ -729,9 +729,9 @@ impl EngineRuntime {
                 if let Err(error) = assertion.validate() {
                     return EngineResult::failure(Diagnostic::error(
                         "TEST_ASSERTION_INVALID",
-                        "測試 assertion 不符合唯一目標 contract",
+                        "Test assertion does not satisfy the single-target contract",
                         format!(
-                            "{} 的 assertions[{index}]：{error}。請依 package 內 test.schema.json 修正。",
+                            "{} assertions[{index}]: {error}. Fix it according to test.schema.json in the package.",
                             test_path.display()
                         ),
                     ));
@@ -758,8 +758,8 @@ impl EngineRuntime {
                         run.diagnostics.into_iter().next().unwrap_or_else(|| {
                             Diagnostic::error(
                                 "TEST_RUN_FAILED",
-                                "測試執行失敗",
-                                "測試 runtime 沒有產生結果。",
+                                "Test execution failed",
+                                "The test runtime produced no result.",
                             )
                         }),
                     );
@@ -803,7 +803,7 @@ impl EngineRuntime {
             None => fs::read_to_string(&self.paths.entry_script).map_err(|err| {
                 Box::new(Diagnostic::error(
                     "SCRIPT_READ_FAILED",
-                    "無法讀取入口腳本",
+                    "Unable to read entry script",
                     format!("{}：{}", self.paths.entry_script.display(), err),
                 ))
             })?,
@@ -819,8 +819,8 @@ impl EngineRuntime {
             _ => {
                 return Err(Box::new(Diagnostic::error(
                     "SCRIPT_ENTRY_INVALID",
-                    "入口腳本必須回傳 Game table",
-                    "入口腳本最後必須 return 一個包含 start 與 update function 的 table。",
+                    "Entry script must return a Game table",
+                    "The entry script must return a table containing start and update functions.",
                 )));
             }
         };
@@ -862,14 +862,14 @@ impl EngineRuntime {
         let metadata = fs::metadata(&self.paths.entry_script).map_err(|err| {
             Box::new(Diagnostic::error(
                 "SCRIPT_METADATA_FAILED",
-                "無法取得入口腳本狀態",
+                "Unable to get entry script metadata",
                 format!("{}：{}", self.paths.entry_script.display(), err),
             ))
         })?;
         let modified = metadata.modified().map_err(|err| {
             Box::new(Diagnostic::error(
                 "SCRIPT_METADATA_FAILED",
-                "無法取得入口腳本修改時間",
+                "Unable to get entry script modification time",
                 format!("{}：{}", self.paths.entry_script.display(), err),
             ))
         })?;
@@ -913,7 +913,7 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
             let entity = world
                 .entities
                 .get(&id)
-                .ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' 不存在。")))?;
+                .ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' does not exist.")))?;
             let table = lua.create_table()?;
             table.set("x", entity.transform.x)?;
             table.set("y", entity.transform.y)?;
@@ -931,7 +931,7 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
             let entity = world
                 .entities
                 .get_mut(&id)
-                .ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' 不存在。")))?;
+                .ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' does not exist.")))?;
             entity.transform = Vec2 { x, y };
             Ok(())
         })?,
@@ -1452,7 +1452,7 @@ fn disable_if_off(
         .collect();
     for name in names {
         let message = format!(
-            "SYSTEM_DISABLED: system '{system}' 已在 project.unone.json 停用，因此 api.{name} 無法使用。要使用它請執行 game systems set --id {system} --enabled true。"
+            "SYSTEM_DISABLED: system '{system}' is disabled in project.unone.json, so api.{name} is unavailable. To use it, run game systems set --id {system} --enabled true."
         );
         disabled.set(
             name,
@@ -1608,17 +1608,43 @@ fn json_to_lua(lua: &Lua, value: serde_json::Value) -> mlua::Result<Value> {
     }
 }
 
+/// Strip Windows' extended-length prefix before handing a path to another tool.
+///
+/// `fs::canonicalize` returns `\\\\?\\D:\\...` on Windows, and luau-analyze cannot
+/// open that form. Measured against the same file carrying a deliberate type
+/// error, the plain path exits 1 and reports the TypeError while the prefixed
+/// path exits 0 and says nothing. Since exit 0 means "nothing found", the whole
+/// type gate silently passed for every project.
+fn analyzer_argument(path: &Path) -> String {
+    let text = path.display().to_string();
+    if let Some(rest) = text.strip_prefix("\\\\?\\UNC\\") {
+        return format!("\\\\{rest}");
+    }
+    text.strip_prefix("\\\\?\\")
+        .map(str::to_string)
+        .unwrap_or(text)
+}
+
 fn run_luau_analyzer(paths: &ProjectPaths) -> Result<TypeCheckReport, Box<Diagnostic>> {
-    let analyzer = analyzer_path();
-    let output = Command::new(&analyzer)
+    run_luau_analyzer_with(&analyzer_path(), &paths.entry_script)
+}
+
+/// The analyzer call itself, with the tool and script named explicitly so a test
+/// can prove the gate still rejects a bad script.
+fn run_luau_analyzer_with(
+    analyzer: &Path,
+    entry_script: &Path,
+) -> Result<TypeCheckReport, Box<Diagnostic>> {
+    let script_argument = analyzer_argument(entry_script);
+    let output = Command::new(analyzer)
         .arg("--formatter=gnu")
-        .arg(&paths.entry_script)
+        .arg(&script_argument)
         .output()
         .map_err(|err| {
             let mut diagnostic = Diagnostic::error(
                 "LUAU_ANALYZER_NOT_FOUND",
-                "找不到 Luau static analyzer",
-                "`game check --types` 需要官方 luau-analyze；目前 runtime 只內嵌 Luau 執行器，不會假裝執行完整型別分析。",
+                "Luau static analyzer not found",
+                "`game check --types` requires the official luau-analyze; the runtime embeds only the Luau interpreter and does not pretend to run full type analysis.",
             );
             diagnostic.facts = serde_json::json!({
                 "requested_tool": analyzer.display().to_string(),
@@ -1627,7 +1653,7 @@ fn run_luau_analyzer(paths: &ProjectPaths) -> Result<TypeCheckReport, Box<Diagno
             });
             diagnostic.suggested_actions = vec![ActionSuggestion {
                 action: "install_luau_analyzer".to_string(),
-                description: "安裝官方 luau-analyze，或設定 UNONE_LUAU_ANALYZER 指向可執行檔。".to_string(),
+                description: "Install the official luau-analyze, or set UNONE_LUAU_ANALYZER to the executable path.".to_string(),
                 command: Some("$env:UNONE_LUAU_ANALYZER = 'D:/tools/luau-analyze.exe'".to_string()),
             }];
             Box::new(diagnostic)
@@ -1640,29 +1666,77 @@ fn run_luau_analyzer(paths: &ProjectPaths) -> Result<TypeCheckReport, Box<Diagno
         .collect::<Vec<_>>()
         .join("\n");
     let tool = analyzer.display().to_string();
-    let files = vec![paths.entry_script.display().to_string()];
-    if output.status.success() {
+    let files = vec![script_argument.clone()];
+    classify_analyzer_result(
+        output.status.success(),
+        output.status.code(),
+        combined,
+        tool,
+        files,
+    )
+}
+
+/// Decide what a finished analyzer run means.
+///
+/// The exit code alone cannot say this. `--formatter=gnu` exists so that a real
+/// type error is reported as text, so a run that failed while saying nothing did
+/// not find a type error — it did not get far enough to look. Reporting that as
+/// a type error sends the author to rewrite a script that is fine, which is what
+/// an analyzer killed by an antivirus scan or a file lock looks like from here.
+fn classify_analyzer_result(
+    success: bool,
+    exit_code: Option<i32>,
+    output: String,
+    tool: String,
+    files: Vec<String>,
+) -> Result<TypeCheckReport, Box<Diagnostic>> {
+    if success {
         return Ok(TypeCheckReport {
             tool,
             files,
             passed: true,
-            output: combined,
+            output,
         });
+    }
+    if output.is_empty() {
+        let mut diagnostic = Diagnostic::error(
+            "LUAU_ANALYZER_FAILED",
+            "Luau static analyzer did not complete",
+            "The analyzer exited with a failure but reported nothing, so it never got as far as              checking types. This is a tool or environment problem, not a problem with the game              script; the script has not been type checked either way.",
+        );
+        diagnostic.facts = serde_json::json!({
+            "tool": tool,
+            "exit_code": exit_code,
+            "files": files,
+            "output": "",
+        });
+        diagnostic.likely_causes = vec![
+            "an antivirus or endpoint agent stopped the analyzer process".to_string(),
+            "the analyzer executable or the script was locked by another process".to_string(),
+            "the analyzer crashed before producing output".to_string(),
+        ];
+        diagnostic.suggested_actions = vec![ActionSuggestion {
+            action: "retry_type_check".to_string(),
+            description: "Run the type check again. If it keeps failing with no output, check                           antivirus and file locks on the analyzer and the entry script."
+                .to_string(),
+            command: Some("game check --types --json".to_string()),
+        }];
+        return Err(Box::new(diagnostic));
     }
     let mut diagnostic = Diagnostic::error(
         "LUAU_TYPECHECK_FAILED",
-        "Luau static analyzer 發現型別或 lint 問題",
-        "入口腳本通過 runtime contract，但沒有通過官方 luau-analyze；先修正 typecheck output，再進行 hot reload 或執行測試。",
+        "Luau static analyzer found type or lint issues",
+        "The entry script passes the runtime contract but not official luau-analyze; fix the typecheck output before hot reload or running tests.",
     );
     diagnostic.facts = serde_json::json!({
         "tool": tool,
-        "exit_code": output.status.code(),
+        "exit_code": exit_code,
         "files": files,
-        "output": combined,
+        "output": output,
     });
     diagnostic.suggested_actions = vec![ActionSuggestion {
         action: "fix_typecheck".to_string(),
-        description: "依 output 的檔案、行號與訊息修正 Luau 型別或 lint 問題。".to_string(),
+        description: "Fix Luau type or lint issues using the files, line numbers, and messages in the output.".to_string(),
         command: Some("game check --types --json".to_string()),
     }];
     Err(Box::new(diagnostic))
@@ -1696,7 +1770,7 @@ fn analyzer_path() -> PathBuf {
 fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
     let mut diagnostic = Diagnostic::error(
         "LUAU_RUNTIME_ERROR",
-        "Luau 腳本無法載入或執行",
+        "Luau script could not be loaded or executed",
         message.clone(),
     );
     diagnostic.facts = serde_json::json!({
@@ -1710,18 +1784,18 @@ fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
         column: None,
     });
     diagnostic.likely_causes = vec![
-        "入口腳本的語法或 Engine API 呼叫不符合目前契約".to_string(),
-        "腳本在 runtime 使用了不存在的 Entity 或欄位".to_string(),
+        "The entry script syntax or Engine API calls do not satisfy the current contract".to_string(),
+        "The script uses a missing Entity or field at runtime".to_string(),
     ];
     diagnostic.suggested_actions = vec![
         ActionSuggestion {
             action: "check_script".to_string(),
-            description: "先檢查入口腳本 contract。".to_string(),
+            description: "Check the entry script contract first.".to_string(),
             command: Some("game check --json".to_string()),
         },
         ActionSuggestion {
             action: "inspect_project".to_string(),
-            description: "確認 scene 與 Entity id。".to_string(),
+            description: "Confirm the scene and Entity ids.".to_string(),
             command: Some("game project inspect --json".to_string()),
         },
     ];
@@ -1741,12 +1815,12 @@ fn evaluate_assertion(
         let actual = world
             .ui
             .as_ref()
-            .ok_or_else(|| "UI tree 不存在。".to_string())?;
+            .ok_or_else(|| "UI tree does not exist.".to_string())?;
         let expected = UiTree::from_json(ui.equals.clone())
-            .map_err(|error| format!("UI assertion 不是有效的 UI tree：{error}"))?;
+            .map_err(|error| format!("UI assertion is not a valid UI tree: {error}"))?;
         if actual != &expected {
             return Err(format!(
-                "UI tree 不等於預期；actual={} expected={}",
+                "UI tree does not equal the expected value; actual={} expected={}",
                 serde_json::to_string(actual).unwrap_or_else(|_| "<unserializable>".to_string()),
                 serde_json::to_string(&expected).unwrap_or_else(|_| "<unserializable>".to_string())
             ));
@@ -1757,12 +1831,12 @@ fn evaluate_assertion(
         let entity = world
             .entities
             .get(&animation.entity)
-            .ok_or_else(|| format!("Entity '{}' 不存在。", animation.entity))?;
+            .ok_or_else(|| format!("Entity '{}' does not exist.", animation.entity))?;
         let actual = serde_json::to_value(&entity.animation)
-            .map_err(|error| format!("無法序列化 animation 狀態：{error}"))?;
+            .map_err(|error| format!("Unable to serialize animation state: {error}"))?;
         if actual != animation.equals {
             return Err(format!(
-                "Entity '{}' 的 animation = {actual}，不等於預期 {}。",
+                "Entity '{}' animation = {actual}, does not equal expected {}.",
                 animation.entity, animation.equals
             ));
         }
@@ -1770,10 +1844,10 @@ fn evaluate_assertion(
     }
     if let Some(effects) = &assertion.effects {
         let actual = serde_json::to_value(&world.effects)
-            .map_err(|error| format!("無法序列化 effects：{error}"))?;
+            .map_err(|error| format!("Unable to serialize effects: {error}"))?;
         if actual != effects.equals {
             return Err(format!(
-                "effects = {actual}，不等於預期 {}。",
+                "effects = {actual}, does not equal expected {}.",
                 effects.equals
             ));
         }
@@ -1783,10 +1857,10 @@ fn evaluate_assertion(
         let actual = world
             .observations
             .get(&observation.key)
-            .ok_or_else(|| format!("Observation '{}' 不存在。", observation.key))?;
+            .ok_or_else(|| format!("Observation '{}' does not exist.", observation.key))?;
         if actual != &observation.equals {
             return Err(format!(
-                "Observation '{}' = {}，不等於預期 {}。",
+                "Observation '{}' = {}, does not equal expected {}.",
                 observation.key, actual, observation.equals
             ));
         }
@@ -1795,34 +1869,34 @@ fn evaluate_assertion(
     let entity_id = assertion
         .entity
         .as_deref()
-        .ok_or_else(|| "Assertion 必須提供 entity/field 或 observation。".to_string())?;
+        .ok_or_else(|| "Assertion must provide entity/field or observation.".to_string())?;
     let field = assertion
         .field
         .as_deref()
-        .ok_or_else(|| "Entity assertion 必須提供 field。".to_string())?;
+        .ok_or_else(|| "Entity assertion must provide field.".to_string())?;
     let entity = world
         .entities
         .get(entity_id)
-        .ok_or_else(|| format!("Entity '{}' 不存在。", entity_id))?;
+        .ok_or_else(|| format!("Entity '{}' does not exist.", entity_id))?;
     let actual = match field {
         "transform.x" => entity.transform.x,
         "transform.y" => entity.transform.y,
         field => {
             return Err(format!(
-                "不支援的 assertion field '{field}'；目前支援 transform.x 與 transform.y。"
+                "Unsupported assertion field '{field}'; currently supported fields are transform.x and transform.y."
             ));
         }
     };
     if let Some(expected) = assertion.equals
         && (actual - expected).abs() > 0.000_001
     {
-        return Err(format!("{} {} 不等於預期 {}。", entity_id, field, expected));
+        return Err(format!("{} {} does not equal expected {}.", entity_id, field, expected));
     }
     if let Some(expected) = assertion.greater_than
         && actual <= expected
     {
         return Err(format!(
-            "{} {} = {}，沒有大於 {}。",
+            "{} {} = {} is not greater than {}.",
             entity_id, field, actual, expected
         ));
     }
@@ -1830,7 +1904,7 @@ fn evaluate_assertion(
         && actual >= expected
     {
         return Err(format!(
-            "{} {} = {}，沒有小於 {}。",
+            "{} {} = {} is not less than {}.",
             entity_id, field, actual, expected
         ));
     }
@@ -2076,6 +2150,107 @@ return Game
                 .unwrap_err()
                 .code,
             "VIEWPORT_ASPECT_INVALID"
+        );
+    }
+
+    /// The type gate silently passed for every project because the engine handed
+    /// luau-analyze a canonicalized `\\\\?\\` path it cannot open, and a tool that
+    /// opens nothing exits 0 with nothing to say. Nothing caught it, because no
+    /// test ever proved the gate could still fail.
+    #[test]
+    fn the_type_gate_still_rejects_a_script_with_a_type_error() {
+        let analyzer = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../.toolcache/luau-0.734/luau-analyze.exe");
+        if !analyzer.is_file() {
+            eprintln!("skipped: no analyzer at {}", analyzer.display());
+            return;
+        }
+        let dir = tempdir().unwrap();
+        let bad = dir.path().join("bad.luau");
+        fs::write(&bad, "--!strict\nlocal x: number = \"text\"\nreturn x\n").unwrap();
+        // Canonicalize on purpose: this is the shape the engine really passes.
+        let canonical = fs::canonicalize(&bad).unwrap();
+        let error = super::run_luau_analyzer_with(&analyzer, &canonical)
+            .expect_err("a script with a type error must not pass the gate");
+        assert_eq!(error.code, "LUAU_TYPECHECK_FAILED", "{error:?}");
+        assert!(
+            error.facts["output"]
+                .as_str()
+                .is_some_and(|output| output.contains("TypeError")),
+            "the failure must carry the analyzer own message: {:?}",
+            error.facts
+        );
+
+        let good = dir.path().join("good.luau");
+        fs::write(&good, "--!strict\nlocal x: number = 1\nreturn x\n").unwrap();
+        let report =
+            super::run_luau_analyzer_with(&analyzer, &fs::canonicalize(&good).unwrap()).unwrap();
+        assert!(report.passed);
+    }
+
+    #[test]
+    fn the_analyzer_argument_drops_the_extended_length_prefix() {
+        let prefixed = "\\\\?\\D:\\game\\main.luau";
+        assert_eq!(
+            super::analyzer_argument(std::path::Path::new(prefixed)),
+            "D:\\game\\main.luau"
+        );
+
+        let unc = "\\\\?\\UNC\\server\\share\\main.luau";
+        assert_eq!(
+            super::analyzer_argument(std::path::Path::new(unc)),
+            "\\\\server\\share\\main.luau"
+        );
+
+        assert_eq!(
+            super::analyzer_argument(std::path::Path::new("scripts/main.luau")),
+            "scripts/main.luau"
+        );
+    }
+
+    /// Measured against the real analyzer: a good script exits 0 with no output,
+    /// a genuine type error exits 1 carrying the TypeError text. So a failing
+    /// exit with nothing to say is the tool dying, never a type error, and the
+    /// author must not be told to fix a script that was never checked.
+    #[test]
+    fn an_analyzer_that_fails_silently_is_not_reported_as_a_type_error() {
+        let tool = "luau-analyze".to_string();
+        let files = vec!["scripts/main.luau".to_string()];
+
+        let passed = super::classify_analyzer_result(
+            true,
+            Some(0),
+            String::new(),
+            tool.clone(),
+            files.clone(),
+        )
+        .expect("a successful run passes");
+        assert!(passed.passed);
+
+        let type_error = super::classify_analyzer_result(
+            false,
+            Some(1),
+            "main.luau:2.19-2.32: TypeError: Expected 'number', but got 'string'".to_string(),
+            tool.clone(),
+            files.clone(),
+        )
+        .expect_err("a reported type error still fails");
+        assert_eq!(type_error.code, "LUAU_TYPECHECK_FAILED");
+
+        let tool_failure =
+            super::classify_analyzer_result(false, Some(1), String::new(), tool, files)
+                .expect_err("a silent failure still fails the gate");
+        assert_eq!(
+            tool_failure.code, "LUAU_ANALYZER_FAILED",
+            "a silent analyzer failure must not be blamed on the script"
+        );
+        assert!(
+            !tool_failure.suggested_actions.is_empty(),
+            "a tool failure must say what to do next"
+        );
+        assert!(
+            !tool_failure.likely_causes.is_empty(),
+            "a tool failure must name what tends to cause it"
         );
     }
 
