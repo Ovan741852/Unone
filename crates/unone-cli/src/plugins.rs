@@ -342,6 +342,9 @@ fn search_roots(project: &Path) -> Vec<PathBuf> {
     if let Some(paths) = env::var_os("UNONE_PLUGIN_PATHS") {
         roots.extend(env::split_paths(&paths));
     }
+    if let Ok(current_dir) = env::current_dir() {
+        roots.push(current_dir.join("plugins"));
+    }
     roots.push(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../plugins"));
     let mut unique = Vec::new();
     for root in roots {
