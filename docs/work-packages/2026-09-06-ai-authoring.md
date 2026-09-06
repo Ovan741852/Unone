@@ -228,8 +228,9 @@ primitive；企劃確實需要不存在的 engine capability 才立即回報，�
 5. 新候選本地 commit 後重建 CLI/Wasm/mobile，產生來源版本一致的新 immutable
    package；hash/inventory 驗證與該候選 source review 均完成。
 6. **全新 package-only Luna/max 盲評**：只給包、[盲測企劃](../validation/ai-authoring-blind-task.md)
-   與空 output；其所有交付證據是必要條件。game-owned player/target、自己的
-   SVG、成功/失敗/停止/restart 測試、一次改壞遊戲規則後 test fail 再還原、
+   與空 output；其所有交付證據是必要條件。game-owned player/target、自製或
+   使用者授權從 itch.io/game-assets 取得且授權明確的相容素材（須來源／授權紀錄）、
+   成功/失敗/停止/restart 測試、一次改壞遊戲規則後 test fail 再還原、
    空白/Unicode path、repeat-init hash 不變、deep typo/duplicate 拒絕、
    no-match discovery、完整 generation/read hash 均須實測。
    starter/bootstrap tests **不計入** game-owned evidence；新 starter 的 verify

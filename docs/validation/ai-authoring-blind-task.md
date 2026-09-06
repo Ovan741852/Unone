@@ -11,7 +11,10 @@
 移動；提供重新開始的操作。具體速度／距離／時間由你明確寫進遊戲企劃補充，
 不可倚賴實際 wall clock；同 seed 與 input sequence 必須可重播。
 
-至少有 player、target 兩個不同 id；用你自己產生的簡單 SVG 做最小 Web 表現，
+至少有 player、target 兩個不同 id；可自製簡單 SVG，或從 https://itch.io/game-assets
+取得授權明確且目前 host 支援的素材做最小 Web 表現。外部素材須記錄來源、作者、
+授權內容／取得日期、署名要求、實際檔案與 hash；付費或授權不明先回報，不自行購買。
+此授權僅放開素材來源，不允許讀其他遊戲程式或引擎 source。
 畫面能看出目前狀態。無需音效、Spine、3D、native/mobile 新 renderer。
 本任務不要求補尚未存在的引擎系統，不能把未測 host 宣稱 passed。
 
