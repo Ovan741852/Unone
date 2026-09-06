@@ -154,3 +154,18 @@ hash符合作者bytes。見[接續證據](../evidence/2026-09-06-asset-workflow/
 Hooke（全新Luna/max）負責序列Web/Android產物重建；只生成產物，不改功能、
 不跑會刪整份Android build目錄的script、不刪舊封裝。新包完成後再給全新
 package-only evaluator；此處尚無新增畫面或盲評成功宣稱。
+
+## 平台產物與真實瀏覽器回歸
+
+Hooke 完成 Web Wasm 與 Android x86_64 FFI/JNI/dex 重建、精確 staging；未執行
+APK 安裝或 mobile 真機 gate。中途唯讀 hash validator 的 PowerShell array
+flattening 錯誤已修正並重跑成功，非引擎 build failure。沒有刪除其他快取。
+fe8d122 新 immutable 46-file package 驗證通過，交全新 Luna/max Aquinas，
+只給封裝、企劃、空白遊戲輸出；盲評尚未完成。
+
+主代理以實際 IndexedDB + packaged Wasm 跑5項案例成功，包含壞 graph、hash
+不符及損壞 active pointer 的持久化不變性。Web runner 已顯示真 SVG，但仍
+觀察到已記錄的中心偏移，不當成位置正確證據。截圖與產物 hash 見
+[平台／瀏覽器證據](../evidence/2026-09-06-asset-workflow/platform-and-browser.json)。
+Claude CLI #31 readonly review 完成，無新增 actionable P1/P2；它不是獨立盲評，
+詳見[範圍與限制](../issues/2026-09-06-claude-cli-review-31.md)。

@@ -42,3 +42,7 @@ P1/P2；只讀 source/tests，沒有 build/test 實跑。對應追蹤已停止�
 `docs/issues/2026-09-06-claude-cli-review-30.md`。第 29 次已另行完成，
 兩份 review 各自固定範圍；不代表後續修正、平台建置
 或 package-only 盲驗已通過。
+
+第 31 次以 Claude CLI 2.1.260 完成 `4a128d7..c187df8` 唯讀審查，exit0，
+無新增 actionable P1/P2。見 `docs/issues/2026-09-06-claude-cli-review-31.md`；
+此為 source review，不替代獨立 package-only 評估。

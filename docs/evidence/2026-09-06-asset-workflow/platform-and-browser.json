@@ -1,0 +1,40 @@
+{
+  "date": "2026-09-06",
+  "build_source_start": "b70e58b7d80a9c26a360b9e53e8f5402e37cb4cf",
+  "package_source": "fe8d122bb9f9684670ad16233e0036d98e003dcc",
+  "code_equivalence": "Only documentation changed between build start and package source; Cargo, crates, web, platform and scripts unchanged.",
+  "package": {
+    "path": "C:/Temp/unone-asset-gate-20260906/engine",
+    "inventory_count": 46,
+    "source_dirty": false,
+    "manifest_sha256": "21d623cb07454028e118085a04e640090e47b903387fe46f4557b52dceb09c67",
+    "verification": "passed"
+  },
+  "artifact_sha256": {
+    "cli": "63f16c552235543563e83221e14196a60aecf3a3ce5970c03fcb882ecf8fe049",
+    "web_js": "20fc616519b905fd3a941d389841823464f05b9ac7f6e9abba590b286a8541d0",
+    "web_wasm": "d6f37b3d51a894e211f9c685bfc15deb4f72553264ad45c00579790d3106bce3",
+    "android_mobile_ffi": "cf92b5d358cd7d214d3c63800f3728cd9c807e56c9a79465a1d745225ed6e7ea",
+    "android_dex": "21cbdf4047bd5d635303e7d9ea3f8e291471cc46b327fa2fa69db68f7a9c1de8",
+    "android_jni": "e58333c9016be6899be1caaeeb2b764afcafc72f68cdd99d82d5194c21211b11",
+    "android_ndk_libcxx": "220f048039aab19e58132614392ff8e607ea2c3c2ddca26fa021455adbac4383"
+  },
+  "android_scope": "x86_64 compilation/staging only; no APK assembly, signing, installation or device runtime validation; libcxx copied from pinned NDK",
+  "browser": {
+    "implementation": "real IndexedDB and packaged Rust/Wasm; isolated test databases",
+    "fixture": "C:/Temp/unone-asset-gate-20260906/web-regression.html",
+    "passed": true,
+    "cases": [
+      "all roots activate; verified SVG decodes",
+      "unrelated invalid graph rejected; persistence unchanged",
+      "BUNDLE_VERIFY_FAILED preserves active generation",
+      "zero active pointer rejected; persistence unchanged",
+      "missing active generation record rejected; persistence unchanged"
+    ],
+    "svg_sha256": "576d5937511bc11b994bfda2b3c14f5bac8f11d562ea18149cf1702e6dead7b5",
+    "screenshot": "web-regressions-resumed.png",
+    "runner_screenshot": "web-runner-resumed.png",
+    "limitations": "Main integration fixture, not blind game assessment. Known sprite center offset remains. No Android/iOS visual pass."
+  },
+  "package_only_blind_assessment": "in_progress"
+}
