@@ -1,7 +1,8 @@
 use std::{
     collections::BTreeMap,
-    fs,
-    path::{Path, PathBuf},
+    fs::{self, OpenOptions},
+    io::{self, Write},
+    path::{Component, Path, PathBuf},
 };
 
 use serde::{Deserialize, Serialize};
@@ -74,7 +75,23 @@ pub struct ProjectInspectReport {
 pub struct ProjectInitReport {
     pub project: String,
     pub root: String,
-    pub files: Vec<ProjectFileStatus>,
+    pub files: Vec<ProjectInitFile>,
+    pub workflow_scope: String,
+    pub suggested_next_actions: Vec<ProjectInitAction>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ProjectInitFile {
+    pub path: String,
+    pub role: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ProjectInitAction {
+    pub executable: String,
+    pub argv: Vec<String>,
+    pub reason: String,
+    pub prerequisites: Vec<usize>,
 }
 
 /// Resolve a project-relative path without allowing lexical traversal or
@@ -240,84 +257,52 @@ impl ProjectPaths {
 /// This is a developer-tool operation. It gives an AI a canonical project
 /// schema and entrypoint instead of requiring it to infer required fields.
 pub fn init(project_root: impl AsRef<Path>, name: &str) -> EngineResult<ProjectInitReport> {
+    let mut writer = StdInitFileWriter;
+    init_with_writer(project_root, name, &mut writer)
+}
+
+fn init_with_writer<W: InitFileWriter>(
+    project_root: impl AsRef<Path>,
+    name: &str,
+    writer: &mut W,
+) -> EngineResult<ProjectInitReport> {
+    let requested_root = project_root.as_ref().to_path_buf();
+    let requested_root_text = path_string(&requested_root);
+    let tracker = InitTracker::default();
     if name.trim().is_empty() {
-        return EngineResult::failure(Diagnostic::error(
-            "PROJECT_INIT_NAME_INVALID",
-            "project name 不可為空",
-            "請提供一個非空的 --name；project init 不會替 AI 猜測專案名稱。",
-        ));
-    }
-    let root = project_root.as_ref().to_path_buf();
-    if root.exists() && !root.is_dir() {
-        return EngineResult::failure(Diagnostic::error(
-            "PROJECT_ROOT_INVALID",
-            "project root 不是目錄",
-            format!("{} 必須是目錄。", root.display()),
-        ));
-    }
-    if let Err(error) = fs::create_dir_all(&root) {
-        return EngineResult::failure(Diagnostic::error(
-            "PROJECT_ROOT_CREATE_FAILED",
-            "無法建立 project root",
-            format!("{}：{}", root.display(), error),
-        ));
-    }
-    let config_path = root.join("project.unone.json");
-    let script_path = root.join("scripts/main.luau");
-    let scene_path = root.join("scenes/main.scene.json");
-    let files = [&config_path, &script_path, &scene_path];
-    if let Some(existing) = files.iter().find(|path| path.is_file()) {
-        return EngineResult::failure(Diagnostic::error(
-            "PROJECT_ALREADY_EXISTS",
-            "project init 不會覆蓋既有專案檔案",
-            format!(
-                "{} 已存在；請使用新的空目錄，或手動修改既有 project。",
-                existing.display()
+        return init_failure(
+            Diagnostic::error(
+                "PROJECT_INIT_NAME_INVALID",
+                "project name 不可為空",
+                "請提供一個非空的 --name；project init 不會替 AI 猜測專案名稱。",
             ),
-        ));
+            None,
+            "preflight",
+            &requested_root_text,
+            &tracker,
+        );
     }
-    if let Err(error) = fs::create_dir_all(root.join("scripts")) {
-        return EngineResult::failure(Diagnostic::error(
-            "PROJECT_INIT_WRITE_FAILED",
-            "無法建立 scripts 目錄",
-            error.to_string(),
-        ));
-    }
-    if let Err(error) = fs::create_dir_all(root.join("scenes")) {
-        return EngineResult::failure(Diagnostic::error(
-            "PROJECT_INIT_WRITE_FAILED",
-            "無法建立 scenes 目錄",
-            error.to_string(),
-        ));
-    }
-    let config = serde_json::json!({
-        "name": name,
-        "entry_script": "scripts/main.luau",
-        "main_scene": "scenes/main.scene.json",
-        "test_files": []
-    });
-    let writes = [
-        (
-            &config_path,
-            serde_json::to_vec_pretty(&config).unwrap_or_default(),
-        ),
-        (&script_path, scaffold_script().into_bytes()),
-        (&scene_path, b"{\n  \"entities\": []\n}\n".to_vec()),
-    ];
-    for (path, bytes) in writes {
-        if let Err(error) = fs::write(path, bytes) {
-            return EngineResult::failure(Diagnostic::error(
-                "PROJECT_INIT_WRITE_FAILED",
-                "無法寫入 project scaffold",
-                format!("{}：{}", path.display(), error),
-            ));
+
+    let artifacts = init_artifacts(name);
+    let root_plan = match preflight_init_root(&requested_root) {
+        Ok(root_plan) => root_plan,
+        Err(failure) => {
+            let InitPreflightFailure {
+                diagnostic,
+                root,
+                failed_path,
+            } = *failure;
+            return init_failure(
+                diagnostic,
+                root.as_deref(),
+                "preflight",
+                &failed_path,
+                &tracker,
+            );
         }
-    }
-    EngineResult::success(ProjectInitReport {
-        project: name.to_string(),
-        root: root.display().to_string(),
-        files: files.iter().map(|path| file_status(path)).collect(),
-    })
+    };
+    let plan = InitPlan::new(root_plan, artifacts);
+    execute_init(&plan, name, writer)
 }
 
 /// The entry script a new project starts from.
@@ -331,10 +316,7 @@ fn scaffold_script() -> String {
         .lines()
         .filter(|line| !line.trim_start().starts_with("--"))
         .collect::<Vec<_>>()
-        .join(
-            "
-",
-        );
+        .join("\n");
     format!(
         "--!strict
 -- Engine type contract, inlined by `project init`.
@@ -348,13 +330,751 @@ local Game = {{}}
 function Game.start(_api: EngineApi)
 end
 
-function Game.update(_api: EngineApi, _dt: number)
+function Game.update(api: EngineApi, dt: number)
+    if api.input.isDown(\"Right\") then
+        local position = api.entity.getPosition(\"example\")
+        position.x += dt
+        api.entity.setPosition(\"example\", position)
+    end
 end
 
 return Game
 ",
         types.trim()
     )
+}
+
+struct InitFileSpec {
+    project_relative_path: &'static str,
+    role: &'static str,
+    bytes: Vec<u8>,
+}
+
+struct InitDirectory {
+    absolute_path: PathBuf,
+    project_relative_path: Option<String>,
+}
+
+struct InitRootPlan {
+    root: PathBuf,
+    directories: Vec<InitDirectory>,
+}
+
+struct InitPlan {
+    root: PathBuf,
+    directories: Vec<InitDirectory>,
+    files: Vec<InitFileSpecWithPath>,
+}
+
+struct InitFileSpecWithPath {
+    absolute_path: PathBuf,
+    project_relative_path: String,
+    role: String,
+    bytes: Vec<u8>,
+}
+
+impl InitPlan {
+    fn new(root_plan: InitRootPlan, artifacts: Vec<InitFileSpec>) -> Self {
+        let root = root_plan.root;
+        let mut directories = root_plan.directories;
+        for project_relative_path in ["scenes", "scripts", "tests"] {
+            directories.push(InitDirectory {
+                absolute_path: root.join(project_relative_path),
+                project_relative_path: Some(project_relative_path.to_string()),
+            });
+        }
+
+        let mut files = artifacts
+            .into_iter()
+            .map(|artifact| InitFileSpecWithPath {
+                absolute_path: root.join(artifact.project_relative_path),
+                project_relative_path: artifact.project_relative_path.to_string(),
+                role: artifact.role.to_string(),
+                bytes: artifact.bytes,
+            })
+            .collect::<Vec<_>>();
+        files.sort_by(|left, right| left.project_relative_path.cmp(&right.project_relative_path));
+
+        Self {
+            root,
+            directories,
+            files,
+        }
+    }
+}
+
+#[derive(Debug)]
+struct InitPreflightFailure {
+    diagnostic: Diagnostic,
+    root: Option<PathBuf>,
+    failed_path: String,
+}
+
+#[derive(Debug, Default)]
+struct InitTracker {
+    created_files: Vec<CreatedInitFile>,
+    created_directories: Vec<CreatedInitDirectory>,
+}
+
+#[derive(Debug, Clone)]
+struct CreatedInitFile {
+    absolute_path: PathBuf,
+    project_relative_path: String,
+    complete: bool,
+}
+
+#[derive(Debug, Clone)]
+struct CreatedInitDirectory {
+    absolute_path: PathBuf,
+    project_relative_path: Option<String>,
+}
+
+impl InitTracker {
+    fn record_directory(&mut self, directory: &InitDirectory) {
+        self.created_directories.push(CreatedInitDirectory {
+            absolute_path: directory.absolute_path.clone(),
+            project_relative_path: directory.project_relative_path.clone(),
+        });
+    }
+
+    fn record_file(&mut self, file: &InitFileSpecWithPath) -> usize {
+        self.created_files.push(CreatedInitFile {
+            absolute_path: file.absolute_path.clone(),
+            project_relative_path: file.project_relative_path.clone(),
+            complete: false,
+        });
+        self.created_files.len() - 1
+    }
+
+    fn complete_file(&mut self, index: usize) {
+        self.created_files[index].complete = true;
+    }
+
+    fn facts(&self, root: Option<&Path>, phase: &str, failed_path: &str) -> serde_json::Value {
+        let mut files = self.created_files.clone();
+        files.sort_by(|left, right| left.absolute_path.cmp(&right.absolute_path));
+        let mut directories = self.created_directories.clone();
+        directories.sort_by(|left, right| left.absolute_path.cmp(&right.absolute_path));
+
+        serde_json::json!({
+            "root": root.map(path_string),
+            "phase": phase,
+            "failed_path": failed_path,
+            "created_files": files
+                .iter()
+                .map(|file| serde_json::json!({
+                    "absolute_path": path_string(&file.absolute_path),
+                    "project_relative_path": file.project_relative_path.clone(),
+                    "complete": file.complete,
+                }))
+                .collect::<Vec<_>>(),
+            "created_directories": directories
+                .iter()
+                .map(|directory| serde_json::json!({
+                    "absolute_path": path_string(&directory.absolute_path),
+                    "project_relative_path": directory.project_relative_path.clone(),
+                }))
+                .collect::<Vec<_>>(),
+        })
+    }
+
+    fn effects(&self) -> Vec<String> {
+        let mut effects = self
+            .created_directories
+            .iter()
+            .map(|directory| {
+                (
+                    directory.absolute_path.clone(),
+                    format!(
+                        "created_directory:{}",
+                        path_string(&directory.absolute_path)
+                    ),
+                )
+            })
+            .chain(self.created_files.iter().map(|file| {
+                (
+                    file.absolute_path.clone(),
+                    format!("created_file:{}", path_string(&file.absolute_path)),
+                )
+            }))
+            .collect::<Vec<_>>();
+        effects.sort_by(|left, right| left.0.cmp(&right.0));
+        effects.into_iter().map(|(_, effect)| effect).collect()
+    }
+}
+
+trait InitFileWriter {
+    fn create_new(&mut self, path: &Path) -> io::Result<Box<dyn Write>>;
+}
+
+struct StdInitFileWriter;
+
+impl InitFileWriter for StdInitFileWriter {
+    fn create_new(&mut self, path: &Path) -> io::Result<Box<dyn Write>> {
+        OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(path)
+            .map(|file| Box::new(file) as Box<dyn Write>)
+    }
+}
+
+fn init_artifacts(name: &str) -> Vec<InitFileSpec> {
+    let mut config_bytes = serde_json::to_vec_pretty(&serde_json::json!({
+        "name": name,
+        "entry_script": "scripts/main.luau",
+        "main_scene": "scenes/main.scene.json",
+        "test_files": [
+            "tests/bootstrap-idle.test.json",
+            "tests/bootstrap-input.test.json",
+        ],
+    }))
+    .expect("a serde_json::Value is always serializable");
+    config_bytes.push(b'\n');
+
+    let mut files = vec![
+        InitFileSpec {
+            project_relative_path: "project.unone.json",
+            role: "project_config",
+            bytes: config_bytes,
+        },
+        InitFileSpec {
+            project_relative_path: "scripts/main.luau",
+            role: "entry_script",
+            bytes: scaffold_script().into_bytes(),
+        },
+        InitFileSpec {
+            project_relative_path: "scenes/main.scene.json",
+            role: "main_scene",
+            bytes: json_bytes(serde_json::json!({
+                "entities": [{
+                    "id": "example",
+                    "transform": {"x": 0.0, "y": 0.0},
+                }],
+            })),
+        },
+        InitFileSpec {
+            project_relative_path: "tests/bootstrap-idle.test.json",
+            role: "bootstrap_idle_test",
+            bytes: json_bytes(serde_json::json!({
+                "name": "bootstrap-idle",
+                "frames": 60,
+                "seed": 42,
+                "input": {},
+                "assertions": [
+                    {"entity": "example", "field": "transform.x", "equals": 0.0},
+                    {"entity": "example", "field": "transform.y", "equals": 0.0},
+                ],
+            })),
+        },
+        InitFileSpec {
+            project_relative_path: "tests/bootstrap-input.test.json",
+            role: "bootstrap_input_test",
+            bytes: json_bytes(serde_json::json!({
+                "name": "bootstrap-input",
+                "frames": 60,
+                "seed": 42,
+                "input": {"Right": true},
+                "assertions": [
+                    {"entity": "example", "field": "transform.x", "equals": 1.0},
+                    {"entity": "example", "field": "transform.y", "equals": 0.0},
+                ],
+            })),
+        },
+    ];
+    files.sort_by(|left, right| left.project_relative_path.cmp(right.project_relative_path));
+    files
+}
+
+fn json_bytes(value: serde_json::Value) -> Vec<u8> {
+    let mut bytes = serde_json::to_vec_pretty(&value).expect("a serde_json::Value is serializable");
+    bytes.push(b'\n');
+    bytes
+}
+
+fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflightFailure>> {
+    let requested_text = path_string(requested);
+    let absolute = match absolute_init_root(requested) {
+        Ok(path) => path,
+        Err(explanation) => {
+            return Err(Box::new(InitPreflightFailure {
+                diagnostic: Diagnostic::error(
+                    "PROJECT_ROOT_INVALID",
+                    "project root 路徑無效",
+                    explanation,
+                ),
+                root: None,
+                failed_path: requested_text,
+            }));
+        }
+    };
+
+    let (nearest_existing, target_exists) = {
+        let mut cursor = absolute.clone();
+        loop {
+            match fs::symlink_metadata(&cursor) {
+                Ok(_) => {
+                    let target_exists = cursor == absolute;
+                    break (cursor, target_exists);
+                }
+                Err(error) if error.kind() == io::ErrorKind::NotFound => {
+                    let Some(parent) = cursor.parent() else {
+                        return Err(Box::new(InitPreflightFailure {
+                            diagnostic: Diagnostic::error(
+                                "PROJECT_ROOT_INVALID",
+                                "project root 路徑無法解析",
+                                "找不到可以安全檢查的既存 ancestor。",
+                            ),
+                            root: None,
+                            failed_path: requested_text,
+                        }));
+                    };
+                    if parent == cursor {
+                        return Err(Box::new(InitPreflightFailure {
+                            diagnostic: Diagnostic::error(
+                                "PROJECT_ROOT_INVALID",
+                                "project root 路徑無法解析",
+                                "找不到可以安全檢查的既存 ancestor。",
+                            ),
+                            root: None,
+                            failed_path: requested_text,
+                        }));
+                    }
+                    cursor = parent.to_path_buf();
+                }
+                Err(error) => {
+                    return Err(Box::new(InitPreflightFailure {
+                        diagnostic: Diagnostic::error(
+                            "PROJECT_ROOT_INVALID",
+                            "project root 路徑無法檢查",
+                            format!("{}：{}", cursor.display(), error),
+                        ),
+                        root: None,
+                        failed_path: requested_text,
+                    }));
+                }
+            }
+        }
+    };
+
+    let mut ancestors = nearest_existing
+        .ancestors()
+        .map(|path| path.to_path_buf())
+        .collect::<Vec<_>>();
+    ancestors.reverse();
+    for ancestor in ancestors {
+        let metadata = match fs::symlink_metadata(&ancestor) {
+            Ok(metadata) => metadata,
+            Err(error) => {
+                return Err(Box::new(InitPreflightFailure {
+                    diagnostic: Diagnostic::error(
+                        "PROJECT_ROOT_INVALID",
+                        "project root ancestor 無法檢查",
+                        format!("{}：{}", ancestor.display(), error),
+                    ),
+                    root: None,
+                    failed_path: requested_text,
+                }));
+            }
+        };
+        let is_reparse = match init_metadata_is_reparse(&ancestor, &metadata) {
+            Ok(value) => value,
+            Err(error) => {
+                return Err(Box::new(InitPreflightFailure {
+                    diagnostic: Diagnostic::error(
+                        "PROJECT_ROOT_INVALID",
+                        "project root ancestor 無法檢查",
+                        format!("{}：{}", ancestor.display(), error),
+                    ),
+                    root: None,
+                    failed_path: requested_text,
+                }));
+            }
+        };
+        if is_reparse {
+            return Err(Box::new(InitPreflightFailure {
+                diagnostic: Diagnostic::error(
+                    "PROJECT_ROOT_INVALID",
+                    "project init 拒絕 symlink、junction 或 reparse point",
+                    format!(
+                        "{} 是 link/reparse path component；不會沿著它建立專案。",
+                        ancestor.display()
+                    ),
+                ),
+                root: None,
+                failed_path: requested_text,
+            }));
+        }
+        if !metadata.is_dir() {
+            return Err(Box::new(InitPreflightFailure {
+                diagnostic: Diagnostic::error(
+                    "PROJECT_ROOT_INVALID",
+                    "project root path component 不是目錄",
+                    format!(
+                        "{} 不是 directory；不會在其下建立專案。",
+                        ancestor.display()
+                    ),
+                ),
+                root: None,
+                failed_path: requested_text,
+            }));
+        }
+    }
+
+    if target_exists {
+        let canonical_root = match fs::canonicalize(&absolute) {
+            Ok(path) => path,
+            Err(error) => {
+                return Err(Box::new(InitPreflightFailure {
+                    diagnostic: Diagnostic::error(
+                        "PROJECT_ROOT_INVALID",
+                        "project root 無法 canonicalize",
+                        format!("{}：{}", absolute.display(), error),
+                    ),
+                    root: None,
+                    failed_path: requested_text,
+                }));
+            }
+        };
+        let mut entries = match fs::read_dir(&canonical_root) {
+            Ok(entries) => entries,
+            Err(error) => {
+                return Err(Box::new(InitPreflightFailure {
+                    diagnostic: Diagnostic::error(
+                        "PROJECT_ROOT_INVALID",
+                        "無法列出 project root",
+                        format!(
+                            "{}：{}；不能把無法讀取的目錄當成空目錄。",
+                            canonical_root.display(),
+                            error
+                        ),
+                    ),
+                    root: Some(canonical_root),
+                    failed_path: path_string(&absolute),
+                }));
+            }
+        };
+        match entries.next() {
+            Some(Ok(entry)) => {
+                return Err(Box::new(InitPreflightFailure {
+                    diagnostic: Diagnostic::error(
+                        "PROJECT_ALREADY_EXISTS",
+                        "project init 只接受真正空的 root",
+                        format!(
+                            "{} 已包含 {}；project init 不會清理、merge 或覆蓋既有內容。",
+                            canonical_root.display(),
+                            entry.path().display()
+                        ),
+                    ),
+                    root: Some(canonical_root.clone()),
+                    failed_path: path_string(&canonical_root),
+                }));
+            }
+            Some(Err(error)) => {
+                return Err(Box::new(InitPreflightFailure {
+                    diagnostic: Diagnostic::error(
+                        "PROJECT_ROOT_INVALID",
+                        "無法列出 project root",
+                        format!(
+                            "{}：{}；不能把無法讀取的目錄當成空目錄。",
+                            canonical_root.display(),
+                            error
+                        ),
+                    ),
+                    root: Some(canonical_root),
+                    failed_path: path_string(&absolute),
+                }));
+            }
+            None => {
+                return Ok(InitRootPlan {
+                    root: canonical_root,
+                    directories: Vec::new(),
+                });
+            }
+        }
+    }
+
+    let missing_components = match missing_root_components(&absolute, &nearest_existing) {
+        Ok(components) if !components.is_empty() => components,
+        Ok(_) => {
+            return Err(Box::new(InitPreflightFailure {
+                diagnostic: Diagnostic::error(
+                    "PROJECT_ROOT_INVALID",
+                    "project root 路徑無法解析",
+                    "找不到 project root 與最近既存 ancestor 之間的缺少 components。",
+                ),
+                root: None,
+                failed_path: requested_text,
+            }));
+        }
+        Err(explanation) => {
+            return Err(Box::new(InitPreflightFailure {
+                diagnostic: Diagnostic::error(
+                    "PROJECT_ROOT_INVALID",
+                    "project root 路徑無法解析",
+                    explanation,
+                ),
+                root: None,
+                failed_path: requested_text,
+            }));
+        }
+    };
+    let canonical_ancestor = match fs::canonicalize(&nearest_existing) {
+        Ok(path) => path,
+        Err(error) => {
+            return Err(Box::new(InitPreflightFailure {
+                diagnostic: Diagnostic::error(
+                    "PROJECT_ROOT_INVALID",
+                    "最近既存 ancestor 無法 canonicalize",
+                    format!("{}：{}", nearest_existing.display(), error),
+                ),
+                root: None,
+                failed_path: requested_text,
+            }));
+        }
+    };
+
+    let mut root = canonical_ancestor;
+    let last_component = missing_components.len() - 1;
+    let mut directories = Vec::with_capacity(missing_components.len());
+    for (index, component) in missing_components.into_iter().enumerate() {
+        root.push(component);
+        directories.push(InitDirectory {
+            absolute_path: root.clone(),
+            project_relative_path: (index == last_component).then(|| ".".to_string()),
+        });
+    }
+    Ok(InitRootPlan { root, directories })
+}
+
+fn absolute_init_root(requested: &Path) -> Result<PathBuf, String> {
+    if requested.to_string_lossy().contains('\0') {
+        return Err("project root path 不能包含 NUL。".to_string());
+    }
+    if requested
+        .components()
+        .any(|component| matches!(component, Component::ParentDir))
+    {
+        return Err(
+            "project root path 不接受 parent '..' component；請先提供已在目標範圍內的路徑。"
+                .to_string(),
+        );
+    }
+    #[cfg(windows)]
+    if matches!(requested.components().next(), Some(Component::Prefix(_)))
+        && !requested.is_absolute()
+    {
+        return Err(
+            "Windows drive-relative project root path 不安全；請提供完整 absolute path。"
+                .to_string(),
+        );
+    }
+
+    if requested.is_absolute() {
+        Ok(requested.to_path_buf())
+    } else {
+        std::env::current_dir()
+            .map(|current| current.join(requested))
+            .map_err(|error| format!("無法取得 current directory：{error}"))
+    }
+}
+
+fn missing_root_components(
+    absolute: &Path,
+    nearest_existing: &Path,
+) -> Result<Vec<std::ffi::OsString>, String> {
+    let mut cursor = absolute.to_path_buf();
+    let mut components = Vec::new();
+    while cursor != nearest_existing {
+        let name = cursor
+            .file_name()
+            .ok_or_else(|| format!("{} 沒有可建立的 path component。", cursor.display()))?;
+        components.push(name.to_os_string());
+        let parent = cursor
+            .parent()
+            .ok_or_else(|| format!("{} 沒有可檢查的 parent directory。", cursor.display()))?;
+        if parent == cursor {
+            return Err(format!("{} 無法回到既存 ancestor。", cursor.display()));
+        }
+        cursor = parent.to_path_buf();
+    }
+    components.reverse();
+    Ok(components)
+}
+
+fn init_metadata_is_reparse(path: &Path, metadata: &fs::Metadata) -> io::Result<bool> {
+    if metadata.file_type().is_symlink() {
+        return Ok(true);
+    }
+    init_platform_reparse_point(path)
+}
+
+#[cfg(windows)]
+fn init_platform_reparse_point(path: &Path) -> io::Result<bool> {
+    use std::os::windows::ffi::OsStrExt;
+
+    use windows_sys::Win32::Storage::FileSystem::{
+        FILE_ATTRIBUTE_REPARSE_POINT, GetFileAttributesW, INVALID_FILE_ATTRIBUTES,
+    };
+
+    let wide = path
+        .as_os_str()
+        .encode_wide()
+        .chain(std::iter::once(0))
+        .collect::<Vec<_>>();
+    let attributes = unsafe { GetFileAttributesW(wide.as_ptr()) };
+    if attributes == INVALID_FILE_ATTRIBUTES {
+        return Err(io::Error::last_os_error());
+    }
+    Ok(attributes & FILE_ATTRIBUTE_REPARSE_POINT != 0)
+}
+
+#[cfg(not(windows))]
+fn init_platform_reparse_point(_path: &Path) -> io::Result<bool> {
+    Ok(false)
+}
+
+fn execute_init<W: InitFileWriter>(
+    plan: &InitPlan,
+    project_name: &str,
+    writer: &mut W,
+) -> EngineResult<ProjectInitReport> {
+    let mut tracker = InitTracker::default();
+    for directory in &plan.directories {
+        if let Err(error) = fs::create_dir(&directory.absolute_path) {
+            return init_failure(
+                Diagnostic::error(
+                    "PROJECT_INIT_WRITE_FAILED",
+                    "無法建立 project init 目錄",
+                    format!("{}：{}", directory.absolute_path.display(), error),
+                ),
+                Some(&plan.root),
+                "create_directory",
+                &path_string(&directory.absolute_path),
+                &tracker,
+            );
+        }
+        tracker.record_directory(directory);
+    }
+
+    for file in &plan.files {
+        let mut output = match writer.create_new(&file.absolute_path) {
+            Ok(output) => output,
+            Err(error) => {
+                return init_failure(
+                    Diagnostic::error(
+                        "PROJECT_INIT_WRITE_FAILED",
+                        "無法建立 project init 檔案",
+                        format!("{}：{}", file.absolute_path.display(), error),
+                    ),
+                    Some(&plan.root),
+                    "create_file",
+                    &path_string(&file.absolute_path),
+                    &tracker,
+                );
+            }
+        };
+        let file_index = tracker.record_file(file);
+        if let Err(error) = output.write_all(&file.bytes) {
+            return init_failure(
+                Diagnostic::error(
+                    "PROJECT_INIT_WRITE_FAILED",
+                    "無法完整寫入 project init 檔案",
+                    format!("{}：{}", file.absolute_path.display(), error),
+                ),
+                Some(&plan.root),
+                "write_file",
+                &path_string(&file.absolute_path),
+                &tracker,
+            );
+        }
+        tracker.complete_file(file_index);
+    }
+
+    let mut result = EngineResult::success(ProjectInitReport {
+        project: project_name.to_string(),
+        root: path_string(&plan.root),
+        files: plan
+            .files
+            .iter()
+            .map(|file| ProjectInitFile {
+                path: file.project_relative_path.clone(),
+                role: file.role.clone(),
+            })
+            .collect(),
+        workflow_scope: "new_unmodified_scaffold".to_string(),
+        suggested_next_actions: suggested_next_actions(&plan.root),
+    });
+    result.effects = tracker.effects();
+    result
+}
+
+fn init_failure<T: Serialize>(
+    mut diagnostic: Diagnostic,
+    root: Option<&Path>,
+    phase: &str,
+    failed_path: &str,
+    tracker: &InitTracker,
+) -> EngineResult<T> {
+    diagnostic.facts = tracker.facts(root, phase, failed_path);
+    let effects = tracker.effects();
+    let mut result = EngineResult::failure(diagnostic);
+    result.effects = effects;
+    result
+}
+
+fn suggested_next_actions(root: &Path) -> Vec<ProjectInitAction> {
+    let project = path_string(root);
+    vec![
+        ProjectInitAction {
+            executable: "game".to_string(),
+            argv: vec![
+                "--project".to_string(),
+                project.clone(),
+                "--json".to_string(),
+                "verify".to_string(),
+            ],
+            reason: "先驗證剛產生且尚未修改的五檔 starter；這只確認 onboarding smoke。".to_string(),
+            prerequisites: Vec::new(),
+        },
+        ProjectInitAction {
+            executable: "game".to_string(),
+            argv: vec![
+                "--project".to_string(),
+                project.clone(),
+                "--json".to_string(),
+                "bundle".to_string(),
+                "pack".to_string(),
+            ],
+            reason: "verify 後才建立 bundle；init 不會隱式 pack 或啟用 bundle。".to_string(),
+            prerequisites: vec![0],
+        },
+        ProjectInitAction {
+            executable: "game".to_string(),
+            argv: vec![
+                "--project".to_string(),
+                project.clone(),
+                "--json".to_string(),
+                "bundle".to_string(),
+                "install".to_string(),
+                "--all".to_string(),
+            ],
+            reason: "pack 完成後啟用 manifest 宣告的全部 bundle；此步仍由作者明確執行。".to_string(),
+            prerequisites: vec![1],
+        },
+        ProjectInitAction {
+            executable: "game".to_string(),
+            argv: vec![
+                "--project".to_string(),
+                project,
+                "--json".to_string(),
+                "bundle".to_string(),
+                "inspect".to_string(),
+            ],
+            reason: "install 後檢視目前 active bundle；新增資產後應回到既有 pack → verify/strict → install 流程。".to_string(),
+            prerequisites: vec![2],
+        },
+    ]
 }
 
 pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<ProjectInspectReport> {
@@ -420,39 +1140,506 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<ProjectInspectRep
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
+    use std::{
+        collections::BTreeMap,
+        fs::{self, OpenOptions},
+        io::{self, Write},
+        path::Path,
+    };
+
     use tempfile::tempdir;
 
-    use super::{TestAssertion, init, inspect, resolve_project_path};
+    use super::{
+        InitFileWriter, TestAssertion, TestSpec, init, inspect, path_string, resolve_project_path,
+    };
 
     #[test]
-    fn init_creates_a_valid_minimal_project() {
+    fn init_creates_the_five_file_starter_and_structured_actions() {
         let directory = tempdir().expect("temp project directory");
         let result = init(directory.path(), "ai-smoke");
-        assert!(result.ok);
+        assert!(result.ok, "{:?}", result.diagnostics);
         let report = result.value.expect("init report");
         assert_eq!(report.project, "ai-smoke");
-        assert!(report.files.iter().all(|file| file.exists));
+        assert_eq!(
+            report.root,
+            path_string(&fs::canonicalize(directory.path()).unwrap())
+        );
+        assert_eq!(
+            report
+                .files
+                .iter()
+                .map(|file| (file.path.as_str(), file.role.as_str()))
+                .collect::<Vec<_>>(),
+            vec![
+                ("project.unone.json", "project_config"),
+                ("scenes/main.scene.json", "main_scene"),
+                ("scripts/main.luau", "entry_script"),
+                ("tests/bootstrap-idle.test.json", "bootstrap_idle_test"),
+                ("tests/bootstrap-input.test.json", "bootstrap_input_test"),
+            ]
+        );
+        assert_eq!(report.workflow_scope, "new_unmodified_scaffold");
+        assert_eq!(report.suggested_next_actions.len(), 4);
+        assert_eq!(report.suggested_next_actions[0].executable, "game");
+        assert_eq!(
+            report.suggested_next_actions[0].argv,
+            vec![
+                "--project".to_string(),
+                report.root.clone(),
+                "--json".to_string(),
+                "verify".to_string()
+            ]
+        );
+        assert_eq!(
+            report.suggested_next_actions[0].prerequisites,
+            Vec::<usize>::new()
+        );
+        assert_eq!(report.suggested_next_actions[1].prerequisites, vec![0]);
+        assert_eq!(report.suggested_next_actions[2].prerequisites, vec![1]);
+        assert_eq!(report.suggested_next_actions[3].prerequisites, vec![2]);
+        assert!(
+            result
+                .effects
+                .iter()
+                .any(|effect| effect.contains("created_file:"))
+        );
+
+        let config: super::ProjectConfig = serde_json::from_str(
+            &fs::read_to_string(directory.path().join("project.unone.json")).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(config.entry_script, "scripts/main.luau");
+        assert_eq!(config.main_scene.as_deref(), Some("scenes/main.scene.json"));
+        assert_eq!(
+            config.test_files,
+            vec![
+                "tests/bootstrap-idle.test.json".to_string(),
+                "tests/bootstrap-input.test.json".to_string(),
+            ]
+        );
+
+        let script = fs::read_to_string(directory.path().join("scripts/main.luau")).unwrap();
+        assert!(script.starts_with("--!strict\n"));
+        assert!(script.contains("export type EngineApi"));
+        assert!(script.contains("api.input.isDown(\"Right\")"));
+        assert!(script.contains("position.x += dt"));
+
+        let scene: serde_json::Value = serde_json::from_str(
+            &fs::read_to_string(directory.path().join("scenes/main.scene.json")).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(scene["entities"][0]["id"], "example");
+        assert_eq!(
+            scene["entities"][0]["transform"],
+            serde_json::json!({"x": 0.0, "y": 0.0})
+        );
+        assert!(scene["entities"][0].get("rigidbody").is_none());
+        assert!(scene["entities"][0].get("sprite").is_none());
+        assert!(scene["entities"][0].get("asset").is_none());
+
+        let idle: TestSpec = serde_json::from_str(
+            &fs::read_to_string(directory.path().join("tests/bootstrap-idle.test.json")).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(idle.frames, 60);
+        assert_eq!(idle.seed, 42);
+        assert!(idle.input.is_empty());
+        assert_eq!(idle.assertions.len(), 2);
+        assert!(
+            idle.assertions
+                .iter()
+                .all(|assertion| assertion.validate().is_ok())
+        );
+
+        let input: TestSpec = serde_json::from_str(
+            &fs::read_to_string(directory.path().join("tests/bootstrap-input.test.json")).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(input.frames, 60);
+        assert_eq!(input.seed, 42);
+        assert_eq!(input.input.get("Right"), Some(&true));
+        assert_eq!(input.assertions.len(), 2);
+        assert!(
+            input
+                .assertions
+                .iter()
+                .all(|assertion| assertion.validate().is_ok())
+        );
 
         let inspected = inspect(directory.path());
-        assert!(inspected.ok);
+        assert!(inspected.ok, "{:?}", inspected.diagnostics);
         let report = inspected.value.expect("inspect report");
         assert!(report.entry_script.exists);
         assert!(report.main_scene.expect("main scene").exists);
+        assert_eq!(report.test_files.len(), 2);
+        assert!(report.test_files.iter().all(|file| file.exists));
     }
 
     #[test]
-    fn init_never_overwrites_an_existing_project_file() {
+    fn generated_bootstrap_tests_run_and_wrong_movement_amount_fails() {
         let directory = tempdir().expect("temp project directory");
-        std::fs::write(directory.path().join("project.unone.json"), "{}").expect("seed file");
+        assert!(init(directory.path(), "runtime-smoke").ok);
 
-        let result = init(directory.path(), "should-not-overwrite");
-        assert!(!result.ok);
-        assert_eq!(result.diagnostics[0].code, "PROJECT_ALREADY_EXISTS");
+        let tests = crate::runtime::EngineRuntime::run_tests(directory.path());
+        assert!(tests.ok, "{:?}", tests.diagnostics);
+        let suite = tests.value.expect("test suite report");
+        assert!(suite.passed, "{:?}", suite.cases);
+        assert_eq!(suite.cases.len(), 2);
+
+        let input_path = directory.path().join("tests/bootstrap-input.test.json");
+        let original = fs::read(&input_path).unwrap();
+        let mut changed: serde_json::Value = serde_json::from_slice(&original).unwrap();
+        changed["assertions"][0]["equals"] = serde_json::json!(2.0);
+        fs::write(&input_path, super::json_bytes(changed)).unwrap();
+
+        let failed = crate::runtime::EngineRuntime::run_tests(directory.path());
+        assert!(failed.ok, "test execution itself should complete");
+        assert!(!failed.value.expect("failed assertion suite").passed);
+
+        fs::write(input_path, original).unwrap();
+    }
+
+    #[test]
+    fn init_rejects_empty_name_nonempty_root_and_repeat_without_mutation() {
+        let directory = tempdir().expect("temp project directory");
+        let empty_root = directory.path().join("empty-name");
+        let empty_name = init(&empty_root, " \t");
+        assert!(!empty_name.ok);
+        assert_eq!(empty_name.diagnostics[0].code, "PROJECT_INIT_NAME_INVALID");
+        assert!(empty_name.effects.is_empty());
+        assert!(!empty_root.exists());
+        assert_eq!(empty_name.diagnostics[0].facts["phase"], "preflight");
+        assert!(empty_name.diagnostics[0].facts["root"].is_null());
         assert_eq!(
-            std::fs::read_to_string(directory.path().join("project.unone.json")).unwrap(),
-            "{}"
+            empty_name.diagnostics[0].facts["failed_path"],
+            serde_json::json!(path_string(&empty_root))
         );
+
+        let nonempty_root = directory.path().join("nonempty");
+        fs::create_dir(&nonempty_root).unwrap();
+        fs::write(nonempty_root.join(".git"), b"sentinel").unwrap();
+        let before = snapshot_tree(&nonempty_root);
+        let nonempty = init(&nonempty_root, "should-not-overwrite");
+        assert!(!nonempty.ok);
+        assert_eq!(nonempty.diagnostics[0].code, "PROJECT_ALREADY_EXISTS");
+        assert!(nonempty.effects.is_empty());
+        assert_eq!(snapshot_tree(&nonempty_root), before);
+        assert_eq!(nonempty.diagnostics[0].facts["phase"], "preflight");
+        assert!(
+            nonempty.diagnostics[0].facts["created_files"]
+                .as_array()
+                .unwrap()
+                .is_empty()
+        );
+        assert!(
+            nonempty.diagnostics[0].facts["created_directories"]
+                .as_array()
+                .unwrap()
+                .is_empty()
+        );
+
+        let created_root = directory.path().join("created");
+        assert!(init(&created_root, "repeat").ok);
+        let created_before = snapshot_tree(&created_root);
+        let repeated = init(&created_root, "different-name");
+        assert!(!repeated.ok);
+        assert_eq!(repeated.diagnostics[0].code, "PROJECT_ALREADY_EXISTS");
+        assert!(repeated.effects.is_empty());
+        assert_eq!(snapshot_tree(&created_root), created_before);
+    }
+
+    #[test]
+    fn init_rejects_parent_component_but_accepts_dot_and_unicode_paths() {
+        let directory = tempdir().expect("temp project directory");
+        let escaped = directory
+            .path()
+            .join("..")
+            .join("unone-init-parent-component-must-not-exist");
+        assert!(!escaped.exists());
+        let escaped_result = init(&escaped, "escaped");
+        assert!(!escaped_result.ok);
+        assert_eq!(escaped_result.diagnostics[0].code, "PROJECT_ROOT_INVALID");
+        assert!(escaped_result.effects.is_empty());
+        assert!(escaped_result.diagnostics[0].facts["root"].is_null());
+        assert_eq!(
+            escaped_result.diagnostics[0].facts["failed_path"],
+            serde_json::json!(path_string(&escaped))
+        );
+        assert!(!escaped.exists());
+
+        let dot_root = directory.path().join(".").join("dot-project");
+        let dot_result = init(&dot_root, "dot-project");
+        assert!(dot_result.ok, "{:?}", dot_result.diagnostics);
+        assert_eq!(
+            dot_result.value.unwrap().root,
+            path_string(&fs::canonicalize(directory.path().join("dot-project")).unwrap())
+        );
+
+        let unicode_root = directory.path().join("空 白-project");
+        let unicode_result = init(&unicode_root, "unicode-project");
+        assert!(unicode_result.ok, "{:?}", unicode_result.diagnostics);
+        assert!(unicode_root.join("project.unone.json").is_file());
+    }
+
+    #[test]
+    fn init_rejects_a_file_as_root_without_touching_it() {
+        let directory = tempdir().expect("temp project directory");
+        let file_root = directory.path().join("root-file");
+        fs::write(&file_root, b"unchanged").unwrap();
+        let before = fs::read(&file_root).unwrap();
+
+        let result = init(&file_root, "file-root");
+        assert!(!result.ok);
+        assert_eq!(result.diagnostics[0].code, "PROJECT_ROOT_INVALID");
+        assert!(result.effects.is_empty());
+        assert_eq!(fs::read(&file_root).unwrap(), before);
+        assert_eq!(result.diagnostics[0].facts["phase"], "preflight");
+        assert!(
+            result.diagnostics[0].facts["created_files"]
+                .as_array()
+                .unwrap()
+                .is_empty()
+        );
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn init_rejects_symlink_and_dangling_link_roots_and_ancestors() {
+        use std::os::unix::fs::symlink;
+
+        let directory = tempdir().expect("temp project directory");
+        let outside = tempdir().expect("outside directory");
+        let linked = directory.path().join("linked");
+        symlink(outside.path(), &linked).expect("create linked directory");
+        let before = snapshot_tree(directory.path());
+
+        let linked_root = init(linked.join("new-project"), "linked");
+        assert!(!linked_root.ok);
+        assert_eq!(linked_root.diagnostics[0].code, "PROJECT_ROOT_INVALID");
+        assert!(linked_root.effects.is_empty());
+        assert_eq!(snapshot_tree(directory.path()), before);
+
+        let dangling = directory.path().join("dangling");
+        symlink(directory.path().join("not-created"), &dangling).expect("create dangling link");
+        let dangling_root = init(&dangling, "dangling");
+        assert!(!dangling_root.ok);
+        assert_eq!(dangling_root.diagnostics[0].code, "PROJECT_ROOT_INVALID");
+        assert!(dangling_root.effects.is_empty());
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn init_rejects_windows_reparse_roots_and_ancestors() {
+        use std::os::windows::fs::symlink_dir;
+
+        let directory = tempdir().expect("temp project directory");
+        let outside = tempdir().expect("outside directory");
+        let linked = directory.path().join("linked");
+        if let Err(error) = symlink_dir(outside.path(), &linked) {
+            eprintln!(
+                "SKIP init_rejects_windows_reparse_roots_and_ancestors: symlink_dir failed: {error} (kind={:?})",
+                error.kind()
+            );
+            return;
+        }
+        let before = snapshot_tree(directory.path());
+
+        let linked_root = init(linked.join("new-project"), "linked");
+        assert!(!linked_root.ok);
+        assert_eq!(linked_root.diagnostics[0].code, "PROJECT_ROOT_INVALID");
+        assert!(linked_root.effects.is_empty());
+        assert_eq!(snapshot_tree(directory.path()), before);
+
+        let dangling = directory.path().join("dangling");
+        symlink_dir(directory.path().join("not-created"), &dangling).expect("create dangling link");
+        let dangling_root = init(&dangling, "dangling");
+        assert!(!dangling_root.ok);
+        assert_eq!(dangling_root.diagnostics[0].code, "PROJECT_ROOT_INVALID");
+        assert!(dangling_root.effects.is_empty());
+    }
+
+    #[test]
+    fn init_create_failure_reports_directories_and_no_files() {
+        let directory = tempdir().expect("temp project directory");
+        let root = directory.path().join("create-failure");
+        let mut writer = FaultInitFileWriter {
+            fail_create_at: Some(0),
+            fail_write_at: None,
+            create_index: 0,
+        };
+
+        let result = super::init_with_writer(&root, "fault", &mut writer);
+        assert!(!result.ok);
+        assert!(result.value.is_none());
+        let canonical_root = fs::canonicalize(&root).unwrap();
+        let facts = &result.diagnostics[0].facts;
+        assert_eq!(facts["phase"], "create_file");
+        assert_eq!(
+            facts["failed_path"],
+            serde_json::json!(path_string(&canonical_root.join("project.unone.json")))
+        );
+        assert!(facts["created_files"].as_array().unwrap().is_empty());
+        assert_eq!(facts["created_directories"].as_array().unwrap().len(), 4);
+        assert_eq!(result.effects.len(), 4);
+        assert!(!root.join("project.unone.json").exists());
+        assert!(root.join("scripts").is_dir());
+        assert!(root.join("scenes").is_dir());
+        assert!(root.join("tests").is_dir());
+
+        let retry = init(&root, "retry");
+        assert!(!retry.ok);
+        assert_eq!(retry.diagnostics[0].code, "PROJECT_ALREADY_EXISTS");
+        assert!(retry.effects.is_empty());
+    }
+
+    #[test]
+    fn init_mid_write_failure_tracks_partial_file_and_retry_is_no_overwrite() {
+        let directory = tempdir().expect("temp project directory");
+        let root = directory.path().join("write-failure");
+        let mut writer = FaultInitFileWriter {
+            fail_create_at: None,
+            fail_write_at: Some(1),
+            create_index: 0,
+        };
+
+        let result = super::init_with_writer(&root, "fault", &mut writer);
+        assert!(!result.ok);
+        assert!(result.value.is_none());
+        let facts = &result.diagnostics[0].facts;
+        assert_eq!(facts["phase"], "write_file");
+        let canonical_root = fs::canonicalize(&root).unwrap();
+        let created_files = facts["created_files"].as_array().unwrap();
+        assert_eq!(created_files.len(), 2);
+        assert_eq!(
+            created_files[0]["project_relative_path"],
+            "project.unone.json"
+        );
+        assert_eq!(created_files[0]["complete"], true);
+        assert_eq!(
+            created_files[1]["project_relative_path"],
+            "scenes/main.scene.json"
+        );
+        assert_eq!(created_files[1]["complete"], false);
+
+        let config_path = canonical_root.join("project.unone.json");
+        let scene_path = canonical_root.join("scenes/main.scene.json");
+        assert!(
+            serde_json::from_slice::<serde_json::Value>(&fs::read(&config_path).unwrap()).is_ok()
+        );
+        let partial_scene = fs::read(&scene_path).unwrap();
+        let expected_scene = super::init_artifacts("fault")
+            .into_iter()
+            .find(|file| file.project_relative_path == "scenes/main.scene.json")
+            .unwrap()
+            .bytes;
+        assert!(!partial_scene.is_empty());
+        assert!(partial_scene.len() < expected_scene.len());
+        assert!(
+            result
+                .effects
+                .iter()
+                .any(|effect| effect == &format!("created_file:{}", path_string(&config_path)))
+        );
+        assert!(
+            result
+                .effects
+                .iter()
+                .any(|effect| effect == &format!("created_file:{}", path_string(&scene_path)))
+        );
+
+        let before_retry = snapshot_tree(&root);
+        let retry = init(&root, "retry");
+        assert!(!retry.ok);
+        assert_eq!(retry.diagnostics[0].code, "PROJECT_ALREADY_EXISTS");
+        assert!(retry.effects.is_empty());
+        assert_eq!(snapshot_tree(&root), before_retry);
+    }
+
+    struct FaultInitFileWriter {
+        fail_create_at: Option<usize>,
+        fail_write_at: Option<usize>,
+        create_index: usize,
+    }
+
+    struct FaultFile {
+        file: std::fs::File,
+        fail_first_write: bool,
+        failed: bool,
+    }
+
+    impl InitFileWriter for FaultInitFileWriter {
+        fn create_new(&mut self, path: &Path) -> io::Result<Box<dyn Write>> {
+            let index = self.create_index;
+            self.create_index += 1;
+            if self.fail_create_at == Some(index) {
+                return Err(io::Error::other("injected create_new failure"));
+            }
+            let file = OpenOptions::new().write(true).create_new(true).open(path)?;
+            Ok(Box::new(FaultFile {
+                file,
+                fail_first_write: self.fail_write_at == Some(index),
+                failed: false,
+            }))
+        }
+    }
+
+    impl Write for FaultFile {
+        fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+            if self.fail_first_write && !self.failed {
+                self.failed = true;
+                let partial = bytes.len().min(8);
+                if partial != 0 {
+                    self.file.write_all(&bytes[..partial])?;
+                }
+                return Err(io::Error::other("injected mid-write failure"));
+            }
+            self.file.write(bytes)
+        }
+
+        fn flush(&mut self) -> io::Result<()> {
+            self.file.flush()
+        }
+    }
+
+    fn snapshot_tree(root: &Path) -> BTreeMap<String, (String, Vec<u8>)> {
+        fn visit(
+            root: &Path,
+            directory: &Path,
+            snapshot: &mut BTreeMap<String, (String, Vec<u8>)>,
+        ) {
+            for entry in fs::read_dir(directory).unwrap() {
+                let entry = entry.unwrap();
+                let path = entry.path();
+                let relative = path
+                    .strip_prefix(root)
+                    .unwrap()
+                    .to_string_lossy()
+                    .replace('\\', "/");
+                let file_type = entry.file_type().unwrap();
+                if file_type.is_symlink() {
+                    snapshot.insert(
+                        relative,
+                        (
+                            "symlink".to_string(),
+                            fs::read_link(&path)
+                                .unwrap()
+                                .to_string_lossy()
+                                .as_bytes()
+                                .to_vec(),
+                        ),
+                    );
+                } else if file_type.is_dir() {
+                    snapshot.insert(relative.clone(), ("directory".to_string(), Vec::new()));
+                    visit(root, &path, snapshot);
+                } else {
+                    snapshot.insert(relative, ("file".to_string(), fs::read(&path).unwrap()));
+                }
+            }
+        }
+
+        let mut snapshot = BTreeMap::new();
+        visit(root, root, &mut snapshot);
+        snapshot
     }
 
     #[test]
@@ -563,6 +1750,10 @@ fn file_status(path: &Path) -> ProjectFileStatus {
         path: path.display().to_string(),
         exists: path.is_file(),
     }
+}
+
+fn path_string(path: &Path) -> String {
+    path.to_string_lossy().into_owned()
 }
 
 #[derive(Debug, Clone, Deserialize)]

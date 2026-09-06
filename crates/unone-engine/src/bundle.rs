@@ -8,7 +8,7 @@ use std::{
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
-use crate::asset::{AssetManifest, AssetSpec, load_for_pack};
+use crate::asset::{AssetManifest, AssetReference, AssetSpec, load_for_pack, read_scene_references};
 use crate::diagnostics::{ActionSuggestion, Diagnostic, EngineResult};
 use crate::project::{ProjectPaths, resolve_project_path};
 
@@ -375,6 +375,10 @@ pub fn pack_project(
             vec!["project".to_string()],
         ));
     }
+    let scene_references = match read_scene_references(&paths) {
+        Ok(references) => references,
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
+    };
 
     if let Some(asset_manifest_path) = &paths.asset_manifest {
         let asset_manifest_source = match asset_manifest_path.strip_prefix(&root) {
@@ -396,7 +400,7 @@ pub fn pack_project(
             Ok(manifest) => manifest,
             Err(diagnostic) => return EngineResult::failure(*diagnostic),
         };
-        if let Err(diagnostic) = validate_pack_asset_references(&paths, &asset_manifest) {
+        if let Err(diagnostic) = validate_pack_asset_references(&scene_references, &asset_manifest) {
             return EngineResult::failure(*diagnostic);
         }
         if let Err(diagnostic) = validate_generated_asset_bundle_ids(&asset_manifest, &sources) {
@@ -698,10 +702,9 @@ fn validate_generated_asset_bundle_ids(
 }
 
 fn validate_pack_asset_references(
-    paths: &ProjectPaths,
+    references: &[AssetReference],
     manifest: &AssetManifest,
 ) -> Result<(), Box<Diagnostic>> {
-    let references = crate::asset::read_scene_references(paths)?;
     let ids = manifest
         .assets
         .iter()
@@ -2093,6 +2096,48 @@ mod tests {
         let third = pack_project(dir.path(), None);
         assert!(third.ok);
         assert_eq!(third.value.unwrap().manifest_version, 2);
+    }
+
+    #[test]
+    fn pack_rejects_invalid_main_scene_without_asset_manifest_before_writes() {
+        let dir = tempdir().unwrap();
+        fs::create_dir_all(dir.path().join("scripts")).unwrap();
+        fs::create_dir_all(dir.path().join("scenes")).unwrap();
+        fs::write(
+            dir.path().join("project.unone.json"),
+            br#"{"name":"InvalidScenePack","entry_script":"scripts/main.luau","main_scene":"scenes/main.scene.json"}"#,
+        )
+        .unwrap();
+        fs::write(dir.path().join("scripts/main.luau"), b"return {}\n").unwrap();
+        fs::write(
+            dir.path().join("scenes/main.scene.json"),
+            br#"{"entities":[],"typo":true}"#,
+        )
+        .unwrap();
+        let config_before = fs::read(dir.path().join("project.unone.json")).unwrap();
+        let scene_before = fs::read(dir.path().join("scenes/main.scene.json")).unwrap();
+
+        let result = pack_project(dir.path(), None);
+
+        assert!(!result.ok);
+        assert_eq!(result.diagnostics[0].code, "SCENE_INVALID");
+        assert_eq!(
+            result.diagnostics[0].facts["source_kind"],
+            "disk_scene"
+        );
+        assert_eq!(
+            result.diagnostics[0].facts["location_scope"],
+            "scene_file"
+        );
+        assert_eq!(
+            fs::read(dir.path().join("project.unone.json")).unwrap(),
+            config_before
+        );
+        assert_eq!(
+            fs::read(dir.path().join("scenes/main.scene.json")).unwrap(),
+            scene_before
+        );
+        assert!(!dir.path().join("bundles").exists());
     }
 
     #[test]

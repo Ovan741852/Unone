@@ -8,7 +8,7 @@ use anyhow::Result;
 use serde_json::{Map, Value, json};
 use unone_engine::{
     AssetSpec, BundleManager, Diagnostic, EngineResult, EngineRuntime, InputFrame, api_describe,
-    api_search, describe_asset, init_asset_manifest, init_project, inspect_assets,
+    api_search_result, describe_asset, init_asset_manifest, init_project, inspect_assets,
     inspect_assets_strict, inspect_project, inspect_systems, pack_project, platform_capabilities,
     read_asset, search_systems, set_system,
 };
@@ -258,7 +258,7 @@ fn tool_definitions() -> Vec<Value> {
         tool(
             "unone_project_init",
             "Initialize project scaffold",
-            "Create a minimal valid project.unone.json, strict Luau entry script and empty main scene in an empty directory. This writes only the current project root and never overwrites existing project files.",
+            "Create a five-file headless starter: project config, strict Luau script, example scene, and idle/input tests. Root must be new or truly empty, including no .git or plan file; links and parent traversal are rejected. May create missing parent directories. Returns actual files/effects and next actions for the unmodified starter; no implicit pack/install. Partial failure reports created files/directories without deleting them; retry does not resume or overwrite. Starter tests are not game acceptance.",
             object_schema(json!({
                 "properties": {
                     "name": {"type": "string", "description": "Project name written to project.unone.json."}
@@ -421,7 +421,7 @@ fn tool_definitions() -> Vec<Value> {
         tool(
             "unone_api_search",
             "Search engine API by meaning",
-            "Find the smallest public engine API matching a natural-language need. Results include purpose, when_not_to_use, side effects, frame semantics, errors, and examples.",
+            "Find the smallest public engine API matching a natural-language need. Pass meaning=\"\" to list the complete public engine API index. A non-empty no-match search remains successful and explains how to inspect primitives and systems before assuming an engine capability is missing. Results include purpose, when_not_to_use, side effects, frame semantics, errors, and examples.",
             object_schema(json!({
                 "properties": {
                     "meaning": {"type": "string", "description": "Natural-language intent, such as move an entity or read pointer input."}
@@ -745,25 +745,7 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
         }
         "unone_platform_capabilities" => tool_result(platform_capabilities()),
         "unone_api_search" => match required_string(arguments, "meaning") {
-            Ok(meaning) => {
-                let matches = api_search(&meaning);
-                let mut result = EngineResult::success(unone_engine::ApiSearchReport {
-                    query: meaning,
-                    matches,
-                });
-                if result
-                    .value
-                    .as_ref()
-                    .is_some_and(|report| report.matches.is_empty())
-                {
-                    result.diagnostics.push(Diagnostic::warning(
-                        "API_SEARCH_EMPTY",
-                        "沒有找到符合語意的 Engine API",
-                        "搜尋只涵蓋目前公開的最小 API；請改用更具體的動詞或先查看 project inspect。",
-                    ));
-                }
-                tool_result(result)
-            }
+            Ok(meaning) => tool_result(api_search_result(&meaning)),
             Err(diagnostic) => argument_error(*diagnostic),
         },
         "unone_api_describe" => match required_string(arguments, "name") {

@@ -4,8 +4,7 @@ use std::{
     path::Path,
 };
 
-use serde::{Serialize, de::DeserializeOwned};
-use serde_json::Value;
+use serde::Serialize;
 
 use crate::{
     asset::{
@@ -15,7 +14,7 @@ use crate::{
     bundle::{BundleManager, digest_bytes, read_asset_from_archive},
     diagnostics::{ActionSuggestion, Diagnostic, EngineResult},
     project::{ProjectPaths, resolve_project_path},
-    world::SceneFile,
+    scene::{parse_scene_file, scene_read_failed},
 };
 
 #[derive(Debug, Clone, Serialize)]
@@ -351,20 +350,9 @@ fn scene_references(
     let scene_path = resolve_project_path(root, configured_scene)?;
     let scene_relative = relative_path(root, &scene_path);
     let text = fs::read_to_string(&scene_path).map_err(|error| {
-        Box::new(Diagnostic::error(
-            "SCENE_READ_FAILED",
-            "無法讀取主場景",
-            format!("{}：{}", scene_path.display(), error),
-        ))
+        scene_read_failed(&scene_path, error)
     })?;
-    let value: Value = serde_json::from_str(&text).map_err(|error| {
-        Box::new(Diagnostic::error(
-            "SCENE_INVALID",
-            "主場景不是有效的 JSON",
-            format!("{}：{}", scene_path.display(), error),
-        ))
-    })?;
-    let scene: SceneFile = from_value(value.clone(), "SCENE_INVALID", "主場景不是有效的 Unone scene JSON", &scene_path)?;
+    let scene = parse_scene_file(&text, &scene_path)?;
     let mut references = Vec::new();
     for (index, entity) in scene.entities.iter().enumerate() {
         let components = [
@@ -878,21 +866,6 @@ fn relative_path(root: &Path, path: &Path) -> String {
     path.strip_prefix(root)
         .map(|path| path.to_string_lossy().replace('\\', "/"))
         .unwrap_or_else(|_| path.to_string_lossy().replace('\\', "/"))
-}
-
-fn from_value<T: DeserializeOwned>(
-    value: Value,
-    code: &str,
-    summary: &str,
-    path: &Path,
-) -> Result<T, Box<Diagnostic>> {
-    serde_json::from_value(value).map_err(|error| {
-        Box::new(Diagnostic::error(
-            code,
-            summary,
-            format!("{}：{}", path.display(), error),
-        ))
-    })
 }
 
 #[cfg(test)]

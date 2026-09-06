@@ -18,10 +18,13 @@ native preview 已有滑鼠/鍵盤 adapter，headless runner 已有 `InputFrame`
 
 `run_with_input_sequence` 改用同一個入口。平台 adapter、瀏覽器事件、測試 fixture 與 Luau 遊戲規則不進這個方法。
 
+JSON InputFrame 的 pointer position 使用共用 Vec2 closed wire contract，只接受
+x/y；多餘 vector 欄位會被拒絕，而非悄悄忽略。這不修改 numeric pointer FFI
+參數、action 語意或 opaque game/save data，也不是替 Luau table 做全域驗證。
+
 ## Consequences
 
 - native、Web、iOS、Android 與 headless replay 的 input/tick 順序有單一來源。
 - input normalization 與裝置政策仍留在 host；engine 不知道滑鼠、觸控、鍵盤或 device scale。
 - 缺少 pointer frame 不會讓按下狀態 sticky，避免 hot reload 或 sequence 邊界留下幽靈輸入。
 - `tick_with_input` 是必要的 runtime contract，不是額外的 input abstraction；若未來 host 有不同需求，先以可重播測試證明，再調整此 boundary。
-

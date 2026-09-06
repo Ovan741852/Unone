@@ -2,9 +2,12 @@ use std::{cell::RefCell, collections::BTreeMap};
 
 use serde::{Deserialize, Serialize};
 use unone_engine::{
-    BundleSpec, BundleVerifier, Diagnostic, EngineRuntime, InputFrame, PointerInput, SceneFile,
-    Vec2, WorldSnapshot,
+    BundleSpec, BundleVerifier, Diagnostic, EngineRuntime, InputFrame, PointerInput, Vec2,
+    WorldSnapshot, parse_scene_fragment,
 };
+
+#[cfg(test)]
+use unone_engine::SceneFile;
 
 thread_local! {
     static RUNTIME: RefCell<Option<EngineRuntime>> = const { RefCell::new(None) };
@@ -27,7 +30,7 @@ struct HostProject {
     project: String,
     script: String,
     #[serde(default)]
-    scene: Option<SceneFile>,
+    scene: Option<Box<serde_json::value::RawValue>>,
     /// Engine systems this project declares, exactly as project.unone.json
     /// would declare them for a file-backed project.
     #[serde(default)]
@@ -35,11 +38,16 @@ struct HostProject {
 }
 
 fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Box<Diagnostic>> {
+    let scene = project
+        .scene
+        .as_deref()
+        .map(|raw| parse_scene_fragment(raw.get()))
+        .transpose()?;
     EngineRuntime::load_source_with_systems(
         project.project,
         "main.luau",
         project.script,
-        project.scene,
+        scene,
         seed,
         project.systems,
     )
@@ -546,6 +554,126 @@ return Game
             42,
         )
         .unwrap()
+    }
+
+    #[test]
+    fn c_abi_scene_fragment_uses_shared_diagnostic_context() {
+        let payload = serde_json::to_vec(&json!({
+            "project": "WebInvalidScene",
+            "script": PROJECT_SCRIPT,
+            "scene": {"entities": [], "typo": true}
+        }))
+        .unwrap();
+
+        assert_eq!(
+            unsafe { unone_web_load_project(payload.as_ptr(), payload.len(), 42) },
+            -1
+        );
+        let value = output();
+        let diagnostic = &value["diagnostic"];
+        assert_eq!(diagnostic["code"], json!("SCENE_INVALID"));
+        assert_eq!(
+            diagnostic["facts"]["source_kind"],
+            json!("host_payload_scene")
+        );
+        assert_eq!(
+            diagnostic["facts"]["location_scope"],
+            json!("scene_fragment")
+        );
+        assert_eq!(diagnostic["facts"]["pointer_base"], json!("/scene"));
+        assert!(diagnostic["facts"]["line"].is_number());
+        assert!(diagnostic["facts"]["column"].is_number());
+        assert!(diagnostic["source"].is_null());
+    }
+
+    #[test]
+    fn c_abi_rejects_negative_scene_fixture_matrix() {
+        let fixtures = [
+            (
+                "root-typo",
+                r#"{"entities":[],"typo":true}"#,
+                "SCENE_INVALID",
+                None,
+            ),
+            (
+                "deep-vector-typo",
+                r#"{"entities":[{"id":"player","transform":{"x":0,"y":0,"z":0}}]}"#,
+                "SCENE_INVALID",
+                None,
+            ),
+            (
+                "blank-id",
+                r#"{"entities":[{"id":"  \t"}]}"#,
+                "SCENE_ENTITY_ID_INVALID",
+                Some("/entities/0/id"),
+            ),
+            (
+                "duplicate-id",
+                r#"{"entities":[{"id":"player"},{"id":"player"}]}"#,
+                "SCENE_ENTITY_ID_DUPLICATE",
+                Some("/entities/1/id"),
+            ),
+            (
+                "invalid-geometry",
+                r#"{"entities":[{"id":"player","sprite":{"asset":"asset://player","size":{"x":0,"y":1}}}]}"#,
+                "SCENE_SPRITE_INVALID",
+                None,
+            ),
+        ];
+
+        for (name, scene, code, json_pointer) in fixtures {
+            let valid_payload = project_payload();
+            assert_eq!(
+                unsafe { unone_web_load_project(valid_payload.as_ptr(), valid_payload.len(), 42) },
+                0,
+                "valid fixture setup"
+            );
+            let before_entities = output()["world"]["entities"].clone();
+            unone_web_set_pointer(0.0, 0.0, 0);
+            let scene: serde_json::Value = serde_json::from_str(scene).unwrap();
+            let payload = serde_json::to_vec(&json!({
+                "project": format!("WebInvalidScene-{name}"),
+                "script": PROJECT_SCRIPT,
+                "scene": scene,
+            }))
+            .unwrap();
+            assert_eq!(
+                unsafe { unone_web_load_project(payload.as_ptr(), payload.len(), 42) },
+                -1,
+                "fixture {name}"
+            );
+            let diagnostic = &output()["diagnostic"];
+            assert_eq!(diagnostic["code"], json!(code), "fixture {name}");
+            assert_eq!(
+                diagnostic["facts"]["source_kind"],
+                json!("host_payload_scene"),
+                "fixture {name}"
+            );
+            assert_eq!(
+                diagnostic["facts"]["location_scope"],
+                json!("scene_fragment"),
+                "fixture {name}"
+            );
+            assert_eq!(diagnostic["facts"]["pointer_base"], json!("/scene"));
+            assert!(diagnostic["source"].is_null(), "fixture {name}");
+            if code == "SCENE_INVALID" {
+                assert!(diagnostic["facts"]["line"].is_number(), "fixture {name}");
+                assert!(diagnostic["facts"]["column"].is_number(), "fixture {name}");
+            } else {
+                assert!(diagnostic["facts"]["line"].is_null(), "fixture {name}");
+                assert!(diagnostic["facts"]["column"].is_null(), "fixture {name}");
+            }
+            match json_pointer {
+                Some(pointer) => assert_eq!(diagnostic["facts"]["json_pointer"], json!(pointer)),
+                None => assert!(diagnostic["facts"]["json_pointer"].is_null()),
+            }
+            assert_eq!(unone_web_tick(), 0, "fixture {name}");
+            let after_failed_load = output();
+            assert_eq!(
+                after_failed_load["world"]["entities"], before_entities,
+                "failed scene load replaced the web runtime: {name}"
+            );
+        }
     }
 
     #[test]

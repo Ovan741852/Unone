@@ -15,7 +15,7 @@ target/debug/game.exe --project D:/Projects/Unone_Games/minimal-2d mcp
 
 MCP host 設定可使用同一個 command 與 args。連線後先完成 `initialize` 與 `notifications/initialized`，再 discovery `tools/list`；工具名稱以 `unone_` 開頭。`unone_run` 的 arguments 直接接受 `frames`、`seed`、單一 `action` 或 `input_sequence`，後者與 CLI 相同，使用語意 action 與 world-space pointer。工具結果內的 `content[0].text` 是完整 `EngineResult` JSON；錯誤也會保留 `code`、`explanation`、`facts`、`likely_causes` 與 `suggested_actions`。
 
-資產工具的唯一現行契約是 [asset-workflow.md](asset-workflow.md)；MCP discovery 應包含 `unone_asset_describe`，總工具數為 23。需要單筆資產的編輯定位、引用、native-local active 與 freshness 時使用 describe，不用把 `asset inspect` 或 `asset read` 的結果自行拼成另一套規格。
+資產工具的唯一現行契約是 [asset-workflow.md](asset-workflow.md)；MCP discovery 應包含 `unone_asset_describe`，可用工具與參數以 `tools/list` 為準，不以固定數量決定能力。需要單筆資產的編輯定位、引用、native-local active 與 freshness 時使用 describe，不用把 `asset inspect` 或 `asset read` 的結果自行拼成另一套規格。
 
 ## -1. 先確認平台能力
 
@@ -34,7 +34,45 @@ powershell -File scripts/verify-ai-engine-package.ps1 -PackagePath .
 bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json project init --name "<game-name>"
 ```
 
-`project init` 只建立最小的 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不覆蓋既有檔案。可直接使用 package 內的 [project.schema.json](project.schema.json)、[scene.schema.json](scene.schema.json) 與 [test.schema.json](test.schema.json) 驗證格式；它們是目前 canonical authoring contract。UI `rect` 固定是 normalized 0..100 × 0..100 logical design space，Web/native host 只做 viewport/DPI/safe-area 映射，遊戲不可寫 960×540 或其他未宣告尺度。
+`project init` 只接受不存在或真正空的 output directory 與非空名稱；即使只有
+.git 或 GAME_PLAN.md 也會拒絕。企劃、引擎包放在 output 外，git init 在成功建立
+專案後再做。不提供 force／覆寫／合併模式，拒絕 `..` 路徑及 symlink/junction/reparse
+root 或祖先；一般 `.` 與空白／Unicode 路徑可用。
+
+只建立五個遊戲端檔案：
+
+| 檔案 | 用途 |
+|---|---|
+| project.unone.json | 宣告 script、scene、兩個 tests |
+| scripts/main.luau | 內嵌 EngineApi strict types；按住 Right 以 dt 移動 example |
+| scenes/main.scene.json | 無圖片、非剛體的 example，初始 x/y=0 |
+| tests/bootstrap-idle.test.json | 60 frames／seed42，無輸入位置保持0 |
+| tests/bootstrap-input.test.json | 60 frames／seed42，Right 後 x=1、y=0 |
+
+這是 headless onboarding smoke，不是你的玩法驗收。example、Right 與示範 tests
+都可由遊戲替換；移除 example 時同步換掉示範 tests。不要把 bootstrap 綠燈當
+遊戲測試，也不因 starter 無圖片而宣稱畫面正常。init 不產生美術、UI、save、
+asset manifest 或 bundle，也不隱式 pack/install。
+
+結果含 absolute `root`、按 path 排序的 `files[{path,role}]`、
+`workflow_scope=new_unmodified_scaffold` 與 `suggested_next_actions`。
+每個 action 是 `{executable,argv,reason,prerequisites}`：logical executable=game，
+包內解析成 bin/game.exe；argv 直接交 subprocess argument list，不拼 shell。
+prerequisites 是先行 action 的零起算 index。
+未修改 starter 的順序為 verify → bundle pack → bundle install --all → bundle inspect；
+新增資產後依 [asset-workflow.md](asset-workflow.md) 先準備 bytes、宣告、pack，再 strict／verify、install。
+
+部分寫入失敗時不自動刪檔或 rollback：diagnostic facts 的 phase、failed_path、
+created_files（complete 區分完整／部分）、created_directories 與 effects 反映實際
+建立內容。先檢查記錄並由作者處理；留下內容後再次 init 會拒絕，不是 resume。
+作者也可以是 AI；遇到寫入失敗先回報診斷並解決磁碟／權限原因。若企劃允許，
+可保留失敗現場並選另一個全新 output directory 重試；指定 output 不可更動時詢問使用者。
+created_files／created_directories 是歷史寫入紀錄，不是刪除授權或「目前仍可安全刪除」
+的證明：內容可能已被後續修改。不要據此自動清除目錄或遞迴刪除祖先。
+
+格式見 [project.schema.json](project.schema.json)、[scene.schema.json](scene.schema.json)
+與 [test.schema.json](test.schema.json)。UI rect 使用 0..100 × 0..100 logical design space，
+不是 960×540；不需要 UI 的企劃不必建立 UI tree。
 
 ```powershell
 bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json project inspect
@@ -44,6 +82,32 @@ bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json api describe
 ```
 
 `project inspect` 回報引擎看見的設定與檔案事實；`api search` 是依用途找能力；`api describe` 會回傳參數、回傳值、side effects、frame semantics、常見錯誤、範例與相關 API。AI 應先讀這些資料，再修改遊戲腳本，不要猜測 API。
+
+`api search ""` 列完整公開索引（subprocess argv 最後一項是空字串，不是省略参数）；
+MCP 的 `unone_api_search` 使用 `meaning=""`。無匹配仍是成功查詢，附
+`API_SEARCH_EMPTY` warning、search_scope=public_engine_api、query、match_count=0，
+並提供完整索引與 systems list 的固定提示；玩法動詞可能是遊戲端組合，
+無匹配不證明引擎缺能力。CLI／MCP 使用同一 core 結果，transport envelope 不相同。
+
+### 場景輸入與錯誤位置
+
+scene JSON 的 root 與巢狀 typed objects 拒絕未知欄位；entity id 不可空白、
+同一 scene 內不可重複。合法 id 不會被 trim 或改名；空 scene `{}`／entities=[] 合法。
+拼錯 position 不會猜成 transform。disk run／test、asset inspect／describe、pack
+（即使沒有 asset manifest）及 Web/mobile scene payload 都共用檢查；驗證失敗不先
+修改 world，也不先寫 pack output。這不是 scene editor、完整 JSON Schema runtime
+或任意 Luau 動態分支驗證；跨次 load 的既有合併行為不因此改變。
+
+parse／未知欄位使用 SCENE_INVALID；空白／重複 id 分別為
+SCENE_ENTITY_ID_INVALID／SCENE_ENTITY_ID_DUPLICATE。facts 中 disk_scene 的
+line/column 對原 scene file；host_payload_scene 的位置對 `/scene` raw fragment，
+source=null、pointer_base=/scene；typed_scene 無原始 JSON 行列。沒有可靠位置
+就回 null，不能把 fragment 行號當整份 host payload 行號。ID 語意錯誤的
+json_pointer 指向 /entities/<index>/id，duplicate 另有 first_index。
+
+共用 Vec2/Vec3 的 JSON 也拒絕多餘欄位，包括 InputFrame pointer position；
+Web/mobile numeric pointer FFI 原數值參數不變。opaque save／observation game data
+及 Luau 手動讀 table 不在這次 serde 嚴格欄位檢查範圍。
 
 `asset inspect` 會列出主場景的靜態 `sprite`／`mesh3d`／`animation` asset reference，並對照遊戲端 `asset_manifest` 的 id、project-relative source、companion files 與 bundle。它是 authoring 時的 advisory report；交接、CI 或 release 必須使用 `asset inspect --strict`，讓 `ASSET_MANIFEST_MISSING`、`ASSET_REFERENCE_MISSING`、`ASSET_SOURCE_MISSING` 與 `ASSET_BUNDLE_NOT_DECLARED` 變成 `ok=false`。目前 manifest version 是 1，kind 支援 `texture2d`、`mesh3d`、`spine`、`effekseer`；未知版本、typo 或不安全路徑不會靜默當成可用格式。需要單筆資產的 authoring path、JSON pointer、引用、active generation、publication freshness 與下一步時改用 `asset describe --id <id>`，詳見[資產工作流契約](asset-workflow.md)。它不會假裝能發現 Luau 動態選 asset，也不會代替 host 做下載、解碼或 GPU 資源管理。若沒有任何 scene asset reference，沒有 manifest 也不算錯誤。
 
@@ -63,7 +127,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json 
 { "systems": { "physics2d": false } }
 ```
 
-未宣告的 system 使用引擎預設。三種情況會直接失敗：`SYSTEM_UNKNOWN`（引擎沒有這個 id，typo 不會被當成關閉）、`SYSTEM_NOT_OPTIONAL`（`world`／`input`／`observation` 不可關閉）、`SYSTEM_NOT_IMPLEMENTED`（只有契約沒有實作，目前是 `spine`、`effekseer`）。
+未宣告的 system 使用引擎預設。三種情況會直接失敗：`SYSTEM_UNKNOWN`（引擎沒有這個 id，typo 不會被當成關閉）、`SYSTEM_NOT_OPTIONAL`（`world`／`input`／`observation` 不可關閉）、`SYSTEM_NOT_IMPLEMENTED`（嘗試啟用標記為未實作的系統）。`spine`／`effekseer` 目前是可啟用的 `host_required`，不是未實作；能否呈現仍取決於選用 host。
 
 關閉是有實際效果的：`physics2d` 關閉後引擎不再推進剛體；被關閉系統的 Luau API 仍然存在，但呼叫時會回報 `SYSTEM_DISABLED` 並附上重新啟用的命令，不會變成 `attempt to index nil`。`systems` 只決定引擎機制要不要跑，遊戲數值、關卡與內容開關仍屬遊戲端。
 
@@ -171,7 +235,7 @@ Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 f
 
 ## 3.5 骨骼動畫與特效（Spine／Effekseer）
 
-這兩個系統預設關閉，狀態是 `host_required`：引擎這一半可用，但目前沒有任何 host 會畫出骨骼或粒子。需要時先開啟：
+這兩個系統預設關閉，狀態是 `host_required`：引擎提供語意狀態，`web/presentation` 專用 host 接 Spine／Effekseer runtime；generic Web runner、native preview 與 Android host 不因此具備這些呈現能力。這不等於跨平台驗收通過。需要時先開啟：
 
 ```powershell
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems set --id spine --enabled true
@@ -298,7 +362,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --jso
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview --watch
 ```
 
-`--watch` 會在檔案 metadata 變更後，於下一個等待 frame 嘗試載入入口 Luau。成功會保留 Rust-owned world state 並切換腳本 generation；失敗會輸出語意診斷，繼續使用上一份可運作腳本，直到檔案再次變更。方向鍵或 A/D 會更新 Luau input。Escape 或關閉視窗結束。這個 preview 是 runtime smoke client，不是 Editor。
+`--watch` 會在檔案 metadata 變更後，於下一個等待 frame 嘗試載入入口 Luau。成功會保留 Rust-owned world state 並切換腳本 generation；失敗會輸出語意診斷，繼續使用上一份可運作腳本，直到檔案再次變更。腳本 generation 是該 runtime 的 reload 計數，不是 bundle active generation，也不是其他 host 的 generation；不可互相比較數字來判定內容同步。方向鍵或 A/D 會更新 Luau input。Escape 或關閉視窗結束。這個 preview 是 runtime smoke client，不是 Editor。
 
 不帶 `--watch` 也可以啟動一次性的 native preview；AI 需要快速修改與觀察時使用 `--watch`。
 

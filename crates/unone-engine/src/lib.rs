@@ -9,6 +9,7 @@ mod performance;
 mod platform;
 mod project;
 mod runtime;
+mod scene;
 mod systems;
 mod ui;
 mod verify;
@@ -16,7 +17,7 @@ mod world;
 
 pub use api::{
     ApiDescriptor, ApiParameter, ApiSearchReport, describe as api_describe, search as api_search,
-    typings as api_typings,
+    api_search_result, typings as api_typings,
 };
 pub use asset::{
     AssetInitReport, AssetInspectBlocker, AssetInspectReport, AssetManifest, AssetReadReport,
@@ -51,13 +52,15 @@ pub use performance::{
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{
     AnimationAssertion, EffectsAssertion, InputFrame, UiPreviewSpec, ObservationAssertion, PointerInput,
-    ProjectConfig, ProjectFileStatus, ProjectInitReport, ProjectInspectReport, ProjectPaths,
+    ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile, ProjectInitReport,
+    ProjectInspectReport, ProjectPaths,
     TestAssertion, TestSpec, UiAssertion, init as init_project, inspect as inspect_project,
 };
 pub use runtime::{
     CheckReport, EngineRuntime, RunReport, TestCaseReport, TestSuiteReport, TypeCheckReport,
     observation_digest,
 };
+pub use scene::parse_scene_fragment;
 pub use systems::{
     SystemDescriptor, SystemReport, SystemSearchReport, SystemSetReport, SystemSettings,
     SystemState, SystemStatus, describe as describe_system, inspect as inspect_systems,

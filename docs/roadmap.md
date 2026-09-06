@@ -26,10 +26,10 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 ## 待辦
 
 新收到的 AI authoring 回饋已逐項核對，見
-[分析與第一切片計畫](work-packages/2026-09-06-ai-authoring.md)（v2 已完成限定複審，實作待前案 gate）。
+[分析與第一切片計畫](work-packages/2026-09-06-ai-authoring.md)（v2 已完成限定複審，Luna/max 分工實作中）。
 `project init`／位置斷言／observation／trace／replay 已存在，不能標成「完全沒有」。
 已重現的缺口是 starter 沒有 tests、API 空搜尋缺指引，以及 scene typo／重複 id
-被靜默接受。先完成既有 asset WIP 的回歸與封裝 gate，再按審查後的計畫推進；
+被靜默接受。既有 asset 回歸與封裝限定 gate 已完成，現按審查後的計畫推進；
 不因此把下列音訊／host/3D 缺口視為已解決，也不新增整套 prefab/editor。
 
 ### P0 — 遊戲做不出來
@@ -56,7 +56,7 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 | 8 | **擴充 pipeline** | 沒有。外部格式無處可去 | project 宣告 import 步驟，把外部檔案轉成引擎的 scene/asset 格式；產物再走同一套 `verify`。引擎不學外部格式語意。這是 prefab/csb 類需求的正解 |
 | 9 | **非圓形碰撞體** | 只有圓 + 一條地平線；方塊是用圓近似的 | AABB 與線段，先做能表達現有驗證遊戲的最小集合 |
 | 10 | **多點觸控 / 手勢** | 只有單一 pointer | 多 pointer id；手勢留給遊戲端 |
-| 21 | **可靠的 authoring 起點** | 有 init，但三檔 scaffold 無 tests；scene typo／重複 id 可假成功 | [限定計畫](work-packages/2026-09-06-ai-authoring.md) 已完成計畫複審、待前案 gate，強化 existing init 與 shared scene ingestion，不另造 scene CRUD 框架 |
+| 21 | **可靠的 authoring 起點** | 五檔 scaffold／示範 tests、嚴格 scene 與搜尋回饋實作中，尚未驗收 | [限定計畫](work-packages/2026-09-06-ai-authoring.md) 已完成計畫複審與前案 gate，強化 existing init 與 shared scene ingestion，不另造 scene CRUD 框架 |
 | 22 | **通用 sprite frame animation** | 已有 Spine 語意動畫，不等於 sprite frame/UV animation | 根據 2D 遊戲需求另做 fixed-tick frame/state 與 host frame/UV 呈現，不先做 timeline editor |
 
 ### P3 — 盲測回報但未修
@@ -65,7 +65,7 @@ Host：native wgpu preview、Web runner／presentation host、Android package ho
 
 | # | 項目 | 說明 |
 |---|---|---|
-| 11 | 完整 generation 與資產工作流 | `4a128d7` 已實作 `install --all` 與 `asset describe`；修正候選已完成[限定 source review](reviews/2026-09-06-asset-workflow-code.md)。Rust 回歸、新平台建置與封裝盲驗待磁碟空間決策；[工作包](work-packages/2026-09-06-asset-workflow.md) 未驗收，不先標解決 |
+| 11 | 完整 generation 與資產工作流 | 修正候選已通過 Rust/clippy、新 CLI/Wasm/Android 編譯、封裝維護盲評與主代理 native/Web 限定覆核。見[退出證據](evidence/2026-09-06-ai-authoring/predecessor-gate.json)；首輪raw保存缺口及未測平台明列，不等於全平台熱更／七款遊戲通過 |
 | 12 | `API_SEARCH_EMPTY` 沒有 `suggested_actions` | 玩法動詞可能沒有匹配，不等於缺少引擎能力。現有 `api search ""` 可列完整索引，但缺 help/feedback 指引；[第一切片 C](work-packages/2026-09-06-ai-authoring.md) 將補共同 CLI/MCP 提示，不新增 api list 同義命令 |
 | 13 | `verify` 沒有 host parity gate | package 層已擋下 CLI/wasm 契約不一致（[issue](issues/2026-09-05-package-ships-two-engine-builds.md)），但 `verify` 本身仍只驗證 native build |
 | 14 | Web observations 與共用 digest | 已實作並通過 ABI、純 JS output 和新 wasm 瀏覽器 source-mode smoke；immutable package 發行仍待完成。見 [驗收紀錄](devlog/2026-09-06-digest-integration.md) |

@@ -42,7 +42,10 @@ archive bytes、size/hash 與 dependency metadata 都應重新 pack 取得，不
 
 穩定 id 是 scene 與 host 尋找資產的連接點。替換同一 id 的 source 或 companion
 bytes 時保留 id，通常不需要改 scene 的引用；修改內容後重新 pack、strict inspect
-與安裝即可。若搬移 source 或 companion，才修改 manifest 的 `source`／`files`
+與安裝，再以 `asset describe --id` 核對 `matches_authoring`，最後 read verified bytes。
+read 成功不代表 authoring freshness；只改 source bytes 且尚未 pack 時可能讀到舊 active
+bytes，但 pack 已改變該 bundle hash 而未安裝時，read 會拒絕 manifest／active 不一致。
+若搬移 source 或 companion，才修改 manifest 的 `source`／`files`
 路徑，仍保留 stable id。scene 的 size、pivot、碰撞體與放置是獨立的 scene 編輯，
 引擎不會因 source 替換自動改寫它們。
 
@@ -98,8 +101,8 @@ game --project <game-root> --json bundle install --all
 
 MCP 對應工具是 `unone_asset_inspect`、`unone_asset_describe`、
 `unone_asset_read`、`unone_asset_init`、`unone_bundle_pack`、
-`unone_bundle_inspect` 與 `unone_bundle_install`。`tools/list` 應回報 23 個
-工具；`unone_asset_describe` 是 read-only，`unone_asset_read` 則是
+`unone_bundle_inspect` 與 `unone_bundle_install`。可用工具與參數以 `tools/list`
+為準，不以固定工具數量決定能力；`unone_asset_describe` 是 read-only，`unone_asset_read` 則是
 `readOnlyHint=false`，因為傳入 output 時可能寫檔。
 
 ### `asset describe`

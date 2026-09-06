@@ -10,9 +10,9 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use unone_engine::{
     AssetSpec, BundleManager, Camera3DData, EngineResult, EngineRuntime, InputFrame, Vec2, Vec3,
-    WorldSnapshot, api_describe, api_search, describe_asset, init_asset_manifest, init_project,
-    inspect_assets, inspect_assets_strict, inspect_project, inspect_systems, pack_project,
-    read_asset, search_systems, set_system,
+    WorldSnapshot, api_describe, api_search_result, describe_asset, init_asset_manifest,
+    init_project, inspect_assets, inspect_assets_strict, inspect_project, inspect_systems,
+    pack_project, read_asset, search_systems, set_system,
 };
 use winit::{
     application::ApplicationHandler,
@@ -111,7 +111,7 @@ enum Command {
 #[derive(Debug, Subcommand)]
 enum ProjectCommand {
     Inspect,
-    /// Create a minimal valid project scaffold without game-specific rules.
+    /// Create a five-file headless starter with two tests and next actions in a new or truly empty directory.
     Init {
         #[arg(long, help = "Project name written to project.unone.json")]
         name: String,
@@ -222,7 +222,11 @@ enum SystemsCommand {
 
 #[derive(Debug, Subcommand)]
 enum ApiCommand {
+    /// Search public engine APIs by meaning; `game api search ""` lists the complete public API index.
     Search {
+        #[arg(
+            help = "Natural-language intent; use \"\" to list the complete public engine API index"
+        )]
         meaning: String,
     },
     Describe {
@@ -620,26 +624,7 @@ fn run() -> Result<ExitCode> {
             }
         },
         Command::Api { command } => match command {
-            ApiCommand::Search { meaning } => {
-                let matches = api_search(&meaning);
-                let mut result = EngineResult::success(unone_engine::ApiSearchReport {
-                    query: meaning,
-                    matches,
-                });
-                if result
-                    .value
-                    .as_ref()
-                    .map(|report| report.matches.is_empty())
-                    .unwrap_or(false)
-                {
-                    result.diagnostics.push(unone_engine::Diagnostic::warning(
-                        "API_SEARCH_EMPTY",
-                        "沒有找到符合語意的 Engine API",
-                        "搜尋只涵蓋目前公開的最小 API；請改用更具體的動詞或先查看 project inspect。",
-                    ));
-                }
-                print_result(result, cli.json)
-            }
+            ApiCommand::Search { meaning } => print_result(api_search_result(&meaning), cli.json),
             ApiCommand::Typings { output } => {
                 let types = unone_engine::api_typings();
                 let Some(path) = output else {

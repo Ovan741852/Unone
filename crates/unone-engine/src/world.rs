@@ -2,15 +2,20 @@ use std::{collections::BTreeMap, fs, path::Path};
 
 use serde::{Deserialize, Serialize};
 
-use crate::diagnostics::Diagnostic;
+use crate::{
+    diagnostics::Diagnostic,
+    scene::{parse_scene_file, validate_typed_scene},
+};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub struct Vec2 {
     pub x: f64,
     pub y: f64,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
@@ -34,6 +39,7 @@ impl Default for Vec3 {
 /// aggregate is only the API shape, so existing position-only scripts keep
 /// their current data path.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub struct Transform2DData {
     #[serde(default)]
     pub position: Vec2,
@@ -62,6 +68,7 @@ impl Default for Transform2DData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub struct Transform3DData {
     #[serde(default)]
     pub position: Vec3,
@@ -92,6 +99,7 @@ impl Default for Transform3DData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub struct Mesh3DData {
     pub asset: String,
     #[serde(default = "default_true")]
@@ -99,6 +107,7 @@ pub struct Mesh3DData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub struct Camera3DData {
     #[serde(default = "default_camera3d_position")]
     pub position: Vec3,
@@ -139,6 +148,7 @@ pub enum RigidBodyType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RigidBody2DData {
     #[serde(default)]
     pub body_type: RigidBodyType,
@@ -161,6 +171,7 @@ fn default_radius() -> f64 {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PhysicsSettings {
     #[serde(default = "default_gravity")]
     pub gravity: Vec2,
@@ -196,6 +207,7 @@ impl Default for PhysicsSettings {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Camera2DData {
     #[serde(default)]
     pub position: Vec2,
@@ -238,6 +250,7 @@ impl Default for Vec2 {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct SceneFile {
     #[serde(default)]
     pub entities: Vec<SceneEntity>,
@@ -250,6 +263,7 @@ pub struct SceneFile {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct SceneEntity {
     pub id: String,
     #[serde(default)]
@@ -280,6 +294,7 @@ pub struct SceneEntity {
 /// evaluate bones, meshes or blending. The only declared asset kind for this
 /// today is Spine, and the host owns that runtime.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct AnimationData {
     pub asset: String,
     pub animation: String,
@@ -328,6 +343,7 @@ pub struct EffectInstance {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct SpriteData {
     pub asset: String,
     #[serde(default = "default_sprite_size")]
@@ -453,105 +469,20 @@ pub(crate) struct World {
 impl World {
     pub fn load_scene(&mut self, path: &Path) -> Result<(), Box<Diagnostic>> {
         let text = fs::read_to_string(path).map_err(|err| {
-            Box::new(Diagnostic::error(
-                "SCENE_READ_FAILED",
-                "無法讀取主場景",
-                format!("{}：{}", path.display(), err),
-            ))
+            crate::scene::scene_read_failed(path, err)
         })?;
-        let scene: SceneFile = serde_json::from_str(&text).map_err(|err| {
-            Box::new(Diagnostic::error(
-                "SCENE_INVALID",
-                "主場景不是有效的 Unone scene JSON",
-                format!("{}：{}", path.display(), err),
-            ))
-        })?;
-        self.load_scene_data(scene)
+        let scene = parse_scene_file(&text, path)?;
+        self.apply_scene(scene);
+        Ok(())
     }
 
     pub(crate) fn load_scene_data(&mut self, scene: SceneFile) -> Result<(), Box<Diagnostic>> {
-        if scene.camera.zoom <= 0.0 || !scene.camera.zoom.is_finite() {
-            return Err(Box::new(Diagnostic::error(
-                "SCENE_CAMERA_INVALID",
-                "Camera2D 的 zoom 無效",
-                "Camera2D zoom 必須是大於 0 的有限數字。",
-            )));
-        }
-        if let Some(camera3d) = &scene.camera3d {
-            validate_vec3(camera3d.position, "Camera3D position")?;
-            validate_vec3(camera3d.target, "Camera3D target")?;
-            if !(1.0..179.0).contains(&camera3d.fov_degrees) || !camera3d.fov_degrees.is_finite() {
-                return Err(Box::new(Diagnostic::error(
-                    "SCENE_CAMERA3D_INVALID",
-                    "Camera3D 的 fov_degrees 無效",
-                    "Camera3D fov_degrees 必須是大於 1 且小於 179 的有限數字。",
-                )));
-            }
-        }
-        // Validate every entity before changing this world. A malformed visual
-        // transform must not leave behind a partially loaded scene (or a new
-        // camera/physics configuration) if a host retries the load.
-        for entity in &scene.entities {
-            validate_transform2d(
-                entity.transform,
-                entity.rotation,
-                entity.scale,
-                &format!("Entity '{}' Transform2D", entity.id),
-            )?;
-            if let Some(transform3d) = &entity.transform3d {
-                validate_vec3(transform3d.position, "Transform3D position")?;
-                validate_vec3(transform3d.rotation, "Transform3D rotation")?;
-                validate_scale3d(transform3d.scale)?;
-            }
-            if let Some(mesh3d) = &entity.mesh3d
-                && mesh3d.asset.trim().is_empty()
-            {
-                return Err(Box::new(Diagnostic::error(
-                    "SCENE_MESH3D_INVALID",
-                    "Mesh3D 的 asset 無效",
-                    format!("Entity '{}' 的 Mesh3D asset 不可為空。", entity.id),
-                )));
-            }
-            if let Some(sprite) = &entity.sprite
-                && (sprite.size.x <= 0.0
-                    || sprite.size.y <= 0.0
-                    || !sprite.size.x.is_finite()
-                    || !sprite.size.y.is_finite())
-            {
-                return Err(Box::new(Diagnostic::error(
-                    "SCENE_SPRITE_INVALID",
-                    "Sprite 的 size 無效",
-                    format!(
-                        "Entity '{}' 的 Sprite size 必須是 x、y 都大於 0 的有限數字。",
-                        entity.id
-                    ),
-                )));
-            }
-            if let Some(body) = &entity.rigidbody {
-                if body.mass <= 0.0 || !body.mass.is_finite() {
-                    return Err(Box::new(Diagnostic::error(
-                        "SCENE_PHYSICS_INVALID",
-                        "RigidBody2D 的 mass 無效",
-                        format!("Entity '{}' 的 mass 必須是大於 0 的有限數字。", entity.id),
-                    )));
-                }
-                if body.radius <= 0.0 || !body.radius.is_finite() {
-                    return Err(Box::new(Diagnostic::error(
-                        "SCENE_PHYSICS_INVALID",
-                        "RigidBody2D 的 radius 無效",
-                        format!("Entity '{}' 的 radius 必須是大於 0 的有限數字。", entity.id),
-                    )));
-                }
-                if !body.restitution.is_finite() || !(0.0..=1.0).contains(&body.restitution) {
-                    return Err(Box::new(Diagnostic::error(
-                        "SCENE_PHYSICS_INVALID",
-                        "RigidBody2D 的 restitution 無效",
-                        format!("Entity '{}' 的 restitution 必須介於 0 與 1。", entity.id),
-                    )));
-                }
-            }
-        }
+        validate_typed_scene(&scene)?;
+        self.apply_scene(scene);
+        Ok(())
+    }
 
+    fn apply_scene(&mut self, scene: SceneFile) {
         self.physics = scene.physics;
         self.camera = scene.camera;
         self.camera3d = scene.camera3d;
@@ -585,7 +516,6 @@ impl World {
                 },
             );
         }
-        Ok(())
     }
 
     pub(crate) fn spawn(&mut self, name: &str) -> String {
@@ -1162,7 +1092,7 @@ impl World {
     }
 }
 
-fn validate_vec3(value: Vec3, label: &str) -> Result<(), Box<Diagnostic>> {
+pub(crate) fn validate_vec3(value: Vec3, label: &str) -> Result<(), Box<Diagnostic>> {
     if !value.x.is_finite() || !value.y.is_finite() || !value.z.is_finite() {
         return Err(Box::new(Diagnostic::error(
             "SCENE_TRANSFORM3D_INVALID",
@@ -1173,7 +1103,7 @@ fn validate_vec3(value: Vec3, label: &str) -> Result<(), Box<Diagnostic>> {
     Ok(())
 }
 
-fn validate_transform2d(
+pub(crate) fn validate_transform2d(
     position: Vec2,
     rotation: f64,
     scale: Vec2,
@@ -1196,7 +1126,7 @@ fn validate_transform2d(
     Ok(())
 }
 
-fn validate_scale3d(scale: Vec3) -> Result<(), Box<Diagnostic>> {
+pub(crate) fn validate_scale3d(scale: Vec3) -> Result<(), Box<Diagnostic>> {
     validate_vec3(scale, "Transform3D scale")?;
     if scale.x <= 0.0 || scale.y <= 0.0 || scale.z <= 0.0 {
         return Err(Box::new(Diagnostic::error(

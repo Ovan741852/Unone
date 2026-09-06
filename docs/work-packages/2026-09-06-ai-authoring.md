@@ -208,6 +208,13 @@ primitive；企劃確實需要不存在的 engine capability 才立即回報，�
   Git 與有日期的 devlog，不改舊 immutable package。新 current contract 一份。
 - periodic Claude CLI review 與 source-only/package-only 審查分開；不能用未實跑的
   code review 抵掉平台/test gate，也不能用 #30 抵掉既有 deferred #29。
+- 使用者另要求：本批實作與基本驗證後，以全新、無持續 session 的 Claude CLI
+  做 workflow 架構盲評。只交當時有效的 workflow／contract（init、scene ingestion、
+  API discovery、asset/bundle publication、test/reload 與 host 邊界），不交製作計畫、
+  先前 review 答案或主代理結論。要求具體操作反例與影響範圍，檢查權威來源、
+  engine/game/host 責任、失敗原子性、跨平台一致性與不必要抽象。
+  這是 contract-level 架構審查，不冒充 source/runtime 驗證；不擅改程式。
+  主代理逐項採納／駁回並記錄依據，需架構選擇的問題詢問使用者後再修。
 
 ## 驗收（不能降低）
 

@@ -15,6 +15,13 @@ Unone 是 AI-native 遊戲引擎原型：Rust 負責遊戲引擎機制，Luau �
 
 ## 目前可執行的垂直切片
 
+新遊戲使用既有 `game --project <new-or-empty-directory> --json project init --name <name>`。
+它產生五檔 headless starter（含 idle／Right 輸入兩個測試），並回傳可直接交給
+subprocess 的下一步 argv。企劃／engine package 放在 output 外；init 成功後才 git init。
+starter 通過不代表遊戲完成；請換成自己的玩法與測試。完整寫入／錯誤／scene
+嚴格輸入契約見 [AI 開發流程](docs/ai-workflow.md)。搜尋沒有匹配時可用
+`game api search ""` 讀完整公開索引，不必另找 api list 或猜方法名。
+
 在 engine workspace 執行：
 
 ```powershell

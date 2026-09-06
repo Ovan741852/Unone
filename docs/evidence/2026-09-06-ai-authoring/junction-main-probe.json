@@ -1,0 +1,12 @@
+{
+  "scope": "Main-agent actual Windows junction probe, not symbolic-link privilege tests",
+  "fixture_root": "C:/Temp/unone-authoring-junction-def51f05e4b6477b96307277076e2695",
+  "junction_attributes": "Directory, ReparsePoint",
+  "cases": [
+    {"project_relative_to_fixture": "junction", "command": "game --project <path> --json project init --name JunctionProbe", "exit_code": 1, "ok": false, "code": "PROJECT_ROOT_INVALID", "phase": "preflight", "effects": [], "created_files": [], "created_directories": []},
+    {"project_relative_to_fixture": "junction/new game", "command": "game --project <path> --json project init --name JunctionProbe", "exit_code": 1, "ok": false, "code": "PROJECT_ROOT_INVALID", "phase": "preflight", "effects": [], "created_files": [], "created_directories": []}
+  ],
+  "real_target_children_after_both_calls": [],
+  "cleanup": "Fixture and junction retained; no deletion",
+  "record_kind": "Summary of observed tool output; not raw stdout"
+}

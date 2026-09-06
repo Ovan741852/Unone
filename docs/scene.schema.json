@@ -7,6 +7,7 @@
   "properties": {
     "entities": {
       "type": "array",
+      "description": "Entity ids must be nonblank and unique within this scene (validated by the engine). Empty scenes are allowed.",
       "items": {
         "$ref": "#/$defs/entity"
       }

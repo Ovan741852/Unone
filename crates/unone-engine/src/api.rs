@@ -1,5 +1,7 @@
 use serde::Serialize;
 
+use crate::diagnostics::{ActionSuggestion, Diagnostic, EngineResult};
+
 #[derive(Debug, Clone, Serialize)]
 pub struct ApiParameter {
     pub name: String,
@@ -55,6 +57,53 @@ pub fn search(query: &str) -> Vec<ApiDescriptor> {
             terms.iter().any(|term| searchable.contains(term))
         })
         .collect()
+}
+
+/// Search the public engine API and attach the shared no-match guidance.
+///
+/// An empty query is intentionally a complete index request. A non-empty
+/// query with no matches is still a successful search: gameplay verbs may be
+/// game-owned composition rather than a missing engine primitive.
+pub fn api_search_result(query: &str) -> EngineResult<ApiSearchReport> {
+    let matches = search(query);
+    let mut result = EngineResult::success(ApiSearchReport {
+        query: query.to_string(),
+        matches,
+    });
+
+    if !query.trim().is_empty()
+        && result
+            .value
+            .as_ref()
+            .is_some_and(|report| report.matches.is_empty())
+    {
+        let mut diagnostic = Diagnostic::warning(
+            "API_SEARCH_EMPTY",
+            "沒有找到符合語意的 Engine API",
+            "這次搜尋沒有匹配公開 Engine API；玩法動詞可能是 game-owned composition，無匹配不能證明引擎缺少能力。先查看完整 API 索引與 systems，再判斷是否真的需要新的 engine capability。",
+        );
+        diagnostic.facts = serde_json::json!({
+            "search_scope": "public_engine_api",
+            "query": query,
+            "match_count": 0,
+        });
+        diagnostic.suggested_actions = vec![
+            ActionSuggestion {
+                action: "search_api_index".to_string(),
+                description: "列出目前公開的完整 Engine API 索引；空字串查詢會回傳全部 API。"
+                    .to_string(),
+                command: Some("game api search \"\" --json".to_string()),
+            },
+            ActionSuggestion {
+                action: "list_systems".to_string(),
+                description: "列出引擎宣告的 systems 與其可用狀態。".to_string(),
+                command: Some("game systems list --json".to_string()),
+            },
+        ];
+        result.diagnostics.push(diagnostic);
+    }
+
+    result
 }
 
 pub fn describe(name: &str) -> Option<ApiDescriptor> {
@@ -718,7 +767,92 @@ fn descriptor(
 
 #[cfg(test)]
 mod tests {
-    use super::{descriptors, typings};
+    use super::{api_search_result, descriptors, search, typings};
+
+    #[test]
+    fn empty_query_is_the_complete_index_without_empty_warning() {
+        let result = api_search_result("");
+        let report = result.value.expect("search should return a report");
+
+        assert!(result.ok);
+        assert!(result.diagnostics.is_empty());
+        assert_eq!(report.query, "");
+        assert_eq!(report.matches.len(), search("").len());
+        assert!(!report.matches.is_empty());
+    }
+
+    #[test]
+    fn no_match_keeps_success_and_has_fixed_discovery_guidance() {
+        let result = api_search_result("攻擊");
+        let report = result
+            .value
+            .as_ref()
+            .expect("search should return a report");
+        let diagnostic = result
+            .diagnostics
+            .first()
+            .expect("no-match search should explain the next step");
+
+        assert!(result.ok);
+        assert_eq!(report.query, "攻擊");
+        assert!(report.matches.is_empty());
+        assert_eq!(diagnostic.code, "API_SEARCH_EMPTY");
+        assert!(matches!(
+            diagnostic.severity,
+            crate::diagnostics::DiagnosticSeverity::Warning
+        ));
+        assert_eq!(
+            diagnostic.facts,
+            serde_json::json!({
+                "search_scope": "public_engine_api",
+                "query": "攻擊",
+                "match_count": 0,
+            })
+        );
+        assert!(diagnostic.explanation.contains("game-owned composition"));
+        assert_eq!(diagnostic.suggested_actions.len(), 2);
+        assert_eq!(
+            diagnostic
+                .suggested_actions
+                .iter()
+                .map(|action| action.action.as_str())
+                .collect::<Vec<_>>(),
+            vec!["search_api_index", "list_systems"]
+        );
+        assert_eq!(
+            diagnostic.suggested_actions[0].command.as_deref(),
+            Some("game api search \"\" --json")
+        );
+        assert_eq!(
+            diagnostic.suggested_actions[1].command.as_deref(),
+            Some("game systems list --json")
+        );
+        for action in &diagnostic.suggested_actions {
+            assert!(
+                !action
+                    .command
+                    .as_deref()
+                    .unwrap_or_default()
+                    .contains("攻擊")
+            );
+        }
+    }
+
+    #[test]
+    fn matching_query_keeps_existing_search_results_without_diagnostic() {
+        let result = api_search_result("position");
+
+        assert!(result.ok);
+        assert!(
+            !result
+                .value
+                .as_ref()
+                .expect("search should return a report")
+                .matches
+                .is_empty()
+        );
+        assert!(result.diagnostics.is_empty());
+    }
 
     /// Every documented API must have a Luau type, or `check --types` silently
     /// stops covering it.

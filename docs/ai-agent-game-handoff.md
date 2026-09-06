@@ -41,7 +41,7 @@ bin/game.exe --project <game-root> --json check --types
 
 初始空 project 沒有 UI tree，因此不要求在這份 bootstrap 清單額外執行 `ui preview --strict`。只有 GAME_PLAN 明確需要 UI 時，才建立 View tree 並按 UI 章節使用 preview；需要 save／restore 時才在遊戲與測試中加入 save。
 
-`project init` 只接受明確的 project name，在空目錄建立 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不會覆蓋既有檔案，也不會替遊戲猜測玩法。設定檔、場景與 deterministic test manifest 的 canonical JSON Schema 分別在 `docs/project.schema.json`、`docs/scene.schema.json` 與 `docs/test.schema.json`。UI rect 固定使用 normalized 0..100 × 0..100 logical design space，host 不可猜測 960×540；`project.unone.json.test_files` 只列出 project-relative `.test.json`；測試支援 fixed frames/seed、semantic input 或 input sequence、opaque `load_save`，以及 entity transform、observation、UI tree assertions。CLI 內建的 `bin/luau-analyze.exe` 會由 `bin/game.exe` 自動找到，因此 `check --types` 不需要額外安裝或設定環境變數。任何 structured workflow action 的 `executable: "game"` 都只是邏輯 CLI 名稱；在 immutable package 內固定解析為該 package 的 `bin/game.exe`，並把 `argv` 原樣交給 subprocess argument list，禁止拼接 shell command 或要求 AI 猜 PATH／安裝 alias。CLI 沒有的能力不能自行發明；先查 api search，找不到就回報。
+`project init` 產生五檔 headless starter：config、strict script、example scene、idle/input 兩個 tests；只接受不存在或真正空的目錄（包含 .git／企劃檔也算非空），不覆寫。企劃與引擎包放在 output 外，成功後才 git init。完整結果欄位、部分失敗處理及下一步契約見 [ai-workflow.md](ai-workflow.md#0-先建立或取得專案與-api-語意)。示範測試只證明 starter，不計入遊戲玩法驗收；替換 example 時換掉它們。使用包內 project／scene／test schema 與 engine.d.luau，不猜尺度或 API。logical executable=game 解析成包內 bin/game.exe，argv 原樣交 subprocess，不拼 shell；官方 analyzer 由同目錄自動找到。
 
 最小測試檔範例（完整 schema 仍以 `docs/test.schema.json` 為準）：
 
@@ -72,7 +72,7 @@ bin/game.exe --project <game-root> --json check --types
 
 `verify` 的畫面（`layout`）step 在專案發布 UI 時檢查結構：節點是否重疊；引擎不讀 GAME_PLAN 來決定執行。`text fit` 是測量值不是判決。沒有發布 UI 的遊戲在 `verify` 得到 `not_applicable`，不是失敗，也不應為了 gate 新增 UI；直接跑 `ui preview --strict` 仍可能回 `UI_TREE_NOT_PUBLISHED`。save／restore 只在企劃需要存檔時加入測試。
 
-任何一項下列情況都算 blocker：命令與文件不一致、semantic diagnostic 不足以判斷下一步、API 找不到、typed Luau contract 不成立、同一問題在兩個以上遊戲會重現、host 不能載入／reload／儲存、或企劃需要 engine 未宣告的 primitive。
+下列情況算 blocker：命令與文件不一致、semantic diagnostic 不足以判斷下一步、typed Luau contract 不成立、同一問題在兩個以上遊戲會重現、host 不能載入／reload／儲存、或企劃確實需要 engine 未宣告的 primitive。API 搜尋無匹配本身不是 blocker：先用 `api search ""` 完整索引及 `systems list` 判斷玩法是否能由既有 primitive 組合；不能捏造 API，也不能重造缺少的必要引擎機制。
 
 發現 blocker 後，子代理必須立刻：
 

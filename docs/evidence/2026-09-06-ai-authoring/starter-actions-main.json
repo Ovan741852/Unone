@@ -1,0 +1,332 @@
+{
+  "root": "C:\\Temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07",
+  "init_exit": 0,
+  "init": {
+    "ok": true,
+    "value": {
+      "project": "AuthoringProbe",
+      "root": "\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07",
+      "files": [
+        {
+          "path": "project.unone.json",
+          "role": "project_config"
+        },
+        {
+          "path": "scenes/main.scene.json",
+          "role": "main_scene"
+        },
+        {
+          "path": "scripts/main.luau",
+          "role": "entry_script"
+        },
+        {
+          "path": "tests/bootstrap-idle.test.json",
+          "role": "bootstrap_idle_test"
+        },
+        {
+          "path": "tests/bootstrap-input.test.json",
+          "role": "bootstrap_input_test"
+        }
+      ],
+      "workflow_scope": "new_unmodified_scaffold",
+      "suggested_next_actions": [
+        {
+          "executable": "game",
+          "argv": [
+            "--project",
+            "\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07",
+            "--json",
+            "verify"
+          ],
+          "reason": "先驗證剛產生且尚未修改的五檔 starter；這只確認 onboarding smoke。",
+          "prerequisites": []
+        },
+        {
+          "executable": "game",
+          "argv": [
+            "--project",
+            "\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07",
+            "--json",
+            "bundle",
+            "pack"
+          ],
+          "reason": "verify 後才建立 bundle；init 不會隱式 pack 或啟用 bundle。",
+          "prerequisites": [
+            0
+          ]
+        },
+        {
+          "executable": "game",
+          "argv": [
+            "--project",
+            "\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07",
+            "--json",
+            "bundle",
+            "install",
+            "--all"
+          ],
+          "reason": "pack 完成後啟用 manifest 宣告的全部 bundle；此步仍由作者明確執行。",
+          "prerequisites": [
+            1
+          ]
+        },
+        {
+          "executable": "game",
+          "argv": [
+            "--project",
+            "\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07",
+            "--json",
+            "bundle",
+            "inspect"
+          ],
+          "reason": "install 後檢視目前 active bundle；新增資產後應回到既有 pack → verify/strict → install 流程。",
+          "prerequisites": [
+            2
+          ]
+        }
+      ]
+    },
+    "diagnostics": [],
+    "effects": [
+      "created_directory:\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07",
+      "created_file:\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07\\project.unone.json",
+      "created_directory:\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07\\scenes",
+      "created_file:\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07\\scenes\\main.scene.json",
+      "created_directory:\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07\\scripts",
+      "created_file:\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07\\scripts\\main.luau",
+      "created_directory:\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07\\tests",
+      "created_file:\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07\\tests\\bootstrap-idle.test.json",
+      "created_file:\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07\\tests\\bootstrap-input.test.json"
+    ]
+  },
+  "steps": [
+    {
+      "argv": [
+        "--project",
+        "\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07",
+        "--json",
+        "verify"
+      ],
+      "exit_code": 0,
+      "result": {
+        "ok": true,
+        "value": {
+          "project": "AuthoringProbe",
+          "steps": [
+            {
+              "name": "types",
+              "status": "passed",
+              "summary": "entrypoints [\"start\", \"update\"], strict_mode true",
+              "command": "game check --types",
+              "diagnostics": []
+            },
+            {
+              "name": "assets",
+              "status": "passed",
+              "summary": "0 declared, 0 scene references, ready_for_packaging true",
+              "command": "game asset inspect --strict",
+              "diagnostics": []
+            },
+            {
+              "name": "layout",
+              "status": "not_applicable",
+              "summary": "the game publishes no UI tree",
+              "command": "game ui preview --strict --frames 1 --seed 42",
+              "diagnostics": []
+            },
+            {
+              "name": "tests",
+              "status": "passed",
+              "summary": "2/2 deterministic cases passed",
+              "command": "game test",
+              "diagnostics": []
+            }
+          ],
+          "passed": 3,
+          "failed": 0,
+          "not_applicable": 1
+        },
+        "diagnostics": [],
+        "effects": [
+          "verify ran 4 gates: 3 passed, 0 failed, 1 not applicable"
+        ]
+      }
+    },
+    {
+      "argv": [
+        "--project",
+        "\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07",
+        "--json",
+        "bundle",
+        "pack"
+      ],
+      "exit_code": 0,
+      "result": {
+        "ok": true,
+        "value": {
+          "project_root": "\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07",
+          "manifest_path": "\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07\\bundles\\manifest.json",
+          "manifest_version": 1,
+          "manifest_changed": true,
+          "project_config_changed": true,
+          "bundles": [
+            {
+              "id": "project",
+              "version": "1",
+              "source": "project.unone.json",
+              "sha256": "29f28d71c594007b7d00e6ece6861cad254cfaf055883f527f36cca7ea1a069e",
+              "size_bytes": 256,
+              "dependencies": []
+            },
+            {
+              "id": "script",
+              "version": "1",
+              "source": "scripts/main.luau",
+              "sha256": "7eef070cb61e41aa5ed83018e83e6e1951ba3a2a4d6b82051ef89cdb5ff51978",
+              "size_bytes": 3604,
+              "dependencies": [
+                "project"
+              ]
+            },
+            {
+              "id": "scene",
+              "version": "1",
+              "source": "scenes/main.scene.json",
+              "sha256": "da7bbc5fb50a5f6b41b08279b6ba3a13ef6fc1458a94c1b10e5774bbac1e3b3f",
+              "size_bytes": 123,
+              "dependencies": [
+                "project"
+              ]
+            }
+          ]
+        },
+        "diagnostics": [],
+        "effects": []
+      }
+    },
+    {
+      "argv": [
+        "--project",
+        "\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07",
+        "--json",
+        "bundle",
+        "install",
+        "--all"
+      ],
+      "exit_code": 0,
+      "result": {
+        "ok": true,
+        "value": {
+          "manifest_version": 1,
+          "valid": true,
+          "entries": [
+            {
+              "id": "project",
+              "source": "project.unone.json",
+              "source_exists": true,
+              "size_valid": true,
+              "hash_valid": true,
+              "cached": true,
+              "cache_valid": true,
+              "available": true,
+              "error": null
+            },
+            {
+              "id": "script",
+              "source": "scripts/main.luau",
+              "source_exists": true,
+              "size_valid": true,
+              "hash_valid": true,
+              "cached": true,
+              "cache_valid": true,
+              "available": true,
+              "error": null
+            },
+            {
+              "id": "scene",
+              "source": "scenes/main.scene.json",
+              "source_exists": true,
+              "size_valid": true,
+              "hash_valid": true,
+              "cached": true,
+              "cache_valid": true,
+              "available": true,
+              "error": null
+            }
+          ],
+          "active_generation": 1,
+          "active_bundles": {
+            "project": "29f28d71c594007b7d00e6ece6861cad254cfaf055883f527f36cca7ea1a069e",
+            "scene": "da7bbc5fb50a5f6b41b08279b6ba3a13ef6fc1458a94c1b10e5774bbac1e3b3f",
+            "script": "7eef070cb61e41aa5ed83018e83e6e1951ba3a2a4d6b82051ef89cdb5ff51978"
+          }
+        },
+        "diagnostics": [],
+        "effects": [
+          "active bundle generation 1 created"
+        ]
+      }
+    },
+    {
+      "argv": [
+        "--project",
+        "\\\\?\\C:\\temp\\unone-starter actions 遊戲-76a76dab4a4f43ca8d2abbf4d9ab9b07",
+        "--json",
+        "bundle",
+        "inspect"
+      ],
+      "exit_code": 0,
+      "result": {
+        "ok": true,
+        "value": {
+          "manifest_version": 1,
+          "valid": true,
+          "entries": [
+            {
+              "id": "project",
+              "source": "project.unone.json",
+              "source_exists": true,
+              "size_valid": true,
+              "hash_valid": true,
+              "cached": true,
+              "cache_valid": true,
+              "available": true,
+              "error": null
+            },
+            {
+              "id": "script",
+              "source": "scripts/main.luau",
+              "source_exists": true,
+              "size_valid": true,
+              "hash_valid": true,
+              "cached": true,
+              "cache_valid": true,
+              "available": true,
+              "error": null
+            },
+            {
+              "id": "scene",
+              "source": "scenes/main.scene.json",
+              "source_exists": true,
+              "size_valid": true,
+              "hash_valid": true,
+              "cached": true,
+              "cache_valid": true,
+              "available": true,
+              "error": null
+            }
+          ],
+          "active_generation": 1,
+          "active_bundles": {
+            "project": "29f28d71c594007b7d00e6ece6861cad254cfaf055883f527f36cca7ea1a069e",
+            "scene": "da7bbc5fb50a5f6b41b08279b6ba3a13ef6fc1458a94c1b10e5774bbac1e3b3f",
+            "script": "7eef070cb61e41aa5ed83018e83e6e1951ba3a2a4d6b82051ef89cdb5ff51978"
+          }
+        },
+        "diagnostics": [],
+        "effects": []
+      }
+    }
+  ]
+}
+

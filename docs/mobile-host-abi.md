@@ -27,6 +27,14 @@ Include `crates/unone-mobile-ffi/include/unone_mobile.h` from the native wrapper
 
 ## Lifecycle sequence
 
+Scene fragments in project JSON use the same strict scene parser and semantic
+validator as disk loading: unknown nested fields and blank/duplicate entity ids
+are rejected before replacing the runtime. Scene diagnostics retain the existing
+structured error channel. Their source is null; line/column are relative to the
+scene fragment, with `source_kind=host_payload_scene`,
+`location_scope=scene_fragment` and `pointer_base=/scene`, not the full envelope.
+Malformed outer envelopes still use the existing host parse-error path.
+
 ```text
 init
   → resize (surface available)

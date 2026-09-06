@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use unone_engine::{
-    BundleSpec, BundleVerifier, Diagnostic, EngineRuntime, InputFrame, PointerInput, SceneFile,
-    Vec2,
+    BundleSpec, BundleVerifier, Diagnostic, EngineRuntime, InputFrame, PointerInput, Vec2,
+    parse_scene_fragment,
 };
 
 #[derive(Debug, Deserialize)]
@@ -9,7 +9,7 @@ struct HostProject {
     project: String,
     script: String,
     #[serde(default)]
-    scene: Option<SceneFile>,
+    scene: Option<Box<serde_json::value::RawValue>>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -234,12 +234,21 @@ pub unsafe extern "C" fn unone_mobile_load_project(
             return session.write_error(format!("project payload is invalid JSON: {error}"));
         }
     };
+    let scene = match payload
+        .scene
+        .as_deref()
+        .map(|raw| parse_scene_fragment(raw.get()))
+        .transpose()
+    {
+        Ok(scene) => scene,
+        Err(diagnostic) => return session.write_diagnostic(*diagnostic),
+    };
     let project_name = payload.project.clone();
     let runtime = match EngineRuntime::load_source_with_seed(
         payload.project,
         "main.luau",
         payload.script,
-        payload.scene,
+        scene,
         seed,
     ) {
         Ok(runtime) => runtime,
@@ -729,6 +738,135 @@ return Game
         let length = unsafe { unone_mobile_observation_len(session) };
         let bytes = unsafe { std::slice::from_raw_parts(pointer, length) };
         serde_json::from_slice(bytes).unwrap()
+    }
+
+    #[test]
+    fn c_abi_scene_fragment_uses_shared_diagnostic_context() {
+        let session = unone_mobile_init();
+        let project = serde_json::to_vec(&json!({
+            "project": "MobileInvalidScene",
+            "script": SCRIPT,
+            "scene": {"entities": [], "typo": true}
+        }))
+        .unwrap();
+
+        assert_eq!(
+            unsafe { unone_mobile_load_project(session, project.as_ptr(), project.len(), 42) },
+            -1
+        );
+        let diagnostic = output(session)["diagnostic"].clone();
+        assert_eq!(diagnostic["code"], json!("SCENE_INVALID"));
+        assert_eq!(
+            diagnostic["facts"]["source_kind"],
+            json!("host_payload_scene")
+        );
+        assert_eq!(
+            diagnostic["facts"]["location_scope"],
+            json!("scene_fragment")
+        );
+        assert_eq!(diagnostic["facts"]["pointer_base"], json!("/scene"));
+        assert!(diagnostic["facts"]["line"].is_number());
+        assert!(diagnostic["facts"]["column"].is_number());
+        assert!(diagnostic["source"].is_null());
+        unsafe { unone_mobile_shutdown(session) };
+    }
+
+    #[test]
+    fn c_abi_rejects_negative_scene_fixture_matrix() {
+        let fixtures = [
+            (
+                "root-typo",
+                r#"{"entities":[],"typo":true}"#,
+                "SCENE_INVALID",
+                None,
+            ),
+            (
+                "deep-vector-typo",
+                r#"{"entities":[{"id":"player","transform":{"x":0,"y":0,"z":0}}]}"#,
+                "SCENE_INVALID",
+                None,
+            ),
+            (
+                "blank-id",
+                r#"{"entities":[{"id":"  \t"}]}"#,
+                "SCENE_ENTITY_ID_INVALID",
+                Some("/entities/0/id"),
+            ),
+            (
+                "duplicate-id",
+                r#"{"entities":[{"id":"player"},{"id":"player"}]}"#,
+                "SCENE_ENTITY_ID_DUPLICATE",
+                Some("/entities/1/id"),
+            ),
+            (
+                "invalid-geometry",
+                r#"{"entities":[{"id":"player","sprite":{"asset":"asset://player","size":{"x":0,"y":1}}}]}"#,
+                "SCENE_SPRITE_INVALID",
+                None,
+            ),
+        ];
+
+        for (name, scene, code, json_pointer) in fixtures {
+            let session = unone_mobile_init();
+            let valid_project = payload();
+            assert_eq!(
+                unsafe {
+                    unone_mobile_load_project(
+                        session,
+                        valid_project.as_ptr(),
+                        valid_project.len(),
+                        42,
+                    )
+                },
+                0,
+                "valid fixture setup"
+            );
+            let before_entities = output(session)["world"]["entities"].clone();
+            let scene: Value = serde_json::from_str(scene).unwrap();
+            let project = serde_json::to_vec(&json!({
+                "project": format!("MobileInvalidScene-{name}"),
+                "script": SCRIPT,
+                "scene": scene,
+            }))
+            .unwrap();
+            assert_eq!(
+                unsafe { unone_mobile_load_project(session, project.as_ptr(), project.len(), 42) },
+                -1,
+                "fixture {name}"
+            );
+            let diagnostic = output(session)["diagnostic"].clone();
+            assert_eq!(diagnostic["code"], json!(code), "fixture {name}");
+            assert_eq!(
+                diagnostic["facts"]["source_kind"],
+                json!("host_payload_scene"),
+                "fixture {name}"
+            );
+            assert_eq!(
+                diagnostic["facts"]["location_scope"],
+                json!("scene_fragment"),
+                "fixture {name}"
+            );
+            assert_eq!(diagnostic["facts"]["pointer_base"], json!("/scene"));
+            assert!(diagnostic["source"].is_null(), "fixture {name}");
+            if code == "SCENE_INVALID" {
+                assert!(diagnostic["facts"]["line"].is_number(), "fixture {name}");
+                assert!(diagnostic["facts"]["column"].is_number(), "fixture {name}");
+            } else {
+                assert!(diagnostic["facts"]["line"].is_null(), "fixture {name}");
+                assert!(diagnostic["facts"]["column"].is_null(), "fixture {name}");
+            }
+            match json_pointer {
+                Some(pointer) => assert_eq!(diagnostic["facts"]["json_pointer"], json!(pointer)),
+                None => assert!(diagnostic["facts"]["json_pointer"].is_null()),
+            }
+            assert_eq!(unsafe { unone_mobile_tick(session) }, 0, "fixture {name}");
+            let after_failed_load = output(session);
+            assert_eq!(
+                after_failed_load["world"]["entities"], before_entities,
+                "failed scene load replaced the mobile runtime: {name}"
+            );
+            unsafe { unone_mobile_shutdown(session) };
+        }
     }
 
     #[test]

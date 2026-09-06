@@ -10,7 +10,7 @@ use crate::{
     bundle::{BundleManager, BundleManifest, digest_bytes},
     diagnostics::{ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult},
     project::{ProjectFileStatus, ProjectPaths, resolve_project_path},
-    world::SceneFile,
+    scene::{parse_scene_file, scene_read_failed},
 };
 
 pub const SUPPORTED_ASSET_MANIFEST_VERSION: u32 = 1;
@@ -1109,19 +1109,9 @@ pub(crate) fn read_scene_references(
     };
     let scene_path = project_path_from_path(&paths.root, scene_path, "main scene")?;
     let text = fs::read_to_string(&scene_path).map_err(|error| {
-        Box::new(Diagnostic::error(
-            "SCENE_READ_FAILED",
-            "無法讀取主場景",
-            format!("{}：{}", scene_path.display(), error),
-        ))
+        scene_read_failed(&scene_path, error)
     })?;
-    let scene: SceneFile = serde_json::from_str(&text).map_err(|error| {
-        Box::new(Diagnostic::error(
-            "SCENE_INVALID",
-            "主場景不是有效的 Unone scene JSON",
-            format!("{}：{}", scene_path.display(), error),
-        ))
-    })?;
+    let scene = parse_scene_file(&text, &scene_path)?;
     let mut references = Vec::new();
     for entity in scene.entities {
         if let Some(sprite) = entity.sprite {
