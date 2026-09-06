@@ -7,7 +7,7 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-use crate::diagnostics::{Diagnostic, EngineResult};
+use crate::diagnostics::{ActionSuggestion, Diagnostic, EngineResult};
 use crate::world::Vec2;
 
 #[derive(Debug, Clone, Deserialize)]
@@ -610,12 +610,24 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
     let absolute = match absolute_init_root(requested) {
         Ok(path) => path,
         Err(explanation) => {
-            return Err(Box::new(InitPreflightFailure {
-                diagnostic: Diagnostic::error(
-                    "PROJECT_ROOT_INVALID",
-                    "project root 路徑無效",
-                    explanation,
+            // Saying what is wrong without saying what to type sends the author
+            // guessing at path syntax, which is where `..` came from.
+            let mut diagnostic = Diagnostic::error(
+                "PROJECT_ROOT_INVALID",
+                "project root 路徑無效",
+                explanation,
+            );
+            diagnostic.suggested_actions.push(ActionSuggestion {
+                action: "use_absolute_project_root".to_string(),
+                description: "改用絕對路徑；相對路徑不可含 '..'。PowerShell 可先建目錄再解析："
+                    .to_string(),
+                command: Some(
+                    "New-Item -ItemType Directory -Force ../my-game | Out-Null; game --project (Resolve-Path ../my-game) --json project init --name MyGame"
+                        .to_string(),
                 ),
+            });
+            return Err(Box::new(InitPreflightFailure {
+                diagnostic,
                 root: None,
                 failed_path: requested_text,
             }));

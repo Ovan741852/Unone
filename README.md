@@ -36,8 +36,11 @@ cargo test --workspace
 Then make a game. The starter is five files and passes its own gates:
 
 ```powershell
-cargo run -p unone-cli -- --project ../my-game --json project init --name MyGame
-cargo run -p unone-cli -- --project ../my-game --json verify
+# The engine refuses a project path containing '..', so resolve it first.
+New-Item -ItemType Directory -Force ../my-game | Out-Null
+$game = (Resolve-Path ../my-game).Path
+cargo run -p unone-cli -- --project $game --json project init --name MyGame
+cargo run -p unone-cli -- --project $game --json verify
 ```
 
 `verify` should report four gates: `types`, `assets`, `tests` passing and
