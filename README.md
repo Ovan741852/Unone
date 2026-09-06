@@ -2,10 +2,57 @@
 
 Unone is an AI-native game engine prototype: Rust owns engine mechanisms, while Luau owns game rules and content. The engine is still in early development; its long-term goal is complete only after seven game validations pass.
 
+## Getting started from a clone
+
+Everything below runs from the repository root. It does not need the validation
+games, which live in a separate directory and are **not part of this repository**.
+
+Prerequisites:
+
+- **Rust** — `rust-toolchain.toml` pins the channel and targets, so `rustup`
+  installs the right one on first build. Nothing else to choose.
+- **PowerShell** — the scripts here are `.ps1`.
+- **Python 3** — only for `python -m http.server`, to look at the Web hosts.
+- **Emscripten** — only if you want the Web runtime. Setup is in
+  [docs/platform-toolchain.md](docs/platform-toolchain.md). Skip it until you
+  need a browser.
+
+```powershell
+git clone https://github.com/Ovan741852/Unone.git
+cd Unone
+cargo build -p unone-cli
+
+# The official luau-analyze is a development-time tool and is deliberately not
+# committed (decision 0005). Without it `verify`'s types gate fails, so fetch
+# the pinned build once; the script checks the download against a recorded hash.
+powershell -File scripts/install-luau-analyze.ps1
+
+cargo test --workspace
+```
+
+Then make a game. The starter is five files and passes its own gates:
+
+```powershell
+cargo run -p unone-cli -- --project ../my-game --json project init --name MyGame
+cargo run -p unone-cli -- --project ../my-game --json verify
+```
+
+`verify` should report four gates: `types`, `assets`, `tests` passing and
+`layout` `not_applicable` (the starter draws no UI). That is the whole loop —
+edit `scripts/main.luau`, add assertions to the tests, run `verify` again.
+
+Keep the game outside this repository. `game api search ""` prints the complete
+public API index; there is no separate list to find and no method names to guess.
+
 ## Workspace
 
+The paths in the command examples below are the ones this engine is developed
+against. They are **one machine's layout**, not a requirement: the validation
+games are a separate directory that this repository does not contain, and every
+command takes `--project <path>`.
+
 - Engine: `D:/Projects/Unone`
-- Validation games: `D:/Projects/Unone_Games`
+- Validation games: `D:/Projects/Unone_Games` (separate; not in this repository)
 - Engine roadmap: [docs/roadmap.md](docs/roadmap.md)
 - Technical plan: [docs/ai-native-game-engine-plan-v0.1.md](docs/ai-native-game-engine-plan-v0.1.md)
 - AI CLI workflow: [docs/ai-workflow.md](docs/ai-workflow.md)

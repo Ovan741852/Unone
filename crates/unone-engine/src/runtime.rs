@@ -1866,11 +1866,22 @@ fn run_luau_analyzer_with(
                 "error": err.to_string(),
                 "override_environment": "UNONE_LUAU_ANALYZER",
             });
-            diagnostic.suggested_actions = vec![ActionSuggestion {
-                action: "install_luau_analyzer".to_string(),
-                description: "Install the official luau-analyze, or set UNONE_LUAU_ANALYZER to the executable path.".to_string(),
-                command: Some("$env:UNONE_LUAU_ANALYZER = 'D:/tools/luau-analyze.exe'".to_string()),
-            }];
+            diagnostic.suggested_actions = vec![
+                ActionSuggestion {
+                    action: "install_luau_analyzer".to_string(),
+                    description: "Fetch the pinned official analyzer into .toolcache. Run it from the engine repository root; it verifies the download against a recorded hash.".to_string(),
+                    command: Some(
+                        "powershell -File scripts/install-luau-analyze.ps1".to_string(),
+                    ),
+                },
+                ActionSuggestion {
+                    action: "use_existing_luau_analyzer".to_string(),
+                    description: "Or point the engine at an analyzer you already have.".to_string(),
+                    command: Some(
+                        "$env:UNONE_LUAU_ANALYZER = 'D:/tools/luau-analyze.exe'".to_string(),
+                    ),
+                },
+            ];
             Box::new(diagnostic)
         })?;
     let stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
@@ -1973,11 +1984,17 @@ fn analyzer_path() -> PathBuf {
             return packaged_tool;
         }
     }
-    let local_tool = env::current_dir()
-        .ok()
-        .map(|root| root.join(".toolcache/luau-0.734/luau-analyze.exe"));
-    if let Some(path) = local_tool.filter(|path| path.is_file()) {
-        return path;
+    // Walk up from the working directory, not just look in it: an author
+    // running the CLI from a subdirectory of the engine repository should get
+    // the same analyzer as one standing at the root, rather than a silent
+    // "analyzer not found" that depends on where they happened to be.
+    if let Ok(cwd) = env::current_dir() {
+        for root in cwd.ancestors() {
+            let candidate = root.join(".toolcache/luau-0.734/luau-analyze.exe");
+            if candidate.is_file() {
+                return candidate;
+            }
+        }
     }
     PathBuf::from("luau-analyze")
 }
