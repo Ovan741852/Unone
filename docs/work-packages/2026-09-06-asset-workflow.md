@@ -185,10 +185,11 @@ Decision 0025 的一般盲測/嚴格 gate 原則未全部被取代，保留並�
 source-only 覆核皆已完成，未見新增可證實 P1/P2。主代理已做 Rust 語法解析、diff check 與
 Node 5/5（stub）驗證；不把這些稱為 Rust 編譯、Wasm 或 real-browser 通過。
 
-1. 等使用者回覆是否清理唯一指定的 `target/debug/incremental`，不可把
-   async 選項預選視為授權。詳見 disk-pressure issue。沒有自行清 cache。
-2. 若獲准，重新確認 exact target／沒有 active Cargo-rustc-link，再只清
-   該可重建快取並記錄前後磁碟量；不可刪 Games、`.git`、其他 target 或舊封裝。
+1. 使用者已明確批准只清理 `target/debug/incremental`。主代理完成 exact
+   target／ancestor／children reparse 與 active build 的唯讀檢查。
+2. 刪除命令被工具執行政策拒絕，沒有刪除任何快取或啟動 Cargo；需使用者
+   手動清理唯一指定目錄後再量測空間。詳見 disk-pressure issue；不繞過
+   政策、不刪 Games、`.git`、其他 target 或舊封裝。
 3. 依序重跑 workspace tests（明示 Windows link privilege skip）、clippy、
    CLI build、MCP smoke。用主代理保留的原 probe 重跑 corrupt generation、
    metadata mismatch、output collision、post-activation Junction 反例。

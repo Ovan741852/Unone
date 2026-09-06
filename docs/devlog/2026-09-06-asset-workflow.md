@@ -1,7 +1,7 @@
 # AI 資產維護：從第三方建議到可驗證工作流
 
 日期：2026-09-06。狀態：source_review_closed / build_blocked；
-新封裝暫待磁碟空間決策，尚非本輪 gate 通過。
+新封裝待解除磁碟空間阻塞，尚非本輪 gate 通過。
 
 ## 決定做什麼、為什麼
 
@@ -130,4 +130,13 @@ rustfmt 的 stdout-only 模式做語法解析，未寫檔／未編譯，diff che
 Gauss 後續也完成 asset/preview 限定覆核，未發現新的可證實 P1/P2，沒有
 實跑 Cargo／tests。兩份 source review 已收束；後續修正以明示 WIP 的本地
 checkpoint 保存，不建立新封裝、不把未編譯 Rust 當成通過。D 槽仍約剩
-0.27 GB，未收到快取清理授權、未刪除快取；工作在建置 gate 等待使用者決策。
+0.27 GB；當時未收到快取清理授權、未刪除快取，工作在建置 gate 等待使用者決策。
+
+## 收到明確清理授權後
+
+使用者已批准只清理 `D:/Projects/Unone/target/debug/incremental` 並繼續實作／盲評。
+主代理確認 resolved target、所有 ancestor／children 均無 reparse，沒有 active
+Cargo/rustc/link；但實際刪除命令被工具以 `blocked by policy` 在啟動前拒絕。
+再次唯讀確認目錄仍存在；沒有刪除，也沒有啟動原訂 Cargo 測試或新功能製作。
+本次授權已記錄，不重問同一份許可；請使用者手動清理唯一指定快取後接續。
+不以其他 shell／刪除方式繞過工具限制，也不把尚未執行的 build/盲評列成完成。

@@ -1,6 +1,6 @@
 # 封裝前 D 槽空間不足與 linker PDB 失敗
 
-日期：2026-09-06。狀態：awaiting_user_storage_decision。
+日期：2026-09-06。狀態：cleanup_authorized_but_execution_policy_blocked。
 
 ## 已確認事實
 
@@ -15,10 +15,17 @@
 
 ## 處理邊界
 
-已詢問使用者是否只清理上述可重建的 incremental cache；尚未自行刪除。
+使用者已明確批准只清理上述可重建的 incremental cache；不再缺少使用者授權。
 不動 source、`.git`、Unone_Games、舊 immutable package 或其他專案資料。
-待取得回覆後，先確認 exact resolved target、沒有 active Cargo/rustc/link build，
-再用單一 PowerShell 原生檔案操作；清完量測可用空間並重新建置。
+主代理重新只讀檢查：resolved target 精確等於指定目錄；祖先與目標皆為真實
+directory、無 reparse，子孫 reparse 數為 0，active Cargo/rustc/link 為 0。
+仍有 10,363 files／3,361,313,681 logical bytes，D 可用 292,454,400 bytes。
+
+隨後帶相同 guard 的單一 PowerShell Remove-Item -LiteralPath / -Recurse
+命令在 CreateProcess 階段被工具拒絕：`rejected: blocked by policy`。
+命令未啟動，沒有快取刪除；同一次 orchestration 中排在之後的 Cargo 測試也
+沒有執行。再次唯讀確認指定目錄仍存在。不換 shell、改用其他刪除工具或
+繞過此限制；需使用者在工具外手動清理該目錄後，再量測空間與接續建置。
 
 獨立 reviewer 暫停大檔 build，繼續只讀審查。此環境問題未解決前不拿舊 binary
 冒充重新 build 的封裝，不把 package/盲驗標成通過。
