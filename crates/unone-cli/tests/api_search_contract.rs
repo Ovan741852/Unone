@@ -23,6 +23,22 @@ fn cli_search(project_root: &Path, query: &str) -> Value {
     serde_json::from_slice(&output.stdout).expect("CLI should emit EngineResult JSON")
 }
 
+fn cli_search_from_cwd(current_dir: &Path, project_arg: &Path, query: &str) -> Value {
+    let output = Command::new(env!("CARGO_BIN_EXE_game"))
+        .arg("--project")
+        .arg(project_arg)
+        .args(["--json", "api", "search", query])
+        .current_dir(current_dir)
+        .output()
+        .expect("CLI api search should start");
+    assert!(
+        output.status.success(),
+        "CLI api search failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    serde_json::from_slice(&output.stdout).expect("CLI should emit EngineResult JSON")
+}
+
 fn mcp_search(project_root: &Path, query: &str) -> Value {
     let mut child = Command::new(env!("CARGO_BIN_EXE_game"))
         .arg("--project")
@@ -377,4 +393,93 @@ fn invalid_project_keeps_matching_and_full_index_global_but_blocks_no_match_syst
     assert_eq!(systems["ready"], false);
     assert_eq!(systems["diagnostic"]["code"], "SYSTEM_UNKNOWN");
     assert_eq!(systems["reason"], systems["diagnostic"]["explanation"]);
+}
+
+#[test]
+fn full_index_action_executes_with_a_true_empty_query_from_an_unrelated_cwd() {
+    let search_root = unique_fixture_root("full index missing project");
+    let unrelated_cwd = unique_fixture_root("full index unrelated cwd");
+    fs::create_dir_all(&unrelated_cwd).expect("unrelated cwd should be creatable");
+
+    let no_match = cli_search(&search_root, "攻擊");
+    let full_index = suggested_action(&no_match, "search_api_index");
+    assert_action_readiness(full_index);
+    assert_eq!(full_index["ready"], true);
+    assert_eq!(full_index["executable"], "game");
+    let argv = action_argv(full_index);
+    assert_eq!(
+        argv,
+        vec![
+            "api".to_string(),
+            "search".to_string(),
+            String::new(),
+            "--json".to_string(),
+        ]
+    );
+
+    let output = Command::new(env!("CARGO_BIN_EXE_game"))
+        .args(&argv)
+        .current_dir(&unrelated_cwd)
+        .output()
+        .expect("emitted full-index argv should start from an unrelated cwd");
+    assert!(
+        output.status.success(),
+        "emitted full-index argv failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let full_result: Value =
+        serde_json::from_slice(&output.stdout).expect("full-index command should emit JSON");
+    assert_eq!(full_result["ok"], true);
+    assert_eq!(full_result["value"]["query"], "");
+    assert_eq!(full_result["diagnostics"], json!([]));
+    assert_eq!(full_result["value"]["suggested_next_actions"], json!([]));
+    assert!(!full_result["value"]["matches"]
+        .as_array()
+        .expect("full-index result should contain matches")
+        .is_empty());
+}
+
+#[test]
+fn relative_caller_project_is_canonicalized_before_systems_argv_runs_elsewhere() {
+    let game_a = unique_fixture_root("game A 相對 project");
+    let game_b = unique_fixture_root("game B unrelated project");
+    init_fixture(&game_a, "game-a");
+    init_fixture(&game_b, "game-b");
+    set_physics2d(&game_a, false);
+    set_physics2d(&game_b, true);
+
+    let result = cli_search_from_cwd(&game_a, Path::new("."), "攻擊");
+    assert_eq!(result["ok"], true);
+    let systems_action = suggested_action(&result, "list_systems");
+    assert_action_readiness(systems_action);
+    assert_eq!(systems_action["ready"], true);
+    let argv = action_argv(systems_action);
+    assert_eq!(argv.first().map(String::as_str), Some("--project"));
+    assert_eq!(
+        fs::canonicalize(&argv[1]).expect("emitted project root should exist"),
+        fs::canonicalize(&game_a).expect("game A root should exist")
+    );
+
+    let output = Command::new(env!("CARGO_BIN_EXE_game"))
+        .args(&argv)
+        .current_dir(&game_b)
+        .output()
+        .expect("emitted systems argv should start from game B cwd");
+    assert!(
+        output.status.success(),
+        "emitted systems argv failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let systems_result: Value =
+        serde_json::from_slice(&output.stdout).expect("systems command should emit JSON");
+    assert_eq!(systems_result["ok"], true);
+    assert_eq!(systems_result["value"]["project"], "game-a");
+    let physics2d = systems_result["value"]["systems"]
+        .as_array()
+        .expect("systems report should contain systems")
+        .iter()
+        .find(|system| system["id"] == "physics2d")
+        .expect("systems report should include physics2d");
+    assert_eq!(physics2d["enabled"], false);
+    assert_eq!(physics2d["source"], "project");
 }

@@ -1,0 +1,32 @@
+Claude narrow source review, no tools/no history, exit0. Diff-only review; hypotheses require source or runtime confirmation, not established defects.
+
+## Review: API search project-context change
+
+### 1. Likely defect — inconsistent flag placement makes the "ready" `search_api_index` argv untested and possibly unparseable
+**File:** `crates/unone-engine/src/api.rs`, `suggested_next_actions()` (the `full_index` literal, ~argv `vec!["api","search","",  "--json"]`)
+
+The generated argv puts `--json` **after** the subcommand tokens. Compare:
+- `list_systems` argv (same function): `["--project", <root>, "--json", "systems", "list"]` — global flags *before* the subcommand.
+- The test harness's own working invocation (`cli_search` in `api_search_contract.rs`): `--project <root> --json api search <query>` — same, global flags before subcommand.
+
+If `cli.json` in `main.rs`'s `Cli` struct is not declared `global = true` in clap, then once the subcommand parser (`ApiCommand::Search { meaning }`, which only owns `meaning`) takes over, a trailing `--json` is an unrecognized argument and the invocation errors out — contradicting `ready: true` and the MCP tool docstring's promise of a directly executable argv.
+
+**Repro:** build `game`, then run `game api search "" --json` from a fresh shell. If it errors with "unexpected argument", the bug is confirmed.
+
+**Why it can hide:** every test that touches this action (`no_match_contract_has_fixed_facts_and_discovery_actions`, `nonexistent_project_keeps_search_global_and_blocks_only_systems_action`) only asserts on the argv contents (`argv.iter().any(String::is_empty)`); none of them actually spawn it as a process, unlike `list_systems`, which *is* executed end-to-end in `systems_action_is_bound_to_the_caller_project_across_cwds`. So this path can be silently broken while all tests in the diff pass.
+
+**Fix (pending confirmation of the clap attribute):** reorder to `["--json", "api", "search", ""]`, matching the pattern already proven to work, or confirm `--json` is `global = true` and this is a non-issue.
+
+### 2. Hypothesis — `--project` argv value may not be canonical/absolute in the untested case
+**File:** `crates/unone-engine/src/api.rs`, `suggested_next_actions()`, `let canonical_project = paths.root.to_string_lossy().into_owned();`
+
+The requirement is that the suggested `list_systems` action be "executable safely as argv from another cwd." That only holds if `paths.root` (from `ProjectPaths::discover`) is always absolute. The only test exercising this (`systems_action_is_bound_to_the_caller_project_across_cwds`) passes an already-absolute temp directory (`unique_fixture_root` joins `std::env::temp_dir()`), so it can't distinguish "discover canonicalizes" from "discover just echoes back what was already absolute." If the real CLI's `--project` default (used when the flag isn't passed) is relative (e.g. `.`), and `ProjectPaths::discover` doesn't absolutize `root`, the emitted argv would embed a cwd-relative path that resolves incorrectly once executed from a different working directory — the exact failure mode this feature is supposed to prevent.
+
+**Repro (once `ProjectPaths` source is available):** invoke `game api search "攻擊"` with a relative `--project` (or the default) from directory A, take the emitted `list_systems` argv, run it with `current_dir(B)`, and check whether it still targets A's project.
+
+**Action:** confirm `ProjectPaths::discover` canonicalizes `root`; if not, canonicalize `project_root` explicitly before building the argv in `suggested_next_actions`.
+
+### Not a defect, just noting
+- `main.rs`/`mcp.rs` threading of `project`/`cli.project` into `api_search_result` is consistent with the pre-existing `call_tool(project: &Path, ...)` pattern; assuming `cli.project` is a concrete `PathBuf` (not `Option<PathBuf>`), this compiles and is correct. (If it were `Option<PathBuf>`, it wouldn't compile at all, so this is self-evidently fine or a build-breaking issue you'd already know about.)
+- The rest of the branch logic (empty vs. no-match vs. matching-query paths for `suggested_next_actions`, diagnostic wiring for `SYSTEM_UNKNOWN`, blocked-action shape) is internally consistent with the tests and not itself suspect from the diff.
+

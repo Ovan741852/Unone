@@ -1,48 +1,70 @@
-# Code review 流程
+# Code review and decision records
 
-## 目的
+## Purpose and cadence
 
-定期用 Claude CLI 做第二層 code review，檢查引擎核心是否仍符合 Rust/Luau 邊界、遊戲引擎定位、determinism、hot reload 與語意診斷要求。
+Use Claude CLI as an independent, read-only review layer at meaningful vertical
+slices, every 3-5 commits, and after changes to runtime ownership, lifecycle,
+platform adapters, protocol or data formats. Repeated game-agent failures also
+warrant review. Review is not authorization for the reviewer to edit files.
 
-## 觸發時機
+## Review scope
 
-- 每完成一個重要垂直切片。
-- 每 3–5 個 commits。
-- 修改 runtime ownership、script lifecycle、platform adapter、protocol 或資料格式後。
-- 憤怒鳥 2D 或其他驗證遊戲回報跨專案重複問題時。
+Review correctness, Rust/FFI safety, deterministic simulation, reload behavior,
+semantic diagnostics and engine/host/game boundaries. Require concrete findings
+with file/line, failure scenario and proposed correction. Distinguish a verified
+defect from a hypothesis or missing test. Do not rewrite working architecture
+solely because a reviewer speculates that an existing invariant might be absent.
 
-## 執行原則
+Run non-interactively with read-only access or a supplied fixed diff. Record the
+exact revision range, CLI version, command, exit status and raw response. If the
+review cannot run, preserve the actual failure; do not label it completed.
 
-在專案根目錄以 non-interactive、read-only 方式執行 Claude CLI。review 不直接授權它改檔；修正由主開發流程判斷、實作、測試，再另做 commit。
-
-建議 prompt：
+Suggested prompt:
 
 ```text
-Review the current Unone Rust/Luau engine changes as a senior game-engine reviewer.
-Do not edit files. Inspect the diff and relevant tests. Focus on correctness,
-Rust ownership/FFI safety, deterministic simulation, hot reload, semantic
-diagnostics, platform boundaries, and whether game-specific policy leaked into
-the engine. Report findings by severity with file/line and concrete fixes.
+Review this fixed Unone Rust/Luau diff and relevant code as an independent
+game-engine reviewer. Do not edit files. Report concrete correctness, safety,
+determinism, hot-reload or boundary defects with file/line and reproduction.
+Separate confirmed findings from hypotheses and bounded test gaps.
 ```
 
-## 結果紀錄
+Independent package-only game validation is different: the agent receives only
+an immutable engine package, game plan and empty game directory, not source or
+previous review conclusions. Source review is not proof of host output.
 
-每次 review 在 devlog 記錄：日期、review commit、Claude 版本、執行命令、結果、採納項目與不採納理由。若 CLI 不可用，也要記錄具體錯誤，不以「已 review」代替。
+## Documentation discipline
 
-## 本次狀態
+- ADR: a shared semantic/ownership boundary or a material decision between
+  alternatives. Preserve the rationale, including why rejected options failed.
+- Schema/API docs: field definitions and callable contracts.
+- Issue/devlog plus regression: ordinary fixes, reproduction, impact, root cause,
+  review disposition and evidence.
+- Replace obsolete current instructions in place. Keep historical raw evidence
+  and Git history; neither is authorization to delete current files.
+- Use English for engine-authored guidance and diagnostics. Preserve user data,
+  Unicode regression inputs and original external-review/test output.
 
-2026-09-05：Claude CLI `2.1.206` 曾回報 OAuth session expired，後續第 17–27 次 review 都在約 60–70 秒無輸出後中止，這些不算完成。`2.1.260` 的第 28 次 review 已完成；結果與採納項目見 `docs/issues/2026-09-05-claude-cli-review-findings-28.md`。
+Keep the author's existing aggregate verify workflow. Distributor parity and
+source code review must not become duplicate mandatory author commands.
+Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
-2026-09-06：第 29 次首次因 session limit 未完成，使用者批准先提交。
-現已補完固定 `5ae821e..6ab9b60`：Claude CLI 2.1.260 exit0、無 actionable
-P1/P2；只讀 source/tests，沒有 build/test 實跑。對應追蹤已停止，詳見
-`docs/issues/2026-09-06-claude-cli-review-29.md`；不代表後續變更或產品通過。
+## Recorded reviews
 
-第 30 次已完成 `04af786..4a128d7` 只讀審查；結果及主代理的獨立反例見
-`docs/issues/2026-09-06-claude-cli-review-30.md`。第 29 次已另行完成，
-兩份 review 各自固定範圍；不代表後續修正、平台建置
-或 package-only 盲驗已通過。
-
-第 31 次以 Claude CLI 2.1.260 完成 `4a128d7..c187df8` 唯讀審查，exit0，
-無新增 actionable P1/P2。見 `docs/issues/2026-09-06-claude-cli-review-31.md`；
-此為 source review，不替代獨立 package-only 評估。
+- 2026-09-05: Claude 2.1.206 reported an expired OAuth session. Attempts 17-27
+  were stopped after roughly 60-70 seconds without output, so were not completed
+  reviews. Version 2.1.260 completed review 28:
+  [findings](issues/2026-09-05-claude-cli-review-findings-28.md).
+- Review 29 initially hit a session limit; the user approved committing first.
+  The fixed range 5ae821e..6ab9b60 was subsequently reviewed with 2.1.260, exit 0,
+  no actionable P1/P2. No build/test execution by Claude:
+  [record](issues/2026-09-06-claude-cli-review-29.md).
+- Review 30 covered 04af786..4a128d7. Findings and the main agent's independent
+  counterexample are in [record](issues/2026-09-06-claude-cli-review-30.md).
+- Review 31 covered 4a128d7..c187df8, exit 0, no new actionable P1/P2:
+  [record](issues/2026-09-06-claude-cli-review-31.md).
+- The API project-context review raised two conditional concerns: global CLI
+  flags and canonical roots. Existing code already provides both invariants.
+  Additional tests now execute the emitted empty query and a relative-project
+  action from an unrelated directory; all eight API contract tests passed in
+  the main agent's run. [Raw Claude output](evidence/2026-09-06-ai-authoring/api-context-claude-review.txt).
+  This does not establish new-package or final-game acceptance.
