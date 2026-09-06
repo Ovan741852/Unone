@@ -1,0 +1,255 @@
+{
+  "status": "ready_for_review",
+  "scope": "native-local asset maintenance only",
+  "inputs": {
+    "task": "C:\\Temp\\unone-asset-gate-20260906\\task.md",
+    "engine_package": "C:\\Temp\\unone-asset-gate-20260906\\engine",
+    "game_root": "C:\\Temp\\unone-asset-gate-20260906\\遊戲 資產盲評",
+    "evidence_root": "C:\\Temp\\unone-asset-gate-20260906\\evidence"
+  },
+  "package_verification": {
+    "command": "powershell -NoProfile -ExecutionPolicy Bypass -File C:\\Temp\\unone-asset-gate-20260906\\engine\\scripts\\verify-ai-engine-package.ps1 -PackagePath C:\\Temp\\unone-asset-gate-20260906\\engine",
+    "ok": true,
+    "observed": [
+      "CLI and Web host agree on the UI placement contract",
+      "AI engine package verified"
+    ]
+  },
+  "final_native_local": {
+    "active_generation": 3,
+    "bundle_manifest_version": 3,
+    "bundle_manifest_valid": true,
+    "asset_inspect_strict": {
+      "ok": true,
+      "declared_assets": 3,
+      "static_scene_references": 3,
+      "missing_asset_ids": [],
+      "missing_sources": [],
+      "undeclared_bundles": [],
+      "ready_for_packaging": true,
+      "unreferenced_asset_ids": [
+        "asset://characters/hero-rig"
+      ],
+      "scope": "main_scene_only",
+      "dynamic_luau_assets_included": false
+    },
+    "verify": {
+      "ok": true,
+      "passed": 4,
+      "failed": 0,
+      "not_applicable": 0,
+      "steps": [
+        {
+          "name": "types",
+          "status": "passed",
+          "command": "game check --types"
+        },
+        {
+          "name": "assets",
+          "status": "passed",
+          "command": "game asset inspect --strict"
+        },
+        {
+          "name": "layout",
+          "status": "passed",
+          "command": "game ui preview --strict --frames 1 --seed 42"
+        },
+        {
+          "name": "tests",
+          "status": "passed",
+          "command": "game test"
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "id": "asset://characters/hero",
+      "kind": "texture2d",
+      "bundle": "characters",
+      "source": "assets/characters/hero art/hero revised.svg",
+      "size_bytes": 936,
+      "sha256": "f66dc71a29cc83bdb7e8199081f9da69c4a02460175cdf81ccd61b1e39ee0344",
+      "stable_id_preserved": true,
+      "scene_references": [
+        "hero-left",
+        "hero-right"
+      ],
+      "native_local_matches_authoring": true,
+      "bundle_generation": 3
+    },
+    {
+      "id": "asset://scenes/courtyard",
+      "kind": "texture2d",
+      "bundle": "environment",
+      "source": "assets/scenes/courtyard.svg",
+      "size_bytes": 1251,
+      "sha256": "b7d7fbb1cf46710c8c1b0bcf9e8299a4df925f58b0f81ef9b2c42e595610b4b9",
+      "native_local_matches_authoring": true,
+      "bundle_generation": 3
+    },
+    {
+      "id": "asset://characters/hero-rig",
+      "kind": "spine",
+      "bundle": "characters",
+      "primary": {
+        "path": "assets/characters/hero-rig.json",
+        "size_bytes": 125,
+        "sha256": "df0aae745de617440b0653119462098771c33210f79e37f822aebf519bbfc95b"
+      },
+      "companions": [
+        {
+          "path": "assets/characters/hero-rig.atlas",
+          "size_bytes": 82,
+          "sha256": "84e2aac404b2f7d21393a620b98a491ee5905329ef251e77336b9682049d99c7"
+        },
+        {
+          "path": "assets/characters/hero-rig.page",
+          "size_bytes": 55,
+          "sha256": "6d51cda940eedb5a31b426cf89b9c4c6332c029ee3081fefbeeb1e614c786be0"
+        }
+      ],
+      "native_local_matches_authoring": true,
+      "bundle_generation": 3,
+      "format_claim": "test bytes only; not certified Spine/Effekseer"
+    }
+  ],
+  "staged_states": [
+    {
+      "stage": "hero bytes changed before pack",
+      "active_generation": 1,
+      "describe_matches_authoring": false,
+      "asset_spec_matches": true,
+      "primary_bytes_match": false,
+      "read_result": "old generation 1 bytes returned safely"
+    },
+    {
+      "stage": "hero path/manifest changed before pack",
+      "active_generation": 1,
+      "describe_asset_spec_matches": false,
+      "read_diagnostic": "BUNDLE_GENERATION_MISMATCH"
+    },
+    {
+      "stage": "hero packed before activation",
+      "bundle_manifest_version": 2,
+      "active_generation": 1,
+      "read_diagnostic": "BUNDLE_GENERATION_MISMATCH"
+    },
+    {
+      "stage": "companion packed before activation",
+      "bundle_manifest_version": 3,
+      "active_generation": 2,
+      "describe_diagnostic": "BUNDLE_GENERATION_MISMATCH"
+    }
+  ],
+  "failure_case": {
+    "case": "missing declared companion",
+    "missing_path": "assets/characters/hero-rig.page",
+    "asset_inspect_strict": {
+      "ok": false,
+      "diagnostic": {
+        "code": "ASSET_SOURCE_MISSING",
+        "facts": {
+          "missing_sources": [
+            "assets/characters/hero-rig.page"
+          ]
+        }
+      }
+    },
+    "bundle_pack": {
+      "ok": false,
+      "diagnostic": {
+        "code": "ASSET_SOURCE_NOT_FOUND",
+        "asset_id": "asset://characters/hero-rig"
+      }
+    },
+    "post_failure_active_generation": 3,
+    "post_failure_active_unchanged": true,
+    "recovered": true,
+    "recovery_sha256": "6d51cda940eedb5a31b426cf89b9c4c6332c029ee3081fefbeeb1e614c786be0"
+  },
+  "hashes": [
+    {
+      "path": "project.unone.json",
+      "size_bytes": 375,
+      "sha256": "1f66c0d09a1565f45dc862e88ba82af86d1680a4b4c0e53341b9002a6dc65151"
+    },
+    {
+      "path": "scripts/main.luau",
+      "size_bytes": 5437,
+      "sha256": "1bc77ba25d99f6827c957c316b85aef5fed80320d2cbe4b43815c7b496f64794"
+    },
+    {
+      "path": "scenes/main.scene.json",
+      "size_bytes": 908,
+      "sha256": "ecf4f5ca7f092fe0d16c9c7fc95c36ffb5f18e02b2e1615272f6086cca8f4903"
+    },
+    {
+      "path": "assets/manifest.json",
+      "size_bytes": 636,
+      "sha256": "d5cd61d442ee292b92694a8de8e4f47344b1c222b3b617da0f2d3eecd7b53049"
+    },
+    {
+      "path": "assets/characters/hero art/hero revised.svg",
+      "size_bytes": 936,
+      "sha256": "f66dc71a29cc83bdb7e8199081f9da69c4a02460175cdf81ccd61b1e39ee0344"
+    },
+    {
+      "path": "assets/scenes/courtyard.svg",
+      "size_bytes": 1251,
+      "sha256": "b7d7fbb1cf46710c8c1b0bcf9e8299a4df925f58b0f81ef9b2c42e595610b4b9"
+    },
+    {
+      "path": "assets/characters/hero-rig.json",
+      "size_bytes": 125,
+      "sha256": "df0aae745de617440b0653119462098771c33210f79e37f822aebf519bbfc95b"
+    },
+    {
+      "path": "assets/characters/hero-rig.atlas",
+      "size_bytes": 82,
+      "sha256": "84e2aac404b2f7d21393a620b98a491ee5905329ef251e77336b9682049d99c7"
+    },
+    {
+      "path": "assets/characters/hero-rig.page",
+      "size_bytes": 55,
+      "sha256": "6d51cda940eedb5a31b426cf89b9c4c6332c029ee3081fefbeeb1e614c786be0"
+    },
+    {
+      "path": "bundles/manifest.json",
+      "size_bytes": 1628,
+      "sha256": "ab816dcde02d2e52ddcbd8fe690bf5f059a17b5aab9d469c8749c7a9506327db"
+    },
+    {
+      "path": "bundles/characters.bundle",
+      "size_bytes": 1847,
+      "sha256": "575d59750e087ce4e4e8bbbb9a2983e1c8bcadcf82b6f47e906d5e6797e412b7"
+    },
+    {
+      "path": "bundles/environment.bundle",
+      "size_bytes": 1437,
+      "sha256": "f5fd1a37b84dc7c357093c0bc993ba047286fad942c9b48b06cead0c56e590ed"
+    }
+  ],
+  "next_step_from_package": {
+    "available": true,
+    "source": "asset describe required_next_actions",
+    "scope": "native_local selected asset only",
+    "web_not_inferred": true
+  },
+  "not_tested": [
+    "Web runner/IndexedDB/browser/WebGPU/127.0.0.1:8120",
+    "actual pixel rendering or texture draw correctness",
+    "Spine/Effekseer decoding or playback",
+    "Android/iOS host",
+    "dynamic Luau/host/external asset references"
+  ],
+  "teaching_noise_retained": [
+    "minimal UI tree",
+    "opaque save round-trip",
+    "input replay and deterministic tests"
+  ],
+  "itch_io": {
+    "used": false,
+    "reason": "fixture uses self-authored SVG/test bytes; no third-party asset licensing record is needed"
+  }
+}

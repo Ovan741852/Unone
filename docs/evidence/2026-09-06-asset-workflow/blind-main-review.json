@@ -1,0 +1,29 @@
+{
+  "date": "2026-09-06",
+  "status": "evidence_supplement_pending",
+  "evaluator": "01a074a4-3691-73a1-a8d8-4457994efb51",
+  "package_source": "fe8d122bb9f9684670ad16233e0036d98e003dcc",
+  "game_root": "C:/Temp/unone-asset-gate-20260906/遊戲 資產盲評",
+  "evaluator_report": "C:/Temp/unone-asset-gate-20260906/evidence/validation-report.json",
+  "main_verified": {
+    "all_12_reported_file_hashes_match": true,
+    "verify": {"passed":4,"failed":0,"not_applicable":0,"deterministic_tests_passed":2},
+    "native_active_generation": 3,
+    "native_bundle_entries_valid": 6,
+    "hero_verified_read_sha256": "f66dc71a29cc83bdb7e8199081f9da69c4a02460175cdf81ccd61b1e39ee0344"
+  },
+  "web_actual": {
+    "renderer_available": true,
+    "status": "activated",
+    "manifest_version": 3,
+    "browser_generation": 1,
+    "all_six_bundle_hashes_match_native": true,
+    "declared_assets": 3,
+    "resolved_texture_assets": 2,
+    "scene_entities": ["courtyard-background", "hero-left", "hero-right"],
+    "screenshot": "blind-game-web.png",
+    "limitations": "Browser generation is a separate counter, not native generation3. Dummy rig is not a texture or playback proof. Known sprite center-offset remains: screenshot is not correct positioning/background approval."
+  },
+  "supplement_required": "Evaluator command log is summary, not full JSON. Preserve recoverable original output; otherwise mark new fixture replay separately. Do not fabricate first-run evidence.",
+  "not_passed": ["seven game acceptance", "Android device runtime", "iOS", "production renderer", "Spine/Effekseer playback"]
+}
