@@ -37,8 +37,9 @@ bin/game.exe --project <game-root> --json systems list
 bin/game.exe --project <game-root> --json systems search "<企劃不需要的機制>"
 bin/game.exe --project <game-root> --json asset inspect --strict
 bin/game.exe --project <game-root> --json check --types
-bin/game.exe --project <game-root> ui preview --strict
 ~~~
+
+初始空 project 沒有 UI tree，因此不要求在這份 bootstrap 清單額外執行 `ui preview --strict`。只有 GAME_PLAN 明確需要 UI 時，才建立 View tree 並按 UI 章節使用 preview；需要 save／restore 時才在遊戲與測試中加入 save。
 
 `project init` 只接受明確的 project name，在空目錄建立 `project.unone.json`、`scripts/main.luau` 與 `scenes/main.scene.json`，不會覆蓋既有檔案，也不會替遊戲猜測玩法。設定檔、場景與 deterministic test manifest 的 canonical JSON Schema 分別在 `docs/project.schema.json`、`docs/scene.schema.json` 與 `docs/test.schema.json`。UI rect 固定使用 normalized 0..100 × 0..100 logical design space，host 不可猜測 960×540；`project.unone.json.test_files` 只列出 project-relative `.test.json`；測試支援 fixed frames/seed、semantic input 或 input sequence、opaque `load_save`，以及 entity transform、observation、UI tree assertions。CLI 內建的 `bin/luau-analyze.exe` 會由 `bin/game.exe` 自動找到，因此 `check --types` 不需要額外安裝或設定環境變數。任何 structured workflow action 的 `executable: "game"` 都只是邏輯 CLI 名稱；在 immutable package 內固定解析為該 package 的 `bin/game.exe`，並把 `argv` 原樣交給 subprocess argument list，禁止拼接 shell command 或要求 AI 猜 PATH／安裝 alias。CLI 沒有的能力不能自行發明；先查 api search，找不到就回報。
 
@@ -50,7 +51,6 @@ bin/game.exe --project <game-root> ui preview --strict
   "frames": 3,
   "seed": 42,
   "input_sequence": [{"actions": {"Confirm": true}}, {"actions": {}}, {"actions": {}}],
-  "load_save": {"version": 1},
   "assertions": [
     {"observation": {"key": "view_model", "equals": {"screen": "opening", "step": 1}}},
     {"entity": "player", "field": "transform.x", "greater_than": -100.0}
@@ -58,7 +58,7 @@ bin/game.exe --project <game-root> ui preview --strict
 }
 ~~~
 
-資產工作流必須先建立實際 primary source 與所有 companion bytes，再依序執行 `asset init` 宣告、`bundle pack`、`asset inspect --strict`、`bundle install --all`、`asset describe --id <asset-id>`、`asset read --id <asset-id>`。`asset init` 只建立／更新 manifest declaration，不會建立或猜測圖片、模型、Spine 或 Effekseer source；`bundle install <id>` 只是明確的 subset 選擇，不可當成完整 generation。`asset describe` 會把 authoring path、主場景 JSON pointer、引用 scope、native-local active 與 selected-asset freshness 放在同一份查詢結果；freshness 不等於整個遊戲或 Web／mobile host 已同步。`asset read` 回報已驗證的 `size_bytes`、`sha256` 與 `bundle_generation`，與 Web host 解析同一個 asset id 的結果才能逐項比對；`--output` 是明確的匯出寫入。完整現行契約見 package 的 `docs/asset-workflow.md`。
+資產工作流必須先建立實際 primary source 與所有 companion bytes，再依序執行 `asset init` 宣告、`bundle pack`、`asset inspect --strict`、`bundle install --all`、`asset describe --id <asset-id>`、`asset read --id <asset-id>`。`asset init` 是 append-only，只能為新 id 新增 declaration；修改既有 stable id 時，直接編輯原 manifest entry 的 `source`／`files`（及必要的其他宣告欄位），保留 id，再依後續流程重新發佈。它不會建立或猜測圖片、模型、Spine 或 Effekseer source；`bundle install <id>` 只是明確的 subset 選擇，不可當成完整 generation。`asset describe` 會把 authoring path、主場景 JSON pointer、引用 scope、native-local active 與 selected-asset freshness 放在同一份查詢結果；freshness 不等於整個遊戲或 Web／mobile host 已同步。`asset read` 回報已驗證的 `size_bytes`、`sha256` 與 `bundle_generation`，與 Web host 解析同一個 asset id 的結果才能逐項比對；`--output` 是明確的匯出寫入。完整現行契約見 package 的 `docs/asset-workflow.md`。
 
 子代理必須先用 systems list／systems search 決定這款遊戲要用哪些引擎系統，並用 `systems set --id <id> --enabled false` 關掉企劃不需要的機制（例如老虎機、AVG、自走棋通常不需要 physics2d）。未宣告的 system 使用引擎預設；不可自行發明 system id，也不可啟用 status 為 not_implemented 的 system。asset inspect 是作者檢查用的 advisory report；asset inspect --strict 是 handoff/release gate，任何靜態 reference、source、companion、manifest、bundle 或目前不支援的 manifest kind/version 問題都必須 ok=false。主場景只檢查 `sprite`、`mesh3d`、`animation` 靜態引用；Luau 動態 asset id 不在 scope。bundle pack 也會拒絕未解決的主場景 asset reference。
 
@@ -70,7 +70,7 @@ bin/game.exe --project <game-root> ui preview --strict
 
 它一次跑完全部四個 gate——Luau 型別、嚴格資產宣告、畫面結構、deterministic 測試——並回傳單一結論。即使某一步失敗，其餘步驟仍然會跑完，所以你一次看到全貌而不是只看到第一個爆掉的地方；每個步驟都附上可單獨重跑的 `command`。不要自己一條一條跑再自行判斷，那是可以出錯的判斷。
 
-畫面那一關（`layout`）只檢查結構：節點是否重疊。`text fit` 是測量值不是判決。沒有發布 UI 的遊戲會得到 `not_applicable`，不是失敗。
+`verify` 的畫面（`layout`）step 在專案發布 UI 時檢查結構：節點是否重疊；引擎不讀 GAME_PLAN 來決定執行。`text fit` 是測量值不是判決。沒有發布 UI 的遊戲在 `verify` 得到 `not_applicable`，不是失敗，也不應為了 gate 新增 UI；直接跑 `ui preview --strict` 仍可能回 `UI_TREE_NOT_PUBLISHED`。save／restore 只在企劃需要存檔時加入測試。
 
 任何一項下列情況都算 blocker：命令與文件不一致、semantic diagnostic 不足以判斷下一步、API 找不到、typed Luau contract 不成立、同一問題在兩個以上遊戲會重現、host 不能載入／reload／儲存、或企劃需要 engine 未宣告的 primitive。
 
@@ -89,7 +89,7 @@ bin/game.exe --project <game-root> ui preview --strict
 子代理只能把自己的遊戲報告為 ready_for_review，不能自行把七款總矩陣標成 passed。至少要有：
 
 - project inspect、asset inspect --strict、check／check --types 的結果。
-- deterministic game test，涵蓋企劃的最小完整閉環、失敗路徑、save restore 與必要的 input replay。
+- deterministic game test，涵蓋企劃的最小完整閉環、失敗路徑與必要的 input replay；若企劃需要存檔，才加入 save restore。
 - bundle pack、bundle inspect，並確認 project/script/scene/asset-manifest/content bundle 的 hash、依賴與大小。
 - generic Web runner 的 source 與 packaged bundle smoke；若需 UI/資產，確認 semantic state 與 resolved asset count，不以截圖取代 state assertion。
 - native preview／可用的 mobile host smoke；缺少平台能力要寫 blocker，不得改成「完成」。

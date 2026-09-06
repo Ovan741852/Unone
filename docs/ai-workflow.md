@@ -75,7 +75,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json 
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json verify
 ```
 
-`verify` 依序執行 `check --types`、`asset inspect --strict`、`ui preview --strict`、`test`，回傳單一結論與每個步驟的結果；任何一步失敗都不會中斷其他步驟，且每個步驟都附上可單獨重跑的 `command`。以下小節說明各個 gate 單獨使用的方式。
+`verify` 依序執行 `check --types`、`asset inspect --strict`、UI `layout` gate 與 `test`，回傳單一結論與每個步驟的結果；有 UI 時，`layout` gate 以 `ui preview --strict` 檢查，沒有發布 UI 時結果為 `not_applicable`。UI 與 save 都只按 GAME_PLAN 需要適用，不應為了 gate 額外建立；任何一步失敗都不會中斷其他步驟，且每個步驟都附上可單獨重跑的 `command`。以下小節說明各個 gate 單獨使用的方式。
 
 ```powershell
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check --types
@@ -85,9 +85,9 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json ch
 
 `check` 保證 Luau syntax 與 Engine entrypoint contract；它會確認入口腳本回傳 `Game` table，且有 `start` / `update` function。`--!strict` 會被回報為 contract metadata。加上 `--types` 才會呼叫官方 `luau-analyze`；engine package 的 `bin/game.exe` 會自動尋找同目錄的 `bin/luau-analyze.exe`。若自行開發 engine 或替換工具，可用 `UNONE_LUAU_ANALYZER` 指定 analyzer 可執行檔路徑；工具不存在時，命令會回傳 `LUAU_ANALYZER_NOT_FOUND`，不會把缺少型別檢查的狀態藏起來。
 
-`.test.json` 的完整欄位與 assertion 結構以 package 內的 `test.schema.json` 為準；`game test` 會把每個 test file 當成一個獨立 deterministic case，最後回傳 observation digest、save payload 與 assertion failures。不要把 UI screenshot 當成 test assertion。
+`.test.json` 的完整欄位與 assertion 結構以 package 內的 `test.schema.json` 為準；`game test` 會把每個 test file 當成一個獨立 deterministic case，最後回傳 observation digest、save payload 與 assertion failures；save／restore 欄位只在 GAME_PLAN 需要存檔時使用。不要把 UI screenshot 當成 test assertion。
 
-例如 `project.unone.json` 可設定 `"test_files": ["tests/opening.test.json"]`，而 test file 由 `name`、可選 `frames`/`seed`/`input`/`input_sequence`/`load_save` 與 `assertions` 組成。assertion 三選一：`observation` 做完整 JSON value 比對、`ui` 做完整 flat UI tree 比對，或 `entity` + `field`（目前 `transform.x`／`transform.y`）做數值比較。
+例如 `project.unone.json` 可設定 `"test_files": ["tests/opening.test.json"]`，而 test file 由 `name`、可選 `frames`/`seed`/`input`/`input_sequence`/`load_save` 與 `assertions` 組成；`load_save` 只在 GAME_PLAN 需要驗證 restore 時使用。assertion 三選一：`observation` 做完整 JSON value 比對、`ui` 做完整 flat UI tree 比對，或 `entity` + `field`（目前 `transform.x`／`transform.y`）做數值比較。
 
 若只要驗證 runtime contract，可移除 `--types`。本機可用官方 Luau release 的 Windows binary，或先設定：
 
@@ -156,7 +156,7 @@ Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 f
 需要驗證 restore 時，test manifest 可額外提供 `load_save` JSON payload。它在 `Game.start` **之前**就已還原，所以遊戲可以在 `start` 裡用 `api.save.get()` 重建狀態，不必等到第一次 update；輸出也會帶 `save_payload`，但引擎不會替遊戲判斷版本或 migration。
 - tooling/docs：CLI、診斷或教學有噪音，改 protocol/metadata/文件。
 
-若遊戲有對話、戰鬥結果或其他不適合塞進 Entity Transform 的狀態，使用 `api.observation.set(key, value)` 發布 typed ViewModel 的 semantic projection；test assertion 可用 `{"observation":{"key":"view_model","equals":{...}}}` 做完整 JSON equality。需要 host 顯示時，遊戲端以 `api.ui.setRoot(root)` 發布最小 View tree。
+若遊戲有對話、戰鬥結果或其他不適合塞進 Entity Transform 的狀態，使用 `api.observation.set(key, value)` 發布 typed ViewModel 的 semantic projection；test assertion 可用 `{"observation":{"key":"view_model","equals":{...}}}` 做完整 JSON equality。只有 GAME_PLAN 需要 host 顯示時，遊戲端才以 `api.ui.setRoot(root)` 發布最小 View tree。
 
 **設計空間兩軸都是 0..100，而且 y 軸向上**：`y = 0` 是畫面底部、`y = 100` 是頂部，rect 從它的 `y` 往上長。多數 UI 系統是 y 向下，所以這是看不到畫面的作者最容易寫反的一件事——寫反的症狀是上下兩排疊在一起，`ui preview` 的 ASCII 圖會直接顯示出來。
 
@@ -167,7 +167,7 @@ Test manifest 放在遊戲專案，包含 frames、seed、input、可選的逐 f
 
 兩者同時宣告或都不宣告都會被拒絕。headless 測試使用 16:9 參考比例；host 用 `unone_web_set_viewport_aspect` 回報實際比例，test 可用 `{"ui":{"equals":{...}}}` assertion。ViewModel、View、hit-test 與 action 意義仍屬遊戲端；engine 只驗證／傳輸 tree，host 處理 viewport 與實際 render。
 
-需要存檔時使用 `api.save.set(value)`／`api.save.get()`，payload 由遊戲端定義版本與 migration；引擎只做 JSON-like transport，host 負責檔案／平台儲存。不要把 observation 當 save，也不要在引擎增加 save slot、cloud sync 或遊戲專用 schema。
+只有 GAME_PLAN 需要存檔時，才使用 `api.save.set(value)`／`api.save.get()`；payload 由遊戲端定義版本與 migration；引擎只做 JSON-like transport，host 負責檔案／平台儲存。不要把 observation 當 save，也不要在引擎增加 save slot、cloud sync 或遊戲專用 schema。
 
 ## 3.5 骨骼動畫與特效（Spine／Effekseer）
 
@@ -190,9 +190,9 @@ cargo run -p unone-cli -- --json api describe effect.spawn
 
 引擎不評估骨骼、不混合動畫、不回報動畫是否播完、不模擬粒子，也不含任何 Spine／Effekseer 程式碼。遊戲若要「動畫播完才結算」，必須自己以 fixed frame 計算。
 
-## 3.8 讀懂自己的畫面
+## 3.8 讀懂自己的畫面（企劃需要 UI 時）
 
-AI 看不到畫面。其他每一個 gate 都在檢查語意狀態，所以遊戲可以全部通過，同時把控制項疊在一起。把 UI tree 畫成字元格是最便宜的補救：人和模型都讀得懂、確定性夠高可以進測試、不需要 GPU、字型或視窗。
+headless 觀測不等於實際畫面驗證。只有 GAME_PLAN 需要 UI 時才發布 UI tree 並使用以下 preview；沒有 UI 的專案在 `verify` 的 layout gate 會得到 `not_applicable`，不要為了 gate 額外建立 UI 或 save。對有 UI 的專案，把 UI tree 畫成字元格可供人和模型診斷，確定性夠高可以進測試，不需要 GPU、字型或視窗；實際 host 畫面仍須另驗。
 
 ```powershell
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary ui preview
@@ -201,7 +201,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary --json ui 
 
 不帶 `--json` 會輸出 markdown：一張 ASCII 圖、一張節點表、以及 findings。`--frames` 決定先跑幾格再畫（預設 1），`--cols`／`--rows` 調整格線大小。
 
-`verify` 預設只畫**開場畫面**（1 frame、無輸入），所以勝負畫面不會被檢查。要讓它涵蓋其他畫面，在 `project.unone.json` 宣告 `ui_previews`，方式與宣告 `test_files` 相同：
+對有 UI 的專案，`verify` 預設只畫**開場畫面**（1 frame、無輸入），所以勝負畫面不會被檢查。要讓它涵蓋其他畫面，在 `project.unone.json` 宣告 `ui_previews`，方式與宣告 `test_files` 相同：
 
 ```json
 "ui_previews": [
@@ -213,7 +213,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/xiao-mary --json ui 
 
 每個宣告會變成一個獨立的 `layout:<name>` gate。**每個 step 會列出該畫面實際包含的節點 id**：兩個宣告如果列出一模一樣的節點，那幾乎一定是同一個畫面被跑到兩次，也就是一個什麼都沒證明的 gate。引擎只陳述這個事實，不替你判斷。
 
-目前只有一條 finding：`UI_NODES_OVERLAP`（兩個節點的 rect 相交，圖上以 `#` 標出，附重疊的設計空間單位）。`--strict` 讓它變成 `ok=false` 與非零 exit code；交接與 release 應該使用它。finding 會附上**該往哪個軸、哪個方向移動**的建議，而不只是說兩個框相交。
+目前只有一條 finding：`UI_NODES_OVERLAP`（兩個節點的 rect 相交，圖上以 `#` 標出，附重疊的設計空間單位）。對有 UI 的專案，`--strict` 讓它變成 `ok=false` 與非零 exit code；交接與 release 應該使用它。沒有 UI 的專案在 `verify` 是 `not_applicable`；直接執行 `ui preview --strict` 仍可能回 `UI_TREE_NOT_PUBLISHED`，不需要為此新增 UI。finding 會附上**該往哪個軸、哪個方向移動**的建議，而不只是說兩個框相交。
 
 節點表另外附 `text fit`：文字約佔宣告寬度的幾倍。它假設 16:9 viewport 與 0.5 字寬比例，所以是**測量值不是判決**——超過 1.0 表示 host 必須縮小、換行或裁切，值得看一眼，但引擎不會因此判定失敗。加規則的入場條件見 Decision 0029。
 
@@ -284,7 +284,7 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --jso
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset read --id asset://characters/bird/red --output D:/tmp/red.svg
 ```
 
-上面的順序是「先建立實際 source／companion bytes，再 `asset init` 宣告，接著 `pack`、strict inspect、`install --all`、describe、read」。`asset init` 不產生圖片或其他美術；它回報本次實際變更的 `changed_files`，若後續寫入失敗則 failure effects 仍會列出已發生的寫入。替換同一 stable id 的 source 不需改 scene 引用；搬移 source 或 companion 才修改 manifest path；scene 的 size/pivot/放置是另一個作者變更。
+上面的順序是「先建立實際 source／companion bytes，再 `asset init` 宣告，接著 `pack`、strict inspect、`install --all`、describe、read」。`asset init` 是 append-only，只能為新 id 新增 declaration；修改既有 stable id 時，直接編輯原 manifest entry 的 `source`／`files`（及必要的其他宣告欄位），保留 id，不透過 `asset init` 變更既有 entry。它不產生圖片或其他美術；它回報本次實際變更的 `changed_files`，若後續寫入失敗則 failure effects 仍會列出已發生的寫入。替換同一 stable id 的 source 不需改 scene 引用；搬移 source 或 companion 才修改 manifest path；scene 的 size/pivot/放置是另一個作者變更。
 
 `asset describe --id` 是單筆唯讀 workflow query，回報 manifest entry、primary/companion path、role、exists、可讀時的 size/hash、shared paths、主場景 JSON pointer、`main_scene_only` 的 static scope、`native_local` active verified files、`selected_asset_native_local` 的 `matches_authoring` 與 ordered `required_next_actions`。`matches_authoring=true` 只表示這筆資產的 active bytes 與 authoring 相同，不等於所有遊戲內容、其他 host 或整個 release 已更新；`false`／`null` 也不能被當成 true。缺 manifest、source 或 companion 時修正 authoring，再依序 pack、strict、install、describe、read。若最新正式 active record 損壞，`install`、`describe`、`read` 都會 fail closed；這是 host/operator 依診斷從可信備份修復的 manual prerequisite，沒有備份就回報 blocker，不能清 cache、刪 `.unone`、退回舊 generation 或篡造 record。只有 cache/archive 損壞或 authoring bundle manifest 尚未發布的落後，才走 `pack → strict → install --all → describe → read`。
 
@@ -311,7 +311,7 @@ cargo run -p unone-cli -- --json api describe camera3d.setTarget
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json test
 ```
 
-要驗證實際遊戲專案的 Web host，可從 `D:/Projects` 啟動 `python -m http.server 8001`，再開啟 `http://127.0.0.1:8001/Unone/web/runner/?project=/Unone_Games/3d-racing/`。有 bundle manifest 的專案會由同一個 runner 安裝 content-addressed generation、讀取驗證後的 project/script/scene、消費 2D/3D snapshot 與 UI，並可按 `Install / reload active bundle` 重新安裝目前 generation、執行 Luau hot reload；save payload 會以 project-isolated IndexedDB store 持久化，輸出 `save_store.loaded` 讓 AI 確認是否真的載入；`?bundle=0` 只用於排查 source fallback。這是 generic host smoke；沒有 asset CDN、OPFS/production quota policy、實際 mobile host 與內容變更 hot-update evidence 時，不可標記 Web final gate 通過。
+要驗證實際遊戲專案的 Web host，可從 `D:/Projects` 啟動 `python -m http.server 8001`，再開啟 `http://127.0.0.1:8001/Unone/web/runner/?project=/Unone_Games/3d-racing/`。有 bundle manifest 的專案會由同一個 runner 安裝 content-addressed generation、讀取驗證後的 project/script/scene、消費 2D/3D snapshot 與 UI，並可按 `Install / reload active bundle` 重新安裝目前 generation、執行 Luau hot reload；遊戲有發布 save payload 時，host 會將它以 project-isolated IndexedDB store 持久化，輸出 `save_store.loaded` 讓 AI 確認是否真的載入；`?bundle=0` 只用於排查 source fallback。這是 generic host smoke；沒有 asset CDN、OPFS/production quota policy、實際 mobile host 與內容變更 hot-update evidence 時，不可標記 Web final gate 通過。
 
 ## 輸出規則
 

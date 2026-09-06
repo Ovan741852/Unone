@@ -1,6 +1,6 @@
 # Asset-only onboarding noise
 
-日期：2026-09-06。狀態：awaiting_user_decision。分類：docs/tooling。
+日期：2026-09-06。狀態：fixed_in_source_docs，待下一封裝盲評確認教學效果。分類：docs/tooling。
 
 封裝 fe8d122 的獨立資產評估中，初始 `ui preview --strict` 回
 `UI_TREE_NOT_PUBLISHED`。代理後續建立 UI/save tests，雖然資產維護企劃不要求它們。
@@ -15,5 +15,6 @@
 declaration，修改既有 source/files 直接改原 entry。不要為文件噪音新增
 update/replace 同義 CLI 或 UI/save engine 功能。舊敘述直接替換，歷史留 Git。
 
-已詢問使用者，待答覆；尚未修改產品文件或 immutable package。
-獨立資產維護測試可繼續，教學修正與新封裝 gate 不得先標通過。
+使用者後續要求「推進」，由 Sagan（Luna/max）修正兩份現行教學，主代理覆核
+並明確区分 verify 的 not_applicable 與直接 UI preview 的 error；不再宣稱引擎
+依 GAME_PLAN 自動判斷。舊 immutable package 不變；實際教學效果待新封裝盲評。

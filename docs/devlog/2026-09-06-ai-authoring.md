@@ -32,3 +32,30 @@ roadmap 同步移除「別家引擎有就全部都要有」的無界原則，改
 渲染仍由引擎負責，並非刪掉難做的機制。API 空搜尋的現況也改成正確描述，
 不再暗示一定需要新增 api list。
 本輪沒有新增 screenshot／平台驗證，不拿先前畫面冒充本輪成果。
+
+## Implementation follow-up
+
+## Predecessor integration
+
+使用者要求推進後，主代理核對 package-only 資產評估。實際12檔 hash 相符，
+重跑 verify 四 gate／兩 tests 成功；native read hero sha符合作者檔，active六包
+皆 valid。實際 Web IndexedDB 啟用 manifest version3，browser generation1，
+六包 hash 與 native generation3 相同。它們是獨立 host counter，不能要求數字相等。
+截圖保留既有 Web center-offset；不宣稱 background/位置或平台 renderer 通過。
+
+交付紀錄不足：command-log 是摘要，不是完整 stdout JSON。已退回補存要求，
+取不到首輪完整輸出須明說，另建隔離 fixture 重跑並標 rerun。不得從摘要編造
+首次 raw evidence。這是驗收記錄問題，不因功能最後成功就抹掉。
+
+資產教學噪音由 Luna/max Sagan 修兩份 current docs；不改 immutable package。
+本次使用者「推進」接續最小教學修正，不新增 engine 功能、update CLI 或強迫 UI/save。
+
+## Production owners (prepared, not yet writing)
+
+- McClintock：A project.rs／專屬 init tests。
+- Lovelace：B world/runtime/scene、asset readers、pack、Web/mobile ingestion 與 lib exports。
+- Meitner：C api.rs、CLI main/MCP、專屬 parity tests。
+
+三位 Luna/max 已收到計畫與互斥 write sets；前置 gate released 前僅讀取準備。
+主代理統一建置、整合 export、現行文件、review、平台封裝與新盲評。
+Cargo 暫時維持 incremental=0/jobs=1，不改全域設定、不刪其他快取。
