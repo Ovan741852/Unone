@@ -115,6 +115,26 @@ layout can pass in one and overlap in another. Once a second table exists the
 layout gate only needs to loop over locales, and no game code changes — provided
 the strings are in a table now.
 
+## Shipping a game
+
+Opening the served root today shows a developer tool: a page listing games, each
+reached with `?project=<path>`. A shipped game is not that — the URL should be
+the game, with no switcher, no query parameter and no debug panel. There is no
+export path at all: `game` has verify, perf, bundle and preview, and nothing
+that produces a playable artifact, while `pack-ai-engine.ps1` packages the
+engine for subagents rather than a game.
+
+Planned as `game export web --output <dir>` producing a self-contained
+directory: see the [work package](work-packages/2026-09-06-web-export.md). It
+also closes three standing faults at once — the host pages hardcode
+`../../target/...` which is gitignored, so a clean clone opens broken; the only
+Web runtime anyone can build is a 33 MB debug wasm; and that runtime is a crate
+named `unone-web-live-smoke`, which reads as a throwaway test while being the
+only Web runtime there is.
+
+The development hosts stay exactly as they are. Switching projects and showing
+semantic state is why they exist.
+
 ## Deliberate exclusions
 
 - No imitation Unity prefab/Cocos scene model; external formats belong in imports.
