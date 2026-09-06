@@ -1,0 +1,15 @@
+✔ shared validation fixtures reject invalid manifests before activation (1.3423ms)
+✔ valid fixture installs every root and keeps one active generation (14.4239ms)
+✔ read validates an unrelated dependency graph before reading an active base (2.8302ms)
+✔ corrupt active generation metadata fails closed without rewriting persistence (1.9511ms)
+✔ failed later fetch leaves the previous active generation unchanged (0.8201ms)
+semantic output regression passed
+✔ web\runner\semantic-output.test.mjs (44.4812ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 79.9639

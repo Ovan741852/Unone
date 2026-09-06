@@ -43,11 +43,14 @@ execution. Their capability sets are not equivalent.
 1. Close the existing bounded authoring correction: five-file project init,
    starter tests, shared strict scene ingestion and project-bound API discovery.
    Source changes exist; final package and independent game evidence remain.
-2. Complete ordinary 2D rotation, scale and painter order together across existing
-   hosts. Core/schema/Luau already expose these fields. Fix the Web DOM center
+2. Complete ordinary 2D rotation, scale and painter order on Web first.
+   Core/schema/Luau already expose these fields. Fix the Web DOM center
    offset in this same slice. Preserve independent colliders.
-3. Deliver minimal audio through a reviewed lifecycle contract and actual host
+3. Deliver minimal Web audio through a reviewed lifecycle contract and actual host
    playback. Intent snapshots are not proof of audible output.
+
+Android implementation, rebuilding and device validation follow Web and are not
+exit conditions for this slice. Native parity is also deferred, not implied.
 
 The previously approved hot-update failure-consistency repair remains necessary:
 reproduce failed activation/reload divergence and fix that boundary. Keep it

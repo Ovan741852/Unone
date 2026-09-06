@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "asset://probe/arrow",
+      "source": "assets/arrow.svg",
+      "kind": "texture2d",
+      "bundle": "content"
+    }
+  ]
+}

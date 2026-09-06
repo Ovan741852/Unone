@@ -42,6 +42,39 @@ order across ordinary sprites. These observations were sent to plan review.
 
 ## Remaining evidence
 
+### Web baseline
+
+Main agent ran `node --test web/runner/semantic-output.test.mjs
+web/live/bundle-store.test.mjs`: 6 passed. Raw output is retained in
+`docs/evidence/2026-09-06-web-capabilities/baseline-tests.txt`.
+
+A real browser source-mode probe uses the synthetic fixture at
+`tests/fixtures/web-sprite-transform`. The pre-fix screenshot is
+`docs/evidence/2026-09-06-web-capabilities/transform-before.png`: the image is
+unrotated, above its expected center, and mixed DOM/GPU ordering hides the
+foreground fallback. Semantic output also enumerates numeric-looking IDs in
+numeric rather than required byte order. This is a host reproduction, not a
+blind game or package acceptance result.
+
+The fixture deliberately includes an undeclared asset to exercise fallback and
+error visibility; strict asset validation is expected to reject it. The first
+fixture attempt omitted the required sprite.asset field and was rejected by the
+shared scene parser. That was a fixture-authoring mistake, fixed by supplying
+the intentional missing asset ID; the corrected scene runs successfully.
+
+Web renderer work was dispatched after independent plan review required a
+single DOM painter layer, aligned geometry, world-space WebGPU transforms and
+targeted camera/aspect/Unicode regressions. Existing 3D rendering is preserved.
+The Web-only package change removes Android build dependencies from this slice;
+the package must state its included platforms, not silently imply parity.
+
+The user subsequently narrowed delivery to Web first and Android later. No
+Android renderer/build/device work is authorized for this immediate slice.
+Existing Android gap observations are retained for later, not immediate scope.
+Audio design and plan review were redirected; mobile documentation translation
+was paused in favor of the Web handoff. This supersedes the initial cross-host
+delivery ordering above without rewriting the history of that instruction.
+
 Plan review, translation review, 2D host implementation/output, audio lifecycle
 and playback, hot-update failure repair and fresh package-only game validation
 remain unfinished. Do not infer completion from dispatched work.

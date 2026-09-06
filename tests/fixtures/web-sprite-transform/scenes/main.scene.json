@@ -1,0 +1,37 @@
+{
+  "camera": { "position": { "x": 2, "y": 1 }, "zoom": 2, "view_height": 12 },
+  "entities": [
+    {
+      "id": "10",
+      "transform": { "x": 2, "y": 1 },
+      "rotation": 0.5235987755982988,
+      "scale": { "x": 1.5, "y": 0.75 },
+      "sprite": { "asset": "asset://probe/arrow", "size": { "x": 3, "y": 1.5 }, "visible": true, "layer": 0 }
+    },
+    {
+      "id": "2",
+      "transform": { "x": 2, "y": 1 },
+      "rotation": 0.5235987755982988,
+      "scale": { "x": 1, "y": 1 },
+      "sprite": { "asset": "asset://probe/missing", "size": { "x": 0.3, "y": 0.3 }, "visible": true, "layer": 0 }
+    },
+    {
+      "id": "back",
+      "transform": { "x": 2, "y": 1 },
+      "sprite": { "asset": "asset://probe/missing", "size": { "x": 5, "y": 3 }, "visible": true, "layer": -2 },
+      "rigidbody": { "body_type": "static", "radius": 0.01 }
+    },
+    {
+      "id": "hidden",
+      "transform": { "x": 2, "y": 1 },
+      "sprite": { "asset": "asset://probe/missing", "size": { "x": 9, "y": 5 }, "visible": false, "layer": 2147483647 }
+    },
+    {
+      "id": "example",
+      "transform": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  ]
+}
