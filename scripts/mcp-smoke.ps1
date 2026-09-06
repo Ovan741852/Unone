@@ -73,7 +73,7 @@ try {
     if ($initialize.result.protocolVersion -ne '2025-11-25') {
         throw "Unexpected negotiated protocol version: $($initialize.result.protocolVersion)"
     }
-    if ($tools.result.tools.Count -ne 23) {
+    if ($tools.result.tools.Count -ne 26) {
         throw "Unexpected MCP tool count: $($tools.result.tools.Count)"
     }
     if ($run.result.isError -ne $false -or $runPayload.ok -ne $true) {
@@ -82,8 +82,8 @@ try {
     if ($conflict.result.isError -ne $true -or @($conflictPayload.diagnostics)[0].code -ne 'MCP_ARGUMENT_CONFLICT') {
         throw 'MCP argument conflict did not produce the expected semantic diagnostic'
     }
-    if ($asset.result.isError -ne $false -or $assetPayload.ok -ne $true -or @($assetPayload.diagnostics)[0].code -ne 'ASSET_MANIFEST_MISSING') {
-        throw 'Asset inspect did not produce the expected semantic diagnostic'
+    if ($asset.result.isError -ne $false -or $assetPayload.ok -ne $true -or $assetPayload.value.ready_for_packaging -ne $true) {
+        throw 'Asset inspect did not produce the expected authoring report'
     }
     if ($describe.result.isError -ne $true -or $describePayload.ok -ne $false -or @($describePayload.diagnostics).Count -eq 0) {
         throw 'Asset describe did not return a structured semantic result for the manifest-less fixture'
@@ -95,7 +95,7 @@ try {
         }
     }
 
-    Write-Output "MCP smoke passed: protocol=$($initialize.result.protocolVersion), tools=$(@($tools.result.tools).Count), digest=$($runPayload.value.observation_digest), conflict=$(@($conflictPayload.diagnostics)[0].code), asset=$(@($assetPayload.diagnostics)[0].code), describe=$(@($describePayload.diagnostics)[0].code), selection_none=$(@($selectionNonePayload.diagnostics)[0].code), selection_both=$(@($selectionBothPayload.diagnostics)[0].code)"
+    Write-Output "MCP smoke passed: protocol=$($initialize.result.protocolVersion), tools=$(@($tools.result.tools).Count), digest=$($runPayload.value.observation_digest), conflict=$(@($conflictPayload.diagnostics)[0].code), asset_ready=$($assetPayload.value.ready_for_packaging), describe=$(@($describePayload.diagnostics)[0].code), selection_none=$(@($selectionNonePayload.diagnostics)[0].code), selection_both=$(@($selectionBothPayload.diagnostics)[0].code)"
 }
 finally {
     Pop-Location

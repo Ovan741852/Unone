@@ -1,6 +1,6 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum DiagnosticSeverity {
     Error,
@@ -8,21 +8,21 @@ pub enum DiagnosticSeverity {
     Info,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SourceLocation {
     pub file: String,
     pub line: Option<u32>,
     pub column: Option<u32>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActionSuggestion {
     pub action: String,
     pub description: String,
     pub command: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Diagnostic {
     pub code: String,
     pub severity: DiagnosticSeverity,

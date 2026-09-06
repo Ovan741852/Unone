@@ -24,6 +24,7 @@ use winit::{
 
 mod assets;
 mod mcp;
+mod plugins;
 
 #[derive(Debug, Parser)]
 #[command(name = "game", version, about = "Unone AI-native game developer CLI")]
@@ -103,6 +104,11 @@ enum Command {
     Bundle {
         #[command(subcommand)]
         command: BundleCommand,
+    },
+    /// Discover and call optional AI-facing plugins.
+    Plugin {
+        #[command(subcommand)]
+        command: PluginCommand,
     },
     /// Serve the existing Developer Protocol over MCP stdio.
     Mcp,
@@ -260,6 +266,31 @@ enum BundleCommand {
             help = "Select every bundle in the manifest (mutually exclusive with ID)"
         )]
         all: bool,
+    },
+}
+
+#[derive(Debug, Subcommand)]
+enum PluginCommand {
+    /// List plugins visible to this project and engine package.
+    List,
+    /// Inspect one plugin manifest and its AI-facing tools.
+    Inspect {
+        #[arg(long, help = "Plugin id, for example org.unone.blender")]
+        id: String,
+    },
+    /// Run a plugin's deterministic self-test.
+    Test {
+        #[arg(long, help = "Plugin id, for example org.unone.blender")]
+        id: String,
+    },
+    /// Call one plugin tool with a JSON object from a file.
+    Call {
+        #[arg(long, help = "Plugin id")]
+        id: String,
+        #[arg(long, help = "Tool name declared by the plugin")]
+        tool: String,
+        #[arg(long, help = "JSON input file; omitted input is {}")]
+        input: Option<PathBuf>,
     },
 }
 
@@ -806,6 +837,39 @@ fn run() -> Result<ExitCode> {
                 }
             }
         }
+        Command::Plugin { command } => match command {
+            PluginCommand::List => print_result(plugins::list(&cli.project), cli.json),
+            PluginCommand::Inspect { id } => {
+                print_result(plugins::inspect(&cli.project, &id), cli.json)
+            }
+            PluginCommand::Test { id } => print_result(plugins::test(&cli.project, &id), cli.json),
+            PluginCommand::Call { id, tool, input } => {
+                let input = match input {
+                    Some(path) => match fs::read_to_string(&path)
+                        .map_err(|error| format!("{}：{}", path.display(), error))
+                        .and_then(|text| {
+                            serde_json::from_str::<serde_json::Value>(&text)
+                                .map_err(|error| format!("{}：{}", path.display(), error))
+                        }) {
+                        Ok(value) => value,
+                        Err(error) => {
+                            return print_result(
+                                EngineResult::<serde_json::Value>::failure(
+                                    unone_engine::Diagnostic::error(
+                                        "PLUGIN_INPUT_INVALID",
+                                        "插件 input 不是有效 JSON",
+                                        error,
+                                    ),
+                                ),
+                                cli.json,
+                            );
+                        }
+                    },
+                    None => serde_json::json!({}),
+                };
+                print_result(plugins::call(&cli.project, &id, &tool, input), cli.json)
+            }
+        },
         Command::Mcp => mcp::serve(&cli.project),
     }
 }

@@ -44,6 +44,7 @@ Copy-PackageFile $cliPath "bin\game.exe"
 Copy-PackageFile $analyzerPath "bin\luau-analyze.exe"
 Copy-PackageFile (Join-Path $engineRoot "docs\ai-agent-game-handoff.md") "docs\ai-agent-game-handoff.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\ai-workflow.md") "docs\ai-workflow.md"
+Copy-PackageFile (Join-Path $engineRoot "docs\plugin-protocol.md") "docs\plugin-protocol.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\asset-workflow.md") "docs\asset-workflow.md"
 & $cliPath api typings --output (Join-Path $outputRoot "docs\engine.d.luau") | Out-Null
 if ($LASTEXITCODE -ne 0) { throw "game api typings failed while packaging the Luau type contract" }
@@ -98,6 +99,14 @@ foreach ($webFile in @(
 Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.js") "web\runtime\unone_web_live_smoke.js"
 Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.wasm") "web\runtime\unone_web_live_smoke.wasm"
 Copy-PackageFile (Join-Path $engineRoot "scripts\verify-ai-engine-package.ps1") "scripts\verify-ai-engine-package.ps1"
+Copy-PackageFile (Join-Path $engineRoot "scripts\plugin-smoke.ps1") "scripts\plugin-smoke.ps1"
+foreach ($pluginFile in @(
+    "plugins\org.unone.blender\plugin.json",
+    "plugins\org.unone.blender\plugin.mjs",
+    "plugins\org.unone.blender\README.md"
+)) {
+    Copy-PackageFile (Join-Path $engineRoot $pluginFile) $pluginFile
+}
 
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 # Both hosts load the runtime from the repo build directory in place; in a
@@ -118,6 +127,7 @@ before writing game code.
 
 Native command: bin/game.exe
 Luau analyzer: bin/luau-analyze.exe (game check --types finds it automatically)
+Optional AI plugins: docs/plugin-protocol.md and plugins/
 Web runner: web/runner/index.html
 Presentation host: web/presentation/index.html (Spine, Effekseer and audio;
 the generic runner draws none of those)

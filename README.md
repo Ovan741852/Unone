@@ -50,6 +50,13 @@ edit `scripts/main.luau`, add assertions to the tests, run `verify` again.
 Keep the game outside this repository. `game api search ""` prints the complete
 public API index; there is no separate list to find and no method names to guess.
 
+Optional AI tools use the same protocol instead of adding engine-specific
+dependencies. Discover and test them with `game plugin list`, `game plugin
+inspect`, and `game plugin test`; see [docs/plugin-protocol.md](docs/plugin-protocol.md).
+The bundled Blender bridge is optional and can validate/stage scene data without
+Blender installed. A plugin is an external process, so the Rust runtime remains
+deterministic and the AI can inspect its capabilities before using it.
+
 ## Workspace
 
 The paths in the command examples below are the ones this engine is developed
