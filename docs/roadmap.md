@@ -47,7 +47,10 @@ execution. Their capability sets are not equivalent.
    Core/schema/Luau already expose these fields. Fix the Web DOM center
    offset in this same slice. Preserve independent colliders.
 3. Deliver minimal Web audio through a reviewed lifecycle contract and actual host
-   playback. Intent snapshots are not proof of audible output.
+   playback. Intent snapshots are not proof of audible output. Contract planned in
+   the [audio work package](work-packages/2026-09-06-audio.md): one-shot events
+   rebuilt per frame, looping sources with handles, and declared categories
+   carrying engine-owned rules so a fade-out on track change is frame-exact.
 
 Android implementation, rebuilding and device validation follow Web and are not
 exit conditions for this slice. Native parity is also deferred, not implied.
@@ -83,6 +86,7 @@ Stable IDs are retained for existing references, not a competing priority order.
 | 13 | Package parity | Package verifier detects CLI/Wasm contract mismatch; author verify runs native checks. Do not duplicate distributor responsibilities in author workflow. |
 | 14 | Web digest | Shared Rust digest wired and checked via ABI, JS and source-mode browser smoke. New immutable-package evidence pending; see [record](devlog/2026-09-06-digest-integration.md). |
 | 15 | World inspection | No world ASCII map. Camera view_height fixed a framing root cause; missing map is not grounds for speculative verdicts. |
+| 16 | Flaky types gate | `verify` reported `types: failed` once in seven runs on an untouched project while `check --types` passed every time alone. A gate that fails at random teaches rerunning until green and erodes every other gate. Reproduce and measure before fixing; separate "the analyzer could not run" from "the types are wrong". See [issue](issues/2026-09-06-verify-types-step-flaky.md). |
 
 ## Platform gaps
 
