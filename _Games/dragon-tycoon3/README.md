@@ -29,11 +29,25 @@ Creator editor sources or prove every decoder works. Resource versions may chang
 on the remote server. Raw reference assets and generated players remain local and
 are ignored by Git.
 
-Run `python tools/prepare_probe.py` from this directory after collection. The probe
-uses an unchanged Creator banner texture, 12 moving 3D proxy targets, pointer aiming,
-hit counters, HUD input and seeded native hit particles. Proxies deliberately expose
-the blocked mesh path rather than pretending the original fish/dragons were imported.
+Run `python tools/prepare_probe.py` from this directory after collection. It now
+calls `tools/import_art.py`: six original actor meshes (four dragons, pterosaur,
+tiger), the original cannon and floor, with eight unchanged original textures.
+Twelve moving actors use these meshes instead of the previous sphere proxies.
+`asset-provenance.json` records source logical paths, conversion bounds and hashes.
 Click targets or the hit-test button. `game test` exercises two deterministic hits.
+
+The adapter extracts static rest poses from inspected Creator 3.8 vertex buffers.
+Skeleton clips, skinning, source prefab transforms and original material/shader
+behavior are not restored. Texture pairs and display scales are curated. In
+particular, the floor has source UVs outside 0..1 and currently uses clamp sampling;
+its edge stretching remains a material/sampler integration gap. These are real
+3D meshes, but this is not a visual reconstruction of the complete original game.
+See [the mesh contract](../../docs/static-mesh.md).
+
+The current art packages contain 34 matching export files: Web ZIP 1,351,991 bytes,
+Android APK 1,375,669 bytes. Both were visually checked with the original models;
+Web hit-button interaction also passed. The Android check used a Pixel 8 / Android
+14 emulator, not a physical phone. Earlier proxy measurements below are historical.
 
 ## Reproduced gaps
 
@@ -41,7 +55,7 @@ Run `python tools/check_gaps.py`; [gap-results.json](gap-results.json) records f
 
 | Attempt | Actual obstacle | Needed engine capability |
 |---|---|---|
-| Reuse `res/fbx/scene/scene1/scene1/scene1_floor` | Creator native `.bin` mesh has no player decoder; export rejects the mesh | Mesh/material conversion with buffer-layout and dependency validation |
+| Reuse `res/fbx/scene/scene1/scene1/scene1_floor` | Raw Creator `.bin` still fails; the new curated static conversion renders it | General material/sampler/prefab resolution beyond the selected adapter |
 | Create a new 3D fish with spawn + setTransform3D | New entity has no Transform3D, setter rejects it | Typed component/lifecycle creation, followed by prefab/package support |
 | Shoot through the camera into the world | No `physics.raycast3D` API | Camera ray construction and 3D queries/physics |
 | Reuse original animated actors | Collection includes Skeleton, AnimationClip and skinned assets; there is no corresponding import route | Skeleton/clip/skinning import and renderer integration; collection alone is insufficient |
@@ -60,7 +74,10 @@ fail visibly.
 
 ## Measurements
 
-See `measurements.json` for the final release byte counts and repeated browser runs.
+`measurements.json` records the earlier proxy build, not the current art build.
+See `distributions.json` for current archive hashes/sizes and validation. One local
+browser run with all original art reached first content in 357.2 ms; this is not a
+repeated benchmark or an Android startup measurement.
 Startup is HTML-bootstrap-to-first-content on this Windows machine using localhost,
 gzip and HTTP no-store. Browser/OS caches may still accelerate compilation; these
 are not mobile-network or fresh-browser guarantees. The full reference collection

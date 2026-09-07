@@ -1,37 +1,37 @@
 {
   "date": "2026-09-08",
+  "art": {
+    "original_meshes": 8,
+    "original_textures": 8,
+    "actor_variants": 6,
+    "instances": 12,
+    "skeletal_animation": false
+  },
   "web": {
     "file": "dist/dragon-tycoon3-web.zip",
-    "bytes": 982079,
-    "sha256": "769959c56a09558aec77a02600c49c57b620b6ffbbb56cacad34c883d7c8ffeb",
-    "verified_export_files": 18,
+    "bytes": 1351991,
+    "sha256": "018131424c9aa055f031876be3a67939cd90580058b5cf705fcf7c08832ae03f",
+    "verified_export_files": 34,
     "validation": {
-      "browser": "Codex in-app browser",
-      "launch": true,
+      "original_models_and_textures_rendered": true,
       "hit_button": true,
-      "console_errors": 0,
-      "node_tests": 16
+      "first_presented_ms_localhost_single_run": 357.2,
+      "rust_export_tests_passed": 2,
+      "node_mesh_and_host_tests_passed": 4
     }
   },
   "android": {
     "file": "dist/dragon-tycoon3-android.apk",
-    "bytes": 989068,
-    "sha256": "cb1cba403b9d5d3738d093b8f8a048df7af0b81e2ee0ec1c8ada039225c4b6ba",
-    "verified_export_files": 18,
-    "host": "offline Android WebView + release WASM",
-    "signing": "local test certificate, APK v2/v3 verified",
-    "network_permission": false,
-    "test_device": "Pixel_8 AVD / Android 14 / x86_64 / SwiftShader",
-    "webview": "137.0.7151.61",
-    "real_device_tested": false,
+    "bytes": 1375669,
+    "sha256": "3a01e0d5007073da48907d1a3b78743306d357976026d80ac5da37537c738644",
+    "verified_export_files": 34,
     "validation": {
       "installed": true,
-      "3d_rendered": true,
-      "hit_particles_visible": true,
-      "touch_hits": 3,
-      "pause_resume_retained_score": true,
-      "fatal_runtime_errors": 0
-    },
-    "bootstrap_to_first_content_ms": 4224.2
+      "original_models_and_textures_rendered": true,
+      "test_device": "Pixel_8 / Android 14 / SwiftShader emulator",
+      "real_device_tested": false,
+      "screenshot": "dist/android-art.png",
+      "signing": "local test certificate, APK v2/v3 verified"
+    }
   }
 }

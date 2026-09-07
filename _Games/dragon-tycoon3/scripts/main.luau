@@ -1,5 +1,5 @@
 -- Offline capability probe: no account, currency, server or copied game code.
--- 3D actors are placeholders until Creator mesh/skeleton conversion exists.
+-- Original textured Creator meshes in static rest pose; skeletal animation pending.
 local Game = {}
 local frame, shots, hits, previous = 0, 0, 0, false
 local positions = {}
@@ -8,7 +8,7 @@ local function hud(api)
         {kind="text",id="title",rect={x=10,y=88,width=80,height=8},text="獵龍戰紀 3 · Unone 引擎驗證"},
         {kind="text",id="score",rect={x=2,y=2,width=45,height=8},text="射擊 "..shots.."  /  命中 "..hits},
         {kind="button",id="fire",rect={x=76,y=2,width=22,height=9},text="測試命中特效",action="probe.hit"},
-        {kind="text",id="help",rect={x=10,y=79,width=80,height=6},text="點擊 3D 目標射擊 · 原始 Creator 圖片 + Unone 粒子"}
+        {kind="text",id="help",rect={x=10,y=79,width=80,height=6},text="原始龍／翼龍／猛虎模型 · 點擊射擊"}
     }})
 end
 function Game.start(api)
@@ -22,7 +22,9 @@ function Game.update(api, dt)
         t.position.x=((i-1)%4)*2-3+math.sin(frame/90+i)*0.4
         t.position.y=math.floor((i-1)/4)*1.5-1.5
         t.position.z=math.sin(frame/120+i)*0.4
-        t.rotation.y=frame/80+i
+        t.rotation.x=-1.15
+        t.rotation.y=0.25
+        t.rotation.z=-0.5
         positions[i]=t.position
         api.entity.setTransform3D("target"..i,t)
     end

@@ -9,6 +9,42 @@ use std::{
 fn digest(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }
+
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct StaticMesh {
+    version: u32,
+    positions: Vec<f64>,
+    uvs: Vec<f64>,
+    indices: Vec<usize>,
+    texture: String,
+}
+impl StaticMesh {
+    fn validate(&self) -> Result<()> {
+        ensure!(self.version == 1, "MESH_INVALID: version must be 1");
+        ensure!(
+            self.positions.len() >= 9
+                && self.positions.len() <= 3_000_000
+                && self.positions.len() % 3 == 0
+                && self.positions.iter().all(|v| v.is_finite()),
+            "MESH_INVALID: positions"
+        );
+        ensure!(
+            self.uvs.len() == self.positions.len() / 3 * 2
+                && self.uvs.iter().all(|v| v.is_finite()),
+            "MESH_INVALID: uvs"
+        );
+        ensure!(
+            !self.indices.is_empty()
+                && self.indices.len() <= 6_000_000
+                && self.indices.len() % 3 == 0
+                && self.indices.iter().all(|i| *i < self.positions.len() / 3),
+            "MESH_INVALID: indices"
+        );
+        ensure!(!self.texture.is_empty(), "MESH_INVALID: texture asset id");
+        Ok(())
+    }
+}
 fn inside(root: &Path, relative: &str) -> Result<PathBuf> {
     ensure!(
         !Path::new(relative).is_absolute() && !relative.split(['/', '\\']).any(|p| p == ".."),
@@ -84,21 +120,31 @@ pub fn web(project: &Path, output: &Path, runtime: Option<&Path>) -> Result<Valu
         .map_err(|e| anyhow::anyhow!(e.explanation))?
         .into_runtime(42)
         .map_err(|e| anyhow::anyhow!(e.explanation))?;
-    for entity in scene["entities"].as_array().into_iter().flatten() {
-        if let Some(mesh) = entity["mesh3d"]["asset"].as_str() {
-            ensure!(
-                ["mesh://primitive/box", "mesh://primitive/sphere"].contains(&mesh),
-                "PLAYER_DECODER_UNAVAILABLE: mesh {mesh}; convert to a supported renderer asset before exporting"
-            );
-        }
-    }
     let assets = if let Some(path) = &config.asset_manifest {
         let assets: unone_engine::AssetManifest =
             serde_json::from_slice(&fs::read(inside(project, path)?)?)?;
         ensure!(assets.version == 1, "unsupported asset manifest version");
         for asset in &assets.assets {
-            if !["texture2d", "audio"].contains(&asset.kind.as_str()) {
+            if !["texture2d", "audio", "mesh3d"].contains(&asset.kind.as_str()) {
                 bail!("PLAYER_DECODER_UNAVAILABLE: {} ({})", asset.id, asset.kind);
+            }
+            if asset.kind == "mesh3d" {
+                ensure!(
+                    asset.source.ends_with(".mesh.json"),
+                    "PLAYER_DECODER_UNAVAILABLE: {} requires .mesh.json conversion",
+                    asset.id
+                );
+                let data: StaticMesh =
+                    serde_json::from_slice(&fs::read(inside(project, &asset.source)?)?)?;
+                data.validate()?;
+                ensure!(
+                    assets
+                        .assets
+                        .iter()
+                        .any(|a| a.id == data.texture && a.kind == "texture2d"),
+                    "MESH_TEXTURE_MISSING: {}",
+                    data.texture
+                );
             }
             for path in std::iter::once(&asset.source).chain(&asset.files) {
                 files.push((format!("content/{path}"), fs::read(inside(project, path)?)?));
@@ -108,6 +154,19 @@ pub fn web(project: &Path, output: &Path, runtime: Option<&Path>) -> Result<Valu
     } else {
         json!({"version":1,"assets":[]})
     };
+    for entity in scene["entities"].as_array().into_iter().flatten() {
+        if let Some(mesh) = entity["mesh3d"]["asset"].as_str() {
+            ensure!(
+                ["mesh://primitive/box", "mesh://primitive/sphere"].contains(&mesh)
+                    || assets["assets"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .any(|a| a["id"] == mesh && a["kind"] == "mesh3d"),
+                "PLAYER_DECODER_UNAVAILABLE: mesh {mesh}; declare a supported mesh asset"
+            );
+        }
+    }
     files.push(("content/project.json".into(), serde_json::to_vec(&payload)?));
     files.push(("content/assets.json".into(), serde_json::to_vec(&assets)?));
     files.push((
@@ -117,6 +176,7 @@ pub fn web(project: &Path, output: &Path, runtime: Option<&Path>) -> Result<Valu
     for path in [
         "player/main.js",
         "renderer/three.js",
+        "renderer/mesh.js",
         "renderer/particles.js",
         "shared/ui-tree.js",
         "shared/host-input.js",
@@ -169,6 +229,31 @@ pub fn web(project: &Path, output: &Path, runtime: Option<&Path>) -> Result<Valu
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn mesh_contract_rejects_bad_topology_uvs_and_unknown_fields() {
+        let valid = json!({"version":1,"positions":[0,0,0,1,0,0,0,1,0],"uvs":[0,0,1,0,0,1],"indices":[0,1,2],"texture":"texture://test"});
+        serde_json::from_value::<StaticMesh>(valid.clone())
+            .unwrap()
+            .validate()
+            .unwrap();
+        for (field, value) in [
+            ("indices", json!([0, 1, 3])),
+            ("uvs", json!([0, 1])),
+            ("version", json!(2)),
+        ] {
+            let mut bad = valid.clone();
+            bad[field] = value;
+            assert!(
+                serde_json::from_value::<StaticMesh>(bad)
+                    .unwrap()
+                    .validate()
+                    .is_err()
+            );
+        }
+        let mut typo = valid;
+        typo["postions"] = json!([]);
+        assert!(serde_json::from_value::<StaticMesh>(typo).is_err());
+    }
     #[test]
     fn rejects_parent_paths_and_existing_output() {
         let dir = tempfile::tempdir().unwrap();

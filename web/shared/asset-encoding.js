@@ -1,5 +1,6 @@
 // Accepted decoder routes, not a guarantee that bytes decode on this device.
 export const DECODER_ROUTES = Object.freeze({
+  mesh: { "unone-mesh-json": "application/json" },
   image: { svg: "image/svg+xml", png: "image/png", jpeg: "image/jpeg", webp: "image/webp" },
   audio: { wav: "audio/wav", mp3: "audio/mpeg", ogg: "audio/ogg" },
   spine: { "spine-json": "application/json" },

@@ -189,7 +189,7 @@ export function loadAssetUrl(asset) {
   if (assetUrls.has(assetId)) return Promise.resolve(assetUrls.get(assetId));
   if (assetUrlLoads.has(assetId)) return assetUrlLoads.get(assetId);
   const load = (async () => {
-    requireAssetEncoding(asset, "image");
+    requireAssetEncoding(asset, asset.kind === "mesh3d" ? "mesh" : "image");
     let bytes;
     if (requestGeneration) {
       bytes = await readActiveAsset(requestGeneration, asset, window.Module, requestManifest);

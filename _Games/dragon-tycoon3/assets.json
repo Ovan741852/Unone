@@ -2,9 +2,132 @@
   "version": 1,
   "assets": [
     {
-      "id": "texture://reference/banner",
-      "source": "assets/reference/banner.webp",
-      "kind": "texture2d"
+      "id": "texture://reference/a-dragon",
+      "kind": "texture2d",
+      "source": "assets/reference/a-dragon.webp"
+    },
+    {
+      "id": "mesh://reference/a-dragon",
+      "kind": "mesh3d",
+      "source": "assets/reference/a-dragon.mesh.json",
+      "encoding": {
+        "format": "unone-mesh-json",
+        "mime": "application/json",
+        "decoder": "mesh",
+        "companions": []
+      }
+    },
+    {
+      "id": "texture://reference/d-dragon",
+      "kind": "texture2d",
+      "source": "assets/reference/d-dragon.webp"
+    },
+    {
+      "id": "mesh://reference/d-dragon",
+      "kind": "mesh3d",
+      "source": "assets/reference/d-dragon.mesh.json",
+      "encoding": {
+        "format": "unone-mesh-json",
+        "mime": "application/json",
+        "decoder": "mesh",
+        "companions": []
+      }
+    },
+    {
+      "id": "texture://reference/s-dragon",
+      "kind": "texture2d",
+      "source": "assets/reference/s-dragon.webp"
+    },
+    {
+      "id": "mesh://reference/s-dragon",
+      "kind": "mesh3d",
+      "source": "assets/reference/s-dragon.mesh.json",
+      "encoding": {
+        "format": "unone-mesh-json",
+        "mime": "application/json",
+        "decoder": "mesh",
+        "companions": []
+      }
+    },
+    {
+      "id": "texture://reference/g-dragon",
+      "kind": "texture2d",
+      "source": "assets/reference/g-dragon.webp"
+    },
+    {
+      "id": "mesh://reference/g-dragon",
+      "kind": "mesh3d",
+      "source": "assets/reference/g-dragon.mesh.json",
+      "encoding": {
+        "format": "unone-mesh-json",
+        "mime": "application/json",
+        "decoder": "mesh",
+        "companions": []
+      }
+    },
+    {
+      "id": "texture://reference/pterosaur",
+      "kind": "texture2d",
+      "source": "assets/reference/pterosaur.webp"
+    },
+    {
+      "id": "mesh://reference/pterosaur",
+      "kind": "mesh3d",
+      "source": "assets/reference/pterosaur.mesh.json",
+      "encoding": {
+        "format": "unone-mesh-json",
+        "mime": "application/json",
+        "decoder": "mesh",
+        "companions": []
+      }
+    },
+    {
+      "id": "texture://reference/tiger",
+      "kind": "texture2d",
+      "source": "assets/reference/tiger.webp"
+    },
+    {
+      "id": "mesh://reference/tiger",
+      "kind": "mesh3d",
+      "source": "assets/reference/tiger.mesh.json",
+      "encoding": {
+        "format": "unone-mesh-json",
+        "mime": "application/json",
+        "decoder": "mesh",
+        "companions": []
+      }
+    },
+    {
+      "id": "texture://reference/cannon",
+      "kind": "texture2d",
+      "source": "assets/reference/cannon.jpg"
+    },
+    {
+      "id": "mesh://reference/cannon",
+      "kind": "mesh3d",
+      "source": "assets/reference/cannon.mesh.json",
+      "encoding": {
+        "format": "unone-mesh-json",
+        "mime": "application/json",
+        "decoder": "mesh",
+        "companions": []
+      }
+    },
+    {
+      "id": "texture://reference/floor",
+      "kind": "texture2d",
+      "source": "assets/reference/floor.webp"
+    },
+    {
+      "id": "mesh://reference/floor",
+      "kind": "mesh3d",
+      "source": "assets/reference/floor.mesh.json",
+      "encoding": {
+        "format": "unone-mesh-json",
+        "mime": "application/json",
+        "decoder": "mesh",
+        "companions": []
+      }
     }
   ]
 }

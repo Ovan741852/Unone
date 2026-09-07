@@ -24,7 +24,7 @@ async function start(){
   try{project.restored_save=JSON.parse(localStorage.getItem(key)??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}
   project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
   send('_unone_web_load_project',project,42n);snapshot=read();
-  renderer=await createThreeRenderer(canvas,{kind:'three-webgl',getAssetManifest:()=>assets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,'image');return new URL('content/'+asset.source,location.href).href;}});
+  renderer=await createThreeRenderer(canvas,{kind:'three-webgl',getAssetManifest:()=>assets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':'image');return new URL('content/'+asset.source,location.href).href;}});
   audio=await createAudioPlayback({assetManifest:assets,config:project.audio,projectRoot:new URL('content/',location.href)});
   if(audio?.report().failures.length)throw new Error(JSON.stringify(audio.report()));
   draw();await renderer.ready();draw();

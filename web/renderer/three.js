@@ -1,4 +1,5 @@
 import { createParticleRenderer } from "./particles.js";
+import { meshGeometry, validateMesh } from "./mesh.js";
 import { compareSpriteEntities, worldOf } from "../shared/webgpu-snapshot.js";
 
 const LOCAL_THREE_URL = new URL("../vendor/three/three.module.js", import.meta.url).href;
@@ -71,6 +72,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   scene.add(root);
   const camera3d = new THREE.PerspectiveCamera(60,1,0.05,2000);
   const meshes3d = new Map();
+  const meshAssets = new Map();
   const particles = createParticleRenderer(THREE,scene);
   const camera = new THREE.OrthographicCamera(-8, 8, 4.5, -4.5, -1000, 1000);
   camera.position.z = 10;
@@ -131,6 +133,29 @@ export async function createThreeRenderer(canvas, options = {}) {
     return record;
   }
 
+  function meshAssetFor(id, specs) {
+    if (meshAssets.has(id)) return meshAssets.get(id);
+    const asset = specs.get(id);
+    if (asset?.kind !== 'mesh3d' || !asset.source.endsWith('.mesh.json')) throw new Error(`MESH_DECODER_UNAVAILABLE: ${id}`);
+    const record = {geometry:null, material:null, error:null};
+    record.promise = options.loadAssetUrl(asset).then(url => fetch(url)).then(response => {
+      if (!response.ok) throw new Error(`MESH_LOAD_FAILED: ${id} (${response.status})`);
+      return response.json();
+    }).then(async raw => {
+      const data = validateMesh(raw);
+      const spec = specs.get(data.texture);
+      if (spec?.kind !== 'texture2d') throw new Error(`MESH_TEXTURE_MISSING: ${data.texture}`);
+      const texture = textureFor(spec);
+      if (!texture) throw new Error(`MESH_TEXTURE_LOADER_MISSING: ${data.texture}`);
+      await texture.promise;
+      if (texture.error) throw texture.error;
+      record.geometry = meshGeometry(THREE, data);
+      record.material = new THREE.MeshBasicMaterial({map:texture.texture, side:THREE.DoubleSide, alphaTest:0.05});
+    }).catch(error => { record.error = error; });
+    meshAssets.set(id, record);
+    return record;
+  }
+
   function draw(snapshot) {
     const world = worldOf(snapshot);
     resize(world);
@@ -173,11 +198,23 @@ export async function createThreeRenderer(canvas, options = {}) {
     for (const entity of Object.values(world.entities ?? {})) {
       if (!entity.mesh3d || !entity.transform3d || !entity.mesh3d.visible) continue;
       let mesh=meshes3d.get(entity.id);
+      if (mesh && mesh.userData.asset !== entity.mesh3d.asset) {
+        scene.remove(mesh);
+        if (mesh.userData.asset.startsWith('mesh://primitive/')) { mesh.geometry.dispose(); mesh.material.dispose(); }
+        meshes3d.delete(entity.id); mesh=null;
+      }
       if (!mesh) {
         const shape=entity.mesh3d.asset;
-        if (!['mesh://primitive/box','mesh://primitive/sphere'].includes(shape)) throw new Error(`MESH_DECODER_UNAVAILABLE: ${shape}`);
-        const geometry=shape.endsWith('/sphere') ? new THREE.SphereGeometry(0.5,16,12) : new THREE.BoxGeometry(1,1,1);
-        mesh=new THREE.Mesh(geometry,new THREE.MeshNormalMaterial()); scene.add(mesh); meshes3d.set(entity.id,mesh);
+        if (['mesh://primitive/box','mesh://primitive/sphere'].includes(shape)) {
+          const geometry=shape.endsWith('/sphere') ? new THREE.SphereGeometry(0.5,16,12) : new THREE.BoxGeometry(1,1,1);
+          mesh=new THREE.Mesh(geometry,new THREE.MeshNormalMaterial());
+        } else {
+          const asset=meshAssetFor(shape,specs);
+          if(asset.error) throw asset.error;
+          if(!asset.geometry) continue;
+          mesh=new THREE.Mesh(asset.geometry,asset.material);
+        }
+        mesh.userData.asset=shape; scene.add(mesh); meshes3d.set(entity.id,mesh);
       }
       const t=entity.transform3d;
       mesh.position.set(t.position.x,t.position.y,t.position.z); mesh.rotation.set(t.rotation.x,t.rotation.y,t.rotation.z);
@@ -189,6 +226,13 @@ export async function createThreeRenderer(canvas, options = {}) {
   }
 
   function clearTextures() {
+    for (const mesh of meshes3d.values()) {
+      scene.remove(mesh);
+      if (mesh.userData.asset.startsWith('mesh://primitive/')) { mesh.geometry.dispose(); mesh.material.dispose(); }
+    }
+    meshes3d.clear();
+    for (const record of meshAssets.values()) { record.geometry?.dispose(); record.material?.dispose(); }
+    meshAssets.clear();
     for (const record of textureRecords.values()) record.texture?.dispose();
     textureRecords.clear();
     for (const record of records.values()) {
@@ -199,7 +243,7 @@ export async function createThreeRenderer(canvas, options = {}) {
 
   return {
     draw,
-    async ready() { await Promise.all([...textureRecords.values()].map(r=>r.promise)); for(const r of textureRecords.values()) if(r.error) throw r.error; },
+    async ready() { await Promise.all([...meshAssets.values(),...textureRecords.values()].map(r=>r.promise)); for(const r of [...meshAssets.values(),...textureRecords.values()]) if(r.error) throw r.error; },
     clearTextures,
     usesGpuSprites: true,
     implementation: "three.js",

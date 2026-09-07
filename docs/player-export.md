@@ -34,9 +34,10 @@ and no CDN. It can be served from a subdirectory. Export currently requires this
 source checkout's presentation files; a standalone installed CLI distribution
 must ship them before it can support this command.
 
-Supported presentation: Three.js WebGL primitive boxes/spheres, image sprites,
-DOM UI, Web Audio, and native 3D particles. Imported meshes, Spine and Effekseer
-asset declarations fail export explicitly. Their development presentation host
+Supported presentation: Three.js WebGL primitive boxes/spheres, textured
+[static mesh JSON](static-mesh.md), image sprites, DOM UI, Web Audio, and native
+3D particles. Other mesh encodings, Spine and Effekseer asset declarations fail
+export explicitly. Their development presentation host
 support does not imply a production player decoder exists.
 
 `document.body.dataset.playerMetrics` reports HTML-bootstrap-to-runtime readiness, first rendered

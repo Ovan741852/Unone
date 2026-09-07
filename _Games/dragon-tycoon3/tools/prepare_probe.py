@@ -17,3 +17,5 @@ for i in range(1,13):
     entities.append({'id':f'target{i}','transform3d':{'position':{'x':(i-1)%4*2-3,'y':(i-1)//4*1.5-1.5,'z':0},'scale':{'x':1.3,'y':0.65,'z':0.8}},'mesh3d':{'asset':'mesh://primitive/sphere'}})
 entities.append({'id':'cannon','transform3d':{'position':{'x':0,'y':-3.6,'z':1},'scale':{'x':0.35,'y':1.1,'z':0.35}},'mesh3d':{'asset':'mesh://primitive/box'}})
 write('scenes/arena.json',{'entities':entities,'camera3d':{'position':{'x':0,'y':0,'z':10},'target':{'x':0,'y':0,'z':0},'fov_degrees':50},'particle_effects':{'hit':json.loads((REPO/'tests/fixtures/spark.particle.json').read_text(encoding='utf8'))}})
+from import_art import main as import_art
+import_art()

@@ -1,6 +1,222 @@
 {
   "source_base": "https://prod-maxluck.slam777.com.tw/DragonTycoon3/",
-  "files": {
-    "assets/reference/banner.webp": "assets/game/native/03/0342d283-39a9-4e58-aa70-4657100341b8.41bb2.webp"
-  }
+  "conversion": "static textured rest pose; skin weights and clips not imported",
+  "files": [
+    {
+      "output": "assets/reference/a-dragon.webp",
+      "source": "assets/game/native/ff/ff9b3a19-17ad-4cb9-8bbd-5516e805c1cc.167c1.webp",
+      "logical_path": "fishRes/DT3_NormalFish/model/A_Dragon_01",
+      "sha256": "83c2778a703135b6e876ab7adfc7a61bbd1541c445f486c83eabf78cab42f475"
+    },
+    {
+      "output": "assets/reference/a-dragon.mesh.json",
+      "source": "assets/game/native/60/6063444b-7f61-41c9-bd5f-8a289ce624d8@a8a13.d42d8.bin",
+      "logical_path": "fishRes/DT3_NormalFish/model/DT3_5_A_Dragon_01/A_Dragon_01",
+      "vertices": 475,
+      "triangles": 726,
+      "source_bounds": [
+        [
+          -0.03582675755023956,
+          -0.11146651208400726,
+          -0.001608580001629889
+        ],
+        [
+          0.03582675755023956,
+          0.12327970564365387,
+          0.1877688318490982
+        ]
+      ],
+      "rest_pose_only": true,
+      "sha256": "2481773a3bf3797b6e5c722d7b62aed7bf2ad3310696f920e04f2e83ec724c96"
+    },
+    {
+      "output": "assets/reference/d-dragon.webp",
+      "source": "assets/game/native/8a/8a9fee7b-1eaf-473b-8ceb-de5a2dd8c92d.a009e.webp",
+      "logical_path": "fishRes/DT3_NormalFish/model/D_Dragon_01",
+      "sha256": "b11d7fcb09ce168d8b9c429672f7dbc80d835e98e398b568f9c27cdef1e4a2ce"
+    },
+    {
+      "output": "assets/reference/d-dragon.mesh.json",
+      "source": "assets/game/native/38/38b504e0-9128-4c04-bb14-4d98f3ad7efb@8f5eb.2566f.bin",
+      "logical_path": "fishRes/DT3_NormalFish/model/DT3_4_D_Dragon_01/D_Dragon_01",
+      "vertices": 773,
+      "triangles": 1112,
+      "source_bounds": [
+        [
+          -0.41474899649620056,
+          -1.4043776988983154,
+          0.0005029211170040071
+        ],
+        [
+          0.41474899649620056,
+          1.8714210987091064,
+          1.7798115015029907
+        ]
+      ],
+      "rest_pose_only": true,
+      "sha256": "6eaf78a23dd17f7cad6bc84907286ad892c4a288a2f8bb36b83390e0d30babc3"
+    },
+    {
+      "output": "assets/reference/s-dragon.webp",
+      "source": "assets/game/native/da/da553890-3f7d-41cd-a9a2-86a95d196c10.90575.webp",
+      "logical_path": "fishRes/DT3_NormalFish/model/S_Dragon_01",
+      "sha256": "3c083fa7311db8d2b9ba8f501fa3aa2f2245cb1d14dae5167425766262b55caa"
+    },
+    {
+      "output": "assets/reference/s-dragon.mesh.json",
+      "source": "assets/game/native/78/785802b8-5d18-4753-a9cb-37c38b590567@1a695.d1b96.bin",
+      "logical_path": "fishRes/DT3_NormalFish/model/DT3_13_S_Dragon_01/S_Dragon_01",
+      "vertices": 1673,
+      "triangles": 2010,
+      "source_bounds": [
+        [
+          -0.7142474055290222,
+          -1.617928147315979,
+          -0.0008889961172826588
+        ],
+        [
+          0.7142474055290222,
+          1.7750154733657837,
+          1.7791146039962769
+        ]
+      ],
+      "rest_pose_only": true,
+      "sha256": "420c3338d72b92574d727c3cfa86e702ba83c869d7d23bfc8483d466da7e64e2"
+    },
+    {
+      "output": "assets/reference/g-dragon.webp",
+      "source": "assets/game/native/2f/2fb59f70-70d5-4681-8f67-1a21e508d2ea.ab90b.webp",
+      "logical_path": "fishRes/DT3_NormalFish/model/G_Dragon_01",
+      "sha256": "66dd84bd20f12085893936ccc34ef5d9cce5be5012beb81fd3409a1ee6035a09"
+    },
+    {
+      "output": "assets/reference/g-dragon.mesh.json",
+      "source": "assets/game/native/7c/7cd14655-0152-4106-9451-ad64bc05fc9d@15811.73bd2.bin",
+      "logical_path": "fishRes/DT3_NormalFish/model/DT3_14_G_Dragon_01/G_Dragon_01",
+      "vertices": 1417,
+      "triangles": 2102,
+      "source_bounds": [
+        [
+          -0.04789064824581146,
+          -0.13788044452667236,
+          0.0
+        ],
+        [
+          0.04789064824581146,
+          0.14113649725914001,
+          0.1328473836183548
+        ]
+      ],
+      "rest_pose_only": true,
+      "sha256": "31c07df7bc337f085c4189a4ff2c74046c93c613297938586ae207089f2bd8c6"
+    },
+    {
+      "output": "assets/reference/pterosaur.webp",
+      "source": "assets/game/native/b4/b43b7e39-b75f-4fd3-8349-48045294d797.aa038.webp",
+      "logical_path": "fishRes/DT3_NormalFish/model/Pterosaur_01",
+      "sha256": "40917cc302d9fe22ea40020dba3a1b4a94f4b50650743ea4090934bd11f03226"
+    },
+    {
+      "output": "assets/reference/pterosaur.mesh.json",
+      "source": "assets/game/native/61/6153d5d4-12b3-4083-b07f-806a352b3add@7e800.2e568.bin",
+      "logical_path": "fishRes/DT3_NormalFish/model/DT3_11_Pterosaur_01/bird_low",
+      "vertices": 1640,
+      "triangles": 2412,
+      "source_bounds": [
+        [
+          -0.2506078779697418,
+          -0.23132120072841644,
+          -0.13893207907676697
+        ],
+        [
+          0.2506078779697418,
+          0.11799094825983047,
+          0.05265064910054207
+        ]
+      ],
+      "rest_pose_only": true,
+      "sha256": "ee34534eb81670a5f3d8e013823209ed4b17bbd291203329dc31b33c732e4f4c"
+    },
+    {
+      "output": "assets/reference/tiger.webp",
+      "source": "assets/game/native/27/2731c672-e4f7-4d5e-a655-b30acab7ace1.118ae.webp",
+      "logical_path": "fishRes/DT3_NormalFish/model/A_Tiger_01",
+      "sha256": "5814e8636f12e97fd6c4e0786b768663e5879fe14016eec6fa28896eddeddd92"
+    },
+    {
+      "output": "assets/reference/tiger.mesh.json",
+      "source": "assets/game/native/6d/6dc683eb-ef14-49cc-9bc0-dd093c745b93@5b53c.c01b6.bin",
+      "logical_path": "fishRes/DT3_NormalFish/model/DT3_8_A_Tiger_01/A_Tiger_01",
+      "vertices": 1378,
+      "triangles": 2036,
+      "source_bounds": [
+        [
+          -0.06054440885782242,
+          -0.15264511108398438,
+          9.53399867285043e-05
+        ],
+        [
+          0.06054440885782242,
+          0.13218429684638977,
+          0.17186012864112854
+        ]
+      ],
+      "rest_pose_only": true,
+      "sha256": "da7e62f952315c78eeca283c173c0fbb48de2407f97c6e16bb3208a68480ef65"
+    },
+    {
+      "output": "assets/reference/cannon.jpg",
+      "source": "assets/game/native/7e/7e8628a7-c64e-41f4-b719-1967d92b044e.34df8.jpg",
+      "logical_path": "cannonRes/DT3_Normal/dt3_cannon_A",
+      "sha256": "fb844010a51762d253c9651a6dd273f7491d331bd72e38916e818ff420341f83"
+    },
+    {
+      "output": "assets/reference/cannon.mesh.json",
+      "source": "assets/game/native/61/61430e31-f188-4bb3-8461-6f8e07f4e052@a8de9.8aa7e.bin",
+      "logical_path": "cannonRes/DT3_Normal/dt3_cannon_A/Cannon_A_Boby",
+      "vertices": 3463,
+      "triangles": 1622,
+      "source_bounds": [
+        [
+          -0.05038433149456978,
+          -0.0802788957953453,
+          0.0005140139255672693
+        ],
+        [
+          0.05038433149456978,
+          0.07451954483985901,
+          0.11267424374818802
+        ]
+      ],
+      "rest_pose_only": true,
+      "sha256": "4067f3ea45b287ddcfe34ef729700b835ab5b47cd376d96ec7b08ebfb80b903f"
+    },
+    {
+      "output": "assets/reference/floor.webp",
+      "source": "assets/game/native/a2/a28ec5c2-9778-4238-b6c7-6beab6fc0806.523bd.webp",
+      "logical_path": "res/fbx/scene/scene1/material/scene1",
+      "sha256": "c1ba0c3fe1fe8725e7e1c56c4516e2b7e465802898eacf73ab8488265ecc9eea"
+    },
+    {
+      "output": "assets/reference/floor.mesh.json",
+      "source": "assets/game/native/00/00b3e9b7-0f9e-485e-9b2e-018fb32f9770@bb027.eda12.bin",
+      "logical_path": "res/fbx/scene/scene1/scene1/scene1_floor",
+      "vertices": 4,
+      "triangles": 2,
+      "source_bounds": [
+        [
+          -4.848871231079102,
+          -0.7580583691596985,
+          -2.9067994091747096e-06
+        ],
+        [
+          5.212100982666016,
+          5.426640033721924,
+          2.5192259727191413e-06
+        ]
+      ],
+      "rest_pose_only": true,
+      "sha256": "d113aa245b83047221bb217eef027f646f404c108f1c59dc3be7fae276d11221"
+    }
+  ]
 }
