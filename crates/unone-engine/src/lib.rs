@@ -1,35 +1,47 @@
+#[cfg(feature = "dev-tools")]
 mod api;
-mod audio;
+#[cfg(feature = "dev-tools")]
 mod asset;
+#[cfg(feature = "dev-tools")]
 mod asset_workflow;
+mod audio;
+#[cfg(feature = "dev-tools")]
 mod bundle;
-mod diagnostics;
-mod host;
-mod schema;
+#[cfg(feature = "dev-tools")]
 mod developer;
+mod diagnostics;
+#[cfg(feature = "dev-tools")]
 mod diff;
+mod host;
+#[cfg(feature = "dev-tools")]
 mod layout;
 mod performance;
 mod platform;
 mod project;
 mod runtime;
 mod scene;
+#[cfg(feature = "dev-tools")]
+mod schema;
 mod systems;
 mod ui;
+#[cfg(feature = "dev-tools")]
 mod verify;
 mod world;
 
+#[cfg(feature = "dev-tools")]
 pub use api::{
-    ApiDescriptor, ApiParameter, ApiSearchAction, ApiSearchReport, describe as api_describe,
-    search as api_search, api_search_result, typings as api_typings,
+    ApiDescriptor, ApiParameter, ApiSearchAction, ApiSearchReport, api_search_result,
+    describe as api_describe, search as api_search, typings as api_typings,
 };
+#[cfg(feature = "dev-tools")]
 pub use asset::{
-    AssetCompanion, AssetEncoding, SUPPORTED_ASSET_KINDS,
-    AssetInitReport, AssetInspectBlocker, AssetInspectReport, AssetManifest, AssetReadReport,
-    AssetReference, AssetSpec, ResolvedAssetBytes, StaticReferenceScope, init_asset_manifest,
-    inspect as inspect_assets, inspect_strict as inspect_assets_strict,
-    manifest as load_asset_manifest, read as read_asset, resolve_asset_bytes,
+    AssetCompanion, AssetEncoding, AssetInitReport, AssetInspectBlocker, AssetInspectReport,
+    AssetManifest, AssetReadReport, AssetReference, AssetSpec, ResolvedAssetBytes,
+    SUPPORTED_ASSET_KINDS, StaticReferenceScope, init_asset_manifest, inspect as inspect_assets,
+    inspect_strict as inspect_assets_strict, manifest as load_asset_manifest, read as read_asset,
+    resolve_asset_bytes,
 };
+#[cfg(feature = "dev-tools")]
 pub use asset_workflow::{
     AssetActiveFileReport, AssetActiveReport, AssetAuthoringFileReport, AssetAuthoringReport,
     AssetDescribeReference, AssetDescribeReport, AssetPublicationReport, AssetReferenceScope,
@@ -39,24 +51,27 @@ pub use audio::{
     AudioBus, AudioCategory, AudioConfig, AudioEvent, AudioEventKind, AudioLoop, AudioOptions,
     AudioPhase, IMPLEMENTED_AUDIO_RULES, MAX_LIVE_AUDIO_LOOPS,
 };
+#[cfg(feature = "dev-tools")]
 pub use bundle::{
     ASSET_ARCHIVE_VERSION, AssetArchiveEntry, BundleFetcher, BundleManager, BundleManifest,
     BundlePackReport, BundleReport, BundleSpec, BundleVerification, BundleVerifier, pack_project,
     read_asset_from_archive,
 };
-pub use diagnostics::{
-    ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult, SourceLocation,
-};
+#[cfg(feature = "dev-tools")]
 pub use developer::{
     Change, DeveloperProtocol, DeveloperRequest, DeveloperSession, EnactOperation, Selector,
     developer_request_schema,
 };
-pub use host::{HostInputState, HostProject, host_error, parse_input_frame};
-pub use schema::{SCHEMA_NAMES, contract_schema};
-pub use diff::{
-    DiffReport, FieldDifference, RecordedFrame, Recording, diff as diff_run,
-    read_recording, record as record_run, to_markdown as diff_markdown,
+pub use diagnostics::{
+    ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult, SourceLocation,
 };
+#[cfg(feature = "dev-tools")]
+pub use diff::{
+    DiffReport, FieldDifference, RecordedFrame, Recording, diff as diff_run, read_recording,
+    record as record_run, to_markdown as diff_markdown,
+};
+pub use host::{HostInputState, HostProject, host_error, parse_input_frame};
+#[cfg(feature = "dev-tools")]
 pub use layout::{
     DEFAULT_LAYOUT_COLS, DEFAULT_LAYOUT_ROWS, LayoutFinding, LayoutNode, LayoutReport,
     draw as draw_layout, inspect as inspect_layout, to_markdown as layout_markdown,
@@ -66,25 +81,38 @@ pub use performance::{
 };
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{
-    AnimationAssertion, AudioAssertion, EffectsAssertion, InputFrame, UiPreviewSpec, ObservationAssertion, PointerInput,
-    ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile, ProjectInitReport,
-    ProjectInspectReport, ProjectPaths,
-    TestAssertion, TestSpec, UiAssertion, init as init_project, inspect as inspect_project,
+    AnimationAssertion, AudioAssertion, EffectsAssertion, InputFrame, ObservationAssertion,
+    PointerInput, ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile,
+    ProjectInitReport, ProjectInspectReport, ProjectPaths, TestAssertion, TestSpec, UiAssertion,
+    UiPreviewSpec,
 };
 pub use runtime::{
     CheckReport, EngineRuntime, RunReport, SourceProject, TestCaseReport, TestSuiteReport,
     TypeCheckReport, observation_digest,
 };
 pub use scene::parse_scene_fragment;
+#[cfg(feature = "dev-tools")]
+pub use schema::{SCHEMA_NAMES, contract_schema};
 pub use systems::{
     SystemDescriptor, SystemReport, SystemSearchReport, SystemSetReport, SystemSettings,
-    SystemState, SystemStatus, describe as describe_system, inspect as inspect_systems,
-    search as search_systems, set as set_system,
+    SystemState, SystemStatus, describe as describe_system, search as search_systems,
 };
-pub use verify::{DEFAULT_VERIFY_STEPS, StepStatus, VerifyReport, VerifyStep, verify};
 pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiNode, UiRect, UiTree};
+#[cfg(feature = "dev-tools")]
+pub use verify::{DEFAULT_VERIFY_STEPS, StepStatus, VerifyReport, VerifyStep, verify};
 pub use world::{
-    AnimationData, AnimationSnapshot, Camera2DData, Contact, Camera3DData, EffectInstance, EntitySnapshot,
-    Mesh3DData, PhysicsSettings, RigidBody2DData, RigidBodySnapshot, RigidBodyType, SceneFile,
-    Transform2DData, Transform3DData, Vec2, Vec3, WorldSnapshot,
+    AnimationData, AnimationSnapshot, Camera2DData, Camera3DData, Contact, EffectInstance,
+    EntitySnapshot, Mesh3DData, PhysicsSettings, RigidBody2DData, RigidBodySnapshot, RigidBodyType,
+    SceneFile, Transform2DData, Transform3DData, Vec2, Vec3, WorldSnapshot,
 };
+
+#[cfg(feature = "dev-tools")]
+pub use project::{init as init_project, inspect as inspect_project};
+#[cfg(feature = "dev-tools")]
+pub use systems::{inspect as inspect_systems, set as set_system};
+
+/// Player binaries assert this is false at compile time.
+pub const DEV_TOOLS_ENABLED: bool = cfg!(feature = "dev-tools");
+
+mod particle;
+pub use particle::{ParticleDefinition, ParticleEmitter, ParticleSnapshot};

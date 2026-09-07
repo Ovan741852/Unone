@@ -23,7 +23,8 @@ const MAX_REQUEST_BYTES: usize = 64 * 1024;
 const MAX_RECORDING_BYTES: usize = 16 * 1024 * 1024;
 static NEXT_SESSION: AtomicU64 = AtomicU64::new(1);
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Selector {
     Entity { id: String },
@@ -32,9 +33,22 @@ pub enum Selector {
     Effect { handle: String },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Change {
+    SpawnParticle {
+        effect: String,
+        position: crate::Vec3,
+        seed: u64,
+    },
+    StopParticle {
+        handle: String,
+    },
+    SetParticleDefinition {
+        effect: String,
+        definition: crate::ParticleDefinition,
+    },
     SetTransform3d {
         transform: crate::Transform3DData,
     },
@@ -79,7 +93,8 @@ pub enum Change {
     StopEffect,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct EnactOperation {
     pub selector: Selector,
@@ -110,6 +125,9 @@ pub(crate) fn apply_operations(
     let mut results = Vec::new();
     for (index, operation) in operations.iter().enumerate() {
         let needed = match operation.change {
+            Change::SpawnParticle { .. }
+            | Change::StopParticle { .. }
+            | Change::SetParticleDefinition { .. } => Some("particle"),
             Change::SetCamera3d { .. } => Some("camera3d"),
             Change::PlayAnimation { .. } | Change::StopAnimation => Some("spine"),
             Change::SpawnEffect { .. } | Change::StopEffect => Some("effekseer"),
@@ -128,6 +146,34 @@ pub(crate) fn apply_operations(
         }
         let result: Result<Value, String> = (|| {
             match (&operation.selector, &operation.change) {
+                (
+                    Selector::Scene,
+                    Change::SpawnParticle {
+                        effect,
+                        position,
+                        seed,
+                    },
+                ) => {
+                    return world
+                        .particles
+                        .play(effect, *position, *seed, world.frame)
+                        .map(|handle| json!({"handle":handle}));
+                }
+                (Selector::Scene, Change::StopParticle { handle }) => {
+                    if !world.particles.stop(handle) {
+                        return Err(format!("Particle instance {handle} not found"));
+                    }
+                }
+                (Selector::Scene, Change::SetParticleDefinition { effect, definition }) => {
+                    definition.validate()?;
+                    if effect.trim().is_empty() {
+                        return Err("Particle ID must not be blank".into());
+                    }
+                    world
+                        .particles
+                        .definitions
+                        .insert(effect.clone(), definition.clone());
+                }
                 (Selector::Entity { id }, Change::SetTransform3d { transform }) => {
                     world.set_transform3d(id, transform.clone())?
                 }
@@ -219,7 +265,8 @@ pub(crate) fn apply_operations(
     Ok(results)
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(tag = "command", rename_all = "snake_case", deny_unknown_fields)]
 pub enum DeveloperRequest {
     Open {
@@ -278,7 +325,7 @@ pub enum DeveloperRequest {
         session: String,
     },
     Replay {
-        #[schemars(with = "Recording")]
+        #[cfg_attr(feature = "dev-tools", schemars(with = "Recording"))]
         recording: Value,
     },
 }
@@ -789,7 +836,8 @@ impl DeveloperProtocol {
     }
 }
 
-#[derive(Deserialize, schemars::JsonSchema)]
+#[derive(Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 struct Recording {
     schema_version: u32,
@@ -801,13 +849,15 @@ struct Recording {
     engine_version: String,
 }
 
-#[derive(Deserialize, schemars::JsonSchema)]
+#[derive(Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 struct RecordedFailure {
     code: String,
 }
 
-#[derive(Deserialize, schemars::JsonSchema)]
+#[derive(Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(tag = "command", rename_all = "snake_case", deny_unknown_fields)]
 enum RecordedCommand {
     Step {

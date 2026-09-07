@@ -8,18 +8,22 @@ use std::{
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
-use crate::asset::{AssetManifest, AssetReference, AssetSpec, load_for_pack, read_scene_references};
+use crate::asset::{
+    AssetManifest, AssetReference, AssetSpec, load_for_pack, read_scene_references,
+};
 use crate::diagnostics::{ActionSuggestion, Diagnostic, EngineResult};
 use crate::project::{ProjectPaths, resolve_project_path};
 
-#[derive(Debug, Clone, Deserialize, Serialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct BundleManifest {
     pub version: u32,
     pub bundles: Vec<BundleSpec>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct BundleSpec {
     pub id: String,
@@ -82,7 +86,11 @@ fn validate_bundle_manifest(manifest: &BundleManifest) -> Result<(), Box<Diagnos
             });
             return Err(Box::new(diagnostic));
         }
-        if spec.dependencies.iter().any(|dependency| dependency.trim().is_empty()) {
+        if spec
+            .dependencies
+            .iter()
+            .any(|dependency| dependency.trim().is_empty())
+        {
             return Err(Box::new(Diagnostic::error(
                 "BUNDLE_MANIFEST_INVALID",
                 "Bundle dependency id cannot be empty",
@@ -98,12 +106,7 @@ fn validate_bundle_manifest(manifest: &BundleManifest) -> Result<(), Box<Diagnos
     let mut visiting = BTreeSet::new();
     let mut visited = BTreeSet::new();
     for spec in &manifest.bundles {
-        validate_dependency_graph(
-            &spec.id,
-            &specs,
-            &mut visiting,
-            &mut visited,
-        )?;
+        validate_dependency_graph(&spec.id, &specs, &mut visiting, &mut visited)?;
     }
     Ok(())
 }
@@ -145,7 +148,10 @@ fn validate_dependency_graph(
 }
 
 fn is_valid_sha256(value: &str) -> bool {
-    value.len() == 64 && value.bytes().all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+    value.len() == 64
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
 }
 
 enum InstallSelection {
@@ -232,7 +238,10 @@ fn resolve_pack_output_path(
                             Box::new(Diagnostic::error(
                                 "BUNDLE_OUTPUT_OUTSIDE_PROJECT",
                                 "Could not resolve the bundle manifest output path",
-                                format!("{} has no existing parent directory to inspect.", path.display()),
+                                format!(
+                                    "{} has no existing parent directory to inspect.",
+                                    path.display()
+                                ),
                             ))
                         })?;
                     }
@@ -256,14 +265,21 @@ fn resolve_pack_output_path(
                 return Err(Box::new(Diagnostic::error(
                     "BUNDLE_OUTPUT_OUTSIDE_PROJECT",
                     "Bundle manifest output path is outside the project root",
-                    format!("{} is outside project root {}.", path.display(), root.display()),
+                    format!(
+                        "{} is outside project root {}.",
+                        path.display(),
+                        root.display()
+                    ),
                 )));
             }
             let suffix = path.strip_prefix(existing).map_err(|_| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_OUTPUT_OUTSIDE_PROJECT",
                     "Could not resolve the bundle manifest output path",
-                    format!("The parent path of {} could not be reconstructed.", path.display()),
+                    format!(
+                        "The parent path of {} could not be reconstructed.",
+                        path.display()
+                    ),
                 ))
             })?;
             let mut canonical_candidate = canonical_existing;
@@ -272,7 +288,11 @@ fn resolve_pack_output_path(
                 Box::new(Diagnostic::error(
                     "BUNDLE_OUTPUT_OUTSIDE_PROJECT",
                     "Bundle manifest output path is outside the project root",
-                    format!("{} is outside project root {}.", path.display(), root.display()),
+                    format!(
+                        "{} is outside project root {}.",
+                        path.display(),
+                        root.display()
+                    ),
                 ))
             })?)
         }
@@ -402,7 +422,8 @@ pub fn pack_project(
             Ok(manifest) => manifest,
             Err(diagnostic) => return EngineResult::failure(*diagnostic),
         };
-        if let Err(diagnostic) = validate_pack_asset_references(&scene_references, &asset_manifest) {
+        if let Err(diagnostic) = validate_pack_asset_references(&scene_references, &asset_manifest)
+        {
             return EngineResult::failure(*diagnostic);
         }
         if let Err(diagnostic) = validate_generated_asset_bundle_ids(&asset_manifest, &sources) {
@@ -546,9 +567,7 @@ pub fn pack_project(
     let manifest_changed = fs::read(&manifest_path)
         .map(|current| current != manifest_bytes)
         .unwrap_or(true);
-    if config_changed
-        && let Err(error) = write_atomic(&root, &paths.config, &config_bytes)
-    {
+    if config_changed && let Err(error) = write_atomic(&root, &paths.config, &config_bytes) {
         return EngineResult::failure(Diagnostic::error(
             "PROJECT_CONFIG_WRITE_FAILED",
             "Could not update the bundle_manifest setting",
@@ -966,14 +985,14 @@ fn read_existing_manifest(path: &Path) -> Result<Option<BundleManifest>, Box<Dia
 }
 
 fn write_atomic(root: &Path, path: &Path, bytes: &[u8]) -> Result<(), String> {
-    let path = resolve_project_path(
-        root,
-        &normalize_relative_path(
-            path.strip_prefix(root)
-                .map_err(|error| format!("path '{}' is outside project: {error}", path.display()))?,
-        ),
-    )
-    .map_err(|diagnostic| diagnostic.explanation)?;
+    let path =
+        resolve_project_path(
+            root,
+            &normalize_relative_path(path.strip_prefix(root).map_err(|error| {
+                format!("path '{}' is outside project: {error}", path.display())
+            })?),
+        )
+        .map_err(|diagnostic| diagnostic.explanation)?;
     let parent = path
         .parent()
         .ok_or_else(|| format!("path '{}' has no parent directory", path.display()))?;
@@ -1235,24 +1254,35 @@ impl BundleManager {
                 Box::new(Diagnostic::error(
                     "BUNDLE_MANIFEST_OUTSIDE_PROJECT",
                     "Bundle manifest is outside the project root",
-                    format!("{} must be inside the project root.", manifest_path.as_ref().display()),
+                    format!(
+                        "{} must be inside the project root.",
+                        manifest_path.as_ref().display()
+                    ),
                 ))
             })?;
             resolve_project_path(&root, &normalize_relative_path(relative)).map_err(|_| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_MANIFEST_OUTSIDE_PROJECT",
                     "Bundle manifest is outside the project root",
-                    format!("{} must be a safe project-relative path.", manifest_path.as_ref().display()),
+                    format!(
+                        "{} must be a safe project-relative path.",
+                        manifest_path.as_ref().display()
+                    ),
                 ))
             })?
         } else {
-            resolve_project_path(&root, &manifest_path.as_ref().to_string_lossy()).map_err(|_| {
-                Box::new(Diagnostic::error(
-                    "BUNDLE_MANIFEST_OUTSIDE_PROJECT",
-                    "Bundle manifest is outside the project root",
-                    format!("{} must be a safe project-relative path.", manifest_path.as_ref().display()),
-                ))
-            })?
+            resolve_project_path(&root, &manifest_path.as_ref().to_string_lossy()).map_err(
+                |_| {
+                    Box::new(Diagnostic::error(
+                        "BUNDLE_MANIFEST_OUTSIDE_PROJECT",
+                        "Bundle manifest is outside the project root",
+                        format!(
+                            "{} must be a safe project-relative path.",
+                            manifest_path.as_ref().display()
+                        ),
+                    ))
+                },
+            )?
         };
         let manager = Self {
             root,
@@ -1399,13 +1429,9 @@ impl BundleManager {
         let mut visiting = BTreeSet::new();
         let mut installed = BTreeMap::new();
         for root_spec in roots {
-            if let Err(diagnostic) = self.install_recursive(
-                &manifest,
-                root_spec,
-                &mut visiting,
-                &mut installed,
-                fetcher,
-            ) {
+            if let Err(diagnostic) =
+                self.install_recursive(&manifest, root_spec, &mut visiting, &mut installed, fetcher)
+            {
                 return EngineResult::failure(*diagnostic);
             }
         }
@@ -1542,7 +1568,9 @@ impl BundleManager {
             });
             diagnostic.suggested_actions.push(ActionSuggestion {
                 action: "install_bundle".to_string(),
-                description: format!("Reinstall bundle '{bundle_id}' to activate the current manifest."),
+                description: format!(
+                    "Reinstall bundle '{bundle_id}' to activate the current manifest."
+                ),
                 command: Some(format!("game bundle install {bundle_id}")),
             });
             return Err(Box::new(diagnostic));
@@ -1586,7 +1614,10 @@ impl BundleManager {
             return Err(Box::new(Diagnostic::error(
                 "BUNDLE_DEPENDENCY_CYCLE",
                 "Bundle dependency cycle detected",
-                format!("A dependency cycle was found while installing '{}'.", spec.id),
+                format!(
+                    "A dependency cycle was found while installing '{}'.",
+                    spec.id
+                ),
             )));
         }
         for dependency in &spec.dependencies {
@@ -1785,11 +1816,15 @@ impl BundleManager {
 
     fn verify_cache(&self, spec: &BundleSpec) -> bool {
         self.cache_path(spec)
-            .and_then(|path| self.verify_path(&path).map_err(|error| Box::new(Diagnostic::error(
-                "BUNDLE_CACHE_CORRUPT",
-                "Bundle cache verification failed",
-                error,
-            ))))
+            .and_then(|path| {
+                self.verify_path(&path).map_err(|error| {
+                    Box::new(Diagnostic::error(
+                        "BUNDLE_CACHE_CORRUPT",
+                        "Bundle cache verification failed",
+                        error,
+                    ))
+                })
+            })
             .map(|result| result.size == spec.size_bytes && result.sha256 == spec.sha256)
             .unwrap_or(false)
     }
@@ -1842,11 +1877,7 @@ impl BundleManager {
             return Ok(None);
         };
         let path = self
-            .checked_project_path(
-                &path,
-                "active bundle record",
-                "BUNDLE_STORAGE_PATH_UNSAFE",
-            )
+            .checked_project_path(&path, "active bundle record", "BUNDLE_STORAGE_PATH_UNSAFE")
             .map_err(|diagnostic| diagnostic.explanation)?;
         let bytes = fs::read(&path).map_err(|error| error.to_string())?;
         let record = serde_json::from_slice::<ActiveGeneration>(&bytes)
@@ -1877,18 +1908,13 @@ impl BundleManager {
             .map_err(|diagnostic| diagnostic.explanation)?;
         fs::create_dir_all(&active_dir)
             .map_err(|err| format!("create active dir '{}': {err}", self.active_dir.display()))?;
-        let path = active_dir
-            .join(format!("generation-{:020}.json", generation.generation));
+        let path = active_dir.join(format!("generation-{:020}.json", generation.generation));
         let staging_path = active_dir.join(format!(
             "generation-{:020}.json.part",
             generation.generation
         ));
         let path = self
-            .checked_project_path(
-                &path,
-                "active bundle record",
-                "BUNDLE_STORAGE_PATH_UNSAFE",
-            )
+            .checked_project_path(&path, "active bundle record", "BUNDLE_STORAGE_PATH_UNSAFE")
             .map_err(|diagnostic| diagnostic.explanation)?;
         let staging_path = self
             .checked_project_path(
@@ -1935,12 +1961,17 @@ fn formal_generation_number(name: &str) -> Result<Option<u64>, String> {
         return Ok(None);
     };
     if number.is_empty() || !number.bytes().all(|byte| byte.is_ascii_digit()) {
-        return Err(format!("Invalid generation number in active-generation filename '{}'.", name));
+        return Err(format!(
+            "Invalid generation number in active-generation filename '{}'.",
+            name
+        ));
     }
-    number
-        .parse::<u64>()
-        .map(Some)
-        .map_err(|error| format!("Invalid generation number in active-generation filename '{}': {}", name, error))
+    number.parse::<u64>().map(Some).map_err(|error| {
+        format!(
+            "Invalid generation number in active-generation filename '{}': {}",
+            name, error
+        )
+    })
 }
 
 fn validate_active_generation(record: &ActiveGeneration) -> Result<(), String> {
@@ -1952,7 +1983,10 @@ fn validate_active_generation(record: &ActiveGeneration) -> Result<(), String> {
     }
     for (id, sha256) in &record.bundles {
         if id.trim().is_empty() || !is_valid_sha256(sha256) {
-            return Err(format!("Active generation contains an invalid record for bundle '{}'.", id));
+            return Err(format!(
+                "Active generation contains an invalid record for bundle '{}'.",
+                id
+            ));
         }
     }
     Ok(())
@@ -2019,9 +2053,7 @@ mod tests {
     #[test]
     fn accepts_only_portable_project_relative_bundle_sources() {
         let directory = tempdir().unwrap();
-        assert!(
-            crate::project::resolve_project_path(directory.path(), "assets/bird.svg").is_ok()
-        );
+        assert!(crate::project::resolve_project_path(directory.path(), "assets/bird.svg").is_ok());
         for source in [
             "",
             "/etc/passwd",
@@ -2123,14 +2155,8 @@ mod tests {
 
         assert!(!result.ok);
         assert_eq!(result.diagnostics[0].code, "SCENE_INVALID");
-        assert_eq!(
-            result.diagnostics[0].facts["source_kind"],
-            "disk_scene"
-        );
-        assert_eq!(
-            result.diagnostics[0].facts["location_scope"],
-            "scene_file"
-        );
+        assert_eq!(result.diagnostics[0].facts["source_kind"], "disk_scene");
+        assert_eq!(result.diagnostics[0].facts["location_scope"], "scene_file");
         assert_eq!(
             fs::read(dir.path().join("project.unone.json")).unwrap(),
             config_before
@@ -2820,7 +2846,9 @@ mod tests {
             let manifest = serde_json::from_value::<BundleManifest>(value.clone());
             let expected_code = match name.as_str() {
                 "empty_bundles" => "BUNDLE_MANIFEST_EMPTY",
-                "unknown_root" | "unknown_spec" | "empty_id" | "invalid_hash" | "invalid_size" => "BUNDLE_MANIFEST_INVALID",
+                "unknown_root" | "unknown_spec" | "empty_id" | "invalid_hash" | "invalid_size" => {
+                    "BUNDLE_MANIFEST_INVALID"
+                }
                 "duplicate_id" => "BUNDLE_MANIFEST_DUPLICATE_ID",
                 "missing_dependency" => "BUNDLE_DEPENDENCY_NOT_FOUND",
                 "dependency_cycle" => "BUNDLE_DEPENDENCY_CYCLE",

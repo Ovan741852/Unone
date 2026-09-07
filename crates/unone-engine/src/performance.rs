@@ -36,6 +36,7 @@ pub struct FrameCounts {
     pub rigidbodies: usize,
     pub ui_nodes: usize,
     pub effects: usize,
+    pub particles: usize,
     pub observations: usize,
 }
 

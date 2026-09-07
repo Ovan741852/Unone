@@ -1,0 +1,12 @@
+{
+  "name": "Dragon Tycoon 3 — Unone engine probe",
+  "entry_script": "scripts/main.luau",
+  "main_scene": "scenes/arena.json",
+  "asset_manifest": "assets.json",
+  "test_files": [
+    "tests/shoot.test.json"
+  ],
+  "systems": {
+    "particle": true
+  }
+}

@@ -15,7 +15,8 @@ pub const UI_REFERENCE_ASPECT: f64 = 16.0 / 9.0;
 /// A named corner is the whole point: an author who cannot see the screen picks
 /// a word correctly far more often than four normalized floats, which is what
 /// every RectTransform-style anchor system asks for.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 pub enum UiAnchor {
     TopLeft,
@@ -67,7 +68,8 @@ impl UiAnchor {
 ///
 /// The platform host maps this design space to its viewport. The engine does
 /// not know about pixels, DPI, safe areas, fonts, or platform widgets.
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct UiRect {
     pub x: f64,
@@ -102,7 +104,8 @@ pub struct UiTree {
     pub children: Vec<UiNode>,
 }
 
-#[derive(Debug, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 struct RawUiTree {
     kind: String,
@@ -111,7 +114,8 @@ struct RawUiTree {
     children: Vec<RawUiNode>,
 }
 
-#[derive(Debug, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 struct RawUiNode {
     kind: String,
@@ -138,7 +142,8 @@ struct RawUiNode {
 /// Anchored offsets and sizes are in vertical units: percent of the viewport
 /// height, on both axes. One unit system means an author never has to reason
 /// about the aspect, and a box keeps its shape when the aspect changes.
-#[derive(Debug, Clone, Copy, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Copy, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 struct RawOffset {
     #[serde(default)]
@@ -147,7 +152,8 @@ struct RawOffset {
     y: f64,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Copy, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 struct RawSize {
     width: f64,
@@ -177,9 +183,9 @@ fn resolve_rect(node: &RawUiNode, aspect: f64) -> Result<UiRect, String> {
             Ok(rect)
         }
         (None, Some(anchor)) => {
-            let size = node.size.ok_or_else(|| {
-                format!("ui.setRoot anchored node '{}' requires a size", node.id)
-            })?;
+            let size = node
+                .size
+                .ok_or_else(|| format!("ui.setRoot anchored node '{}' requires a size", node.id))?;
             if !size.width.is_finite() || !size.height.is_finite() {
                 return Err(format!(
                     "ui.setRoot node '{}' size must be finite numbers",

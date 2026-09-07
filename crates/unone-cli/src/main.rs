@@ -23,9 +23,20 @@ use winit::{
 };
 
 mod assets;
+mod export;
 mod mcp;
 mod plugins;
 mod session;
+
+#[derive(Debug, Subcommand)]
+enum ExportCommand {
+    Web {
+        #[arg(long)]
+        output: PathBuf,
+        #[arg(long)]
+        runtime: Option<PathBuf>,
+    },
+}
 
 #[derive(Debug, Parser)]
 #[command(name = "game", version, about = "Unone AI-native game developer CLI")]
@@ -40,6 +51,20 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Export one game with the separately compiled release player.
+    Export {
+        #[command(subcommand)]
+        command: ExportCommand,
+    },
+    /// Deterministically sample a native particle definition at a frame.
+    Particle {
+        #[arg(long)]
+        file: PathBuf,
+        #[arg(long, default_value_t = 0)]
+        frame: u64,
+        #[arg(long, default_value_t = 42)]
+        seed: u64,
+    },
     /// Inspect/export a structural JSON Schema generated from the runtime Rust types.
     Schema {
         name: String,
@@ -121,7 +146,10 @@ enum Command {
     Mcp,
     /// Stateful developer protocol: one JSON request and EngineResult per line on stdio.
     Session {
-        #[arg(long, help = "Print the request JSON schema instead of starting a session transport")]
+        #[arg(
+            long,
+            help = "Print the request JSON schema instead of starting a session transport"
+        )]
         schema: bool,
     },
 }
@@ -319,15 +347,52 @@ fn main() -> ExitCode {
 fn run() -> Result<ExitCode> {
     let cli = Cli::parse();
     match cli.command {
+        Command::Export {
+            command: ExportCommand::Web { output, runtime },
+        } => {
+            let result = export::web(&cli.project, &output, runtime.as_deref());
+            match result {
+                Ok(value) => print_result(EngineResult::success(value), cli.json),
+                Err(error) => print_result(
+                    EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
+                        "EXPORT_FAILED",
+                        "Web export failed",
+                        format!(
+                            "{error:#}. Build the player with scripts/build-web-live.ps1 -Player, correct the reported input, and retry game export web with an empty output directory."
+                        ),
+                    )),
+                    cli.json,
+                ),
+            }
+        }
+        Command::Particle { file, frame, seed } => {
+            let definition: unone_engine::ParticleDefinition =
+                serde_json::from_slice(&fs::read(file)?)?;
+            let samples = definition
+                .sample(seed, frame, Vec3::default())
+                .map_err(|e| anyhow::anyhow!(e))?;
+            print_result(EngineResult::success(samples), cli.json)
+        }
         Command::Schema { name, output } => {
             let Some(schema) = unone_engine::contract_schema(&name) else {
-                return print_result(EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
-                    "SCHEMA_UNKNOWN", "Unknown schema", format!("Choose one of: {}", unone_engine::SCHEMA_NAMES.join(", ")),
-                )), cli.json);
+                return print_result(
+                    EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
+                        "SCHEMA_UNKNOWN",
+                        "Unknown schema",
+                        format!("Choose one of: {}", unone_engine::SCHEMA_NAMES.join(", ")),
+                    )),
+                    cli.json,
+                );
             };
             if let Some(path) = output {
-                fs::write(&path, format!("{}\n", serde_json::to_string_pretty(&schema)?))?;
-                print_result(EngineResult::success(serde_json::json!({"schema":name,"output":path})), cli.json)
+                fs::write(
+                    &path,
+                    format!("{}\n", serde_json::to_string_pretty(&schema)?),
+                )?;
+                print_result(
+                    EngineResult::success(serde_json::json!({"schema":name,"output":path})),
+                    cli.json,
+                )
             } else {
                 print_result(EngineResult::success(schema), cli.json)
             }
@@ -447,21 +512,25 @@ fn run() -> Result<ExitCode> {
                     && let Err(error) = fs::create_dir_all(parent)
                 {
                     return print_result(
-                        EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
-                            "RECORDING_WRITE_FAILED",
-                            "無法建立錄製檔目錄",
-                            format!("{}：{}", parent.display(), error),
-                        )),
+                        EngineResult::<serde_json::Value>::failure(
+                            unone_engine::Diagnostic::error(
+                                "RECORDING_WRITE_FAILED",
+                                "無法建立錄製檔目錄",
+                                format!("{}：{}", parent.display(), error),
+                            ),
+                        ),
                         cli.json,
                     );
                 }
                 if let Err(error) = fs::write(&output, text) {
                     return print_result(
-                        EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
-                            "RECORDING_WRITE_FAILED",
-                            "無法寫入錄製檔",
-                            format!("{}：{}", output.display(), error),
-                        )),
+                        EngineResult::<serde_json::Value>::failure(
+                            unone_engine::Diagnostic::error(
+                                "RECORDING_WRITE_FAILED",
+                                "無法寫入錄製檔",
+                                format!("{}：{}", output.display(), error),
+                            ),
+                        ),
                         cli.json,
                     );
                 }
@@ -551,7 +620,10 @@ fn run() -> Result<ExitCode> {
                 result.diagnostics = run.diagnostics;
                 return print_result(result, true);
             }
-            println!("{}", unone_engine::performance_markdown(&report.performance));
+            println!(
+                "{}",
+                unone_engine::performance_markdown(&report.performance)
+            );
             Ok(ExitCode::SUCCESS)
         }
         Command::Ui { command } => match command {
@@ -634,11 +706,13 @@ fn run() -> Result<ExitCode> {
                         )
                     };
                     diagnostic.facts = serde_json::json!({"nodes": finding.nodes});
-                    diagnostic.suggested_actions.push(unone_engine::ActionSuggestion {
-                        action: "resolve_layout_finding".to_string(),
-                        description: finding.resolution.clone(),
-                        command: Some("game ui preview --strict".to_string()),
-                    });
+                    diagnostic
+                        .suggested_actions
+                        .push(unone_engine::ActionSuggestion {
+                            action: "resolve_layout_finding".to_string(),
+                            description: finding.resolution.clone(),
+                            command: Some("game ui preview --strict".to_string()),
+                        });
                     result.diagnostics.push(diagnostic);
                 }
                 if strict && !findings.is_empty() {
@@ -1684,9 +1758,6 @@ mod tests {
             install_selection(&["bundle", "install", "--all"]),
             (None, true)
         );
-        assert_eq!(
-            install_selection(&["bundle", "install"]),
-            (None, false)
-        );
+        assert_eq!(install_selection(&["bundle", "install"]), (None, false));
     }
 }

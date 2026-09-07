@@ -77,7 +77,10 @@ pub fn record(
     };
     let mut recorded = Vec::with_capacity(frames as usize);
     for index in 0..frames {
-        let frame = input_sequence.get(index as usize).cloned().unwrap_or_default();
+        let frame = input_sequence
+            .get(index as usize)
+            .cloned()
+            .unwrap_or_default();
         let snapshot = match runtime.tick_with_input(&frame) {
             Ok(snapshot) => snapshot,
             Err(diagnostic) => return EngineResult::failure(*diagnostic),
@@ -242,7 +245,13 @@ fn collect_differences(
             if left.len() == right.len() =>
         {
             for (index, (left, right)) in left.iter().zip(right).enumerate() {
-                collect_differences(&format!("{path}[{index}]"), left, right, differences, omitted);
+                collect_differences(
+                    &format!("{path}[{index}]"),
+                    left,
+                    right,
+                    differences,
+                    omitted,
+                );
             }
         }
         _ => {

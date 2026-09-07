@@ -1,7 +1,7 @@
 {
   "project": {
     "project": "HostParity3D",
-    "script": "local Game = {}\nlocal frame = 0\nfunction Game.start(api)\n api.observation.set(\"saved\",api.save.get())\n api.audio.loop(\"music://fixture\",{category=\"music\"})\nend\nfunction Game.update(api,dt)\n frame += 1\n local transform = api.entity.getTransform3D(\"car\")\n if api.input.isDown(\"Drive\") then transform.position.z += 1 end\n api.entity.setTransform3D(\"car\",transform)\n api.observation.set(\"pointer_down\",api.input.isPointerDown())\n api.observation.set(\"pointer\",api.input.getPointerPosition())\nend\nreturn Game",
+    "script": "local Game = {}\nlocal frame = 0\nfunction Game.start(api)\n api.particle.play(\"spark\",{x=0,y=0,z=0},42)\n api.observation.set(\"saved\",api.save.get())\n api.audio.loop(\"music://fixture\",{category=\"music\"})\nend\nfunction Game.update(api,dt)\n frame += 1\n local transform = api.entity.getTransform3D(\"car\")\n if api.input.isDown(\"Drive\") then transform.position.z += 1 end\n api.entity.setTransform3D(\"car\",transform)\n api.observation.set(\"pointer_down\",api.input.isPointerDown())\n api.observation.set(\"pointer\",api.input.getPointerPosition())\nend\nreturn Game",
     "systems": {
       "physics2d": false
     },
@@ -23,7 +23,56 @@
           "id": "car",
           "transform3d": {}
         }
-      ]
+      ],
+      "particle_effects": {
+        "spark": {
+          "version": 1,
+          "duration_frames": 1,
+          "emitters": [
+            {
+              "id": "sparks",
+              "count": 24,
+              "interval_frames": 1,
+              "lifetime_frames": 45,
+              "spread": {
+                "x": 0.08,
+                "y": 0.08,
+                "z": 0.08
+              },
+              "velocity_min": {
+                "x": -2,
+                "y": 0.5,
+                "z": -2
+              },
+              "velocity_max": {
+                "x": 2,
+                "y": 3,
+                "z": 2
+              },
+              "gravity": {
+                "x": 0,
+                "y": -4,
+                "z": 0
+              },
+              "size_start": 0.16,
+              "size_end": 0.01,
+              "color_start": [
+                1,
+                0.65,
+                0.08,
+                1
+              ],
+              "color_end": [
+                1,
+                0.12,
+                0,
+                0
+              ],
+              "additive": true
+            }
+          ]
+        }
+      }
     }
   },
   "frames": [

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "texture://reference/banner",
+      "source": "assets/reference/banner.webp",
+      "kind": "texture2d"
+    }
+  ]
+}

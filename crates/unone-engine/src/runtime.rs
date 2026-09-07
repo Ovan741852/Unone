@@ -1,12 +1,8 @@
-use std::{
-    cell::RefCell,
-    collections::BTreeMap,
-    env, fs,
-    path::{Path, PathBuf},
-    process::Command,
-    rc::Rc,
-    time::SystemTime,
-};
+#[cfg(feature = "dev-tools")]
+use crate::project::TestSpec;
+use std::{cell::RefCell, collections::BTreeMap, path::PathBuf, rc::Rc};
+#[cfg(feature = "dev-tools")]
+use std::{env, fs, path::Path, process::Command, time::SystemTime};
 
 use mlua::{Function, Lua, Table, Value};
 use serde::Serialize;
@@ -16,7 +12,7 @@ use crate::{
     audio::AudioOptions,
     diagnostics::{ActionSuggestion, Diagnostic, EngineResult, SourceLocation},
     performance::{FrameCounts, FrameTiming, PerformanceCollector, PerformanceReport, timed},
-    project::{InputFrame, ProjectConfig, ProjectPaths, TestSpec},
+    project::{InputFrame, ProjectConfig, ProjectPaths},
     systems::SystemSettings,
     ui::UiTree,
     world::{SceneFile, Transform2DData, Transform3DData, Vec2, Vec3, World, WorldSnapshot},
@@ -175,11 +171,13 @@ impl DeterministicRng {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg(feature = "dev-tools")]
 struct ScriptStamp {
     modified: SystemTime,
     size: u64,
 }
 
+#[cfg(feature = "dev-tools")]
 struct ReloadRollbackState {
     input: InputState,
     random: DeterministicRng,
@@ -199,6 +197,7 @@ pub struct EngineRuntime {
     systems: SystemSettings,
     world: Rc<RefCell<World>>,
     input: Rc<RefCell<InputState>>,
+    #[cfg(feature = "dev-tools")]
     random: Rc<RefCell<DeterministicRng>>,
     lua: Lua,
     api: Table,
@@ -208,14 +207,18 @@ pub struct EngineRuntime {
     ui: Rc<RefCell<Option<UiTree>>>,
     viewport_aspect: Rc<RefCell<f64>>,
     save_payload: Rc<RefCell<Option<serde_json::Value>>>,
+    #[cfg(feature = "dev-tools")]
     generation: u64,
+    #[cfg(feature = "dev-tools")]
     last_seen_script_stamp: Option<ScriptStamp>,
     script_source: Option<String>,
     performance: PerformanceCollector,
+    #[cfg(feature = "dev-tools")]
     loaded_script_digest: String,
 }
 
 impl EngineRuntime {
+    #[cfg(feature = "dev-tools")]
     pub fn check(project_root: impl AsRef<Path>) -> EngineResult<CheckReport> {
         let (config, paths) = match ProjectPaths::discover(project_root) {
             Ok(value) => value,
@@ -291,6 +294,7 @@ impl EngineRuntime {
         result
     }
 
+    #[cfg(feature = "dev-tools")]
     pub fn check_with_types(project_root: impl AsRef<Path>) -> EngineResult<CheckReport> {
         let mut result = Self::check(&project_root);
         if !result.ok {
@@ -314,10 +318,12 @@ impl EngineRuntime {
         result
     }
 
+    #[cfg(feature = "dev-tools")]
     pub fn load(project_root: impl AsRef<Path>) -> Result<Self, Box<Diagnostic>> {
         Self::load_with_seed(project_root, 42)
     }
 
+    #[cfg(feature = "dev-tools")]
     pub fn load_with_seed(
         project_root: impl AsRef<Path>,
         seed: u64,
@@ -330,6 +336,7 @@ impl EngineRuntime {
     /// The payload is visible to `api.save.get()` inside `Game.start`, so a game
     /// can rebuild its state before the first frame instead of detecting the
     /// restore on its first update.
+    #[cfg(feature = "dev-tools")]
     pub fn load_with_seed_and_save(
         project_root: impl AsRef<Path>,
         seed: u64,
@@ -474,7 +481,15 @@ impl EngineRuntime {
         if let Some(scene) = scene {
             world.borrow_mut().load_scene_data(scene)?;
         }
-        Self::with_world(config, paths, world, Some(source), seed, restored_save, viewport_aspect)
+        Self::with_world(
+            config,
+            paths,
+            world,
+            Some(source),
+            seed,
+            restored_save,
+            viewport_aspect,
+        )
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -543,6 +558,7 @@ impl EngineRuntime {
             systems,
             world,
             input,
+            #[cfg(feature = "dev-tools")]
             random,
             lua,
             api,
@@ -552,13 +568,18 @@ impl EngineRuntime {
             ui,
             viewport_aspect,
             save_payload,
+            #[cfg(feature = "dev-tools")]
             generation: 0,
+            #[cfg(feature = "dev-tools")]
             last_seen_script_stamp: None,
             script_source,
             performance: PerformanceCollector::default(),
+            #[cfg(feature = "dev-tools")]
             loaded_script_digest: String::new(),
         };
-        if let Some(aspect) = initial_viewport_aspect { runtime.set_viewport_aspect(aspect)?; }
+        if let Some(aspect) = initial_viewport_aspect {
+            runtime.set_viewport_aspect(aspect)?;
+        }
         runtime.load_script(false, None)?;
         Ok(runtime)
     }
@@ -614,6 +635,7 @@ impl EngineRuntime {
         self.save_payload.borrow().clone()
     }
 
+    #[cfg(feature = "dev-tools")]
     pub fn reload(&mut self) -> Result<(), Box<Diagnostic>> {
         self.load_script(true, None)
     }
@@ -622,6 +644,7 @@ impl EngineRuntime {
     ///
     /// A failed source keeps the previous update function active, matching
     /// filesystem hot reload behavior. The host can fix the source and retry.
+    #[cfg(feature = "dev-tools")]
     pub fn reload_source(&mut self, source: impl Into<String>) -> Result<(), Box<Diagnostic>> {
         self.load_script(true, Some(source.into()))
     }
@@ -631,6 +654,7 @@ impl EngineRuntime {
     /// The changed stamp is remembered before attempting the reload so an
     /// invalid file does not spam the preview every frame. A later file edit
     /// produces a new stamp and can be retried.
+    #[cfg(feature = "dev-tools")]
     pub fn reload_if_changed(&mut self) -> Result<bool, Box<Diagnostic>> {
         let current = self.script_stamp()?;
         if self.last_seen_script_stamp.as_ref() == Some(&current) {
@@ -703,7 +727,9 @@ impl EngineRuntime {
                 return EngineResult::failure(Diagnostic::error(
                     "OBSERVATION_SERIALIZATION_FAILED",
                     "Unable to serialize observation snapshot",
-                    format!("WorldSnapshot could not be serialized, so the observation digest cannot be computed: {error}"),
+                    format!(
+                        "WorldSnapshot could not be serialized, so the observation digest cannot be computed: {error}"
+                    ),
                 ));
             }
         };
@@ -750,6 +776,7 @@ impl EngineRuntime {
             let mut world = self.world.borrow_mut();
             let frame = world.frame;
             world.audio.end_frame(frame);
+            world.particles.advance(frame);
         }
         let (snapshot, observe_time) = timed(|| self.observe());
         self.performance.record(FrameTiming {
@@ -777,6 +804,7 @@ impl EngineRuntime {
                 .map(|tree| tree.children.len())
                 .unwrap_or(0),
             effects: snapshot.effects.len(),
+            particles: snapshot.particles.len(),
             observations: snapshot.observations.len(),
         };
         self.performance.report(
@@ -786,6 +814,7 @@ impl EngineRuntime {
         )
     }
 
+    #[cfg(feature = "dev-tools")]
     pub fn run_tests(project_root: impl AsRef<Path>) -> EngineResult<TestSuiteReport> {
         let (config, paths) = match ProjectPaths::discover(project_root) {
             Ok(value) => value,
@@ -891,14 +920,17 @@ impl EngineRuntime {
         snapshot
     }
 
+    #[cfg(feature = "dev-tools")]
     pub(crate) fn developer_generation(&self) -> u64 {
         self.generation
     }
 
+    #[cfg(feature = "dev-tools")]
     pub(crate) fn developer_script_digest(&self) -> &str {
         &self.loaded_script_digest
     }
 
+    #[cfg(feature = "dev-tools")]
     pub(crate) fn take_developer_trace(&mut self) -> Vec<serde_json::Value> {
         std::mem::take(&mut *self.trace.borrow_mut())
             .into_iter()
@@ -906,12 +938,14 @@ impl EngineRuntime {
             .collect()
     }
 
+    #[cfg(feature = "dev-tools")]
     pub(crate) fn developer_performance(&self) -> PerformanceReport {
         self.performance_report()
     }
 
     /// Validate an entire developer batch on candidate Rust state, then publish once.
     /// No Lua callback runs here. The caller serializes this between simulation ticks.
+    #[cfg(feature = "dev-tools")]
     pub(crate) fn enact_developer(
         &mut self,
         operations: &[crate::developer::EnactOperation],
@@ -932,6 +966,29 @@ impl EngineRuntime {
         Ok((snapshot, results))
     }
 
+    #[cfg(not(feature = "dev-tools"))]
+    fn load_script(
+        &mut self,
+        _is_reload: bool,
+        _source_override: Option<String>,
+    ) -> Result<(), Box<Diagnostic>> {
+        let source = self.script_source.as_deref().ok_or_else(|| {
+            Box::new(Diagnostic::error(
+                "PLAYER_SOURCE_REQUIRED",
+                "Player requires packaged source",
+                "Filesystem loading and hot reload are developer-only.",
+            ))
+        })?;
+        let table = evaluate_script(&self.lua, &self.paths, source)?;
+        let update_fn = script_entrypoint(&table, "update", &self.paths)?;
+        script_entrypoint(&table, "start", &self.paths)?
+            .call::<()>(self.api.clone())
+            .map_err(|error| Box::new(script_diagnostic(&self.paths, error.to_string())))?;
+        self.update_fn = update_fn;
+        Ok(())
+    }
+
+    #[cfg(feature = "dev-tools")]
     fn load_script(
         &mut self,
         is_reload: bool,
@@ -1034,6 +1091,7 @@ impl EngineRuntime {
         Ok(())
     }
 
+    #[cfg(feature = "dev-tools")]
     fn capture_reload_state(&self) -> ReloadRollbackState {
         ReloadRollbackState {
             input: self.input.borrow().clone(),
@@ -1049,6 +1107,7 @@ impl EngineRuntime {
         }
     }
 
+    #[cfg(feature = "dev-tools")]
     fn restore_failed_reload(&mut self, state: ReloadRollbackState) {
         *self.input.borrow_mut() = state.input;
         *self.random.borrow_mut() = state.random;
@@ -1062,6 +1121,7 @@ impl EngineRuntime {
         self.script_source = state.script_source;
     }
 
+    #[cfg(feature = "dev-tools")]
     fn script_stamp(&self) -> Result<ScriptStamp, Box<Diagnostic>> {
         if self.script_source.is_some() {
             return Ok(ScriptStamp {
@@ -1150,10 +1210,9 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
         "getPosition",
         lua.create_function(move |lua, id: String| {
             let world = get_world.borrow();
-            let entity = world
-                .entities
-                .get(&id)
-                .ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' does not exist.")))?;
+            let entity = world.entities.get(&id).ok_or_else(|| {
+                mlua::Error::RuntimeError(format!("Entity '{id}' does not exist."))
+            })?;
             let table = lua.create_table()?;
             table.set("x", entity.transform.x)?;
             table.set("y", entity.transform.y)?;
@@ -1609,6 +1668,33 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
         })?,
     )?;
 
+    let particle_api = lua.create_table()?;
+    let particle_world = Rc::clone(&world);
+    particle_api.set(
+        "play",
+        lua.create_function(
+            move |_, (effect, position, seed): (String, Table, Option<u64>)| {
+                let position = Vec3 {
+                    x: position.get("x")?,
+                    y: position.get("y")?,
+                    z: position.get("z")?,
+                };
+                let mut world = particle_world.borrow_mut();
+                let frame = world.frame;
+                world
+                    .particles
+                    .play(&effect, position, seed.unwrap_or(0), frame)
+                    .map_err(mlua::Error::external)
+            },
+        )?,
+    )?;
+    let particle_world = Rc::clone(&world);
+    particle_api.set(
+        "stop",
+        lua.create_function(move |_, handle: String| {
+            Ok(particle_world.borrow_mut().particles.stop(&handle))
+        })?,
+    )?;
     let effect_api = lua.create_table()?;
     let spawn_world = Rc::clone(&world);
     effect_api.set(
@@ -1692,7 +1778,10 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
     audio_api.set(
         "pause",
         lua.create_function(move |_, handle: String| {
-            Ok(pause_audio_world.borrow_mut().audio.set_paused(&handle, true))
+            Ok(pause_audio_world
+                .borrow_mut()
+                .audio
+                .set_paused(&handle, true))
         })?,
     )?;
     let resume_audio_world = Rc::clone(&world);
@@ -1709,7 +1798,10 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
     audio_api.set(
         "pauseAll",
         lua.create_function(move |_, ()| {
-            Ok(pause_all_audio_world.borrow_mut().audio.set_all_paused(true) as i64)
+            Ok(pause_all_audio_world
+                .borrow_mut()
+                .audio
+                .set_all_paused(true) as i64)
         })?,
     )?;
     let resume_all_audio_world = Rc::clone(&world);
@@ -1782,6 +1874,10 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
     api.set(
         "effect",
         disable_if_off(lua, systems, "effekseer", effect_api)?,
+    )?;
+    api.set(
+        "particle",
+        disable_if_off(lua, systems, "particle", particle_api)?,
     )?;
     api.set("audio", disable_if_off(lua, systems, "audio", audio_api)?)?;
     Ok(api)
@@ -1996,6 +2092,7 @@ fn json_to_lua(lua: &Lua, value: serde_json::Value) -> mlua::Result<Value> {
 /// error, the plain path exits 1 and reports the TypeError while the prefixed
 /// path exits 0 and says nothing. Since exit 0 means "nothing found", the whole
 /// type gate silently passed for every project.
+#[cfg(feature = "dev-tools")]
 fn analyzer_argument(path: &Path) -> String {
     let text = path.display().to_string();
     if let Some(rest) = text.strip_prefix("\\\\?\\UNC\\") {
@@ -2006,12 +2103,14 @@ fn analyzer_argument(path: &Path) -> String {
         .unwrap_or(text)
 }
 
+#[cfg(feature = "dev-tools")]
 fn run_luau_analyzer(paths: &ProjectPaths) -> Result<TypeCheckReport, Box<Diagnostic>> {
     run_luau_analyzer_with(&analyzer_path(), &paths.entry_script)
 }
 
 /// The analyzer call itself, with the tool and script named explicitly so a test
 /// can prove the gate still rejects a bad script.
+#[cfg(feature = "dev-tools")]
 fn run_luau_analyzer_with(
     analyzer: &Path,
     entry_script: &Path,
@@ -2075,6 +2174,7 @@ fn run_luau_analyzer_with(
 /// not find a type error — it did not get far enough to look. Reporting that as
 /// a type error sends the author to rewrite a script that is fine, which is what
 /// an analyzer killed by an antivirus scan or a file lock looks like from here.
+#[cfg(feature = "dev-tools")]
 fn classify_analyzer_result(
     success: bool,
     exit_code: Option<i32>,
@@ -2134,6 +2234,7 @@ fn classify_analyzer_result(
     Err(Box::new(diagnostic))
 }
 
+#[cfg(feature = "dev-tools")]
 fn analyzer_path() -> PathBuf {
     if let Ok(path) = env::var("UNONE_LUAU_ANALYZER") {
         return PathBuf::from(path);
@@ -2183,7 +2284,8 @@ fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
         column: None,
     });
     diagnostic.likely_causes = vec![
-        "The entry script syntax or Engine API calls do not satisfy the current contract".to_string(),
+        "The entry script syntax or Engine API calls do not satisfy the current contract"
+            .to_string(),
         "The script uses a missing Entity or field at runtime".to_string(),
     ];
     diagnostic.suggested_actions = vec![
@@ -2206,6 +2308,7 @@ fn hex_digest(bytes: &[u8]) -> String {
     digest.iter().map(|byte| format!("{byte:02x}")).collect()
 }
 
+#[cfg(feature = "dev-tools")]
 fn evaluate_assertion(
     world: &WorldSnapshot,
     assertion: &crate::project::TestAssertion,
@@ -2310,7 +2413,10 @@ fn evaluate_assertion(
     if let Some(expected) = assertion.equals
         && (actual - expected).abs() > 0.000_001
     {
-        return Err(format!("{} {} does not equal expected {}.", entity_id, field, expected));
+        return Err(format!(
+            "{} {} does not equal expected {}.",
+            entity_id, field, expected
+        ));
     }
     if let Some(expected) = assertion.greater_than
         && actual <= expected
@@ -2331,14 +2437,18 @@ fn evaluate_assertion(
     Ok(())
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "dev-tools"))]
 mod tests {
     use std::{collections::BTreeMap, fs};
 
     use tempfile::tempdir;
 
     use super::{DeterministicRng, EngineRuntime, hex_digest, observation_digest};
-    use crate::{project::InputFrame, ui::UiTree, world::{SceneFile, Vec2}};
+    use crate::{
+        project::InputFrame,
+        ui::UiTree,
+        world::{SceneFile, Vec2},
+    };
 
     fn write_project(dir: &std::path::Path, script: &str) {
         fs::create_dir_all(dir.join("scripts")).unwrap();
@@ -2546,7 +2656,11 @@ return Game
         let dir = tempdir().unwrap();
         write_project_with_systems(dir.path(), ANCHOR_SCRIPT, "{}");
 
-        let wide = EngineRuntime::load(dir.path()).unwrap().observe().ui.unwrap();
+        let wide = EngineRuntime::load(dir.path())
+            .unwrap()
+            .observe()
+            .ui
+            .unwrap();
         let mut narrow_runtime = EngineRuntime::load(dir.path()).unwrap();
         narrow_runtime.set_viewport_aspect(9.0 / 16.0).unwrap();
         narrow_runtime.run(1, 42);
@@ -2722,8 +2836,8 @@ return Game
 
     #[test]
     fn observation_digest_matches_snapshot_bytes_and_does_not_mutate_snapshot() {
-        let runtime = EngineRuntime::load_source("DigestSmoke", "main.luau", IDLE_SCRIPT, None)
-            .unwrap();
+        let runtime =
+            EngineRuntime::load_source("DigestSmoke", "main.luau", IDLE_SCRIPT, None).unwrap();
         let snapshot = runtime.observe();
         let before = serde_json::to_vec(&snapshot).unwrap();
 
@@ -2765,8 +2879,9 @@ function Game.update(_api, _dt) end
 return Game
 "#;
 
-        let runtime = EngineRuntime::load_source("Transform2DSmoke", "main.luau", source, Some(scene))
-            .unwrap();
+        let runtime =
+            EngineRuntime::load_source("Transform2DSmoke", "main.luau", source, Some(scene))
+                .unwrap();
         let snapshot = runtime.observe();
         let player = snapshot.entities.get("player").unwrap();
 
@@ -2923,21 +3038,27 @@ function Game.update(_api, _dt) end
 return Game
 "#;
 
-        let mut runtime = EngineRuntime::load_source_with_seed("Reload", "main.luau", OLD, None, 7)
-            .unwrap();
-        let mut control = EngineRuntime::load_source_with_seed("Reload", "main.luau", OLD, None, 7)
-            .unwrap();
+        let mut runtime =
+            EngineRuntime::load_source_with_seed("Reload", "main.luau", OLD, None, 7).unwrap();
+        let mut control =
+            EngineRuntime::load_source_with_seed("Reload", "main.luau", OLD, None, 7).unwrap();
         let save = serde_json::json!({"value": "before"});
         runtime.set_save_payload(Some(save.clone()));
         control.set_save_payload(Some(save));
 
         let error = runtime.reload_source(BROKEN).unwrap_err();
-        assert!(error.explanation.contains("candidate reload failed"), "{error:?}");
+        assert!(
+            error.explanation.contains("candidate reload failed"),
+            "{error:?}"
+        );
         assert_eq!(
             serde_json::to_value(runtime.observe().entities).unwrap(),
             serde_json::to_value(control.observe().entities).unwrap()
         );
-        assert_eq!(runtime.observe().observations, control.observe().observations);
+        assert_eq!(
+            runtime.observe().observations,
+            control.observe().observations
+        );
         assert_eq!(runtime.observe().ui, control.observe().ui);
         assert_eq!(runtime.save_payload(), control.save_payload());
 
@@ -3334,7 +3455,10 @@ return Game
         assert_eq!(first.audio_events[0].asset, "sfx://boot");
         assert!(!first.audio_events[0].looping);
         assert_eq!(first.audio_loops.len(), 1);
-        assert_eq!(first.audio_loops[0].phase, crate::audio::AudioPhase::Playing);
+        assert_eq!(
+            first.audio_loops[0].phase,
+            crate::audio::AudioPhase::Playing
+        );
 
         let second = runtime.tick().unwrap();
         assert!(
@@ -3376,7 +3500,11 @@ return Game
 
         runtime.tick().unwrap();
         let switched = runtime.tick().unwrap();
-        assert_eq!(switched.audio_loops.len(), 2, "the old track is still fading");
+        assert_eq!(
+            switched.audio_loops.len(),
+            2,
+            "the old track is still fading"
+        );
         assert_eq!(
             switched.audio_loops[0].phase,
             crate::audio::AudioPhase::FadingOut
@@ -3435,7 +3563,11 @@ return Game
             Err(error) => error,
         };
         assert_eq!(error.code, "AUDIO_RULE_NOT_IMPLEMENTED");
-        assert!(error.explanation.contains("ducking"), "{}", error.explanation);
+        assert!(
+            error.explanation.contains("ducking"),
+            "{}",
+            error.explanation
+        );
         assert!(
             error.explanation.contains("fade_out_frames"),
             "{}",

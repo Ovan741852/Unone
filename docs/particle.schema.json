@@ -1,0 +1,152 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$defs": {
+    "ParticleEmitter": {
+      "additionalProperties": false,
+      "properties": {
+        "additive": {
+          "default": false,
+          "type": "boolean"
+        },
+        "color_end": {
+          "items": {
+            "format": "double",
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "color_start": {
+          "items": {
+            "format": "double",
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "count": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "gravity": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        },
+        "id": {
+          "type": "string"
+        },
+        "interval_frames": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "lifetime_frames": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "size_end": {
+          "format": "double",
+          "type": "number"
+        },
+        "size_start": {
+          "format": "double",
+          "type": "number"
+        },
+        "spread": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        },
+        "velocity_max": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        },
+        "velocity_min": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        }
+      },
+      "required": [
+        "id",
+        "count",
+        "interval_frames",
+        "lifetime_frames",
+        "size_start",
+        "size_end",
+        "color_start",
+        "color_end"
+      ],
+      "type": "object"
+    },
+    "Vec3": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        },
+        "z": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://unone.dev/schema/particle.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "duration_frames": {
+      "format": "uint32",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "emitters": {
+      "items": {
+        "$ref": "#/$defs/ParticleEmitter"
+      },
+      "type": "array"
+    },
+    "version": {
+      "format": "uint32",
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "version",
+    "duration_frames",
+    "emitters"
+  ],
+  "title": "ParticleDefinition",
+  "type": "object"
+}

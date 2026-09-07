@@ -1,4 +1,6 @@
-use std::{collections::BTreeMap, fmt::Display, path::Path};
+#[cfg(feature = "dev-tools")]
+use std::fmt::Display;
+use std::{collections::BTreeMap, path::Path};
 
 use serde_json::{Map, Value};
 
@@ -9,6 +11,7 @@ use crate::{
 
 #[derive(Debug, Clone, Copy)]
 enum SceneSourceKind {
+    #[cfg_attr(not(feature = "dev-tools"), allow(dead_code))]
     Disk,
     HostPayload,
     Typed,
@@ -21,6 +24,7 @@ struct SceneSource<'a> {
 }
 
 impl<'a> SceneSource<'a> {
+    #[cfg(feature = "dev-tools")]
     fn disk(file: &'a Path) -> Self {
         Self {
             kind: SceneSourceKind::Disk,
@@ -52,6 +56,7 @@ pub fn parse_scene_fragment(text: &str) -> Result<SceneFile, Box<Diagnostic>> {
     parse_and_validate(text, SceneSource::host_payload())
 }
 
+#[cfg(feature = "dev-tools")]
 pub(crate) fn parse_scene_file(text: &str, path: &Path) -> Result<SceneFile, Box<Diagnostic>> {
     parse_and_validate(text, SceneSource::disk(path))
 }
@@ -60,6 +65,7 @@ pub(crate) fn validate_typed_scene(scene: &SceneFile) -> Result<(), Box<Diagnost
     validate_scene(scene, SceneSource::typed())
 }
 
+#[cfg(feature = "dev-tools")]
 pub(crate) fn scene_read_failed(path: &Path, error: impl Display) -> Box<Diagnostic> {
     with_scene_context(
         Box::new(Diagnostic::error(
@@ -80,7 +86,9 @@ fn parse_and_validate(text: &str, source: SceneSource<'_>) -> Result<SceneFile, 
         let column = nonzero_location(error.column());
         let explanation = match source.file {
             Some(path) => format!("{}: {}", path.display(), error),
-            None => format!("The host payload scene fragment is not valid Unone scene JSON: {error}"),
+            None => {
+                format!("The host payload scene fragment is not valid Unone scene JSON: {error}")
+            }
         };
         with_scene_context(
             Box::new(Diagnostic::error(
@@ -99,6 +107,24 @@ fn parse_and_validate(text: &str, source: SceneSource<'_>) -> Result<SceneFile, 
 }
 
 fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<Diagnostic>> {
+    for (id, definition) in &scene.particle_effects {
+        if id.trim().is_empty() {
+            return Err(scene_error(
+                source,
+                "PARTICLE_DEFINITION_INVALID",
+                "Empty particle id",
+                "Particle IDs must not be blank",
+            ));
+        }
+        definition.validate().map_err(|message| {
+            scene_error(
+                source,
+                "PARTICLE_DEFINITION_INVALID",
+                "Invalid particle definition",
+                message,
+            )
+        })?;
+    }
     if scene.camera.zoom <= 0.0 || !scene.camera.zoom.is_finite() {
         return Err(scene_error(
             source,
@@ -216,7 +242,10 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
                     source,
                     "SCENE_PHYSICS_INVALID",
                     "RigidBody2D mass is invalid",
-                    format!("Entity '{}' mass must be a finite number greater than 0.", entity.id),
+                    format!(
+                        "Entity '{}' mass must be a finite number greater than 0.",
+                        entity.id
+                    ),
                 ));
             }
             if body.radius <= 0.0 || !body.radius.is_finite() {
@@ -224,7 +253,10 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
                     source,
                     "SCENE_PHYSICS_INVALID",
                     "RigidBody2D radius is invalid",
-                    format!("Entity '{}' radius must be a finite number greater than 0.", entity.id),
+                    format!(
+                        "Entity '{}' radius must be a finite number greater than 0.",
+                        entity.id
+                    ),
                 ));
             }
             if !body.restitution.is_finite() || !(0.0..=1.0).contains(&body.restitution) {
@@ -232,7 +264,10 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
                     source,
                     "SCENE_PHYSICS_INVALID",
                     "RigidBody2D restitution is invalid",
-                    format!("Entity '{}' restitution must be between 0 and 1.", entity.id),
+                    format!(
+                        "Entity '{}' restitution must be between 0 and 1.",
+                        entity.id
+                    ),
                 ));
             }
         }
@@ -337,7 +372,7 @@ fn nonzero_location(value: usize) -> Option<u32> {
     (value != 0).then_some(value as u32)
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "dev-tools"))]
 mod tests {
     use std::{fs, path::Path};
 

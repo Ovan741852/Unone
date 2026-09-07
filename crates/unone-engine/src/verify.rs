@@ -165,7 +165,9 @@ fn resolve_plan(
             let mut diagnostic = Diagnostic::error(
                 "VERIFY_STEP_UNKNOWN",
                 "verify declared an unavailable gate",
-                format!("The engine does not provide gate '{name}'; a typo must not silently disable a gate."),
+                format!(
+                    "The engine does not provide gate '{name}'; a typo must not silently disable a gate."
+                ),
             );
             diagnostic.facts = serde_json::json!({
                 "step": name,
@@ -259,7 +261,11 @@ fn tests_step(project_root: &Path, paths: &ProjectPaths, required: bool) -> Veri
     )
 }
 
-fn finish(project: String, steps: Vec<VerifyStep>, step_source: &str) -> EngineResult<VerifyReport> {
+fn finish(
+    project: String,
+    steps: Vec<VerifyStep>,
+    step_source: &str,
+) -> EngineResult<VerifyReport> {
     let failed = steps
         .iter()
         .filter(|step| step.status == StepStatus::Failed)
@@ -360,10 +366,12 @@ fn layout_step(
     let command = command.as_str();
     let mut sequence = Vec::new();
     if let Some(path) = preview.and_then(|preview| preview.input_sequence.as_deref()) {
-        match std::fs::read_to_string(root.join(path)).map_err(|error| error.to_string()).and_then(
-            |text| serde_json::from_str::<Vec<crate::project::InputFrame>>(&text)
-                .map_err(|error| error.to_string()),
-        ) {
+        match std::fs::read_to_string(root.join(path))
+            .map_err(|error| error.to_string())
+            .and_then(|text| {
+                serde_json::from_str::<Vec<crate::project::InputFrame>>(&text)
+                    .map_err(|error| error.to_string())
+            }) {
             Ok(frames) => sequence = frames,
             Err(error) => {
                 return step(
@@ -415,7 +423,11 @@ fn layout_step(
             Vec::new(),
         );
     };
-    let report = layout::inspect(&tree, layout::DEFAULT_LAYOUT_COLS, layout::DEFAULT_LAYOUT_ROWS);
+    let report = layout::inspect(
+        &tree,
+        layout::DEFAULT_LAYOUT_COLS,
+        layout::DEFAULT_LAYOUT_ROWS,
+    );
     let diagnostics = report
         .findings
         .iter()
@@ -572,7 +584,10 @@ return Game
             result.diagnostics
         );
         assert!(
-            result.effects.iter().any(|effect| effect.contains("advisory (tests)")),
+            result
+                .effects
+                .iter()
+                .any(|effect| effect.contains("advisory (tests)")),
             "the run must say which gate was let through: {:?}",
             result.effects
         );

@@ -139,7 +139,9 @@ fn suggested_next_actions(project_root: &Path) -> Vec<ApiSearchAction> {
             String::new(),
             "--json".to_string(),
         ]),
-        reason: "Query the complete public Engine API index; this query does not need project context.".to_string(),
+        reason:
+            "Query the complete public Engine API index; this query does not need project context."
+                .to_string(),
         diagnostic: None,
     };
 
@@ -191,6 +193,42 @@ pub fn describe(name: &str) -> Option<ApiDescriptor> {
 fn descriptors() -> Vec<ApiDescriptor> {
     vec![
         descriptor(
+            "particle.play",
+            "particle",
+            "Play a seeded native 3D particle definition.",
+            "For editable JSON effects, deterministic previews and replay.",
+            "Use effect APIs for Effekseer assets.",
+            vec![
+                parameter("effect", "string", "Scene particle_effects key."),
+                parameter("position", "Vec3", "World-space emission origin."),
+                parameter("seed", "number?", "Seed; defaults to zero."),
+            ],
+            "string: stoppable instance handle.",
+            vec!["Create a runtime particle instance"],
+            "Births and motion use fixed 60 Hz frame age; active instances retain their definition after an authoring replacement.",
+            vec![
+                "Unknown effect",
+                "Disabled particle system",
+                "Particle capacity exceeded",
+            ],
+            "local handle = api.particle.play(\"spark\", {x=0,y=0,z=0}, 42)",
+            vec!["particle.stop"],
+        ),
+        descriptor(
+            "particle.stop",
+            "particle",
+            "Stop a native particle instance.",
+            "To cancel a running effect.",
+            "Not for Effekseer handles.",
+            vec![parameter("handle", "string", "Handle from particle.play.")],
+            "boolean: whether the instance existed.",
+            vec!["Remove the runtime instance"],
+            "Immediate; a second stop returns false.",
+            vec!["Disabled particle system"],
+            "api.particle.stop(handle)",
+            vec!["particle.play"],
+        ),
+        descriptor(
             "entity.spawn",
             "world",
             "Create a new Entity without a Sprite.",
@@ -204,7 +242,10 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "string: the unique Entity id that was created.",
             vec!["Modify Rust-owned world state"],
             "The Entity can be used immediately in the same script update; its id remains valid until the world is rebuilt.",
-            vec!["An empty name uses entity", "A duplicate name receives a suffix such as _2 or _3"],
+            vec![
+                "An empty name uses entity",
+                "A duplicate name receives a suffix such as _2 or _3",
+            ],
             "local id = api.entity.spawn(\"enemy\")",
             vec!["entity.getPosition", "entity.setPosition"],
         ),
@@ -283,9 +324,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "Transform2D: position is a Vec2, rotation is in radians, and scale is a positive Vec2.",
             vec!["Read Rust-owned 2D world state"],
             "Returns the 2D transform at call time; it does not create a second transform owned by the game.",
-            vec![
-                "A missing Entity id returns LUAU_RUNTIME_ERROR",
-            ],
+            vec!["A missing Entity id returns LUAU_RUNTIME_ERROR"],
             "local transform = api.entity.getTransform2D(\"bird\")",
             vec!["entity.setTransform2D", "entity.getPosition"],
         ),
@@ -320,7 +359,11 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "Read an Entity's current RigidBody2D velocity.",
             "When game rules need to display, test, or use physical velocity.",
             "For an Entity without a RigidBody2D, declare a physics body in the scene first.",
-            vec![parameter("id", "string", "An Entity id with a RigidBody2D.")],
+            vec![parameter(
+                "id",
+                "string",
+                "An Entity id with a RigidBody2D.",
+            )],
             "Vec2: the current x and y velocity.",
             vec!["Read Rust-owned physics state"],
             "Returns the velocity after the current physics step; changes made during script update are integrated on the next physics step.",
@@ -337,7 +380,11 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "Read an Entity's 3D Transform, including position, radian Euler rotation, and scale.",
             "When 3D game rules need to use the current object position or orientation.",
             "For a 2D Entity without a Transform3D, declare a 3D transform in the scene. Do not use it in place of game-owned vehicle, character, or combat state.",
-            vec![parameter("id", "string", "An Entity id with a Transform3D.")],
+            vec![parameter(
+                "id",
+                "string",
+                "An Entity id with a Transform3D.",
+            )],
             "Transform3D: position, rotation, and scale are all Vec3 values.",
             vec!["Read Rust-owned 3D world state"],
             "Returns the 3D transform from the start of this update; it does not create or copy a game-owned transform.",
@@ -437,7 +484,11 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "Set the active Camera2D world position.",
             "When the camera needs to follow a character or switch the level view.",
             "Do not convert every Entity coordinate to screen coordinates in the game; the renderer uses the camera state.",
-            vec![parameter("position", "Vec2", "The new camera world position.")],
+            vec![parameter(
+                "position",
+                "Vec2",
+                "The new camera world position.",
+            )],
             "(): no additional data on success.",
             vec!["Modify Rust-owned camera state"],
             "The setting takes effect immediately during the current script update; the next renderer draw reflects the new camera.",
@@ -481,7 +532,11 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "Do not use it for game-rule timing; the engine does not evaluate bones, meshes, or blending, and does not report whether playback has finished.",
             vec![
                 parameter("id", "string", "The target Entity id."),
-                parameter("name", "string", "The animation clip name defined by the Spine asset."),
+                parameter(
+                    "name",
+                    "string",
+                    "The animation clip name defined by the Spine asset.",
+                ),
                 parameter(
                     "options",
                     "table?",
@@ -602,7 +657,10 @@ fn descriptors() -> Vec<ApiDescriptor> {
                 ),
             ],
             "string: the handle for this loop, required by audio.stop.",
-            vec!["Modify Rust-owned audio loop list", "Stop other loops in an exclusive category"],
+            vec![
+                "Modify Rust-owned audio loop list",
+                "Stop other loops in an exclusive category",
+            ],
             "Starting a loop in an exclusive category begins stopping the ones already in it, honouring their fade_out_frames. A fade is counted in frames by the engine, so it ends on the same frame in every replay.",
             vec![
                 "asset is empty",
@@ -652,7 +710,11 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "Pause one looping sound without losing it.",
             "A pause menu, a cutscene, a lost window focus: the loop should stop making noise but still be there, still where it was in its fade, ready to carry on.",
             "Do not use it to end a sound; a paused loop still counts against the 64 live loops and still needs a stop. It has no meaning for a one-shot, which is already over.",
-            vec![parameter("handle", "string", "The handle returned by audio.loop.")],
+            vec![parameter(
+                "handle",
+                "string",
+                "The handle returned by audio.loop.",
+            )],
             "boolean: whether the loop changed state (false if it was already paused or the handle is unknown).",
             vec!["Modify Rust-owned audio loop list"],
             "A paused loop does not advance through its fade: its phase deadline moves with it, so resuming continues from exactly where it stopped.",
@@ -666,7 +728,11 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "Resume one paused loop.",
             "When the pause is over and playback should continue from where it stopped.",
             "It does not restart the loop from the beginning, and it does nothing to a loop that was stopped rather than paused.",
-            vec![parameter("handle", "string", "The handle returned by audio.loop.")],
+            vec![parameter(
+                "handle",
+                "string",
+                "The handle returned by audio.loop.",
+            )],
             "boolean: whether the loop changed state.",
             vec!["Modify Rust-owned audio loop list"],
             "Any fade continues from the frame it was paused on, not from now.",
@@ -712,7 +778,10 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "(): no additional data on success.",
             vec!["Modify Rust-owned audio mix"],
             "The mix is published in the observation as soon as it leaves its declared default, so a replay reproduces the same levels and a test can assert them. The host multiplies source volume by category level by master level.",
-            vec!["volume is not between 0 and 1", "system 'audio' is not enabled"],
+            vec![
+                "volume is not between 0 and 1",
+                "system 'audio' is not enabled",
+            ],
             "api.audio.setMasterVolume(0.8)",
             vec!["audio.getMasterVolume", "audio.setCategoryVolume"],
         ),
@@ -986,7 +1055,10 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "(): no additional data on success.",
             vec!["Modify Rust-owned Camera3D state"],
             "The update takes effect immediately during the current script update; the renderer uses it on the next draw.",
-            vec!["The current scene has no Camera3D", "x/y/z must be finite numbers"],
+            vec![
+                "The current scene has no Camera3D",
+                "x/y/z must be finite numbers",
+            ],
             "api.camera3d.setPosition({ x = 0, y = 3, z = 8 })",
             vec!["camera3d.getTransform", "camera3d.setTarget"],
         ),
@@ -996,11 +1068,18 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "Update the world target watched by the Camera3D.",
             "When the game must control a 3D camera aimed at a vehicle, track, or other gameplay target.",
             "Do not add game-specific tracking, smoothing, or camera-shake strategies to the engine.",
-            vec![parameter("target", "Vec3", "The new Camera3D world target.")],
+            vec![parameter(
+                "target",
+                "Vec3",
+                "The new Camera3D world target.",
+            )],
             "(): no additional data on success.",
             vec!["Modify Rust-owned Camera3D state"],
             "The update takes effect immediately during the current script update; the renderer uses it on the next draw.",
-            vec!["The current scene has no Camera3D", "x/y/z must be finite numbers"],
+            vec![
+                "The current scene has no Camera3D",
+                "x/y/z must be finite numbers",
+            ],
             "api.camera3d.setTarget({ x = 0, y = 0, z = 0 })",
             vec!["camera3d.getTransform", "camera3d.setPosition"],
         ),
@@ -1116,7 +1195,10 @@ mod tests {
         assert!(full_index.ready);
         assert_eq!(full_index.executable.as_deref(), Some("game"));
         assert_eq!(
-            full_index.argv.as_ref().expect("full index should have argv"),
+            full_index
+                .argv
+                .as_ref()
+                .expect("full index should have argv"),
             &vec![
                 "api".to_string(),
                 "search".to_string(),

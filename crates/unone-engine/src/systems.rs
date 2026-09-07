@@ -6,13 +6,17 @@
 //! system with no implementation cannot be enabled just because a plan asks
 //! for it.
 
-use std::{collections::BTreeMap, fs, path::Path};
+#[cfg(feature = "dev-tools")]
+use crate::{EngineResult, ProjectPaths};
+use std::collections::BTreeMap;
+#[cfg(feature = "dev-tools")]
+use std::{fs, path::Path};
 
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    diagnostics::{ActionSuggestion, Diagnostic, EngineResult},
-    project::{ProjectConfig, ProjectPaths},
+    diagnostics::{ActionSuggestion, Diagnostic},
+    project::ProjectConfig,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -106,7 +110,9 @@ impl SystemSettings {
                 let mut diagnostic = Diagnostic::error(
                     "SYSTEM_UNKNOWN",
                     "project.unone.json declares an unavailable system",
-                    format!("The engine does not provide system '{id}'; a typo must not silently disable a system."),
+                    format!(
+                        "The engine does not provide system '{id}'; a typo must not silently disable a system."
+                    ),
                 );
                 diagnostic.facts = serde_json::json!({
                     "system": id,
@@ -117,7 +123,8 @@ impl SystemSettings {
                 });
                 diagnostic.suggested_actions.push(ActionSuggestion {
                     action: "list_systems".to_string(),
-                    description: "List the systems declared by the engine and their defaults.".to_string(),
+                    description: "List the systems declared by the engine and their defaults."
+                        .to_string(),
                     command: Some("game systems list --json".to_string()),
                 });
                 return Err(Box::new(diagnostic));
@@ -206,6 +213,7 @@ pub fn search(query: &str) -> Vec<SystemDescriptor> {
 }
 
 /// Report the systems a project actually runs with.
+#[cfg(feature = "dev-tools")]
 pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<SystemReport> {
     let (config, _) = match ProjectPaths::discover(project_root) {
         Ok(value) => value,
@@ -233,6 +241,7 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<SystemReport> {
 }
 
 /// Turn one system on or off in the game's own project config.
+#[cfg(feature = "dev-tools")]
 pub fn set(
     project_root: impl AsRef<Path>,
     id: &str,
@@ -486,6 +495,17 @@ fn descriptors() -> Vec<SystemDescriptor> {
             vec!["world.entities[].animation"],
             "When disabled, api.animation reports SYSTEM_DISABLED; animation declared by the scene still appears in the snapshot.",
             "Games without skeletal animation; this system is disabled by default. Currently only the web/presentation Web host plays it with spine-webgl; native preview and the Android host do not. The engine only owns transport and determinism.",
+        ),
+        descriptor(
+            "particle",
+            "Seeded fixed-frame 3D native particles, sampled by core and presented by the host.",
+            SystemStatus::Available,
+            true,
+            true,
+            vec!["api.particle.play", "api.particle.stop"],
+            vec!["world.particles"],
+            "Particle calls fail when disabled.",
+            "Disable if the game has no native particle effects.",
         ),
         descriptor(
             "effekseer",

@@ -17,7 +17,8 @@ pub const SUPPORTED_ASSET_MANIFEST_VERSION: u32 = 1;
 pub const SUPPORTED_ASSET_KINDS: &[&str] = &["texture2d", "mesh3d", "spine", "effekseer", "audio"];
 const ACTIVE_ASSET_MANIFEST_BUNDLE_ID: &str = "asset-manifest";
 
-#[derive(Debug, Clone, Deserialize, Serialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct AssetManifest {
     #[serde(default = "default_manifest_version")]
@@ -26,13 +27,14 @@ pub struct AssetManifest {
     pub assets: Vec<AssetSpec>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct AssetSpec {
     pub id: String,
     pub source: String,
     #[serde(default = "default_asset_kind")]
-    #[schemars(schema_with = "asset_kind_schema")]
+    #[cfg_attr(feature = "dev-tools", schemars(schema_with = "asset_kind_schema"))]
     pub kind: String,
     #[serde(default = "default_asset_bundle")]
     pub bundle: String,
@@ -47,7 +49,8 @@ pub struct AssetSpec {
     pub encoding: Option<AssetEncoding>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct AssetEncoding {
     pub format: String,
@@ -60,7 +63,8 @@ pub struct AssetEncoding {
     pub companions: Vec<AssetCompanion>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct AssetCompanion {
     pub path: String,
@@ -68,6 +72,7 @@ pub struct AssetCompanion {
     pub mime: String,
 }
 
+#[cfg(feature = "dev-tools")]
 fn asset_kind_schema(_: &mut schemars::SchemaGenerator) -> schemars::Schema {
     schemars::json_schema!({"type":"string", "enum": SUPPORTED_ASSET_KINDS})
 }
@@ -156,7 +161,10 @@ pub(crate) fn load_for_pack(root: &Path, path: &Path) -> Result<AssetManifest, B
                 return Err(Box::new(Diagnostic::error(
                     "ASSET_SOURCE_NOT_FOUND",
                     "Asset companion file not found",
-                    format!("Asset '{}' requires '{file}', but the file does not exist.", asset.id),
+                    format!(
+                        "Asset '{}' requires '{file}', but the file does not exist.",
+                        asset.id
+                    ),
                 )));
             }
         }
@@ -200,7 +208,9 @@ pub struct ResolvedAssetBytes {
     pub bytes: Vec<u8>,
 }
 
-pub(crate) fn load_declared_manifest(paths: &ProjectPaths) -> Result<AssetManifest, Box<Diagnostic>> {
+pub(crate) fn load_declared_manifest(
+    paths: &ProjectPaths,
+) -> Result<AssetManifest, Box<Diagnostic>> {
     let Some(manifest_path) = paths.asset_manifest.as_deref() else {
         return Err(Box::new(Diagnostic::error(
             "ASSET_MANIFEST_MISSING",
@@ -301,7 +311,9 @@ fn resolve_asset_bytes_with_observation_hook(
         let mut diagnostic = Diagnostic::error(
             "ASSET_ID_NOT_DECLARED",
             "Asset manifest does not contain this asset id",
-            format!("The manifest does not declare asset '{asset_id}'; the engine will not guess the asset source."),
+            format!(
+                "The manifest does not declare asset '{asset_id}'; the engine will not guess the asset source."
+            ),
         );
         diagnostic.facts = serde_json::json!({
             "asset_id": asset_id,
@@ -355,7 +367,9 @@ fn resolve_asset_bytes_with_observation_hook(
             let mut diagnostic = Diagnostic::error(
                 "ASSET_FILE_NOT_DECLARED",
                 "Asset has not declared this companion file",
-                format!("The files for asset '{asset_id}' do not include '{file}'; the engine will not read undeclared content."),
+                format!(
+                    "The files for asset '{asset_id}' do not include '{file}'; the engine will not read undeclared content."
+                ),
             );
             diagnostic.facts = serde_json::json!({
                 "asset_id": asset_id,
@@ -680,10 +694,9 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
             );
             diagnostic.facts = serde_json::json!({"missing_sources": report.missing_sources});
             if let Some(asset) = report.assets.iter().find(|asset| {
-                report
-                    .missing_sources
-                    .iter()
-                    .any(|path| path == &asset.source || asset.files.iter().any(|file| file == path))
+                report.missing_sources.iter().any(|path| {
+                    path == &asset.source || asset.files.iter().any(|file| file == path)
+                })
             }) {
                 diagnostic.suggested_actions.push(ActionSuggestion {
                     action: "describe_asset".to_string(),
@@ -856,9 +869,9 @@ pub fn init_asset_manifest(
         if let Err(error) = fs::write(&candidate, bytes) {
             return init_failure_with_effects(
                 Diagnostic::error(
-                "ASSET_MANIFEST_WRITE_FAILED",
-                "Unable to write asset manifest",
-                format!("{}: {}", candidate.display(), error),
+                    "ASSET_MANIFEST_WRITE_FAILED",
+                    "Unable to write asset manifest",
+                    format!("{}: {}", candidate.display(), error),
                 ),
                 effects,
                 changed_files,
@@ -875,9 +888,9 @@ pub fn init_asset_manifest(
         Err(error) => {
             return init_failure_with_effects(
                 Diagnostic::error(
-                "PROJECT_CONFIG_READ_FAILED",
-                "Unable to update asset manifest configuration",
-                format!("{}: {}", config_path.display(), error),
+                    "PROJECT_CONFIG_READ_FAILED",
+                    "Unable to update asset manifest configuration",
+                    format!("{}: {}", config_path.display(), error),
                 ),
                 effects,
                 changed_files,
@@ -889,9 +902,9 @@ pub fn init_asset_manifest(
         Err(error) => {
             return init_failure_with_effects(
                 Diagnostic::error(
-                "PROJECT_CONFIG_INVALID",
-                "Unone project configuration is not valid JSON",
-                error.to_string(),
+                    "PROJECT_CONFIG_INVALID",
+                    "Unone project configuration is not valid JSON",
+                    error.to_string(),
                 ),
                 effects,
                 changed_files,
@@ -1036,10 +1049,7 @@ pub(crate) fn validate_asset_manifest(
     Ok(())
 }
 
-pub(crate) fn validate_asset_paths(
-    root: &Path,
-    asset: &AssetSpec,
-) -> Result<(), Box<Diagnostic>> {
+pub(crate) fn validate_asset_paths(root: &Path, asset: &AssetSpec) -> Result<(), Box<Diagnostic>> {
     resolve_project_path(root, &asset.source)?;
     for file in &asset.files {
         resolve_project_path(root, file)?;
@@ -1049,16 +1059,32 @@ pub(crate) fn validate_asset_paths(
 
 pub(crate) fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnostic>> {
     if let Some(encoding) = &asset.encoding {
-        let mime_valid = |mime: &str| mime.split_once('/').is_some_and(|(a,b)| !a.is_empty() && !b.is_empty())
-            && !mime.chars().any(char::is_whitespace);
+        let mime_valid = |mime: &str| {
+            mime.split_once('/')
+                .is_some_and(|(a, b)| !a.is_empty() && !b.is_empty())
+                && !mime.chars().any(char::is_whitespace)
+        };
         let mut described = BTreeSet::new();
-        if encoding.format.trim().is_empty() || encoding.decoder.trim().is_empty() || !mime_valid(&encoding.mime)
-            || encoding.format_version.as_ref().is_some_and(|version| version.trim().is_empty())
-            || encoding.companions.iter().any(|file| file.role.trim().is_empty() || !mime_valid(&file.mime)
-                || !asset.files.contains(&file.path) || !described.insert(&file.path))
-            || described.len() != asset.files.len() {
-            return Err(Box::new(Diagnostic::error("ASSET_ENCODING_INVALID", "Invalid asset encoding contract",
-                "Declare nonblank format/decoder, MIME types, and exactly one role/MIME descriptor for every required files entry.")));
+        if encoding.format.trim().is_empty()
+            || encoding.decoder.trim().is_empty()
+            || !mime_valid(&encoding.mime)
+            || encoding
+                .format_version
+                .as_ref()
+                .is_some_and(|version| version.trim().is_empty())
+            || encoding.companions.iter().any(|file| {
+                file.role.trim().is_empty()
+                    || !mime_valid(&file.mime)
+                    || !asset.files.contains(&file.path)
+                    || !described.insert(&file.path)
+            })
+            || described.len() != asset.files.len()
+        {
+            return Err(Box::new(Diagnostic::error(
+                "ASSET_ENCODING_INVALID",
+                "Invalid asset encoding contract",
+                "Declare nonblank format/decoder, MIME types, and exactly one role/MIME descriptor for every required files entry.",
+            )));
         }
     }
     if !looks_like_asset_id(&asset.id) {
@@ -1119,14 +1145,20 @@ pub(crate) fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnosti
             return Err(Box::new(Diagnostic::error(
                 "ASSET_SPEC_INVALID",
                 "Asset companion file duplicates the source",
-                format!("Asset '{}' files must not list the source itself again.", asset.id),
+                format!(
+                    "Asset '{}' files must not list the source itself again.",
+                    asset.id
+                ),
             )));
         }
         if !files.insert(file) {
             return Err(Box::new(Diagnostic::error(
                 "ASSET_SPEC_INVALID",
                 "Duplicate asset companion file declaration",
-                format!("Asset '{}' files must not list '{file}' more than once.", asset.id),
+                format!(
+                    "Asset '{}' files must not list '{file}' more than once.",
+                    asset.id
+                ),
             )));
         }
     }
@@ -1142,7 +1174,10 @@ fn project_path_from_path(
         Box::new(Diagnostic::error(
             "ASSET_PATH_OUTSIDE_PROJECT",
             "Asset workflow path is outside the project root",
-            format!("{label} '{}' must be inside the project root.", path.display()),
+            format!(
+                "{label} '{}' must be inside the project root.",
+                path.display()
+            ),
         ))
     })?;
     resolve_project_path(root, &relative.to_string_lossy().replace('\\', "/"))
@@ -1155,9 +1190,8 @@ pub(crate) fn read_scene_references(
         return Ok(Vec::new());
     };
     let scene_path = project_path_from_path(&paths.root, scene_path, "main scene")?;
-    let text = fs::read_to_string(&scene_path).map_err(|error| {
-        scene_read_failed(&scene_path, error)
-    })?;
+    let text =
+        fs::read_to_string(&scene_path).map_err(|error| scene_read_failed(&scene_path, error))?;
     let scene = parse_scene_file(&text, &scene_path)?;
     let mut references = Vec::new();
     for entity in scene.entities {
@@ -1392,8 +1426,8 @@ mod tests {
 
     use tempfile::tempdir;
 
-    use crate::bundle::{BundleManager, pack_project};
     use crate::asset_workflow::describe_asset;
+    use crate::bundle::{BundleManager, pack_project};
 
     use super::{
         AssetSpec, init_asset_manifest, inspect, inspect_strict, is_project_relative, read,
@@ -1647,14 +1681,19 @@ mod tests {
         assert!(first.ok, "{:?}", first.diagnostics);
         let first = first.value.unwrap();
         assert_eq!(first.changed_files.len(), 2);
-        assert!(first
-            .changed_files
-            .iter()
-            .any(|path| path.ends_with("assets\\manifest.json") || path.ends_with("assets/manifest.json")));
-        assert!(first
-            .changed_files
-            .iter()
-            .any(|path| path.ends_with("project.unone.json")));
+        assert!(
+            first
+                .changed_files
+                .iter()
+                .any(|path| path.ends_with("assets\\manifest.json")
+                    || path.ends_with("assets/manifest.json"))
+        );
+        assert!(
+            first
+                .changed_files
+                .iter()
+                .any(|path| path.ends_with("project.unone.json"))
+        );
         assert_eq!(first.describe_argv, None);
 
         let second = init_asset_manifest(dir.path(), None, None);
@@ -1678,7 +1717,10 @@ mod tests {
         fs::set_permissions(&config_path, permissions).unwrap();
 
         let result = init_asset_manifest(dir.path(), None, None);
-        assert!(!result.ok, "a read-only project config must not report init success");
+        assert!(
+            !result.ok,
+            "a read-only project config must not report init success"
+        );
         assert_eq!(result.diagnostics[0].code, "PROJECT_CONFIG_WRITE_FAILED");
         assert!(result.effects.iter().any(|effect| {
             effect.contains("assets\\manifest.json") || effect.contains("assets/manifest.json")
@@ -1733,10 +1775,13 @@ mod tests {
         fs::write(&output, b"keep-existing-output").unwrap();
         let new_output = dir.path().join("uncreated-export/result.bin");
         for (field, value) in [
-            ("encoding", serde_json::json!({"format":"svg","mime":"image/svg+xml","decoder":"image","companions":[
-                {"path":"assets/a.atlas","role":"atlas","mime":"text/plain"},
-                {"path":"assets/a.png","role":"texture","mime":"image/png"}
-            ]})),
+            (
+                "encoding",
+                serde_json::json!({"format":"svg","mime":"image/svg+xml","decoder":"image","companions":[
+                    {"path":"assets/a.atlas","role":"atlas","mime":"text/plain"},
+                    {"path":"assets/a.png","role":"texture","mime":"image/png"}
+                ]}),
+            ),
             ("kind", serde_json::json!("spine")),
             ("source", serde_json::json!("assets/moved.svg")),
             ("bundle", serde_json::json!("other")),
@@ -1996,8 +2041,11 @@ mod encoding_tests {
         validate_asset_spec(&asset).unwrap();
         let original = asset.clone();
         asset.encoding.as_mut().unwrap().companions.clear();
-        assert_eq!(validate_asset_spec(&asset).unwrap_err().code,"ASSET_ENCODING_INVALID");
-        assert_ne!(asset,original);
+        assert_eq!(
+            validate_asset_spec(&asset).unwrap_err().code,
+            "ASSET_ENCODING_INVALID"
+        );
+        assert_ne!(asset, original);
         let mut typo = serde_json::to_value(original).unwrap();
         typo["encoding"]["decodre"] = serde_json::json!("spine");
         assert!(serde_json::from_value::<AssetSpec>(typo).is_err());

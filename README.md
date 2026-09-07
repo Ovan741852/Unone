@@ -165,3 +165,7 @@ The formal gate is defined by `D:/Projects/Unone_Games/validation/acceptance-mat
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File D:/Projects/Unone/scripts/validate-game-matrix.ps1 -MatrixPath D:/Projects/Unone_Games/validation/acceptance-matrix.json
 ```
+
+Release player/export: [build and measurements](docs/player-export.md).
+Native 3D particle JSON, API and preview: [particle v1](docs/native-particles.md).
+Reference-game capability probe: [_Games/dragon-tycoon3](_Games/dragon-tycoon3/README.md).

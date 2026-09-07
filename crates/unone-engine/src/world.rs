@@ -1,21 +1,27 @@
-use std::{collections::BTreeMap, fs, path::Path};
+#[cfg(feature = "dev-tools")]
+use crate::scene::parse_scene_file;
+use std::collections::BTreeMap;
+#[cfg(feature = "dev-tools")]
+use std::{fs, path::Path};
 
 use serde::{Deserialize, Serialize};
 
 use crate::{
     audio::{AudioBus, AudioEvent, AudioLoop, AudioMix},
     diagnostics::Diagnostic,
-    scene::{parse_scene_file, validate_typed_scene},
+    scene::validate_typed_scene,
 };
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct Vec2 {
     pub x: f64,
     pub y: f64,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct Vec3 {
     pub x: f64,
@@ -39,7 +45,8 @@ impl Default for Vec3 {
 /// position and store `rotation`/`scale` as additive sibling fields. The
 /// aggregate is only the API shape, so existing position-only scripts keep
 /// their current data path.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct Transform2DData {
     #[serde(default)]
@@ -68,7 +75,8 @@ impl Default for Transform2DData {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct Transform3DData {
     #[serde(default)]
@@ -99,7 +107,8 @@ impl Default for Transform3DData {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct Mesh3DData {
     pub asset: String,
@@ -107,7 +116,8 @@ pub struct Mesh3DData {
     pub visible: bool,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct Camera3DData {
     #[serde(default = "default_camera3d_position")]
@@ -140,7 +150,8 @@ impl Default for Camera3DData {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(rename_all = "lowercase")]
 pub enum RigidBodyType {
     #[default]
@@ -148,7 +159,8 @@ pub enum RigidBodyType {
     Static,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct RigidBody2DData {
     #[serde(default)]
@@ -171,7 +183,8 @@ fn default_radius() -> f64 {
     0.5
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct PhysicsSettings {
     #[serde(default = "default_gravity")]
@@ -207,7 +220,8 @@ impl Default for PhysicsSettings {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct Camera2DData {
     #[serde(default)]
@@ -250,9 +264,12 @@ impl Default for Vec2 {
     }
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct SceneFile {
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub particle_effects: BTreeMap<String, crate::ParticleDefinition>,
     #[serde(default)]
     pub entities: Vec<SceneEntity>,
     #[serde(default)]
@@ -263,7 +280,8 @@ pub struct SceneFile {
     pub camera3d: Option<Camera3DData>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct SceneEntity {
     pub id: String,
@@ -294,7 +312,8 @@ pub struct SceneEntity {
 /// The engine stores which clip is selected and since which frame; it does not
 /// evaluate bones, meshes or blending. The only declared asset kind for this
 /// today is Spine, and the host owns that runtime.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct AnimationData {
     pub asset: String,
@@ -343,7 +362,8 @@ pub struct EffectInstance {
     pub started_frame: u64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct SpriteData {
     pub asset: String,
@@ -401,6 +421,10 @@ pub struct RigidBodySnapshot {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct WorldSnapshot {
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub particle_effects: BTreeMap<String, crate::ParticleDefinition>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub particles: Vec<crate::ParticleSnapshot>,
     pub frame: u64,
     pub time_seconds: f64,
     pub camera: Camera2DData,
@@ -464,6 +488,7 @@ pub(crate) struct RigidBodyState {
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct World {
+    pub particles: crate::particle::ParticleWorld,
     pub frame: u64,
     pub time_seconds: f64,
     pub entities: BTreeMap<String, EntityState>,
@@ -479,10 +504,10 @@ pub(crate) struct World {
 }
 
 impl World {
+    #[cfg(feature = "dev-tools")]
     pub fn load_scene(&mut self, path: &Path) -> Result<(), Box<Diagnostic>> {
-        let text = fs::read_to_string(path).map_err(|err| {
-            crate::scene::scene_read_failed(path, err)
-        })?;
+        let text =
+            fs::read_to_string(path).map_err(|err| crate::scene::scene_read_failed(path, err))?;
         let scene = parse_scene_file(&text, path)?;
         self.apply_scene(scene);
         Ok(())
@@ -495,6 +520,7 @@ impl World {
     }
 
     fn apply_scene(&mut self, scene: SceneFile) {
+        self.particles.definitions = scene.particle_effects;
         self.physics = scene.physics;
         self.camera = scene.camera;
         self.camera3d = scene.camera3d;
@@ -623,6 +649,8 @@ impl World {
             entities,
             observations: BTreeMap::new(),
             ui: None,
+            particle_effects: self.particles.definitions.clone(),
+            particles: self.particles.snapshot(self.frame),
             effects: self
                 .effects
                 .iter()
@@ -695,7 +723,12 @@ impl World {
     /// to write it would re-read every position every frame and still get the
     /// despawn case wrong.
     pub(crate) fn follow_audio_entities(&mut self) {
-        if self.audio.loops.iter().all(|source| source.entity.is_none()) {
+        if self
+            .audio
+            .loops
+            .iter()
+            .all(|source| source.entity.is_none())
+        {
             return;
         }
         let positions: BTreeMap<String, Vec2> = self
@@ -748,7 +781,9 @@ impl World {
     ) -> Result<(), String> {
         let frame = self.frame;
         let Some(entity) = self.entities.get_mut(id) else {
-            return Err(format!("Entity '{id}' does not exist; cannot play animation."));
+            return Err(format!(
+                "Entity '{id}' does not exist; cannot play animation."
+            ));
         };
         if animation.trim().is_empty() {
             return Err("Animation name must not be empty.".to_string());
@@ -791,7 +826,9 @@ impl World {
 
     pub(crate) fn stop_animation(&mut self, id: &str) -> Result<(), String> {
         let Some(entity) = self.entities.get_mut(id) else {
-            return Err(format!("Entity '{id}' does not exist; cannot stop animation."));
+            return Err(format!(
+                "Entity '{id}' does not exist; cannot stop animation."
+            ));
         };
         entity.animation = None;
         Ok(())
@@ -949,12 +986,17 @@ impl World {
             .ok_or_else(|| "The current scene has no Camera3D.".to_string())
     }
 
+    #[cfg(feature = "dev-tools")]
     pub(crate) fn set_camera3d(&mut self, camera: Camera3DData) -> Result<(), String> {
         // Reuse scene camera validation rather than a second set of FOV rules.
         crate::scene::validate_typed_scene(&SceneFile {
-            camera3d: Some(camera.clone()), ..SceneFile::default()
-        }).map_err(|diagnostic| diagnostic.explanation.clone())?;
-        if self.camera3d.is_none() { return Err("The current scene has no Camera3D.".into()); }
+            camera3d: Some(camera.clone()),
+            ..SceneFile::default()
+        })
+        .map_err(|diagnostic| diagnostic.explanation.clone())?;
+        if self.camera3d.is_none() {
+            return Err("The current scene has no Camera3D.".into());
+        }
         self.camera3d = Some(camera);
         Ok(())
     }
@@ -1330,6 +1372,7 @@ mod tests {
             contacts: Vec::new(),
             ground_contacts: Vec::new(),
             audio: AudioBus::default(),
+            particles: crate::particle::ParticleWorld::default(),
         }
     }
 
@@ -1381,7 +1424,10 @@ mod tests {
         let sliding = frictionless.entities["block"].transform.x;
         let stopped = with_friction.entities["block"].transform.x;
         assert!(sliding > 10.0, "without friction a body keeps its velocity");
-        assert!(stopped < sliding * 0.5, "friction took the horizontal speed");
+        assert!(
+            stopped < sliding * 0.5,
+            "friction took the horizontal speed"
+        );
         assert!(
             with_friction.ground_contacts.contains(&"block".to_string()),
             "a body resting on the ground is reported"
@@ -1590,7 +1636,10 @@ mod tests {
             )
             .unwrap_err();
         assert!(error.contains("RUNTIME_VEC2_INVALID"), "{error}");
-        assert_eq!(world.get_transform2d("player").unwrap().position, original_position);
+        assert_eq!(
+            world.get_transform2d("player").unwrap().position,
+            original_position
+        );
 
         let error = world
             .set_velocity(
@@ -1698,16 +1747,21 @@ mod tests {
 
             saw_contact |= !baseline.contacts.is_empty();
             saw_ground_contact |= !baseline.ground_contacts.is_empty();
-            assert_eq!(visual_only.contacts, baseline.contacts, "contacts at frame {frame}");
             assert_eq!(
-                visual_only.ground_contacts,
-                baseline.ground_contacts,
+                visual_only.contacts, baseline.contacts,
+                "contacts at frame {frame}"
+            );
+            assert_eq!(
+                visual_only.ground_contacts, baseline.ground_contacts,
                 "ground contacts at frame {frame}"
             );
             for id in ["bird", "pig"] {
                 let expected = &baseline.entities[id];
                 let actual = &visual_only.entities[id];
-                assert_eq!(actual.transform, expected.transform, "position for {id} at frame {frame}");
+                assert_eq!(
+                    actual.transform, expected.transform,
+                    "position for {id} at frame {frame}"
+                );
                 assert_eq!(
                     actual.rigidbody.as_ref().unwrap().velocity,
                     expected.rigidbody.as_ref().unwrap().velocity,
@@ -1715,7 +1769,10 @@ mod tests {
                 );
             }
         }
-        assert!(saw_contact, "the regression must exercise an entity contact");
+        assert!(
+            saw_contact,
+            "the regression must exercise an entity contact"
+        );
         assert!(
             saw_ground_contact,
             "the regression must exercise a ground contact"
@@ -1741,11 +1798,7 @@ mod tests {
         let diagnostic = world.load_scene_data(scene).unwrap_err();
 
         assert_eq!(diagnostic.code, "SCENE_SPRITE_INVALID");
-        assert!(
-            diagnostic
-                .explanation
-                .contains("Sprite size")
-        );
+        assert!(diagnostic.explanation.contains("Sprite size"));
         assert!(diagnostic.explanation.contains("greater than 0"));
     }
 

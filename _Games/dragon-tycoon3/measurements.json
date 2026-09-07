@@ -1,0 +1,184 @@
+{
+  "date": "2026-09-08",
+  "conditions": {
+    "host": "Windows desktop, Codex in-app browser, 1280x720",
+    "transport": "localhost HTTP, gzip, Cache-Control no-store",
+    "clock": "HTML bootstrap to runtime ready / first presented content",
+    "limits": "First navigation and two foreground reloads; browser/OS compilation caches not cleared; not mobile or WAN data."
+  },
+  "wasm": {
+    "bytes": 1372563,
+    "gzip_bytes": 513286,
+    "sha256": "33adcbc75c9230bb53426564a92f22a1d6c6bc8b7af42cfae9f5c38c271a67ef"
+  },
+  "package_files_bytes": 3628758,
+  "runs": [
+    {
+      "runtime_ready_ms": 93.6,
+      "first_presented_ms": 282.3,
+      "http_body_bytes": 964519,
+      "requests": 17
+    },
+    {
+      "runtime_ready_ms": 93.7,
+      "first_presented_ms": 227.8,
+      "http_body_bytes": 964519,
+      "requests": 17
+    },
+    {
+      "runtime_ready_ms": 94.5,
+      "first_presented_ms": 226.6,
+      "http_body_bytes": 964519,
+      "requests": 17
+    }
+  ],
+  "median_first_presented_ms": 227.8,
+  "requested_files": [
+    {
+      "path": "/",
+      "raw_bytes": 1176,
+      "body_bytes": 681
+    },
+    {
+      "path": "/web/player/main.js",
+      "raw_bytes": 5490,
+      "body_bytes": 2106
+    },
+    {
+      "path": "/runtime/unone-player.js",
+      "raw_bytes": 100649,
+      "body_bytes": 29628
+    },
+    {
+      "path": "/web/shared/fixed-step-scheduler.mjs",
+      "raw_bytes": 10641,
+      "body_bytes": 2925
+    },
+    {
+      "path": "/web/shared/ui-tree.js",
+      "raw_bytes": 902,
+      "body_bytes": 455
+    },
+    {
+      "path": "/web/shared/host-input.js",
+      "raw_bytes": 3020,
+      "body_bytes": 1113
+    },
+    {
+      "path": "/web/renderer/three.js",
+      "raw_bytes": 8799,
+      "body_bytes": 2895
+    },
+    {
+      "path": "/web/shared/audio-playback.js",
+      "raw_bytes": 9470,
+      "body_bytes": 2866
+    },
+    {
+      "path": "/web/shared/asset-encoding.js",
+      "raw_bytes": 944,
+      "body_bytes": 520
+    },
+    {
+      "path": "/web/shared/webgpu-snapshot.js",
+      "raw_bytes": 19886,
+      "body_bytes": 5345
+    },
+    {
+      "path": "/web/renderer/particles.js",
+      "raw_bytes": 1562,
+      "body_bytes": 677
+    },
+    {
+      "path": "/content/assets.json",
+      "raw_bytes": 138,
+      "body_bytes": 118
+    },
+    {
+      "path": "/content/project.json",
+      "raw_bytes": 5243,
+      "body_bytes": 1683
+    },
+    {
+      "path": "/runtime/unone_player.wasm",
+      "raw_bytes": 1372563,
+      "body_bytes": 513286
+    },
+    {
+      "path": "/web/vendor/three/three.module.js",
+      "raw_bytes": 621665,
+      "body_bytes": 118299
+    },
+    {
+      "path": "/web/vendor/three/three.core.js",
+      "raw_bytes": 1460002,
+      "body_bytes": 278873
+    },
+    {
+      "path": "/content/assets/reference/banner.webp",
+      "raw_bytes": 3026,
+      "body_bytes": 3049
+    }
+  ],
+  "checks": {
+    "browser_errors": 0,
+    "pointer_shot_and_hit": true,
+    "particle_native_and_wasm_frame15_seed42": {
+      "count": 24,
+      "normalized_fnv32": 3062416429
+    },
+    "rust_tests": 221,
+    "node_tests": 16
+  },
+  "headless_performance": {
+    "frames": 600,
+    "total_ms": 60.321,
+    "mean_frame_ms": 0.101,
+    "median_frame_ms": 0.097,
+    "p95_frame_ms": 0.114,
+    "slowest_frame": {
+      "frame": 326,
+      "total_ms": 0.338,
+      "script_ms": 0.268,
+      "physics_ms": 0.011,
+      "observe_ms": 0.055
+    },
+    "sustained_fps": 9946.8,
+    "frame_budget_ms": 16.667,
+    "frames_over_budget": 0,
+    "phases": [
+      {
+        "name": "script",
+        "total_ms": 55.105,
+        "mean_ms": 0.092,
+        "share": 0.916
+      },
+      {
+        "name": "physics",
+        "total_ms": 0.544,
+        "mean_ms": 0.001,
+        "share": 0.009
+      },
+      {
+        "name": "observe",
+        "total_ms": 4.506,
+        "mean_ms": 0.008,
+        "share": 0.075
+      }
+    ],
+    "counts": {
+      "entities": 14,
+      "rigidbodies": 0,
+      "ui_nodes": 4,
+      "effects": 0,
+      "particles": 0,
+      "observations": 3
+    },
+    "luau_memory_bytes": 522776,
+    "notes": [
+      "wall clock timings, excluded from the observation digest",
+      "a debug build measures debug costs; compare like with like",
+      "median, p95, and frames-over-budget use the most recent bounded sample window (up to 1024 frames)"
+    ]
+  }
+}

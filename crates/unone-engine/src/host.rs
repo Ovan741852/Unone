@@ -1,17 +1,18 @@
 //! Shared host ingestion contract. Platform adapters own transport and storage,
 //! never a separate interpretation of game configuration or replay input.
-use crate::{AudioConfig, Diagnostic, EngineRuntime, InputFrame, SceneFile, SourceProject};
+use crate::{AudioConfig, Diagnostic, EngineRuntime, InputFrame, SourceProject};
 use serde::Deserialize;
 use std::collections::BTreeMap;
 
-#[derive(Debug, Deserialize, schemars::JsonSchema)]
+#[derive(Debug, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct HostProject {
     pub project: String,
     pub script: String,
     // Preserve original JSON locations for the common scene validator.
     #[serde(default)]
-    #[schemars(with = "Option<SceneFile>")]
+    #[cfg_attr(feature = "dev-tools", schemars(with = "Option<crate::SceneFile>"))]
     pub scene: Option<Box<serde_json::value::RawValue>>,
     #[serde(default)]
     pub systems: BTreeMap<String, bool>,

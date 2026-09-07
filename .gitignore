@@ -7,3 +7,7 @@
 platform/android/build/
 platform/android/debug.keystore
 artifacts/
+_Games/**/reference/
+_Games/**/dist/
+_Games/**/assets/reference/
+crates/unone-player/target/

@@ -1,0 +1,314 @@
+{
+  "entities": [
+    {
+      "id": "banner",
+      "transform": {
+        "x": 0,
+        "y": 3.7
+      },
+      "sprite": {
+        "asset": "texture://reference/banner",
+        "size": {
+          "x": 12,
+          "y": 1.05
+        }
+      }
+    },
+    {
+      "id": "target1",
+      "transform3d": {
+        "position": {
+          "x": -3,
+          "y": -1.5,
+          "z": 0
+        },
+        "scale": {
+          "x": 1.3,
+          "y": 0.65,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "target2",
+      "transform3d": {
+        "position": {
+          "x": -1,
+          "y": -1.5,
+          "z": 0
+        },
+        "scale": {
+          "x": 1.3,
+          "y": 0.65,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "target3",
+      "transform3d": {
+        "position": {
+          "x": 1,
+          "y": -1.5,
+          "z": 0
+        },
+        "scale": {
+          "x": 1.3,
+          "y": 0.65,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "target4",
+      "transform3d": {
+        "position": {
+          "x": 3,
+          "y": -1.5,
+          "z": 0
+        },
+        "scale": {
+          "x": 1.3,
+          "y": 0.65,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "target5",
+      "transform3d": {
+        "position": {
+          "x": -3,
+          "y": 0.0,
+          "z": 0
+        },
+        "scale": {
+          "x": 1.3,
+          "y": 0.65,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "target6",
+      "transform3d": {
+        "position": {
+          "x": -1,
+          "y": 0.0,
+          "z": 0
+        },
+        "scale": {
+          "x": 1.3,
+          "y": 0.65,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "target7",
+      "transform3d": {
+        "position": {
+          "x": 1,
+          "y": 0.0,
+          "z": 0
+        },
+        "scale": {
+          "x": 1.3,
+          "y": 0.65,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "target8",
+      "transform3d": {
+        "position": {
+          "x": 3,
+          "y": 0.0,
+          "z": 0
+        },
+        "scale": {
+          "x": 1.3,
+          "y": 0.65,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "target9",
+      "transform3d": {
+        "position": {
+          "x": -3,
+          "y": 1.5,
+          "z": 0
+        },
+        "scale": {
+          "x": 1.3,
+          "y": 0.65,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "target10",
+      "transform3d": {
+        "position": {
+          "x": -1,
+          "y": 1.5,
+          "z": 0
+        },
+        "scale": {
+          "x": 1.3,
+          "y": 0.65,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "target11",
+      "transform3d": {
+        "position": {
+          "x": 1,
+          "y": 1.5,
+          "z": 0
+        },
+        "scale": {
+          "x": 1.3,
+          "y": 0.65,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "target12",
+      "transform3d": {
+        "position": {
+          "x": 3,
+          "y": 1.5,
+          "z": 0
+        },
+        "scale": {
+          "x": 1.3,
+          "y": 0.65,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "cannon",
+      "transform3d": {
+        "position": {
+          "x": 0,
+          "y": -3.6,
+          "z": 1
+        },
+        "scale": {
+          "x": 0.35,
+          "y": 1.1,
+          "z": 0.35
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    }
+  ],
+  "camera3d": {
+    "position": {
+      "x": 0,
+      "y": 0,
+      "z": 10
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "fov_degrees": 50
+  },
+  "particle_effects": {
+    "hit": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "sparks",
+          "count": 24,
+          "interval_frames": 1,
+          "lifetime_frames": 45,
+          "spread": {
+            "x": 0.08,
+            "y": 0.08,
+            "z": 0.08
+          },
+          "velocity_min": {
+            "x": -2,
+            "y": 0.5,
+            "z": -2
+          },
+          "velocity_max": {
+            "x": 2,
+            "y": 3,
+            "z": 2
+          },
+          "gravity": {
+            "x": 0,
+            "y": -4,
+            "z": 0
+          },
+          "size_start": 0.16,
+          "size_end": 0.01,
+          "color_start": [
+            1,
+            0.65,
+            0.08,
+            1
+          ],
+          "color_end": [
+            1,
+            0.12,
+            0,
+            0
+          ],
+          "additive": true
+        }
+      ]
+    }
+  }
+}

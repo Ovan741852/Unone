@@ -57,6 +57,59 @@ fn position(x: f64) -> Value {
 }
 
 #[test]
+fn native_particle_definition_spawn_and_stop_are_atomic_and_observable() {
+    let dir = fixture();
+    let mut protocol = DeveloperProtocol::default();
+    let opened = open(&mut protocol, dir.path());
+    let id = &opened["session"];
+    let definition: Value =
+        serde_json::from_str(include_str!("../../../tests/fixtures/spark.particle.json")).unwrap();
+    let operations = json!([
+        {"selector":{"kind":"scene"},"change":{"op":"set_particle_definition","effect":"spark","definition":definition}},
+        {"selector":{"kind":"scene"},"change":{"op":"spawn_particle","effect":"spark","position":{"x":0,"y":0,"z":0},"seed":42}}
+    ]);
+    ok(
+        &mut protocol,
+        dir.path(),
+        json!({"command":"enact","session":id,"expected_revision":0,"dry_run":true,"operations":operations}),
+    );
+    assert_eq!(
+        ok(
+            &mut protocol,
+            dir.path(),
+            json!({"command":"snapshot","session":id})
+        ),
+        opened
+    );
+    ok(
+        &mut protocol,
+        dir.path(),
+        json!({"command":"enact","session":id,"expected_revision":0,"operations":operations}),
+    );
+    let snapshot = ok(
+        &mut protocol,
+        dir.path(),
+        json!({"command":"snapshot","session":id}),
+    );
+    assert_eq!(
+        snapshot["snapshot"]["particles"].as_array().unwrap().len(),
+        24
+    );
+    let handle = &snapshot["snapshot"]["particles"][0]["instance"];
+    ok(
+        &mut protocol,
+        dir.path(),
+        json!({"command":"enact","session":id,"expected_revision":1,"operations":[{"selector":{"kind":"scene"},"change":{"op":"stop_particle","handle":handle}}]}),
+    );
+    let snapshot = ok(
+        &mut protocol,
+        dir.path(),
+        json!({"command":"snapshot","session":id}),
+    );
+    assert!(snapshot["snapshot"]["particles"].is_null());
+}
+
+#[test]
 fn snapshots_and_watch_follow_the_same_runtime_without_ticking_on_reads() {
     let dir = fixture();
     let mut protocol = DeveloperProtocol::default();

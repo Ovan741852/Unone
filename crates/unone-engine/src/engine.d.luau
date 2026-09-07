@@ -155,7 +155,13 @@ export type AudioApi = {
     getCategoryVolume: (category: string) -> number,
 }
 
+export type ParticleApi = {
+    play: (effect: string, position: Vec3, seed: number?) -> string,
+    stop: (handle: string) -> boolean,
+}
+
 export type EngineApi = {
+    particle: ParticleApi,
     entity: EntityApi,
     input: InputApi,
     random: RandomApi,

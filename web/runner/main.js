@@ -1,3 +1,4 @@
+import { createUiTree } from "../shared/ui-tree.js";
 import { requireAssetEncoding, DECODER_ROUTES } from "../shared/asset-encoding.js";
 import { frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=5";
 import { createRenderer } from "../renderer/index.js?v=1";
@@ -35,7 +36,7 @@ let audioState = null;
 let scheduler = null;
 let schedulerResult = null;
 const hostInput = createHostInput();
-let renderedUi = null;
+const renderUi = createUiTree(uiLayer);
 let loadedSave = false;
 let lastStoredSaveText = null;
 let pendingSaveText = null;
@@ -241,26 +242,6 @@ function screenFromPointer(canvasElement, event) {
   return { x: x * 100, y: (1 - y) * 100 };
 }
 
-function renderUi(nextSnapshot) {
-  const ui = nextSnapshot?.world?.ui ?? null;
-  const serialized = JSON.stringify(ui);
-  if (serialized === renderedUi) return;
-  renderedUi = serialized;
-  uiLayer.replaceChildren();
-  if (!ui) return;
-  for (const node of ui.children ?? []) {
-    const element = document.createElement(node.kind === "button" ? "button" : "div");
-    element.className = `unone-ui-node unone-ui-${node.kind}`;
-    element.textContent = node.text;
-    element.dataset.nodeId = node.id;
-    if (node.kind === "button") element.dataset.action = node.action;
-    element.style.left = `${node.rect.x}%`;
-    element.style.bottom = `${node.rect.y}%`;
-    element.style.width = `${node.rect.width}%`;
-    element.style.height = `${node.rect.height}%`;
-    uiLayer.appendChild(element);
-  }
-}
 
 function writeOutput() {
   output.textContent = JSON.stringify({

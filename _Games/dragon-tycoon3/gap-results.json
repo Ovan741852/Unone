@@ -1,0 +1,106 @@
+{
+  "creator_mesh_export": {
+    "exit_code": 1,
+    "result": {
+      "ok": false,
+      "value": null,
+      "diagnostics": [
+        {
+          "code": "EXPORT_FAILED",
+          "severity": "ERROR",
+          "summary": "Web export failed",
+          "explanation": "PLAYER_DECODER_UNAVAILABLE: mesh mesh://creator/scene1_floor; convert to a supported renderer asset before exporting. Build the player with scripts/build-web-live.ps1 -Player, correct the reported input, and retry game export web with an empty output directory.",
+          "facts": {},
+          "likely_causes": [],
+          "suggested_actions": [],
+          "source": null
+        }
+      ],
+      "effects": []
+    }
+  },
+  "dynamic_3d_entity": {
+    "exit_code": 1,
+    "result": {
+      "ok": false,
+      "value": null,
+      "diagnostics": [
+        {
+          "code": "LUAU_RUNTIME_ERROR",
+          "severity": "ERROR",
+          "summary": "Luau script could not be loaded or executed",
+          "explanation": "runtime error: Entity 'fish' has no Transform3D.\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\D:\\Projects\\Unone\\_Games\\dragon-tycoon3\\reference\\probes\\dynamic-entity\\main.luau\"]:1: in function 'start'\n",
+          "facts": {
+            "message": "runtime error: Entity 'fish' has no Transform3D.\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\D:\\Projects\\Unone\\_Games\\dragon-tycoon3\\reference\\probes\\dynamic-entity\\main.luau\"]:1: in function 'start'\n",
+            "runtime": "Luau",
+            "script": "\\\\?\\D:\\Projects\\Unone\\_Games\\dragon-tycoon3\\reference\\probes\\dynamic-entity\\main.luau"
+          },
+          "likely_causes": [
+            "The entry script syntax or Engine API calls do not satisfy the current contract",
+            "The script uses a missing Entity or field at runtime"
+          ],
+          "suggested_actions": [
+            {
+              "action": "check_script",
+              "description": "Check the entry script contract first.",
+              "command": "game check --json"
+            },
+            {
+              "action": "inspect_project",
+              "description": "Confirm the scene and Entity ids.",
+              "command": "game project inspect --json"
+            }
+          ],
+          "source": {
+            "file": "\\\\?\\D:\\Projects\\Unone\\_Games\\dragon-tycoon3\\reference\\probes\\dynamic-entity\\main.luau",
+            "line": null,
+            "column": null
+          }
+        }
+      ],
+      "effects": []
+    }
+  },
+  "raycast_3d": {
+    "exit_code": 1,
+    "result": {
+      "ok": false,
+      "value": null,
+      "diagnostics": [
+        {
+          "code": "LUAU_RUNTIME_ERROR",
+          "severity": "ERROR",
+          "summary": "Luau script could not be loaded or executed",
+          "explanation": "runtime error: [string \"\\\\?\\D:\\Projects\\Unone\\_Games\\dragon-tycoon3\\reference\\probes\\raycast\\main.luau\"]:1: attempt to call a nil value\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\D:\\Projects\\Unone\\_Games\\dragon-tycoon3\\reference\\probes\\raycast\\main.luau\"]:1: in function 'start'",
+          "facts": {
+            "message": "runtime error: [string \"\\\\?\\D:\\Projects\\Unone\\_Games\\dragon-tycoon3\\reference\\probes\\raycast\\main.luau\"]:1: attempt to call a nil value\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\D:\\Projects\\Unone\\_Games\\dragon-tycoon3\\reference\\probes\\raycast\\main.luau\"]:1: in function 'start'",
+            "runtime": "Luau",
+            "script": "\\\\?\\D:\\Projects\\Unone\\_Games\\dragon-tycoon3\\reference\\probes\\raycast\\main.luau"
+          },
+          "likely_causes": [
+            "The entry script syntax or Engine API calls do not satisfy the current contract",
+            "The script uses a missing Entity or field at runtime"
+          ],
+          "suggested_actions": [
+            {
+              "action": "check_script",
+              "description": "Check the entry script contract first.",
+              "command": "game check --json"
+            },
+            {
+              "action": "inspect_project",
+              "description": "Confirm the scene and Entity ids.",
+              "command": "game project inspect --json"
+            }
+          ],
+          "source": {
+            "file": "\\\\?\\D:\\Projects\\Unone\\_Games\\dragon-tycoon3\\reference\\probes\\raycast\\main.luau",
+            "line": null,
+            "column": null
+          }
+        }
+      ],
+      "effects": []
+    }
+  }
+}

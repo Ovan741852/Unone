@@ -135,7 +135,11 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
                     };
                     format!(
                         "Increase '{mover}' x by {x:.1} (to the {}), or reduce one of the widths.",
-                        if direction == "right" { "right" } else { "left" }
+                        if direction == "right" {
+                            "right"
+                        } else {
+                            "left"
+                        }
                     )
                 } else {
                     let mover = if left_rect.y <= right_rect.y {

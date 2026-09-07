@@ -1,3 +1,4 @@
+import { createParticleRenderer } from "./particles.js";
 import { compareSpriteEntities, worldOf } from "../shared/webgpu-snapshot.js";
 
 const LOCAL_THREE_URL = new URL("../vendor/three/three.module.js", import.meta.url).href;
@@ -68,6 +69,9 @@ export async function createThreeRenderer(canvas, options = {}) {
   const scene = new THREE.Scene();
   const root = new THREE.Group();
   scene.add(root);
+  const camera3d = new THREE.PerspectiveCamera(60,1,0.05,2000);
+  const meshes3d = new Map();
+  const particles = createParticleRenderer(THREE,scene);
   const camera = new THREE.OrthographicCamera(-8, 8, 4.5, -4.5, -1000, 1000);
   camera.position.z = 10;
   const geometry = new THREE.PlaneGeometry(1, 1);
@@ -159,7 +163,29 @@ export async function createThreeRenderer(canvas, options = {}) {
       if (alive.has(id)) continue;
       record.mesh.visible = false;
     }
-    renderer.render(scene, camera);
+    let activeCamera = camera;
+    if (world.camera3d) {
+      const c = world.camera3d; camera3d.position.set(c.position.x,c.position.y,c.position.z);
+      camera3d.lookAt(c.target.x,c.target.y,c.target.z); camera3d.fov=c.fov_degrees;
+      camera3d.aspect=aspectOf(canvas); camera3d.updateProjectionMatrix(); activeCamera=camera3d;
+    }
+    const alive3d = new Set();
+    for (const entity of Object.values(world.entities ?? {})) {
+      if (!entity.mesh3d || !entity.transform3d || !entity.mesh3d.visible) continue;
+      let mesh=meshes3d.get(entity.id);
+      if (!mesh) {
+        const shape=entity.mesh3d.asset;
+        if (!['mesh://primitive/box','mesh://primitive/sphere'].includes(shape)) throw new Error(`MESH_DECODER_UNAVAILABLE: ${shape}`);
+        const geometry=shape.endsWith('/sphere') ? new THREE.SphereGeometry(0.5,16,12) : new THREE.BoxGeometry(1,1,1);
+        mesh=new THREE.Mesh(geometry,new THREE.MeshNormalMaterial()); scene.add(mesh); meshes3d.set(entity.id,mesh);
+      }
+      const t=entity.transform3d;
+      mesh.position.set(t.position.x,t.position.y,t.position.z); mesh.rotation.set(t.rotation.x,t.rotation.y,t.rotation.z);
+      mesh.scale.set(t.scale.x,t.scale.y,t.scale.z); mesh.visible=true; alive3d.add(entity.id);
+    }
+    for (const [id,mesh] of meshes3d) mesh.visible=alive3d.has(id);
+    particles.draw(world.particles);
+    renderer.render(scene, activeCamera);
   }
 
   function clearTextures() {
@@ -173,10 +199,12 @@ export async function createThreeRenderer(canvas, options = {}) {
 
   return {
     draw,
+    async ready() { await Promise.all([...textureRecords.values()].map(r=>r.promise)); for(const r of textureRecords.values()) if(r.error) throw r.error; },
     clearTextures,
     usesGpuSprites: true,
     implementation: "three.js",
     backend,
+    metrics: () => ({draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count}),
   };
 }
 

@@ -41,7 +41,8 @@ fn default_volume() -> f64 {
 /// when they are implemented. Declaring one is an **error**, never a silent
 /// no-op: a game believing it configured something it did not is the hardest
 /// kind of audio bug to find.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct AudioCategory {
     /// Only one loop in this category plays at a time; starting another begins
@@ -99,7 +100,8 @@ impl AudioCategory {
     }
 }
 
-#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq, schemars::JsonSchema)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct AudioConfig {
     #[serde(default)]
@@ -238,7 +240,9 @@ impl AudioOptions {
         let volume = self.volume.unwrap_or(1.0);
         let speed = self.speed.unwrap_or(1.0);
         if !volume.is_finite() || !(0.0..=1.0).contains(&volume) {
-            return Err(format!("Audio volume must be between 0 and 1; received {volume}."));
+            return Err(format!(
+                "Audio volume must be between 0 and 1; received {volume}."
+            ));
         }
         if !speed.is_finite() || speed <= 0.0 {
             return Err(format!(
@@ -540,11 +544,7 @@ impl AudioBus {
     /// A source attached to something that no longer exists has no position to
     /// be at. Leaving it playing at the last place the entity stood is the
     /// behaviour nobody wants and everybody has to write around.
-    pub fn follow_entities(
-        &mut self,
-        frame: u64,
-        position_of: impl Fn(&str) -> Option<Vec2>,
-    ) {
+    pub fn follow_entities(&mut self, frame: u64, position_of: impl Fn(&str) -> Option<Vec2>) {
         let mut orphaned = Vec::new();
         for source in &mut self.loops {
             let Some(entity) = source.entity.clone() else {
@@ -552,7 +552,9 @@ impl AudioBus {
             };
             match position_of(&entity) {
                 Some(position) => source.position = Some(position),
-                None if source.phase != AudioPhase::FadingOut => orphaned.push(source.handle.clone()),
+                None if source.phase != AudioPhase::FadingOut => {
+                    orphaned.push(source.handle.clone())
+                }
                 None => {}
             }
         }
@@ -752,7 +754,11 @@ mod tests {
 
         assert!(audio.set_master_volume(1.5).is_err());
         assert!(audio.set_category_volume("", 0.5).is_err());
-        assert_eq!(audio.mix().master, 0.8, "a refused change leaves the mix alone");
+        assert_eq!(
+            audio.mix().master,
+            0.8,
+            "a refused change leaves the mix alone"
+        );
     }
 
     /// Pausing must not consume the fade, or leaving a pause menu jumps the
@@ -815,9 +821,7 @@ mod tests {
         audio.end_frame(0);
         audio.begin_frame(1);
 
-        audio.follow_entities(1, |id| {
-            (id == "car").then_some(Vec2 { x: 3.0, y: 1.0 })
-        });
+        audio.follow_entities(1, |id| (id == "car").then_some(Vec2 { x: 3.0, y: 1.0 }));
         assert_eq!(audio.loops[0].position, Some(Vec2 { x: 3.0, y: 1.0 }));
         assert!(audio.events.is_empty());
 

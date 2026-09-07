@@ -1,12 +1,13 @@
 use std::cell::RefCell;
+#[cfg(feature = "dev-tools")]
+use unone_engine::{BundleSpec, BundleVerifier};
 
 use serde::Serialize;
 use unone_engine::{
-    BundleSpec, BundleVerifier, Diagnostic, EngineRuntime, Vec2,
-    WorldSnapshot, HostProject, HostInputState, parse_input_frame,
+    Diagnostic, EngineRuntime, HostInputState, HostProject, Vec2, WorldSnapshot, parse_input_frame,
 };
 
-#[cfg(test)]
+#[cfg(all(test, feature = "dev-tools"))]
 use unone_engine::SceneFile;
 
 thread_local! {
@@ -15,6 +16,7 @@ thread_local! {
     static OUTPUT: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static INPUT_BUFFER: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static PROJECT_NAME: RefCell<String> = const { RefCell::new(String::new()) };
+    #[cfg(feature = "dev-tools")]
     static BUNDLE_VERIFIER: RefCell<Option<BundleVerifier>> = const { RefCell::new(None) };
 }
 
@@ -74,11 +76,19 @@ fn write_runtime_snapshot(runtime: &EngineRuntime) -> i32 {
 }
 
 fn write_error(message: impl Into<String>) {
-    write_diagnostic(&Diagnostic::error("HOST_REQUEST_INVALID", "Invalid host request", message.into()));
+    write_diagnostic(&Diagnostic::error(
+        "HOST_REQUEST_INVALID",
+        "Invalid host request",
+        message.into(),
+    ));
 }
 
 fn write_diagnostic(diagnostic: &Diagnostic) {
-    OUTPUT.with(|output| *output.borrow_mut() = serde_json::to_vec(&unone_engine::host_error("web_error", diagnostic)).unwrap_or_default());
+    OUTPUT.with(|output| {
+        *output.borrow_mut() =
+            serde_json::to_vec(&unone_engine::host_error("web_error", diagnostic))
+                .unwrap_or_default()
+    });
 }
 
 #[unsafe(no_mangle)]
@@ -101,6 +111,7 @@ pub extern "C" fn unone_web_alloc(length: usize) -> *mut u8 {
 /// `pointer` must reference `length` readable UTF-8 JSON bytes for the
 /// duration of this call. The payload must contain `id`, `sha256` and
 /// `size_bytes` fields describing the expected bundle content.
+#[cfg(feature = "dev-tools")]
 pub unsafe extern "C" fn unone_web_bundle_begin(pointer: *const u8, length: usize) -> i32 {
     if pointer.is_null() {
         write_error("bundle spec pointer is null");
@@ -131,6 +142,7 @@ pub unsafe extern "C" fn unone_web_bundle_begin(pointer: *const u8, length: usiz
 ///
 /// `pointer` must reference `length` readable bytes for the duration of this
 /// call. A null pointer is only valid when `length` is zero.
+#[cfg(feature = "dev-tools")]
 pub unsafe extern "C" fn unone_web_bundle_write(pointer: *const u8, length: usize) -> i32 {
     if pointer.is_null() && length != 0 {
         write_error("bundle chunk pointer is null for non-empty chunk");
@@ -153,6 +165,7 @@ pub unsafe extern "C" fn unone_web_bundle_write(pointer: *const u8, length: usiz
 }
 
 #[unsafe(no_mangle)]
+#[cfg(feature = "dev-tools")]
 pub extern "C" fn unone_web_bundle_finish() -> i32 {
     let verifier = BUNDLE_VERIFIER.with(|verifier| verifier.borrow_mut().take());
     let Some(verifier) = verifier else {
@@ -254,6 +267,7 @@ pub unsafe extern "C" fn unone_web_set_save_payload(pointer: *const u8, length: 
 ///
 /// `pointer` must reference `length` readable UTF-8 bytes for the duration of
 /// this call.
+#[cfg(feature = "dev-tools")]
 pub unsafe extern "C" fn unone_web_reload_script(pointer: *const u8, length: usize) -> i32 {
     if pointer.is_null() {
         write_error("script payload pointer is null");
@@ -285,10 +299,11 @@ pub unsafe extern "C" fn unone_web_reload_script(pointer: *const u8, length: usi
 
 #[unsafe(no_mangle)]
 pub extern "C" fn unone_web_set_pointer(x: f64, y: f64, down: i32) {
-    if let Err(diagnostic) = INPUT.with(|input| input.borrow_mut().set_pointer(Vec2 { x, y }, down != 0)) {
+    if let Err(diagnostic) =
+        INPUT.with(|input| input.borrow_mut().set_pointer(Vec2 { x, y }, down != 0))
+    {
         write_diagnostic(&diagnostic);
     }
-
 }
 
 /// Set the complete host-normalized input frame for the next tick.
@@ -343,9 +358,11 @@ pub extern "C" fn unone_web_set_viewport_aspect(aspect: f64) -> i32 {
 pub extern "C" fn unone_web_set_screen_pointer(x: f64, y: f64) -> i32 {
     match INPUT.with(|input| input.borrow_mut().set_screen_pointer(Vec2 { x, y })) {
         Ok(()) => 0,
-        Err(diagnostic) => { write_diagnostic(&diagnostic); -1 }
+        Err(diagnostic) => {
+            write_diagnostic(&diagnostic);
+            -1
+        }
     }
-
 }
 
 #[unsafe(no_mangle)]
@@ -382,33 +399,55 @@ pub extern "C" fn unone_web_observation_len() -> usize {
 
 fn main() {}
 
-#[cfg(test)]
+#[cfg(all(test, feature = "dev-tools"))]
 mod tests {
-    use unone_engine::InputFrame;
     use super::{
-        EngineRuntime, OUTPUT, SceneFile, unone_web_bundle_begin,
-        unone_web_bundle_finish, unone_web_bundle_write, unone_web_load_project,
-        unone_web_reload_script, unone_web_set_input_frame, unone_web_set_pointer,
-        unone_web_set_save_payload, unone_web_set_screen_pointer, unone_web_tick,
+        EngineRuntime, OUTPUT, SceneFile, unone_web_bundle_begin, unone_web_bundle_finish,
+        unone_web_bundle_write, unone_web_load_project, unone_web_reload_script,
+        unone_web_set_input_frame, unone_web_set_pointer, unone_web_set_save_payload,
+        unone_web_set_screen_pointer, unone_web_tick,
     };
     use serde_json::json;
-
+    use unone_engine::InputFrame;
 
     #[test]
     fn web_normalized_3d_replay_matches_core_every_frame() {
-        let fixture: serde_json::Value = serde_json::from_str(include_str!("../../unone-engine/tests/fixtures/host-parity.json")).unwrap();
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../unone-engine/tests/fixtures/host-parity.json"
+        ))
+        .unwrap();
         let payload = serde_json::to_vec(&fixture["project"]).unwrap();
-        let mut core = unone_engine::HostProject::parse(&payload).unwrap().into_runtime(42).unwrap();
-        assert_eq!(unsafe { unone_web_load_project(payload.as_ptr(),payload.len(),42) },0);
-        let output = || OUTPUT.with(|bytes| serde_json::from_slice::<serde_json::Value>(&bytes.borrow()).unwrap());
-        assert_eq!(output()["world"],serde_json::to_value(core.observe()).unwrap());
+        let mut core = unone_engine::HostProject::parse(&payload)
+            .unwrap()
+            .into_runtime(42)
+            .unwrap();
+        assert_eq!(
+            unsafe { unone_web_load_project(payload.as_ptr(), payload.len(), 42) },
+            0
+        );
+        let output = || {
+            OUTPUT
+                .with(|bytes| serde_json::from_slice::<serde_json::Value>(&bytes.borrow()).unwrap())
+        };
+        assert_eq!(
+            output()["world"],
+            serde_json::to_value(core.observe()).unwrap()
+        );
         for frame in fixture["frames"].as_array().unwrap() {
             let bytes = serde_json::to_vec(frame).unwrap();
-            assert_eq!(unsafe { unone_web_set_input_frame(bytes.as_ptr(),bytes.len()) },0);
-            assert_eq!(unone_web_tick(),0);
-            let expected = core.tick_with_input(&unone_engine::parse_input_frame(&bytes).unwrap()).unwrap();
-            assert_eq!(output()["world"],serde_json::to_value(&expected).unwrap());
-            assert_eq!(output()["observation_digest"],unone_engine::observation_digest(&expected).unwrap());
+            assert_eq!(
+                unsafe { unone_web_set_input_frame(bytes.as_ptr(), bytes.len()) },
+                0
+            );
+            assert_eq!(unone_web_tick(), 0);
+            let expected = core
+                .tick_with_input(&unone_engine::parse_input_frame(&bytes).unwrap())
+                .unwrap();
+            assert_eq!(output()["world"], serde_json::to_value(&expected).unwrap());
+            assert_eq!(
+                output()["observation_digest"],
+                unone_engine::observation_digest(&expected).unwrap()
+            );
         }
     }
     const PROJECT_SCRIPT: &str = r#"--!strict
