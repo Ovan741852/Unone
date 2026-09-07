@@ -5,8 +5,8 @@
       "id": "project",
       "version": "1",
       "source": "./project.json",
-      "sha256": "806d273f30bfd0f8f4c9d0e5e041e0b325b3163c1e849ccb63a78a9b34b80067",
-      "size_bytes": 896,
+      "sha256": "64a19db0d08a889ae85c6bad12a46c28008ccf407abfb836ecee3a8b83e89884",
+      "size_bytes": 1056,
       "dependencies": []
     },
     {
@@ -15,7 +15,9 @@
       "source": "./reload.luau",
       "sha256": "f7ba0802e1d5e8964ce187d1a00565c02503ddc302a774090c57f1e511db36ed",
       "size_bytes": 1297,
-      "dependencies": ["project"]
+      "dependencies": [
+        "project"
+      ]
     }
   ]
 }

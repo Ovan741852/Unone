@@ -400,6 +400,17 @@ fn descriptors() -> Vec<SystemDescriptor> {
             "Not applicable.",
         ),
         descriptor(
+            "physics3d",
+            "Continuous sphere sweeps against moving 3D sphere targets. Returns earliest time of impact; integration and collision response belong to the game.",
+            SystemStatus::Available,
+            false,
+            true,
+            vec!["api.physics3d.sweepSphere"],
+            vec![],
+            "api.physics3d reports SYSTEM_DISABLED.",
+            "Games without 3D projectile queries.",
+        ),
+        descriptor(
             "physics2d",
             "Fixed-step integration for 2D rigid bodies: gravity, linear damping, ground bounce and friction, and circle collisions with per-frame contact points. There is no angular velocity, non-circular collider, sensor, or raycast.",
             SystemStatus::Available,

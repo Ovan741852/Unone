@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::world::Vec2;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Default, Serialize)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct ProjectConfig {
@@ -118,7 +118,7 @@ pub use authoring::{init, inspect};
 /// say so once in its config rather than teaching its author to read past a
 /// red line — a gate people learn to ignore is worse than a gate that says it
 /// is advisory.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct VerifyConfig {
@@ -127,7 +127,7 @@ pub struct VerifyConfig {
 }
 
 /// One declared gate: either the bare id, or the id with its settings.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(untagged)]
 pub enum VerifyStepSpec {
@@ -135,7 +135,7 @@ pub enum VerifyStepSpec {
     Detailed(VerifyStepDetail),
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct VerifyStepDetail {
@@ -402,7 +402,7 @@ pub struct AudioAssertion {
 }
 
 /// One reachable screen the layout gate should inspect.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct UiPreviewSpec {

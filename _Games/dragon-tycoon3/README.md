@@ -34,7 +34,15 @@ calls `tools/import_art.py`: six original actor meshes (four dragons, pterosaur,
 tiger), the original cannon and floor, with eight unchanged original textures.
 Twelve moving actors use these meshes instead of the previous sphere proxies.
 `asset-provenance.json` records source logical paths, conversion bounds and hashes.
-Click targets or the hit-test button. `game test` exercises two deterministic hits.
+Click to aim or use the fire button. Lua integrates bullet velocity/gravity and
+calls the engine's read-only continuous sphere sweep; hits occur after flight,
+not on click. `game test` checks both delayed travel and two eventual hits.
+The effect button previews the original `GoldCrystal_Hit` (unchanged SKFE bytes,
+one original texture losslessly transcoded to PNG). `hit-provenance.json` records
+its source and dependencies. Effect choice, scale and lifetime belong to Lua.
+Bloom and performance UI are opt-in through `player.presentation.json`. Freeze
+the scene and toggle Bloom to compare the same effect/frame. See
+`bloom-measurements.json` and [the contracts](../../docs/sphere-sweeps-and-bloom.md).
 
 The adapter extracts static rest poses from inspected Creator 3.8 vertex buffers.
 Skeleton clips, skinning, source prefab transforms and original material/shader
@@ -44,10 +52,10 @@ its edge stretching remains a material/sampler integration gap. These are real
 3D meshes, but this is not a visual reconstruction of the complete original game.
 See [the mesh contract](../../docs/static-mesh.md).
 
-The current art packages contain 34 matching export files: Web ZIP 1,351,991 bytes,
-Android APK 1,375,669 bytes. Both were visually checked with the original models;
-Web hit-button interaction also passed. The Android check used a Pixel 8 / Android
-14 emulator, not a physical phone. Earlier proxy measurements below are historical.
+`distributions.json` records the current packages. Both were visually checked with
+the original models; the Web flight-then-hit interaction also passed. Android
+checks use a Pixel 8 / Android 14 emulator, not a physical phone. Earlier proxy
+and static-art measurements below are historical.
 
 ## Reproduced gaps
 
@@ -61,8 +69,9 @@ Run `python tools/check_gaps.py`; [gap-results.json](gap-results.json) records f
 | Reuse original animated actors | Collection includes Skeleton, AnimationClip and skinned assets; there is no corresponding import route | Skeleton/clip/skinning import and renderer integration; collection alone is insufficient |
 | Reuse original atlases/effects | Image bytes load, but atlas regions/material UVs and `.efk` companion remapping are separate contracts | Sprite-frame/atlas and effect dependency adapters |
 
-The playable slice predeclares targets and uses a game-owned approximate ray/sphere
-test. These are explicit workarounds, not completed engine features. The first three
+The playable slice predeclares targets. Luau integrates bullet motion and calls the
+engine sphere sweep query against selected targets; full 3D rigid-body response and
+camera ray construction remain absent. The first three
 gaps have executable negative probes; the remaining two are inventory/implementation
 findings, not claims of completed decoder tests. The original live session expired
 while resources were collected; no paid gameplay was performed.
@@ -87,3 +96,7 @@ is not part of the exported game's download.
 raw simulation/presentation timings. A low headless mean does not prove GPU speed;
 the current particle renderer uses one sprite per particle and needs instancing
 before high-density effects. No universal performance verdict is encoded in a tool.
+
+Current release measurements are in `release-measurements.json`: the single minified
+Three bundle, actual Web startup/download, and the separately scoped 2D broadphase
+benchmark. The 3D probe does not enable that 2D solver.

@@ -36,15 +36,11 @@ pub fn observation_digest(snapshot: &WorldSnapshot) -> Result<String, serde_json
 /// only what it actually has.
 #[derive(Debug, Default)]
 pub struct SourceProject {
-    pub name: String,
-    /// Defaults to `main.luau` when empty; only names the script in diagnostics.
-    pub script_name: String,
+    pub config: ProjectConfig,
     pub source: String,
     pub scene: Option<SceneFile>,
     pub seed: u64,
-    pub systems: BTreeMap<String, bool>,
     pub restored_save: Option<serde_json::Value>,
-    pub audio: Option<crate::audio::AudioConfig>,
     pub viewport_aspect: Option<f64>,
 }
 
@@ -421,53 +417,37 @@ impl EngineRuntime {
         restored_save: Option<serde_json::Value>,
     ) -> Result<Self, Box<Diagnostic>> {
         Self::load_source_project(SourceProject {
-            name: project_name.into(),
-            script_name: script_name.into(),
+            config: ProjectConfig {
+                name: project_name.into(),
+                entry_script: script_name.into(),
+                systems,
+                ..ProjectConfig::default()
+            },
             source: source.into(),
             scene,
             seed,
-            systems,
             restored_save,
             ..SourceProject::default()
         })
     }
 
-    /// Load a project a host assembled itself, declaration by declaration.
-    ///
-    /// Every project-level declaration a file-backed game can make has to reach
-    /// a host-loaded game too, or the same game behaves differently on Web than
-    /// on disk — the exact failure that made audio categories do nothing in the
-    /// browser. New declarations belong on `SourceProject`, not on another
-    /// positional argument.
+    /// Load the canonical ProjectConfig and separately resolved source bytes.
+    /// Host and disk loading reach the same with_world configuration path.
     pub fn load_source_project(project: SourceProject) -> Result<Self, Box<Diagnostic>> {
         let SourceProject {
-            name,
-            script_name,
+            mut config,
             source,
             scene,
             seed,
-            systems,
             restored_save,
-            audio,
             viewport_aspect,
         } = project;
-        let script_name = if script_name.is_empty() {
+        let script_name = if config.entry_script.is_empty() {
             "main.luau".to_string()
         } else {
-            script_name
+            config.entry_script.clone()
         };
-        let config = ProjectConfig {
-            name,
-            entry_script: script_name.clone(),
-            main_scene: None,
-            test_files: Vec::new(),
-            bundle_manifest: None,
-            asset_manifest: None,
-            ui_previews: Vec::new(),
-            systems,
-            verify: None,
-            audio,
-        };
+        config.entry_script = script_name.clone();
         let paths = ProjectPaths {
             root: PathBuf::from("<memory>"),
             config: PathBuf::from("<memory>/project.unone.json"),
@@ -1850,6 +1830,30 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
     )?;
 
     api.set("entity", entity)?;
+    let physics3d_api = lua.create_table()?;
+    let physics3d_world = Rc::clone(&world);
+    physics3d_api.set(
+        "sweepSphere",
+        lua.create_function(move |lua, request: Table| {
+            let mut value =
+                lua_value_to_json(Value::Table(request)).map_err(mlua::Error::RuntimeError)?;
+            if value["targets"].as_object().is_some_and(|v| v.is_empty()) {
+                value["targets"] = serde_json::json!([]);
+            }
+            let request: crate::physics3d::SphereSweep =
+                serde_json::from_value(value).map_err(mlua::Error::external)?;
+            let result = crate::physics3d::sweep_sphere(&physics3d_world.borrow(), request)
+                .map_err(mlua::Error::RuntimeError)?;
+            json_to_lua(
+                lua,
+                serde_json::to_value(result).map_err(mlua::Error::external)?,
+            )
+        })?,
+    )?;
+    api.set(
+        "physics3d",
+        disable_if_off(lua, systems, "physics3d", physics3d_api)?,
+    )?;
     api.set("input", input_api)?;
     api.set(
         "random",

@@ -4,7 +4,7 @@ export const DECODER_ROUTES = Object.freeze({
   image: { svg: "image/svg+xml", png: "image/png", jpeg: "image/jpeg", webp: "image/webp" },
   audio: { wav: "audio/wav", mp3: "audio/mpeg", ogg: "audio/ogg" },
   spine: { "spine-json": "application/json" },
-  effekseer: { efkefc: "application/octet-stream" },
+  effekseer: { efkefc: "application/octet-stream", efk: "application/octet-stream" },
 });
 
 export function requireAssetEncoding(asset, decoder) {

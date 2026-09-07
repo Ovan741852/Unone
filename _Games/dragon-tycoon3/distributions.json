@@ -2,36 +2,37 @@
   "date": "2026-09-08",
   "art": {
     "original_meshes": 8,
-    "original_textures": 8,
+    "unchanged_original_textures": 8,
+    "original_effects": 1,
+    "transcoded_effect_textures": 1,
     "actor_variants": 6,
     "instances": 12,
     "skeletal_animation": false
   },
   "web": {
     "file": "dist/dragon-tycoon3-web.zip",
-    "bytes": 1351991,
-    "sha256": "018131424c9aa055f031876be3a67939cd90580058b5cf705fcf7c08832ae03f",
-    "verified_export_files": 34,
+    "bytes": 1759625,
+    "sha256": "f47e8aaaca592a4e1af4a73b3d7947f0bc9c4b5025487ea62b09fc78c27d37ec",
+    "verified_export_files": 42,
     "validation": {
-      "original_models_and_textures_rendered": true,
-      "hit_button": true,
-      "first_presented_ms_localhost_single_run": 357.2,
-      "rust_export_tests_passed": 2,
-      "node_mesh_and_host_tests_passed": 4
+      "original_models_visible": true,
+      "bloom_visible": true,
+      "browser_console_errors": 0,
+      "release_host_digest_parity": true,
+      "note": "Final release at port 8186 rendered original meshes and Bloom; prior same-game flight/hit interaction verified separately."
     }
   },
   "android": {
     "file": "dist/dragon-tycoon3-android.apk",
-    "bytes": 1375669,
-    "sha256": "3a01e0d5007073da48907d1a3b78743306d357976026d80ac5da37537c738644",
-    "verified_export_files": 34,
+    "bytes": 1781918,
+    "sha256": "f4f3dcd2cbebf0b7c49ee85d5af600a8937d1e5f8f346d8fe2f83f6f08757b68",
+    "verified_export_files": 42,
     "validation": {
-      "installed": true,
-      "original_models_and_textures_rendered": true,
-      "test_device": "Pixel_8 / Android 14 / SwiftShader emulator",
-      "real_device_tested": false,
-      "screenshot": "dist/android-art.png",
-      "signing": "local test certificate, APK v2/v3 verified"
+      "emulator": "Pixel 8 / Android 14",
+      "original_models_visible": true,
+      "bloom_visible": true,
+      "gpu_timer_available": false,
+      "note": "Final APK installed and booted in emulator. Screenshot dist/android-final.png; physical device and Android startup benchmark not tested."
     }
   }
 }

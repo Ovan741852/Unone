@@ -53,6 +53,11 @@ export type RandomApi = {
 export type PhysicsApi = {
     applyImpulse: (id: string, impulse: Vec2) -> (),
 }
+export type SphereSweepTarget = { id: string, radius: number, previous_position: Vec3 }
+export type SphereSweepHit = { id: string, fraction: number, point: Vec3, normal: Vec3 }
+export type Physics3DApi = {
+    sweepSphere: (request: { from: Vec3, to: Vec3, radius: number, targets: {SphereSweepTarget} }) -> SphereSweepHit?,
+}
 
 export type CameraApi = {
     getPosition: () -> Vec2,
@@ -166,6 +171,7 @@ export type EngineApi = {
     input: InputApi,
     random: RandomApi,
     physics: PhysicsApi,
+    physics3d: Physics3DApi,
     camera: CameraApi,
     camera3d: Camera3DApi,
     observation: ObservationApi,

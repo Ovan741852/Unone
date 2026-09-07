@@ -1,0 +1,43 @@
+{
+  "date": "2026-09-08",
+  "three": {
+    "previous_raw_bytes": 2081667,
+    "player_raw_bytes": 492531,
+    "previous_gzip_bytes": 397172,
+    "player_gzip_bytes": 123163,
+    "gzip_saved_bytes": 274009,
+    "same_game_resource_body_reduction_percent": 13.53619504127169
+  },
+  "browser": {
+    "url": "http://127.0.0.1:8186/",
+    "runtime_ready_ms": 132.7,
+    "first_presented_ms": 614.4,
+    "encoded_resource_bytes": 1750260,
+    "transfer_resource_bytes": 1761960,
+    "resource_count": 39,
+    "limitations": "One localhost no-store gzip run; ResourceTiming excludes HTML navigation. Not cold-process, mobile-network or Android startup performance."
+  },
+  "broadphase": {
+    "layout": "sparse 3-unit lattice, radius 0.5",
+    "samples": 9,
+    "profile": "release",
+    "measurements": [
+      {
+        "bodies": 250,
+        "grid_physics_median_ms": 0.4655,
+        "brute_collision_median_ms": 1.7733
+      },
+      {
+        "bodies": 1000,
+        "grid_physics_median_ms": 1.9549,
+        "brute_collision_median_ms": 41.3944
+      },
+      {
+        "bodies": 4000,
+        "grid_physics_median_ms": 11.2057,
+        "brute_collision_median_ms": 1022.3688
+      }
+    ],
+    "limits": "2D circle solver only; grid includes physics step, brute measures pair collision phase. Dense/oversized fallback remains quadratic. Not game FPS; this 3D probe disables physics2d."
+  }
+}

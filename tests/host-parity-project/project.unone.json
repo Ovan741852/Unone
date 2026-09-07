@@ -1,0 +1,22 @@
+{
+  "name": "HostParity3D",
+  "systems": {
+    "physics2d": true
+  },
+  "audio": {
+    "categories": {
+      "music": {
+        "fade_in_frames": 2
+      }
+    }
+  },
+  "entry_script": "main.luau",
+  "main_scene": "scene.json",
+  "test_files": [
+    "frame-0.test.json",
+    "frame-1.test.json",
+    "frame-2.test.json",
+    "frame-3.test.json",
+    "frame-4.test.json"
+  ]
+}

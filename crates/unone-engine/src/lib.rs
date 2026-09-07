@@ -5,6 +5,7 @@ mod asset;
 #[cfg(feature = "dev-tools")]
 mod asset_workflow;
 mod audio;
+mod broadphase;
 #[cfg(feature = "dev-tools")]
 mod bundle;
 #[cfg(feature = "dev-tools")]
@@ -18,6 +19,7 @@ mod layout;
 mod performance;
 mod platform;
 mod project;
+mod physics3d;
 mod runtime;
 mod scene;
 #[cfg(feature = "dev-tools")]

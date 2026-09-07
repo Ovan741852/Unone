@@ -1,1 +1,40 @@
-{"name":"deterministic-hit-loop","frames":3,"seed":42,"input_sequence":[{"actions":{"probe.hit":true}},{"actions":{}},{"actions":{"probe.hit":true}}],"assertions":[{"observation":{"key":"shots","equals":2}},{"observation":{"key":"hits","equals":2}},{"observation":{"key":"targets","equals":12}}]}
+{
+  "name": "deterministic-hit-loop",
+  "frames": 120,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "probe.hit": true
+      }
+    },
+    {
+      "actions": {}
+    },
+    {
+      "actions": {
+        "probe.hit": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "shots",
+        "equals": 2
+      }
+    },
+    {
+      "observation": {
+        "key": "hits",
+        "equals": 2
+      }
+    },
+    {
+      "observation": {
+        "key": "targets",
+        "equals": 12
+      }
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 import { createParticleRenderer } from "./particles.js";
 import { meshGeometry, validateMesh } from "./mesh.js";
+import {createBloom} from './bloom.js';
+import {createEffects} from './effekseer.js';
 import { compareSpriteEntities, worldOf } from "../shared/webgpu-snapshot.js";
 
 const LOCAL_THREE_URL = new URL("../vendor/three/three.module.js", import.meta.url).href;
@@ -66,6 +68,10 @@ export async function createThreeRenderer(canvas, options = {}) {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.setClearColor(0x111827, 1);
+  renderer.info.autoReset=false;
+  const bloom=backend==='webgl'?createBloom(THREE,renderer):null;
+  bloom?.setEnabled(options.bloom??false);
+  const effects=await createEffects(renderer.getContext?.(),options.getAssetManifest?.()?.assets??[],options.loadAssetUrl);
 
   const scene = new THREE.Scene();
   const root = new THREE.Group();
@@ -157,6 +163,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   }
 
   function draw(snapshot) {
+    renderer.info.reset();
     const world = worldOf(snapshot);
     resize(world);
     const specs = specsOf();
@@ -222,7 +229,9 @@ export async function createThreeRenderer(canvas, options = {}) {
     }
     for (const [id,mesh] of meshes3d) mesh.visible=alive3d.has(id);
     particles.draw(world.particles);
-    renderer.render(scene, activeCamera);
+    const overlay=effects?()=>{effects.draw(world,activeCamera);renderer.resetState();}:null;
+    if(bloom) bloom.draw(scene,activeCamera,overlay);
+    else {renderer.render(scene,activeCamera);overlay?.();}
   }
 
   function clearTextures() {
@@ -246,9 +255,11 @@ export async function createThreeRenderer(canvas, options = {}) {
     async ready() { await Promise.all([...meshAssets.values(),...textureRecords.values()].map(r=>r.promise)); for(const r of [...meshAssets.values(),...textureRecords.values()]) if(r.error) throw r.error; },
     clearTextures,
     usesGpuSprites: true,
+    setBloom:enabled=>bloom?.setEnabled(enabled),
+    resetMeasurements:()=>bloom?.resetMeasurements(),
     implementation: "three.js",
     backend,
-    metrics: () => ({draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count}),
+    metrics: () => ({draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 

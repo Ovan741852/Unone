@@ -1,3 +1,4 @@
+import {loadProject as loadHostProject} from '../shared/load-project.js';
 import { frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=2";
 import { createRenderer } from "../renderer/index.js?v=1";
 import { installGeneration, readActiveText } from "./bundle-store.js?v=1";
@@ -84,11 +85,7 @@ async function loadProject() {
   manifest = await readManifest("./bundle-manifest-v1.json");
   generationState = await installGeneration(manifest, { module: window.Module });
   const payload = await readActiveText(generationState, "project", window.Module, manifest);
-  const input = await writeBridgePayload(payload);
-  if (window.Module._unone_web_load_project(input.pointerAddress, input.length, 42n) !== 0) {
-    throw new Error("host-provided project load failed");
-  }
-  snapshot = readSnapshot();
+  snapshot=loadHostProject(window.Module,JSON.parse(payload),42n);
 }
 
 async function reloadScriptFromActiveBundle() {

@@ -193,6 +193,28 @@ pub fn describe(name: &str) -> Option<ApiDescriptor> {
 fn descriptors() -> Vec<ApiDescriptor> {
     vec![
         descriptor(
+            "physics3d.sweepSphere",
+            "physics3d",
+            "Query the earliest continuous sphere contact along a 3D segment against moving sphere targets.",
+            "For fast objects that must not tunnel through colliders between frames.",
+            "Velocity, integration, gravity, damage, lifetime and collision response belong to Luau; this query does not move entities.",
+            vec![parameter(
+                "request",
+                "table",
+                "Exactly {from:Vec3,to:Vec3,radius:number,targets:{id:string,radius:number,previous_position:Vec3}[]}; target current centers come from their Transform3D. At most 1024 unique targets.",
+            )],
+            "nil or {id:string,fraction:number,point:Vec3,normal:Vec3}; fraction in [0,1]; lexical id breaks equal-time ties.",
+            vec!["Read 3D transforms; no mutation"],
+            "Sweeps relative linear motion over the supplied endpoints; initial overlap returns fraction zero. Radii are explicit world units, not inferred from meshes.",
+            vec![
+                "Invalid or unknown request fields",
+                "Target missing Transform3D",
+                "Disabled physics3d system",
+            ],
+            "local hit=api.physics3d.sweepSphere({from=p,to=q,radius=0.1,targets={{id=\"target\",radius=0.5,previous_position=old}}})",
+            vec!["entity.getTransform3D", "entity.setTransform3D"],
+        ),
+        descriptor(
             "particle.play",
             "particle",
             "Play a seeded native 3D particle definition.",

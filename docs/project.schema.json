@@ -87,6 +87,7 @@
       "description": "The gates this project wants `verify` to run.\n\nThe default order is the engine's opinion, not a law. A project that draws\nno screen, or that is mid-way through acquiring assets, should be able to\nsay so once in its config rather than teaching its author to read past a\nred line — a gate people learn to ignore is worse than a gate that says it\nis advisory.",
       "properties": {
         "steps": {
+          "default": [],
           "items": {
             "$ref": "#/$defs/VerifyStepSpec"
           },
@@ -188,6 +189,7 @@
       "type": "array"
     },
     "ui_previews": {
+      "default": [],
       "description": "Screens `verify` must check the layout of.\n\nWithout this only the opening screen is ever drawn, so a broken win or\nlose screen passes every gate. Each entry says how to reach a screen,\nthe same way `test_files` says how to reach a state worth asserting.",
       "items": {
         "$ref": "#/$defs/UiPreviewSpec"
@@ -203,6 +205,7 @@
           "type": "null"
         }
       ],
+      "default": null,
       "description": "Which gates `verify` runs, in what order, and which of them are\nadvisory.\n\nUndeclared means the engine's default order with every gate required."
     }
   },

@@ -34,12 +34,24 @@ still requires its implementation and contract tests.
 
 ## Host semantics and deterministic scope
 
-Web and Mobile share `HostProject` and `HostInputState` from engine core. Systems,
-audio rules, restored save and optional startup viewport travel through that
-loader. Save restoration happens before `Game.start`; later save replacement
+Web and Mobile share `HostProject` and `HostInputState` from engine core. The host
+envelope is `{config, script, scene, restored_save?, viewport_aspect?}`; `config`
+is the complete `ProjectConfig`, with the same generated schema and unknown-field
+rejection. Old envelopes with top-level `project`, `systems` or `audio` must be
+rebuilt. Hosts forward the whole config rather than maintaining a field allowlist.
+Runner, live, presentation and player share `web/shared/load-project.js` for the
+actual WASM load. Android packagers preserve the original config JSON as well.
+Save restoration happens before `Game.start`; later save replacement
 is a separate action and cannot retroactively rerun startup. Web runner restores
 persisted save before load. Android packaging includes systems/audio; storage
 policy remains the caller's responsibility.
+
+`node scripts/verify-host-parity.mjs` executes the built CLI and actual WASM on
+the checked-in replay project, comparing observation digests at every fixture
+time point. It includes an audio-omission negative control. Package verification
+runs this against its packaged binaries; binary string searches are removed.
+This proves the exercised replay contracts, not every possible future declaration
+or rendering equivalence. Extend the fixture as observable contracts grow.
 
 Normalized `InputFrame` is the replay boundary. Every field is checked before
 runtime mutation. Explicit frames are consumed once; omitted pointers release

@@ -220,7 +220,7 @@ pub unsafe extern "C" fn unone_mobile_load_project(
     if payload.viewport_aspect.is_none() {
         payload.viewport_aspect = session.surface.as_ref().map(|surface| f64::from(surface.width_px) / f64::from(surface.height_px));
     }
-    let project_name = payload.project.clone();
+    let project_name = payload.config.name.clone();
     let runtime = match payload.into_runtime(seed) {
         Ok(runtime) => runtime,
         Err(diagnostic) => return session.write_diagnostic(*diagnostic),
@@ -706,7 +706,7 @@ return Game
 
     fn payload() -> Vec<u8> {
         serde_json::to_vec(&json!({
-            "project": "MobileContract",
+            "config": {"name": "MobileContract"},
             "script": SCRIPT,
             "scene": {"entities": [{"id": "player", "transform": {"x": 0.0, "y": 0.0}}]}
         }))
@@ -715,7 +715,7 @@ return Game
 
     fn payload_with_script(script: &str) -> Vec<u8> {
         serde_json::to_vec(&json!({
-            "project": "MobileSaveContract",
+            "config": {"name": "MobileSaveContract"},
             "script": script,
         }))
         .unwrap()
@@ -732,7 +732,7 @@ return Game
     fn c_abi_scene_fragment_uses_shared_diagnostic_context() {
         let session = unone_mobile_init();
         let project = serde_json::to_vec(&json!({
-            "project": "MobileInvalidScene",
+            "config": {"name": "MobileInvalidScene"},
             "script": SCRIPT,
             "scene": {"entities": [], "typo": true}
         }))
@@ -812,7 +812,7 @@ return Game
             let before_entities = output(session)["world"]["entities"].clone();
             let scene: Value = serde_json::from_str(scene).unwrap();
             let project = serde_json::to_vec(&json!({
-                "project": format!("MobileInvalidScene-{name}"),
+                "config": {"name": format!("MobileInvalidScene-{name}")},
                 "script": SCRIPT,
                 "scene": scene,
             }))
@@ -938,7 +938,7 @@ return Game
         );
         let error = output(session);
         assert_eq!(error["diagnostic"]["code"], json!("LUAU_RUNTIME_ERROR"));
-        assert_eq!(error["diagnostic"]["source"]["file"], json!("main.luau"));
+        assert_eq!(error["diagnostic"]["source"]["file"], json!("scripts/main.luau"));
         let good = SCRIPT.replace("position.x += dt", "position.x += dt * 2");
         assert_eq!(
             unsafe { unone_mobile_reload_script(session, good.as_ptr(), good.len()) },

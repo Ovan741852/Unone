@@ -1,0 +1,16 @@
+{
+  "date": "2026-09-08",
+  "host": "Windows Codex in-app browser, WebGL2",
+  "method": "Freeze the same world/effect at frame 584, switch Bloom using its UI control; bounded 240-sample windows after warm-up. Asynchronous EXT_disjoint_timer_query_webgl2; no gl.finish.",
+  "drawing_buffer": [1280, 720],
+  "bloom_buffer": [320, 180],
+  "original_effect_instances": 1,
+  "bloom_on": {"samples":240,"cpu_render_median_ms":0.3,"cpu_render_p95_ms":0.5,"gpu_median_ms":0.03936,"gpu_p95_ms":3.113024,"three_draw_calls":18},
+  "bloom_off": {"samples":240,"cpu_render_median_ms":0.3,"cpu_render_p95_ms":0.5,"gpu_median_ms":0.018944,"gpu_p95_ms":2.497088,"three_draw_calls":14},
+  "limits": [
+    "GPU timings show substantial tail variance on this shared desktop; medians are not a frame-time guarantee.",
+    "CPU render includes presentation and DOM UI, excludes simulation/bridge.",
+    "Three draw counts exclude Effekseer's raw WebGL draw calls; the GPU query includes them.",
+    "This 12-actor scene does not establish a thousands-of-entities ceiling or Android GPU performance."
+  ]
+}

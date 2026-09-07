@@ -1,0 +1,17 @@
+{
+  "effect_source": "assets/game/native/73/73e14817-696d-42e5-b8b8-ef2a2abd2085.acdb1.efk",
+  "texture_source": "assets/game/native/56/56a67048-acbe-484d-bd01-3dd58492ea3c.98146.webp",
+  "effect_sha256": "83e4e8e3315514c4f512d83288b95774d94fe0ef6ff728947c36d0e70eec9188",
+  "effect_unchanged": true,
+  "texture_conversion": "lossless PNG encoding of decoded collected image",
+  "resources": [
+    [
+      "RockCrystal_Dragon.png"
+    ],
+    [],
+    [],
+    [],
+    [],
+    []
+  ]
+}

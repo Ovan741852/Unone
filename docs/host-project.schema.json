@@ -298,6 +298,90 @@
       },
       "type": "object"
     },
+    "ProjectConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_manifest": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "audio": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AudioConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Sound categories and the rules between them.\n\nUndeclared means no rules, not no sound: a game can still play and loop\nwithout ever naming a category. Categories exist to say what happens\n*between* sounds, which is the part the engine owns."
+        },
+        "bundle_manifest": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "entry_script": {
+          "default": "scripts/main.luau",
+          "type": "string"
+        },
+        "main_scene": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "systems": {
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "default": {},
+          "description": "Engine systems this game explicitly turns on or off.\n\nAnything not declared keeps the engine default; the engine rejects\nunknown ids instead of treating a typo as a disabled system.",
+          "type": "object"
+        },
+        "test_files": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "ui_previews": {
+          "default": [],
+          "description": "Screens `verify` must check the layout of.\n\nWithout this only the opening screen is ever drawn, so a broken win or\nlose screen passes every gate. Each entry says how to reach a screen,\nthe same way `test_files` says how to reach a state worth asserting.",
+          "items": {
+            "$ref": "#/$defs/UiPreviewSpec"
+          },
+          "type": "array"
+        },
+        "verify": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VerifyConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Which gates `verify` runs, in what order, and which of them are\nadvisory.\n\nUndeclared means the engine's default order with every gate required."
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
     "RigidBody2DData": {
       "additionalProperties": false,
       "properties": {
@@ -542,6 +626,39 @@
       },
       "type": "object"
     },
+    "UiPreviewSpec": {
+      "additionalProperties": false,
+      "description": "One reachable screen the layout gate should inspect.",
+      "properties": {
+        "frames": {
+          "default": 1,
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "input_sequence": {
+          "default": null,
+          "description": "Project-relative per-frame input replay that reaches this screen.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "seed": {
+          "default": 42,
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
     "Vec2": {
       "additionalProperties": false,
       "properties": {
@@ -582,25 +699,60 @@
         "z"
       ],
       "type": "object"
+    },
+    "VerifyConfig": {
+      "additionalProperties": false,
+      "description": "The gates this project wants `verify` to run.\n\nThe default order is the engine's opinion, not a law. A project that draws\nno screen, or that is mid-way through acquiring assets, should be able to\nsay so once in its config rather than teaching its author to read past a\nred line — a gate people learn to ignore is worse than a gate that says it\nis advisory.",
+      "properties": {
+        "steps": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/VerifyStepSpec"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "VerifyStepDetail": {
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "default": null,
+          "description": "Reserved: a project-owned command as a gate. Declaring it is an error in\nthis build rather than a step that silently never runs."
+        },
+        "required": {
+          "default": true,
+          "description": "A failing advisory gate is reported and does not fail the run.",
+          "type": "boolean"
+        },
+        "step": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "step"
+      ],
+      "type": "object"
+    },
+    "VerifyStepSpec": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/$defs/VerifyStepDetail"
+        }
+      ],
+      "description": "One declared gate: either the bare id, or the id with its settings."
     }
   },
   "$id": "https://unone.dev/schema/host-project.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
-    "audio": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/AudioConfig"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null
-    },
-    "project": {
-      "type": "string"
+    "config": {
+      "$ref": "#/$defs/ProjectConfig"
     },
     "restored_save": {
       "default": null,
@@ -620,13 +772,6 @@
     "script": {
       "type": "string"
     },
-    "systems": {
-      "additionalProperties": {
-        "type": "boolean"
-      },
-      "default": {},
-      "type": "object"
-    },
     "viewport_aspect": {
       "default": null,
       "description": "UI viewport aspect, supplied before Game.start; defaults to 16:9.",
@@ -638,7 +783,7 @@
     }
   },
   "required": [
-    "project",
+    "config",
     "script"
   ],
   "title": "HostProject",

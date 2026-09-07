@@ -1,5 +1,6 @@
 import { createUiTree } from "../shared/ui-tree.js";
 import { requireAssetEncoding, DECODER_ROUTES } from "../shared/asset-encoding.js";
+import {loadProject as loadHostProject} from '../shared/load-project.js';
 import { frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=5";
 import { createRenderer } from "../renderer/index.js?v=1";
 import { activateGeneration, readActiveAsset, readActiveText, rollbackGeneration, stageGeneration } from "../live/bundle-store.js?v=5";
@@ -322,21 +323,13 @@ async function loadProject() {
   // off stay on, and audio categories have no rules.
   const stored = await readSave(saveProjectKey);
   loadedSave = stored != null;
-  const payload = bridgeBytes(
-    JSON.stringify({
+  snapshot=loadHostProject(window.Module,{
       restored_save: stored ?? null,
       viewport_aspect: viewportAspect(),
-      project: config.name,
+      config,
       script,
       scene,
-      systems: config.systems ?? {},
-      audio: config.audio ?? null,
-    })
-  );
-  if (window.Module._unone_web_load_project(payload.pointerAddress, payload.length, seed) !== 0) {
-    throw bridgeError(readSnapshot(), "generic project load failed");
-  }
-  snapshot = readSnapshot();
+    },seed);
   if (packaged) {
     generationState = await activateGeneration(packaged.generationState);
     bundleManifest = { manifest: packaged.manifest, manifestUrl: packaged.manifestUrl };

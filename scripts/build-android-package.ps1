@@ -29,7 +29,7 @@ $scriptPath = Join-Path $gameRoot $entryScript
 if (-not (Test-Path -LiteralPath $scriptPath -PathType Leaf)) {
     throw "Entry script not found: $scriptPath"
 }
-$projectJson = ConvertTo-Json -InputObject ([string]$config.name) -Compress
+$configJson = [IO.File]::ReadAllText($configPath).Trim()
 $scriptJson = ConvertTo-Json -InputObject ([IO.File]::ReadAllText($scriptPath)) -Compress
 $sceneJson = "null"
 if (-not [string]::IsNullOrWhiteSpace([string]$config.main_scene)) {
@@ -53,9 +53,7 @@ if (Test-Path -LiteralPath $buildRoot) {
 }
 $packageDir = Join-Path $buildRoot "package"
 New-Item -ItemType Directory -Path (Join-Path $packageDir "assets") -Force | Out-Null
-$systemsJson = if ($config.systems) { ConvertTo-Json -InputObject $config.systems -Depth 8 -Compress } else { "{}" }
-$audioJson = if ($config.audio) { ConvertTo-Json -InputObject $config.audio -Depth 12 -Compress } else { "null" }
-$payloadText = '{"project":' + $projectJson + ',"script":' + $scriptJson + ',"scene":' + $sceneJson + ',"systems":' + $systemsJson + ',"audio":' + $audioJson + '}'
+$payloadText = '{"config":' + $configJson + ',"script":' + $scriptJson + ',"scene":' + $sceneJson + '}'
 [IO.File]::WriteAllText((Join-Path $packageDir "assets\unone-project.json"), $payloadText, [Text.UTF8Encoding]::new($false))
 
 $androidRoot = Join-Path $packageRoot "mobile\android-host"

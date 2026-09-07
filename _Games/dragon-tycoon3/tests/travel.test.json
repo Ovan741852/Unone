@@ -1,0 +1,40 @@
+{
+  "name": "bullets-must-travel-before-hitting",
+  "frames": 3,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "probe.hit": true
+      }
+    },
+    {
+      "actions": {}
+    },
+    {
+      "actions": {
+        "probe.hit": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "shots",
+        "equals": 2
+      }
+    },
+    {
+      "observation": {
+        "key": "hits",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "flying_bullets",
+        "equals": 2
+      }
+    }
+  ]
+}

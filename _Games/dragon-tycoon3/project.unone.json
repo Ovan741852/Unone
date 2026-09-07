@@ -4,9 +4,13 @@
   "main_scene": "scenes/arena.json",
   "asset_manifest": "assets.json",
   "test_files": [
-    "tests/shoot.test.json"
+    "tests/shoot.test.json",
+    "tests/travel.test.json"
   ],
   "systems": {
-    "particle": true
+    "particle": true,
+    "physics3d": true,
+    "physics2d": false,
+    "effekseer": true
   }
 }

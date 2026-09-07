@@ -12,6 +12,7 @@ From the repository root:
 ```powershell
 ./scripts/install-binaryen.ps1
 ./scripts/build-web-live.ps1 -Player
+node scripts/build-three-player.mjs
 cargo build -p unone-cli
 ./target/debug/game.exe --project _Games/dragon-tycoon3 export web --output _Games/dragon-tycoon3/dist/release --json
 python scripts/serve-export.py _Games/dragon-tycoon3/dist/release --port 8176 --gzip
@@ -36,9 +37,12 @@ must ship them before it can support this command.
 
 Supported presentation: Three.js WebGL primitive boxes/spheres, textured
 [static mesh JSON](static-mesh.md), image sprites, DOM UI, Web Audio, and native
-3D particles. Other mesh encodings, Spine and Effekseer asset declarations fail
-export explicitly. Their development presentation host
-support does not imply a production player decoder exists.
+3D particles, [legacy SKFE 1500 Effekseer and optional Bloom](sphere-sweeps-and-bloom.md).
+Other mesh encodings, Spine and unsupported Effekseer encodings fail export.
+The Effekseer JS/WASM is included only when declared by the game.
+The WebGL export ships one minified, tree-shaken Three bundle instead of the two
+dependent source modules. Rebuild it with the pinned esbuild script after changing
+the renderer's Three API usage. Development hosts retain the original modules.
 
 `document.body.dataset.playerMetrics` reports HTML-bootstrap-to-runtime readiness, first rendered
 content and ResourceTiming bytes. `playerPerformance` reports sampled bridge/render

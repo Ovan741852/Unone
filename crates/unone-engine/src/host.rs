@@ -1,6 +1,6 @@
 //! Shared host ingestion contract. Platform adapters own transport and storage,
 //! never a separate interpretation of game configuration or replay input.
-use crate::{AudioConfig, Diagnostic, EngineRuntime, InputFrame, SourceProject};
+use crate::{Diagnostic, EngineRuntime, InputFrame, ProjectConfig, SourceProject};
 use serde::Deserialize;
 use std::collections::BTreeMap;
 
@@ -8,16 +8,12 @@ use std::collections::BTreeMap;
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct HostProject {
-    pub project: String,
+    pub config: ProjectConfig,
     pub script: String,
     // Preserve original JSON locations for the common scene validator.
     #[serde(default)]
     #[cfg_attr(feature = "dev-tools", schemars(with = "Option<crate::SceneFile>"))]
     pub scene: Option<Box<serde_json::value::RawValue>>,
-    #[serde(default)]
-    pub systems: BTreeMap<String, bool>,
-    #[serde(default)]
-    pub audio: Option<AudioConfig>,
     /// Restored state is available in Game.start, never injected after startup.
     #[serde(default)]
     pub restored_save: Option<serde_json::Value>,
@@ -44,13 +40,10 @@ impl HostProject {
             .map(|raw| crate::parse_scene_fragment(raw.get()))
             .transpose()?;
         EngineRuntime::load_source_project(SourceProject {
-            name: self.project,
-            script_name: "main.luau".into(),
+            config: self.config,
             source: self.script,
             scene,
             seed,
-            systems: self.systems,
-            audio: self.audio,
             restored_save: self.restored_save,
             viewport_aspect: self.viewport_aspect,
         })
@@ -154,7 +147,8 @@ mod tests {
     #[test]
     fn typo_payloads_and_nested_input_fail_before_running() {
         assert!(
-            HostProject::parse(br#"{"project":"p","script":"return {}","system":{}}"#).is_err()
+            HostProject::parse(br#"{"config":{"name":"p","system":{}},"script":"return {}"}"#)
+                .is_err()
         );
         for input in [
             r#"{"action":{}}"#,
@@ -188,8 +182,8 @@ mod tests {
 
     #[test]
     fn startup_restores_save_and_tick_observation_has_completed_audio_lifecycle() {
-        let bytes = serde_json::to_vec(&json!({"project":"contract", "restored_save":{"credits":9},
-            "systems":{"physics2d":false},"audio":{"categories":{"music":{"fade_in_frames":1}}},
+        let bytes = serde_json::to_vec(&json!({"config":{"name":"contract",
+            "systems":{"physics2d":false},"audio":{"categories":{"music":{"fade_in_frames":1}}}},"restored_save":{"credits":9},
             "script": "local Game = {} function Game.start(api) api.observation.set('saved',api.save.get()) api.audio.loop('music://test',{category='music'}) end function Game.update(api,dt) end return Game"
         })).unwrap();
         let mut runtime = HostProject::parse(&bytes).unwrap().into_runtime(7).unwrap();

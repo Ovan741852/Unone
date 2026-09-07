@@ -12,7 +12,7 @@ with zipfile.ZipFile(zip_path,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as archi
     for path in sorted(web.rglob('*')):
         if path.is_file():
             archive.write(path,path.relative_to(web).as_posix())
-packages = {'date':'2026-09-08','art':{'original_meshes':8,'original_textures':8,'actor_variants':6,'instances':12,'skeletal_animation':False}}
+packages = {'date':'2026-09-08','art':{'original_meshes':8,'unchanged_original_textures':8,'original_effects':1,'transcoded_effect_textures':1,'actor_variants':6,'instances':12,'skeletal_animation':False}}
 for name,path,prefix in [('web',zip_path,''),('android',root/'dist/dragon-tycoon3-android.apk','assets/player/')]:
     with zipfile.ZipFile(path) as archive:
         for item in export['files']:

@@ -62,7 +62,7 @@ fn run() -> Result<Value, String> {
 
 fn run_session(session: *mut UnoneMobileSession) -> Result<Value, String> {
     let payload = serde_json::to_vec(&json!({
-        "project": "AndroidSmoke",
+        "config": {"name": "AndroidSmoke"},
         "script": SCRIPT,
         "scene": null,
     }))

@@ -115,24 +115,10 @@ foreach ($helper in @(
     }
 }
 
-# The package ships two engine builds: the native CLI and the Web wasm host. A
-# package whose wasm is older than its CLI makes `game verify` a false green:
-# every gate passes natively while the Web host rejects a contract the CLI
-# accepts. Check that both binaries carry the same UI placement vocabulary
-# rather than trusting that whoever packaged it rebuilt everything.
-$cliBinary = Join-Path $packageRoot "bin\\game.exe"
-$wasmBinary = Join-Path $packageRoot "web\\runtime\\unone_web_live_smoke.wasm"
-if (-not (Test-Path -LiteralPath $cliBinary -PathType Leaf) -or -not (Test-Path -LiteralPath $wasmBinary -PathType Leaf)) {
-    throw "Web-first package is missing the native CLI or Web runtime binary"
+# Execute the actual packaged CLI and WASM against the same project and inputs.
+if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
+    throw "Node.js is required for behavioral parity. Install Node.js 22+ and rerun this verifier."
 }
-$encoding = [Text.Encoding]::ASCII
-$cliText = $encoding.GetString([IO.File]::ReadAllBytes($cliBinary))
-$wasmText = $encoding.GetString([IO.File]::ReadAllBytes($wasmBinary))
-foreach ($marker in @("top_left", "bottom_right", "view_height")) {
-    if ($cliText.Contains($marker) -and -not $wasmText.Contains($marker)) {
-        throw "Engine build mismatch: bin/game.exe knows '$marker' but web/runtime/unone_web_live_smoke.wasm does not. Rebuild the Web host with scripts/build-web-live.ps1 before packaging."
-    }
-}
-Write-Output "CLI and Web host agree on the UI placement contract"
-
+& node (Join-Path $packageRoot 'scripts/verify-host-parity.mjs') --cli (Join-Path $packageRoot 'bin/game.exe') --wasm (Join-Path $packageRoot 'web/runtime/unone_web_live_smoke.js') --fixture (Join-Path $packageRoot 'tests/host-parity-project')
+if ($LASTEXITCODE -ne 0) { throw 'CLI/WASM behavioral parity failed. Rebuild both artifacts and inspect the shared host payload.' }
 Write-Output "AI engine package verified: $packageRoot"

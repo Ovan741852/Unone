@@ -248,6 +248,53 @@
           "additive": true
         }
       ]
+    },
+    "bullet": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "bullet",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 4,
+          "spread": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "velocity_min": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "gravity": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "size_start": 0.2,
+          "size_end": 0.06,
+          "color_start": [
+            1,
+            0.75,
+            0.1,
+            1
+          ],
+          "color_end": [
+            1,
+            0.2,
+            0,
+            0
+          ],
+          "additive": true
+        }
+      ]
     }
   }
 }

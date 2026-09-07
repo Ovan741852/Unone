@@ -1125,29 +1125,50 @@ impl World {
             .filter(|(_, entity)| entity.rigidbody.is_some())
             .map(|(id, _)| id.clone())
             .collect();
+        let circles = ids
+            .iter()
+            .map(|id| {
+                let entity = &self.entities[id];
+                (entity.transform, entity.rigidbody.as_ref().unwrap().radius)
+            })
+            .collect::<Vec<_>>();
+        let mut grid = crate::broadphase::CircleGrid::new(&circles);
         for left_index in 0..ids.len() {
-            for right_index in (left_index + 1)..ids.len() {
-                self.resolve_circle_collision(&ids[left_index], &ids[right_index]);
+            let mut seen = std::collections::BTreeSet::new();
+            let mut pending = std::collections::BTreeSet::new();
+            grid.extend_candidates(left_index, &mut seen, &mut pending, left_index);
+            while let Some(right_index) = pending.pop_first() {
+                if self.resolve_circle_collision(&ids[left_index], &ids[right_index]) {
+                    for index in [left_index, right_index] {
+                        let entity = &self.entities[&ids[index]];
+                        grid.update(
+                            index,
+                            entity.transform,
+                            entity.rigidbody.as_ref().unwrap().radius,
+                        );
+                    }
+                    grid.extend_candidates(left_index, &mut seen, &mut pending, right_index);
+                }
             }
         }
     }
 
-    fn resolve_circle_collision(&mut self, left_id: &str, right_id: &str) {
+    fn resolve_circle_collision(&mut self, left_id: &str, right_id: &str) -> bool {
         // Ids arrive in sorted order from the caller, so a pair always reads
         // the same way and the contact list stays deterministic.
         let Some(left) = self.entities.get(left_id) else {
-            return;
+            return false;
         };
         let Some(right) = self.entities.get(right_id) else {
-            return;
+            return false;
         };
         let (Some(left_body), Some(right_body)) = (&left.rigidbody, &right.rigidbody) else {
-            return;
+            return false;
         };
         if left_body.body_type == RigidBodyType::Static
             && right_body.body_type == RigidBodyType::Static
         {
-            return;
+            return false;
         }
         let delta = Vec2 {
             x: right.transform.x - left.transform.x,
@@ -1168,7 +1189,7 @@ impl World {
         };
         let penetration = left_body.radius + right_body.radius - distance;
         if penetration <= 0.0 {
-            return;
+            return false;
         }
 
         let left_inverse_mass = if left_body.body_type == RigidBodyType::Dynamic {
@@ -1183,7 +1204,7 @@ impl World {
         };
         let inverse_mass_sum = left_inverse_mass + right_inverse_mass;
         if inverse_mass_sum <= 0.0 {
-            return;
+            return false;
         }
 
         let left_velocity = left_body.velocity;
@@ -1235,6 +1256,7 @@ impl World {
             body.velocity.x += impulse.x * right_inverse_mass;
             body.velocity.y += impulse.y * right_inverse_mass;
         }
+        true
     }
 }
 
@@ -1373,6 +1395,105 @@ mod tests {
             ground_contacts: Vec::new(),
             audio: AudioBus::default(),
             particles: crate::particle::ParticleWorld::default(),
+        }
+    }
+
+    fn brute_pairs(world: &mut World) {
+        world.contacts.clear();
+        let ids = world.entities.keys().cloned().collect::<Vec<_>>();
+        for i in 0..ids.len() {
+            for j in i + 1..ids.len() {
+                world.resolve_circle_collision(&ids[i], &ids[j]);
+            }
+        }
+    }
+    #[test]
+    fn broadphase_matches_brute_solver_even_after_correction_creates_contacts() {
+        for seed in 0..32 {
+            let mut entities = BTreeMap::new();
+            for i in 0..80 {
+                let id = format!("body{i:04}");
+                let mut body = dynamic_body(Vec2 {
+                    x: (i % 5) as f64 - 2.0,
+                    y: (i % 3) as f64 - 1.0,
+                });
+                body.radius = if i == 3 {
+                    8.0
+                } else {
+                    0.1 + ((i * 13 + seed) % 11) as f64 * 0.12
+                };
+                if i % 7 == 0 {
+                    body.body_type = RigidBodyType::Static;
+                }
+                entities.insert(
+                    id.clone(),
+                    entity(
+                        &id,
+                        ((i * 31 + seed * 17) % 101) as f64 * 0.1 - 5.0,
+                        ((i * 43 + seed * 19) % 97) as f64 * 0.1 - 5.0,
+                        body,
+                    ),
+                );
+            }
+            let mut grid = world_with(entities);
+            grid.physics.ground_y = None;
+            let mut brute = grid.clone();
+            for frame in 0..6 {
+                grid.step_physics(0.0);
+                brute_pairs(&mut brute);
+                for id in grid.entities.keys() {
+                    assert_eq!(
+                        grid.entities[id].transform, brute.entities[id].transform,
+                        "seed={seed} frame={frame} id={id}"
+                    );
+                    assert_eq!(
+                        grid.entities[id].rigidbody.as_ref().unwrap().velocity,
+                        brute.entities[id].rigidbody.as_ref().unwrap().velocity
+                    );
+                }
+                assert_eq!(
+                    serde_json::to_value(&grid.contacts).unwrap(),
+                    serde_json::to_value(&brute.contacts).unwrap()
+                );
+            }
+        }
+    }
+    #[test]
+    #[ignore = "manual release physics-only timing; not an end-to-end FPS claim"]
+    fn broadphase_benchmark() {
+        for count in [250, 1000, 4000] {
+            let mut entities = BTreeMap::new();
+            for i in 0..count {
+                let id = format!("body{i:05}");
+                entities.insert(
+                    id.clone(),
+                    entity(
+                        &id,
+                        (i % 100) as f64 * 3.0,
+                        (i / 100) as f64 * 3.0,
+                        dynamic_body(Vec2::default()),
+                    ),
+                );
+            }
+            let mut grid = world_with(entities);
+            grid.physics.ground_y = None;
+            let mut brute = grid.clone();
+            let mut grid_times = Vec::new();
+            let mut brute_times = Vec::new();
+            for _ in 0..9 {
+                let start = std::time::Instant::now();
+                grid.step_physics(0.0);
+                grid_times.push(start.elapsed().as_secs_f64() * 1000.0);
+                let start = std::time::Instant::now();
+                brute_pairs(&mut brute);
+                brute_times.push(start.elapsed().as_secs_f64() * 1000.0);
+            }
+            grid_times.sort_by(f64::total_cmp);
+            brute_times.sort_by(f64::total_cmp);
+            println!(
+                "{}",
+                serde_json::json!({"bodies":count,"layout":"sparse 3-unit lattice, radius 0.5","samples":9,"broadphase_physics_median_ms":grid_times[4],"brute_collision_median_ms":brute_times[4],"brute_pairs":count*(count-1)/2})
+            );
         }
     }
 

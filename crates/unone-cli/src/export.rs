@@ -19,6 +19,12 @@ struct StaticMesh {
     indices: Vec<usize>,
     texture: String,
 }
+#[derive(Default, serde::Deserialize, serde::Serialize)]
+#[serde(default, deny_unknown_fields)]
+struct PresentationSettings {
+    bloom: bool,
+    show_performance: bool,
+}
 impl StaticMesh {
     fn validate(&self) -> Result<()> {
         ensure!(self.version == 1, "MESH_INVALID: version must be 1");
@@ -114,7 +120,7 @@ pub fn web(project: &Path, output: &Path, runtime: Option<&Path>) -> Result<Valu
     } else {
         Value::Null
     };
-    let payload = json!({"project":config.name,"script":fs::read_to_string(inside(project,&config.entry_script)?)?,"scene":scene,"systems":config.systems,"audio":config.audio});
+    let payload = json!({"config":config,"script":fs::read_to_string(inside(project,&config.entry_script)?)?,"scene":scene});
     // Exercise the exact player ingestion contract before creating any output.
     unone_engine::HostProject::parse(&serde_json::to_vec(&payload)?)
         .map_err(|e| anyhow::anyhow!(e.explanation))?
@@ -125,8 +131,73 @@ pub fn web(project: &Path, output: &Path, runtime: Option<&Path>) -> Result<Valu
             serde_json::from_slice(&fs::read(inside(project, path)?)?)?;
         ensure!(assets.version == 1, "unsupported asset manifest version");
         for asset in &assets.assets {
-            if !["texture2d", "audio", "mesh3d"].contains(&asset.kind.as_str()) {
+            if !["texture2d", "audio", "mesh3d", "effekseer"].contains(&asset.kind.as_str()) {
                 bail!("PLAYER_DECODER_UNAVAILABLE: {} ({})", asset.id, asset.kind);
+            }
+            if asset.kind == "effekseer" {
+                let bytes = fs::read(inside(project, &asset.source)?)?;
+                ensure!(
+                    bytes.starts_with(b"SKFE")
+                        && bytes.get(4..8) == Some(1500_i32.to_le_bytes().as_slice()),
+                    "PLAYER_DECODER_UNAVAILABLE: {} requires legacy SKFE 1500 with declared companions",
+                    asset.id
+                );
+                let mut offset = 8usize;
+                for _ in 0..6 {
+                    let mut integer = || -> Result<usize> {
+                        let value = i32::from_le_bytes(
+                            bytes
+                                .get(offset..offset + 4)
+                                .context("EFFEKSEER_INVALID: truncated resource table")?
+                                .try_into()?,
+                        );
+                        offset += 4;
+                        ensure!(
+                            (0..=4096).contains(&value),
+                            "EFFEKSEER_INVALID: resource count/length"
+                        );
+                        Ok(value as usize)
+                    };
+                    let count = integer()?;
+                    for _ in 0..count {
+                        let length = i32::from_le_bytes(
+                            bytes
+                                .get(offset..offset + 4)
+                                .context("EFFEKSEER_INVALID: resource length")?
+                                .try_into()?,
+                        );
+                        offset += 4;
+                        ensure!(
+                            (1..=4096).contains(&length),
+                            "EFFEKSEER_INVALID: resource name"
+                        );
+                        let raw = bytes
+                            .get(offset..offset + length as usize * 2)
+                            .context("EFFEKSEER_INVALID: truncated resource name")?;
+                        offset += raw.len();
+                        let name = String::from_utf16(
+                            &raw.chunks_exact(2)
+                                .map(|b| u16::from_le_bytes([b[0], b[1]]))
+                                .collect::<Vec<_>>(),
+                        )?;
+                        let name = name.trim_end_matches('\0').replace('\\', "/");
+                        ensure!(
+                            !name.is_empty() && !name.split('/').any(|p| p == ".."),
+                            "EFFEKSEER_INVALID: resource path"
+                        );
+                        let companion = Path::new(&asset.source)
+                            .parent()
+                            .unwrap()
+                            .join(name)
+                            .to_string_lossy()
+                            .replace('\\', "/");
+                        ensure!(
+                            asset.files.contains(&companion),
+                            "EFFEKSEER_COMPANION_MISSING: {companion}; declare it in asset.files"
+                        );
+                        inside(project, &companion)?;
+                    }
+                }
             }
             if asset.kind == "mesh3d" {
                 ensure!(
@@ -169,6 +240,18 @@ pub fn web(project: &Path, output: &Path, runtime: Option<&Path>) -> Result<Valu
     }
     files.push(("content/project.json".into(), serde_json::to_vec(&payload)?));
     files.push(("content/assets.json".into(), serde_json::to_vec(&assets)?));
+    let presentation = if project.join("player.presentation.json").exists() {
+        serde_json::from_slice::<PresentationSettings>(&fs::read(inside(
+            project,
+            "player.presentation.json",
+        )?)?)?
+    } else {
+        PresentationSettings::default()
+    };
+    files.push((
+        "content/presentation.json".into(),
+        serde_json::to_vec(&presentation)?,
+    ));
     files.push((
         "runtime/runtime.json".into(),
         serde_json::to_vec(&manifest)?,
@@ -177,20 +260,42 @@ pub fn web(project: &Path, output: &Path, runtime: Option<&Path>) -> Result<Valu
         "player/main.js",
         "renderer/three.js",
         "renderer/mesh.js",
+        "renderer/bloom.js",
+        "renderer/effekseer.js",
         "renderer/particles.js",
         "shared/ui-tree.js",
         "shared/host-input.js",
         "shared/webgpu-snapshot.js",
         "shared/audio-playback.js",
         "shared/asset-encoding.js",
+        "shared/load-project.js",
         "shared/fixed-step-scheduler.mjs",
-        "vendor/three/three.module.js",
-        "vendor/three/three.core.js",
+        "vendor/three/three.player.min.js",
     ] {
-        files.push((
-            format!("web/{path}"),
-            fs::read(repo.join("web").join(path))?,
-        ));
+        let mut bytes = fs::read(repo.join("web").join(path))?;
+        if path == "renderer/three.js" {
+            bytes = String::from_utf8(bytes)?
+                .replace(
+                    "../vendor/three/three.module.js",
+                    "../vendor/three/three.player.min.js",
+                )
+                .into_bytes();
+        }
+        files.push((format!("web/{path}"), bytes));
+    }
+    if assets["assets"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|a| a["kind"] == "effekseer")
+    {
+        for name in ["effekseer.js", "effekseer.wasm", "LICENSE"] {
+            let path = format!("vendor/effekseer/{name}");
+            files.push((
+                format!("web/{path}"),
+                fs::read(repo.join("web").join(path))?,
+            ));
+        }
     }
     let index = fs::read_to_string(repo.join("web/player/index.html"))?
         .replace("__RUNTIME_JS__", manifest["javascript"].as_str().unwrap());

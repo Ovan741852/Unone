@@ -214,7 +214,7 @@ pub unsafe extern "C" fn unone_web_load_project(
             return -1;
         }
     };
-    let project_name = payload.project.clone();
+    let project_name = payload.config.name.clone();
     match create_runtime(payload, seed) {
         Ok(runtime_value) => {
             INPUT.with(|input| *input.borrow_mut() = HostInputState::default());
@@ -506,7 +506,7 @@ return Game
 
     fn project_payload() -> Vec<u8> {
         serde_json::to_vec(&json!({
-            "project": "NativeAbiTest",
+            "config": {"name": "NativeAbiTest"},
             "script": PROJECT_SCRIPT,
             "scene": {"entities": [{
                 "id": "web_probe",
@@ -518,7 +518,7 @@ return Game
 
     fn save_project_payload() -> Vec<u8> {
         serde_json::to_vec(&json!({
-            "project": "WebSaveAbiTest",
+            "config": {"name": "WebSaveAbiTest"},
             "script": SAVE_SCRIPT,
         }))
         .unwrap()
@@ -565,7 +565,7 @@ return Game
     #[test]
     fn c_abi_scene_fragment_uses_shared_diagnostic_context() {
         let payload = serde_json::to_vec(&json!({
-            "project": "WebInvalidScene",
+            "config": {"name": "WebInvalidScene"},
             "script": PROJECT_SCRIPT,
             "scene": {"entities": [], "typo": true}
         }))
@@ -638,7 +638,7 @@ return Game
             unone_web_set_pointer(0.0, 0.0, 0);
             let scene: serde_json::Value = serde_json::from_str(scene).unwrap();
             let payload = serde_json::to_vec(&json!({
-                "project": format!("WebInvalidScene-{name}"),
+                "config": {"name": format!("WebInvalidScene-{name}")},
                 "script": PROJECT_SCRIPT,
                 "scene": scene,
             }))
@@ -838,7 +838,7 @@ return Game
     #[test]
     fn c_abi_complete_input_frame_replaces_scalar_pointer_for_one_tick() {
         let payload = serde_json::to_vec(&json!({
-            "project": "WebInputFrameTest",
+            "config": {"name": "WebInputFrameTest"},
             "script": INPUT_FRAME_SCRIPT,
         }))
         .unwrap();

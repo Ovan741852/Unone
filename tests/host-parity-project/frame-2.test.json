@@ -1,0 +1,34 @@
+{
+  "name": "parity-frame-2",
+  "frames": 2,
+  "seed": 42,
+  "load_save": {
+    "lap": 3
+  },
+  "input_sequence": [
+    {
+      "actions": {
+        "Drive": true
+      },
+      "pointer": {
+        "position": {
+          "x": 4,
+          "y": 2
+        },
+        "screen_position": {
+          "x": 25,
+          "y": 75
+        },
+        "down": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "Drive": true
+      }
+    },
+    {}
+  ],
+  "assertions": []
+}

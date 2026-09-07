@@ -96,6 +96,13 @@ foreach ($webFile in @(
 )) {
     Copy-PackageFile (Join-Path $engineRoot $webFile) $webFile
 }
+# Keep each host's transitive renderer and shared imports in the package.
+foreach ($directory in @('web/shared','web/renderer','web/vendor/three','tests/host-parity-project')) {
+    foreach ($file in Get-ChildItem -LiteralPath (Join-Path $engineRoot $directory) -File -Recurse) {
+        Copy-PackageFile $file.FullName $file.FullName.Substring($engineRoot.Length + 1)
+    }
+}
+Copy-PackageFile (Join-Path $engineRoot 'scripts/verify-host-parity.mjs') 'scripts/verify-host-parity.mjs'
 Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.js") "web\runtime\unone_web_live_smoke.js"
 Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.wasm") "web\runtime\unone_web_live_smoke.wasm"
 Copy-PackageFile (Join-Path $engineRoot "scripts\verify-ai-engine-package.ps1") "scripts\verify-ai-engine-package.ps1"

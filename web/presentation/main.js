@@ -1,4 +1,5 @@
 import { requireAssetEncoding, DECODER_ROUTES } from "../shared/asset-encoding.js";
+import {assembleProject,loadProject as loadHostProject} from '../shared/load-project.js';
 // Presentation host: the engine decides, this page draws.
 //
 // Rust/Luau owns the fixed-tick simulation and publishes semantic state:
@@ -100,26 +101,9 @@ function writePayload(text) {
 
 async function loadProject() {
   const config = await fetchJson("project.unone.json");
-  const script = await fetchText(config.entry_script ?? "scripts/main.luau");
-  const scene = config.main_scene ? await fetchJson(config.main_scene) : null;
+  const payload=await assembleProject(config,fetchText,fetchJson);
   const manifest = config.asset_manifest ? await fetchJson(config.asset_manifest) : null;
-  const payload = writePayload(
-    JSON.stringify({
-      project: config.name,
-      script,
-      scene,
-      // The same switches project.unone.json declares on disk. Without them the
-      // engine would report SYSTEM_DISABLED for animation and effect calls.
-      systems: config.systems ?? {},
-      // And the same audio categories, or the browser runs the game with no
-      // category rules: no exclusive track switch, no fades.
-      audio: config.audio ?? null,
-    })
-  );
-  if (window.Module._unone_web_load_project(payload.address, payload.length, 42n) !== 0) {
-    throw new Error(`project load rejected: ${JSON.stringify(readSnapshot())}`);
-  }
-  snapshot = readSnapshot();
+  snapshot=loadHostProject(window.Module,payload,42n);
   return { config, manifest };
 }
 
