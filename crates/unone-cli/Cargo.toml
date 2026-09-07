@@ -20,3 +20,6 @@ sha2 = "0.10"
 unone-engine = { path = "../unone-engine" }
 wgpu = "30"
 winit = "0.30.12"
+
+[dev-dependencies]
+tempfile = "3"

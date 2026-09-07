@@ -1,3 +1,4 @@
+import { requireAssetEncoding } from "./asset-encoding.js";
 function audioError(message) {
   return message instanceof Error ? message.message : String(message);
 }
@@ -81,6 +82,7 @@ export async function createAudioPlayback({
   const buffers = new Map();
   const decoded = await Promise.all(declared.map(async (asset) => {
     try {
+      requireAssetEncoding(asset, "audio");
       let bytes;
       if (loadAssetBytes) {
         bytes = await loadAssetBytes(asset);

@@ -16,7 +16,9 @@
         "source": "https://cdn.example/feature.bundle",
         "sha256": "50997c798fdfb63a6a1d19e58dae9ce3fce09a3deb627738c5774531d27a3779",
         "size_bytes": 15,
-        "dependencies": ["base"]
+        "dependencies": [
+          "base"
+        ]
       }
     ]
   },
@@ -105,7 +107,9 @@
           "source": "https://cdn.example/feature.bundle",
           "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
           "size_bytes": 0,
-          "dependencies": ["missing"]
+          "dependencies": [
+            "missing"
+          ]
         }
       ]
     },
@@ -126,7 +130,9 @@
           "source": "https://cdn.example/a.bundle",
           "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
           "size_bytes": 0,
-          "dependencies": ["b"]
+          "dependencies": [
+            "b"
+          ]
         },
         {
           "id": "b",
@@ -134,7 +140,57 @@
           "source": "https://cdn.example/b.bundle",
           "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
           "size_bytes": 0,
-          "dependencies": ["a"]
+          "dependencies": [
+            "a"
+          ]
+        }
+      ]
+    },
+    "unknown_root": {
+      "version": 1,
+      "bundles": [
+        {
+          "id": "base",
+          "version": "1",
+          "source": "https://cdn.example/base.bundle",
+          "sha256": "5e894f9198f3b2da2aa6c9d41b4620f82a18dd28c1dbc71ddc46d3795a77baaf",
+          "size_bytes": 12,
+          "dependencies": []
+        },
+        {
+          "id": "feature",
+          "version": "1",
+          "source": "https://cdn.example/feature.bundle",
+          "sha256": "50997c798fdfb63a6a1d19e58dae9ce3fce09a3deb627738c5774531d27a3779",
+          "size_bytes": 15,
+          "dependencies": [
+            "base"
+          ]
+        }
+      ],
+      "typo": true
+    },
+    "unknown_spec": {
+      "version": 1,
+      "bundles": [
+        {
+          "id": "base",
+          "version": "1",
+          "source": "https://cdn.example/base.bundle",
+          "sha256": "5e894f9198f3b2da2aa6c9d41b4620f82a18dd28c1dbc71ddc46d3795a77baaf",
+          "size_bytes": 12,
+          "dependencies": [],
+          "dependecies": []
+        },
+        {
+          "id": "feature",
+          "version": "1",
+          "source": "https://cdn.example/feature.bundle",
+          "sha256": "50997c798fdfb63a6a1d19e58dae9ce3fce09a3deb627738c5774531d27a3779",
+          "size_bytes": 15,
+          "dependencies": [
+            "base"
+          ]
         }
       ]
     }

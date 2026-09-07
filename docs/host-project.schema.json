@@ -1,0 +1,517 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$defs": {
+    "AnimationData": {
+      "additionalProperties": false,
+      "description": "Skeletal animation state an entity publishes for a host to play.\n\nThe engine stores which clip is selected and since which frame; it does not\nevaluate bones, meshes or blending. The only declared asset kind for this\ntoday is Spine, and the host owns that runtime.",
+      "properties": {
+        "animation": {
+          "type": "string"
+        },
+        "asset": {
+          "type": "string"
+        },
+        "loop": {
+          "default": true,
+          "type": "boolean"
+        },
+        "speed": {
+          "default": 1.0,
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "asset",
+        "animation"
+      ],
+      "type": "object"
+    },
+    "AudioCategory": {
+      "additionalProperties": false,
+      "description": "How a game groups its sounds, and what the engine does about the grouping.\n\nThe engine does not name `bgm` or `sfx`: the taxonomy is the game's. It owns\nonly the rules, because they decide which source survives a switch, and that\nis world state a test asserts.\n\nThe reserved fields exist so the declaration shape does not have to change\nwhen they are implemented. Declaring one is an **error**, never a silent\nno-op: a game believing it configured something it did not is the hardest\nkind of audio bug to find.",
+      "properties": {
+        "ducking": true,
+        "exclusive": {
+          "default": false,
+          "description": "Only one loop in this category plays at a time; starting another begins\nstopping the previous one.",
+          "type": "boolean"
+        },
+        "exclusive_group": true,
+        "fade_in_frames": {
+          "default": 0,
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "fade_out_frames": {
+          "default": 0,
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "max_concurrent": true,
+        "on_limit": true,
+        "priority": true,
+        "volume": {
+          "default": 1.0,
+          "description": "The bus level this category starts at, the way a mixer group has a\nvolume before anything plays. A settings screen changes it at runtime.",
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "AudioConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "categories": {
+          "additionalProperties": {
+            "$ref": "#/$defs/AudioCategory"
+          },
+          "default": {},
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "Camera2DData": {
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "$ref": "#/$defs/Vec2",
+          "default": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        },
+        "view_height": {
+          "default": 10.0,
+          "description": "World units visible vertically at zoom 1, centred on `position`.\n\nWithout this a host cannot know how much world a frame shows, so every\nhost invented its own constant and the same scene framed differently in\neach one. The visible height is `view_height / zoom`, and the visible\nwidth is that times the host's viewport aspect.",
+          "format": "double",
+          "type": "number"
+        },
+        "zoom": {
+          "default": 1.0,
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "Camera3DData": {
+      "additionalProperties": false,
+      "properties": {
+        "fov_degrees": {
+          "default": 60.0,
+          "format": "double",
+          "type": "number"
+        },
+        "position": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 3.0,
+            "z": 8.0
+          }
+        },
+        "target": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        }
+      },
+      "type": "object"
+    },
+    "Mesh3DData": {
+      "additionalProperties": false,
+      "properties": {
+        "asset": {
+          "type": "string"
+        },
+        "visible": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "asset"
+      ],
+      "type": "object"
+    },
+    "PhysicsSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "gravity": {
+          "$ref": "#/$defs/Vec2",
+          "default": {
+            "x": 0.0,
+            "y": -9.8
+          }
+        },
+        "ground_friction": {
+          "default": 0.0,
+          "description": "Horizontal velocity lost per second while a body rests on the ground.\n\nWithout it a landed body slides the length of the level, which silently\nturns a miss into a hit.",
+          "format": "double",
+          "type": "number"
+        },
+        "ground_y": {
+          "default": null,
+          "format": "double",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "linear_damping": {
+          "default": 0.0,
+          "description": "Velocity lost per second by every dynamic body, as a fraction.\n\nDefaults to none, which is what this engine simulated before the field\nexisted: a body keeps its velocity forever unless something takes it.",
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "RigidBody2DData": {
+      "additionalProperties": false,
+      "properties": {
+        "body_type": {
+          "$ref": "#/$defs/RigidBodyType",
+          "default": "dynamic"
+        },
+        "mass": {
+          "default": 1.0,
+          "format": "double",
+          "type": "number"
+        },
+        "radius": {
+          "default": 0.5,
+          "format": "double",
+          "type": "number"
+        },
+        "restitution": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "velocity": {
+          "$ref": "#/$defs/Vec2",
+          "default": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        }
+      },
+      "type": "object"
+    },
+    "RigidBodyType": {
+      "enum": [
+        "dynamic",
+        "static"
+      ],
+      "type": "string"
+    },
+    "SceneEntity": {
+      "additionalProperties": false,
+      "properties": {
+        "animation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AnimationData"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "type": "string"
+        },
+        "mesh3d": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Mesh3DData"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "default": "",
+          "type": "string"
+        },
+        "rigidbody": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RigidBody2DData"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "rotation": {
+          "default": 0.0,
+          "description": "Visual-only 2D rotation in radians around the sprite centre.",
+          "format": "double",
+          "type": "number"
+        },
+        "scale": {
+          "$ref": "#/$defs/Vec2",
+          "default": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "description": "Visual-only 2D scale applied to the sprite's declared size."
+        },
+        "sprite": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SpriteData"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "transform": {
+          "$ref": "#/$defs/Vec2",
+          "default": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        },
+        "transform3d": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Transform3DData"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "type": "object"
+    },
+    "SceneFile": {
+      "additionalProperties": false,
+      "properties": {
+        "camera": {
+          "$ref": "#/$defs/Camera2DData",
+          "default": {
+            "position": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "view_height": 10.0,
+            "zoom": 1.0
+          }
+        },
+        "camera3d": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Camera3DData"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "entities": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/SceneEntity"
+          },
+          "type": "array"
+        },
+        "physics": {
+          "$ref": "#/$defs/PhysicsSettings",
+          "default": {
+            "gravity": {
+              "x": 0.0,
+              "y": -9.8
+            },
+            "ground_friction": 0.0,
+            "ground_y": null,
+            "linear_damping": 0.0
+          }
+        }
+      },
+      "type": "object"
+    },
+    "SpriteData": {
+      "additionalProperties": false,
+      "properties": {
+        "asset": {
+          "type": "string"
+        },
+        "layer": {
+          "default": 0,
+          "description": "Painter layer. Lower layers are drawn first; same-layer order is the\nascending entity id, which is the portable tie-break used by hosts.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "size": {
+          "$ref": "#/$defs/Vec2",
+          "default": {
+            "x": 1.0,
+            "y": 1.0
+          }
+        },
+        "visible": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "asset"
+      ],
+      "type": "object"
+    },
+    "Transform3DData": {
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        },
+        "rotation": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "description": "Euler rotation in radians. The engine stores the transform; game code\nowns the meaning of steering and other gameplay-specific orientation."
+        },
+        "scale": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      "type": "object"
+    },
+    "Vec2": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "type": "object"
+    },
+    "Vec3": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        },
+        "z": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://unone.dev/schema/host-project.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "audio": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AudioConfig"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "project": {
+      "type": "string"
+    },
+    "restored_save": {
+      "default": null,
+      "description": "Restored state is available in Game.start, never injected after startup."
+    },
+    "scene": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SceneFile"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "script": {
+      "type": "string"
+    },
+    "systems": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "default": {},
+      "type": "object"
+    },
+    "viewport_aspect": {
+      "default": null,
+      "description": "UI viewport aspect, supplied before Game.start; defaults to 16:9.",
+      "format": "double",
+      "type": [
+        "number",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "project",
+    "script"
+  ],
+  "title": "HostProject",
+  "type": "object"
+}

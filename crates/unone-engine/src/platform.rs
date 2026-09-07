@@ -11,30 +11,31 @@ pub struct PlatformCapabilities {
     pub hot_reload_modes: Vec<String>,
     pub verified_runtime: Vec<String>,
     pub pending_host_work: Vec<String>,
+    /// Core discovery never establishes what a separately running renderer can decode.
+    pub renderer_probe: &'static str,
 }
 
 pub fn capabilities() -> EngineResult<PlatformCapabilities> {
     let is_wasm = cfg!(target_arch = "wasm32");
     let mut project_loaders = vec!["memory_source".to_string()];
     let mut hot_reload_modes = vec!["reload_source".to_string()];
-    let mut verified_runtime = vec![
+    let verified_runtime = vec![
         "luau_runtime".to_string(),
         "deterministic_fixed_step".to_string(),
         "semantic_observation".to_string(),
     ];
     let pending_host_work = if is_wasm {
         vec![
-            "browser_fetch_and_storage_adapter".to_string(),
-            "browser_webgpu_host".to_string(),
-            "browser_input_adapter".to_string(),
+            "device_and_renderer_capability_probe".to_string(),
+            "cross_device_render_validation".to_string(),
+            "native_mobile_presentation_parity".to_string(),
         ]
     } else {
         project_loaders.push("native_filesystem_project".to_string());
         hot_reload_modes.push("filesystem_stamp".to_string());
-        verified_runtime.push("native_wgpu_preview".to_string());
         vec![
             "ios_platform_wrapper".to_string(),
-            "android_platform_wrapper".to_string(),
+            "android_3d_renderer_and_audio".to_string(),
         ]
     };
 
@@ -46,5 +47,6 @@ pub fn capabilities() -> EngineResult<PlatformCapabilities> {
         hot_reload_modes,
         verified_runtime,
         pending_host_work,
+        renderer_probe: "not_probed",
     })
 }

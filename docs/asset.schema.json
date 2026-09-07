@@ -1,0 +1,128 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$defs": {
+    "AssetCompanion": {
+      "additionalProperties": false,
+      "properties": {
+        "mime": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "role",
+        "mime"
+      ],
+      "type": "object"
+    },
+    "AssetEncoding": {
+      "additionalProperties": false,
+      "properties": {
+        "companions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/AssetCompanion"
+          },
+          "type": "array"
+        },
+        "decoder": {
+          "description": "Capability id the selected host must explicitly advertise. No extension inference.",
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
+        },
+        "format_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "mime": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "format",
+        "mime",
+        "decoder"
+      ],
+      "type": "object"
+    },
+    "AssetSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "bundle": {
+          "default": "content",
+          "type": "string"
+        },
+        "encoding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AssetEncoding"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional explicit encoding contract. Absence means legacy/unspecified,\nnot that a host can decode this asset. Every companion still belongs in files."
+        },
+        "files": {
+          "description": "Extra project-relative sources this asset cannot be used without, such\nas a Spine atlas and its texture pages. They are packed into the same\nbundle; the engine does not parse them.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "default": "texture2d",
+          "enum": [
+            "texture2d",
+            "mesh3d",
+            "spine",
+            "effekseer",
+            "audio"
+          ],
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://unone.dev/schema/asset.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "assets": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/AssetSpec"
+      },
+      "type": "array"
+    },
+    "version": {
+      "default": 1,
+      "format": "uint32",
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "title": "AssetManifest",
+  "type": "object"
+}

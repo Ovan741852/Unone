@@ -64,7 +64,15 @@ pub fn load_textures(project_root: &Path) -> HostAssets {
         }
         let bytes = resolved.bytes;
         let sha256 = sha256_hex(&bytes);
-        match decode_texture(&asset.source, &bytes) {
+        let source = if let Some(encoding) = &asset.encoding {
+            if encoding.decoder != "image" || encoding.format != "svg"
+                || encoding.mime != "image/svg+xml" || encoding.format_version.is_some() {
+                assets.notes.push(format!("{}: HOST_ASSET_ENCODING_UNSUPPORTED native preview accepts unversioned image/svg", asset.id));
+                continue;
+            }
+            "declared.svg"
+        } else { &asset.source };
+        match decode_texture(source, &bytes) {
             Ok((width, height, rgba)) => {
                 assets.textures.insert(
                     asset.id.clone(),

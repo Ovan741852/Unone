@@ -1,0 +1,76 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$defs": {
+    "PointerInput": {
+      "additionalProperties": false,
+      "properties": {
+        "down": {
+          "default": false,
+          "type": "boolean"
+        },
+        "position": {
+          "$ref": "#/$defs/Vec2"
+        },
+        "screen_position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Vec2"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Host-normalized logical UI coordinates. When omitted, world position\nis used as a compatibility-free default for headless callers."
+        }
+      },
+      "required": [
+        "position"
+      ],
+      "type": "object"
+    },
+    "Vec2": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://unone.dev/schema/input.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actions": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "default": {},
+      "type": "object"
+    },
+    "pointer": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PointerInput"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "title": "InputFrame",
+  "type": "object"
+}

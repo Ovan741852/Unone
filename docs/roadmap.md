@@ -1,6 +1,6 @@
 # Unone engine roadmap
 
-This is the current engine capability roadmap. Validation games measure engine
+Unone is a 3D engine with 2D workflows. This is the current engine capability roadmap. Validation games measure engine
 gaps, not opportunities to put game-specific policy in core. The final authority
 remains `D:/Projects/Unone_Games/validation/acceptance-matrix.json`: overall
 `not_passed`, all seven final games `in_progress`.
@@ -40,31 +40,22 @@ execution. Their capability sets are not equivalent.
 
 ## Immediate sequence
 
-1. Close the existing bounded authoring correction: five-file project init,
-   starter tests, shared strict scene ingestion and project-bound API discovery.
-   Source changes exist; final package and independent game evidence remain.
-2. Complete ordinary 2D rotation, scale and painter order on Web first.
-   Core/schema/Luau already expose these fields. Fix the Web DOM center
-   offset in this same slice. Preserve independent colliders.
-3. ~~Deliver minimal Web audio through a reviewed lifecycle contract and actual host
-   playback.~~ **Delivered**: `api.audio.play` / `loop` / `stop` / `stopAll`,
-   `world.audio_events` and `world.audio_loops`, project-declared categories with
-   `exclusive` and frame-exact fades, and playback in `web/presentation`. See the
-   [audio work package](work-packages/2026-09-06-audio.md), plus the bus volumes,
-   pause/resume and entity-attached sources every shipping engine has. A real
-   cross-fade was measured in the browser:
-   [evidence](evidence/2026-09-06-audio/). What is still missing is a person
-   actually hearing it on a real game with licensed assets, and native/Android
-   hosts remain silent.
+1. Keep runtime data contracts unique: Rust DTOs generate JSON schemas; unknown
+   typed fields fail ingestion; common host loaders and normalized replay fixtures
+   prevent silent platform drift. See [runtime contracts](runtime-contracts.md).
+2. Provide AI-operated observation, input, debug edits and raw measurements through
+   [developer sessions](developer-session.md). Include 3D entity/camera experiments
+   and replay. Diagnosis and optimization decisions belong to the AI.
+3. Validate the 3D racing workflow and extend real 3D needs: entity lifecycle,
+   mesh/material import, camera/picking, host rendering and 3D physics. Existing
+   2D fixtures remain regression coverage; their convenience does not set direction.
+4. Design an optional AI-native particle format alongside Effekseer. Keep Spine
+   as an external format/runtime integration. Do not promise deterministic pixels
+   from external renderers or force external formats into an invented DSL.
 
-Android implementation, rebuilding and device validation follow Web and are not
-exit conditions for this slice. Native parity is also deferred, not implied.
-
-The previously approved hot-update failure-consistency repair is delivered for
-the Web runner: stage content, compare-and-set the generation pointer, perform
-transactional Luau reload, and restore only the pointer on script failure.
-Generation identifiers remain monotonic across rollback. Keep this boundary
-bounded; do not create a general transaction/update framework.
+Audio decisions and Web playback already exist; native/Android playback remains
+unfinished. Android Canvas is currently a limited 2D adapter, not the engine's
+intended dimensional boundary. Representative device validation is still required.
 
 ## Capability backlog
 

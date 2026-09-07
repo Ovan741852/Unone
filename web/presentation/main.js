@@ -1,3 +1,4 @@
+import { requireAssetEncoding, DECODER_ROUTES } from "../shared/asset-encoding.js";
 // Presentation host: the engine decides, this page draws.
 //
 // Rust/Luau owns the fixed-tick simulation and publishes semantic state:
@@ -130,13 +131,16 @@ function assetByKind(manifest, kind) {
 
 async function createSpine(asset) {
   if (!asset) return null;
+  requireAssetEncoding(asset, "spine");
   const context = new spine.ManagedWebGLRenderingContext(canvas, { alpha: true, premultipliedAlpha: true });
   const renderer = new spine.SceneRenderer(canvas, context);
   const base = new URL(asset.source, projectRoot);
   const directory = base.href.slice(0, base.href.lastIndexOf("/") + 1);
   const manager = new spine.AssetManager(context, directory);
   const skeletonFile = asset.source.slice(asset.source.lastIndexOf("/") + 1);
-  const atlasFile = (asset.files ?? []).find((file) => file.endsWith(".atlas"));
+  const atlasFile = asset.encoding
+    ? asset.encoding.companions.find((file) => file.role === "atlas")?.path
+    : (asset.files ?? []).find((file) => file.endsWith(".atlas"));
   if (!atlasFile) throw new Error("spine asset declares no .atlas companion file");
   manager.loadJson(skeletonFile);
   manager.loadTextureAtlas(atlasFile.slice(atlasFile.lastIndexOf("/") + 1));
@@ -210,6 +214,7 @@ function drawSpine(delta) {
 
 async function createEffekseer(asset, gl) {
   if (!asset) return null;
+  requireAssetEncoding(asset, "effekseer");
   await new Promise((resolve, reject) =>
     effekseer.initRuntime("../vendor/effekseer/effekseer.wasm", resolve, () =>
       reject(new Error("effekseer wasm failed to load"))
@@ -616,6 +621,11 @@ async function start() {
       if (action) pressAction(action);
     });
     window.unoneHost = {
+      decoderCapabilities: () => ({
+        accepted_routes: { spine: DECODER_ROUTES.spine, effekseer: DECODER_ROUTES.effekseer, audio: DECODER_ROUTES.audio },
+        format_versions: [],
+        decode_success_requires_loading: true,
+      }),
       pressAction,
       stepOnce: step,
       record,

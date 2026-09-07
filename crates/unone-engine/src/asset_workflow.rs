@@ -27,6 +27,8 @@ pub struct AssetDescribeReport {
     pub active: AssetActiveReport,
     pub publication: AssetPublicationReport,
     pub required_next_actions: Vec<AssetWorkflowAction>,
+    /// Declaration only; decoder availability belongs to the selected live host.
+    pub decoder_support: &'static str,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -234,6 +236,7 @@ pub fn describe_asset(
         active: active_comparison.report,
         publication,
         required_next_actions,
+        decoder_support: "not_probed",
     };
     let mut result = EngineResult::success(report);
     result.diagnostics = diagnostics;

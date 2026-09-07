@@ -1,5 +1,8 @@
 # AI development workflow
 
+For persistent Snapshot / Journal / Watch, transient Enact edits, input-driven
+play sessions and measured replay experiments, see [developer sessions](developer-session.md).
+
 This is the minimum workflow for an AI or human operating Unone. The CLI and `game mcp` are Developer Protocol clients; MCP is only a thin stdio adapter and does not reimplement engine logic in another layer.
 
 ## -0. MCP stdio (optional)

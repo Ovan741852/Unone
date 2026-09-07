@@ -1,16 +1,8 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use unone_engine::{
-    BundleSpec, BundleVerifier, Diagnostic, EngineRuntime, InputFrame, PointerInput, Vec2,
-    parse_scene_fragment,
+    BundleSpec, BundleVerifier, Diagnostic, EngineRuntime, Vec2,
+    HostProject, HostInputState, parse_input_frame,
 };
-
-#[derive(Debug, Deserialize)]
-struct HostProject {
-    project: String,
-    script: String,
-    #[serde(default)]
-    scene: Option<Box<serde_json::value::RawValue>>,
-}
 
 #[derive(Debug, Clone, Serialize)]
 struct SafeArea {
@@ -39,6 +31,7 @@ struct MobileObservation {
     reason: Option<String>,
     world: Option<unone_engine::WorldSnapshot>,
     save_payload: Option<serde_json::Value>,
+    observation_digest: Option<String>,
 }
 
 /// Opaque session owned by the mobile host.
@@ -48,7 +41,7 @@ struct MobileObservation {
 #[repr(C)]
 pub struct UnoneMobileSession {
     runtime: Option<EngineRuntime>,
-    pending_input: InputFrame,
+    pending_input: HostInputState,
     paused: bool,
     surface: Option<SurfaceState>,
     project: Option<String>,
@@ -60,7 +53,7 @@ impl UnoneMobileSession {
     fn new() -> Self {
         let mut session = Self {
             runtime: None,
-            pending_input: InputFrame::default(),
+            pending_input: HostInputState::default(),
             paused: false,
             surface: None,
             project: None,
@@ -82,6 +75,8 @@ impl UnoneMobileSession {
     }
 
     fn write_observation(&mut self, event: &'static str, reason: Option<&str>) {
+        let world = self.runtime.as_ref().map(EngineRuntime::observe);
+        let observation_digest = world.as_ref().map(|world| unone_engine::observation_digest(world).expect("snapshot serializes"));
         let observation = MobileObservation {
             ok: true,
             kind: "mobile_observation",
@@ -90,29 +85,19 @@ impl UnoneMobileSession {
             project: self.project.clone(),
             surface: self.surface.clone(),
             reason: reason.map(str::to_string),
-            world: self.runtime.as_ref().map(EngineRuntime::observe),
+            world,
+            observation_digest,
             save_payload: self.runtime.as_ref().and_then(EngineRuntime::save_payload),
         };
         self.output = serde_json::to_vec(&observation).unwrap_or_default();
     }
 
     fn write_error(&mut self, message: impl Into<String>) -> i32 {
-        self.output = serde_json::to_vec(&serde_json::json!({
-            "ok": false,
-            "kind": "mobile_error",
-            "message": message.into(),
-        }))
-        .unwrap_or_default();
-        -1
+        self.write_diagnostic(Diagnostic::error("HOST_REQUEST_INVALID", "Invalid host request", message.into()))
     }
 
     fn write_diagnostic(&mut self, diagnostic: Diagnostic) -> i32 {
-        self.output = serde_json::to_vec(&serde_json::json!({
-            "ok": false,
-            "kind": "mobile_error",
-            "diagnostic": diagnostic,
-        }))
-        .unwrap_or_default();
+        self.output = serde_json::to_vec(&unone_engine::host_error("mobile_error", &diagnostic)).unwrap_or_default();
         -1
     }
 
@@ -228,35 +213,21 @@ pub unsafe extern "C" fn unone_mobile_load_project(
         Ok(bytes) => bytes,
         Err(error) => return session.write_error(error),
     };
-    let payload: HostProject = match serde_json::from_slice(&bytes) {
+    let mut payload = match HostProject::parse(&bytes) {
         Ok(payload) => payload,
-        Err(error) => {
-            return session.write_error(format!("project payload is invalid JSON: {error}"));
-        }
-    };
-    let scene = match payload
-        .scene
-        .as_deref()
-        .map(|raw| parse_scene_fragment(raw.get()))
-        .transpose()
-    {
-        Ok(scene) => scene,
         Err(diagnostic) => return session.write_diagnostic(*diagnostic),
     };
+    if payload.viewport_aspect.is_none() {
+        payload.viewport_aspect = session.surface.as_ref().map(|surface| f64::from(surface.width_px) / f64::from(surface.height_px));
+    }
     let project_name = payload.project.clone();
-    let runtime = match EngineRuntime::load_source_with_seed(
-        payload.project,
-        "main.luau",
-        payload.script,
-        scene,
-        seed,
-    ) {
+    let runtime = match payload.into_runtime(seed) {
         Ok(runtime) => runtime,
         Err(diagnostic) => return session.write_diagnostic(*diagnostic),
     };
     session.runtime = Some(runtime);
     session.project = Some(project_name);
-    session.pending_input = InputFrame::default();
+    session.pending_input = HostInputState::default();
     session.paused = false;
     session.write_observation("project_loaded", None);
     0
@@ -405,11 +376,11 @@ pub unsafe extern "C" fn unone_mobile_set_input_frame(
         Ok(bytes) => bytes,
         Err(error) => return session.write_error(error),
     };
-    let frame: InputFrame = match serde_json::from_slice(&bytes) {
+    let frame = match parse_input_frame(&bytes) {
         Ok(frame) => frame,
-        Err(error) => return session.write_error(format!("input frame is invalid JSON: {error}")),
+        Err(diagnostic) => return session.write_diagnostic(*diagnostic),
     };
-    session.pending_input = frame;
+    session.pending_input.queue_frame(frame);
     session.write_observation("input_frame_set", None);
     0
 }
@@ -432,12 +403,9 @@ pub unsafe extern "C" fn unone_mobile_set_pointer(
     if !x.is_finite() || !y.is_finite() {
         return session.write_error("pointer coordinates must be finite");
     }
-    session.pending_input.pointer = Some(PointerInput {
-        position: Vec2 { x, y },
-        down: down != 0,
-        screen_position: Some(Vec2 { x, y }),
-    });
-    0
+    match session.pending_input.set_pointer(Vec2 { x, y }, down != 0) {
+        Ok(()) => 0, Err(diagnostic) => session.write_diagnostic(*diagnostic),
+    }
 }
 
 /// Set the host-normalized logical UI pointer position while preserving the
@@ -462,13 +430,9 @@ pub unsafe extern "C" fn unone_mobile_set_screen_pointer(
     if !x.is_finite() || !y.is_finite() {
         return session.write_error("screen pointer coordinates must be finite");
     }
-    let pointer = session.pending_input.pointer.get_or_insert(PointerInput {
-        position: Vec2::default(),
-        down: false,
-        screen_position: None,
-    });
-    pointer.screen_position = Some(Vec2 { x, y });
-    0
+    match session.pending_input.set_screen_pointer(Vec2 { x, y }) {
+        Ok(()) => 0, Err(diagnostic) => session.write_diagnostic(*diagnostic),
+    }
 }
 
 /// Set one semantic action without JSON parsing. The action is consumed by
@@ -493,7 +457,7 @@ pub unsafe extern "C" fn unone_mobile_set_action(
         Ok(_) => return session.write_error("action name must not be empty"),
         Err(error) => return session.write_error(error),
     };
-    session.pending_input.actions.insert(action, is_down != 0);
+    session.pending_input.set_action(action, is_down != 0);
     0
 }
 
@@ -529,6 +493,10 @@ pub unsafe extern "C" fn unone_mobile_resize(
         Ok(surface) => surface,
         Err(diagnostic) => return session.write_diagnostic(*diagnostic),
     };
+    if let Some(runtime) = session.runtime.as_mut()
+        && let Err(diagnostic) = runtime.set_viewport_aspect(f64::from(width_px) / f64::from(height_px)) {
+        return session.write_diagnostic(*diagnostic);
+    }
     session.surface = Some(surface);
     session.write_observation("surface_resized", None);
     0
@@ -562,6 +530,7 @@ pub unsafe extern "C" fn unone_mobile_pause(session: *mut UnoneMobileSession) ->
         return session.write_error("cannot pause before a project is loaded");
     }
     session.paused = true;
+    session.pending_input.release_all();
     session.write_observation("paused", Some("host_lifecycle_pause"));
     0
 }
@@ -600,7 +569,7 @@ pub unsafe extern "C" fn unone_mobile_tick(session: *mut UnoneMobileSession) -> 
         session.write_observation("tick_skipped", Some("paused"));
         return 0;
     }
-    let frame = std::mem::take(&mut session.pending_input);
+    let frame = session.pending_input.consume_frame();
     let result = session
         .runtime
         .as_mut()
@@ -676,6 +645,25 @@ mod tests {
     use super::*;
     use serde_json::{Value, json};
 
+
+    #[test]
+    fn mobile_normalized_3d_replay_matches_core_every_frame() {
+        let fixture: Value = serde_json::from_str(include_str!("../../unone-engine/tests/fixtures/host-parity.json")).unwrap();
+        let payload = serde_json::to_vec(&fixture["project"]).unwrap();
+        let mut core = HostProject::parse(&payload).unwrap().into_runtime(42).unwrap();
+        let session = unone_mobile_init();
+        assert_eq!(unsafe { unone_mobile_load_project(session,payload.as_ptr(),payload.len(),42) },0);
+        assert_eq!(output(session)["world"],serde_json::to_value(core.observe()).unwrap());
+        for frame in fixture["frames"].as_array().unwrap() {
+            let bytes = serde_json::to_vec(frame).unwrap();
+            assert_eq!(unsafe { unone_mobile_set_input_frame(session,bytes.as_ptr(),bytes.len()) },0);
+            assert_eq!(unsafe { unone_mobile_tick(session) },0);
+            let expected = core.tick_with_input(&parse_input_frame(&bytes).unwrap()).unwrap();
+            assert_eq!(output(session)["world"],serde_json::to_value(&expected).unwrap());
+            assert_eq!(output(session)["observation_digest"],unone_engine::observation_digest(&expected).unwrap());
+        }
+        unsafe { unone_mobile_shutdown(session) };
+    }
     const SCRIPT: &str = r#"--!strict
 type Vec2 = { x: number, y: number }
 type EntityApi = { getPosition: (id: string) -> Vec2, setPosition: (id: string, position: Vec2) -> () }

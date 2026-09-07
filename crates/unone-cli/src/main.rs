@@ -25,6 +25,7 @@ use winit::{
 mod assets;
 mod mcp;
 mod plugins;
+mod session;
 
 #[derive(Debug, Parser)]
 #[command(name = "game", version, about = "Unone AI-native game developer CLI")]
@@ -39,6 +40,12 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Inspect/export a structural JSON Schema generated from the runtime Rust types.
+    Schema {
+        name: String,
+        #[arg(long)]
+        output: Option<PathBuf>,
+    },
     Project {
         #[command(subcommand)]
         command: ProjectCommand,
@@ -112,6 +119,11 @@ enum Command {
     },
     /// Serve the existing Developer Protocol over MCP stdio.
     Mcp,
+    /// Stateful developer protocol: one JSON request and EngineResult per line on stdio.
+    Session {
+        #[arg(long, help = "Print the request JSON schema instead of starting a session transport")]
+        schema: bool,
+    },
 }
 
 #[derive(Debug, Subcommand)]
@@ -307,6 +319,19 @@ fn main() -> ExitCode {
 fn run() -> Result<ExitCode> {
     let cli = Cli::parse();
     match cli.command {
+        Command::Schema { name, output } => {
+            let Some(schema) = unone_engine::contract_schema(&name) else {
+                return print_result(EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
+                    "SCHEMA_UNKNOWN", "Unknown schema", format!("Choose one of: {}", unone_engine::SCHEMA_NAMES.join(", ")),
+                )), cli.json);
+            };
+            if let Some(path) = output {
+                fs::write(&path, format!("{}\n", serde_json::to_string_pretty(&schema)?))?;
+                print_result(EngineResult::success(serde_json::json!({"schema":name,"output":path})), cli.json)
+            } else {
+                print_result(EngineResult::success(schema), cli.json)
+            }
+        }
         Command::Project { command } => match command {
             ProjectCommand::Inspect => print_result(inspect_project(&cli.project), cli.json),
             ProjectCommand::Init { name } => {
@@ -345,6 +370,7 @@ fn run() -> Result<ExitCode> {
                         kind,
                         bundle,
                         files: file,
+                        encoding: None,
                     }),
                     (None, Some(_)) => {
                         return print_result(
@@ -871,6 +897,7 @@ fn run() -> Result<ExitCode> {
             }
         },
         Command::Mcp => mcp::serve(&cli.project),
+        Command::Session { schema } => session::serve(&cli.project, schema),
     }
 }
 

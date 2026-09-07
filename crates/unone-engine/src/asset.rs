@@ -14,9 +14,11 @@ use crate::{
 };
 
 pub const SUPPORTED_ASSET_MANIFEST_VERSION: u32 = 1;
+pub const SUPPORTED_ASSET_KINDS: &[&str] = &["texture2d", "mesh3d", "spine", "effekseer", "audio"];
 const ACTIVE_ASSET_MANIFEST_BUNDLE_ID: &str = "asset-manifest";
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct AssetManifest {
     #[serde(default = "default_manifest_version")]
     pub version: u32,
@@ -24,11 +26,13 @@ pub struct AssetManifest {
     pub assets: Vec<AssetSpec>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct AssetSpec {
     pub id: String,
     pub source: String,
     #[serde(default = "default_asset_kind")]
+    #[schemars(schema_with = "asset_kind_schema")]
     pub kind: String,
     #[serde(default = "default_asset_bundle")]
     pub bundle: String,
@@ -37,6 +41,35 @@ pub struct AssetSpec {
     /// bundle; the engine does not parse them.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub files: Vec<String>,
+    /// Optional explicit encoding contract. Absence means legacy/unspecified,
+    /// not that a host can decode this asset. Every companion still belongs in files.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub encoding: Option<AssetEncoding>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct AssetEncoding {
+    pub format: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub format_version: Option<String>,
+    pub mime: String,
+    /// Capability id the selected host must explicitly advertise. No extension inference.
+    pub decoder: String,
+    #[serde(default)]
+    pub companions: Vec<AssetCompanion>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct AssetCompanion {
+    pub path: String,
+    pub role: String,
+    pub mime: String,
+}
+
+fn asset_kind_schema(_: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    schemars::json_schema!({"type":"string", "enum": SUPPORTED_ASSET_KINDS})
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -1015,6 +1048,19 @@ pub(crate) fn validate_asset_paths(
 }
 
 pub(crate) fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnostic>> {
+    if let Some(encoding) = &asset.encoding {
+        let mime_valid = |mime: &str| mime.split_once('/').is_some_and(|(a,b)| !a.is_empty() && !b.is_empty())
+            && !mime.chars().any(char::is_whitespace);
+        let mut described = BTreeSet::new();
+        if encoding.format.trim().is_empty() || encoding.decoder.trim().is_empty() || !mime_valid(&encoding.mime)
+            || encoding.format_version.as_ref().is_some_and(|version| version.trim().is_empty())
+            || encoding.companions.iter().any(|file| file.role.trim().is_empty() || !mime_valid(&file.mime)
+                || !asset.files.contains(&file.path) || !described.insert(&file.path))
+            || described.len() != asset.files.len() {
+            return Err(Box::new(Diagnostic::error("ASSET_ENCODING_INVALID", "Invalid asset encoding contract",
+                "Declare nonblank format/decoder, MIME types, and exactly one role/MIME descriptor for every required files entry.")));
+        }
+    }
     if !looks_like_asset_id(&asset.id) {
         let mut diagnostic = Diagnostic::error(
             "ASSET_ID_INVALID",
@@ -1200,7 +1246,7 @@ fn is_project_relative(source: &str) -> bool {
 }
 
 fn is_supported_asset_kind(kind: &str) -> bool {
-    matches!(kind, "texture2d" | "mesh3d" | "spine" | "effekseer" | "audio")
+    SUPPORTED_ASSET_KINDS.contains(&kind)
 }
 
 fn is_safe_bundle_id(bundle: &str) -> bool {
@@ -1569,6 +1615,7 @@ mod tests {
                 kind: "texture2d".to_string(),
                 bundle: "content".to_string(),
                 files: Vec::new(),
+                encoding: None,
             }),
         );
         assert!(second.ok, "{:?}", second.diagnostics);
@@ -1686,6 +1733,10 @@ mod tests {
         fs::write(&output, b"keep-existing-output").unwrap();
         let new_output = dir.path().join("uncreated-export/result.bin");
         for (field, value) in [
+            ("encoding", serde_json::json!({"format":"svg","mime":"image/svg+xml","decoder":"image","companions":[
+                {"path":"assets/a.atlas","role":"atlas","mime":"text/plain"},
+                {"path":"assets/a.png","role":"texture","mime":"image/png"}
+            ]})),
             ("kind", serde_json::json!("spine")),
             ("source", serde_json::json!("assets/moved.svg")),
             ("bundle", serde_json::json!("other")),
@@ -1933,5 +1984,22 @@ mod tests {
         let unknown = read(dir.path(), "asset://missing", None, None);
         assert!(!unknown.ok);
         assert_eq!(unknown.diagnostics[0].code, "ASSET_ID_NOT_DECLARED");
+    }
+}
+
+#[cfg(test)]
+mod encoding_tests {
+    use super::*;
+    #[test]
+    fn explicit_encoding_requires_exact_companion_descriptors() {
+        let mut asset: AssetSpec = serde_json::from_str(r#"{"id":"asset://actor","source":"actor.json","kind":"spine","files":["actor.atlas"],"encoding":{"format":"spine-json","mime":"application/json","decoder":"spine","companions":[{"path":"actor.atlas","role":"atlas","mime":"text/plain"}]}}"#).unwrap();
+        validate_asset_spec(&asset).unwrap();
+        let original = asset.clone();
+        asset.encoding.as_mut().unwrap().companions.clear();
+        assert_eq!(validate_asset_spec(&asset).unwrap_err().code,"ASSET_ENCODING_INVALID");
+        assert_ne!(asset,original);
+        let mut typo = serde_json::to_value(original).unwrap();
+        typo["encoding"]["decodre"] = serde_json::json!("spine");
+        assert!(serde_json::from_value::<AssetSpec>(typo).is_err());
     }
 }

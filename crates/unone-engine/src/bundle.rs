@@ -12,13 +12,15 @@ use crate::asset::{AssetManifest, AssetReference, AssetSpec, load_for_pack, read
 use crate::diagnostics::{ActionSuggestion, Diagnostic, EngineResult};
 use crate::project::{ProjectPaths, resolve_project_path};
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct BundleManifest {
     pub version: u32,
     pub bundles: Vec<BundleSpec>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct BundleSpec {
     pub id: String,
     pub version: String,
@@ -2507,6 +2509,7 @@ mod tests {
             kind: "texture2d".to_string(),
             bundle: "content".to_string(),
             files: Vec::new(),
+            encoding: None,
         }
     }
 
@@ -2817,7 +2820,7 @@ mod tests {
             let manifest = serde_json::from_value::<BundleManifest>(value.clone());
             let expected_code = match name.as_str() {
                 "empty_bundles" => "BUNDLE_MANIFEST_EMPTY",
-                "empty_id" | "invalid_hash" | "invalid_size" => "BUNDLE_MANIFEST_INVALID",
+                "unknown_root" | "unknown_spec" | "empty_id" | "invalid_hash" | "invalid_size" => "BUNDLE_MANIFEST_INVALID",
                 "duplicate_id" => "BUNDLE_MANIFEST_DUPLICATE_ID",
                 "missing_dependency" => "BUNDLE_DEPENDENCY_NOT_FOUND",
                 "dependency_cycle" => "BUNDLE_DEPENDENCY_CYCLE",

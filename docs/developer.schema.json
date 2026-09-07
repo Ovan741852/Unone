@@ -1,0 +1,955 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$defs": {
+    "Camera3DData": {
+      "additionalProperties": false,
+      "properties": {
+        "fov_degrees": {
+          "default": 60.0,
+          "format": "double",
+          "type": "number"
+        },
+        "position": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 3.0,
+            "z": 8.0
+          }
+        },
+        "target": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        }
+      },
+      "type": "object"
+    },
+    "Change": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "set_transform3d",
+              "type": "string"
+            },
+            "transform": {
+              "$ref": "#/$defs/Transform3DData"
+            }
+          },
+          "required": [
+            "op",
+            "transform"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "camera": {
+              "$ref": "#/$defs/Camera3DData"
+            },
+            "op": {
+              "const": "set_camera3d",
+              "type": "string"
+            }
+          },
+          "required": [
+            "op",
+            "camera"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "set_position",
+              "type": "string"
+            },
+            "position": {
+              "$ref": "#/$defs/Vec2"
+            }
+          },
+          "required": [
+            "op",
+            "position"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "set_transform2d",
+              "type": "string"
+            },
+            "transform": {
+              "$ref": "#/$defs/Transform2DData"
+            }
+          },
+          "required": [
+            "op",
+            "transform"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "set_velocity",
+              "type": "string"
+            },
+            "velocity": {
+              "$ref": "#/$defs/Vec2"
+            }
+          },
+          "required": [
+            "op",
+            "velocity"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "set_visible",
+              "type": "string"
+            },
+            "visible": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "op",
+            "visible"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "animation": {
+              "type": "string"
+            },
+            "asset": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "looping": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "op": {
+              "const": "play_animation",
+              "type": "string"
+            },
+            "speed": {
+              "format": "double",
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "op",
+            "animation"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "stop_animation",
+              "type": "string"
+            }
+          },
+          "required": [
+            "op"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "set_text",
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "op",
+            "text"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "set_rect",
+              "type": "string"
+            },
+            "rect": {
+              "$ref": "#/$defs/UiRect"
+            }
+          },
+          "required": [
+            "op",
+            "rect"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "set_camera",
+              "type": "string"
+            },
+            "position": {
+              "$ref": "#/$defs/Vec2"
+            },
+            "zoom": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          "required": [
+            "op",
+            "position",
+            "zoom"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "asset": {
+              "type": "string"
+            },
+            "op": {
+              "const": "spawn_effect",
+              "type": "string"
+            },
+            "position": {
+              "$ref": "#/$defs/Vec2"
+            },
+            "rotation": {
+              "format": "double",
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "scale": {
+              "format": "double",
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "op",
+            "asset",
+            "position"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "op": {
+              "const": "stop_effect",
+              "type": "string"
+            }
+          },
+          "required": [
+            "op"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "EnactOperation": {
+      "additionalProperties": false,
+      "properties": {
+        "change": {
+          "$ref": "#/$defs/Change"
+        },
+        "selector": {
+          "$ref": "#/$defs/Selector"
+        }
+      },
+      "required": [
+        "selector",
+        "change"
+      ],
+      "type": "object"
+    },
+    "InputFrame": {
+      "additionalProperties": false,
+      "properties": {
+        "actions": {
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "default": {},
+          "type": "object"
+        },
+        "pointer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PointerInput"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "type": "object"
+    },
+    "PointerInput": {
+      "additionalProperties": false,
+      "properties": {
+        "down": {
+          "default": false,
+          "type": "boolean"
+        },
+        "position": {
+          "$ref": "#/$defs/Vec2"
+        },
+        "screen_position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Vec2"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Host-normalized logical UI coordinates. When omitted, world position\nis used as a compatibility-free default for headless callers."
+        }
+      },
+      "required": [
+        "position"
+      ],
+      "type": "object"
+    },
+    "RecordedCommand": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "step",
+              "type": "string"
+            },
+            "digests": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "failure": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/RecordedFailure"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "frames": {
+              "format": "uint64",
+              "minimum": 0,
+              "type": "integer"
+            },
+            "input": {
+              "$ref": "#/$defs/InputFrame"
+            }
+          },
+          "required": [
+            "command",
+            "frames",
+            "input",
+            "digests"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "enact",
+              "type": "string"
+            },
+            "digest": {
+              "type": "string"
+            },
+            "operations": {
+              "items": {
+                "$ref": "#/$defs/EnactOperation"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "command",
+            "operations",
+            "digest"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "RecordedFailure": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code"
+      ],
+      "type": "object"
+    },
+    "Recording": {
+      "additionalProperties": false,
+      "properties": {
+        "commands": {
+          "items": {
+            "$ref": "#/$defs/RecordedCommand"
+          },
+          "type": "array"
+        },
+        "engine_version": {
+          "type": "string"
+        },
+        "initial_digest": {
+          "type": "string"
+        },
+        "schema_version": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "script_digest": {
+          "type": "string"
+        },
+        "seed": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "seed",
+        "initial_digest",
+        "commands",
+        "scope",
+        "script_digest",
+        "engine_version"
+      ],
+      "type": "object"
+    },
+    "Selector": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "kind": {
+              "const": "entity",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "id"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "kind": {
+              "const": "ui",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "id"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "scene",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "handle": {
+              "type": "string"
+            },
+            "kind": {
+              "const": "effect",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "handle"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "Transform2DData": {
+      "additionalProperties": false,
+      "description": "The typed 2D transform exposed to Luau.\n\nScene and snapshot JSON keep `Entity.transform` as the existing `{x, y}`\nposition and store `rotation`/`scale` as additive sibling fields. The\naggregate is only the API shape, so existing position-only scripts keep\ntheir current data path.",
+      "properties": {
+        "position": {
+          "$ref": "#/$defs/Vec2",
+          "default": {
+            "x": 0.0,
+            "y": 0.0
+          }
+        },
+        "rotation": {
+          "default": 0.0,
+          "description": "Visual Euler rotation in radians. Positive rotation is\ncounter-clockwise in the engine's y-up world.",
+          "format": "double",
+          "type": "number"
+        },
+        "scale": {
+          "$ref": "#/$defs/Vec2",
+          "default": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "description": "Visual scale. Both components must be finite and strictly positive;\nmirroring through negative scale is not part of this contract."
+        }
+      },
+      "type": "object"
+    },
+    "Transform3DData": {
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        },
+        "rotation": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "description": "Euler rotation in radians. The engine stores the transform; game code\nowns the meaning of steering and other gameplay-specific orientation."
+        },
+        "scale": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
+        }
+      },
+      "type": "object"
+    },
+    "UiRect": {
+      "additionalProperties": false,
+      "description": "Logical coordinates for a host-rendered UI element.\n\nBoth axes run 0..100 and **y points up**: y = 0 is the bottom of the screen\nand a rect grows upward from its y. Most UI systems are y-down, so this is\nthe easiest thing for an author who cannot see the screen to get wrong.\n\nThe platform host maps this design space to its viewport. The engine does\nnot know about pixels, DPI, safe areas, fonts, or platform widgets.",
+      "properties": {
+        "height": {
+          "format": "double",
+          "type": "number"
+        },
+        "width": {
+          "format": "double",
+          "type": "number"
+        },
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "type": "object"
+    },
+    "Vec2": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "type": "object"
+    },
+    "Vec3": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        },
+        "z": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://unone.dev/schema/developer.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "const": "open",
+          "type": "string"
+        },
+        "seed": {
+          "default": 42,
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "command"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "const": "close",
+          "type": "string"
+        },
+        "session": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "command",
+        "session"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "const": "snapshot",
+          "type": "string"
+        },
+        "paths": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "selector": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Selector"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "session": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "command",
+        "session"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "after": {
+          "default": 0,
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "command": {
+          "const": "journal",
+          "type": "string"
+        },
+        "limit": {
+          "default": 100,
+          "format": "uint",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "session": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "command",
+        "session"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "description": "Incremental polling, never advances the runtime. Hosts can poll at their desired cadence.",
+      "properties": {
+        "after": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "command": {
+          "const": "watch",
+          "type": "string"
+        },
+        "limit": {
+          "default": 100,
+          "format": "uint",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "paths": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "selector": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Selector"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "session": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "command",
+        "session",
+        "after"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "const": "step",
+          "type": "string"
+        },
+        "expected_revision": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "frames": {
+          "default": 1,
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "input": {
+          "$ref": "#/$defs/InputFrame",
+          "default": {
+            "actions": {},
+            "pointer": null
+          }
+        },
+        "session": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "command",
+        "session",
+        "expected_revision"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "description": "Apply a temporary debug patch to Rust-owned runtime state. This is not a\ngameplay command: no Lua callback runs, and the game may overwrite it next tick.",
+      "properties": {
+        "command": {
+          "const": "enact",
+          "type": "string"
+        },
+        "dry_run": {
+          "default": false,
+          "type": "boolean"
+        },
+        "expected_revision": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "operations": {
+          "items": {
+            "$ref": "#/$defs/EnactOperation"
+          },
+          "type": "array"
+        },
+        "session": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "command",
+        "session",
+        "expected_revision",
+        "operations"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "const": "perf",
+          "type": "string"
+        },
+        "session": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "command",
+        "session"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "const": "recording",
+          "type": "string"
+        },
+        "session": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "command",
+        "session"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "const": "replay",
+          "type": "string"
+        },
+        "recording": {
+          "$ref": "#/$defs/Recording"
+        }
+      },
+      "required": [
+        "command",
+        "recording"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "DeveloperRequest",
+  "type": "object"
+}

@@ -53,7 +53,9 @@ if (Test-Path -LiteralPath $buildRoot) {
 }
 $packageDir = Join-Path $buildRoot "package"
 New-Item -ItemType Directory -Path (Join-Path $packageDir "assets") -Force | Out-Null
-$payloadText = '{"project":' + $projectJson + ',"script":' + $scriptJson + ',"scene":' + $sceneJson + '}'
+$systemsJson = if ($config.systems) { ConvertTo-Json -InputObject $config.systems -Depth 8 -Compress } else { "{}" }
+$audioJson = if ($config.audio) { ConvertTo-Json -InputObject $config.audio -Depth 12 -Compress } else { "null" }
+$payloadText = '{"project":' + $projectJson + ',"script":' + $scriptJson + ',"scene":' + $sceneJson + ',"systems":' + $systemsJson + ',"audio":' + $audioJson + '}'
 [IO.File]::WriteAllText((Join-Path $packageDir "assets\unone-project.json"), $payloadText, [Text.UTF8Encoding]::new($false))
 
 $androidRoot = Join-Path $packageRoot "mobile\android-host"

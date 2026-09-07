@@ -1,3 +1,5 @@
+> Current positioning: Unone is a 3D engine with 2D workflows. This historical plan does not override the generated schemas or [current runtime contracts](runtime-contracts.md).
+
 # Unone AI-native Game Engine 技術草案 v0.1
 
 日期：2026-09-05  

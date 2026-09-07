@@ -51,6 +51,9 @@ function normalizeManifest(manifest) {
   if (!manifest || !Number.isInteger(manifest.version) || manifest.version < 0 || manifest.version > 0xffffffff || !Array.isArray(manifest.bundles)) {
     throw engineError("BUNDLE_MANIFEST_INVALID", "bundle manifest is invalid", "Expected integer version and bundles array.");
   }
+  if (Object.keys(manifest).some((key) => !["version", "bundles"].includes(key))) {
+    throw engineError("BUNDLE_MANIFEST_INVALID", "unknown manifest field", "Bundle manifests reject unknown fields.");
+  }
   if (manifest.bundles.length === 0) {
     throw engineError("BUNDLE_MANIFEST_EMPTY", "bundle manifest is empty", "Bundle activation requires at least one bundle.");
   }
@@ -58,6 +61,9 @@ function normalizeManifest(manifest) {
   const bundles = manifest.bundles.map((spec) => {
     if (!spec || typeof spec.id !== "string" || spec.id.trim() === "") {
       throw engineError("BUNDLE_MANIFEST_INVALID", "bundle id is missing or empty", "Every bundle must have a non-empty id.");
+    }
+    if (Object.keys(spec).some((key) => !["id", "version", "source", "sha256", "size_bytes", "dependencies"].includes(key))) {
+      throw engineError("BUNDLE_MANIFEST_INVALID", "unknown bundle field", "Bundle entries reject unknown fields.");
     }
     if (ids.has(spec.id)) {
       throw engineError("BUNDLE_MANIFEST_DUPLICATE_ID", "bundle id is duplicated", "Every bundle must have a unique id.", { bundle_id: spec.id });

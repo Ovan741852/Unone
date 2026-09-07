@@ -16,11 +16,12 @@ use unone_engine::{
 const LATEST_PROTOCOL_VERSION: &str = "2025-11-25";
 const SUPPORTED_PROTOCOL_VERSIONS: &[&str] = &["2025-11-25", "2025-06-18", "2025-03-26"];
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 struct ProtocolState {
     initialize_seen: bool,
     initialized: bool,
     protocol_version: Option<String>,
+    developer: unone_engine::DeveloperProtocol,
 }
 
 pub fn serve(project: &Path) -> Result<ExitCode> {
@@ -204,7 +205,11 @@ fn handle_message(message: Value, project: &Path, state: &mut ProtocolState) -> 
             }
             Some(success_response(
                 request_id,
-                call_tool(project, name, &arguments),
+                if name == "unone_session" {
+                    tool_result(state.developer.execute_json(project, arguments))
+                } else {
+                    call_tool(project, name, &arguments)
+                },
             ))
         }
         _ if id.is_some() => Some(error_response(
@@ -219,6 +224,7 @@ fn handle_message(message: Value, project: &Path, state: &mut ProtocolState) -> 
 
 fn tool_names() -> Vec<&'static str> {
     vec![
+        "unone_session",
         "unone_plugin_list",
         "unone_plugin_inspect",
         "unone_plugin_call",
@@ -250,6 +256,14 @@ fn tool_names() -> Vec<&'static str> {
 
 fn tool_definitions() -> Vec<Value> {
     vec![
+        tool(
+            "unone_session",
+            "Control and observe a persistent developer session",
+            "Open one headless runtime per connection. Snapshot selects stable entity/UI ids and JSON pointers. Step applies keyboard/pointer input for 1..600 deterministic ticks. Journal reads bounded history; watch polls incremental filtered changes without ticking (use next_cursor, honor lost_events). Enact previews or atomically applies transient typed edits between ticks using expected_revision; it never saves authoring files. Perf exposes measured runtime phase costs, counts and memory for AI analysis, not an automatic bottleneck verdict; rendering/transport are excluded. Recording exports inputs/edits and expected digests; replay reruns them independently and reports the first divergence. A script failure freezes mutations but preserves inspection and recording. Close releases the session. This does not attach to a separately running browser/native preview.",
+            unone_engine::developer_request_schema(),
+            false,
+            false,
+        ),
         tool(
             "unone_plugin_list",
             "List optional plugins",
@@ -357,7 +371,7 @@ fn tool_definitions() -> Vec<Value> {
                     "files": {"type": "array", "items": {"type": "string"}, "description": "Companion project-relative sources this asset cannot be used without, such as a Spine atlas and its texture pages."},
                     "id": {"type": "string", "description": "Stable asset id; provide with source to append a declaration."},
                     "source": {"type": "string", "description": "Project-relative source path; provide with id."},
-                    "kind": {"type": "string", "enum": ["texture2d", "mesh3d", "spine", "effekseer"], "default": "texture2d"},
+                    "kind": {"type": "string", "enum": unone_engine::SUPPORTED_ASSET_KINDS, "default": "texture2d"},
                     "bundle": {"type": "string", "default": "content"}
                 }
             })),
@@ -600,7 +614,7 @@ fn tool(
 }
 
 fn object_schema(extra: Value) -> Value {
-    let mut schema = json!({"type": "object"});
+    let mut schema = json!({"type": "object", "additionalProperties": false});
     if let (Some(base), Some(extra_object)) = (schema.as_object_mut(), extra.as_object()) {
         for (key, value) in extra_object {
             base.insert(key.clone(), value.clone());
@@ -610,6 +624,18 @@ fn object_schema(extra: Value) -> Value {
 }
 
 fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
+    // The advertised property set is also the accepted property set. Never
+    // silently discard a misspelled argument before calling the typed engine.
+    if let Some(definition) = tool_definitions().iter().find(|definition| definition["name"] == name)
+        && let Some(arguments) = arguments.as_object() {
+        let empty = Map::new();
+        let properties = definition["inputSchema"].get("properties").and_then(Value::as_object).unwrap_or(&empty);
+        if let Some(key) = arguments.keys().find(|key| !properties.contains_key(*key)) {
+            let mut diagnostic = Diagnostic::error("MCP_ARGUMENT_UNKNOWN", "Unknown tool argument", format!("Tool '{name}' does not accept '{key}'"));
+            diagnostic.facts = json!({"tool":name,"field":key,"accepted_fields":properties.keys().collect::<Vec<_>>()});
+            return argument_error(diagnostic);
+        }
+    }
     match name {
         "unone_plugin_list" => tool_result(crate::plugins::list(project)),
         "unone_plugin_inspect" => match required_string(arguments, "id") {
@@ -791,6 +817,7 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                     kind,
                     bundle,
                     files,
+                    encoding: None,
                 }),
                 _ => {
                     return argument_error(Diagnostic::error(
@@ -1108,6 +1135,16 @@ mod tests {
     use std::path::Path;
 
     #[test]
+    fn advertised_argument_contract_rejects_typos_including_no_argument_tools() {
+        for name in ["unone_run", "unone_systems_list", "unone_project_inspect"] {
+            let reply = super::call_tool(Path::new("."), name, &json!({"typo":true}));
+            assert_eq!(reply["isError"],true,"{reply}");
+            let result: serde_json::Value = serde_json::from_str(reply["content"][0]["text"].as_str().unwrap()).unwrap();
+            assert_eq!(result["diagnostics"][0]["code"],"MCP_ARGUMENT_UNKNOWN","{reply}");
+        }
+    }
+
+    #[test]
     fn initialize_requires_initialized_notification_before_tools() {
         let mut state = ProtocolState::default();
         let initialize = handle_message(
@@ -1140,7 +1177,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 26);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 27);
     }
 
     #[test]
@@ -1150,7 +1187,7 @@ mod tests {
             .iter()
             .map(|tool| tool["name"].as_str().unwrap())
             .collect();
-        assert_eq!(names.first(), Some(&"unone_plugin_list"));
+        assert_eq!(names.first(), Some(&"unone_session"));
         assert_eq!(names.last(), Some(&"unone_bundle_install"));
         assert!(names.contains(&"unone_asset_describe"));
         let plugin_list = tools.iter().find(|tool| tool["name"] == "unone_plugin_list").unwrap();
@@ -1164,7 +1201,7 @@ mod tests {
                 .as_array()
                 .unwrap()
                 .len(),
-            4
+            unone_engine::SUPPORTED_ASSET_KINDS.len()
         );
         let bundle_install = tools
             .iter()
@@ -1203,6 +1240,7 @@ mod tests {
             initialize_seen: true,
             initialized: true,
             protocol_version: Some("2025-11-25".to_string()),
+            developer: unone_engine::DeveloperProtocol::default(),
         };
         let response = handle_message(
             json!({"jsonrpc": "2.0", "id": "x", "method": "unknown"}),

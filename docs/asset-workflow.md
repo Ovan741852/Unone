@@ -1,7 +1,7 @@
 # Asset workflow contract
 
-This is the only currently valid contract for asset operations and engine
-boundaries. The CLI, MCP, native-local bundle reader, and documentation all
+This document explains asset operations and engine boundaries. Structural fields
+come from Rust DTOs and generated `asset.schema.json`; runtime validation is authoritative. The CLI, MCP, native-local bundle reader, and documentation all
 follow the same engine-core results. The old asset-reference and host-resolve
 decisions have been removed; Git history retains their historical record.
 
@@ -11,7 +11,7 @@ The asset workflow has three distinct authorities:
 
 1. **Authoring** is the game's `project.unone.json`, asset manifest,
    primary source, and manifest-declared companion files. The manifest entry's
-   `id`, `source`, `kind`, `bundle`, and `files` are the authoring contract; the
+   `id`, `source`, `kind`, `bundle`, `files`, and optional `encoding` are the authoring contract; the
    scene uses the same stable ID for placement and presentation.
 2. **Packaged** is the bundle manifest, hash, and archive produced by
    `bundle pack` from authoring files. Do not edit an archive or cache
@@ -22,7 +22,7 @@ The asset workflow has three distinct authorities:
    manifest and active hash; it does not fall back to the authoring source.
 
 `asset read` first compares the complete AssetSpec with the verified
-`asset-manifest`. If the author changes only kind, source, bundle, or files
+`asset-manifest`. If the author changes only kind, source, bundle, files, or encoding
 without publishing, it reports `BUNDLE_GENERATION_MISMATCH` rather than mixing new metadata
 with old bytes as a successful result. If the bundle manifest or active record
 changes during a read, the read is rejected and no export is written. If only
@@ -421,3 +421,48 @@ IndexedDB, native `.unone`, mobile, and other hosts each install and validate
 independently, and CLI results cannot substitute for cross-host evidence. Mobile
 validation remains a separate deferred track and is not a prerequisite for the
 Web slice.
+
+## Encoding and decoder boundaries
+
+A legacy entry without `encoding` is unspecified, not universally decodable.
+`asset describe` reports `decoder_support: not_probed` even when bytes are fresh.
+An explicit declaration looks like this:
+
+```json
+{
+  "id": "asset://actor", "kind": "spine", "source": "assets/actor.json",
+  "bundle": "content", "files": ["assets/actor.atlas", "assets/actor.png"],
+  "encoding": {
+    "format": "spine-json", "mime": "application/json", "decoder": "spine",
+    "companions": [
+      {"path": "assets/actor.atlas", "role": "atlas", "mime": "text/plain"},
+      {"path": "assets/actor.png", "role": "texture", "mime": "image/png"}
+    ]
+  }
+}
+```
+
+Every `files` entry is required and must have exactly one role/MIME descriptor
+when encoding is supplied. Undeclared, duplicate and missing descriptors fail
+validation. `format_version` optionally states a required version; current adapters
+cannot negotiate it and reject versioned declarations instead of silently ignoring
+it. Encoding is part of AssetSpec equality and active-generation freshness checks.
+The basic asset-init command still initializes legacy entries; richer declarations
+are authored in the schema-backed manifest.
+
+| Host path | Actual boundary |
+| --- | --- |
+| Native texture loader | Explicit `image` / `svg` / `image/svg+xml`; resvg decode. Legacy sources use SVG extension detection. |
+| Web runner image loader | `image`: svg/png/jpeg/webp, matching MIME. Actual image decode may still fail. |
+| Web audio loader | `audio`: wav/mp3/ogg with audio/wav, audio/mpeg, audio/ogg. `decodeAudioData` decides actual device support. |
+| Web presentation Spine | `spine` / `spine-json` / application/json, JSON skeleton and atlas. Uses the external runtime, not binary skeleton loading; currently one selected rig asset. |
+| Web presentation Effekseer | `effekseer` / `efkefc` / application/octet-stream for explicit declarations, external runtime loading; currently one selected effect asset. |
+| Android Canvas | Limited semantic 2D presentation, no universal asset decoder or 3D renderer. |
+
+Web runner/presentation expose `unoneHost.decoderCapabilities()` from the same
+accepted-route table used by their loaders. These are accepted routes, not proof
+of successful decoding. Unsupported explicit routes return
+`HOST_ASSET_ENCODING_UNSUPPORTED`; load/decode failures remain visible. Legacy
+extension/runtime behavior remains compatible, with no inferred capability claim.
+Unknown or unimplemented formats can be packaged as assets but cannot be claimed
+renderable until the selected host implements and verifies their decoder.

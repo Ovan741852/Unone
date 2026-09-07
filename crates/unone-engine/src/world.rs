@@ -8,14 +8,14 @@ use crate::{
     scene::{parse_scene_file, validate_typed_scene},
 };
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct Vec2 {
     pub x: f64,
     pub y: f64,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct Vec3 {
     pub x: f64,
@@ -39,7 +39,7 @@ impl Default for Vec3 {
 /// position and store `rotation`/`scale` as additive sibling fields. The
 /// aggregate is only the API shape, so existing position-only scripts keep
 /// their current data path.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct Transform2DData {
     #[serde(default)]
@@ -68,7 +68,7 @@ impl Default for Transform2DData {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct Transform3DData {
     #[serde(default)]
@@ -99,7 +99,7 @@ impl Default for Transform3DData {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct Mesh3DData {
     pub asset: String,
@@ -107,7 +107,7 @@ pub struct Mesh3DData {
     pub visible: bool,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct Camera3DData {
     #[serde(default = "default_camera3d_position")]
@@ -140,7 +140,7 @@ impl Default for Camera3DData {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq, schemars::JsonSchema)]
 #[serde(rename_all = "lowercase")]
 pub enum RigidBodyType {
     #[default]
@@ -148,7 +148,7 @@ pub enum RigidBodyType {
     Static,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct RigidBody2DData {
     #[serde(default)]
@@ -171,7 +171,7 @@ fn default_radius() -> f64 {
     0.5
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct PhysicsSettings {
     #[serde(default = "default_gravity")]
@@ -207,7 +207,7 @@ impl Default for PhysicsSettings {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct Camera2DData {
     #[serde(default)]
@@ -250,7 +250,7 @@ impl Default for Vec2 {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct SceneFile {
     #[serde(default)]
@@ -263,7 +263,7 @@ pub struct SceneFile {
     pub camera3d: Option<Camera3DData>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct SceneEntity {
     pub id: String,
@@ -294,7 +294,7 @@ pub struct SceneEntity {
 /// The engine stores which clip is selected and since which frame; it does not
 /// evaluate bones, meshes or blending. The only declared asset kind for this
 /// today is Spine, and the host owns that runtime.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct AnimationData {
     pub asset: String,
@@ -343,7 +343,7 @@ pub struct EffectInstance {
     pub started_frame: u64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct SpriteData {
     pub asset: String,
@@ -947,6 +947,16 @@ impl World {
         self.camera3d
             .clone()
             .ok_or_else(|| "The current scene has no Camera3D.".to_string())
+    }
+
+    pub(crate) fn set_camera3d(&mut self, camera: Camera3DData) -> Result<(), String> {
+        // Reuse scene camera validation rather than a second set of FOV rules.
+        crate::scene::validate_typed_scene(&SceneFile {
+            camera3d: Some(camera.clone()), ..SceneFile::default()
+        }).map_err(|diagnostic| diagnostic.explanation.clone())?;
+        if self.camera3d.is_none() { return Err("The current scene has no Camera3D.".into()); }
+        self.camera3d = Some(camera);
+        Ok(())
     }
 
     pub(crate) fn set_camera3d_position(&mut self, position: Vec3) -> Result<(), String> {

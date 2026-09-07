@@ -1,3 +1,4 @@
+import { requireAssetEncoding, DECODER_ROUTES } from "../shared/asset-encoding.js";
 import { frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=5";
 import { createRenderer } from "../renderer/index.js?v=1";
 import { activateGeneration, readActiveAsset, readActiveText, rollbackGeneration, stageGeneration } from "../live/bundle-store.js?v=5";
@@ -161,6 +162,7 @@ async function readPackagedGeneration(nextGeneration, manifest) {
 }
 
 function assetMime(asset) {
+  if (asset.encoding) return asset.encoding.mime;
   const source = asset.source.toLowerCase();
   if (source.endsWith(".svg")) return "image/svg+xml";
   if (source.endsWith(".webp")) return "image/webp";
@@ -186,6 +188,7 @@ export function loadAssetUrl(asset) {
   if (assetUrls.has(assetId)) return Promise.resolve(assetUrls.get(assetId));
   if (assetUrlLoads.has(assetId)) return assetUrlLoads.get(assetId);
   const load = (async () => {
+    requireAssetEncoding(asset, "image");
     let bytes;
     if (requestGeneration) {
       bytes = await readActiveAsset(requestGeneration, asset, window.Module, requestManifest);
@@ -336,8 +339,12 @@ async function loadProject() {
   // The project's own declarations have to travel with it. Without them this
   // host runs a different game than the CLI does: systems the project turned
   // off stay on, and audio categories have no rules.
+  const stored = await readSave(saveProjectKey);
+  loadedSave = stored != null;
   const payload = bridgeBytes(
     JSON.stringify({
+      restored_save: stored ?? null,
+      viewport_aspect: viewportAspect(),
       project: config.name,
       script,
       scene,
@@ -349,15 +356,6 @@ async function loadProject() {
     throw bridgeError(readSnapshot(), "generic project load failed");
   }
   snapshot = readSnapshot();
-  const stored = await readSave(saveProjectKey);
-  if (stored != null) {
-    loadedSave = true;
-    const savePayload = bridgeBytes(JSON.stringify(stored));
-    if (window.Module._unone_web_set_save_payload(savePayload.pointerAddress, savePayload.length) !== 0) {
-      throw new Error("stored save payload was rejected by the engine");
-    }
-    snapshot = readSnapshot();
-  }
   if (packaged) {
     generationState = await activateGeneration(packaged.generationState);
     bundleManifest = { manifest: packaged.manifest, manifestUrl: packaged.manifestUrl };
@@ -457,11 +455,13 @@ async function reloadActiveBundle() {
 
 // Report the canvas shape so anchored UI nodes resolve against the real screen.
 let reportedAspect = 0;
-function syncViewportAspect() {
+function viewportAspect() {
   const width = canvas.clientWidth || canvas.width;
   const height = canvas.clientHeight || canvas.height;
-  if (!width || !height) return;
-  const aspect = width / height;
+  return width > 0 && height > 0 ? width / height : 16 / 9;
+}
+function syncViewportAspect() {
+  const aspect = viewportAspect();
   if (Math.abs(aspect - reportedAspect) < 0.001) return;
   if (window.Module._unone_web_set_viewport_aspect?.(aspect) === 0) reportedAspect = aspect;
 }
@@ -558,6 +558,11 @@ async function start() {
     }, null, 2);
   }));
   window.unoneHost = {
+    decoderCapabilities: () => ({
+      accepted_routes: { image: DECODER_ROUTES.image, audio: DECODER_ROUTES.audio },
+      format_versions: [],
+      decode_success_requires_loading: true,
+    }),
     retryFailedAssets,
     reloadActiveBundle,
   };

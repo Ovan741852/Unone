@@ -10,7 +10,8 @@ use serde::{Deserialize, Serialize};
 use crate::diagnostics::{ActionSuggestion, Diagnostic, EngineResult};
 use crate::world::Vec2;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct ProjectConfig {
     pub name: String,
     #[serde(default = "default_entry_script")]
@@ -1791,7 +1792,7 @@ fn path_string(path: &Path) -> String {
 /// say so once in its config rather than teaching its author to read past a
 /// red line — a gate people learn to ignore is worse than a gate that says it
 /// is advisory.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct VerifyConfig {
     #[serde(default)]
@@ -1799,14 +1800,14 @@ pub struct VerifyConfig {
 }
 
 /// One declared gate: either the bare id, or the id with its settings.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, schemars::JsonSchema)]
 #[serde(untagged)]
 pub enum VerifyStepSpec {
     Name(String),
     Detailed(VerifyStepDetail),
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct VerifyStepDetail {
     pub step: String,
@@ -1848,7 +1849,7 @@ impl VerifyStepSpec {
 /// Unknown keys are rejected: a test file with a misspelled or invented key
 /// used to load with that key ignored, so a file whose assertions lived under
 /// the wrong name passed green while checking nothing.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct TestSpec {
     pub name: String,
@@ -1866,7 +1867,8 @@ pub struct TestSpec {
     pub assertions: Vec<TestAssertion>,
 }
 
-#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct InputFrame {
     #[serde(default)]
     pub actions: BTreeMap<String, bool>,
@@ -1874,7 +1876,8 @@ pub struct InputFrame {
     pub pointer: Option<PointerInput>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct PointerInput {
     pub position: Vec2,
     #[serde(default)]
@@ -1885,6 +1888,22 @@ pub struct PointerInput {
     pub screen_position: Option<Vec2>,
 }
 
+impl InputFrame {
+    /// Validate before mutating input or ticking, across every host path.
+    pub fn validate(&self) -> Result<(), Box<crate::Diagnostic>> {
+        if self.actions.keys().any(|action| action.trim().is_empty()) {
+            return Err(Box::new(crate::Diagnostic::error("INPUT_FRAME_INVALID", "Invalid action name", "Action names must not be blank")));
+        }
+        if let Some(pointer) = &self.pointer {
+            crate::world::validate_vec2(pointer.position, "Pointer position")?;
+            if let Some(screen) = pointer.screen_position {
+                crate::world::validate_vec2(screen, "Pointer screen position")?;
+            }
+        }
+        Ok(())
+    }
+}
+
 fn default_test_frames() -> u64 {
     60
 }
@@ -1892,7 +1911,8 @@ fn default_test_seed() -> u64 {
     42
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct TestAssertion {
     #[serde(default)]
     pub entity: Option<String>,
@@ -2010,14 +2030,16 @@ impl TestAssertion {
 }
 
 /// Full equality against one entity's published animation state.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct AnimationAssertion {
     pub entity: String,
     pub equals: serde_json::Value,
 }
 
 /// Full equality against the live effect list a host would be playing.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct EffectsAssertion {
     pub equals: serde_json::Value,
 }
@@ -2028,7 +2050,8 @@ pub struct EffectsAssertion {
 /// still be playing. They are separate because a test usually cares about one
 /// or the other: "the reel stopped and made a noise" is an event, "the music
 /// survived the win screen" is a loop.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct AudioAssertion {
     #[serde(default)]
     pub events: Option<serde_json::Value>,
@@ -2037,7 +2060,8 @@ pub struct AudioAssertion {
 }
 
 /// One reachable screen the layout gate should inspect.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct UiPreviewSpec {
     pub name: String,
     #[serde(default = "default_preview_frames")]
@@ -2057,13 +2081,15 @@ fn default_preview_seed() -> u64 {
     42
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct ObservationAssertion {
     pub key: String,
     pub equals: serde_json::Value,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct UiAssertion {
     pub equals: serde_json::Value,
 }

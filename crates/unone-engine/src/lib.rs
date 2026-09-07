@@ -4,6 +4,9 @@ mod asset;
 mod asset_workflow;
 mod bundle;
 mod diagnostics;
+mod host;
+mod schema;
+mod developer;
 mod diff;
 mod layout;
 mod performance;
@@ -21,6 +24,7 @@ pub use api::{
     search as api_search, api_search_result, typings as api_typings,
 };
 pub use asset::{
+    AssetCompanion, AssetEncoding, SUPPORTED_ASSET_KINDS,
     AssetInitReport, AssetInspectBlocker, AssetInspectReport, AssetManifest, AssetReadReport,
     AssetReference, AssetSpec, ResolvedAssetBytes, StaticReferenceScope, init_asset_manifest,
     inspect as inspect_assets, inspect_strict as inspect_assets_strict,
@@ -43,6 +47,12 @@ pub use bundle::{
 pub use diagnostics::{
     ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult, SourceLocation,
 };
+pub use developer::{
+    Change, DeveloperProtocol, DeveloperRequest, DeveloperSession, EnactOperation, Selector,
+    developer_request_schema,
+};
+pub use host::{HostInputState, HostProject, host_error, parse_input_frame};
+pub use schema::{SCHEMA_NAMES, contract_schema};
 pub use diff::{
     DiffReport, FieldDifference, RecordedFrame, Recording, diff as diff_run,
     read_recording, record as record_run, to_markdown as diff_markdown,

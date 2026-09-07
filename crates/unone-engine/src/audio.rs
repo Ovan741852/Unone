@@ -41,7 +41,7 @@ fn default_volume() -> f64 {
 /// when they are implemented. Declaring one is an **error**, never a silent
 /// no-op: a game believing it configured something it did not is the hardest
 /// kind of audio bug to find.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct AudioCategory {
     /// Only one loop in this category plays at a time; starting another begins
@@ -99,7 +99,7 @@ impl AudioCategory {
     }
 }
 
-#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct AudioConfig {
     #[serde(default)]

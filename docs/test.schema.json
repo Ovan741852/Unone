@@ -1,703 +1,281 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://unone.dev/schema/test.schema.json",
-  "title": "Unone deterministic test manifest",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "name"
-  ],
-  "properties": {
-    "name": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Human-readable test case name."
-    },
-    "frames": {
-      "type": "integer",
-      "minimum": 0,
-      "default": 60,
-      "description": "Number of fixed 60 Hz simulation frames."
-    },
-    "seed": {
-      "type": "integer",
-      "minimum": 0,
-      "default": 42,
-      "description": "Deterministic Luau random seed."
-    },
-    "input": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "boolean"
-      },
-      "description": "Semantic actions held for the whole test run."
-    },
-    "input_sequence": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/inputFrame"
-      },
-      "description": "Optional per-frame semantic input replay."
-    },
-    "load_save": {
-      "description": "Opaque game-owned JSON save payload injected before the first tick."
-    },
-    "assertions": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/assertion"
-      },
-      "description": "Assertions evaluated against the final WorldSnapshot."
-    }
-  },
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
   "$defs": {
-    "vec2": {
-      "type": "object",
+    "AnimationAssertion": {
       "additionalProperties": false,
-      "required": [
-        "x",
-        "y"
-      ],
+      "description": "Full equality against one entity's published animation state.",
       "properties": {
-        "x": {
-          "type": "number"
+        "entity": {
+          "type": "string"
         },
-        "y": {
-          "type": "number"
-        }
-      }
+        "equals": true
+      },
+      "required": [
+        "entity",
+        "equals"
+      ],
+      "type": "object"
     },
-    "pointer": {
-      "type": "object",
+    "AudioAssertion": {
       "additionalProperties": false,
-      "required": [
-        "position"
-      ],
+      "description": "Full equality against what the game asked to be heard.\n\n`events` is what was fired on the asserted frame; `loops` is what should\nstill be playing. They are separate because a test usually cares about one\nor the other: \"the reel stopped and made a noise\" is an event, \"the music\nsurvived the win screen\" is a loop.",
       "properties": {
-        "position": {
-          "$ref": "#/$defs/vec2"
+        "events": {
+          "default": null
         },
-        "down": {
-          "type": "boolean",
-          "default": false
-        },
-        "screen_position": {
-          "$ref": "#/$defs/vec2"
+        "loops": {
+          "default": null
         }
-      }
+      },
+      "type": "object"
     },
-    "inputFrame": {
-      "type": "object",
+    "EffectsAssertion": {
+      "additionalProperties": false,
+      "description": "Full equality against the live effect list a host would be playing.",
+      "properties": {
+        "equals": true
+      },
+      "required": [
+        "equals"
+      ],
+      "type": "object"
+    },
+    "InputFrame": {
       "additionalProperties": false,
       "properties": {
         "actions": {
-          "type": "object",
           "additionalProperties": {
             "type": "boolean"
-          }
+          },
+          "default": {},
+          "type": "object"
         },
         "pointer": {
           "anyOf": [
             {
-              "$ref": "#/$defs/pointer"
+              "$ref": "#/$defs/PointerInput"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "type": "object"
+    },
+    "ObservationAssertion": {
+      "additionalProperties": false,
+      "properties": {
+        "equals": true,
+        "key": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "equals"
+      ],
+      "type": "object"
+    },
+    "PointerInput": {
+      "additionalProperties": false,
+      "properties": {
+        "down": {
+          "default": false,
+          "type": "boolean"
+        },
+        "position": {
+          "$ref": "#/$defs/Vec2"
+        },
+        "screen_position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Vec2"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Host-normalized logical UI coordinates. When omitted, world position\nis used as a compatibility-free default for headless callers."
+        }
+      },
+      "required": [
+        "position"
+      ],
+      "type": "object"
+    },
+    "TestAssertion": {
+      "additionalProperties": false,
+      "properties": {
+        "animation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AnimationAssertion"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "audio": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AudioAssertion"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "effects": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EffectsAssertion"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "entity": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "equals": {
+          "default": null,
+          "format": "double",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "field": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "greater_than": {
+          "default": null,
+          "format": "double",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "less_than": {
+          "default": null,
+          "format": "double",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "observation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObservationAssertion"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ui": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiAssertion"
             },
             {
               "type": "null"
             }
           ]
         }
-      }
+      },
+      "type": "object"
     },
-    "observationAssertion": {
-      "type": "object",
+    "UiAssertion": {
       "additionalProperties": false,
+      "properties": {
+        "equals": true
+      },
       "required": [
-        "key",
         "equals"
       ],
-      "properties": {
-        "key": {
-          "type": "string",
-          "minLength": 1
-        },
-        "equals": {}
-      }
+      "type": "object"
     },
-    "uiNode": {
-      "oneOf": [
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "kind",
-            "id",
-            "rect",
-            "text"
-          ],
-          "properties": {
-            "kind": {
-              "const": "text"
-            },
-            "id": {
-              "type": "string",
-              "minLength": 1
-            },
-            "rect": {
-              "$ref": "#/$defs/rect"
-            },
-            "text": {
-              "type": "string"
-            }
-          }
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "kind",
-            "id",
-            "rect",
-            "text",
-            "action"
-          ],
-          "properties": {
-            "kind": {
-              "const": "button"
-            },
-            "id": {
-              "type": "string",
-              "minLength": 1
-            },
-            "rect": {
-              "$ref": "#/$defs/rect"
-            },
-            "text": {
-              "type": "string"
-            },
-            "action": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
-        }
-      ]
-    },
-    "rect": {
-      "type": "object",
+    "Vec2": {
       "additionalProperties": false,
-      "required": [
-        "x",
-        "y",
-        "width",
-        "height"
-      ],
       "properties": {
         "x": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 100
+          "format": "double",
+          "type": "number"
         },
         "y": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 100
-        },
-        "width": {
-          "type": "number",
-          "exclusiveMinimum": 0,
-          "maximum": 100
-        },
-        "height": {
-          "type": "number",
-          "exclusiveMinimum": 0,
-          "maximum": 100
-        }
-      }
-    },
-    "uiTree": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "kind",
-        "id",
-        "node",
-        "children"
-      ],
-      "properties": {
-        "kind": {
-          "const": "screen"
-        },
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "node": {
-          "type": "string",
-          "minLength": 1
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/uiNode"
-          }
-        }
-      }
-    },
-    "uiAssertion": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "equals"
-      ],
-      "properties": {
-        "equals": {
-          "$ref": "#/$defs/uiTree"
-        }
-      }
-    },
-    "assertion": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "entity": {
-          "type": "string",
-          "minLength": 1
-        },
-        "field": {
-          "enum": [
-            "transform.x",
-            "transform.y"
-          ]
-        },
-        "equals": {
+          "format": "double",
           "type": "number"
-        },
-        "greater_than": {
-          "type": "number"
-        },
-        "less_than": {
-          "type": "number"
-        },
-        "observation": {
-          "$ref": "#/$defs/observationAssertion"
-        },
-        "ui": {
-          "$ref": "#/$defs/uiAssertion"
-        },
-        "animation": {
-          "$ref": "#/$defs/animationAssertion"
-        },
-        "effects": {
-          "$ref": "#/$defs/effectsAssertion"
-        },
-        "audio": {
-          "$ref": "#/$defs/audioAssertion"
         }
       },
-      "oneOf": [
-        {
-          "required": [
-            "observation"
-          ],
-          "not": {
-            "anyOf": [
-              {
-                "required": [
-                  "animation"
-                ]
-              },
-              {
-                "required": [
-                  "effects"
-                ]
-              },
-              {
-                "required": [
-                  "entity"
-                ]
-              },
-              {
-                "required": [
-                  "field"
-                ]
-              },
-              {
-                "required": [
-                  "ui"
-                ]
-              },
-              {
-                "required": [
-                  "audio"
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "required": [
-            "ui"
-          ],
-          "not": {
-            "anyOf": [
-              {
-                "required": [
-                  "animation"
-                ]
-              },
-              {
-                "required": [
-                  "effects"
-                ]
-              },
-              {
-                "required": [
-                  "entity"
-                ]
-              },
-              {
-                "required": [
-                  "field"
-                ]
-              },
-              {
-                "required": [
-                  "observation"
-                ]
-              },
-              {
-                "required": [
-                  "audio"
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "required": [
-            "animation"
-          ],
-          "not": {
-            "anyOf": [
-              {
-                "required": [
-                  "effects"
-                ]
-              },
-              {
-                "required": [
-                  "entity"
-                ]
-              },
-              {
-                "required": [
-                  "field"
-                ]
-              },
-              {
-                "required": [
-                  "observation"
-                ]
-              },
-              {
-                "required": [
-                  "ui"
-                ]
-              },
-              {
-                "required": [
-                  "audio"
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "required": [
-            "effects"
-          ],
-          "not": {
-            "anyOf": [
-              {
-                "required": [
-                  "animation"
-                ]
-              },
-              {
-                "required": [
-                  "entity"
-                ]
-              },
-              {
-                "required": [
-                  "field"
-                ]
-              },
-              {
-                "required": [
-                  "observation"
-                ]
-              },
-              {
-                "required": [
-                  "ui"
-                ]
-              },
-              {
-                "required": [
-                  "audio"
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "required": [
-            "entity",
-            "field"
-          ],
-          "not": {
-            "anyOf": [
-              {
-                "required": [
-                  "animation"
-                ]
-              },
-              {
-                "required": [
-                  "effects"
-                ]
-              },
-              {
-                "required": [
-                  "observation"
-                ]
-              },
-              {
-                "required": [
-                  "ui"
-                ]
-              },
-              {
-                "required": [
-                  "audio"
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "required": [
-            "audio"
-          ],
-          "not": {
-            "anyOf": [
-              {
-                "required": [
-                  "animation"
-                ]
-              },
-              {
-                "required": [
-                  "effects"
-                ]
-              },
-              {
-                "required": [
-                  "entity"
-                ]
-              },
-              {
-                "required": [
-                  "field"
-                ]
-              },
-              {
-                "required": [
-                  "observation"
-                ]
-              },
-              {
-                "required": [
-                  "ui"
-                ]
-              }
-            ]
-          }
-        }
-      ],
-      "allOf": [
-        {
-          "if": {
-            "anyOf": [
-              {
-                "required": [
-                  "observation"
-                ]
-              },
-              {
-                "required": [
-                  "ui"
-                ]
-              },
-              {
-                "required": [
-                  "animation"
-                ]
-              },
-              {
-                "required": [
-                  "effects"
-                ]
-              },
-              {
-                "required": [
-                  "audio"
-                ]
-              }
-            ]
-          },
-          "then": {
-            "not": {
-              "anyOf": [
-                {
-                  "required": [
-                    "equals"
-                  ]
-                },
-                {
-                  "required": [
-                    "greater_than"
-                  ]
-                },
-                {
-                  "required": [
-                    "less_than"
-                  ]
-                }
-              ]
-            }
-          }
-        },
-        {
-          "if": {
-            "required": [
-              "entity"
-            ]
-          },
-          "then": {
-            "required": [
-              "field"
-            ],
-            "oneOf": [
-              {
-                "required": [
-                  "equals"
-                ],
-                "not": {
-                  "anyOf": [
-                    {
-                      "required": [
-                        "greater_than"
-                      ]
-                    },
-                    {
-                      "required": [
-                        "less_than"
-                      ]
-                    }
-                  ]
-                }
-              },
-              {
-                "required": [
-                  "greater_than"
-                ],
-                "not": {
-                  "anyOf": [
-                    {
-                      "required": [
-                        "equals"
-                      ]
-                    },
-                    {
-                      "required": [
-                        "less_than"
-                      ]
-                    }
-                  ]
-                }
-              },
-              {
-                "required": [
-                  "less_than"
-                ],
-                "not": {
-                  "anyOf": [
-                    {
-                      "required": [
-                        "equals"
-                      ]
-                    },
-                    {
-                      "required": [
-                        "greater_than"
-                      ]
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "animationAssertion": {
-      "type": "object",
-      "additionalProperties": false,
       "required": [
-        "entity",
-        "equals"
+        "x",
+        "y"
       ],
-      "properties": {
-        "entity": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Entity whose published animation state is compared."
-        },
-        "equals": {
-          "description": "Full equality against the entity's animation state, or null when it must have none."
-        }
-      },
-      "description": "The engine transports this state; the host runs the Spine runtime. Requires system \"spine\"."
-    },
-    "effectsAssertion": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "equals"
-      ],
-      "properties": {
-        "equals": {
-          "type": "array",
-          "description": "Full equality against the live effect list, in spawn order."
-        }
-      },
-      "description": "The engine transports these events; the host runs the Effekseer runtime. Requires system \"effekseer\"."
-    },
-    "audioAssertion": {
-      "type": "object",
-      "additionalProperties": false,
-      "minProperties": 1,
-      "description": "Full equality against what the game asked to be heard. events is what was fired on the asserted frame; loops is what should still be playing. Provide at least one, or the assertion checks nothing.",
-      "properties": {
-        "events": {
-          "description": "Full equality against world.audio_events for the asserted frame."
-        },
-        "loops": {
-          "description": "Full equality against world.audio_loops, the loops a host should currently be playing."
-        }
-      }
+      "type": "object"
     }
-  }
+  },
+  "$id": "https://unone.dev/schema/test.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "One test case, one file.\n\nUnknown keys are rejected: a test file with a misspelled or invented key\nused to load with that key ignored, so a file whose assertions lived under\nthe wrong name passed green while checking nothing.",
+  "properties": {
+    "assertions": {
+      "items": {
+        "$ref": "#/$defs/TestAssertion"
+      },
+      "type": "array"
+    },
+    "frames": {
+      "default": 60,
+      "format": "uint64",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "input": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "default": {},
+      "type": "object"
+    },
+    "input_sequence": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/InputFrame"
+      },
+      "type": "array"
+    },
+    "load_save": {
+      "default": null
+    },
+    "name": {
+      "type": "string"
+    },
+    "seed": {
+      "default": 42,
+      "format": "uint64",
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "title": "TestSpec",
+  "type": "object"
 }

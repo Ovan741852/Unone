@@ -202,6 +202,8 @@ function persistenceSnapshot(database) {
 test("shared validation fixtures reject invalid manifests before activation", async () => {
   globalThis.indexedDB = new FakeIndexedDb();
   const expectedCodes = {
+    unknown_root: "BUNDLE_MANIFEST_INVALID",
+    unknown_spec: "BUNDLE_MANIFEST_INVALID",
     empty_bundles: "BUNDLE_MANIFEST_EMPTY",
     missing_bundles: "BUNDLE_MANIFEST_INVALID",
     empty_id: "BUNDLE_MANIFEST_INVALID",

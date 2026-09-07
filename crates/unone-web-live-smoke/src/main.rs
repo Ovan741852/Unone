@@ -1,9 +1,9 @@
-use std::{cell::RefCell, collections::BTreeMap};
+use std::cell::RefCell;
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use unone_engine::{
-    BundleSpec, BundleVerifier, Diagnostic, EngineRuntime, InputFrame, PointerInput, Vec2,
-    WorldSnapshot, parse_scene_fragment,
+    BundleSpec, BundleVerifier, Diagnostic, EngineRuntime, Vec2,
+    WorldSnapshot, HostProject, HostInputState, parse_input_frame,
 };
 
 #[cfg(test)]
@@ -11,53 +11,15 @@ use unone_engine::SceneFile;
 
 thread_local! {
     static RUNTIME: RefCell<Option<EngineRuntime>> = const { RefCell::new(None) };
-    static POINTER: RefCell<PointerInput> = const {
-        RefCell::new(PointerInput {
-            position: Vec2 { x: 0.0, y: 0.0 },
-            down: false,
-            screen_position: None,
-        })
-    };
-    static INPUT_FRAME: RefCell<Option<InputFrame>> = const { RefCell::new(None) };
+    static INPUT: RefCell<HostInputState> = RefCell::new(HostInputState::default());
     static OUTPUT: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static INPUT_BUFFER: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static PROJECT_NAME: RefCell<String> = const { RefCell::new(String::new()) };
     static BUNDLE_VERIFIER: RefCell<Option<BundleVerifier>> = const { RefCell::new(None) };
 }
 
-#[derive(Debug, Deserialize)]
-struct HostProject {
-    project: String,
-    script: String,
-    #[serde(default)]
-    scene: Option<Box<serde_json::value::RawValue>>,
-    /// Engine systems this project declares, exactly as project.unone.json
-    /// would declare them for a file-backed project.
-    #[serde(default)]
-    systems: BTreeMap<String, bool>,
-    /// Audio categories and their rules, exactly as project.unone.json declares
-    /// them. Without this the browser runs the same game with no category
-    /// rules at all: no exclusive track switch, no fades.
-    #[serde(default)]
-    audio: Option<unone_engine::AudioConfig>,
-}
-
 fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Box<Diagnostic>> {
-    let scene = project
-        .scene
-        .as_deref()
-        .map(|raw| parse_scene_fragment(raw.get()))
-        .transpose()?;
-    EngineRuntime::load_source_project(unone_engine::SourceProject {
-        name: project.project,
-        script_name: "main.luau".to_string(),
-        source: project.script,
-        scene,
-        seed,
-        systems: project.systems,
-        audio: project.audio,
-        ..unone_engine::SourceProject::default()
-    })
+    project.into_runtime(seed)
 }
 
 #[derive(Debug, Serialize)]
@@ -112,21 +74,11 @@ fn write_runtime_snapshot(runtime: &EngineRuntime) -> i32 {
 }
 
 fn write_error(message: impl Into<String>) {
-    let value = serde_json::json!({
-        "ok": false,
-        "kind": "web_error",
-        "error": message.into(),
-    });
-    OUTPUT.with(|output| *output.borrow_mut() = serde_json::to_vec(&value).unwrap_or_default());
+    write_diagnostic(&Diagnostic::error("HOST_REQUEST_INVALID", "Invalid host request", message.into()));
 }
 
-fn write_diagnostic(diagnostic: &unone_engine::Diagnostic) {
-    let value = serde_json::json!({
-        "ok": false,
-        "kind": "web_error",
-        "diagnostic": diagnostic,
-    });
-    OUTPUT.with(|output| *output.borrow_mut() = serde_json::to_vec(&value).unwrap_or_default());
+fn write_diagnostic(diagnostic: &Diagnostic) {
+    OUTPUT.with(|output| *output.borrow_mut() = serde_json::to_vec(&unone_engine::host_error("web_error", diagnostic)).unwrap_or_default());
 }
 
 #[unsafe(no_mangle)]
@@ -242,17 +194,17 @@ pub unsafe extern "C" fn unone_web_load_project(
         return -1;
     }
     let bytes = unsafe { std::slice::from_raw_parts(pointer, length) };
-    let payload: HostProject = match serde_json::from_slice(bytes) {
+    let payload = match HostProject::parse(bytes) {
         Ok(payload) => payload,
         Err(error) => {
-            write_error(format!("project payload is invalid JSON: {error}"));
+            write_diagnostic(&error);
             return -1;
         }
     };
     let project_name = payload.project.clone();
     match create_runtime(payload, seed) {
         Ok(runtime_value) => {
-            INPUT_FRAME.with(|input| *input.borrow_mut() = None);
+            INPUT.with(|input| *input.borrow_mut() = HostInputState::default());
             let snapshot = runtime_value.observe();
             let save_payload = runtime_value.save_payload();
             RUNTIME.with(|runtime| *runtime.borrow_mut() = Some(runtime_value));
@@ -333,12 +285,10 @@ pub unsafe extern "C" fn unone_web_reload_script(pointer: *const u8, length: usi
 
 #[unsafe(no_mangle)]
 pub extern "C" fn unone_web_set_pointer(x: f64, y: f64, down: i32) {
-    POINTER.with(|pointer| {
-        let mut pointer = pointer.borrow_mut();
-        pointer.position = Vec2 { x, y };
-        pointer.screen_position = Some(Vec2 { x, y });
-        pointer.down = down != 0;
-    });
+    if let Err(diagnostic) = INPUT.with(|input| input.borrow_mut().set_pointer(Vec2 { x, y }, down != 0)) {
+        write_diagnostic(&diagnostic);
+    }
+
 }
 
 /// Set the complete host-normalized input frame for the next tick.
@@ -357,14 +307,14 @@ pub unsafe extern "C" fn unone_web_set_input_frame(pointer: *const u8, length: u
         return -1;
     }
     let bytes = unsafe { std::slice::from_raw_parts(pointer, length) };
-    let frame: InputFrame = match serde_json::from_slice(bytes) {
+    let frame = match parse_input_frame(bytes) {
         Ok(frame) => frame,
         Err(error) => {
-            write_error(format!("input frame is invalid JSON: {error}"));
+            write_diagnostic(&error);
             return -1;
         }
     };
-    INPUT_FRAME.with(|input| *input.borrow_mut() = Some(frame));
+    INPUT.with(|input| input.borrow_mut().queue_frame(frame));
     0
 }
 
@@ -391,14 +341,11 @@ pub extern "C" fn unone_web_set_viewport_aspect(aspect: f64) -> i32 {
 
 #[unsafe(no_mangle)]
 pub extern "C" fn unone_web_set_screen_pointer(x: f64, y: f64) -> i32 {
-    if !x.is_finite() || !y.is_finite() {
-        write_error("screen pointer coordinates must be finite");
-        return -1;
+    match INPUT.with(|input| input.borrow_mut().set_screen_pointer(Vec2 { x, y })) {
+        Ok(()) => 0,
+        Err(diagnostic) => { write_diagnostic(&diagnostic); -1 }
     }
-    POINTER.with(|pointer| {
-        pointer.borrow_mut().screen_position = Some(Vec2 { x, y });
-    });
-    0
+
 }
 
 #[unsafe(no_mangle)]
@@ -406,23 +353,17 @@ pub extern "C" fn unone_web_tick() -> i32 {
     if unone_web_init() != 0 {
         return -1;
     }
-    let pointer = POINTER.with(|pointer| pointer.borrow().clone());
     RUNTIME.with(|runtime| {
         let mut runtime = runtime.borrow_mut();
         let Some(runtime) = runtime.as_mut() else {
             write_error("web runtime is not initialized");
             return -1;
         };
-        let frame = INPUT_FRAME
-            .with(|input| input.borrow_mut().take())
-            .unwrap_or_else(|| InputFrame {
-                actions: BTreeMap::new(),
-                pointer: Some(pointer),
-            });
+        let frame = INPUT.with(|input| input.borrow_mut().consume_frame());
         match runtime.tick_with_input(&frame) {
             Ok(snapshot) => write_runtime_observation(runtime, &snapshot),
             Err(diagnostic) => {
-                write_error(format!("{}: {}", diagnostic.code, diagnostic.explanation));
+                write_diagnostic(&diagnostic);
                 -1
             }
         }
@@ -443,14 +384,33 @@ fn main() {}
 
 #[cfg(test)]
 mod tests {
+    use unone_engine::InputFrame;
     use super::{
-        EngineRuntime, InputFrame, OUTPUT, SceneFile, unone_web_bundle_begin,
+        EngineRuntime, OUTPUT, SceneFile, unone_web_bundle_begin,
         unone_web_bundle_finish, unone_web_bundle_write, unone_web_load_project,
         unone_web_reload_script, unone_web_set_input_frame, unone_web_set_pointer,
         unone_web_set_save_payload, unone_web_set_screen_pointer, unone_web_tick,
     };
     use serde_json::json;
 
+
+    #[test]
+    fn web_normalized_3d_replay_matches_core_every_frame() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!("../../unone-engine/tests/fixtures/host-parity.json")).unwrap();
+        let payload = serde_json::to_vec(&fixture["project"]).unwrap();
+        let mut core = unone_engine::HostProject::parse(&payload).unwrap().into_runtime(42).unwrap();
+        assert_eq!(unsafe { unone_web_load_project(payload.as_ptr(),payload.len(),42) },0);
+        let output = || OUTPUT.with(|bytes| serde_json::from_slice::<serde_json::Value>(&bytes.borrow()).unwrap());
+        assert_eq!(output()["world"],serde_json::to_value(core.observe()).unwrap());
+        for frame in fixture["frames"].as_array().unwrap() {
+            let bytes = serde_json::to_vec(frame).unwrap();
+            assert_eq!(unsafe { unone_web_set_input_frame(bytes.as_ptr(),bytes.len()) },0);
+            assert_eq!(unone_web_tick(),0);
+            let expected = core.tick_with_input(&unone_engine::parse_input_frame(&bytes).unwrap()).unwrap();
+            assert_eq!(output()["world"],serde_json::to_value(&expected).unwrap());
+            assert_eq!(output()["observation_digest"],unone_engine::observation_digest(&expected).unwrap());
+        }
+    }
     const PROJECT_SCRIPT: &str = r#"--!strict
 type Vec2 = { x: number, y: number }
 type EntityApi = { getPosition: (id: string) -> Vec2, setPosition: (id: string, position: Vec2) -> () }

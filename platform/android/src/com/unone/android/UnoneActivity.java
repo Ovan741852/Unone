@@ -52,7 +52,7 @@ public final class UnoneActivity extends Activity {
 
     private static final class UnoneView extends View {
         private static final String TAG = "UnoneAndroidHost";
-        private static final float WORLD_SCALE = 32.0f;
+
         private final Handler handler = new Handler(Looper.getMainLooper());
         private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private long session;
@@ -163,13 +163,28 @@ public final class UnoneActivity extends Activity {
             }
         }
 
+        // This Canvas adapter renders Camera2D only. Screen coordinates also
+        // remain available to 3D game code; they are not a fabricated 3D ray.
+        private float[] camera2d() {
+            try {
+                JSONObject world = new JSONObject(observation).optJSONObject("world");
+                JSONObject camera = world == null ? null : world.optJSONObject("camera");
+                JSONObject position = camera == null ? null : camera.optJSONObject("position");
+                float height = camera == null ? 10.0f : (float) camera.optDouble("view_height", 10.0);
+                float zoom = camera == null ? 1.0f : (float) camera.optDouble("zoom", 1.0);
+                return new float[] { position == null ? 0 : (float) position.optDouble("x", 0),
+                    position == null ? 0 : (float) position.optDouble("y", 0), getHeight() * zoom / height };
+            } catch (JSONException error) { return new float[] {0, 0, getHeight() / 10.0f}; }
+        }
+
         @Override
         public boolean onTouchEvent(MotionEvent event) {
             if (session == 0 || closed || getWidth() == 0 || getHeight() == 0) return true;
             boolean down = event.getActionMasked() != MotionEvent.ACTION_UP
                     && event.getActionMasked() != MotionEvent.ACTION_CANCEL;
-            float worldX = (event.getX() - getWidth() * 0.5f) / WORLD_SCALE;
-            float worldY = (getHeight() * 0.5f - event.getY()) / WORLD_SCALE;
+            float[] camera = camera2d();
+            float worldX = camera[0] + (event.getX() - getWidth() * 0.5f) / camera[2];
+            float worldY = camera[1] + (getHeight() * 0.5f - event.getY()) / camera[2];
             float screenX = event.getX() * 100.0f / getWidth();
             float screenY = (getHeight() - event.getY()) * 100.0f / getHeight();
             UnoneNative.setPointer(session, worldX, worldY, down);
@@ -210,6 +225,7 @@ public final class UnoneActivity extends Activity {
                 if (world == null) return;
                 JSONObject entities = world.optJSONObject("entities");
                 if (entities == null) return;
+                float[] camera = camera2d();
                 Iterator<String> ids = entities.keys();
                 while (ids.hasNext()) {
                     String id = ids.next();
@@ -219,11 +235,11 @@ public final class UnoneActivity extends Activity {
                     if (transform == null) continue;
                     float x = (float) transform.optDouble("x", 0.0);
                     float y = (float) transform.optDouble("y", 0.0);
-                    float centerX = getWidth() * 0.5f + x * WORLD_SCALE;
-                    float centerY = getHeight() * 0.5f - y * WORLD_SCALE;
+                    float centerX = getWidth() * 0.5f + (x - camera[0]) * camera[2];
+                    float centerY = getHeight() * 0.5f - (y - camera[1]) * camera[2];
                     JSONObject sprite = entity.optJSONObject("sprite");
-                    float width = WORLD_SCALE;
-                    float height = WORLD_SCALE;
+                    float width = camera[2];
+                    float height = camera[2];
                     if (sprite != null) {
                         JSONObject size = sprite.optJSONObject("size");
                         if (size != null) {

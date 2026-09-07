@@ -1,6 +1,8 @@
 # Unone
 
-Unone is an AI-native game engine prototype: Rust owns engine mechanisms, while Luau owns game rules and content. The engine is still in early development; its long-term goal is complete only after seven game validations pass.
+Unone is an AI-native **3D game engine prototype with 2D workflows**: Rust owns engine mechanisms, while Luau owns game rules and content. The engine is still in early development; its long-term goal is complete only after seven game validations pass.
+
+The current contract boundaries and host limitations are recorded in [Runtime contracts](docs/runtime-contracts.md). 3D transforms, cameras and presentation are an existing direction; mature 3D physics and a universal asset importer remain unfinished.
 
 ## Getting started from a clone
 
@@ -69,6 +71,7 @@ command takes `--project <path>`.
 - Engine roadmap: [docs/roadmap.md](docs/roadmap.md)
 - Technical plan: [docs/ai-native-game-engine-plan-v0.1.md](docs/ai-native-game-engine-plan-v0.1.md)
 - AI CLI workflow: [docs/ai-workflow.md](docs/ai-workflow.md)
+- Stateful AI play/inspect/edit tools: [docs/developer-session.md](docs/developer-session.md)
 - Current asset workflow contract: [docs/asset-workflow.md](docs/asset-workflow.md)
 - Code review workflow: [docs/review-process.md](docs/review-process.md)
 - Platform toolchain: [docs/platform-toolchain.md](docs/platform-toolchain.md)

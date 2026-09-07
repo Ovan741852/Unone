@@ -62,7 +62,9 @@ if ($config.main_scene) {
 # Keep the scene as validated source JSON. Re-serializing a PSCustomObject with
 # ConvertTo-Json -Depth 100 can recurse through PowerShell metadata and consume
 # unbounded memory on Windows PowerShell; the host payload needs no such model.
-$payloadText = '{"project":' + $projectJson + ',"script":' + $scriptJson + ',"scene":' + $sceneJson + '}'
+$systemsJson = if ($config.systems) { ConvertTo-Json -InputObject $config.systems -Depth 8 -Compress } else { "{}" }
+$audioJson = if ($config.audio) { ConvertTo-Json -InputObject $config.audio -Depth 12 -Compress } else { "null" }
+$payloadText = '{"project":' + $projectJson + ',"script":' + $scriptJson + ',"scene":' + $sceneJson + ',"systems":' + $systemsJson + ',"audio":' + $audioJson + '}'
 [IO.File]::WriteAllText((Join-Path $assetRoot "unone-project.json"), $payloadText, [Text.UTF8Encoding]::new($false))
 
 Write-Output "Building Rust mobile FFI: $Target"

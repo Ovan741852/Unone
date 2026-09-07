@@ -1,0 +1,54 @@
+{
+  "project": {
+    "project": "HostParity3D",
+    "script": "local Game = {}\nlocal frame = 0\nfunction Game.start(api)\n api.observation.set(\"saved\",api.save.get())\n api.audio.loop(\"music://fixture\",{category=\"music\"})\nend\nfunction Game.update(api,dt)\n frame += 1\n local transform = api.entity.getTransform3D(\"car\")\n if api.input.isDown(\"Drive\") then transform.position.z += 1 end\n api.entity.setTransform3D(\"car\",transform)\n api.observation.set(\"pointer_down\",api.input.isPointerDown())\n api.observation.set(\"pointer\",api.input.getPointerPosition())\nend\nreturn Game",
+    "systems": {
+      "physics2d": false
+    },
+    "audio": {
+      "categories": {
+        "music": {
+          "fade_in_frames": 2
+        }
+      }
+    },
+    "restored_save": {
+      "lap": 3
+    },
+    "viewport_aspect": 1.5,
+    "scene": {
+      "camera3d": {},
+      "entities": [
+        {
+          "id": "car",
+          "transform3d": {}
+        }
+      ]
+    }
+  },
+  "frames": [
+    {
+      "actions": {
+        "Drive": true
+      },
+      "pointer": {
+        "position": {
+          "x": 4,
+          "y": 2
+        },
+        "screen_position": {
+          "x": 25,
+          "y": 75
+        },
+        "down": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "Drive": true
+      }
+    },
+    {}
+  ]
+}

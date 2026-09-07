@@ -49,6 +49,7 @@ pub struct SourceProject {
     pub systems: BTreeMap<String, bool>,
     pub restored_save: Option<serde_json::Value>,
     pub audio: Option<crate::audio::AudioConfig>,
+    pub viewport_aspect: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -211,6 +212,7 @@ pub struct EngineRuntime {
     last_seen_script_stamp: Option<ScriptStamp>,
     script_source: Option<String>,
     performance: PerformanceCollector,
+    loaded_script_digest: String,
 }
 
 impl EngineRuntime {
@@ -338,7 +340,7 @@ impl EngineRuntime {
         if let Some(scene) = &paths.main_scene {
             world.borrow_mut().load_scene(scene)?;
         }
-        Self::with_world(config, paths, world, None, seed, restored_save)
+        Self::with_world(config, paths, world, None, seed, restored_save, None)
     }
 
     /// Create a runtime from host-provided source instead of a native filesystem.
@@ -440,6 +442,7 @@ impl EngineRuntime {
             systems,
             restored_save,
             audio,
+            viewport_aspect,
         } = project;
         let script_name = if script_name.is_empty() {
             "main.luau".to_string()
@@ -471,9 +474,10 @@ impl EngineRuntime {
         if let Some(scene) = scene {
             world.borrow_mut().load_scene_data(scene)?;
         }
-        Self::with_world(config, paths, world, Some(source), seed, restored_save)
+        Self::with_world(config, paths, world, Some(source), seed, restored_save, viewport_aspect)
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn with_world(
         config: ProjectConfig,
         paths: ProjectPaths,
@@ -481,6 +485,7 @@ impl EngineRuntime {
         script_source: Option<String>,
         seed: u64,
         restored_save: Option<serde_json::Value>,
+        initial_viewport_aspect: Option<f64>,
     ) -> Result<Self, Box<Diagnostic>> {
         let input = Rc::new(RefCell::new(InputState::default()));
         let random = Rc::new(RefCell::new(DeterministicRng::new(seed)));
@@ -551,7 +556,9 @@ impl EngineRuntime {
             last_seen_script_stamp: None,
             script_source,
             performance: PerformanceCollector::default(),
+            loaded_script_digest: String::new(),
         };
+        if let Some(aspect) = initial_viewport_aspect { runtime.set_viewport_aspect(aspect)?; }
         runtime.load_script(false, None)?;
         Ok(runtime)
     }
@@ -656,6 +663,7 @@ impl EngineRuntime {
         &mut self,
         frame: &InputFrame,
     ) -> Result<WorldSnapshot, Box<Diagnostic>> {
+        frame.validate()?;
         self.input.borrow_mut().down = frame.actions.clone();
         if let Some(pointer) = &frame.pointer {
             let mut input = self.input.borrow_mut();
@@ -738,12 +746,12 @@ impl EngineRuntime {
             world.frame += 1;
             world.time_seconds = world.frame as f64 / 60.0;
         }
-        let (snapshot, observe_time) = timed(|| self.observe());
         {
             let mut world = self.world.borrow_mut();
             let frame = world.frame;
             world.audio.end_frame(frame);
         }
+        let (snapshot, observe_time) = timed(|| self.observe());
         self.performance.record(FrameTiming {
             script: script_time,
             physics: physics_time,
@@ -883,6 +891,47 @@ impl EngineRuntime {
         snapshot
     }
 
+    pub(crate) fn developer_generation(&self) -> u64 {
+        self.generation
+    }
+
+    pub(crate) fn developer_script_digest(&self) -> &str {
+        &self.loaded_script_digest
+    }
+
+    pub(crate) fn take_developer_trace(&mut self) -> Vec<serde_json::Value> {
+        std::mem::take(&mut *self.trace.borrow_mut())
+            .into_iter()
+            .map(|event| serde_json::to_value(event).expect("trace serializes"))
+            .collect()
+    }
+
+    pub(crate) fn developer_performance(&self) -> PerformanceReport {
+        self.performance_report()
+    }
+
+    /// Validate an entire developer batch on candidate Rust state, then publish once.
+    /// No Lua callback runs here. The caller serializes this between simulation ticks.
+    pub(crate) fn enact_developer(
+        &mut self,
+        operations: &[crate::developer::EnactOperation],
+        dry_run: bool,
+    ) -> Result<(WorldSnapshot, Vec<serde_json::Value>), Box<Diagnostic>> {
+        let mut world = self.world.borrow().clone();
+        let mut ui = self.ui.borrow().clone();
+        let results =
+            crate::developer::apply_operations(&mut world, &mut ui, &self.systems, operations)?;
+        world.follow_audio_entities();
+        let mut snapshot = world.snapshot();
+        snapshot.observations = self.observations.borrow().clone();
+        snapshot.ui = ui.clone();
+        if !dry_run {
+            *self.world.borrow_mut() = world;
+            *self.ui.borrow_mut() = ui;
+        }
+        Ok((snapshot, results))
+    }
+
     fn load_script(
         &mut self,
         is_reload: bool,
@@ -910,6 +959,7 @@ impl EngineRuntime {
                 .call::<()>(self.api.clone())
                 .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
             self.update_fn = update_fn;
+            self.loaded_script_digest = format!("sha256:{}", hex_digest(source.as_bytes()));
             if let Some(source) = source_override {
                 self.script_source = Some(source);
             }
@@ -976,6 +1026,7 @@ impl EngineRuntime {
         self.lua = candidate_lua;
         self.api = candidate_api;
         self.update_fn = update_fn;
+        self.loaded_script_digest = format!("sha256:{}", hex_digest(source.as_bytes()));
         if let Some(source) = source_override {
             self.script_source = Some(source);
         }
@@ -3349,11 +3400,11 @@ return Game
             assets,
             vec![
                 vec!["music://lobby".to_string(), "music://game".to_string()],
-                vec!["music://lobby".to_string(), "music://game".to_string()],
+                vec!["music://game".to_string()],
                 vec!["music://game".to_string()],
                 vec!["music://game".to_string()],
             ],
-            "the fade must last exactly its declared 3 frames"
+            "fade starts at simulation frame 1 and completes at frame 4; completed-frame observations must not retain an expired loop"
         );
     }
 

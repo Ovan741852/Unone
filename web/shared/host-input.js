@@ -7,10 +7,13 @@ const DEFAULT_POINTER = Object.freeze({
 function copyPointer(pointer) {
   const position = pointer?.position ?? DEFAULT_POINTER.position;
   const screen = pointer?.screen_position ?? position;
+  if (![position.x, position.y, screen.x, screen.y].every(Number.isFinite) || typeof pointer?.down !== "boolean") {
+    throw new TypeError("INPUT_FRAME_INVALID: pointer coordinates must be finite numbers and down a boolean");
+  }
   return {
-    position: { x: Number(position.x) || 0, y: Number(position.y) || 0 },
-    screen_position: { x: Number(screen.x) || 0, y: Number(screen.y) || 0 },
-    down: Boolean(pointer?.down),
+    position: { x: position.x, y: position.y },
+    screen_position: { x: screen.x, y: screen.y },
+    down: pointer.down,
   };
 }
 
@@ -66,6 +69,7 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
 
   function releaseAll() {
     held.clear();
+    pressed.clear();
     pointer.down = false;
     pointerFrames.length = 0;
   }
