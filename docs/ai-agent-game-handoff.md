@@ -33,6 +33,21 @@ bin/game.exe --project <game-root> --json systems search "<unneeded-game-mechani
 bin/game.exe --project <game-root> --json verify
 ~~~
 
+After the engine bootstrap, discover optional AI tools. Plugins are not hidden
+engine dependencies and may be absent; only use one when the game plan needs
+its capability:
+
+~~~
+bin/game.exe --project <game-root> --json plugin list
+bin/game.exe --project <game-root> --json plugin inspect --id org.unone.blender
+bin/game.exe --project <game-root> --json plugin test --id org.unone.blender
+~~~
+
+The bundled Blender plugin is a dependency-free protocol smoke and scene
+staging bridge. It is not proof that Blender itself is installed. Read
+`docs/plugin-protocol.md`; plugin tools are called through the same structured
+result contract and must stage artifacts before the game activates them.
+
 An initially empty project has no UI tree, so this bootstrap list does not require an additional `ui preview --strict`. Create a View tree and use preview according to the UI section only when GAME_PLAN explicitly requires UI; add save to the game and tests only when save／restore is required.
 
 `project init` produces a five-file headless starter: config, a strict script, an example scene, and two idle/input tests. It accepts only a nonexistent or genuinely empty directory (a `.git` directory or a game-plan file also makes it non-empty) and never overwrites. Keep the game plan and engine package outside the output; run `git init` only after successful initialization. See [ai-workflow.md](ai-workflow.md#0-先建立或取得專案與-api-語意) for complete result fields, partial-failure handling, and the next-step contract. The example tests prove only the starter and do not count toward gameplay acceptance; replace them when replacing the example. Use the package's project／scene／test schemas and engine.d.luau; do not guess scale or APIs. Resolve logical executable `game` to the package's `bin/game.exe`, pass argv unchanged to the subprocess without shell interpolation, and locate the official analyzer automatically in the same directory.

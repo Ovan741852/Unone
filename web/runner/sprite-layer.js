@@ -83,7 +83,7 @@ function declarationKey(assetManifest, assetId, asset) {
 }
 
 /**
- * Own the single ordinary-sprite DOM painter layer. The WebGPU runner can
+ * Own the single ordinary-sprite DOM painter layer. The GPU runner can
  * suppress its matching 2D quads while this layer keeps image and fallback
  * sprites in one deterministic stacking order.
  */

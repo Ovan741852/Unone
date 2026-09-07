@@ -1,0 +1,15 @@
+{
+  "scene": "little-fighter2",
+  "entities": [
+    {
+      "id": "player",
+      "transform": {"position": {"x": 0, "y": 0, "z": 0}},
+      "mesh3d": {"asset": "asset://fighter/player"}
+    },
+    {
+      "id": "enemy",
+      "transform": {"position": {"x": 2, "y": 0, "z": 0}},
+      "mesh3d": {"asset": "asset://fighter/enemy"}
+    }
+  ]
+}

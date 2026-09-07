@@ -219,6 +219,9 @@ fn handle_message(message: Value, project: &Path, state: &mut ProtocolState) -> 
 
 fn tool_names() -> Vec<&'static str> {
     vec![
+        "unone_plugin_list",
+        "unone_plugin_inspect",
+        "unone_plugin_call",
         "unone_project_inspect",
         "unone_project_init",
         "unone_asset_inspect",
@@ -247,6 +250,42 @@ fn tool_names() -> Vec<&'static str> {
 
 fn tool_definitions() -> Vec<Value> {
     vec![
+        tool(
+            "unone_plugin_list",
+            "List optional plugins",
+            "Discover installed AI-facing plugins from the project and engine package. Plugins are optional; use their declared tools only when the capability is needed.",
+            object_schema(json!({})),
+            true,
+            true,
+        ),
+        tool(
+            "unone_plugin_inspect",
+            "Inspect an optional plugin",
+            "Read one plugin manifest, capabilities, permissions, and AI-facing tool schemas without starting the plugin process.",
+            object_schema(json!({
+                "properties": {
+                    "id": {"type": "string", "description": "Plugin id, for example org.unone.blender."}
+                },
+                "required": ["id"]
+            })),
+            true,
+            true,
+        ),
+        tool(
+            "unone_plugin_call",
+            "Call an optional plugin tool",
+            "Call one declared plugin tool through the versioned Unone plugin protocol. The plugin runs out of process and returns structured JSON; it may create staged artifacts but must not silently mutate the game.",
+            object_schema(json!({
+                "properties": {
+                    "id": {"type": "string", "description": "Plugin id."},
+                    "tool": {"type": "string", "description": "Tool name from unone_plugin_inspect."},
+                    "input": {"type": "object", "description": "Tool-specific JSON object."}
+                },
+                "required": ["id", "tool"]
+            })),
+            false,
+            false,
+        ),
         tool(
             "unone_project_inspect",
             "Inspect project",
@@ -572,6 +611,30 @@ fn object_schema(extra: Value) -> Value {
 
 fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
     match name {
+        "unone_plugin_list" => tool_result(crate::plugins::list(project)),
+        "unone_plugin_inspect" => match required_string(arguments, "id") {
+            Ok(id) => tool_result(crate::plugins::inspect(project, &id)),
+            Err(diagnostic) => argument_error(*diagnostic),
+        },
+        "unone_plugin_call" => {
+            let id = match required_string(arguments, "id") {
+                Ok(id) => id,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let tool = match required_string(arguments, "tool") {
+                Ok(tool) => tool,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let input = arguments.get("input").cloned().unwrap_or_else(|| json!({}));
+            if !input.is_object() {
+                return argument_error(Diagnostic::error(
+                    "MCP_ARGUMENT_INVALID",
+                    "工具參數型別錯誤",
+                    "arguments.input 必須是 object。",
+                ));
+            }
+            tool_result(crate::plugins::call(project, &id, &tool, input))
+        }
         "unone_project_inspect" => tool_result(inspect_project(project)),
         "unone_project_init" => match required_string(arguments, "name") {
             Ok(name) => tool_result(init_project(project, &name)),
@@ -1077,7 +1140,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 23);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 26);
     }
 
     #[test]
@@ -1087,37 +1150,51 @@ mod tests {
             .iter()
             .map(|tool| tool["name"].as_str().unwrap())
             .collect();
-        assert_eq!(names.first(), Some(&"unone_project_inspect"));
+        assert_eq!(names.first(), Some(&"unone_plugin_list"));
         assert_eq!(names.last(), Some(&"unone_bundle_install"));
         assert!(names.contains(&"unone_asset_describe"));
-        assert!(
-            tools[0]["description"]
-                .as_str()
-                .unwrap()
-                .contains("No files")
-        );
-        assert_eq!(tools[3]["annotations"]["readOnlyHint"], true);
-        assert_eq!(tools[4]["annotations"]["readOnlyHint"], false);
-        assert_eq!(tools[5]["inputSchema"]["type"], "object");
+        let plugin_list = tools.iter().find(|tool| tool["name"] == "unone_plugin_list").unwrap();
+        assert!(plugin_list["description"].as_str().unwrap().contains("optional"));
+        let project_init = tools.iter().find(|tool| tool["name"] == "unone_project_init").unwrap();
+        assert_eq!(project_init["annotations"]["readOnlyHint"], false);
+        let asset_init = tools.iter().find(|tool| tool["name"] == "unone_asset_init").unwrap();
+        assert_eq!(asset_init["inputSchema"]["type"], "object");
         assert_eq!(
-            tools[5]["inputSchema"]["properties"]["kind"]["enum"]
+            asset_init["inputSchema"]["properties"]["kind"]["enum"]
                 .as_array()
                 .unwrap()
                 .len(),
             4
         );
+        let bundle_install = tools
+            .iter()
+            .find(|tool| tool["name"] == "unone_bundle_install")
+            .unwrap();
         assert_eq!(
-            tools[22]["inputSchema"]["oneOf"]
+            bundle_install["inputSchema"]["oneOf"]
                 .as_array()
                 .unwrap()
                 .len(),
             2
         );
-        assert!(tools[22]["inputSchema"].get("required").is_none());
-        assert_eq!(tools[22]["inputSchema"]["oneOf"][0]["properties"]["all"]["const"], false);
-        assert_eq!(tools[22]["inputSchema"]["oneOf"][1]["properties"]["all"]["const"], true);
-        assert_eq!(tools[22]["inputSchema"]["properties"]["all"]["type"], "boolean");
-        assert!(tools[22]["inputSchema"]["properties"]["all"].get("const").is_none());
+        assert!(bundle_install["inputSchema"].get("required").is_none());
+        assert_eq!(
+            bundle_install["inputSchema"]["oneOf"][0]["properties"]["all"]["const"],
+            false
+        );
+        assert_eq!(
+            bundle_install["inputSchema"]["oneOf"][1]["properties"]["all"]["const"],
+            true
+        );
+        assert_eq!(
+            bundle_install["inputSchema"]["properties"]["all"]["type"],
+            "boolean"
+        );
+        assert!(
+            bundle_install["inputSchema"]["properties"]["all"]
+                .get("const")
+                .is_none()
+        );
     }
 
     #[test]

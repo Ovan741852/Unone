@@ -32,7 +32,7 @@
     <main>
       <h1>Unone generic Web game runner</h1>
       <p id="status" data-testid="status">waiting for Emscripten runtime…</p>
-      <p class="note">Host fetches a project config, scene and Luau script; Rust/Wasm owns fixed-tick simulation and semantic snapshot. Use ?project=/Unone_Games/&lt;game&gt;/.</p>
+      <p class="note">Host fetches a project config, scene and Luau script; Rust/Wasm owns fixed-tick simulation and semantic snapshot. Three.js owns GPU presentation (WebGPU or WebGL). Use ?project=/Unone_Games/&lt;game&gt;/.</p>
       <div class="layout">
         <div id="game-shell">
           <canvas id="game" data-testid="game-canvas" aria-label="Unone generic game viewport"></canvas>

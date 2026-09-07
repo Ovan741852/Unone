@@ -17,6 +17,12 @@ The MCP host configuration can use the same command and args. After connecting, 
 
 The only current asset contract is [asset-workflow.md](asset-workflow.md). MCP discovery should include `unone_asset_describe`; use `tools/list` as the authority for available tools and parameters instead of assuming a fixed count. Use describe when you need one asset's editing location, references, native-local active state, and freshness; do not assemble a second contract by combining `asset inspect` and `asset read` results.
 
+Optional authoring tools are discovered through the same protocol. Run
+`game --project <game> --json plugin list`, inspect a plugin before using it,
+and call only the tools it declares. Plugins run out of process and return the
+same structured result shape; they may write staging artifacts but must not
+silently replace active game data. See [plugin-protocol.md](plugin-protocol.md).
+
 ## -1. Check platform capabilities first
 
 ```powershell

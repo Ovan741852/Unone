@@ -169,6 +169,44 @@ export function verticesFor(snapshot, aspect, options = {}) {
   return new Float32Array(vertices);
 }
 
+function spriteEntitiesFor(snapshot) {
+  const world = worldOf(snapshot);
+  return Object.values(world.entities ?? {})
+    .filter((entity) => entity.sprite && entity.sprite.visible !== false)
+    .sort(compareSpriteEntities);
+}
+
+function spriteVerticesFor(snapshot, aspect, predicate = () => true) {
+  const world = worldOf(snapshot);
+  const vertices = [];
+  for (const entity of spriteEntitiesFor(snapshot)) {
+    if (!predicate(entity)) continue;
+    const corners = worldSpriteCorners(entity).map((point) => worldToView(point, world.camera, aspect));
+    const clipCorners = corners.map((point) => ({ x: point.x / 50 - 1, y: point.y / 50 - 1 }));
+    const color = colorFor(entity);
+    for (const index of [0, 1, 2, 0, 2, 3]) {
+      const point = clipCorners[index];
+      vertices.push(point.x, point.y, ...color);
+    }
+  }
+  return new Float32Array(vertices);
+}
+
+function texturedSpriteVertices(entity, world, aspect) {
+  const corners = worldSpriteCorners(entity).map((point) => worldToView(point, world.camera, aspect));
+  const clipCorners = corners.map((point) => ({ x: point.x / 50 - 1, y: point.y / 50 - 1 }));
+  const uvs = [
+    [0, 1], [1, 1], [1, 0],
+    [0, 1], [1, 0], [0, 0],
+  ];
+  const vertices = [];
+  for (let index = 0; index < 6; index += 1) {
+    const point = clipCorners[[0, 1, 2, 0, 2, 3][index]];
+    vertices.push(point.x, point.y, uvs[index][0], uvs[index][1], 1, 1, 1, 1);
+  }
+  return new Float32Array(vertices);
+}
+
 function add3(left, right) {
   return { x: left.x + right.x, y: left.y + right.y, z: left.z + right.z };
 }
@@ -298,33 +336,130 @@ export async function createWebGpuRenderer(canvas, options = {}) {
   resize();
   window.addEventListener("resize", resize);
 
-  const shader = device.createShaderModule({ code: `
+  const colorShader = device.createShaderModule({ code: `
     struct VertexOut { @builtin(position) position: vec4f, @location(0) color: vec4f }
     @vertex fn vs(@location(0) position: vec2f, @location(1) color: vec4f) -> VertexOut {
       var out: VertexOut; out.position = vec4f(position, 0.0, 1.0); out.color = color; return out;
     }
     @fragment fn fs(@location(0) color: vec4f) -> @location(0) vec4f { return color; }
   ` });
-  const pipeline = device.createRenderPipeline({
+  const colorPipeline = device.createRenderPipeline({
     layout: "auto",
     vertex: {
-      module: shader,
+      module: colorShader,
       entryPoint: "vs",
       buffers: [{ arrayStride: 24, attributes: [
         { shaderLocation: 0, offset: 0, format: "float32x2" },
         { shaderLocation: 1, offset: 8, format: "float32x4" },
       ] }],
     },
-    fragment: { module: shader, entryPoint: "fs", targets: [{ format }] },
+    fragment: { module: colorShader, entryPoint: "fs", targets: [{ format }] },
     primitive: { topology: "triangle-list" },
   });
 
+  const textureShader = device.createShaderModule({ code: `
+    struct VertexOut {
+      @builtin(position) position: vec4f,
+      @location(0) uv: vec2f,
+      @location(1) tint: vec4f,
+    }
+    @vertex fn vs(
+      @location(0) position: vec2f,
+      @location(1) uv: vec2f,
+      @location(2) tint: vec4f,
+    ) -> VertexOut {
+      var out: VertexOut;
+      out.position = vec4f(position, 0.0, 1.0);
+      out.uv = uv;
+      out.tint = tint;
+      return out;
+    }
+    @group(0) @binding(0) var spriteTexture: texture_2d<f32>;
+    @group(0) @binding(1) var spriteSampler: sampler;
+    @fragment fn fs(input: VertexOut) -> @location(0) vec4f {
+      return textureSample(spriteTexture, spriteSampler, input.uv) * input.tint;
+    }
+  ` });
+  const texturePipeline = device.createRenderPipeline({
+    layout: "auto",
+    vertex: {
+      module: textureShader,
+      entryPoint: "vs",
+      buffers: [{ arrayStride: 32, attributes: [
+        { shaderLocation: 0, offset: 0, format: "float32x2" },
+        { shaderLocation: 1, offset: 8, format: "float32x2" },
+        { shaderLocation: 2, offset: 16, format: "float32x4" },
+      ] }],
+    },
+    fragment: { module: textureShader, entryPoint: "fs", targets: [{ format, blend: {
+      color: { srcFactor: "src-alpha", dstFactor: "one-minus-src-alpha", operation: "add" },
+      alpha: { srcFactor: "one", dstFactor: "one-minus-src-alpha", operation: "add" },
+    } }] },
+    primitive: { topology: "triangle-list" },
+  });
+  const sampler = device.createSampler({ magFilter: "linear", minFilter: "linear", mipmapFilter: "linear" });
+  const textureRecords = new Map();
+  const assetManifestOf = options.getAssetManifest ?? (() => options.assetManifest ?? null);
+
+  function ensureTexture(asset) {
+    const assetId = String(asset?.id ?? "");
+    if (!assetId || typeof options.loadAssetUrl !== "function") return null;
+    const existing = textureRecords.get(assetId);
+    if (existing) return existing;
+    const record = { state: "loading", texture: null, bindGroup: null, error: null };
+    record.promise = options.loadAssetUrl(asset)
+      .then((url) => fetch(url))
+      .then((response) => {
+        if (!response.ok) throw new Error(`texture request failed: ${response.status}`);
+        return response.blob();
+      })
+      .then((blob) => createImageBitmap(blob))
+      .then((bitmap) => {
+        const texture = device.createTexture({
+          size: [bitmap.width, bitmap.height, 1],
+          format: "rgba8unorm",
+          usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
+        });
+        device.queue.copyExternalImageToTexture(
+          { source: bitmap },
+          { texture },
+          [bitmap.width, bitmap.height, 1],
+        );
+        bitmap.close();
+        record.texture = texture;
+        record.bindGroup = device.createBindGroup({
+          layout: texturePipeline.getBindGroupLayout(0),
+          entries: [
+            { binding: 0, resource: texture.createView() },
+            { binding: 1, resource: sampler },
+          ],
+        });
+        record.state = "ready";
+      })
+      .catch((error) => {
+        record.state = "error";
+        record.error = error;
+      });
+    textureRecords.set(assetId, record);
+    return record;
+  }
+
   let vertexBuffer = null;
   let vertexCapacity = 0;
+  const spriteBuffers = new Map();
   const draw = (snapshot) => {
     resize();
-    const data = verticesFor(snapshot, aspectOf(canvas), options);
-    if (!vertexBuffer || data.byteLength > vertexCapacity) {
+    const aspect = aspectOf(canvas);
+    const manifest = assetManifestOf();
+    const specs = new Map((manifest?.assets ?? []).map((asset) => [String(asset.id), asset]));
+    const textureEntities = new Map();
+    for (const entity of spriteEntitiesFor(snapshot)) {
+      const asset = specs.get(String(entity.sprite.asset ?? ""));
+      const record = asset ? ensureTexture(asset) : null;
+      textureEntities.set(entity.id, record);
+    }
+    const data = verticesFor(snapshot, aspect, { ...options, suppress2dSprites: true });
+    if (data.length > 0 && (!vertexBuffer || data.byteLength > vertexCapacity)) {
       vertexBuffer?.destroy();
       vertexCapacity = Math.max(4, 2 ** Math.ceil(Math.log2(Math.max(4, data.byteLength))));
       vertexBuffer = device.createBuffer({
@@ -332,7 +467,7 @@ export async function createWebGpuRenderer(canvas, options = {}) {
         usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
       });
     }
-    device.queue.writeBuffer(vertexBuffer, 0, data);
+    if (data.length > 0) device.queue.writeBuffer(vertexBuffer, 0, data);
     const encoder = device.createCommandEncoder();
     const pass = encoder.beginRenderPass({
       colorAttachments: [{
@@ -341,11 +476,39 @@ export async function createWebGpuRenderer(canvas, options = {}) {
         loadOp: "clear", storeOp: "store",
       }],
     });
-    pass.setPipeline(pipeline);
-    pass.setVertexBuffer(0, vertexBuffer);
-    pass.draw(data.length / 6);
+    pass.setPipeline(colorPipeline);
+    if (data.length > 0) {
+      pass.setVertexBuffer(0, vertexBuffer);
+      pass.draw(data.length / 6);
+    }
+    for (const entity of spriteEntitiesFor(snapshot)) {
+      const record = textureEntities.get(entity.id);
+      if (!record || record.state !== "ready") continue;
+      const spriteData = texturedSpriteVertices(entity, worldOf(snapshot), aspect);
+      let spriteRecord = spriteBuffers.get(entity.id);
+      if (!spriteRecord || spriteRecord.size < spriteData.byteLength) {
+        spriteRecord?.buffer.destroy();
+        const buffer = device.createBuffer({
+          size: Math.max(32, spriteData.byteLength),
+          usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+        });
+        spriteRecord = { buffer, size: Math.max(32, spriteData.byteLength) };
+        spriteBuffers.set(entity.id, spriteRecord);
+      }
+      device.queue.writeBuffer(spriteRecord.buffer, 0, spriteData);
+      pass.setPipeline(texturePipeline);
+      pass.setBindGroup(0, record.bindGroup);
+      pass.setVertexBuffer(0, spriteRecord.buffer);
+      pass.draw(6);
+    }
     pass.end();
     device.queue.submit([encoder.finish()]);
   };
-  return { draw };
+  const clearTextures = () => {
+    for (const record of textureRecords.values()) record.texture?.destroy();
+    textureRecords.clear();
+    for (const record of spriteBuffers.values()) record.buffer.destroy();
+    spriteBuffers.clear();
+  };
+  return { draw, clearTextures, usesGpuSprites: true };
 }

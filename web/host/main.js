@@ -1,4 +1,5 @@
-import { createWebGpuRenderer, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=2";
+import { semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=2";
+import { createRenderer } from "../renderer/index.js?v=1";
 
 const canvas = document.querySelector("#game");
 const status = document.querySelector("#status");
@@ -24,7 +25,7 @@ async function main() {
   canvas.addEventListener("pointerup", (event) => {
     showState(snapshot, { position: worldFromPointer(canvas, event, snapshot), down: false });
   });
-  const renderer = await createWebGpuRenderer(canvas);
+  const renderer = await createRenderer(canvas, { kind: "webgpu-raw" });
   renderer.draw(snapshot);
   status.textContent = `passed: WebGPU rendered ${Object.keys(snapshot.world.entities).length} engine entities`;
 }

@@ -50,6 +50,13 @@ edit `scripts/main.luau`, add assertions to the tests, run `verify` again.
 Keep the game outside this repository. `game api search ""` prints the complete
 public API index; there is no separate list to find and no method names to guess.
 
+Optional AI tools use the same protocol instead of adding engine-specific
+dependencies. Discover and test them with `game plugin list`, `game plugin
+inspect`, and `game plugin test`; see [docs/plugin-protocol.md](docs/plugin-protocol.md).
+The bundled Blender bridge is optional and can validate/stage scene data without
+Blender installed. A plugin is an external process, so the Rust runtime remains
+deterministic and the AI can inspect its capabilities before using it.
+
 ## Workspace
 
 The paths in the command examples below are the ones this engine is developed
@@ -129,12 +136,14 @@ python -m http.server 8001
 ```
 
 The slot machine uses `web/presentation/` (Spine + Effekseer, requiring WebGL2); Xiao Mary and Angry Birds use `web/runner/`.
-A browser without WebGPU can still run the semantic layer: the runner reports `renderer.available=false` and continues simulation, UI, and save execution.
+A browser without WebGPU can still run the semantic layer: the default Three.js
+adapter falls back to WebGL, and a browser without any usable GPU reports
+`renderer.available=false` while continuing simulation, UI, and save execution.
 The slot-machine wasm host must first run `scripts/build-web-live.ps1`.
 
 ## Current Web status
 
-`unone-engine` has passed a library compile with `wasm32-unknown-emscripten` and an Emscripten wrapper. `unone-web-smoke` has also completed linking, run 60 frames under host Node (requiring `--experimental-wasm-exnref`), and been loaded by `web/smoke/index.html` in a browser. `web/host/` covers the snapshot bridge; `web/live/` additionally covers browser animation frames, host-provided project payloads, script reload, pointer-driven execution of the same Rust/Luau runtime, WebGPU rendering, and sample bundle verification, IndexedDB caching, generation activation, and cache-only reopen. `web/runner/` can read engine-produced content archives and parse a real SVG asset. This is still not complete production asset packaging; OPFS/chunked asset streaming, CDN policy, and formal error transport remain unfinished.
+`unone-engine` has passed a library compile with `wasm32-unknown-emscripten` and an Emscripten wrapper. `unone-web-smoke` has also completed linking, run 60 frames under host Node (requiring `--experimental-wasm-exnref`), and been loaded by `web/smoke/index.html` in a browser. `web/host/` covers the snapshot bridge; `web/live/` additionally covers browser animation frames, host-provided project payloads, script reload, pointer-driven execution of the same Rust/Luau runtime, and the diagnostic raw WebGPU adapter. `web/runner/` uses the abstract renderer contract with a bundled Three.js adapter (WebGPU when available, WebGL fallback), uploads declared SVG/PNG/JPG/WebP sprites as GPU textures, and can read engine-produced content archives. This is still not complete production asset packaging; OPFS/chunked asset streaming, CDN policy, and formal error transport remain unfinished.
 
 Android preflight has passed an engine and minimal `unone-mobile-ffi` adapter cross-compile for `aarch64-linux-android` and `x86_64-linux-android` using NDK `27.1.12297006`; this is not APK, emulator/device, or mobile-lifecycle evidence. See [docs/mobile-host-abi.md](docs/mobile-host-abi.md) for the ABI description. Mobile validation is a separate deferred track and is not a prerequisite for the Web slice; Android/iOS host and lifecycle evidence will be added when those hosts are explicitly exercised.
 
