@@ -196,6 +196,138 @@ function sameBundles(left, right) {
   return JSON.stringify(leftEntries) === JSON.stringify(rightEntries);
 }
 
+function generationState(record, database, status) {
+  return {
+    status,
+    generation: record.generation,
+    manifest_version: record.manifest_version,
+    bundles: { ...record.bundles },
+    database,
+  };
+}
+
+function generationRecordMatches(record, state) {
+  return isRecord(record)
+    && record.generation === state.generation
+    && record.manifest_version === state.manifest_version
+    && sameBundles(record.bundles, state.bundles);
+}
+
+function readableGenerationRecord(record, generation) {
+  return isRecord(record)
+    && record.generation === generation
+    && Number.isInteger(record.manifest_version)
+    && record.manifest_version >= 0
+    && record.manifest_version <= 0xffffffff
+    && isValidBundleMap(record.bundles);
+}
+
+function activePointerGeneration(pointer) {
+  if (pointer === undefined) return null;
+  if (!isRecord(pointer) || pointer.key !== "activeGeneration" || !isValidGeneration(pointer.generation)) {
+    activeGenerationUnreadable("active generation pointer is invalid", "The active generation pointer must identify a positive integer generation.");
+  }
+  return pointer.generation;
+}
+
+/**
+ * Compare the active pointer and write its replacement in one IndexedDB
+ * readwrite transaction. A read followed by a later transaction is not a CAS:
+ * another tab could activate between those two operations.
+ */
+function compareAndSetGeneration({ database, expectedGeneration, targetState, status }) {
+  return new Promise((resolve, reject) => {
+    let failure = null;
+    let targetRecord = null;
+    const transaction = database.transaction(["generations", "meta"], "readwrite");
+    const generations = transaction.objectStore("generations");
+    const meta = transaction.objectStore("meta");
+
+    const fail = (error) => {
+      failure ??= error;
+    };
+
+    const pointerRequest = meta.get("activeGeneration");
+    pointerRequest.onerror = () => fail(pointerRequest.error ?? new Error("IndexedDB active pointer read failed"));
+    pointerRequest.onsuccess = () => {
+      if (failure) return;
+      let actualGeneration;
+      try {
+        actualGeneration = activePointerGeneration(pointerRequest.result);
+      } catch (error) {
+        fail(error);
+        return;
+      }
+      if (actualGeneration !== expectedGeneration) {
+        fail(engineError(
+          "BUNDLE_ACTIVATION_STALE",
+          "bundle activation lost a concurrent update",
+          "The active generation changed while this candidate was being committed; keep the current session and retry from a fresh stage.",
+          { expected_generation: expectedGeneration, actual_generation: actualGeneration },
+        ));
+        return;
+      }
+
+      const verifyPrevious = (callback) => {
+        if (actualGeneration === null) {
+          callback();
+          return;
+        }
+        const previousRequest = generations.get(actualGeneration);
+        previousRequest.onerror = () => fail(previousRequest.error ?? new Error("IndexedDB active generation read failed"));
+        previousRequest.onsuccess = () => {
+          if (!readableGenerationRecord(previousRequest.result, actualGeneration)) {
+            fail(engineError(
+              "BUNDLE_ACTIVE_GENERATION_UNREADABLE",
+              "active generation record is missing or invalid",
+              "The active generation pointer must resolve to a valid generation record before it can be replaced.",
+              { generation: actualGeneration },
+            ));
+            return;
+          }
+          callback();
+        };
+      };
+
+      verifyPrevious(() => {
+        if (failure) return;
+        if (targetState === null) {
+          meta.delete("activeGeneration");
+          return;
+        }
+        const targetRequest = generations.get(targetState.generation);
+        targetRequest.onerror = () => fail(targetRequest.error ?? new Error("IndexedDB target generation read failed"));
+        targetRequest.onsuccess = () => {
+          if (!generationRecordMatches(targetRequest.result, targetState)) {
+            fail(engineError(
+              "BUNDLE_STAGE_INVALID",
+              "target generation metadata is missing or changed",
+              "The generation record no longer matches the validated content.",
+              { generation: targetState.generation },
+            ));
+            return;
+          }
+          targetRecord = {
+            ...targetRequest.result,
+            activated_at: new Date().toISOString(),
+          };
+          generations.put(targetRecord);
+          meta.put({ key: "activeGeneration", generation: targetState.generation });
+        };
+      });
+    };
+    transaction.onerror = () => {
+      failure ??= transaction.error ?? new Error("IndexedDB generation transaction failed");
+    };
+    transaction.onabort = () => reject(failure ?? transaction.error ?? new Error("IndexedDB generation transaction aborted"));
+    transaction.oncomplete = () => {
+      if (failure) reject(failure);
+      else if (targetState === null) resolve(null);
+      else resolve(generationState(targetRecord, database, status));
+    };
+  });
+}
+
 async function fetchBlobAndVerify(module, spec, fetchImpl) {
   const response = await fetchImpl(spec.source, { cache: "no-store" });
   if (!response.ok) throw engineError("BUNDLE_FETCH_FAILED", `bundle '${spec.id}' request failed`, `HTTP ${response.status} for ${spec.source}.`);
@@ -234,17 +366,20 @@ async function fetchBlobAndVerify(module, spec, fetchImpl) {
 }
 
 /**
- * Install all manifest bundles in dependency order and atomically activate a
- * new generation. Network policy belongs to fetchImpl; this module only owns
- * browser persistence and delegates integrity to the Rust/Wasm engine.
+ * Stage all manifest bundles in dependency order without changing the active
+ * generation pointer. Network policy belongs to fetchImpl; this module only
+ * owns browser persistence and delegates integrity to the Rust/Wasm engine.
+ *
+ * Keeping the candidate unclaimed is important for hosts that have to ask a
+ * live runtime to accept a script before the browser's durable pointer moves.
  */
-export async function installGeneration(manifestInput, { module, fetchImpl = fetch, databaseName = DB_NAME } = {}) {
+export async function stageGeneration(manifestInput, { module, fetchImpl = fetch, databaseName = DB_NAME } = {}) {
   const { manifest, order } = validateManifestGraph(manifestInput);
   const database = await openDatabase(databaseName);
   const previous = await getActiveGeneration(database);
   const bundles = Object.fromEntries(order.map((spec) => [spec.id, spec.sha256]));
   if (previous && previous.manifest_version === manifest.version && sameBundles(previous.bundles, bundles)) {
-    return { status: "already_active", generation: previous.generation, manifest_version: manifest.version, bundles, database };
+    return generationState(previous, database, "already_active");
   }
 
   const staged = [];
@@ -263,25 +398,113 @@ export async function installGeneration(manifestInput, { module, fetchImpl = fet
     staged.push({ sha256: spec.sha256, size_bytes: spec.size_bytes, bytes: blob });
   }
 
-  const generation = (previous?.generation ?? 0) + 1;
-  const record = {
-    generation,
-    manifest_version: manifest.version,
-    bundles,
-    activated_at: new Date().toISOString(),
+  // This transaction deliberately excludes `meta`. The active pointer is a
+  // commit made only by activateGeneration after the consumer validates the
+  // staged candidate. Read existing generations in the same readwrite
+  // transaction so identifiers remain monotonic after rollback; an old
+  // activated state must never be confused with a newer candidate that reuses
+  // its number.
+  const transaction = database.transaction(["bundles", "generations"], "readwrite");
+  const generationsStore = transaction.objectStore("generations");
+  const allocationRequest = generationsStore.getAll();
+  let record = null;
+  let allocationError = null;
+  allocationRequest.onerror = () => {
+    allocationError = allocationRequest.error ?? new Error("IndexedDB generation allocation read failed");
   };
-  const transaction = database.transaction(["bundles", "generations", "meta"], "readwrite");
-  for (const item of staged) transaction.objectStore("bundles").put(item);
-  transaction.objectStore("generations").put(record);
-  transaction.objectStore("meta").put({ key: "activeGeneration", generation });
+  allocationRequest.onsuccess = () => {
+    try {
+      const highestExisting = (allocationRequest.result ?? [])
+        .map((candidate) => candidate?.generation)
+        .filter(isValidGeneration)
+        .reduce((highest, candidate) => Math.max(highest, candidate), 0);
+      const generation = Math.max(highestExisting, previous?.generation ?? 0) + 1;
+      if (!isValidGeneration(generation)) {
+        throw engineError(
+          "BUNDLE_GENERATION_EXHAUSTED",
+          "bundle generation limit has been reached",
+          "The generation identifier cannot increase safely; the active generation was left unchanged.",
+          { highest_existing_generation: highestExisting, active_generation: previous?.generation ?? null },
+        );
+      }
+      record = {
+        generation,
+        manifest_version: manifest.version,
+        bundles,
+        staged_at: new Date().toISOString(),
+        previous_generation: previous?.generation ?? null,
+      };
+      for (const item of staged) transaction.objectStore("bundles").put(item);
+      generationsStore.put(record);
+    } catch (error) {
+      allocationError = error;
+    }
+  };
   await transactionDone(transaction);
-  return { status: "activated", generation, manifest_version: manifest.version, bundles, database };
+  if (allocationError) throw allocationError;
+  return {
+    ...generationState(record, database, "staged"),
+    previous_generation: previous?.generation ?? null,
+  };
 }
 
-export async function readActiveBundle(generationState, bundleId, module, manifestInput) {
+/**
+ * Commit a previously staged candidate as the active generation.
+ *
+ * The active pointer is re-read immediately before the commit. A candidate
+ * staged against an older active generation is rejected instead of silently
+ * overwriting a concurrent host update.
+ */
+export async function activateGeneration(stagedState) {
+  if (!stagedState || stagedState.status === "already_active") return stagedState;
+  if (stagedState.status !== "staged" || !stagedState.database || !isValidGeneration(stagedState.generation)) {
+    throw engineError("BUNDLE_STAGE_INVALID", "bundle candidate is not activatable", "Only a staged generation returned by stageGeneration may be activated.");
+  }
+  const expectedPrevious = stagedState.previous_generation ?? null;
+  return compareAndSetGeneration({
+    database: stagedState.database,
+    expectedGeneration: expectedPrevious,
+    targetState: stagedState,
+    status: "activated",
+  });
+}
+
+/**
+ * Restore a prior pointer only if the generation being undone is still active.
+ * This is used when a script candidate fails after storage activation.
+ */
+export async function rollbackGeneration(currentState, previousState) {
+  if (!currentState || currentState.status !== "activated" || !currentState.database) {
+    throw engineError("BUNDLE_STAGE_INVALID", "active generation state is missing", "Rollback requires the activated generation returned by activateGeneration.");
+  }
+  if (previousState !== null && (!previousState || !isValidGeneration(previousState.generation))) {
+    throw engineError("BUNDLE_STAGE_INVALID", "previous generation state is invalid", "Rollback requires the previous generation returned by the same host session.");
+  }
+  return compareAndSetGeneration({
+    database: currentState.database,
+    expectedGeneration: currentState.generation,
+    targetState: previousState,
+    status: "rolled_back",
+  });
+}
+
+/**
+ * Backwards-compatible install helper for hosts that can activate as soon as
+ * content verification completes. Live script reload uses the explicit
+ * stage/activate pair above.
+ */
+export async function installGeneration(manifestInput, options = {}) {
+  const staged = await stageGeneration(manifestInput, options);
+  return staged.status === "already_active" ? staged : activateGeneration(staged);
+}
+
+export async function readGenerationBundle(generationState, bundleId, module, manifestInput) {
   const { manifest } = validateManifestGraph(manifestInput);
   const spec = manifest.bundles.find((candidate) => candidate.id === bundleId);
   if (!spec) throw engineError("BUNDLE_NOT_FOUND", `bundle '${bundleId}' does not exist`, "The requested bundle is not in the manifest.");
+  if (!generationState || !isRecord(generationState.bundles)) {
+    throw engineError("BUNDLE_STAGE_INVALID", "bundle generation state is missing", "Read content through a generation returned by stageGeneration or installGeneration.");
+  }
   const hash = generationState.bundles?.[bundleId];
   if (hash !== spec.sha256) throw engineError("BUNDLE_GENERATION_MISMATCH", `bundle '${bundleId}' is not active`, "The active generation does not match the requested manifest.");
   const database = generationState.database ?? await openDatabase();
@@ -291,8 +514,12 @@ export async function readActiveBundle(generationState, bundleId, module, manife
   return record.bytes;
 }
 
+export async function readActiveBundle(generationState, bundleId, module, manifestInput) {
+  return readGenerationBundle(generationState, bundleId, module, manifestInput);
+}
+
 export async function readActiveText(generationState, bundleId, module, manifestInput) {
-  const blob = await readActiveBundle(generationState, bundleId, module, manifestInput);
+  const blob = await readGenerationBundle(generationState, bundleId, module, manifestInput);
   return new TextDecoder().decode(await blob.arrayBuffer());
 }
 

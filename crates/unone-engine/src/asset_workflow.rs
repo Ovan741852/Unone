@@ -139,8 +139,8 @@ pub fn describe_asset(
         Err(error) => {
             return EngineResult::failure(Diagnostic::error(
                 "PROJECT_ROOT_NOT_FOUND",
-                "找不到 Unone 專案根目錄",
-                format!("{}：{}", paths.root.display(), error),
+                "Unone project root was not found",
+                format!("{}: {}", paths.root.display(), error),
             ));
         }
     };
@@ -156,9 +156,9 @@ pub fn describe_asset(
     else {
         let mut diagnostic = Diagnostic::error(
             "ASSET_ID_NOT_DECLARED",
-            "asset manifest 沒有這個 asset id",
+            "The asset manifest has no such asset id",
             format!(
-                "manifest 沒有宣告 asset '{asset_id}'；引擎不會猜測資產來源。"
+                "The manifest does not declare asset '{asset_id}'; the engine does not guess asset sources."
             ),
         );
         diagnostic.facts = serde_json::json!({
@@ -171,7 +171,7 @@ pub fn describe_asset(
         });
         diagnostic.suggested_actions.push(ActionSuggestion {
             action: "inspect_assets".to_string(),
-            description: "先列出目前宣告、source 與靜態引用，再選擇要 describe 的 asset id。"
+            description: "List the current declarations, sources, and static references before choosing an asset id to describe."
                 .to_string(),
             command: Some("game asset inspect --json".to_string()),
         });
@@ -257,13 +257,13 @@ fn authoring_report(
         manifest_json_pointer: format!("/assets/{asset_index}"),
         files,
         editing_rules: vec![
-            "編輯內容時修改 primary 或 companion 的 source bytes；asset id 與 scene 引用保持不變。"
+            "Edit content by changing the source bytes of the primary or a companion; keep the asset id and scene references unchanged."
                 .to_string(),
-            "搬移檔案時修改同一份 manifest entry 的 source/files path，再重新 pack；不要手改 archive 或 cache。"
+            "When moving files, update the source/files paths in the same manifest entry and repack; do not edit an archive or cache by hand."
                 .to_string(),
-            "修改 scene 只影響放置與表現；本查詢不會自動改 size、pivot、碰撞體或動態 Luau 引用。"
+            "Editing a scene changes placement and presentation only; this query does not automatically change size, pivot, colliders, or dynamic Luau references."
                 .to_string(),
-            "asset init 只宣告 source/files，不會產生或猜測新的美術內容。".to_string(),
+            "asset init declares source/files only; it does not create or guess new art content.".to_string(),
         ],
     }
 }
@@ -308,8 +308,8 @@ fn authoring_file(
             shared_with_asset_ids,
             diagnostic: Some(Diagnostic::warning(
                 "ASSET_SOURCE_NOT_FOUND",
-                "找不到 asset authoring 檔案",
-                format!("asset '{}' 需要 '{}'，但檔案不存在。", selected.id, path),
+                "Asset authoring file was not found",
+                format!("asset '{}' requires '{}', but the file does not exist.", selected.id, path),
             )),
         };
     }
@@ -332,8 +332,8 @@ fn authoring_file(
             shared_with_asset_ids,
             diagnostic: Some(Diagnostic::error(
                 "ASSET_SOURCE_READ_FAILED",
-                "無法讀取 asset authoring 檔案",
-                format!("{}：{}", resolved.display(), error),
+                "Could not read the asset authoring file",
+                format!("{}: {}", resolved.display(), error),
             )),
         },
     }
@@ -459,8 +459,8 @@ fn observe_active(
                         &mut report,
                         Diagnostic::error(
                             "ASSET_ACTIVE_ID_MISSING",
-                            "active asset manifest 沒有要求的 asset id",
-                            format!("active generation 沒有 asset '{}' 的宣告。", selected.id),
+                            "The active asset manifest has no requested asset id",
+                            format!("The active generation does not declare asset '{}'.", selected.id),
                         ),
                     );
                 }
@@ -513,8 +513,8 @@ fn observe_active(
         let diagnostic = report.diagnostics.last().cloned().unwrap_or_else(|| {
             Diagnostic::error(
                 "BUNDLE_GENERATION_MISMATCH",
-                "沒有可供 describe 的 active asset generation",
-                "先由 host 安裝並啟用包含 asset manifest 的 generation。",
+                "No active asset generation is available to describe",
+                "First have the host install and activate a generation that includes the asset manifest.",
             )
         });
         push_active_diagnostic(&mut report, diagnostic.clone());
@@ -535,8 +535,8 @@ fn observe_active(
                 &mut report,
                 Diagnostic::error(
                     "ASSET_OBSERVATION_CHANGED",
-                    "describe 期間 active observation 發生變更",
-                    "查詢不會從不同 generation 拼湊 freshness；請在 host 完成寫入後重新 describe。",
+                    "The active observation changed during describe",
+                    "The query does not combine freshness data from different generations; run describe again after the host finishes writing.",
                 ),
             );
             false
@@ -695,14 +695,14 @@ fn required_next_actions(
     if !authoring_ready {
         actions.push(manual_action(
             "authoring_files_ready",
-            "先由 AI/作者補齊或修正 primary 與 companion authoring files；init 不會產生美術。",
+            "Have the AI or author complete or fix the primary and companion authoring files; init does not create art.",
             Vec::new(),
         ));
     }
     if active_corrupt {
         actions.push(manual_action(
             "repair_active_generation_record",
-            "最新 native-local active generation record 無法讀取；先依 host 診斷並修復該 record。pack、strict、install 都不能被假定會修復它，也不建議清 cache。",
+            "The latest native-local active generation record cannot be read; diagnose and repair that record through the host first. Do not assume pack, strict, or install will repair it, and do not clear the cache as a first response.",
             if authoring_ready {
                 Vec::new()
             } else {
@@ -721,7 +721,7 @@ fn required_next_actions(
     if needs_publication {
         actions.push(command_action(
             "bundle_pack",
-            "重新從目前 authoring manifest/source 產生 bundle；pack 是首次建立或內容變更後的第一個機械步驟，不以 strict 互相卡住。",
+            "Regenerate the bundle from the current authoring manifest/source; pack is the first mechanical step for initial creation or after content changes and is not blocked by strict inspection.",
             vec!["--project", &project, "bundle", "pack", "--json"],
             pack_prerequisites.clone(),
             pack_prerequisites.is_empty(),
@@ -733,7 +733,7 @@ fn required_next_actions(
         };
         actions.push(command_action(
             "asset_inspect_strict",
-            "pack 後確認靜態 main-scene references、manifest source 與 bundle 宣告；dynamic Luau references 仍不在 scope。",
+            "After pack, verify static main-scene references, manifest sources, and bundle declarations; dynamic Luau references remain out of scope.",
             vec!["--project", &project, "asset", "inspect", "--strict", "--json"],
             strict_prerequisites.clone(),
             false,
@@ -745,7 +745,7 @@ fn required_next_actions(
         };
         actions.push(command_action(
             "bundle_install_all",
-            "strict inspect 通過後，一次啟用完整 generation；查詢不會逐 bundle 安裝或自行清 cache。",
+            "After strict inspection passes, activate the complete generation at once; the query does not install bundles individually or clear the cache.",
             vec!["--project", &project, "bundle", "install", "--all", "--json"],
             install_prerequisites.clone(),
             false,
@@ -757,7 +757,7 @@ fn required_next_actions(
         };
         actions.push(command_action(
             "asset_describe",
-            "啟用後重新固定同一 native-local observation，確認 AssetSpec 與 primary/companion bytes freshness。",
+            "After activation, capture the same native-local observation again to confirm AssetSpec and primary/companion byte freshness.",
             vec!["--project", &project, "asset", "describe", "--id", selected.id.as_str(), "--json"],
             describe_prerequisites.clone(),
             false,
@@ -783,7 +783,7 @@ fn required_next_actions(
             argv.push("--json".to_string());
             actions.push(command_action(
                 action,
-                "只讀取已確認的 native-local verified bytes；describe argv 不帶 output，不把 read export 當成 authoring source。",
+                "Read only confirmed native-local verified bytes; describe argv has no output path, and a read export is not an authoring source.",
                 argv.iter().map(String::as_str).collect(),
                 vec!["asset_describe".to_string()],
                 false,
@@ -811,7 +811,7 @@ fn required_next_actions(
             argv.push("--json".to_string());
             actions.push(command_action(
                 action,
-                "active bytes 已與 authoring 對照一致；如 host 需要檔案，再以 explicit read export 讀取。",
+                "Active bytes match authoring; if the host needs a file, read it with an explicit read export.",
                 argv.iter().map(String::as_str).collect(),
                 Vec::new(),
                 true,

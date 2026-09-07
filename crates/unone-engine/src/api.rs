@@ -1067,7 +1067,7 @@ mod tests {
 
     #[test]
     fn no_match_keeps_success_and_has_fixed_discovery_guidance() {
-        let result = api_search_result(Path::new("missing-project"), "攻擊");
+        let result = api_search_result(Path::new("missing-project"), "attack");
         let report = result
             .value
             .as_ref()
@@ -1078,7 +1078,7 @@ mod tests {
             .expect("no-match search should explain the next step");
 
         assert!(result.ok);
-        assert_eq!(report.query, "攻擊");
+        assert_eq!(report.query, "attack");
         assert!(report.matches.is_empty());
         assert_eq!(diagnostic.code, "API_SEARCH_EMPTY");
         assert!(matches!(
@@ -1089,7 +1089,7 @@ mod tests {
             diagnostic.facts,
             serde_json::json!({
                 "search_scope": "public_engine_api",
-                "query": "攻擊",
+                "query": "attack",
                 "match_count": 0,
             })
         );

@@ -9,6 +9,8 @@
 // which sound starts, which one an exclusive category stops, and how far into a
 // fade each frame is; this file only decodes, mixes and sets a gain.
 
+import { createFixedStepScheduler } from "../shared/fixed-step-scheduler.mjs?v=2";
+
 const statusLine = document.querySelector("#status");
 const output = document.querySelector("#output");
 const canvas = document.querySelector("#game");
@@ -42,6 +44,7 @@ let autoPlay = false;
 let autoCooldown = 0;
 // While a recorder drives the loop, the page must not also schedule frames.
 let recording = false;
+let frameScheduler = null;
 
 function fail(error) {
   statusLine.textContent = `failed: ${error.message ?? error}`;
@@ -77,25 +80,6 @@ function waitFor(condition, label, timeoutMs = 20000) {
     };
     poll();
   });
-}
-
-/// Schedule the next frame. A hidden pane starves requestAnimationFrame, so
-/// fall back to a timer whenever it stops delivering frames.
-let rafAlive = false;
-function scheduleFrame(callback) {
-  let handled = false;
-  const once = () => {
-    if (handled) return;
-    handled = true;
-    callback();
-  };
-  requestAnimationFrame(() => {
-    rafAlive = true;
-    once();
-  });
-  setTimeout(() => {
-    if (!rafAlive) once();
-  }, 16);
 }
 
 function readSnapshot() {
@@ -357,7 +341,10 @@ function loopGain(world, source) {
 
 // The engine owns which sounds exist; this only mirrors that decision.
 function syncAudio(world) {
-  if (!audioState || audioState.context.state !== "running") return;
+  // Web Audio permits nodes to be scheduled while the context is suspended;
+  // dropping a one-shot here would make a gesture's sound disappear before
+  // the unlock promise resolves. Only a closed context is unusable.
+  if (!audioState || audioState.context.state === "closed") return;
   const context = audioState.context;
 
   for (const event of world.audio_events ?? []) {
@@ -401,7 +388,11 @@ function syncAudio(world) {
 // Browsers keep an AudioContext suspended until a real gesture. The game stays
 // playable while it is locked; this only unlocks it when the player acts.
 function unlockAudio() {
-  if (audioState && audioState.context.state === "suspended") audioState.context.resume();
+  if (audioState && audioState.context.state === "suspended") {
+    audioState.context.resume().catch((error) => {
+      audioState.failures.push(`AudioContext resume failed: ${error.message ?? error}`);
+    });
+  }
 }
 
 function audioStatus(world) {
@@ -472,11 +463,12 @@ function syncViewportAspect() {
   if (window.Module._unone_web_set_viewport_aspect?.(aspect) === 0) reportedAspect = aspect;
 }
 
-function step() {
+function advanceSimulation() {
   const frame = writePayload(inputFrameJson());
   if (window.Module._unone_web_set_input_frame(frame.address, frame.length) !== 0) {
     fail(new Error("input frame rejected"));
   }
+  resizeCanvas();
   syncViewportAspect();
   if (window.Module._unone_web_tick() !== 0) fail(new Error("engine tick failed"));
   snapshot = readSnapshot();
@@ -491,6 +483,15 @@ function step() {
     autoCooldown -= 1;
   }
 
+  // These consumers must see every simulation snapshot, including snapshots
+  // produced during a bounded catch-up burst between two browser renders.
+  syncSpineActors(world);
+  syncEffects(world);
+  syncAudio(world);
+  return world;
+}
+
+function renderPresentation(world, steps = 0) {
   resizeCanvas();
   const gl = spineState?.context?.gl ?? effekseerState?.context?.gl;
   if (gl) {
@@ -498,10 +499,7 @@ function step() {
     gl.clearColor(0.06, 0.09, 0.16, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
   }
-  syncSpineActors(world);
-  syncEffects(world);
-  syncAudio(world);
-  drawSpine(1 / 60);
+  drawSpine(steps / 60);
   drawEffects();
   renderUi(world);
 
@@ -530,7 +528,14 @@ function step() {
     2
   );
   statusLine.textContent = `engine frame ${world.frame} — spine actors ${spineState?.actors.size ?? 0}, effects ${world.effects?.length ?? 0}, ${audioStatus(world)}`;
-  if (!recording) scheduleFrame(step);
+}
+
+// A manual step is intentionally kept for recording and test drivers. The
+// live scheduler owns normal browser timing and calls these two phases
+// independently.
+function step() {
+  const world = advanceSimulation();
+  renderPresentation(world, 1);
 }
 
 /// Render a fixed number of engine frames at an explicit size and post each
@@ -540,45 +545,51 @@ function step() {
 /// a recording drives the loop itself. The engine is fixed-timestep, so frame N
 /// is the same frame regardless of how long the wall clock took.
 async function record({ frames = 180, width = 960, height = 540, every = 2, endpoint, script = [] } = {}) {
+  const resumeLiveScheduler = frameScheduler?.isStarted() ?? false;
+  if (resumeLiveScheduler) frameScheduler.pause();
   recording = true;
-  canvas.width = width;
-  canvas.height = height;
-  const cues = new Map(script.map((cue) => [cue.frame, cue.action]));
-  const startFrame = snapshot?.world?.frame ?? 0;
-  const states = [];
-  let posted = 0;
-  for (let index = 0; index < frames; index += 1) {
-    const action = cues.get(index);
-    if (action) pressAction(action);
-    step();
-    if (index % every !== 0) continue;
-    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
-    const name = String(startFrame + index).padStart(5, "0");
-    const world = snapshot.world;
-    const model = world.observations?.view_model ?? {};
-    states.push({
-      file: `${name}.png`,
-      frame: world.frame,
-      message: model.message ?? "",
-      credits: model.credits ?? 0,
-      reels: model.reels ?? [],
-      last_win: model.last_win ?? 0,
-      clips: Object.entries(world.entities ?? {})
-        .filter(([, entity]) => entity.animation)
-        .map(([id, entity]) => `${id}:${entity.animation.animation}`),
-      effects: (world.effects ?? []).map((effect) => effect.handle),
+  try {
+    canvas.width = width;
+    canvas.height = height;
+    const cues = new Map(script.map((cue) => [cue.frame, cue.action]));
+    const startFrame = snapshot?.world?.frame ?? 0;
+    const states = [];
+    let posted = 0;
+    for (let index = 0; index < frames; index += 1) {
+      const action = cues.get(index);
+      if (action) pressAction(action);
+      step();
+      if (index % every !== 0) continue;
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+      const name = String(startFrame + index).padStart(5, "0");
+      const world = snapshot.world;
+      const model = world.observations?.view_model ?? {};
+      states.push({
+        file: `${name}.png`,
+        frame: world.frame,
+        message: model.message ?? "",
+        credits: model.credits ?? 0,
+        reels: model.reels ?? [],
+        last_win: model.last_win ?? 0,
+        clips: Object.entries(world.entities ?? {})
+          .filter(([, entity]) => entity.animation)
+          .map(([id, entity]) => `${id}:${entity.animation.animation}`),
+        effects: (world.effects ?? []).map((effect) => effect.handle),
+      });
+      const response = await fetch(`${endpoint}/${name}.png`, { method: "POST", body: blob });
+      if (!response.ok) throw new Error(`recorder rejected frame ${name}: ${response.status}`);
+      posted += 1;
+    }
+    const stateResponse = await fetch(`${endpoint.replace(/\/frame$/, "")}/states.json`, {
+      method: "POST",
+      body: JSON.stringify(states),
     });
-    const response = await fetch(`${endpoint}/${name}.png`, { method: "POST", body: blob });
-    if (!response.ok) throw new Error(`recorder rejected frame ${name}: ${response.status}`);
-    posted += 1;
+    if (!stateResponse.ok) throw new Error(`recorder rejected state sidecar: ${stateResponse.status}`);
+    return { posted, endFrame: snapshot?.world?.frame ?? null };
+  } finally {
+    recording = false;
+    if (resumeLiveScheduler) frameScheduler.resume();
   }
-  const stateResponse = await fetch(`${endpoint.replace(/\/frame$/, "")}/states.json`, {
-    method: "POST",
-    body: JSON.stringify(states),
-  });
-  if (!stateResponse.ok) throw new Error(`recorder rejected state sidecar: ${stateResponse.status}`);
-  recording = false;
-  return { posted, endFrame: snapshot?.world?.frame ?? null };
 }
 
 async function start() {
@@ -631,7 +642,15 @@ async function start() {
       autoCooldown = 0;
       autoButton.textContent = autoPlay ? "Auto: on" : "Auto";
     });
-    scheduleFrame(step);
+    frameScheduler = createFixedStepScheduler({
+      tick: advanceSimulation,
+      render: ({ steps }) => renderPresentation(snapshot.world, steps),
+      onError: fail,
+      // Hidden tabs pause deliberately. An occluded pane that remains visible
+      // is protected by the scheduler's bounded watchdog fallback.
+      backgroundPolicy: "pause",
+    });
+    frameScheduler.start();
   } catch (error) {
     fail(error);
   }

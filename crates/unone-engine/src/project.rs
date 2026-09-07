@@ -126,9 +126,9 @@ pub(crate) fn resolve_project_path(
     {
         return Err(Box::new(Diagnostic::error(
             "PROJECT_PATH_OUTSIDE_PROJECT",
-            "專案路徑不是安全的相對路徑",
+            "Project path is not a safe relative path",
             format!(
-                "'{relative}' 必須使用 project-relative 正斜線路徑，不能是絕對路徑、磁碟路徑或含反斜線。"
+                "'{relative}' must use a project-relative forward-slash path; it cannot be absolute, a drive path, or contain backslashes."
             ),
         )));
     }
@@ -137,17 +137,17 @@ pub(crate) fn resolve_project_path(
         if component.is_empty() || component == "." || component == ".." {
             return Err(Box::new(Diagnostic::error(
                 "PROJECT_PATH_OUTSIDE_PROJECT",
-                "專案路徑超出根目錄",
+                "Project path escapes the project root",
                 format!(
-                    "'{relative}' 含有空白、目前目錄或 parent path component；只接受明確的 project-relative 路徑。"
+                    "'{relative}' contains a blank, current-directory, or parent path component; only explicit project-relative paths are accepted."
                 ),
             )));
         }
         if component.contains(':') {
             return Err(Box::new(Diagnostic::error(
                 "PROJECT_PATH_OUTSIDE_PROJECT",
-                "專案路徑不是可攜式相對路徑",
-                format!("'{relative}' 含有不合法的磁碟或 URL 標記。"),
+                "Project path is not a portable relative path",
+                format!("'{relative}' contains an invalid drive or URL marker."),
             )));
         }
     }
@@ -155,8 +155,8 @@ pub(crate) fn resolve_project_path(
     let canonical_root = fs::canonicalize(root).map_err(|error| {
         Box::new(Diagnostic::error(
             "PROJECT_ROOT_INVALID",
-            "無法解析專案根目錄",
-            format!("{}：{}", root.display(), error),
+            "Could not resolve the project root",
+            format!("{}: {}", root.display(), error),
         ))
     })?;
     let candidate = canonical_root.join(relative);
@@ -169,16 +169,16 @@ pub(crate) fn resolve_project_path(
                 existing = existing.parent().ok_or_else(|| {
                     Box::new(Diagnostic::error(
                         "PROJECT_PATH_INVALID",
-                        "無法解析專案路徑",
-                        format!("'{relative}' 沒有可檢查的既存 parent directory。"),
+                        "Could not resolve the project path",
+                        format!("'{relative}' has no existing parent directory to inspect."),
                     ))
                 })?;
             }
             Err(error) => {
                 return Err(Box::new(Diagnostic::error(
                     "PROJECT_PATH_RESOLVE_FAILED",
-                    "無法解析專案路徑",
-                    format!("{}：{}", existing.display(), error),
+                    "Could not resolve the project path",
+                    format!("{}: {}", existing.display(), error),
                 )));
             }
         }
@@ -186,16 +186,16 @@ pub(crate) fn resolve_project_path(
     .map_err(|error| {
         Box::new(Diagnostic::error(
             "PROJECT_PATH_RESOLVE_FAILED",
-            "無法解析專案路徑",
-            format!("{}：{}", existing.display(), error),
+            "Could not resolve the project path",
+            format!("{}: {}", existing.display(), error),
         ))
     })?;
     if !canonical_existing.starts_with(&canonical_root) {
         return Err(Box::new(Diagnostic::error(
             "PROJECT_PATH_OUTSIDE_PROJECT",
-            "專案路徑透過 symlink 超出根目錄",
+            "Project path escapes the project root through a symlink",
             format!(
-                "'{relative}' 解析到 '{}'，不在專案根目錄 '{}' 內。",
+                "'{relative}' resolves to '{}', outside project root '{}'.",
                 canonical_existing.display(),
                 canonical_root.display()
             ),
@@ -210,23 +210,23 @@ impl ProjectPaths {
         let root = fs::canonicalize(root.as_ref()).map_err(|error| {
             Box::new(Diagnostic::error(
                 "PROJECT_ROOT_NOT_FOUND",
-                "找不到 Unone 專案根目錄",
-                format!("{}：{}", root.as_ref().display(), error),
+                "Unone project root was not found",
+                format!("{}: {}", root.as_ref().display(), error),
             ))
         })?;
         let config_path = resolve_project_path(&root, "project.unone.json")?;
         let text = fs::read_to_string(&config_path).map_err(|err| {
             Box::new(Diagnostic::error(
                 "PROJECT_CONFIG_NOT_FOUND",
-                "找不到 Unone 專案設定",
-                format!("無法讀取 {}：{}", config_path.display(), err),
+                "Unone project configuration was not found",
+                format!("Could not read {}: {}", config_path.display(), err),
             ))
         })?;
         let config: ProjectConfig = serde_json::from_str(&text).map_err(|err| {
             Box::new(Diagnostic::error(
                 "PROJECT_CONFIG_INVALID",
-                "Unone 專案設定不是有效 JSON",
-                format!("{}：{}", config_path.display(), err),
+                "Unone project configuration is not valid JSON",
+                format!("{}: {}", config_path.display(), err),
             ))
         })?;
         let entry_script = resolve_project_path(&root, &config.entry_script)?;
@@ -286,8 +286,8 @@ fn init_with_writer<W: InitFileWriter>(
         return init_failure(
             Diagnostic::error(
                 "PROJECT_INIT_NAME_INVALID",
-                "project name 不可為空",
-                "請提供一個非空的 --name；project init 不會替 AI 猜測專案名稱。",
+            "Project name cannot be empty",
+            "Provide a non-empty --name; project init does not guess a project name for AI.",
             ),
             None,
             "preflight",
@@ -614,12 +614,12 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
             // guessing at path syntax, which is where `..` came from.
             let mut diagnostic = Diagnostic::error(
                 "PROJECT_ROOT_INVALID",
-                "project root 路徑無效",
+                "Invalid project root path",
                 explanation,
             );
             diagnostic.suggested_actions.push(ActionSuggestion {
                 action: "use_absolute_project_root".to_string(),
-                description: "改用絕對路徑；相對路徑不可含 '..'。PowerShell 可先建目錄再解析："
+                description: "Use an absolute path; relative paths cannot contain '..'. In PowerShell, create the directory and resolve it first:"
                     .to_string(),
                 command: Some(
                     "New-Item -ItemType Directory -Force ../my-game | Out-Null; game --project (Resolve-Path ../my-game) --json project init --name MyGame"
@@ -647,8 +647,8 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
                         return Err(Box::new(InitPreflightFailure {
                             diagnostic: Diagnostic::error(
                                 "PROJECT_ROOT_INVALID",
-                                "project root 路徑無法解析",
-                                "找不到可以安全檢查的既存 ancestor。",
+                                "Could not resolve the project root path",
+                                "No existing ancestor can be safely inspected.",
                             ),
                             root: None,
                             failed_path: requested_text,
@@ -658,8 +658,8 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
                         return Err(Box::new(InitPreflightFailure {
                             diagnostic: Diagnostic::error(
                                 "PROJECT_ROOT_INVALID",
-                                "project root 路徑無法解析",
-                                "找不到可以安全檢查的既存 ancestor。",
+                                "Could not resolve the project root path",
+                                "No existing ancestor can be safely inspected.",
                             ),
                             root: None,
                             failed_path: requested_text,
@@ -671,8 +671,8 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
                     return Err(Box::new(InitPreflightFailure {
                         diagnostic: Diagnostic::error(
                             "PROJECT_ROOT_INVALID",
-                            "project root 路徑無法檢查",
-                            format!("{}：{}", cursor.display(), error),
+                            "Could not inspect the project root path",
+                            format!("{}: {}", cursor.display(), error),
                         ),
                         root: None,
                         failed_path: requested_text,
@@ -694,8 +694,8 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
                 return Err(Box::new(InitPreflightFailure {
                     diagnostic: Diagnostic::error(
                         "PROJECT_ROOT_INVALID",
-                        "project root ancestor 無法檢查",
-                        format!("{}：{}", ancestor.display(), error),
+                        "Could not inspect the project root ancestor",
+                        format!("{}: {}", ancestor.display(), error),
                     ),
                     root: None,
                     failed_path: requested_text,
@@ -708,8 +708,8 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
                 return Err(Box::new(InitPreflightFailure {
                     diagnostic: Diagnostic::error(
                         "PROJECT_ROOT_INVALID",
-                        "project root ancestor 無法檢查",
-                        format!("{}：{}", ancestor.display(), error),
+                        "Could not inspect the project root ancestor",
+                        format!("{}: {}", ancestor.display(), error),
                     ),
                     root: None,
                     failed_path: requested_text,
@@ -720,9 +720,9 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
             return Err(Box::new(InitPreflightFailure {
                 diagnostic: Diagnostic::error(
                     "PROJECT_ROOT_INVALID",
-                    "project init 拒絕 symlink、junction 或 reparse point",
+                    "project init rejects symlinks, junctions, and reparse points",
                     format!(
-                        "{} 是 link/reparse path component；不會沿著它建立專案。",
+                        "{} is a link/reparse path component; project creation will not follow it.",
                         ancestor.display()
                     ),
                 ),
@@ -734,9 +734,9 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
             return Err(Box::new(InitPreflightFailure {
                 diagnostic: Diagnostic::error(
                     "PROJECT_ROOT_INVALID",
-                    "project root path component 不是目錄",
+                    "project root path component is not a directory",
                     format!(
-                        "{} 不是 directory；不會在其下建立專案。",
+                        "{} is not a directory; project creation will not create a project beneath it.",
                         ancestor.display()
                     ),
                 ),
@@ -753,8 +753,8 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
                 return Err(Box::new(InitPreflightFailure {
                     diagnostic: Diagnostic::error(
                         "PROJECT_ROOT_INVALID",
-                        "project root 無法 canonicalize",
-                        format!("{}：{}", absolute.display(), error),
+                        "Could not canonicalize the project root",
+                        format!("{}: {}", absolute.display(), error),
                     ),
                     root: None,
                     failed_path: requested_text,
@@ -767,9 +767,9 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
                 return Err(Box::new(InitPreflightFailure {
                     diagnostic: Diagnostic::error(
                         "PROJECT_ROOT_INVALID",
-                        "無法列出 project root",
+                        "Could not list the project root",
                         format!(
-                            "{}：{}；不能把無法讀取的目錄當成空目錄。",
+                            "{}: {}; an unreadable directory cannot be treated as empty.",
                             canonical_root.display(),
                             error
                         ),
@@ -784,9 +784,9 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
                 return Err(Box::new(InitPreflightFailure {
                     diagnostic: Diagnostic::error(
                         "PROJECT_ALREADY_EXISTS",
-                        "project init 只接受真正空的 root",
+                        "project init requires a truly empty root",
                         format!(
-                            "{} 已包含 {}；project init 不會清理、merge 或覆蓋既有內容。",
+                            "{} already contains {}; project init will not clean, merge, or overwrite existing contents.",
                             canonical_root.display(),
                             entry.path().display()
                         ),
@@ -799,9 +799,9 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
                 return Err(Box::new(InitPreflightFailure {
                     diagnostic: Diagnostic::error(
                         "PROJECT_ROOT_INVALID",
-                        "無法列出 project root",
+                        "Could not list the project root",
                         format!(
-                            "{}：{}；不能把無法讀取的目錄當成空目錄。",
+                            "{}: {}; an unreadable directory cannot be treated as empty.",
                             canonical_root.display(),
                             error
                         ),
@@ -825,8 +825,8 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
             return Err(Box::new(InitPreflightFailure {
                 diagnostic: Diagnostic::error(
                     "PROJECT_ROOT_INVALID",
-                    "project root 路徑無法解析",
-                    "找不到 project root 與最近既存 ancestor 之間的缺少 components。",
+                    "Could not resolve the project root path",
+                    "No missing components were found between the project root and the nearest existing ancestor.",
                 ),
                 root: None,
                 failed_path: requested_text,
@@ -836,7 +836,7 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
             return Err(Box::new(InitPreflightFailure {
                 diagnostic: Diagnostic::error(
                     "PROJECT_ROOT_INVALID",
-                    "project root 路徑無法解析",
+                    "Could not resolve the project root path",
                     explanation,
                 ),
                 root: None,
@@ -850,8 +850,8 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
             return Err(Box::new(InitPreflightFailure {
                 diagnostic: Diagnostic::error(
                     "PROJECT_ROOT_INVALID",
-                    "最近既存 ancestor 無法 canonicalize",
-                    format!("{}：{}", nearest_existing.display(), error),
+                    "Could not canonicalize the nearest existing ancestor",
+                    format!("{}: {}", nearest_existing.display(), error),
                 ),
                 root: None,
                 failed_path: requested_text,
@@ -874,14 +874,14 @@ fn preflight_init_root(requested: &Path) -> Result<InitRootPlan, Box<InitPreflig
 
 fn absolute_init_root(requested: &Path) -> Result<PathBuf, String> {
     if requested.to_string_lossy().contains('\0') {
-        return Err("project root path 不能包含 NUL。".to_string());
+        return Err("project root path cannot contain NUL.".to_string());
     }
     if requested
         .components()
         .any(|component| matches!(component, Component::ParentDir))
     {
         return Err(
-            "project root path 不接受 parent '..' component；請先提供已在目標範圍內的路徑。"
+            "project root path does not accept parent '..' components; provide a path already within the intended scope."
                 .to_string(),
         );
     }
@@ -890,7 +890,7 @@ fn absolute_init_root(requested: &Path) -> Result<PathBuf, String> {
         && !requested.is_absolute()
     {
         return Err(
-            "Windows drive-relative project root path 不安全；請提供完整 absolute path。"
+            "Windows drive-relative project root paths are unsafe; provide a complete absolute path."
                 .to_string(),
         );
     }
@@ -900,7 +900,7 @@ fn absolute_init_root(requested: &Path) -> Result<PathBuf, String> {
     } else {
         std::env::current_dir()
             .map(|current| current.join(requested))
-            .map_err(|error| format!("無法取得 current directory：{error}"))
+            .map_err(|error| format!("Could not get the current directory: {error}"))
     }
 }
 
@@ -913,13 +913,13 @@ fn missing_root_components(
     while cursor != nearest_existing {
         let name = cursor
             .file_name()
-            .ok_or_else(|| format!("{} 沒有可建立的 path component。", cursor.display()))?;
+            .ok_or_else(|| format!("{} has no creatable path component.", cursor.display()))?;
         components.push(name.to_os_string());
         let parent = cursor
             .parent()
-            .ok_or_else(|| format!("{} 沒有可檢查的 parent directory。", cursor.display()))?;
+            .ok_or_else(|| format!("{} has no parent directory to inspect.", cursor.display()))?;
         if parent == cursor {
-            return Err(format!("{} 無法回到既存 ancestor。", cursor.display()));
+            return Err(format!("{} cannot reach an existing ancestor.", cursor.display()));
         }
         cursor = parent.to_path_buf();
     }
@@ -970,8 +970,8 @@ fn execute_init<W: InitFileWriter>(
             return init_failure(
                 Diagnostic::error(
                     "PROJECT_INIT_WRITE_FAILED",
-                    "無法建立 project init 目錄",
-                    format!("{}：{}", directory.absolute_path.display(), error),
+                    "Could not create the project init directory",
+                    format!("{}: {}", directory.absolute_path.display(), error),
                 ),
                 Some(&plan.root),
                 "create_directory",
@@ -989,8 +989,8 @@ fn execute_init<W: InitFileWriter>(
                 return init_failure(
                     Diagnostic::error(
                         "PROJECT_INIT_WRITE_FAILED",
-                        "無法建立 project init 檔案",
-                        format!("{}：{}", file.absolute_path.display(), error),
+                        "Could not create the project init file",
+                        format!("{}: {}", file.absolute_path.display(), error),
                     ),
                     Some(&plan.root),
                     "create_file",
@@ -1004,8 +1004,8 @@ fn execute_init<W: InitFileWriter>(
             return init_failure(
                 Diagnostic::error(
                     "PROJECT_INIT_WRITE_FAILED",
-                    "無法完整寫入 project init 檔案",
-                    format!("{}：{}", file.absolute_path.display(), error),
+                    "Could not completely write the project init file",
+                    format!("{}: {}", file.absolute_path.display(), error),
                 ),
                 Some(&plan.root),
                 "write_file",
@@ -1059,7 +1059,7 @@ fn suggested_next_actions(root: &Path) -> Vec<ProjectInitAction> {
                 "--json".to_string(),
                 "verify".to_string(),
             ],
-            reason: "先驗證剛產生且尚未修改的五檔 starter；這只確認 onboarding smoke。".to_string(),
+            reason: "First verify the newly generated, unmodified five-file starter; this only confirms the onboarding smoke test.".to_string(),
             prerequisites: Vec::new(),
         },
         ProjectInitAction {
@@ -1071,7 +1071,7 @@ fn suggested_next_actions(root: &Path) -> Vec<ProjectInitAction> {
                 "bundle".to_string(),
                 "pack".to_string(),
             ],
-            reason: "verify 後才建立 bundle；init 不會隱式 pack 或啟用 bundle。".to_string(),
+            reason: "Create the bundle only after verify; init does not implicitly pack or activate a bundle.".to_string(),
             prerequisites: vec![0],
         },
         ProjectInitAction {
@@ -1084,7 +1084,7 @@ fn suggested_next_actions(root: &Path) -> Vec<ProjectInitAction> {
                 "install".to_string(),
                 "--all".to_string(),
             ],
-            reason: "pack 完成後啟用 manifest 宣告的全部 bundle；此步仍由作者明確執行。".to_string(),
+            reason: "Activate every bundle declared by the manifest after packing; this step remains explicit.".to_string(),
             prerequisites: vec![1],
         },
         ProjectInitAction {
@@ -1096,7 +1096,7 @@ fn suggested_next_actions(root: &Path) -> Vec<ProjectInitAction> {
                 "bundle".to_string(),
                 "inspect".to_string(),
             ],
-            reason: "install 後檢視目前 active bundle；新增資產後應回到既有 pack → verify/strict → install 流程。".to_string(),
+            reason: "Inspect the active bundle after installation; after adding assets, return to the existing pack → verify/strict → install workflow.".to_string(),
             prerequisites: vec![2],
         },
     ]
@@ -1152,8 +1152,8 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<ProjectInspectRep
         if !missing.is_empty() {
             result.diagnostics.push(Diagnostic::warning(
                 "PROJECT_FILES_MISSING",
-                "專案宣告了尚未存在的檔案",
-                "設定檔可以被讀取，但部分入口、場景、測試、asset manifest 或 bundle manifest 不存在；下一步應先修正路徑或建立檔案。",
+                "The project declares files that do not exist",
+                "The configuration is readable, but an entrypoint, scene, test, asset manifest, or bundle manifest is missing; fix the path or create the file next.",
             ));
             if let Some(diagnostic) = result.diagnostics.last_mut() {
                 diagnostic.facts = serde_json::json!({"missing": missing});
@@ -1684,7 +1684,10 @@ mod tests {
             "greater_than": 0.0
         }))
         .unwrap();
-        assert!(ambiguous.validate().unwrap_err().contains("只能提供"));
+        assert!(ambiguous
+            .validate()
+            .unwrap_err()
+            .contains("exactly one of equals"));
 
         let mixed_target: TestAssertion = serde_json::from_value(serde_json::json!({
             "observation": {"key": "state", "equals": {}},
@@ -1928,7 +1931,7 @@ impl TestAssertion {
         .count();
         if target_count != 1 {
             return Err(
-                "Assertion 必須且只能提供 observation、ui、animation、effects、audio 或 entity/field 其中一種目標。"
+                "An assertion must provide exactly one target: observation, ui, animation, effects, audio, or entity/field."
                 .to_string(),
             );
         }
@@ -1939,29 +1942,29 @@ impl TestAssertion {
             && self.has_numeric_comparator()
         {
             return Err(
-                "非 entity assertion 不可提供 equals、greater_than、less_than 數值 comparator。"
+                "Non-entity assertions cannot provide equals, greater_than, or less_than numeric comparators."
                     .to_string(),
             );
         }
         if let Some(observation) = &self.observation {
             if observation.key.trim().is_empty() {
-                return Err("Observation assertion 的 key 不可為空。".to_string());
+                return Err("Observation assertion key cannot be empty.".to_string());
             }
             if self.has_numeric_comparator() {
-                return Err("Observation assertion 不可提供數值 comparator。".to_string());
+                return Err("Observation assertions cannot provide numeric comparators.".to_string());
             }
         }
         if let Some(animation) = &self.animation
             && animation.entity.trim().is_empty()
         {
-            return Err("Animation assertion 的 entity 不可為空。".to_string());
+            return Err("Animation assertion entity cannot be empty.".to_string());
         }
         if let Some(audio) = &self.audio
             && audio.events.is_none()
             && audio.loops.is_none()
         {
             return Err(
-                "Audio assertion 必須提供 events 或 loops 其中至少一項，否則它不檢查任何東西。"
+                "An audio assertion must provide at least one of events or loops; otherwise it checks nothing."
                     .to_string(),
             );
         }
@@ -1971,18 +1974,18 @@ impl TestAssertion {
                 .as_deref()
                 .is_none_or(|entity| entity.trim().is_empty())
             {
-                return Err("Entity assertion 必須提供非空 entity。".to_string());
+                return Err("An entity assertion must provide a non-empty entity.".to_string());
             }
             let field = self
                 .field
                 .as_deref()
-                .ok_or_else(|| "Entity assertion 必須提供 field。".to_string())?;
+                .ok_or_else(|| "An entity assertion must provide a field.".to_string())?;
             if !matches!(field, "transform.x" | "transform.y") {
-                return Err(format!("不支援的 assertion field '{field}'。"));
+                return Err(format!("Unsupported assertion field '{field}'."));
             }
             if self.numeric_comparator_count() != 1 {
                 return Err(
-                    "Entity assertion 必須且只能提供 equals、greater_than、less_than 其中一個。"
+                    "An entity assertion must provide exactly one of equals, greater_than, or less_than."
                         .to_string(),
                 );
             }

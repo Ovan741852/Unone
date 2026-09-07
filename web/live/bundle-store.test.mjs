@@ -3,37 +3,68 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
-import { installGeneration, readActiveBundle } from "./bundle-store.js";
+import {
+  activateGeneration,
+  installGeneration,
+  readActiveBundle,
+  rollbackGeneration,
+  stageGeneration,
+} from "./bundle-store.js";
 
 const fixture = JSON.parse(await readFile(fileURLToPath(new URL("../../tests/fixtures/bundle-manifest-validation.json", import.meta.url)), "utf8"));
 
 class FakeRequest {
-  constructor(result) {
+  constructor(result, onSettled = () => {}) {
     this.result = result;
     this.onsuccess = null;
     this.onerror = null;
+    this.onSettled = onSettled;
+    this.settled = false;
   }
 
   succeed() {
-    queueMicrotask(() => this.onsuccess?.({ target: this }));
+    queueMicrotask(() => {
+      this.onsuccess?.({ target: this });
+      this.settled = true;
+      this.onSettled();
+    });
   }
 }
 
 class FakeObjectStore {
-  constructor(keyPath) {
+  constructor(keyPath, records = new Map(), transaction = null) {
     this.keyPath = keyPath;
-    this.records = new Map();
+    this.records = records;
+    this.transaction = transaction;
+  }
+
+  request(result) {
+    this.transaction?.beginRequest();
+    return new FakeRequest(result, () => this.transaction?.endRequest());
   }
 
   get(key) {
-    const request = new FakeRequest(this.records.get(key));
+    const request = this.request(this.records.get(key));
+    request.succeed();
+    return request;
+  }
+
+  getAll() {
+    const request = this.request([...this.records.values()]);
     request.succeed();
     return request;
   }
 
   put(value) {
     this.records.set(value[this.keyPath], structuredClone(value));
-    const request = new FakeRequest(value);
+    const request = this.request(value);
+    request.succeed();
+    return request;
+  }
+
+  delete(key) {
+    this.records.delete(key);
+    const request = this.request(undefined);
     request.succeed();
     return request;
   }
@@ -46,12 +77,38 @@ class FakeTransaction {
     this.oncomplete = null;
     this.onerror = null;
     this.onabort = null;
-    queueMicrotask(() => this.oncomplete?.());
+    this.pendingRequests = 0;
+    this.completionScheduled = false;
+    this.completed = false;
+    this.scheduleCompletion();
+  }
+
+  beginRequest() {
+    assert.equal(this.completed, false, "a fake transaction cannot accept requests after completion");
+    this.pendingRequests += 1;
+  }
+
+  endRequest() {
+    this.pendingRequests -= 1;
+    assert.ok(this.pendingRequests >= 0);
+    this.scheduleCompletion();
+  }
+
+  scheduleCompletion() {
+    if (this.completionScheduled || this.completed || this.pendingRequests !== 0) return;
+    this.completionScheduled = true;
+    queueMicrotask(() => {
+      this.completionScheduled = false;
+      if (this.completed || this.pendingRequests !== 0) return;
+      this.completed = true;
+      this.oncomplete?.();
+    });
   }
 
   objectStore(name) {
     assert.ok(this.names.includes(name));
-    return this.database.stores.get(name);
+    const store = this.database.stores.get(name);
+    return new FakeObjectStore(store.keyPath, store.records, this);
   }
 }
 
@@ -315,4 +372,51 @@ test("failed later fetch leaves the previous active generation unchanged", async
   });
   assert.equal(stillActive.status, "already_active");
   assert.equal(stillActive.generation, 1);
+});
+
+test("generation activation is compare-and-set and rollback cannot overwrite a newer winner", async () => {
+  globalThis.indexedDB = new FakeIndexedDb();
+  const module = fakeVerifierModule();
+  const contentById = {
+    base: new TextEncoder().encode("base-content"),
+    feature: new TextEncoder().encode("feature-content"),
+  };
+  const options = {
+    module,
+    fetchImpl: responseFor(contentById),
+    databaseName: "fixture-generation-cas",
+  };
+  const first = await installGeneration(fixture.valid, options);
+  const changed = structuredClone(fixture.valid);
+  changed.version = 2;
+
+  const candidateA = await stageGeneration(changed, options);
+  const candidateB = await stageGeneration(changed, options);
+  assert.equal(candidateA.generation, 2);
+  assert.equal(candidateB.generation, 3, "staged generation ids remain unique before activation");
+  const activated = await activateGeneration(candidateA);
+  assert.equal(activated.status, "activated");
+  assert.equal(activated.generation, 2);
+
+  await assert.rejects(
+    activateGeneration(candidateB),
+    (error) => error?.diagnostic?.code === "BUNDLE_ACTIVATION_STALE",
+  );
+  const rolledBack = await rollbackGeneration(activated, first);
+  assert.equal(rolledBack.status, "rolled_back");
+  assert.equal(rolledBack.generation, 1);
+
+  const candidateC = await stageGeneration(changed, options);
+  assert.equal(candidateC.generation, 4, "rollback must not make a later stage reuse generation 2");
+  const activatedC = await activateGeneration(candidateC);
+  await assert.rejects(
+    rollbackGeneration(activated, first),
+    (error) => error?.diagnostic?.code === "BUNDLE_ACTIVATION_STALE",
+    "an old activated state cannot roll back a newer generation",
+  );
+  await rollbackGeneration(activatedC, first);
+
+  const current = await installGeneration(fixture.valid, options);
+  assert.equal(current.status, "already_active");
+  assert.equal(current.generation, 1);
 });

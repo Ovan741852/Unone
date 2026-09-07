@@ -35,8 +35,8 @@ fn validate_bundle_manifest(manifest: &BundleManifest) -> Result<(), Box<Diagnos
     if manifest.bundles.is_empty() {
         return Err(Box::new(Diagnostic::error(
             "BUNDLE_MANIFEST_EMPTY",
-            "bundle manifest 沒有可啟用的 bundle",
-            "bundle activation 需要至少一個 bundle；不會建立空的 active generation。",
+            "Bundle manifest has no activatable bundles",
+            "Bundle activation requires at least one bundle; an empty active generation is not created.",
         )));
     }
     let mut ids = BTreeSet::new();
@@ -44,15 +44,15 @@ fn validate_bundle_manifest(manifest: &BundleManifest) -> Result<(), Box<Diagnos
         if spec.id.trim().is_empty() {
             return Err(Box::new(Diagnostic::error(
                 "BUNDLE_MANIFEST_INVALID",
-                "bundle id 不可為空",
-                "bundle manifest 中的每個 id 都必須是非空字串。",
+                "Bundle id cannot be empty",
+                "Every id in the bundle manifest must be a non-empty string.",
             )));
         }
         if !ids.insert(spec.id.clone()) {
             let mut diagnostic = Diagnostic::error(
                 "BUNDLE_MANIFEST_DUPLICATE_ID",
-                "bundle manifest 有重複的 bundle id",
-                format!("bundle id '{}' 只能宣告一次。", spec.id),
+                "Bundle manifest contains a duplicate bundle id",
+                format!("Bundle id '{}' may be declared only once.", spec.id),
             );
             diagnostic.facts = serde_json::json!({"bundle_id": spec.id});
             return Err(Box::new(diagnostic));
@@ -60,16 +60,16 @@ fn validate_bundle_manifest(manifest: &BundleManifest) -> Result<(), Box<Diagnos
         if spec.source.trim().is_empty() {
             return Err(Box::new(Diagnostic::error(
                 "BUNDLE_MANIFEST_INVALID",
-                "bundle source 不可為空",
-                format!("bundle '{}' 必須宣告 source。", spec.id),
+                "Bundle source cannot be empty",
+                format!("Bundle '{}' must declare a source.", spec.id),
             )));
         }
         if spec.size_bytes > MAX_SAFE_BUNDLE_SIZE || !is_valid_sha256(&spec.sha256) {
             let mut diagnostic = Diagnostic::error(
                 "BUNDLE_MANIFEST_INVALID",
-                "bundle integrity 欄位無效",
+                "Bundle integrity fields are invalid",
                 format!(
-                    "bundle '{}' 的 size_bytes 必須是安全非負整數，sha256 必須是小寫 64 位 SHA-256。",
+                    "Bundle '{}' size_bytes must be a safe non-negative integer and sha256 must be a lowercase 64-character SHA-256.",
                     spec.id
                 ),
             );
@@ -83,8 +83,8 @@ fn validate_bundle_manifest(manifest: &BundleManifest) -> Result<(), Box<Diagnos
         if spec.dependencies.iter().any(|dependency| dependency.trim().is_empty()) {
             return Err(Box::new(Diagnostic::error(
                 "BUNDLE_MANIFEST_INVALID",
-                "bundle dependency id 不可為空",
-                format!("bundle '{}' 的 dependencies 含有空 id。", spec.id),
+                "Bundle dependency id cannot be empty",
+                format!("Bundle '{}' dependencies contain an empty id.", spec.id),
             )));
         }
     }
@@ -118,8 +118,8 @@ fn validate_dependency_graph(
     if visiting.contains(id) {
         let mut diagnostic = Diagnostic::error(
             "BUNDLE_DEPENDENCY_CYCLE",
-            "bundle 依賴有循環",
-            format!("bundle '{id}' 的 dependencies 形成循環。"),
+            "Bundle dependency cycle detected",
+            format!("The dependencies of bundle '{id}' form a cycle."),
         );
         diagnostic.facts = serde_json::json!({"bundle_id": id});
         return Err(Box::new(diagnostic));
@@ -127,8 +127,8 @@ fn validate_dependency_graph(
     let Some(spec) = specs.get(id) else {
         let mut diagnostic = Diagnostic::error(
             "BUNDLE_DEPENDENCY_NOT_FOUND",
-            "bundle 依賴不存在",
-            format!("manifest 中找不到 dependency bundle '{id}'。"),
+            "Bundle dependency not found",
+            format!("The manifest does not contain dependency bundle '{id}'."),
         );
         diagnostic.facts = serde_json::json!({"dependency": id});
         return Err(Box::new(diagnostic));
@@ -160,13 +160,13 @@ fn validate_selection(
         (None, true) => Ok(InstallSelection::All),
         (Some(_), false) => Err(Box::new(Diagnostic::error(
             "BUNDLE_SELECTION_INVALID",
-            "bundle install 的 id 不可為空",
-            "請提供一個非空 id，或使用 --all；兩者不能省略或同時提供。",
+            "Bundle install id cannot be empty",
+            "Provide a non-empty id or use --all; do not omit both or provide both.",
         ))),
         _ => Err(Box::new(Diagnostic::error(
             "BUNDLE_SELECTION_INVALID",
-            "bundle install 必須恰好選擇 id 或 all",
-            "請提供一個 id 或 --all，不能兩者都省略或同時提供。",
+            "Bundle install must select exactly one of id or all",
+            "Provide an id or --all; do not omit both or provide both.",
         ))),
     }
 }
@@ -185,8 +185,8 @@ fn select_roots(
             else {
                 let mut diagnostic = Diagnostic::error(
                     "BUNDLE_NOT_FOUND",
-                    "找不到要求安裝的 bundle",
-                    format!("manifest 中沒有 bundle '{bundle_id}'。"),
+                    "Requested bundle was not found",
+                    format!("The manifest does not contain bundle '{bundle_id}'."),
                 );
                 diagnostic.facts = serde_json::json!({
                     "bundle_id": bundle_id,
@@ -229,16 +229,16 @@ fn resolve_pack_output_path(
                         existing = existing.parent().ok_or_else(|| {
                             Box::new(Diagnostic::error(
                                 "BUNDLE_OUTPUT_OUTSIDE_PROJECT",
-                                "bundle manifest 輸出位置無法解析",
-                                format!("{} 沒有可檢查的既存 parent directory。", path.display()),
+                                "Could not resolve the bundle manifest output path",
+                                format!("{} has no existing parent directory to inspect.", path.display()),
                             ))
                         })?;
                     }
                     Err(error) => {
                         return Err(Box::new(Diagnostic::error(
                             "BUNDLE_OUTPUT_OUTSIDE_PROJECT",
-                            "bundle manifest 輸出位置無法解析",
-                            format!("{}：{}", existing.display(), error),
+                            "Could not resolve the bundle manifest output path",
+                            format!("{}: {}", existing.display(), error),
                         )));
                     }
                 }
@@ -246,22 +246,22 @@ fn resolve_pack_output_path(
             .map_err(|error| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_OUTPUT_OUTSIDE_PROJECT",
-                    "bundle manifest 輸出位置無法解析",
-                    format!("{}：{}", existing.display(), error),
+                    "Could not resolve the bundle manifest output path",
+                    format!("{}: {}", existing.display(), error),
                 ))
             })?;
             if !canonical_existing.starts_with(root) {
                 return Err(Box::new(Diagnostic::error(
                     "BUNDLE_OUTPUT_OUTSIDE_PROJECT",
-                    "bundle manifest 輸出位置超出專案根目錄",
-                    format!("{} 不在專案根目錄 {} 內。", path.display(), root.display()),
+                    "Bundle manifest output path is outside the project root",
+                    format!("{} is outside project root {}.", path.display(), root.display()),
                 )));
             }
             let suffix = path.strip_prefix(existing).map_err(|_| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_OUTPUT_OUTSIDE_PROJECT",
-                    "bundle manifest 輸出位置無法解析",
-                    format!("{} 的 parent 路徑無法重組。", path.display()),
+                    "Could not resolve the bundle manifest output path",
+                    format!("The parent path of {} could not be reconstructed.", path.display()),
                 ))
             })?;
             let mut canonical_candidate = canonical_existing;
@@ -269,8 +269,8 @@ fn resolve_pack_output_path(
             normalize_relative_path(canonical_candidate.strip_prefix(root).map_err(|_| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_OUTPUT_OUTSIDE_PROJECT",
-                    "bundle manifest 輸出位置超出專案根目錄",
-                    format!("{} 不在專案根目錄 {} 內。", path.display(), root.display()),
+                    "Bundle manifest output path is outside the project root",
+                    format!("{} is outside project root {}.", path.display(), root.display()),
                 ))
             })?)
         }
@@ -278,7 +278,7 @@ fn resolve_pack_output_path(
     let manifest_path = resolve_project_path(root, &relative).map_err(|diagnostic| {
         let mut diagnostic = *diagnostic;
         diagnostic.code = "BUNDLE_OUTPUT_OUTSIDE_PROJECT".to_string();
-        diagnostic.summary = "bundle manifest 輸出位置不安全".to_string();
+        diagnostic.summary = "Bundle manifest output path is unsafe".to_string();
         Box::new(diagnostic)
     })?;
     Ok((manifest_path, relative))
@@ -299,8 +299,8 @@ pub fn pack_project(
         Err(error) => {
             return EngineResult::failure(Diagnostic::error(
                 "PROJECT_ROOT_NOT_FOUND",
-                "找不到 Unone 專案根目錄",
-                format!("{}：{}", project_root.as_ref().display(), error),
+                "Unone project root was not found",
+                format!("{}: {}", project_root.as_ref().display(), error),
             ));
         }
     };
@@ -320,7 +320,7 @@ pub fn pack_project(
         Err(error) => {
             return EngineResult::failure(Diagnostic::error(
                 "PROJECT_CONFIG_INVALID",
-                "無法準備 bundle 的專案設定",
+                "Could not prepare the project configuration for the bundle",
                 error,
             ));
         }
@@ -328,8 +328,8 @@ pub fn pack_project(
     let Some(config_object) = config_json.as_object_mut() else {
         return EngineResult::failure(Diagnostic::error(
             "PROJECT_CONFIG_INVALID",
-            "專案設定必須是 JSON object",
-            "bundle pack 需要在 project.unone.json 設定 bundle_manifest。",
+            "Project configuration must be a JSON object",
+            "bundle pack requires bundle_manifest to be set in project.unone.json.",
         ));
     };
     let config_changed = config_object
@@ -386,8 +386,8 @@ pub fn pack_project(
             Err(_) => {
                 return EngineResult::failure(Diagnostic::error(
                     "BUNDLE_SOURCE_OUTSIDE_PROJECT",
-                    "asset manifest 超出專案根目錄",
-                    "asset manifest 必須是專案內的相對路徑。",
+                    "Asset manifest is outside the project root",
+                    "The asset manifest must be a project-relative path.",
                 ));
             }
         };
@@ -428,8 +428,8 @@ pub fn pack_project(
                     Err(error) => {
                         return EngineResult::failure(Diagnostic::error(
                             "BUNDLE_ASSET_SOURCE_READ_FAILED",
-                            "無法讀取 asset bundle 來源",
-                            format!("{}：{}", path.display(), error),
+                            "Could not read the asset bundle source",
+                            format!("{}: {}", path.display(), error),
                         ));
                     }
                 };
@@ -445,7 +445,7 @@ pub fn pack_project(
                 Err(error) => {
                     return EngineResult::failure(Diagnostic::error(
                         "BUNDLE_ASSET_ARCHIVE_FAILED",
-                        "無法建立 asset bundle archive",
+                        "Could not create the asset bundle archive",
                         error,
                     ));
                 }
@@ -477,7 +477,7 @@ pub fn pack_project(
             Err(error) => {
                 return EngineResult::failure(Diagnostic::error(
                     "PROJECT_CONFIG_WRITE_FAILED",
-                    "無法序列化 bundle 專案設定",
+                    "Could not serialize the bundle project configuration",
                     error.to_string(),
                 ));
             }
@@ -502,8 +502,8 @@ pub fn pack_project(
                 Err(error) => {
                     return EngineResult::failure(Diagnostic::error(
                         "BUNDLE_SOURCE_READ_FAILED",
-                        "無法讀取 bundle 來源",
-                        format!("{}：{}", path.display(), error),
+                        "Could not read the bundle source",
+                        format!("{}: {}", path.display(), error),
                     ));
                 }
             }
@@ -536,7 +536,7 @@ pub fn pack_project(
         Err(error) => {
             return EngineResult::failure(Diagnostic::error(
                 "BUNDLE_MANIFEST_WRITE_FAILED",
-                "無法序列化 bundle manifest",
+                "Could not serialize the bundle manifest",
                 error.to_string(),
             ));
         }
@@ -549,7 +549,7 @@ pub fn pack_project(
     {
         return EngineResult::failure(Diagnostic::error(
             "PROJECT_CONFIG_WRITE_FAILED",
-            "無法更新 bundle_manifest 設定",
+            "Could not update the bundle_manifest setting",
             error,
         ));
     }
@@ -564,7 +564,7 @@ pub fn pack_project(
         if changed && let Err(error) = write_atomic(&root, &path, &archive) {
             return EngineResult::failure(Diagnostic::error(
                 "BUNDLE_ASSET_ARCHIVE_WRITE_FAILED",
-                "無法寫入 asset bundle archive",
+                "Could not write the asset bundle archive",
                 error,
             ));
         }
@@ -572,7 +572,7 @@ pub fn pack_project(
     if manifest_changed && let Err(error) = write_atomic(&root, &manifest_path, &manifest_bytes) {
         return EngineResult::failure(Diagnostic::error(
             "BUNDLE_MANIFEST_WRITE_FAILED",
-            "無法寫入 bundle manifest",
+            "Could not write the bundle manifest",
             error,
         ));
     }
@@ -630,9 +630,9 @@ fn preflight_pack_outputs(
 fn pack_output_collision(path: &Path, other: &Path, role: &str) -> Box<Diagnostic> {
     let mut diagnostic = Diagnostic::error(
         "BUNDLE_OUTPUT_COLLISION",
-        "bundle pack 輸出位置與專案檔案衝突",
+        "Bundle pack output conflicts with a project file",
         format!(
-            "{} 與 {} ({role}) 指向相同或互相包含的路徑；請使用獨立的 pack 輸出位置。",
+            "{} and {} ({role}) refer to the same or containing paths; use a separate pack output location.",
             path.display(),
             other.display()
         ),
@@ -651,16 +651,16 @@ fn pack_collision_path(root: &Path, path: &Path) -> Result<PathBuf, Box<Diagnost
     let relative = path.strip_prefix(root).map_err(|error| {
         Box::new(Diagnostic::error(
             "BUNDLE_OUTPUT_OUTSIDE_PROJECT",
-            "bundle pack 路徑超出專案根目錄",
-            format!("{}：{}", path.display(), error),
+            "Bundle pack path is outside the project root",
+            format!("{}: {}", path.display(), error),
         ))
     })?;
     let path = resolve_project_path(root, &normalize_relative_path(relative))?;
     let resolve_error = |error: std::io::Error| {
         Box::new(Diagnostic::error(
             "BUNDLE_OUTPUT_PATH_INVALID",
-            "無法檢查 bundle pack 路徑衝突",
-            format!("{}：{}", path.display(), error),
+            "Could not check for bundle pack path conflicts",
+            format!("{}: {}", path.display(), error),
         ))
     };
     let mut existing = path.as_path();
@@ -690,9 +690,9 @@ fn validate_generated_asset_bundle_ids(
         {
             return Err(Box::new(Diagnostic::error(
                 "BUNDLE_ASSET_ID_COLLISION",
-                "asset bundle id 與既有 bundle 衝突",
+                "Asset bundle id conflicts with an existing bundle",
                 format!(
-                    "asset '{}' 指向 bundle '{}'，但該 id 已被 project/script/scene 或 asset-manifest 使用。",
+                    "Asset '{}' points to bundle '{}', but that id is already used by the project, script, scene, or asset manifest.",
                     asset.id, asset.bundle
                 ),
             )));
@@ -720,8 +720,8 @@ fn validate_pack_asset_references(
     }
     let mut diagnostic = Diagnostic::error(
         "ASSET_REFERENCE_MISSING",
-        "bundle pack 拒絕未解決的場景 asset reference",
-        "靜態主場景中的每個 sprite/mesh3d asset id 都必須先在 asset manifest 宣告；不要打包一個 host 無法可靠解析的專案。",
+        "Bundle pack rejected an unresolved scene asset reference",
+        "Every sprite/mesh3d asset id in the static main scene must be declared in the asset manifest first; do not package a project that the host cannot resolve reliably.",
     );
     diagnostic.facts = serde_json::json!({
         "missing_asset_ids": missing,
@@ -731,7 +731,7 @@ fn validate_pack_asset_references(
         .suggested_actions
         .push(crate::diagnostics::ActionSuggestion {
             action: "declare_asset".to_string(),
-            description: "在 asset manifest 為場景引用補上相同 id、source、kind 與 bundle。"
+            description: "Add the same id, source, kind, and bundle for the scene reference in the asset manifest."
                 .to_string(),
             command: Some("game asset inspect --strict --json".to_string()),
         });
@@ -764,7 +764,7 @@ pub struct AssetArchiveEntry {
 fn build_bundle_archive(mut entries: Vec<(String, Vec<u8>)>) -> Result<Vec<u8>, String> {
     entries.sort_by(|left, right| left.0.cmp(&right.0));
     if entries.windows(2).any(|window| window[0].0 == window[1].0) {
-        return Err("asset bundle 內含重複的 source path".to_string());
+        return Err("The asset bundle contains a duplicate source path".to_string());
     }
     let mut payload = Vec::new();
     let mut files = Vec::with_capacity(entries.len());
@@ -780,9 +780,9 @@ fn build_bundle_archive(mut entries: Vec<(String, Vec<u8>)>) -> Result<Vec<u8>, 
         payload.extend_from_slice(&bytes);
     }
     let header = serde_json::to_vec(&BundleArchiveHeader { version: 1, files })
-        .map_err(|error| format!("序列化 asset bundle archive header 失敗：{error}"))?;
+        .map_err(|error| format!("Failed to serialize the asset bundle archive header: {error}"))?;
     let header_len = u32::try_from(header.len())
-        .map_err(|_| "asset bundle archive header 超過 4 GiB".to_string())?;
+        .map_err(|_| "The asset bundle archive header exceeds 4 GiB".to_string())?;
     let mut archive =
         Vec::with_capacity(BUNDLE_ARCHIVE_MAGIC.len() + 4 + header.len() + payload.len());
     archive.extend_from_slice(BUNDLE_ARCHIVE_MAGIC);
@@ -808,9 +808,9 @@ pub fn read_asset_from_archive(
     if archive.len() < header_offset || !archive.starts_with(BUNDLE_ARCHIVE_MAGIC) {
         return Err(Box::new(Diagnostic::error(
             "ASSET_ARCHIVE_INVALID",
-            "asset bundle 不是引擎 archive",
+            "Asset bundle is not an engine archive",
             format!(
-                "bundle '{}' 的內容沒有引擎 asset archive 標頭。",
+                "Bundle '{}' content has no engine asset archive header.",
                 asset.bundle
             ),
         )));
@@ -825,9 +825,9 @@ pub fn read_asset_from_archive(
         _ => {
             return Err(Box::new(Diagnostic::error(
                 "ASSET_ARCHIVE_INVALID",
-                "asset bundle 的 header 長度超出內容",
+                "Asset bundle header length exceeds the content",
                 format!(
-                    "bundle '{}' 宣告的 header 長度超過已驗證的位元組。",
+                    "Bundle '{}' declares a header longer than the verified bytes.",
                     asset.bundle
                 ),
             )));
@@ -837,16 +837,16 @@ pub fn read_asset_from_archive(
         serde_json::from_slice(&archive[header_offset..payload_offset]).map_err(|error| {
             Box::new(Diagnostic::error(
                 "ASSET_ARCHIVE_INVALID",
-                "asset bundle 的 header 不是有效 JSON",
-                format!("bundle '{}'：{error}", asset.bundle),
+                "Asset bundle header is not valid JSON",
+                format!("bundle '{}': {error}", asset.bundle),
             ))
         })?;
     if header.version != ASSET_ARCHIVE_VERSION {
         return Err(Box::new(Diagnostic::error(
             "ASSET_ARCHIVE_INVALID",
-            "asset archive version 不支援",
+            "Asset archive version is unsupported",
             format!(
-                "目前只支援 asset archive version {ASSET_ARCHIVE_VERSION}，不會把未支援的版本靜默當成目前格式。"
+                "Only asset archive version {ASSET_ARCHIVE_VERSION} is supported; an unsupported version is not silently treated as the current format."
             ),
         )));
     }
@@ -854,9 +854,9 @@ pub fn read_asset_from_archive(
     let Some(entry) = header.files.iter().find(|entry| entry.path == source) else {
         let mut diagnostic = Diagnostic::error(
             "ASSET_NOT_IN_BUNDLE",
-            "asset 不在指定的 bundle 內",
+            "Asset is not in the specified bundle",
             format!(
-                "asset '{}' 的 source '{}' 不在 bundle '{}' 的 archive 內。",
+                "Asset '{}' source '{}' is not in bundle '{}' archive.",
                 asset.id, source, asset.bundle
             ),
         );
@@ -884,9 +884,9 @@ pub fn read_asset_from_archive(
         .ok_or_else(|| {
             Box::new(Diagnostic::error(
                 "ASSET_ARCHIVE_INVALID",
-                "asset archive entry 超出內容範圍",
+                "Asset archive entry is outside the content",
                 format!(
-                    "asset '{}' 在 bundle '{}' 的 offset/size 指向已驗證位元組之外。",
+                    "Asset '{}' in bundle '{}' has offset/size outside the verified bytes.",
                     asset.id, asset.bundle
                 ),
             ))
@@ -896,9 +896,9 @@ pub fn read_asset_from_archive(
     if digest != entry.sha256 {
         let mut diagnostic = Diagnostic::error(
             "ASSET_CONTENT_CORRUPT",
-            "asset 內容雜湊與 archive 宣告不符",
+            "Asset content digest does not match the archive declaration",
             format!(
-                "asset '{}' 在 bundle '{}' 的內容雜湊不符，主機不應使用這份資料。",
+                "Asset '{}' content in bundle '{}' has a mismatched digest; the host must not use it.",
                 asset.id, asset.bundle
             ),
         );
@@ -918,9 +918,9 @@ fn validate_pack_source(root: &Path, label: &str, source: &str) -> Result<(), Bo
     if !path.is_file() {
         return Err(Box::new(Diagnostic::error(
             "BUNDLE_SOURCE_NOT_FOUND",
-            "找不到 bundle 來源",
+            "Bundle source was not found",
             format!(
-                "{label} 指向 '{}'，請先建立檔案或修正 project.unone.json。",
+                "{label} points to '{}'; create the file or fix project.unone.json first.",
                 path.display()
             ),
         )));
@@ -936,9 +936,9 @@ fn resolve_bundle_source(
     resolve_project_path(root, source).map_err(|diagnostic| {
         let mut diagnostic = *diagnostic;
         diagnostic.code = "BUNDLE_SOURCE_OUTSIDE_PROJECT".to_string();
-        diagnostic.summary = "bundle 來源超出專案根目錄".to_string();
+        diagnostic.summary = "Bundle source is outside the project root".to_string();
         diagnostic.explanation = format!(
-            "{label} 的路徑 '{source}' 必須是專案內的安全相對路徑：{}",
+            "{label} path '{source}' must be a safe project-relative path: {}",
             diagnostic.explanation
         );
         Box::new(diagnostic)
@@ -950,15 +950,15 @@ fn read_existing_manifest(path: &Path) -> Result<Option<BundleManifest>, Box<Dia
         Ok(text) => serde_json::from_str(&text).map(Some).map_err(|error| {
             Box::new(Diagnostic::error(
                 "BUNDLE_MANIFEST_INVALID",
-                "既有 bundle manifest 不是有效 JSON",
-                format!("{}：{}", path.display(), error),
+                "The existing bundle manifest is not valid JSON",
+                format!("{}: {}", path.display(), error),
             ))
         }),
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
         Err(error) => Err(Box::new(Diagnostic::error(
             "BUNDLE_MANIFEST_READ_FAILED",
-            "無法讀取既有 bundle manifest",
-            format!("{}：{}", path.display(), error),
+            "Could not read the existing bundle manifest",
+            format!("{}: {}", path.display(), error),
         ))),
     }
 }
@@ -1134,9 +1134,9 @@ impl BundleVerifier {
         if self.size_bytes != self.expected_size_bytes || actual_sha256 != self.expected_sha256 {
             let mut diagnostic = Diagnostic::error(
                 "BUNDLE_VERIFY_FAILED",
-                "bundle 驗證失敗",
+                "Bundle verification failed",
                 format!(
-                    "bundle '{}' 的大小或 SHA-256 與 manifest 不一致。",
+                    "Bundle '{}' size or SHA-256 does not match the manifest.",
                     self.bundle_id
                 ),
             );
@@ -1210,8 +1210,8 @@ impl BundleManager {
             .ok_or_else(|| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_MANIFEST_NOT_CONFIGURED",
-                    "專案沒有設定 bundle manifest",
-                    "請在 project.unone.json 設定 bundle_manifest；引擎不會猜測遠端內容目錄。",
+                    "The project has no bundle manifest configured",
+                    "Set bundle_manifest in project.unone.json; the engine does not guess a remote content directory.",
                 ))
             })?;
         Self::new(paths.root, manifest)
@@ -1224,31 +1224,31 @@ impl BundleManager {
         let root = fs::canonicalize(root.as_ref()).map_err(|error| {
             Box::new(Diagnostic::error(
                 "BUNDLE_PROJECT_ROOT_INVALID",
-                "無法解析 bundle 專案根目錄",
-                format!("{}：{}", root.as_ref().display(), error),
+                "Could not resolve the bundle project root",
+                format!("{}: {}", root.as_ref().display(), error),
             ))
         })?;
         let manifest_path = if manifest_path.as_ref().is_absolute() {
             let relative = manifest_path.as_ref().strip_prefix(&root).map_err(|_| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_MANIFEST_OUTSIDE_PROJECT",
-                    "bundle manifest 超出專案根目錄",
-                    format!("{} 必須位於專案根目錄內。", manifest_path.as_ref().display()),
+                    "Bundle manifest is outside the project root",
+                    format!("{} must be inside the project root.", manifest_path.as_ref().display()),
                 ))
             })?;
             resolve_project_path(&root, &normalize_relative_path(relative)).map_err(|_| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_MANIFEST_OUTSIDE_PROJECT",
-                    "bundle manifest 超出專案根目錄",
-                    format!("{} 必須是專案內的安全相對路徑。", manifest_path.as_ref().display()),
+                    "Bundle manifest is outside the project root",
+                    format!("{} must be a safe project-relative path.", manifest_path.as_ref().display()),
                 ))
             })?
         } else {
             resolve_project_path(&root, &manifest_path.as_ref().to_string_lossy()).map_err(|_| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_MANIFEST_OUTSIDE_PROJECT",
-                    "bundle manifest 超出專案根目錄",
-                    format!("{} 必須是專案內的安全相對路徑。", manifest_path.as_ref().display()),
+                    "Bundle manifest is outside the project root",
+                    format!("{} must be a safe project-relative path.", manifest_path.as_ref().display()),
                 ))
             })?
         };
@@ -1417,8 +1417,8 @@ impl BundleManager {
             None => {
                 return EngineResult::failure(Diagnostic::error(
                     "BUNDLE_ACTIVATE_FAILED",
-                    "無法配置下一個 bundle generation",
-                    "active generation 編號已達 u64 上限；不會覆寫目前 active。",
+                    "Could not allocate the next bundle generation",
+                    "The active generation number reached the u64 limit; the current active generation will not be overwritten.",
                 ));
             }
         };
@@ -1434,8 +1434,8 @@ impl BundleManager {
         if let Err(err) = self.write_generation(&active) {
             return EngineResult::failure(Diagnostic::error(
                 "BUNDLE_ACTIVATE_FAILED",
-                "bundle 已驗證但啟用失敗",
-                format!("無法建立 active generation：{err}"),
+                "Bundle was verified but activation failed",
+                format!("Could not create the active generation: {err}"),
             ));
         }
         let mut result = EngineResult::success(report);
@@ -1495,8 +1495,8 @@ impl BundleManager {
         let Some(spec) = manifest.bundles.iter().find(|spec| spec.id == bundle_id) else {
             let mut diagnostic = Diagnostic::error(
                 "BUNDLE_NOT_FOUND",
-                "找不到要求讀取的 bundle",
-                format!("manifest 中沒有 bundle '{bundle_id}'。"),
+                "Requested bundle to read was not found",
+                format!("The manifest does not contain bundle '{bundle_id}'."),
             );
             diagnostic.facts = serde_json::json!({
                 "bundle_id": bundle_id,
@@ -1514,12 +1514,12 @@ impl BundleManager {
         let Some(active) = active else {
             let mut diagnostic = Diagnostic::error(
                 "BUNDLE_GENERATION_MISMATCH",
-                "沒有已啟用的 bundle generation",
-                format!("讀取 bundle '{bundle_id}' 前必須先安裝並啟用一個 generation。"),
+                "No bundle generation is active",
+                format!("Install and activate a generation before reading bundle '{bundle_id}'."),
             );
             diagnostic.suggested_actions.push(ActionSuggestion {
                 action: "install_bundle".to_string(),
-                description: format!("安裝並啟用 bundle '{bundle_id}'。"),
+                description: format!("Install and activate bundle '{bundle_id}'."),
                 command: Some(format!("game bundle install {bundle_id}")),
             });
             return Err(Box::new(diagnostic));
@@ -1527,9 +1527,9 @@ impl BundleManager {
         if active.record.bundles.get(bundle_id) != Some(&spec.sha256) {
             let mut diagnostic = Diagnostic::error(
                 "BUNDLE_GENERATION_MISMATCH",
-                "bundle 不屬於目前啟用的 generation",
+                "Bundle does not belong to the active generation",
                 format!(
-                    "bundle '{bundle_id}' 的 manifest 雜湊與 active generation 不一致；不會讀取未啟用的內容。"
+                    "Bundle '{bundle_id}' manifest digest does not match the active generation; inactive content will not be read."
                 ),
             );
             diagnostic.facts = serde_json::json!({
@@ -1540,7 +1540,7 @@ impl BundleManager {
             });
             diagnostic.suggested_actions.push(ActionSuggestion {
                 action: "install_bundle".to_string(),
-                description: format!("重新安裝 bundle '{bundle_id}' 以啟用目前 manifest。"),
+                description: format!("Reinstall bundle '{bundle_id}' to activate the current manifest."),
                 command: Some(format!("game bundle install {bundle_id}")),
             });
             return Err(Box::new(diagnostic));
@@ -1549,15 +1549,15 @@ impl BundleManager {
         let bytes = fs::read(&cache_path).map_err(|error| {
             Box::new(Diagnostic::error(
                 "BUNDLE_CACHE_MISS",
-                "找不到已啟用 bundle 的快取內容",
-                format!("{}：{}", cache_path.display(), error),
+                "Active bundle cache content was not found",
+                format!("{}: {}", cache_path.display(), error),
             ))
         })?;
         if bytes.len() as u64 != spec.size_bytes || digest_bytes(&bytes) != spec.sha256 {
             return Err(Box::new(Diagnostic::error(
                 "BUNDLE_CACHE_CORRUPT",
-                "已啟用 bundle 的快取內容已損壞",
-                format!("bundle '{bundle_id}' 的快取大小或雜湊與 manifest 不符。"),
+                "Active bundle cache content is corrupt",
+                format!("Bundle '{bundle_id}' cache size or digest does not match the manifest."),
             )));
         }
         Ok(bytes)
@@ -1583,8 +1583,8 @@ impl BundleManager {
         if !visiting.insert(spec.id.clone()) {
             return Err(Box::new(Diagnostic::error(
                 "BUNDLE_DEPENDENCY_CYCLE",
-                "bundle 依賴有循環",
-                format!("安裝 '{}' 時發現依賴循環。", spec.id),
+                "Bundle dependency cycle detected",
+                format!("A dependency cycle was found while installing '{}'.", spec.id),
             )));
         }
         for dependency in &spec.dependencies {
@@ -1595,9 +1595,9 @@ impl BundleManager {
             else {
                 return Err(Box::new(Diagnostic::error(
                     "BUNDLE_DEPENDENCY_NOT_FOUND",
-                    "bundle 依賴不存在",
+                    "Bundle dependency not found",
                     format!(
-                        "bundle '{}' 依賴 '{}', 但 manifest 沒有該項目。",
+                        "Bundle '{}' depends on '{}', but the manifest does not contain that entry.",
                         spec.id, dependency
                     ),
                 )));
@@ -1612,7 +1612,7 @@ impl BundleManager {
         fs::create_dir_all(&staging_dir).map_err(|err| {
             Box::new(Diagnostic::error(
                 "BUNDLE_STORAGE_FAILED",
-                "無法建立 bundle staging",
+                "Could not create bundle staging",
                 err.to_string(),
             ))
         })?;
@@ -1624,7 +1624,7 @@ impl BundleManager {
         fs::create_dir_all(&cache_dir).map_err(|err| {
             Box::new(Diagnostic::error(
                 "BUNDLE_STORAGE_FAILED",
-                "無法建立 bundle cache",
+                "Could not create the bundle cache",
                 err.to_string(),
             ))
         })?;
@@ -1633,7 +1633,7 @@ impl BundleManager {
             fs::remove_file(&cache_path).map_err(|err| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_CACHE_CORRUPT",
-                    "無法移除損壞的 bundle cache",
+                    "Could not remove the corrupt bundle cache",
                     err.to_string(),
                 ))
             })?;
@@ -1652,7 +1652,7 @@ impl BundleManager {
             replace_staged_file(&staged_path, &cache_path).map_err(|err| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_CACHE_COMMIT_FAILED",
-                    "無法提交 bundle cache",
+                    "Could not commit the bundle cache",
                     err.to_string(),
                 ))
             })?;
@@ -1675,15 +1675,15 @@ impl BundleManager {
         let bytes = fs::read(&manifest_path).map_err(|err| {
             Box::new(Diagnostic::error(
                 "BUNDLE_MANIFEST_READ_FAILED",
-                "無法讀取 bundle manifest",
-                format!("{}：{}", manifest_path.display(), err),
+                "Could not read the bundle manifest",
+                format!("{}: {}", manifest_path.display(), err),
             ))
         })?;
         let manifest = serde_json::from_slice(&bytes).map_err(|err| {
             Box::new(Diagnostic::error(
                 "BUNDLE_MANIFEST_INVALID",
-                "bundle manifest 不是有效 JSON",
-                format!("{}：{}", manifest_path.display(), err),
+                "Bundle manifest is not valid JSON",
+                format!("{}: {}", manifest_path.display(), err),
             ))
         })?;
         validate_bundle_manifest(&manifest)?;
@@ -1699,22 +1699,22 @@ impl BundleManager {
         let relative = path.strip_prefix(&self.root).map_err(|_| {
             Box::new(Diagnostic::error(
                 code,
-                format!("{label} 不在專案根目錄內"),
-                format!("{} 必須位於專案根目錄內。", path.display()),
+                format!("{label} is not inside the project root"),
+                format!("{} must be inside the project root.", path.display()),
             ))
         })?;
         resolve_project_path(&self.root, &normalize_relative_path(relative)).map_err(|diagnostic| {
             let mut diagnostic = *diagnostic;
             diagnostic.code = code.to_string();
-            diagnostic.summary = format!("{label} 路徑不安全");
-            diagnostic.explanation = format!("{}：{}", label, diagnostic.explanation);
+            diagnostic.summary = format!("{label} path is unsafe");
+            diagnostic.explanation = format!("{}: {}", label, diagnostic.explanation);
             Box::new(diagnostic)
         })
     }
 
     fn source_path(&self, spec: &BundleSpec) -> Result<PathBuf, String> {
         resolve_project_path(&self.root, &spec.source)
-            .map_err(|diagnostic| format!("{}：{}", diagnostic.code, diagnostic.explanation))
+            .map_err(|diagnostic| format!("{}: {}", diagnostic.code, diagnostic.explanation))
     }
 
     fn write_verified_stream(
@@ -1726,8 +1726,8 @@ impl BundleManager {
         let mut file = File::create(staged_path).map_err(|err| {
             Box::new(Diagnostic::error(
                 "BUNDLE_STAGING_FAILED",
-                "無法建立 bundle staging 檔案",
-                format!("{}：{}", staged_path.display(), err),
+                "Could not create the bundle staging file",
+                format!("{}: {}", staged_path.display(), err),
             ))
         })?;
         let mut verifier = BundleVerifier::new(spec);
@@ -1736,8 +1736,8 @@ impl BundleManager {
             let read = reader.read(&mut buffer).map_err(|err| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_FETCH_FAILED",
-                    "讀取 bundle 來源失敗",
-                    format!("bundle '{}'：{}", spec.id, err),
+                    "Failed to read the bundle source",
+                    format!("bundle '{}': {}", spec.id, err),
                 ))
             })?;
             if read == 0 {
@@ -1746,8 +1746,8 @@ impl BundleManager {
             file.write_all(&buffer[..read]).map_err(|err| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_STAGING_FAILED",
-                    "寫入 bundle staging 失敗",
-                    format!("bundle '{}'：{}", spec.id, err),
+                    "Failed to write bundle staging",
+                    format!("bundle '{}': {}", spec.id, err),
                 ))
             })?;
             verifier.update(&buffer[..read]);
@@ -1755,15 +1755,15 @@ impl BundleManager {
         file.flush().map_err(|err| {
             Box::new(Diagnostic::error(
                 "BUNDLE_STAGING_FAILED",
-                "flush bundle staging 失敗",
-                format!("bundle '{}'：{}", spec.id, err),
+                "Failed to flush bundle staging",
+                format!("bundle '{}': {}", spec.id, err),
             ))
         })?;
         file.sync_all().map_err(|err| {
             Box::new(Diagnostic::error(
                 "BUNDLE_STAGING_FAILED",
-                "同步 bundle staging 失敗",
-                format!("bundle '{}'：{}", spec.id, err),
+                "Failed to sync bundle staging",
+                format!("bundle '{}': {}", spec.id, err),
             ))
         })?;
         verifier.finish().map(|_| ())
@@ -1785,7 +1785,7 @@ impl BundleManager {
         self.cache_path(spec)
             .and_then(|path| self.verify_path(&path).map_err(|error| Box::new(Diagnostic::error(
                 "BUNDLE_CACHE_CORRUPT",
-                "bundle cache 驗證失敗",
+                "Bundle cache verification failed",
                 error,
             ))))
             .map(|result| result.size == spec.size_bytes && result.sha256 == spec.sha256)
@@ -1848,10 +1848,10 @@ impl BundleManager {
             .map_err(|diagnostic| diagnostic.explanation)?;
         let bytes = fs::read(&path).map_err(|error| error.to_string())?;
         let record = serde_json::from_slice::<ActiveGeneration>(&bytes)
-            .map_err(|error| format!("{}：{}", path.display(), error))?;
+            .map_err(|error| format!("{}: {}", path.display(), error))?;
         if record.generation != generation_number {
             return Err(format!(
-                "{} 的 record generation {} 與檔名 generation {} 不一致。",
+                "{} record generation {} does not match filename generation {}.",
                 path.display(),
                 record.generation,
                 generation_number
@@ -1933,24 +1933,24 @@ fn formal_generation_number(name: &str) -> Result<Option<u64>, String> {
         return Ok(None);
     };
     if number.is_empty() || !number.bytes().all(|byte| byte.is_ascii_digit()) {
-        return Err(format!("active generation 檔名 '{}' 的編號無效。", name));
+        return Err(format!("Invalid generation number in active-generation filename '{}'.", name));
     }
     number
         .parse::<u64>()
         .map(Some)
-        .map_err(|error| format!("active generation 檔名 '{}' 的編號無效：{}", name, error))
+        .map_err(|error| format!("Invalid generation number in active-generation filename '{}': {}", name, error))
 }
 
 fn validate_active_generation(record: &ActiveGeneration) -> Result<(), String> {
     if record.generation == 0 {
-        return Err("active generation 編號不可為 0。".to_string());
+        return Err("Active generation number cannot be 0.".to_string());
     }
     if record.bundles.is_empty() {
-        return Err("active generation 不可包含空的 bundle set。".to_string());
+        return Err("Active generation cannot contain an empty bundle set.".to_string());
     }
     for (id, sha256) in &record.bundles {
         if id.trim().is_empty() || !is_valid_sha256(sha256) {
-            return Err(format!("active generation 中 bundle '{}' 的記錄無效。", id));
+            return Err(format!("Active generation contains an invalid record for bundle '{}'.", id));
         }
     }
     Ok(())
@@ -1959,7 +1959,7 @@ fn validate_active_generation(record: &ActiveGeneration) -> Result<(), String> {
 fn active_generation_error(error: String) -> Diagnostic {
     let mut diagnostic = Diagnostic::error(
         "BUNDLE_ACTIVE_GENERATION_UNREADABLE",
-        "無法讀取 active bundle generation",
+        "Could not read the active bundle generation",
         error,
     );
     diagnostic.facts = serde_json::json!({
@@ -1985,8 +1985,8 @@ impl BundleFetcher for LocalBundleFetcher<'_> {
             .map_err(|err| {
                 Box::new(Diagnostic::error(
                     "BUNDLE_FETCH_FAILED",
-                    "無法開啟本地 bundle 來源",
-                    format!("{}：{}", path.display(), err),
+                    "Could not open the local bundle source",
+                    format!("{}: {}", path.display(), err),
                 ))
             })
     }
@@ -3146,7 +3146,7 @@ mod tests {
                 .ok_or_else(|| {
                     Box::new(Diagnostic::error(
                         "BUNDLE_FETCH_FAILED",
-                        "測試 bundle fetcher 找不到內容",
+                        "test bundle fetcher could not find content",
                         spec.id.clone(),
                     ))
                 })

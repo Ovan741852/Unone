@@ -105,8 +105,8 @@ impl SystemSettings {
             let Some(descriptor) = describe(id) else {
                 let mut diagnostic = Diagnostic::error(
                     "SYSTEM_UNKNOWN",
-                    "project.unone.json 宣告了引擎沒有的 system",
-                    format!("引擎沒有 system '{id}'；不會把 typo 當成關閉某個系統。"),
+                    "project.unone.json declares an unavailable system",
+                    format!("The engine does not provide system '{id}'; a typo must not silently disable a system."),
                 );
                 diagnostic.facts = serde_json::json!({
                     "system": id,
@@ -117,7 +117,7 @@ impl SystemSettings {
                 });
                 diagnostic.suggested_actions.push(ActionSuggestion {
                     action: "list_systems".to_string(),
-                    description: "列出引擎宣告的 system 與預設值。".to_string(),
+                    description: "List the systems declared by the engine and their defaults.".to_string(),
                     command: Some("game systems list --json".to_string()),
                 });
                 return Err(Box::new(diagnostic));
@@ -125,9 +125,9 @@ impl SystemSettings {
             if !*enabled && !descriptor.optional {
                 return Err(Box::new(Diagnostic::error(
                     "SYSTEM_NOT_OPTIONAL",
-                    "這個 system 不能關閉",
+                    "This system cannot be disabled",
                     format!(
-                        "system '{id}' 是 runtime 的必要部分：{}",
+                        "system '{id}' is required by the runtime: {}",
                         descriptor.when_disabled
                     ),
                 )));
@@ -135,9 +135,9 @@ impl SystemSettings {
             if *enabled && descriptor.status == SystemStatus::NotImplemented {
                 let mut diagnostic = Diagnostic::error(
                     "SYSTEM_NOT_IMPLEMENTED",
-                    "這個 system 目前沒有實作",
+                    "This system is not implemented",
                     format!(
-                        "system '{id}' 只有契約，沒有引擎或 host 實作；啟用它不會產生任何行為，因此視為設定錯誤。"
+                        "system '{id}' has a contract but no engine or host implementation; enabling it produces no behavior, so the configuration is invalid."
                     ),
                 );
                 diagnostic.facts = serde_json::json!({"system": id, "status": descriptor.status});
@@ -258,8 +258,8 @@ pub fn set(
         Err(error) => {
             return EngineResult::failure(Diagnostic::error(
                 "PROJECT_CONFIG_READ_FAILED",
-                "無法讀取專案設定",
-                format!("{}：{}", paths.config.display(), error),
+                "Could not read the project configuration",
+                format!("{}: {}", paths.config.display(), error),
             ));
         }
     };
@@ -268,16 +268,16 @@ pub fn set(
         Err(error) => {
             return EngineResult::failure(Diagnostic::error(
                 "PROJECT_CONFIG_INVALID",
-                "專案設定不是有效 JSON",
-                format!("{}：{}", paths.config.display(), error),
+                "Project configuration is not valid JSON",
+                format!("{}: {}", paths.config.display(), error),
             ));
         }
     };
     let Some(object) = document.as_object_mut() else {
         return EngineResult::failure(Diagnostic::error(
             "PROJECT_CONFIG_INVALID",
-            "專案設定必須是 JSON object",
-            "systems 只能寫進 project.unone.json 的最上層 object。",
+            "Project configuration must be a JSON object",
+            "systems may only be written in the top-level object of project.unone.json.",
         ));
     };
     let systems = object
@@ -286,8 +286,8 @@ pub fn set(
     let Some(systems) = systems.as_object_mut() else {
         return EngineResult::failure(Diagnostic::error(
             "PROJECT_CONFIG_INVALID",
-            "systems 必須是 JSON object",
-            "systems 的格式是每個 system id 對應 true 或 false。",
+            "systems must be a JSON object",
+            "systems maps each system id to true or false.",
         ));
     };
     systems.insert(id.trim().to_string(), serde_json::Value::Bool(enabled));
@@ -297,7 +297,7 @@ pub fn set(
         Err(error) => {
             return EngineResult::failure(Diagnostic::error(
                 "PROJECT_CONFIG_WRITE_FAILED",
-                "無法序列化專案設定",
+                "Could not serialize the project configuration",
                 error.to_string(),
             ));
         }
@@ -306,8 +306,8 @@ pub fn set(
     if let Err(error) = fs::write(&paths.config, serialized) {
         return EngineResult::failure(Diagnostic::error(
             "PROJECT_CONFIG_WRITE_FAILED",
-            "無法寫入專案設定",
-            format!("{}：{}", paths.config.display(), error),
+            "Could not write the project configuration",
+            format!("{}: {}", paths.config.display(), error),
         ));
     }
 
@@ -359,40 +359,40 @@ fn descriptors() -> Vec<SystemDescriptor> {
     vec![
         descriptor(
             "world",
-            "Entity、Transform 與 Sprite 的 ECS world state。",
+            "ECS world state for entities, transforms, and sprites.",
             SystemStatus::Available,
             true,
             false,
             vec!["api.entity.*"],
             vec!["world.entities"],
-            "沒有 world 就沒有可觀測的遊戲狀態，因此不可關閉。",
-            "不適用。",
+            "Without the world there is no observable game state, so this system cannot be disabled.",
+            "Not applicable.",
         ),
         descriptor(
             "input",
-            "語意 action 與 world/screen pointer 的 host 輸入邊界。",
+            "Host input boundary for semantic actions and world/screen pointers.",
             SystemStatus::Available,
             true,
             false,
             vec!["api.input.isDown", "api.input.pointer"],
             vec!["world.pointer"],
-            "沒有 input 就無法重播 deterministic 測試，因此不可關閉。",
-            "不適用。",
+            "Deterministic tests cannot be replayed without input, so this system cannot be disabled.",
+            "Not applicable.",
         ),
         descriptor(
             "observation",
-            "typed ViewModel 的 semantic projection 與 observation digest。",
+            "Semantic projection and observation digest for the typed ViewModel.",
             SystemStatus::Available,
             true,
             false,
             vec!["api.observation.set"],
             vec!["observation", "observation_digest"],
-            "沒有 observation 就無法做 semantic assertion，因此不可關閉。",
-            "不適用。",
+            "Semantic assertions cannot run without observations, so this system cannot be disabled.",
+            "Not applicable.",
         ),
         descriptor(
             "physics2d",
-            "2D 剛體的 fixed-step 積分：重力、linear damping、地面反彈與摩擦、圓形碰撞，並發布每一幀的接觸點。沒有角速度、沒有非圓形碰撞體、沒有 sensor 與 raycast。",
+            "Fixed-step integration for 2D rigid bodies: gravity, linear damping, ground bounce and friction, and circle collisions with per-frame contact points. There is no angular velocity, non-circular collider, sensor, or raycast.",
             SystemStatus::Available,
             true,
             true,
@@ -402,67 +402,67 @@ fn descriptors() -> Vec<SystemDescriptor> {
                 "world.contacts",
                 "world.ground_contacts",
             ],
-            "關閉後引擎不再推進任何剛體、也不發布任何 contact；RigidBody2D 會保持 scene 的初始值，api.physics 會回報 SYSTEM_DISABLED。",
-            "棋盤、放置、AVG、老虎機這類沒有物理模擬的遊戲；關閉可移除每 frame 的積分成本與非必要的 digest 變動來源。",
+            "When disabled, the engine advances no rigid bodies and publishes no contacts; RigidBody2D keeps its scene initial values and api.physics reports SYSTEM_DISABLED.",
+            "Games without physics simulation, such as board, idle, AVG, and slot games; disabling this removes per-frame integration cost and unnecessary digest changes.",
         ),
         descriptor(
             "camera2d",
-            "2D 相機位置與縮放。",
+            "2D camera position and zoom.",
             SystemStatus::Available,
             true,
             true,
             vec!["api.camera.setPosition", "api.camera.setZoom"],
             vec!["world.camera"],
-            "關閉後 api.camera 會回報 SYSTEM_DISABLED，snapshot 仍輸出預設相機讓 host 有固定視野。",
-            "固定畫面、不捲動的遊戲。",
+            "When disabled, api.camera reports SYSTEM_DISABLED; the snapshot still emits a default camera so the host has a fixed view.",
+            "Fixed-screen, non-scrolling games.",
         ),
         descriptor(
             "camera3d",
-            "3D 相機與 Mesh3D/Transform3D 的觀測投影。",
+            "3D camera and observation projection for Mesh3D/Transform3D.",
             SystemStatus::Available,
             true,
             true,
             vec!["api.camera3d.setPosition", "api.camera3d.setTarget"],
             vec!["world.camera3d", "world.entities[].mesh3d"],
-            "關閉後 api.camera3d 會回報 SYSTEM_DISABLED；api.entity 的 3D transform 目前不受此開關影響。",
-            "純 2D 遊戲；關閉可讓「這個專案不該出現 3D 相機」變成可驗證的事實。",
+            "When disabled, api.camera3d reports SYSTEM_DISABLED; api.entity 3D transforms are currently unaffected by this switch.",
+            "Pure 2D games; disabling this makes 'this project should not contain a 3D camera' a verifiable fact.",
         ),
         descriptor(
             "random",
-            "以 seed 決定、可重播的遊戲亂數。",
+            "Seeded, replayable game randomness.",
             SystemStatus::Available,
             true,
             true,
             vec!["api.random.nextFloat", "api.random.nextInt"],
             vec![],
-            "關閉後 api.random 會回報 SYSTEM_DISABLED。",
-            "完全 deterministic、不允許任何亂數來源的遊戲或關卡驗證。",
+            "When disabled, api.random reports SYSTEM_DISABLED.",
+            "Fully deterministic games or level verification that permits no random source.",
         ),
         descriptor(
             "ui",
-            "engine 驗證的最小 UI tree 傳輸（screen/text/button/rect/action）。",
+            "Minimal UI tree transport for engine verification (screen/text/button/rect/action).",
             SystemStatus::Available,
             true,
             true,
             vec!["api.ui.setRoot"],
             vec!["ui"],
-            "關閉後 api.ui 會回報 SYSTEM_DISABLED，host 不會收到 UI tree。",
-            "只有 headless 模擬或由 host 自行組 UI 的遊戲。",
+            "When disabled, api.ui reports SYSTEM_DISABLED and the host receives no UI tree.",
+            "Headless simulations or games whose host builds the UI independently.",
         ),
         descriptor(
             "save",
-            "遊戲自訂版本與 migration 的 JSON save payload 傳輸。",
+            "Transport for the game's versioned JSON save payload and migrations.",
             SystemStatus::Available,
             true,
             true,
             vec!["api.save.set", "api.save.get"],
             vec!["save_payload"],
-            "關閉後 api.save 會回報 SYSTEM_DISABLED。",
-            "沒有存檔的關卡驗證或 demo。",
+            "When disabled, api.save reports SYSTEM_DISABLED.",
+            "Level verification or demos without saved state.",
         ),
         descriptor(
             "audio",
-            "音效與 BGM：遊戲發布語意音訊事件與 loop 狀態，host 負責解碼與混音。",
+            "Sound effects and BGM: the game publishes semantic audio events and loop state; the host decodes and mixes them.",
             SystemStatus::HostRequired,
             true,
             true,
@@ -473,30 +473,30 @@ fn descriptors() -> Vec<SystemDescriptor> {
                 "api.audio.stopAll",
             ],
             vec!["world.audio_events", "world.audio_loops"],
-            "關閉後 api.audio 會回報 SYSTEM_DISABLED，snapshot 不會有任何音訊事件或 loop。",
-            "完全不出聲的遊戲，或只想比對畫面的驗證專案。分類規則（exclusive／淡入淡出）由引擎決定並進 digest；實際發聲由 host 執行，目前只有 web/presentation 這個 Web host 會播放。",
+            "When disabled, api.audio reports SYSTEM_DISABLED and the snapshot contains no audio events or loops.",
+            "Silent games or verification projects that only compare visuals. Classification rules (exclusive/fade) are decided by the engine and included in the digest; hosts produce the actual sound, and the Web hosts currently play it while native preview and Android remain silent.",
         ),
         descriptor(
             "spine",
-            "Spine 骨骼動畫：遊戲發布語意動畫狀態，host 執行 Spine runtime。",
+            "Spine skeletal animation: the game publishes semantic animation state; the host runs the Spine runtime.",
             SystemStatus::HostRequired,
             false,
             true,
             vec!["api.animation.play", "api.animation.stop"],
             vec!["world.entities[].animation"],
-            "關閉後 api.animation 會回報 SYSTEM_DISABLED，scene 宣告的 animation 仍會出現在 snapshot。",
-            "沒有骨骼動畫的遊戲；這是預設關閉的系統。目前只有 web/presentation 這個 Web host 會以 spine-webgl 播放，native preview 與 Android host 都不會；引擎只負責傳輸與 determinism。",
+            "When disabled, api.animation reports SYSTEM_DISABLED; animation declared by the scene still appears in the snapshot.",
+            "Games without skeletal animation; this system is disabled by default. Currently only the web/presentation Web host plays it with spine-webgl; native preview and the Android host do not. The engine only owns transport and determinism.",
         ),
         descriptor(
             "effekseer",
-            "Effekseer 特效：遊戲發布語意特效事件，host 執行 Effekseer runtime。",
+            "Effekseer effects: the game publishes semantic effect events; the host runs the Effekseer runtime.",
             SystemStatus::HostRequired,
             false,
             true,
             vec!["api.effect.spawn", "api.effect.stop"],
             vec!["world.effects"],
-            "關閉後 api.effect 會回報 SYSTEM_DISABLED，snapshot 不會有任何 effect。",
-            "沒有粒子特效的遊戲；這是預設關閉的系統。目前只有 web/presentation 這個 Web host 會以 Effekseer for WebGL 播放，native preview 與 Android host 都不會；引擎只負責傳輸與 determinism。",
+            "When disabled, api.effect reports SYSTEM_DISABLED and the snapshot contains no effects.",
+            "Games without particle effects; this system is disabled by default. Currently only the web/presentation Web host plays it with Effekseer for WebGL; native preview and the Android host do not. The engine only owns transport and determinism.",
         ),
     ]
 }
@@ -552,9 +552,9 @@ mod tests {
 
     #[test]
     fn finds_systems_by_meaning() {
-        let matches = search("物理");
+        let matches = search("physics");
         assert!(matches.iter().any(|system| system.id == "physics2d"));
-        assert!(search("骨骼").iter().any(|system| system.id == "spine"));
+        assert!(search("skeletal").iter().any(|system| system.id == "spine"));
         assert!(describe("PHYSICS2D").is_some());
         assert!(describe("nope").is_none());
     }

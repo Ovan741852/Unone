@@ -133,3 +133,67 @@ runner stops in a hidden pane is treated as a missing explicit lifecycle policy,
 not automatically a defect requiring background simulation. Pausing hidden games
 can be intentional; an AI recording/test driver needs a separate explicit mode.
 Do not adopt a permanent timer loop merely because a reviewer suggests one.
+
+## Implementation follow-up (2026-09-07)
+
+The bounded defect slice is now implemented in the working tree. The reasons
+for each change are recorded here so a later cleanup does not accidentally
+reintroduce the original failure modes:
+
+- Web runner and presentation now share an elapsed-time fixed-step scheduler.
+  It has one pending wake, a bounded catch-up budget, a watchdog for a starved
+  visible RAF, and an explicit hidden-document pause policy. A host receives a
+  visibility callback so it can release input and suspend host audio; hidden
+  simulation is not silently converted into an always-on timer loop.
+- Web bundle publication is split into stage and activation. Activation reads
+  and replaces the active pointer in one IndexedDB readwrite transaction, and
+  generation numbers are allocated from the maximum stored generation so a
+  rollback cannot make an old state alias a later candidate. If Rust rejects a
+  script, the runner rolls back the pointer with the same CAS check and never
+  executes the old Luau script a second time. Losing that rollback race is an
+  explicit recovery-required diagnostic.
+- Rust reload evaluates a candidate Luau state and runs `onReload` against a
+  cloned World. Shared input, RNG, trace, observations, UI, viewport and save
+  state are restored on failure. This is a reload transaction only; no general
+  transaction framework was added.
+- Runtime 2D vectors are checked for finite values before world mutation.
+  Collision pair construction filters out entities without rigid bodies while
+  retaining deterministic BTreeMap order. Performance keeps cumulative totals
+  but bounds percentile/over-budget samples to the most recent 1,024 frames.
+- Sprite load failures remain visible beside their fallback until a successful
+  load or declaration change. Retrying is explicit through the layer API and
+  the generic Web host's `window.unoneHost.retryFailedAssets()` action.
+  Generic Web now consumes engine audio events/loops; decoding and playback
+  remain host responsibilities.
+- Engine-authored diagnostics in `crates/unone-engine/src` are English. Chinese
+  strings left in tests are deliberate user/Unicode fixtures, not engine text.
+
+The implementation deliberately does not add scene CRUD/prefabs, a CSS engine,
+an ECS rewrite, a permanent background simulation policy, or broad-phase
+physics before a representative game demonstrates the need. Those omissions
+are scope decisions, not silently passed capability claims.
+
+Current regression evidence: `cargo test --workspace` passed; the Web unit suite
+passed 14 tests; all changed Web files passed `node --check`. The repository-wide
+`cargo fmt --all -- --check` still reports pre-existing formatting differences
+outside this slice, so formatting is not claimed as a gate.
+
+## Post-fix review record (2026-09-07)
+
+The follow-up blind review found three concrete manifestations of one missing
+host lifecycle contract: failed asset promises were retained as cache entries,
+same-ID sprites were not explicitly tied to a bundle generation, and an old
+asynchronous completion could repopulate a new cache. The fix keeps this in the
+Web host: `assetEpoch` invalidates URL requests at a generation transition,
+completed failures are removed from the in-flight map, and sprite records carry
+a lifecycle epoch so stale completions cannot update the DOM.
+
+A regression now covers a late completion after `spriteLayer.clear()`. The
+focused suite remains 14/14, and the workspace suite remains green. A second
+blind structural review was dispatched to Tesla and then Astra after Tesla did
+not return; neither produced a report within the bounded review window. They
+were not treated as approval. Claude CLI was also invoked in read-only plan
+mode twice and produced no review output before it was stopped. The submitted
+decision therefore rests on the explicit invariants, source inspection and
+passing tests above, with the external-review non-response recorded rather
+than silently interpreted as a clean review.

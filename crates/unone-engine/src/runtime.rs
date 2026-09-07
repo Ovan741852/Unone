@@ -179,12 +179,26 @@ struct ScriptStamp {
     size: u64,
 }
 
+struct ReloadRollbackState {
+    input: InputState,
+    random: DeterministicRng,
+    trace: Vec<TraceEvent>,
+    observations: BTreeMap<String, serde_json::Value>,
+    ui: Option<UiTree>,
+    viewport_aspect: f64,
+    save_payload: Option<serde_json::Value>,
+    generation: u64,
+    last_seen_script_stamp: Option<ScriptStamp>,
+    script_source: Option<String>,
+}
+
 pub struct EngineRuntime {
     config: ProjectConfig,
     paths: ProjectPaths,
     systems: SystemSettings,
     world: Rc<RefCell<World>>,
     input: Rc<RefCell<InputState>>,
+    random: Rc<RefCell<DeterministicRng>>,
     lua: Lua,
     api: Table,
     update_fn: Function,
@@ -211,7 +225,7 @@ impl EngineRuntime {
                 return EngineResult::failure(Diagnostic::error(
                     "SCRIPT_READ_FAILED",
                     "Unable to read entry script",
-                    format!("{}：{}", paths.entry_script.display(), err),
+                    format!("{}: {}", paths.entry_script.display(), err),
                 ));
             }
         };
@@ -497,7 +511,7 @@ impl EngineRuntime {
             audio.validate().map_err(|explanation| {
                 Box::new(Diagnostic::error(
                     "AUDIO_RULE_NOT_IMPLEMENTED",
-                    "project.unone.json 宣告了本 build 未實作的音訊規則",
+                    "project.unone.json declares an audio rule not implemented by this build",
                     explanation,
                 ))
             })?;
@@ -524,6 +538,7 @@ impl EngineRuntime {
             systems,
             world,
             input,
+            random,
             lua,
             api,
             update_fn: placeholder,
@@ -537,7 +552,7 @@ impl EngineRuntime {
             script_source,
             performance: PerformanceCollector::default(),
         };
-        runtime.load_script(false)?;
+        runtime.load_script(false, None)?;
         Ok(runtime)
     }
 
@@ -593,7 +608,7 @@ impl EngineRuntime {
     }
 
     pub fn reload(&mut self) -> Result<(), Box<Diagnostic>> {
-        self.load_script(true)
+        self.load_script(true, None)
     }
 
     /// Replace a host-provided script while keeping Rust-owned world state.
@@ -601,8 +616,7 @@ impl EngineRuntime {
     /// A failed source keeps the previous update function active, matching
     /// filesystem hot reload behavior. The host can fix the source and retry.
     pub fn reload_source(&mut self, source: impl Into<String>) -> Result<(), Box<Diagnostic>> {
-        self.script_source = Some(source.into());
-        self.load_script(true)
+        self.load_script(true, Some(source.into()))
     }
 
     /// Reload the entry script once its file metadata changes.
@@ -784,7 +798,7 @@ impl EngineRuntime {
                     return EngineResult::failure(Diagnostic::error(
                         "TEST_READ_FAILED",
                         "Unable to read test file",
-                        format!("{}：{}", test_path.display(), err),
+                        format!("{}: {}", test_path.display(), err),
                     ));
                 }
             };
@@ -794,7 +808,7 @@ impl EngineRuntime {
                     return EngineResult::failure(Diagnostic::error(
                         "TEST_INVALID",
                         "Test file is not valid JSON",
-                        format!("{}：{}", test_path.display(), err),
+                        format!("{}: {}", test_path.display(), err),
                     ));
                 }
             };
@@ -869,60 +883,132 @@ impl EngineRuntime {
         snapshot
     }
 
-    fn load_script(&mut self, is_reload: bool) -> Result<(), Box<Diagnostic>> {
+    fn load_script(
+        &mut self,
+        is_reload: bool,
+        source_override: Option<String>,
+    ) -> Result<(), Box<Diagnostic>> {
         let script_stamp = self.script_stamp()?;
-        let source = match &self.script_source {
-            Some(source) => source.clone(),
-            None => fs::read_to_string(&self.paths.entry_script).map_err(|err| {
-                Box::new(Diagnostic::error(
-                    "SCRIPT_READ_FAILED",
-                    "Unable to read entry script",
-                    format!("{}：{}", self.paths.entry_script.display(), err),
-                ))
-            })?,
+        let source = match source_override.as_deref() {
+            Some(source) => source.to_string(),
+            None => match &self.script_source {
+                Some(source) => source.clone(),
+                None => fs::read_to_string(&self.paths.entry_script).map_err(|err| {
+                    Box::new(Diagnostic::error(
+                        "SCRIPT_READ_FAILED",
+                        "Unable to read entry script",
+                        format!("{}: {}", self.paths.entry_script.display(), err),
+                    ))
+                })?,
+            },
         };
-        let value = self
-            .lua
-            .load(&source)
-            .set_name(self.paths.entry_script.to_string_lossy())
-            .eval::<Value>()
-            .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
-        let table = match value {
-            Value::Table(table) => table,
-            _ => {
-                return Err(Box::new(Diagnostic::error(
-                    "SCRIPT_ENTRY_INVALID",
-                    "Entry script must return a Game table",
-                    "The entry script must return a table containing start and update functions.",
-                )));
-            }
-        };
-        let update_fn = table
-            .get::<Function>("update")
-            .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
-        let start_fn = table
-            .get::<Function>("start")
-            .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
-        if is_reload {
-            if let Ok(on_reload) = table.get::<Function>("onReload") {
-                on_reload
-                    .call::<()>(self.api.clone())
-                    .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
-            }
-            self.generation += 1;
-            self.trace.borrow_mut().push(TraceEvent {
-                frame: self.world.borrow().frame,
-                event: "script_reloaded".to_string(),
-                details: serde_json::json!({"generation": self.generation, "state_policy": "rust_owned_state_preserved"}),
-            });
-        } else {
+        if !is_reload {
+            let table = evaluate_script(&self.lua, &self.paths, &source)?;
+            let update_fn = script_entrypoint(&table, "update", &self.paths)?;
+            let start_fn = script_entrypoint(&table, "start", &self.paths)?;
             start_fn
                 .call::<()>(self.api.clone())
                 .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
+            self.update_fn = update_fn;
+            if let Some(source) = source_override {
+                self.script_source = Some(source);
+            }
+            self.last_seen_script_stamp = Some(script_stamp);
+            return Ok(());
         }
+
+        // A candidate gets its own Lua state so top-level evaluation cannot
+        // mutate the live script state before the candidate is accepted.
+        let candidate_lua = Lua::new();
+        let table = evaluate_script(&candidate_lua, &self.paths, &source)?;
+        let update_fn = script_entrypoint(&table, "update", &self.paths)?;
+        let _start_fn = script_entrypoint(&table, "start", &self.paths)?;
+        let on_reload = table.get::<Function>("onReload").ok();
+        let has_on_reload = on_reload.is_some();
+        let rollback = self.capture_reload_state();
+
+        // onReload is allowed to update the world. Run it against a complete
+        // private clone so every world-owned subsystem, including audio and
+        // effect handles, is discarded together if the candidate fails. The
+        // old Rc cell remains the live cell until commit.
+        let candidate_world = if on_reload.is_some() {
+            Rc::new(RefCell::new(self.world.borrow().clone()))
+        } else {
+            Rc::clone(&self.world)
+        };
+        let candidate_api_state = ApiState {
+            world: Rc::clone(&candidate_world),
+            input: Rc::clone(&self.input),
+            random: Rc::clone(&self.random),
+            trace: Rc::clone(&self.trace),
+            observations: Rc::clone(&self.observations),
+            ui: Rc::clone(&self.ui),
+            viewport_aspect: Rc::clone(&self.viewport_aspect),
+            save_payload: Rc::clone(&self.save_payload),
+        };
+        let candidate_api = match build_api(&candidate_lua, &candidate_api_state, &self.systems) {
+            Ok(api) => api,
+            Err(err) => {
+                self.restore_failed_reload(rollback);
+                return Err(Box::new(Diagnostic::error(
+                    "ENGINE_API_BIND_FAILED",
+                    "Unable to create the Luau Engine API",
+                    err.to_string(),
+                )));
+            }
+        };
+        if let Some(on_reload) = on_reload
+            && let Err(err) = on_reload.call::<()>(candidate_api.clone())
+        {
+            self.restore_failed_reload(rollback);
+            return Err(Box::new(script_diagnostic(&self.paths, err.to_string())));
+        }
+
+        if has_on_reload {
+            self.world = candidate_world;
+        }
+        self.generation += 1;
+        self.trace.borrow_mut().push(TraceEvent {
+            frame: self.world.borrow().frame,
+            event: "script_reloaded".to_string(),
+            details: serde_json::json!({"generation": self.generation, "state_policy": "rust_owned_state_preserved"}),
+        });
+        self.lua = candidate_lua;
+        self.api = candidate_api;
         self.update_fn = update_fn;
+        if let Some(source) = source_override {
+            self.script_source = Some(source);
+        }
         self.last_seen_script_stamp = Some(script_stamp);
         Ok(())
+    }
+
+    fn capture_reload_state(&self) -> ReloadRollbackState {
+        ReloadRollbackState {
+            input: self.input.borrow().clone(),
+            random: self.random.borrow().clone(),
+            trace: self.trace.borrow().clone(),
+            observations: self.observations.borrow().clone(),
+            ui: self.ui.borrow().clone(),
+            viewport_aspect: *self.viewport_aspect.borrow(),
+            save_payload: self.save_payload.borrow().clone(),
+            generation: self.generation,
+            last_seen_script_stamp: self.last_seen_script_stamp.clone(),
+            script_source: self.script_source.clone(),
+        }
+    }
+
+    fn restore_failed_reload(&mut self, state: ReloadRollbackState) {
+        *self.input.borrow_mut() = state.input;
+        *self.random.borrow_mut() = state.random;
+        *self.trace.borrow_mut() = state.trace;
+        *self.observations.borrow_mut() = state.observations;
+        *self.ui.borrow_mut() = state.ui;
+        *self.viewport_aspect.borrow_mut() = state.viewport_aspect;
+        *self.save_payload.borrow_mut() = state.save_payload;
+        self.generation = state.generation;
+        self.last_seen_script_stamp = state.last_seen_script_stamp;
+        self.script_source = state.script_source;
     }
 
     fn script_stamp(&self) -> Result<ScriptStamp, Box<Diagnostic>> {
@@ -936,14 +1022,14 @@ impl EngineRuntime {
             Box::new(Diagnostic::error(
                 "SCRIPT_METADATA_FAILED",
                 "Unable to get entry script metadata",
-                format!("{}：{}", self.paths.entry_script.display(), err),
+                format!("{}: {}", self.paths.entry_script.display(), err),
             ))
         })?;
         let modified = metadata.modified().map_err(|err| {
             Box::new(Diagnostic::error(
                 "SCRIPT_METADATA_FAILED",
                 "Unable to get entry script modification time",
-                format!("{}：{}", self.paths.entry_script.display(), err),
+                format!("{}: {}", self.paths.entry_script.display(), err),
             ))
         })?;
         Ok(ScriptStamp {
@@ -951,6 +1037,36 @@ impl EngineRuntime {
             size: metadata.len(),
         })
     }
+}
+
+fn evaluate_script(
+    lua: &Lua,
+    paths: &ProjectPaths,
+    source: &str,
+) -> Result<Table, Box<Diagnostic>> {
+    let value = lua
+        .load(source)
+        .set_name(paths.entry_script.to_string_lossy())
+        .eval::<Value>()
+        .map_err(|err| Box::new(script_diagnostic(paths, err.to_string())))?;
+    match value {
+        Value::Table(table) => Ok(table),
+        _ => Err(Box::new(Diagnostic::error(
+            "SCRIPT_ENTRY_INVALID",
+            "Entry script must return a Game table",
+            "The entry script must return a table containing start and update functions.",
+        ))),
+    }
+}
+
+fn script_entrypoint(
+    table: &Table,
+    name: &str,
+    paths: &ProjectPaths,
+) -> Result<Function, Box<Diagnostic>> {
+    table
+        .get::<Function>(name)
+        .map_err(|err| Box::new(script_diagnostic(paths, err.to_string())))
 }
 
 fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Result<Table> {
@@ -1000,13 +1116,10 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
         lua.create_function(move |_, (id, position): (String, Table)| {
             let x: f64 = position.get("x")?;
             let y: f64 = position.get("y")?;
-            let mut world = set_world.borrow_mut();
-            let entity = world
-                .entities
-                .get_mut(&id)
-                .ok_or_else(|| mlua::Error::RuntimeError(format!("Entity '{id}' does not exist.")))?;
-            entity.transform = Vec2 { x, y };
-            Ok(())
+            set_world
+                .borrow_mut()
+                .set_position(&id, Vec2 { x, y })
+                .map_err(mlua::Error::RuntimeError)
         })?,
     )?;
 
@@ -1244,8 +1357,10 @@ fn build_api(lua: &Lua, state: &ApiState, systems: &SystemSettings) -> mlua::Res
                 x: position.get("x")?,
                 y: position.get("y")?,
             };
-            camera_set_world.borrow_mut().set_camera_position(position);
-            Ok(())
+            camera_set_world
+                .borrow_mut()
+                .set_camera_position(position)
+                .map_err(mlua::Error::RuntimeError)
         })?,
     )?;
 
@@ -2715,6 +2830,74 @@ return Game
         let report = runtime.run(30, 42).value.unwrap();
         let x = report.world.entities.get("player").unwrap().transform.x;
         assert!((x - 4.0).abs() < 0.000_001);
+    }
+
+    #[test]
+    fn failed_on_reload_rolls_back_all_owned_state_and_randomness() {
+        const OLD: &str = r#"--!strict
+local Game = {}
+function Game.start(api)
+    api.observation.set("mode", "old")
+    api.ui.setRoot({
+        kind = "screen", id = "root", node = "root",
+        children = {
+            [1] = { kind = "text", id = "label", text = "old",
+                    rect = { x = 0, y = 0, width = 10, height = 10 } },
+        },
+    })
+end
+function Game.update(api, _dt)
+    api.observation.set("random", api.random.nextFloat())
+end
+return Game
+"#;
+        const BROKEN: &str = r#"--!strict
+local Game = {}
+function Game.start(_api) end
+function Game.onReload(api)
+    api.entity.spawn("candidate")
+    api.save.set({ value = "changed" })
+    api.observation.set("mode", "changed")
+    api.ui.setRoot({
+        kind = "screen", id = "root", node = "root",
+        children = {
+            [1] = { kind = "text", id = "label", text = "changed",
+                    rect = { x = 0, y = 0, width = 10, height = 10 } },
+        },
+    })
+    api.random.nextFloat()
+    error("candidate reload failed")
+end
+function Game.update(_api, _dt) end
+return Game
+"#;
+
+        let mut runtime = EngineRuntime::load_source_with_seed("Reload", "main.luau", OLD, None, 7)
+            .unwrap();
+        let mut control = EngineRuntime::load_source_with_seed("Reload", "main.luau", OLD, None, 7)
+            .unwrap();
+        let save = serde_json::json!({"value": "before"});
+        runtime.set_save_payload(Some(save.clone()));
+        control.set_save_payload(Some(save));
+
+        let error = runtime.reload_source(BROKEN).unwrap_err();
+        assert!(error.explanation.contains("candidate reload failed"), "{error:?}");
+        assert_eq!(
+            serde_json::to_value(runtime.observe().entities).unwrap(),
+            serde_json::to_value(control.observe().entities).unwrap()
+        );
+        assert_eq!(runtime.observe().observations, control.observe().observations);
+        assert_eq!(runtime.observe().ui, control.observe().ui);
+        assert_eq!(runtime.save_payload(), control.save_payload());
+
+        let actual = runtime.run(1, 7).value.unwrap();
+        let expected = control.run(1, 7).value.unwrap();
+        assert_eq!(
+            serde_json::to_value(actual.world).unwrap(),
+            serde_json::to_value(expected.world).unwrap()
+        );
+        assert_eq!(actual.observation_digest, expected.observation_digest);
+        assert_eq!(actual.save_payload, expected.save_payload);
     }
 
     #[test]

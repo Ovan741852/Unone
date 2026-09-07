@@ -462,7 +462,7 @@ pub(crate) struct RigidBodyState {
     pub restitution: f64,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Default)]
 pub(crate) struct World {
     pub frame: u64,
     pub time_seconds: f64,
@@ -715,7 +715,7 @@ impl World {
     /// still costing a physics step.
     pub(crate) fn despawn(&mut self, id: &str) -> Result<(), String> {
         if self.entities.remove(id).is_none() {
-            return Err(format!("Entity '{id}' 不存在，無法移除。"));
+            return Err(format!("Entity '{id}' does not exist; cannot remove it."));
         }
         self.contacts
             .retain(|contact| contact.a != id && contact.b != id);
@@ -726,10 +726,12 @@ impl World {
     /// Show or hide an entity's sprite without removing the entity.
     pub(crate) fn set_sprite_visible(&mut self, id: &str, visible: bool) -> Result<(), String> {
         let Some(entity) = self.entities.get_mut(id) else {
-            return Err(format!("Entity '{id}' 不存在，無法設定 sprite 可見性。"));
+            return Err(format!(
+                "Entity '{id}' does not exist; cannot set sprite visibility."
+            ));
         };
         let Some(sprite) = &mut entity.sprite else {
-            return Err(format!("Entity '{id}' 沒有 Sprite 可以顯示或隱藏。"));
+            return Err(format!("Entity '{id}' has no Sprite to show or hide."));
         };
         sprite.visible = visible;
         Ok(())
@@ -746,26 +748,26 @@ impl World {
     ) -> Result<(), String> {
         let frame = self.frame;
         let Some(entity) = self.entities.get_mut(id) else {
-            return Err(format!("Entity '{id}' 不存在，無法播放動畫。"));
+            return Err(format!("Entity '{id}' does not exist; cannot play animation."));
         };
         if animation.trim().is_empty() {
-            return Err("animation 名稱不可為空。".to_string());
+            return Err("Animation name must not be empty.".to_string());
         }
         let speed = speed.unwrap_or(1.0);
         if !speed.is_finite() || speed <= 0.0 {
-            return Err("animation speed 必須是大於 0 的有限數字。".to_string());
+            return Err("Animation speed must be a finite number greater than 0.".to_string());
         }
         let asset = match (asset, entity.animation.as_ref()) {
             (Some(asset), _) => asset,
             (None, Some(existing)) => existing.asset.clone(),
             (None, None) => {
                 return Err(format!(
-                    "Entity '{id}' 沒有 scene 宣告的 animation asset，play 必須提供 asset。"
+                    "Entity '{id}' has no animation asset declared by the scene; play must provide an asset."
                 ));
             }
         };
         if asset.trim().is_empty() {
-            return Err("animation asset 不可為空。".to_string());
+            return Err("Animation asset must not be empty.".to_string());
         }
         let looping = looping.unwrap_or(true);
         let unchanged = entity.animation.as_ref().is_some_and(|current| {
@@ -789,7 +791,7 @@ impl World {
 
     pub(crate) fn stop_animation(&mut self, id: &str) -> Result<(), String> {
         let Some(entity) = self.entities.get_mut(id) else {
-            return Err(format!("Entity '{id}' 不存在，無法停止動畫。"));
+            return Err(format!("Entity '{id}' does not exist; cannot stop animation."));
         };
         entity.animation = None;
         Ok(())
@@ -804,22 +806,22 @@ impl World {
         rotation: Option<f64>,
     ) -> Result<String, String> {
         if asset.trim().is_empty() {
-            return Err("effect asset 不可為空。".to_string());
+            return Err("Effect asset must not be empty.".to_string());
         }
         let scale = scale.unwrap_or(1.0);
         let rotation = rotation.unwrap_or(0.0);
         if !scale.is_finite() || scale <= 0.0 {
-            return Err("effect scale 必須是大於 0 的有限數字。".to_string());
+            return Err("Effect scale must be a finite number greater than 0.".to_string());
         }
         if !rotation.is_finite() {
-            return Err("effect rotation 必須是有限數字。".to_string());
+            return Err("Effect rotation must be finite.".to_string());
         }
         if !position.x.is_finite() || !position.y.is_finite() {
-            return Err("effect position 必須是有限數字。".to_string());
+            return Err("Effect position must be finite.".to_string());
         }
         if self.effects.len() >= MAX_LIVE_EFFECTS {
             return Err(format!(
-                "同時存在的 effect 不可超過 {MAX_LIVE_EFFECTS} 個；請先停止不再需要的 effect。"
+                "No more than {MAX_LIVE_EFFECTS} effects may exist at once; stop effects that are no longer needed first."
             ));
         }
         self.next_effect_handle += 1;
@@ -845,8 +847,11 @@ impl World {
         self.camera.position
     }
 
-    pub(crate) fn set_camera_position(&mut self, position: Vec2) {
+    pub(crate) fn set_camera_position(&mut self, position: Vec2) -> Result<(), String> {
+        validate_vec2(position, "Camera2D position")
+            .map_err(|diagnostic| format!("{}: {}", diagnostic.code, diagnostic.explanation))?;
         self.camera.position = position;
+        Ok(())
     }
 
     pub(crate) fn get_camera_zoom(&self) -> f64 {
@@ -855,7 +860,7 @@ impl World {
 
     pub(crate) fn set_camera_zoom(&mut self, zoom: f64) -> Result<(), String> {
         if zoom <= 0.0 || !zoom.is_finite() {
-            return Err("Camera2D zoom 必須是大於 0 的有限數字。".to_string());
+            return Err("Camera2D zoom must be a finite number greater than 0.".to_string());
         }
         self.camera.zoom = zoom;
         Ok(())
@@ -865,23 +870,34 @@ impl World {
         let entity = self
             .entities
             .get(id)
-            .ok_or_else(|| format!("Entity '{id}' 不存在。"))?;
+            .ok_or_else(|| format!("Entity '{id}' does not exist."))?;
         entity
             .transform3d
             .clone()
-            .ok_or_else(|| format!("Entity '{id}' 沒有 Transform3D。"))
+            .ok_or_else(|| format!("Entity '{id}' has no Transform3D."))
     }
 
     pub(crate) fn get_transform2d(&self, id: &str) -> Result<Transform2DData, String> {
         let entity = self
             .entities
             .get(id)
-            .ok_or_else(|| format!("Entity '{id}' 不存在。"))?;
+            .ok_or_else(|| format!("Entity '{id}' does not exist."))?;
         Ok(Transform2DData {
             position: entity.transform,
             rotation: entity.rotation,
             scale: entity.scale,
         })
+    }
+
+    pub(crate) fn set_position(&mut self, id: &str, position: Vec2) -> Result<(), String> {
+        validate_vec2(position, "Entity position")
+            .map_err(|diagnostic| format!("{}: {}", diagnostic.code, diagnostic.explanation))?;
+        let entity = self
+            .entities
+            .get_mut(id)
+            .ok_or_else(|| format!("Entity '{id}' does not exist."))?;
+        entity.transform = position;
+        Ok(())
     }
 
     pub(crate) fn set_transform2d(
@@ -899,7 +915,7 @@ impl World {
         let entity = self
             .entities
             .get_mut(id)
-            .ok_or_else(|| format!("Entity '{id}' 不存在。"))?;
+            .ok_or_else(|| format!("Entity '{id}' does not exist."))?;
         entity.transform = transform.position;
         entity.rotation = transform.rotation;
         entity.scale = transform.scale;
@@ -919,9 +935,9 @@ impl World {
         let entity = self
             .entities
             .get_mut(id)
-            .ok_or_else(|| format!("Entity '{id}' 不存在。"))?;
+            .ok_or_else(|| format!("Entity '{id}' does not exist."))?;
         if entity.transform3d.is_none() {
-            return Err(format!("Entity '{id}' 沒有 Transform3D。"));
+            return Err(format!("Entity '{id}' has no Transform3D."));
         }
         entity.transform3d = Some(transform);
         Ok(())
@@ -930,7 +946,7 @@ impl World {
     pub(crate) fn get_camera3d(&self) -> Result<Camera3DData, String> {
         self.camera3d
             .clone()
-            .ok_or_else(|| "目前 scene 沒有 Camera3D。".to_string())
+            .ok_or_else(|| "The current scene has no Camera3D.".to_string())
     }
 
     pub(crate) fn set_camera3d_position(&mut self, position: Vec3) -> Result<(), String> {
@@ -939,7 +955,7 @@ impl World {
         let camera = self
             .camera3d
             .as_mut()
-            .ok_or_else(|| "目前 scene 沒有 Camera3D。".to_string())?;
+            .ok_or_else(|| "The current scene has no Camera3D.".to_string())?;
         camera.position = position;
         Ok(())
     }
@@ -950,7 +966,7 @@ impl World {
         let camera = self
             .camera3d
             .as_mut()
-            .ok_or_else(|| "目前 scene 沒有 Camera3D。".to_string())?;
+            .ok_or_else(|| "The current scene has no Camera3D.".to_string())?;
         camera.target = target;
         Ok(())
     }
@@ -959,38 +975,44 @@ impl World {
         let entity = self
             .entities
             .get(id)
-            .ok_or_else(|| format!("Entity '{id}' 不存在。"))?;
+            .ok_or_else(|| format!("Entity '{id}' does not exist."))?;
         entity
             .rigidbody
             .as_ref()
             .map(|body| body.velocity)
-            .ok_or_else(|| format!("Entity '{id}' 沒有 RigidBody2D。"))
+            .ok_or_else(|| format!("Entity '{id}' has no RigidBody2D."))
     }
 
     pub(crate) fn set_velocity(&mut self, id: &str, velocity: Vec2) -> Result<(), String> {
+        validate_vec2(velocity, "RigidBody2D velocity")
+            .map_err(|diagnostic| format!("{}: {}", diagnostic.code, diagnostic.explanation))?;
         let entity = self
             .entities
             .get_mut(id)
-            .ok_or_else(|| format!("Entity '{id}' 不存在。"))?;
+            .ok_or_else(|| format!("Entity '{id}' does not exist."))?;
         let body = entity
             .rigidbody
             .as_mut()
-            .ok_or_else(|| format!("Entity '{id}' 沒有 RigidBody2D。"))?;
+            .ok_or_else(|| format!("Entity '{id}' has no RigidBody2D."))?;
         body.velocity = velocity;
         Ok(())
     }
 
     pub(crate) fn apply_impulse(&mut self, id: &str, impulse: Vec2) -> Result<(), String> {
+        validate_vec2(impulse, "RigidBody2D impulse")
+            .map_err(|diagnostic| format!("{}: {}", diagnostic.code, diagnostic.explanation))?;
         let entity = self
             .entities
             .get_mut(id)
-            .ok_or_else(|| format!("Entity '{id}' 不存在。"))?;
+            .ok_or_else(|| format!("Entity '{id}' does not exist."))?;
         let body = entity
             .rigidbody
             .as_mut()
-            .ok_or_else(|| format!("Entity '{id}' 沒有 RigidBody2D。"))?;
+            .ok_or_else(|| format!("Entity '{id}' has no RigidBody2D."))?;
         if body.body_type == RigidBodyType::Static {
-            return Err(format!("Entity '{id}' 是 static，不能施加 impulse。"));
+            return Err(format!(
+                "Entity '{id}' is static and cannot receive an impulse."
+            ));
         }
         body.velocity.x += impulse.x / body.mass;
         body.velocity.y += impulse.y / body.mass;
@@ -1042,7 +1064,15 @@ impl World {
             self.ground_contacts = touched;
         }
 
-        let ids: Vec<String> = self.entities.keys().cloned().collect();
+        // Visual-only entities cannot collide. Keep them out of the pair list
+        // so the common scene case does not pay for O(n²) no-op resolver calls.
+        // BTreeMap iteration keeps the candidate order deterministic.
+        let ids: Vec<String> = self
+            .entities
+            .iter()
+            .filter(|(_, entity)| entity.rigidbody.is_some())
+            .map(|(id, _)| id.clone())
+            .collect();
         for left_index in 0..ids.len() {
             for right_index in (left_index + 1)..ids.len() {
                 self.resolve_circle_collision(&ids[left_index], &ids[right_index]);
@@ -1160,8 +1190,19 @@ pub(crate) fn validate_vec3(value: Vec3, label: &str) -> Result<(), Box<Diagnost
     if !value.x.is_finite() || !value.y.is_finite() || !value.z.is_finite() {
         return Err(Box::new(Diagnostic::error(
             "SCENE_TRANSFORM3D_INVALID",
-            "3D 座標含有非有限數字",
-            format!("{label} 的 x、y、z 必須都是有限數字。"),
+            "3D coordinates contain a non-finite number",
+            format!("{label} x, y, and z must all be finite numbers."),
+        )));
+    }
+    Ok(())
+}
+
+pub(crate) fn validate_vec2(value: Vec2, label: &str) -> Result<(), Box<Diagnostic>> {
+    if !value.x.is_finite() || !value.y.is_finite() {
+        return Err(Box::new(Diagnostic::error(
+            "RUNTIME_VEC2_INVALID",
+            "2D vector contains a non-finite number",
+            format!("{label} x and y must both be finite numbers."),
         )));
     }
     Ok(())
@@ -1176,15 +1217,15 @@ pub(crate) fn validate_transform2d(
     if !position.x.is_finite() || !position.y.is_finite() || !rotation.is_finite() {
         return Err(Box::new(Diagnostic::error(
             "SCENE_TRANSFORM2D_INVALID",
-            "2D Transform 含有非有限數字",
-            format!("{label} 的 position x/y 與 rotation 必須都是有限數字。"),
+            "2D Transform contains a non-finite number",
+            format!("{label} position x/y and rotation must all be finite numbers."),
         )));
     }
     if scale.x <= 0.0 || scale.y <= 0.0 || !scale.x.is_finite() || !scale.y.is_finite() {
         return Err(Box::new(Diagnostic::error(
             "SCENE_TRANSFORM2D_INVALID",
-            "2D Transform 的 scale 無效",
-            format!("{label} scale 的 x、y 必須都是大於 0 的有限數字。"),
+            "Invalid 2D Transform scale",
+            format!("{label} scale x and y must both be finite numbers greater than 0."),
         )));
     }
     Ok(())
@@ -1195,8 +1236,8 @@ pub(crate) fn validate_scale3d(scale: Vec3) -> Result<(), Box<Diagnostic>> {
     if scale.x <= 0.0 || scale.y <= 0.0 || scale.z <= 0.0 {
         return Err(Box::new(Diagnostic::error(
             "SCENE_TRANSFORM3D_INVALID",
-            "Transform3D 的 scale 無效",
-            "Transform3D scale 的 x、y、z 必須都是大於 0 的有限數字。",
+            "Invalid Transform3D scale",
+            "Transform3D scale x, y, and z must all be finite numbers greater than 0.",
         )));
     }
     Ok(())
@@ -1358,7 +1399,7 @@ mod tests {
         assert!(world.contacts.is_empty(), "{:?}", world.contacts);
         assert_eq!(
             world.despawn("pig").unwrap_err(),
-            "Entity 'pig' 不存在，無法移除。"
+            "Entity 'pig' does not exist; cannot remove it."
         );
     }
 
@@ -1518,6 +1559,64 @@ mod tests {
     }
 
     #[test]
+    fn non_finite_runtime_vectors_are_rejected_before_world_mutation() {
+        let mut entities = BTreeMap::new();
+        entities.insert(
+            "player".to_string(),
+            entity("player", 2.0, 3.0, dynamic_body(Vec2 { x: 4.0, y: 5.0 })),
+        );
+        let mut world = world_with(entities);
+        let original_position = world.get_transform2d("player").unwrap().position;
+        let original_velocity = world.get_velocity("player").unwrap();
+        let original_camera = world.get_camera_position();
+
+        let error = world
+            .set_position(
+                "player",
+                Vec2 {
+                    x: f64::NAN,
+                    y: 0.0,
+                },
+            )
+            .unwrap_err();
+        assert!(error.contains("RUNTIME_VEC2_INVALID"), "{error}");
+        assert_eq!(world.get_transform2d("player").unwrap().position, original_position);
+
+        let error = world
+            .set_velocity(
+                "player",
+                Vec2 {
+                    x: f64::INFINITY,
+                    y: 0.0,
+                },
+            )
+            .unwrap_err();
+        assert!(error.contains("RUNTIME_VEC2_INVALID"), "{error}");
+        assert_eq!(world.get_velocity("player").unwrap(), original_velocity);
+
+        let error = world
+            .apply_impulse(
+                "player",
+                Vec2 {
+                    x: 0.0,
+                    y: f64::NEG_INFINITY,
+                },
+            )
+            .unwrap_err();
+        assert!(error.contains("RUNTIME_VEC2_INVALID"), "{error}");
+        assert_eq!(world.get_velocity("player").unwrap(), original_velocity);
+
+        let error = world
+            .set_camera_position(Vec2 {
+                x: f64::NAN,
+                y: 1.0,
+            })
+            .unwrap_err();
+        assert!(error.contains("RUNTIME_VEC2_INVALID"), "{error}");
+        assert_eq!(world.get_camera_position(), original_camera);
+    }
+
+    #[test]
     fn invalid_2d_scene_transform_does_not_pollute_existing_world() {
         let mut world = World::default();
         world
@@ -1635,8 +1734,9 @@ mod tests {
         assert!(
             diagnostic
                 .explanation
-                .contains("Sprite size 必須是 x、y 都大於 0")
+                .contains("Sprite size")
         );
+        assert!(diagnostic.explanation.contains("greater than 0"));
     }
 
     #[test]
@@ -1687,6 +1787,6 @@ mod tests {
         let diagnostic = world.load_scene_data(scene).unwrap_err();
 
         assert_eq!(diagnostic.code, "SCENE_TRANSFORM3D_INVALID");
-        assert!(diagnostic.explanation.contains("scale 的 x、y、z"));
+        assert!(diagnostic.explanation.contains("scale x, y, and z"));
     }
 }

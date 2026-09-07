@@ -134,8 +134,8 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
                         (left_id, "right")
                     };
                     format!(
-                        "把 '{mover}' 的 x 增加 {x:.1}（往{}），或縮小其中一個的 width。",
-                        if direction == "right" { "右" } else { "左" }
+                        "Increase '{mover}' x by {x:.1} (to the {}), or reduce one of the widths.",
+                        if direction == "right" { "right" } else { "left" }
                     )
                 } else {
                     let mover = if left_rect.y <= right_rect.y {
@@ -144,13 +144,13 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
                         left_id
                     };
                     format!(
-                        "把 '{mover}' 的 y 增加 {y:.1}（往上，本設計空間 y 軸向上），或縮小其中一個的 height。"
+                        "Increase '{mover}' y by {y:.1} (upward; the design-space y axis points upward), or reduce one of the heights."
                     )
                 };
                 findings.push(LayoutFinding {
                     code: "UI_NODES_OVERLAP".to_string(),
                     detail: format!(
-                        "'{left_id}' 與 '{right_id}' 重疊 {x:.1} x {y:.1}（設計空間單位）。"
+                        "'{left_id}' and '{right_id}' overlap by {x:.1} x {y:.1} (design-space units)."
                     ),
                     nodes: vec![left_id.clone(), right_id.clone()],
                     resolution,

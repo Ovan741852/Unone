@@ -26,7 +26,7 @@ See the [authorized delivery plan](work-packages/2026-09-06-capability-first.md)
 
 Author tools: verify, systems list/search/set, API search/describe/typings.
 Diagnostics: semantic observations, UI preview, trace, replay record/diff.
-Performance: per-stage timings, p50/p95, frame counts and Luau heap measurements;
+Performance: per-stage timings, bounded-window median/p95, frame counts and Luau heap measurements;
 these are measurements, not deterministic gameplay facts or automatic verdicts.
 
 Core: fixed timestep, seeded random, deterministic replay/digest, 2D gravity,
@@ -60,8 +60,10 @@ execution. Their capability sets are not equivalent.
 Android implementation, rebuilding and device validation follow Web and are not
 exit conditions for this slice. Native parity is also deferred, not implied.
 
-The previously approved hot-update failure-consistency repair remains necessary:
-reproduce failed activation/reload divergence and fix that boundary. Keep it
+The previously approved hot-update failure-consistency repair is delivered for
+the Web runner: stage content, compare-and-set the generation pointer, perform
+transactional Luau reload, and restore only the pointer on script failure.
+Generation identifiers remain monotonic across rollback. Keep this boundary
 bounded; do not create a general transaction/update framework.
 
 ## Capability backlog

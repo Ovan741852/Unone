@@ -118,9 +118,9 @@ pub fn diff(project_root: impl AsRef<Path>, baseline: &Recording) -> EngineResul
     if baseline.schema_version != 1 {
         return EngineResult::failure(Diagnostic::error(
             "RECORDING_VERSION_UNSUPPORTED",
-            "錄製檔版本不支援",
+            "Recording version is unsupported",
             format!(
-                "目前只支援 schema_version 1，讀到 {}。",
+                "Only schema_version 1 is supported; received {}.",
                 baseline.schema_version
             ),
         ));
@@ -181,12 +181,12 @@ pub fn diff(project_root: impl AsRef<Path>, baseline: &Recording) -> EngineResul
     }
     let mut diagnostic = Diagnostic::error(
         "REPLAY_DIVERGED",
-        "重播結果與錄製不同",
+        "Replay output differs from recording",
         match report.first_divergent_frame {
             Some(frame) => format!(
-                "第 {frame} 個 frame 開始不同；差異欄位在 differences，路徑是 observation 內的位置。"
+                "The first divergence occurs at frame {frame}; differences contains field-level changes using observation paths."
             ),
-            None => "每個 frame 都相同，但最終 digest 不同；錄製檔可能來自不同的 frame 數。"
+            None => "Every frame matches, but the final digest differs; the recording may have a different frame count."
                 .to_string(),
         },
     );
@@ -196,7 +196,7 @@ pub fn diff(project_root: impl AsRef<Path>, baseline: &Recording) -> EngineResul
     });
     diagnostic.suggested_actions.push(ActionSuggestion {
         action: "inspect_divergent_frame".to_string(),
-        description: "重跑到該 frame 並檢視 observation。".to_string(),
+        description: "Re-run through that frame and inspect the observation.".to_string(),
         command: report
             .first_divergent_frame
             .map(|frame| format!("game run --frames {} --seed {}", frame + 1, report.seed)),
@@ -268,15 +268,15 @@ pub fn read_recording(path: &Path) -> Result<Recording, Box<Diagnostic>> {
     let text = fs::read_to_string(path).map_err(|error| {
         Box::new(Diagnostic::error(
             "RECORDING_READ_FAILED",
-            "無法讀取錄製檔",
-            format!("{}：{}", path.display(), error),
+            "Failed to read recording",
+            format!("{}: {}", path.display(), error),
         ))
     })?;
     serde_json::from_str(&text).map_err(|error| {
         Box::new(Diagnostic::error(
             "RECORDING_INVALID",
-            "錄製檔不是有效的 JSON recording",
-            format!("{}：{}", path.display(), error),
+            "Recording is not valid JSON",
+            format!("{}: {}", path.display(), error),
         ))
     })
 }

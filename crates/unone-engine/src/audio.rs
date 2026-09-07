@@ -112,9 +112,9 @@ impl AudioConfig {
         for (name, rules) in &self.categories {
             if let Some(reserved) = rules.reserved_rule() {
                 return Err(format!(
-                    "audio category '{name}' 宣告了 '{reserved}'：這個規則已保留名稱，但本 build 沒有實作，\
-                     宣告它不會有任何效果，因此視為設定錯誤。本 build 實作的規則：{}。",
-                    IMPLEMENTED_AUDIO_RULES.join("、")
+                    "Audio category '{name}' declares '{reserved}': this rule name is reserved, but this build does not implement it.\
+                     Declaring it has no effect, so it is treated as a configuration error. Rules implemented by this build: {}.",
+                    IMPLEMENTED_AUDIO_RULES.join(", ")
                 ));
             }
         }
@@ -238,22 +238,24 @@ impl AudioOptions {
         let volume = self.volume.unwrap_or(1.0);
         let speed = self.speed.unwrap_or(1.0);
         if !volume.is_finite() || !(0.0..=1.0).contains(&volume) {
-            return Err(format!("audio volume 必須介於 0 與 1 之間，收到 {volume}。"));
+            return Err(format!("Audio volume must be between 0 and 1; received {volume}."));
         }
         if !speed.is_finite() || speed <= 0.0 {
-            return Err(format!("audio speed 必須是大於 0 的有限數字，收到 {speed}。"));
+            return Err(format!(
+                "Audio speed must be a finite number greater than 0; received {speed}."
+            ));
         }
         if let Some(position) = self.position
             && (!position.x.is_finite() || !position.y.is_finite())
         {
-            return Err("audio position 必須是有限數字。".to_string());
+            return Err("Audio position must be finite.".to_string());
         }
         Ok((volume, speed))
     }
 }
 
 /// Everything the engine knows about sound.
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct AudioBus {
     pub config: AudioConfig,
     pub events: Vec<AudioEvent>,
@@ -364,7 +366,7 @@ impl AudioBus {
             .count();
         if live >= MAX_LIVE_AUDIO_LOOPS {
             return Err(format!(
-                "同時播放的 loop 不可超過 {MAX_LIVE_AUDIO_LOOPS} 個；請先用 api.audio.stop 停掉不再需要的 loop。"
+                "No more than {MAX_LIVE_AUDIO_LOOPS} loops may play at once; stop loops that are no longer needed with api.audio.stop first."
             ));
         }
         let handle = self.allocate_handle();
@@ -498,7 +500,7 @@ impl AudioBus {
 
     pub fn set_category_volume(&mut self, category: &str, volume: f64) -> Result<(), String> {
         if category.trim().is_empty() {
-            return Err("audio category 名稱不可為空。".to_string());
+            return Err("Audio category name must not be empty.".to_string());
         }
         let volume = check_volume(volume, category)?;
         self.category_volumes.insert(category.to_string(), volume);
@@ -561,7 +563,7 @@ impl AudioBus {
 
     fn check(&self, asset: &str, options: &AudioOptions) -> Result<(f64, f64), String> {
         if asset.trim().is_empty() {
-            return Err("audio asset 不可為空。".to_string());
+            return Err("Audio asset must not be empty.".to_string());
         }
         options.resolve()
     }
@@ -570,7 +572,7 @@ impl AudioBus {
 fn check_volume(volume: f64, what: &str) -> Result<f64, String> {
     if !volume.is_finite() || !(0.0..=1.0).contains(&volume) {
         return Err(format!(
-            "audio '{what}' 的音量必須介於 0 與 1 之間，收到 {volume}。"
+            "The volume for audio '{what}' must be between 0 and 1; received {volume}."
         ));
     }
     Ok(volume)

@@ -64,8 +64,8 @@ pub(crate) fn scene_read_failed(path: &Path, error: impl Display) -> Box<Diagnos
     with_scene_context(
         Box::new(Diagnostic::error(
             "SCENE_READ_FAILED",
-            "無法讀取主場景",
-            format!("{}：{}", path.display(), error),
+            "Failed to read the main scene",
+            format!("{}: {}", path.display(), error),
         )),
         SceneSource::disk(path),
         None,
@@ -79,13 +79,13 @@ fn parse_and_validate(text: &str, source: SceneSource<'_>) -> Result<SceneFile, 
         let line = nonzero_location(error.line());
         let column = nonzero_location(error.column());
         let explanation = match source.file {
-            Some(path) => format!("{}：{}", path.display(), error),
-            None => format!("host payload 的 scene fragment 不是有效的 Unone scene JSON：{error}"),
+            Some(path) => format!("{}: {}", path.display(), error),
+            None => format!("The host payload scene fragment is not valid Unone scene JSON: {error}"),
         };
         with_scene_context(
             Box::new(Diagnostic::error(
                 "SCENE_INVALID",
-                "主場景不是有效的 Unone scene JSON",
+                "The main scene is not valid Unone scene JSON",
                 explanation,
             )),
             source,
@@ -103,8 +103,8 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
         return Err(scene_error(
             source,
             "SCENE_CAMERA_INVALID",
-            "Camera2D 的 zoom 無效",
-            "Camera2D zoom 必須是大於 0 的有限數字。",
+            "Camera2D zoom is invalid",
+            "Camera2D zoom must be a finite number greater than 0.",
         ));
     }
 
@@ -119,8 +119,8 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
             return Err(scene_error(
                 source,
                 "SCENE_CAMERA3D_INVALID",
-                "Camera3D 的 fov_degrees 無效",
-                "Camera3D fov_degrees 必須是大於 1 且小於 179 的有限數字。",
+                "Camera3D fov_degrees is invalid",
+                "Camera3D fov_degrees must be a finite number greater than 1 and less than 179.",
             ));
         }
     }
@@ -131,8 +131,8 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
             let mut diagnostic = scene_error(
                 source,
                 "SCENE_ENTITY_ID_INVALID",
-                "scene entity id 無效",
-                "每個 scene entity 的 id 都必須是非空白字串；引擎不會替 id trim 或改寫。",
+                "scene entity id is invalid",
+                "Every scene entity id must be a non-blank string; the engine does not trim or rewrite ids.",
             );
             add_fact(
                 &mut diagnostic,
@@ -147,8 +147,8 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
             let mut diagnostic = scene_error(
                 source,
                 "SCENE_ENTITY_ID_DUPLICATE",
-                "scene entity id 重複",
-                "同一份 scene 中的 entity id 必須唯一；引擎不會讓後一筆默默覆寫前一筆。",
+                "scene entity id is duplicated",
+                "Entity ids must be unique within a scene; the engine does not silently overwrite an earlier entity.",
             );
             add_fact(
                 &mut diagnostic,
@@ -190,8 +190,8 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
             return Err(scene_error(
                 source,
                 "SCENE_MESH3D_INVALID",
-                "Mesh3D 的 asset 無效",
-                format!("Entity '{}' 的 Mesh3D asset 不可為空。", entity.id),
+                "Mesh3D asset is invalid",
+                format!("Entity '{}' must provide a Mesh3D asset.", entity.id),
             ));
         }
         if let Some(sprite) = &entity.sprite
@@ -203,9 +203,9 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
             return Err(scene_error(
                 source,
                 "SCENE_SPRITE_INVALID",
-                "Sprite 的 size 無效",
+                "Sprite size is invalid",
                 format!(
-                    "Entity '{}' 的 Sprite size 必須是 x、y 都大於 0 的有限數字。",
+                    "Entity '{}' Sprite size must have finite x and y values greater than 0.",
                     entity.id
                 ),
             ));
@@ -215,24 +215,24 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
                 return Err(scene_error(
                     source,
                     "SCENE_PHYSICS_INVALID",
-                    "RigidBody2D 的 mass 無效",
-                    format!("Entity '{}' 的 mass 必須是大於 0 的有限數字。", entity.id),
+                    "RigidBody2D mass is invalid",
+                    format!("Entity '{}' mass must be a finite number greater than 0.", entity.id),
                 ));
             }
             if body.radius <= 0.0 || !body.radius.is_finite() {
                 return Err(scene_error(
                     source,
                     "SCENE_PHYSICS_INVALID",
-                    "RigidBody2D 的 radius 無效",
-                    format!("Entity '{}' 的 radius 必須是大於 0 的有限數字。", entity.id),
+                    "RigidBody2D radius is invalid",
+                    format!("Entity '{}' radius must be a finite number greater than 0.", entity.id),
                 ));
             }
             if !body.restitution.is_finite() || !(0.0..=1.0).contains(&body.restitution) {
                 return Err(scene_error(
                     source,
                     "SCENE_PHYSICS_INVALID",
-                    "RigidBody2D 的 restitution 無效",
-                    format!("Entity '{}' 的 restitution 必須介於 0 與 1。", entity.id),
+                    "RigidBody2D restitution is invalid",
+                    format!("Entity '{}' restitution must be between 0 and 1.", entity.id),
                 ));
             }
         }

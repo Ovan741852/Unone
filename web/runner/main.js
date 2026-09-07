@@ -1,7 +1,11 @@
 import { createWebGpuRenderer, frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=5";
-import { installGeneration, readActiveAsset, readActiveText } from "../live/bundle-store.js?v=3";
+import { activateGeneration, readActiveAsset, readActiveText, rollbackGeneration, stageGeneration } from "../live/bundle-store.js?v=5";
+import { createAudioPlayback } from "../shared/audio-playback.js?v=2";
+import { createFixedStepScheduler } from "../shared/fixed-step-scheduler.mjs?v=2";
+import { createHostInput } from "../shared/host-input.js?v=2";
+import { assertScriptOnlyUpdate } from "../shared/script-reload.js?v=2";
 import { readSave, writeSave } from "./save-store.js?v=1";
-import { createSpriteLayer } from "./sprite-layer.js?v=1";
+import { createSpriteLayer } from "./sprite-layer.js?v=3";
 
 const canvas = document.querySelector("#game");
 const assetLayer = document.querySelector("#asset-layer");
@@ -22,10 +26,11 @@ let renderer = null;
 let rendererError = null;
 let bundleManifest = null;
 let generationState = null;
-let pointer = { position: { x: 0, y: 0 }, screen_position: { x: 0, y: 0 }, down: false };
-let pendingPointerFrames = [];
-let heldActions = {};
-let pendingActions = {};
+let activePackage = null;
+let audioState = null;
+let scheduler = null;
+let schedulerResult = null;
+const hostInput = createHostInput();
 let renderedUi = null;
 let loadedSave = false;
 let lastStoredSaveText = null;
@@ -34,6 +39,7 @@ let saveWrite = Promise.resolve();
 let assetManifest = null;
 const assetUrls = new Map();
 const assetUrlLoads = new Map();
+let assetEpoch = 0;
 let reportedAssetErrors = [];
 
 export function semanticOutput(nextSnapshot, nextPointer = null) {
@@ -109,20 +115,46 @@ async function readPackagedProject(bootstrapConfig) {
   if (!manifestPath || query.get("bundle") === "0") return null;
   const manifestUrl = new URL(manifestPath, projectRoot);
   const manifest = await readManifest(manifestUrl);
-  generationState = await installGeneration(manifest, {
+  const stagedGeneration = await stageGeneration(manifest, {
     module: window.Module,
     databaseName: bundleDatabaseName,
   });
-  const config = JSON.parse(await readActiveText(generationState, "project", window.Module, manifest));
-  const script = await readActiveText(generationState, "script", window.Module, manifest);
+  const config = JSON.parse(await readActiveText(stagedGeneration, "project", window.Module, manifest));
+  const script = await readActiveText(stagedGeneration, "script", window.Module, manifest);
   const scene = config.main_scene
-    ? JSON.parse(await readActiveText(generationState, "scene", window.Module, manifest))
+    ? JSON.parse(await readActiveText(stagedGeneration, "scene", window.Module, manifest))
     : null;
   const packagedAssets = config.asset_manifest
-    ? JSON.parse(await readActiveText(generationState, "asset-manifest", window.Module, manifest))
+    ? JSON.parse(await readActiveText(stagedGeneration, "asset-manifest", window.Module, manifest))
     : null;
-  bundleManifest = { manifest, manifestUrl };
-  return { config, script, scene, assetManifest: packagedAssets };
+  return {
+    config,
+    script,
+    scene,
+    assetManifest: packagedAssets,
+    generationState: stagedGeneration,
+    manifest,
+    manifestUrl,
+  };
+}
+
+async function readPackagedGeneration(nextGeneration, manifest) {
+  const config = JSON.parse(await readActiveText(nextGeneration, "project", window.Module, manifest));
+  const script = await readActiveText(nextGeneration, "script", window.Module, manifest);
+  const scene = config.main_scene
+    ? JSON.parse(await readActiveText(nextGeneration, "scene", window.Module, manifest))
+    : null;
+  const packagedAssets = config.asset_manifest
+    ? JSON.parse(await readActiveText(nextGeneration, "asset-manifest", window.Module, manifest))
+    : null;
+  return {
+    config,
+    script,
+    scene,
+    assetManifest: packagedAssets,
+    generationState: nextGeneration,
+    manifest,
+  };
 }
 
 function assetMime(asset) {
@@ -134,7 +166,8 @@ function assetMime(asset) {
   return asset.kind === "texture2d" ? "image/*" : "application/octet-stream";
 }
 
-function releaseAssetUrls() {
+export function releaseAssetUrls() {
+  assetEpoch += 1;
   for (const url of assetUrls.values()) URL.revokeObjectURL(url);
   assetUrls.clear();
   assetUrlLoads.clear();
@@ -142,23 +175,38 @@ function releaseAssetUrls() {
   reportedAssetErrors = [];
 }
 
-function loadAssetUrl(asset) {
-  if (assetUrls.has(asset.id)) return Promise.resolve(assetUrls.get(asset.id));
-  if (assetUrlLoads.has(asset.id)) return assetUrlLoads.get(asset.id);
+export function loadAssetUrl(asset) {
+  const assetId = String(asset.id);
+  const requestEpoch = assetEpoch;
+  const requestGeneration = generationState;
+  const requestManifest = bundleManifest?.manifest;
+  if (assetUrls.has(assetId)) return Promise.resolve(assetUrls.get(assetId));
+  if (assetUrlLoads.has(assetId)) return assetUrlLoads.get(assetId);
   const load = (async () => {
     let bytes;
-    if (generationState) {
-      bytes = await readActiveAsset(generationState, asset, window.Module, bundleManifest.manifest);
+    if (requestGeneration) {
+      bytes = await readActiveAsset(requestGeneration, asset, window.Module, requestManifest);
     } else {
       const response = await fetch(new URL(asset.source, projectRoot), { cache: "no-store" });
       if (!response.ok) throw new Error(`asset request failed: ${response.status} ${asset.source}`);
       bytes = new Uint8Array(await response.arrayBuffer());
     }
+    if (requestEpoch !== assetEpoch) {
+      const error = new Error(`asset load discarded after bundle generation changed: ${assetId}`);
+      error.code = "ASSET_GENERATION_STALE";
+      throw error;
+    }
     const url = URL.createObjectURL(new Blob([bytes], { type: assetMime(asset) }));
-    assetUrls.set(asset.id, url);
+    assetUrls.set(assetId, url);
     return url;
   })();
-  assetUrlLoads.set(asset.id, load);
+  assetUrlLoads.set(assetId, load);
+  // Failed and completed requests are no longer in-flight. The identity
+  // guard prevents an old promise from deleting a newer retry's entry.
+  load.then(
+    () => { if (assetUrlLoads.get(assetId) === load) assetUrlLoads.delete(assetId); },
+    () => { if (assetUrlLoads.get(assetId) === load) assetUrlLoads.delete(assetId); },
+  );
   return load;
 }
 
@@ -170,6 +218,15 @@ const spriteLayer = createSpriteLayer({
     if (snapshot) writeOutput();
   },
 });
+
+async function retryFailedAssets() {
+  await spriteLayer.retry();
+  showState();
+  return {
+    asset_errors: reportedAssetErrors,
+    resolved_assets: assetUrls.size,
+  };
+}
 
 function screenFromPointer(canvasElement, event) {
   const rect = canvasElement.getBoundingClientRect();
@@ -210,13 +267,23 @@ function writeOutput() {
       manifest_version: generationState.manifest_version,
       bundles: generationState.bundles,
     },
+    scheduler: scheduler && {
+      running: scheduler.running,
+      visible: scheduler.visible,
+      fixed_step_seconds: scheduler.fixedStepSeconds,
+      max_catch_up_steps: scheduler.maxCatchUpSteps,
+      last_steps: schedulerResult?.steps ?? 0,
+      last_dropped_steps: schedulerResult?.droppedSteps ?? 0,
+      total_dropped_steps: scheduler.totalDroppedSteps,
+    },
+    audio: audioState?.report?.() ?? null,
     assets: assetManifest && {
       manifest_version: assetManifest.version,
       count: assetManifest.assets?.length ?? 0,
       resolved: assetUrls.size,
     },
     asset_errors: reportedAssetErrors,
-    ...semanticOutput(snapshot, pointer),
+    ...semanticOutput(snapshot, hostInput.pointer),
     save_payload: snapshot?.save_payload ?? null,
   }, null, 2);
 }
@@ -224,20 +291,16 @@ function writeOutput() {
 function showState() {
   renderUi(snapshot);
   spriteLayer.render(snapshot, assetManifest, canvas);
+  audioState?.sync(snapshot?.world);
   writeOutput();
 }
 
 function queueAction(action) {
-  if (typeof action === "string" && action.length > 0) pendingActions[action] = true;
+  hostInput.queueAction(action);
 }
 
 function queuePointerFrame(nextPointer, kind) {
-  const last = pendingPointerFrames[pendingPointerFrames.length - 1];
-  if (kind === "move" && last?.kind === "move") {
-    last.pointer = nextPointer;
-    return;
-  }
-  pendingPointerFrames.push({ kind, pointer: nextPointer });
+  hostInput.updatePointer(nextPointer, kind);
 }
 
 function storeSave() {
@@ -290,6 +353,18 @@ async function loadProject() {
     }
     snapshot = readSnapshot();
   }
+  if (packaged) {
+    generationState = await activateGeneration(packaged.generationState);
+    bundleManifest = { manifest: packaged.manifest, manifestUrl: packaged.manifestUrl };
+  }
+  activePackage = {
+    config,
+    script,
+    scene,
+    assetManifest,
+    manifest: packaged?.manifest ?? null,
+    generationState,
+  };
   const mode = packaged ? `bundle generation ${generationState.generation}` : "source files";
   status.textContent = `loaded ${config.name} from ${projectRoot.pathname} (${mode})`;
 }
@@ -299,23 +374,75 @@ async function reloadActiveBundle() {
     status.textContent = "bundle reload skipped: project has no configured bundle manifest";
     return;
   }
-  const manifest = await readManifest(bundleManifest.manifestUrl);
-  const nextGeneration = await installGeneration(manifest, {
+  const manifestUrl = bundleManifest.manifestUrl;
+  const manifest = await readManifest(manifestUrl);
+  const nextGeneration = await stageGeneration(manifest, {
     module: window.Module,
     databaseName: bundleDatabaseName,
   });
-  const script = await readActiveText(nextGeneration, "script", window.Module, manifest);
-  const nextConfig = JSON.parse(await readActiveText(nextGeneration, "project", window.Module, manifest));
-  const nextAssets = nextConfig.asset_manifest
-    ? JSON.parse(await readActiveText(nextGeneration, "asset-manifest", window.Module, manifest))
-    : null;
-  const input = bridgeBytes(script);
-  if (window.Module._unone_web_reload_script(input.pointerAddress, input.length) !== 0) {
-    throw bridgeError(readSnapshot(), "bundle script reload failed");
+  const nextPackage = await readPackagedGeneration(nextGeneration, manifest);
+  const inspection = assertScriptOnlyUpdate(activePackage, nextPackage);
+  if (!inspection.scriptChanged) {
+    status.textContent = `bundle generation ${generationState.generation} unchanged; no script reload needed`;
+    return;
   }
-  generationState = nextGeneration;
-  bundleManifest = { manifest, manifestUrl: bundleManifest.manifestUrl };
-  assetManifest = nextAssets;
+
+  // A bundle generation is the durable source of truth. Commit it first with
+  // CAS, then ask the Wasm runtime to adopt the script. The runtime reload is
+  // transactional, so a rejected script leaves the old world and script live;
+  // storage can then be restored without executing the old script a second
+  // time (which could repeat onReload side effects).
+  const previousGeneration = generationState;
+  if (!previousGeneration || (nextGeneration.status === "already_active" && nextGeneration.generation !== previousGeneration.generation)) {
+    const error = new Error("BUNDLE_ACTIVATION_STALE: the active bundle changed outside this session");
+    error.diagnostic = {
+      code: "BUNDLE_ACTIVATION_STALE",
+      summary: "the active bundle changed outside this session",
+      explanation: "Reload was cancelled because the page no longer owns the generation it started from; retry from a fresh page state.",
+      facts: {
+        expected_generation: previousGeneration?.generation ?? null,
+        actual_generation: nextGeneration.generation,
+      },
+    };
+    throw error;
+  }
+
+  const activated = await activateGeneration(nextGeneration);
+  let reloadError = null;
+  try {
+    const input = bridgeBytes(nextPackage.script);
+    if (window.Module._unone_web_reload_script(input.pointerAddress, input.length) !== 0) {
+      reloadError = bridgeError(readSnapshot(), "bundle script reload failed");
+    }
+  } catch (error) {
+    reloadError = error;
+  }
+
+  if (reloadError) {
+    if (activated.status === "activated") {
+      try {
+        await rollbackGeneration(activated, previousGeneration);
+      } catch (rollbackError) {
+        reloadError.diagnostic = {
+          ...(reloadError.diagnostic ?? {}),
+          code: "BUNDLE_RELOAD_RECOVERY_REQUIRED",
+          summary: "bundle reload failed and storage rollback was not committed",
+          explanation: "The Wasm runtime kept the previous script, but another storage update won the rollback race. Reload the page before continuing.",
+          facts: {
+            ...(reloadError.diagnostic?.facts ?? {}),
+            rollback_error: rollbackError.message,
+            rollback_diagnostic: rollbackError.diagnostic ?? null,
+          },
+        };
+      }
+    }
+    throw reloadError;
+  }
+
+  generationState = activated;
+  bundleManifest = { manifest, manifestUrl };
+  assetManifest = nextPackage.assetManifest;
+  activePackage = { ...nextPackage, generationState: activated };
   releaseAssetUrls();
   snapshot = readSnapshot();
   showState();
@@ -333,40 +460,33 @@ function syncViewportAspect() {
   if (window.Module._unone_web_set_viewport_aspect?.(aspect) === 0) reportedAspect = aspect;
 }
 
-function step() {
-  try {
-    const actions = { ...heldActions, ...pendingActions };
-    pendingActions = {};
-    const framePointer = pendingPointerFrames.shift()?.pointer ?? pointer;
-    window.Module._unone_web_set_pointer(framePointer.position.x, framePointer.position.y, framePointer.down ? 1 : 0);
-    if (window.Module._unone_web_set_screen_pointer(framePointer.screen_position.x, framePointer.screen_position.y) !== 0) {
-      throw new Error("generic host screen pointer update failed");
-    }
-    for (const [action, isDown] of Object.entries(actions)) {
-      if (isDown) queueAction(action);
-    }
-    const frameActions = { ...pendingActions };
-    pendingActions = {};
-    const inputPayload = JSON.stringify({ actions: frameActions, pointer: framePointer });
-    const input = bridgeBytes(inputPayload);
-    if (window.Module._unone_web_set_input_frame(input.pointerAddress, input.length) !== 0) {
-      throw new Error("generic host input frame update failed");
-    }
-    syncViewportAspect();
-    if (window.Module._unone_web_tick() !== 0) {
-      throw bridgeError(readSnapshot(), "generic host tick failed");
-    }
-    snapshot = readSnapshot();
-    storeSave();
-    renderer?.draw(snapshot);
-    showState();
-    status.textContent = rendererError
-      ? `running ${projectRoot.pathname} / frame ${frameOf(snapshot)} — no renderer: ${rendererError}`
-      : `running ${projectRoot.pathname} / frame ${frameOf(snapshot)}`;
-    window.requestAnimationFrame(step);
-  } catch (error) {
-    showFailure(error);
+function tickSimulation() {
+  const frame = hostInput.consumeFrame();
+  const framePointer = frame.pointer;
+  window.Module._unone_web_set_pointer(framePointer.position.x, framePointer.position.y, framePointer.down ? 1 : 0);
+  if (window.Module._unone_web_set_screen_pointer(framePointer.screen_position.x, framePointer.screen_position.y) !== 0) {
+    throw new Error("generic host screen pointer update failed");
   }
+  const inputPayload = JSON.stringify(frame);
+  const input = bridgeBytes(inputPayload);
+  if (window.Module._unone_web_set_input_frame(input.pointerAddress, input.length) !== 0) {
+    throw new Error("generic host input frame update failed");
+  }
+  syncViewportAspect();
+  if (window.Module._unone_web_tick() !== 0) {
+    throw bridgeError(readSnapshot(), "generic host tick failed");
+  }
+  snapshot = readSnapshot();
+  storeSave();
+}
+
+function renderFrame(result = {}) {
+  schedulerResult = result;
+  renderer?.draw(snapshot);
+  showState();
+  status.textContent = rendererError
+    ? `running ${projectRoot.pathname} / frame ${frameOf(snapshot)} — no renderer: ${rendererError}`
+    : `running ${projectRoot.pathname} / frame ${frameOf(snapshot)}${result.droppedSteps ? ` — dropped ${result.droppedSteps} late steps` : ""}`;
 }
 
 function keyAction(event) {
@@ -396,6 +516,24 @@ async function start() {
     rendererError = error.message ?? String(error);
     canvas.replaceChildren();
   }
+  audioState = await createAudioPlayback({
+    assetManifest,
+    config: activePackage?.config,
+    projectRoot,
+    loadAssetBytes: (asset) => {
+      if (generationState && bundleManifest) {
+        return readActiveAsset(generationState, asset, window.Module, bundleManifest.manifest);
+      }
+      return fetch(new URL(asset.source, projectRoot), { cache: "no-store" }).then(async (response) => {
+        if (!response.ok) throw new Error(`audio asset request failed: ${response.status} ${asset.source}`);
+        return new Uint8Array(await response.arrayBuffer());
+      });
+    },
+  });
+  if (audioState) {
+    document.addEventListener("pointerdown", () => audioState.unlock());
+    document.addEventListener("keydown", () => audioState.unlock());
+  }
   document.querySelector("#bundle-reload")?.addEventListener("click", () => reloadActiveBundle().catch((error) => {
     status.textContent = `bundle reload failed: ${error.message}`;
     output.textContent = JSON.stringify({
@@ -403,35 +541,65 @@ async function start() {
       diagnostic: error.diagnostic ?? null,
     }, null, 2);
   }));
+  window.unoneHost = {
+    retryFailedAssets,
+    reloadActiveBundle,
+  };
+  document.querySelector("#asset-retry")?.addEventListener("click", () => retryFailedAssets().catch(showFailure));
   uiLayer.addEventListener("click", (event) => queueAction(event.target?.dataset?.action));
   window.addEventListener("keydown", (event) => {
     const action = keyAction(event);
-    if (action) { event.preventDefault(); heldActions[action] = true; }
+    if (action) {
+      event.preventDefault();
+      hostInput.setHeld(action, true);
+      // A key press is also an edge. This preserves a quick press that lands
+      // entirely between two display callbacks while held input still drives
+      // continuous movement on later fixed ticks.
+      hostInput.queueAction(action);
+    }
   });
   window.addEventListener("keyup", (event) => {
     const action = keyAction(event);
-    if (action) { event.preventDefault(); delete heldActions[action]; }
+    if (action) { event.preventDefault(); hostInput.setHeld(action, false); }
   });
   canvas.addEventListener("pointerdown", (event) => {
     canvas.setPointerCapture(event.pointerId);
-    pointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: true };
-    queuePointerFrame(pointer, "edge");
+    const nextPointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: true };
+    queuePointerFrame(nextPointer, "edge");
   });
   canvas.addEventListener("pointermove", (event) => {
     if (event.buttons & 1) {
-      pointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: true };
-      queuePointerFrame(pointer, "move");
+      const nextPointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: true };
+      queuePointerFrame(nextPointer, "move");
     }
   });
   const releasePointer = (event) => {
-    pointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: false };
-    queuePointerFrame(pointer, "edge");
+    const nextPointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: false };
+    queuePointerFrame(nextPointer, "edge");
   };
   canvas.addEventListener("pointerup", releasePointer);
   canvas.addEventListener("pointercancel", releasePointer);
   showState();
   renderer?.draw(snapshot);
-  window.requestAnimationFrame(step);
+  scheduler = createFixedStepScheduler({
+    tick: () => tickSimulation(),
+    render: renderFrame,
+    onError: showFailure,
+    onVisibilityChange: ({ visible, reason }) => {
+      schedulerResult = null;
+      if (!visible) {
+        hostInput.releaseAll();
+        audioState?.setVisibility(false);
+        status.textContent = `paused ${projectRoot.pathname} while hidden`;
+      } else if (reason !== "start") {
+        audioState?.setVisibility(true);
+        status.textContent = `resuming ${projectRoot.pathname}`;
+      }
+      writeOutput();
+    },
+    visibilityTarget: document,
+  });
+  scheduler.start();
 }
 
 window.addEventListener("unone-runtime-ready", () => start().catch(showFailure));

@@ -93,15 +93,15 @@ pub(crate) fn load_for_pack(root: &Path, path: &Path) -> Result<AssetManifest, B
     let text = fs::read_to_string(&path).map_err(|error| {
         Box::new(Diagnostic::error(
             "ASSET_MANIFEST_READ_FAILED",
-            "無法讀取 asset manifest",
-            format!("{}：{}", path.display(), error),
+            "Unable to read asset manifest",
+            format!("{}: {}", path.display(), error),
         ))
     })?;
     let manifest: AssetManifest = serde_json::from_str(&text).map_err(|error| {
         Box::new(Diagnostic::error(
             "ASSET_MANIFEST_INVALID",
-            "asset manifest 不是有效 JSON",
-            format!("{}：{}", path.display(), error),
+            "Asset manifest is not valid JSON",
+            format!("{}: {}", path.display(), error),
         ))
     })?;
     validate_asset_manifest(root, &manifest)?;
@@ -110,9 +110,9 @@ pub(crate) fn load_for_pack(root: &Path, path: &Path) -> Result<AssetManifest, B
         if !source.is_file() {
             return Err(Box::new(Diagnostic::error(
                 "ASSET_SOURCE_NOT_FOUND",
-                "找不到 asset source",
+                "Asset source not found",
                 format!(
-                    "asset '{}' 指向 '{}'，但 source 檔案不存在。",
+                    "Asset '{}' points to '{}', but the source file does not exist.",
                     asset.id, asset.source
                 ),
             )));
@@ -122,8 +122,8 @@ pub(crate) fn load_for_pack(root: &Path, path: &Path) -> Result<AssetManifest, B
             if !companion.is_file() {
                 return Err(Box::new(Diagnostic::error(
                     "ASSET_SOURCE_NOT_FOUND",
-                    "找不到 asset 附屬檔案",
-                    format!("asset '{}' 需要 '{file}'，但檔案不存在。", asset.id),
+                    "Asset companion file not found",
+                    format!("Asset '{}' requires '{file}', but the file does not exist.", asset.id),
                 )));
             }
         }
@@ -171,23 +171,23 @@ pub(crate) fn load_declared_manifest(paths: &ProjectPaths) -> Result<AssetManife
     let Some(manifest_path) = paths.asset_manifest.as_deref() else {
         return Err(Box::new(Diagnostic::error(
             "ASSET_MANIFEST_MISSING",
-            "專案沒有宣告 asset manifest",
-            "先在 project.unone.json 設定 asset_manifest，host 才能由 bundle 解析資產。",
+            "Project does not declare an asset manifest",
+            "Set asset_manifest in project.unone.json so the host can resolve assets from the bundle.",
         )));
     };
     let manifest_path = project_path_from_path(&paths.root, manifest_path, "asset manifest")?;
     let text = fs::read_to_string(&manifest_path).map_err(|error| {
         Box::new(Diagnostic::error(
             "ASSET_MANIFEST_READ_FAILED",
-            "無法讀取 asset manifest",
-            format!("{}：{}", manifest_path.display(), error),
+            "Unable to read asset manifest",
+            format!("{}: {}", manifest_path.display(), error),
         ))
     })?;
     let manifest: AssetManifest = serde_json::from_str(&text).map_err(|error| {
         Box::new(Diagnostic::error(
             "ASSET_MANIFEST_INVALID",
-            "asset manifest 不是有效 JSON",
-            format!("{}：{}", manifest_path.display(), error),
+            "Asset manifest is not valid JSON",
+            format!("{}: {}", manifest_path.display(), error),
         ))
     })?;
     validate_asset_manifest(&paths.root, &manifest)?;
@@ -202,7 +202,7 @@ pub(crate) fn load_active_asset_manifest(
     let manifest: AssetManifest = serde_json::from_slice(&bytes).map_err(|error| {
         Box::new(Diagnostic::error(
             "ASSET_ACTIVE_MANIFEST_INVALID",
-            "active asset manifest 不是有效 JSON",
+            "Active asset manifest is not valid JSON",
             error.to_string(),
         ))
     })?;
@@ -267,8 +267,8 @@ fn resolve_asset_bytes_with_observation_hook(
     else {
         let mut diagnostic = Diagnostic::error(
             "ASSET_ID_NOT_DECLARED",
-            "asset manifest 沒有這個 asset id",
-            format!("manifest 沒有宣告 asset '{asset_id}'；引擎不會猜測資產來源。"),
+            "Asset manifest does not contain this asset id",
+            format!("The manifest does not declare asset '{asset_id}'; the engine will not guess the asset source."),
         );
         diagnostic.facts = serde_json::json!({
             "asset_id": asset_id,
@@ -280,7 +280,7 @@ fn resolve_asset_bytes_with_observation_hook(
         });
         diagnostic.suggested_actions.push(ActionSuggestion {
             action: "inspect_assets".to_string(),
-            description: "列出目前宣告與被場景參照的 asset id。".to_string(),
+            description: "List currently declared and scene-referenced asset ids.".to_string(),
             command: Some("game asset inspect --json".to_string()),
         });
         return Err(Box::new(diagnostic));
@@ -290,8 +290,8 @@ fn resolve_asset_bytes_with_observation_hook(
     let Some(bundle_generation) = manager.active_generation()? else {
         return Err(Box::new(Diagnostic::error(
             "BUNDLE_GENERATION_MISMATCH",
-            "沒有已啟用的 bundle generation",
-            "讀取資產前必須先安裝並啟用一個 generation。",
+            "No bundle generation is active",
+            "A generation must be installed and activated before reading assets.",
         )));
     };
     let active_manifest = load_active_asset_manifest(&paths.root, &manager)?;
@@ -302,9 +302,9 @@ fn resolve_asset_bytes_with_observation_hook(
     if active_asset != Some(asset) {
         let mut diagnostic = Diagnostic::error(
             "BUNDLE_GENERATION_MISMATCH",
-            "asset 宣告與 active generation 不一致",
+            "Asset declaration does not match the active generation",
             format!(
-                "active asset-manifest 中 asset '{asset_id}' 的完整宣告必須與作者宣告相同；不會混用作者 metadata 與 active bytes。"
+                "The complete declaration for asset '{asset_id}' in the active asset manifest must match the authoring declaration; authoring metadata will not be combined with active bytes."
             ),
         );
         diagnostic.facts = serde_json::json!({
@@ -321,8 +321,8 @@ fn resolve_asset_bytes_with_observation_hook(
         if !active_asset.files.iter().any(|candidate| candidate == file) {
             let mut diagnostic = Diagnostic::error(
                 "ASSET_FILE_NOT_DECLARED",
-                "asset 沒有宣告這個附屬檔案",
-                format!("asset '{asset_id}' 的 files 沒有 '{file}'；引擎不會讀取未宣告的內容。"),
+                "Asset has not declared this companion file",
+                format!("The files for asset '{asset_id}' do not include '{file}'; the engine will not read undeclared content."),
             );
             diagnostic.facts = serde_json::json!({
                 "asset_id": asset_id,
@@ -339,8 +339,8 @@ fn resolve_asset_bytes_with_observation_hook(
     if observation_before != observation_after {
         let mut diagnostic = Diagnostic::error(
             "BUNDLE_GENERATION_MISMATCH",
-            "asset read 期間 active observation 發生變更",
-            "bundle manifest 或 active record 在讀取期間改變；無法確認 metadata、generation 與 bytes 屬於同一次觀測，因此未寫出 output。",
+            "Active observation changed during asset read",
+            "The bundle manifest or active record changed during the read; metadata, generation, and bytes cannot be confirmed to come from the same observation, so no output was written.",
         );
         diagnostic.facts = serde_json::json!({
             "asset_id": asset_id,
@@ -383,15 +383,15 @@ fn read_with_observation_hook(
             {
                 return EngineResult::failure(Diagnostic::error(
                     "ASSET_OUTPUT_WRITE_FAILED",
-                    "無法建立 asset 輸出目錄",
-                    format!("{}：{}", parent.display(), error),
+                    "Unable to create asset output directory",
+                    format!("{}: {}", parent.display(), error),
                 ));
             }
             if let Err(error) = fs::write(path, &bytes) {
                 return EngineResult::failure(Diagnostic::error(
                     "ASSET_OUTPUT_WRITE_FAILED",
-                    "無法寫出 asset 內容",
-                    format!("{}：{}", path.display(), error),
+                    "Unable to write asset contents",
+                    format!("{}: {}", path.display(), error),
                 ));
             }
             effects.push(format!(
@@ -413,9 +413,9 @@ fn read_with_observation_hook(
         sha256: digest_bytes(&bytes),
         output: written,
         host_responsibilities: vec![
-            "decode 與 GPU 資源生命週期屬於 host".to_string(),
-            "下載、重試、快取容量與 CDN policy 屬於 host".to_string(),
-            "engine 只驗證 bundle 與 archive entry 的完整性".to_string(),
+            "Decoding and GPU resource lifetime belong to the host.".to_string(),
+            "Downloading, retries, cache capacity, and CDN policy belong to the host.".to_string(),
+            "The engine only verifies the integrity of the bundle and archive entry.".to_string(),
         ],
     });
     result.effects = effects;
@@ -492,9 +492,9 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
     if !manifest_path.is_file() {
         let mut diagnostic = Diagnostic::error(
             "ASSET_MANIFEST_NOT_FOUND",
-            "找不到專案 asset manifest",
+            "Project asset manifest not found",
             format!(
-                "project.unone.json 宣告了 asset manifest '{}'，但檔案不存在。先建立 manifest，再檢查資產 source 與 bundle。",
+                "project.unone.json declares asset manifest '{}', but the file does not exist. Create the manifest first, then check the asset sources and bundle.",
                 manifest_path.display()
             ),
         );
@@ -504,7 +504,8 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
         });
         diagnostic.suggested_actions.push(ActionSuggestion {
             action: "create_asset_manifest".to_string(),
-            description: "在專案內建立 project.unone.json 宣告的 asset manifest。".to_string(),
+            description: "Create the asset manifest declared by project.unone.json in the project."
+                .to_string(),
             command: Some("game asset inspect --json".to_string()),
         });
         return EngineResult::failure(diagnostic);
@@ -515,8 +516,8 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
         Err(error) => {
             return EngineResult::failure(Diagnostic::error(
                 "ASSET_MANIFEST_READ_FAILED",
-                "無法讀取 asset manifest",
-                format!("{}：{}", manifest_path.display(), error),
+                "Unable to read asset manifest",
+                format!("{}: {}", manifest_path.display(), error),
             ));
         }
     };
@@ -525,8 +526,8 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
         Err(error) => {
             return EngineResult::failure(Diagnostic::error(
                 "ASSET_MANIFEST_INVALID",
-                "asset manifest 不是有效 JSON",
-                format!("{}：{}", manifest_path.display(), error),
+                "Asset manifest is not valid JSON",
+                format!("{}: {}", manifest_path.display(), error),
             ));
         }
     };
@@ -623,13 +624,13 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
         if !report.missing_asset_ids.is_empty() {
             let mut diagnostic = Diagnostic::warning(
                 "ASSET_REFERENCE_MISSING",
-                "場景引用了未宣告的 asset id",
-                "場景中的 sprite/mesh3d asset id 沒有對應 manifest entry；host 無法可靠解析 source 或 bundle。",
+                "Scene references an undeclared asset id",
+                "The scene's sprite/mesh3d asset id has no corresponding manifest entry; the host cannot reliably resolve the source or bundle.",
             );
             diagnostic.facts = serde_json::json!({"missing_asset_ids": report.missing_asset_ids});
             diagnostic.suggested_actions.push(ActionSuggestion {
                 action: "declare_asset".to_string(),
-                description: "在 asset manifest 以相同 id 宣告 source、kind 與 bundle。"
+                description: "Declare source, kind, and bundle under the same id in the asset manifest."
                     .to_string(),
                 command: Some(
                     "game asset init --id \"<asset-id>\" --source \"<project-relative-source>\" --json"
@@ -641,8 +642,8 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
         if !report.missing_sources.is_empty() {
             let mut diagnostic = Diagnostic::warning(
                 "ASSET_SOURCE_MISSING",
-                "asset manifest 宣告了不存在的 source",
-                "asset id 已存在，但 source 檔案不存在；打包或 host 載入會在這裡失敗。",
+                "Asset manifest declares a source that does not exist",
+                "The asset id exists, but the source file does not; packing or host loading will fail here.",
             );
             diagnostic.facts = serde_json::json!({"missing_sources": report.missing_sources});
             if let Some(asset) = report.assets.iter().find(|asset| {
@@ -653,7 +654,7 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
             }) {
                 diagnostic.suggested_actions.push(ActionSuggestion {
                     action: "describe_asset".to_string(),
-                    description: "查看這個 declared asset 的 manifest pointer、shared files、引用與 native-local freshness。"
+                    description: "Inspect this declared asset's manifest pointer, shared files, references, and native-local freshness."
                         .to_string(),
                     command: Some(format!(
                         "game asset describe --id {:?} --json",
@@ -666,8 +667,8 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
         if !report.undeclared_bundles.is_empty() {
             let mut diagnostic = Diagnostic::warning(
                 "ASSET_BUNDLE_NOT_DECLARED",
-                "asset 指向 manifest 沒有的 bundle",
-                "asset 的 bundle id 沒有出現在 bundle manifest；不要讓 host 猜測資產該下載哪一包。",
+                "Asset points to a bundle missing from the manifest",
+                "The asset's bundle id does not appear in the bundle manifest; do not make the host guess which package to download.",
             );
             diagnostic.facts = serde_json::json!({"undeclared_bundles": report.undeclared_bundles});
             if let Some(asset) = report.assets.iter().find(|asset| {
@@ -678,7 +679,7 @@ pub fn inspect(project_root: impl AsRef<Path>) -> EngineResult<AssetInspectRepor
             }) {
                 diagnostic.suggested_actions.push(ActionSuggestion {
                     action: "describe_asset".to_string(),
-                    description: "先以單筆 asset describe 確認宣告與 active 狀態，再依序 pack/inspect/install。"
+                    description: "First use a single-asset describe to confirm the declaration and active status, then run pack/inspect/install in order."
                         .to_string(),
                     command: Some(format!(
                         "game asset describe --id {:?} --json",
@@ -710,8 +711,8 @@ pub fn init_asset_manifest(
         Err(error) => {
             return EngineResult::failure(Diagnostic::error(
                 "PROJECT_ROOT_NOT_FOUND",
-                "找不到 Unone 專案根目錄",
-                format!("{}：{}", paths.root.display(), error),
+                "Unone project root not found",
+                format!("{}: {}", paths.root.display(), error),
             ));
         }
     };
@@ -721,8 +722,8 @@ pub fn init_asset_manifest(
             Err(_) => {
                 return EngineResult::failure(Diagnostic::error(
                     "ASSET_MANIFEST_OUTPUT_OUTSIDE_PROJECT",
-                    "asset manifest 輸出位置超出專案根目錄",
-                    "asset init 只會修改目前遊戲專案內的 manifest 與 project config。",
+                    "Asset manifest output path is outside the project root",
+                    "asset init only modifies the current game project's manifest and project configuration.",
                 ));
             }
         },
@@ -748,8 +749,8 @@ pub fn init_asset_manifest(
             Err(error) => {
                 return EngineResult::failure(Diagnostic::error(
                     "ASSET_MANIFEST_READ_FAILED",
-                    "無法讀取 asset manifest",
-                    format!("{}：{}", candidate.display(), error),
+                    "Unable to read asset manifest",
+                    format!("{}: {}", candidate.display(), error),
                 ));
             }
         };
@@ -758,8 +759,8 @@ pub fn init_asset_manifest(
             Err(error) => {
                 return EngineResult::failure(Diagnostic::error(
                     "ASSET_MANIFEST_INVALID",
-                    "asset manifest 不是有效 JSON",
-                    format!("{}：{}", candidate.display(), error),
+                    "Asset manifest is not valid JSON",
+                    format!("{}: {}", candidate.display(), error),
                 ));
             }
         }
@@ -786,9 +787,9 @@ pub fn init_asset_manifest(
         if !ids.insert(asset.id.clone()) {
             return EngineResult::failure(Diagnostic::error(
                 "ASSET_MANIFEST_DUPLICATE_ID",
-                "asset manifest 已有相同的 asset id",
+                "Asset manifest already has the same asset id",
                 format!(
-                    "asset id '{}' 已存在，避免 asset init 靜默覆蓋既有宣告。",
+                    "Asset id '{}' already exists; this prevents asset init from silently overwriting the existing declaration.",
                     asset.id
                 ),
             ));
@@ -805,7 +806,7 @@ pub fn init_asset_manifest(
             Err(error) => {
                 return EngineResult::failure(Diagnostic::error(
                     "ASSET_MANIFEST_WRITE_FAILED",
-                    "無法序列化 asset manifest",
+                    "Unable to serialize asset manifest",
                     error.to_string(),
                 ));
             }
@@ -815,16 +816,16 @@ pub fn init_asset_manifest(
         {
             return EngineResult::failure(Diagnostic::error(
                 "ASSET_MANIFEST_WRITE_FAILED",
-                "無法建立 asset manifest 目錄",
-                format!("{}：{}", parent.display(), error),
+                "Unable to create asset manifest directory",
+                format!("{}: {}", parent.display(), error),
             ));
         }
         if let Err(error) = fs::write(&candidate, bytes) {
             return init_failure_with_effects(
                 Diagnostic::error(
                 "ASSET_MANIFEST_WRITE_FAILED",
-                "無法寫入 asset manifest",
-                format!("{}：{}", candidate.display(), error),
+                "Unable to write asset manifest",
+                format!("{}: {}", candidate.display(), error),
                 ),
                 effects,
                 changed_files,
@@ -842,8 +843,8 @@ pub fn init_asset_manifest(
             return init_failure_with_effects(
                 Diagnostic::error(
                 "PROJECT_CONFIG_READ_FAILED",
-                "無法更新 asset manifest 設定",
-                format!("{}：{}", config_path.display(), error),
+                "Unable to update asset manifest configuration",
+                format!("{}: {}", config_path.display(), error),
                 ),
                 effects,
                 changed_files,
@@ -856,7 +857,7 @@ pub fn init_asset_manifest(
             return init_failure_with_effects(
                 Diagnostic::error(
                 "PROJECT_CONFIG_INVALID",
-                "Unone 專案設定不是有效 JSON",
+                "Unone project configuration is not valid JSON",
                 error.to_string(),
                 ),
                 effects,
@@ -868,8 +869,8 @@ pub fn init_asset_manifest(
         return init_failure_with_effects(
             Diagnostic::error(
                 "PROJECT_CONFIG_INVALID",
-                "專案設定必須是 JSON object",
-                "asset init 需要在 project.unone.json 設定 asset_manifest。",
+                "Project configuration must be a JSON object",
+                "asset init requires asset_manifest to be set in project.unone.json.",
             ),
             effects,
             changed_files,
@@ -890,7 +891,7 @@ pub fn init_asset_manifest(
                 return init_failure_with_effects(
                     Diagnostic::error(
                         "PROJECT_CONFIG_WRITE_FAILED",
-                        "無法序列化專案設定",
+                        "Unable to serialize project configuration",
                         error.to_string(),
                     ),
                     effects,
@@ -902,7 +903,7 @@ pub fn init_asset_manifest(
             return init_failure_with_effects(
                 Diagnostic::error(
                     "PROJECT_CONFIG_WRITE_FAILED",
-                    "無法更新 asset_manifest 設定",
+                    "Unable to update asset_manifest configuration",
                     error.to_string(),
                 ),
                 effects,
@@ -980,9 +981,9 @@ pub(crate) fn validate_asset_manifest(
     if manifest.version != SUPPORTED_ASSET_MANIFEST_VERSION {
         return Err(Box::new(Diagnostic::error(
             "ASSET_MANIFEST_VERSION_INVALID",
-            "asset manifest version 無效",
+            "Invalid asset manifest version",
             format!(
-                "目前只支援 asset manifest version {}，不會把未支援的版本靜默當成目前格式。",
+                "Only asset manifest version {} is supported; unsupported versions will not be silently treated as the current format.",
                 SUPPORTED_ASSET_MANIFEST_VERSION
             ),
         )));
@@ -993,8 +994,8 @@ pub(crate) fn validate_asset_manifest(
         if !ids.insert(asset.id.clone()) {
             return Err(Box::new(Diagnostic::error(
                 "ASSET_MANIFEST_DUPLICATE_ID",
-                "asset manifest 有重複的 asset id",
-                format!("asset id '{}' 只能宣告一次。", asset.id),
+                "Asset manifest contains a duplicate asset id",
+                format!("Asset id '{}' may be declared only once.", asset.id),
             )));
         }
         validate_asset_paths(root, asset)?;
@@ -1017,9 +1018,9 @@ pub(crate) fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnosti
     if !looks_like_asset_id(&asset.id) {
         let mut diagnostic = Diagnostic::error(
             "ASSET_ID_INVALID",
-            "asset id 無效",
+            "Invalid asset id",
             format!(
-                "asset id '{}' 必須是帶 scheme 的穩定識別字，例如 asset://characters/bird/red 或 mesh://car。",
+                "Asset id '{}' must be a stable identifier with a scheme, such as asset://characters/bird/red or mesh://car.",
                 asset.id
             ),
         );
@@ -1029,9 +1030,9 @@ pub(crate) fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnosti
     if !is_supported_asset_kind(&asset.kind) || asset.bundle.trim().is_empty() {
         return Err(Box::new(Diagnostic::error(
             "ASSET_SPEC_INVALID",
-            "asset spec 的 kind 或 bundle 無效",
+            "Invalid asset spec kind or bundle",
             format!(
-                "asset '{}' 的 kind 必須是 texture2d、mesh3d、spine、effekseer 或 audio，bundle 不可為空。",
+                "Asset '{}' must have kind texture2d, mesh3d, spine, effekseer, or audio, and bundle must not be empty.",
                 asset.id
             ),
         )));
@@ -1039,9 +1040,9 @@ pub(crate) fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnosti
     if !is_safe_bundle_id(&asset.bundle) {
         return Err(Box::new(Diagnostic::error(
             "ASSET_BUNDLE_ID_INVALID",
-            "asset bundle id 無效",
+            "Invalid asset bundle id",
             format!(
-                "asset '{}' 的 bundle '{}' 只能包含單一安全名稱，不能包含路徑分隔符。",
+                "Asset '{}' bundle '{}' may contain only a single safe name and no path separators.",
                 asset.id, asset.bundle
             ),
         )));
@@ -1049,9 +1050,9 @@ pub(crate) fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnosti
     if !is_project_relative(&asset.source) {
         return Err(Box::new(Diagnostic::error(
             "ASSET_SOURCE_OUTSIDE_PROJECT",
-            "asset source 超出專案根目錄",
+            "Asset source is outside the project root",
             format!(
-                "asset '{}' 的 source '{}' 必須是專案內的相對路徑。",
+                "Asset '{}' source '{}' must be a project-relative path.",
                 asset.id, asset.source
             ),
         )));
@@ -1061,9 +1062,9 @@ pub(crate) fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnosti
         if !is_project_relative(file) {
             return Err(Box::new(Diagnostic::error(
                 "ASSET_SOURCE_OUTSIDE_PROJECT",
-                "asset 附屬檔案超出專案根目錄",
+                "Asset companion file is outside the project root",
                 format!(
-                    "asset '{}' 的 files 項目 '{file}' 必須是專案內的相對路徑。",
+                    "Asset '{}' files entry '{file}' must be a project-relative path.",
                     asset.id
                 ),
             )));
@@ -1071,15 +1072,15 @@ pub(crate) fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnosti
         if *file == asset.source {
             return Err(Box::new(Diagnostic::error(
                 "ASSET_SPEC_INVALID",
-                "asset 附屬檔案重複宣告了 source",
-                format!("asset '{}' 的 files 不可再列出 source 本身。", asset.id),
+                "Asset companion file duplicates the source",
+                format!("Asset '{}' files must not list the source itself again.", asset.id),
             )));
         }
         if !files.insert(file) {
             return Err(Box::new(Diagnostic::error(
                 "ASSET_SPEC_INVALID",
-                "asset 附屬檔案重複宣告",
-                format!("asset '{}' 的 files 不可重複列出 '{file}'。", asset.id),
+                "Duplicate asset companion file declaration",
+                format!("Asset '{}' files must not list '{file}' more than once.", asset.id),
             )));
         }
     }
@@ -1094,8 +1095,8 @@ fn project_path_from_path(
     let relative = path.strip_prefix(root).map_err(|_| {
         Box::new(Diagnostic::error(
             "ASSET_PATH_OUTSIDE_PROJECT",
-            "asset workflow path 超出專案根目錄",
-            format!("{label} '{}' 必須位於專案根目錄內。", path.display()),
+            "Asset workflow path is outside the project root",
+            format!("{label} '{}' must be inside the project root.", path.display()),
         ))
     })?;
     resolve_project_path(root, &relative.to_string_lossy().replace('\\', "/"))
@@ -1150,15 +1151,15 @@ fn read_bundle_ids(paths: &ProjectPaths) -> Result<BTreeSet<String>, Box<Diagnos
     let text = fs::read_to_string(&bundle_path).map_err(|error| {
         Box::new(Diagnostic::error(
             "BUNDLE_MANIFEST_READ_FAILED",
-            "無法讀取 bundle manifest",
-            format!("{}：{}", bundle_path.display(), error),
+            "Unable to read bundle manifest",
+            format!("{}: {}", bundle_path.display(), error),
         ))
     })?;
     let manifest: BundleManifest = serde_json::from_str(&text).map_err(|error| {
         Box::new(Diagnostic::error(
             "BUNDLE_MANIFEST_INVALID",
-            "bundle manifest 不是有效 JSON",
-            format!("{}：{}", bundle_path.display(), error),
+            "Bundle manifest is not valid JSON",
+            format!("{}: {}", bundle_path.display(), error),
         ))
     })?;
     Ok(manifest
@@ -1251,13 +1252,13 @@ fn missing_manifest_diagnostic(references: &[AssetReference]) -> Diagnostic {
     let ids = sorted_unique(references.iter().map(|reference| reference.id.clone()));
     let mut diagnostic = Diagnostic::warning(
         "ASSET_MANIFEST_MISSING",
-        "場景有 asset reference 但專案沒有 asset manifest",
-        "引擎只看見 scene 裡的 asset id，沒有 manifest 就無法驗證 source、kind、bundle 或跨平台 host 解析結果。",
+        "Scene has asset references but the project has no asset manifest",
+        "The engine only sees asset ids in the scene; without a manifest it cannot verify the source, kind, bundle, or cross-platform host resolution result.",
     );
     diagnostic.facts = serde_json::json!({"asset_ids": ids});
     diagnostic.suggested_actions.push(ActionSuggestion {
         action: "declare_asset_manifest".to_string(),
-        description: "在 project.unone.json 加入 asset_manifest，並為每個靜態 asset reference 宣告 source、kind 與 bundle。".to_string(),
+        description: "Add asset_manifest to project.unone.json and declare source, kind, and bundle for each static asset reference.".to_string(),
         command: Some("game asset init --json".to_string()),
     });
     diagnostic
@@ -1523,7 +1524,7 @@ mod tests {
             "ASSET_SOURCE_OUTSIDE_PROJECT"
         );
         let packed = pack_project(dir.path(), None);
-        assert!(!packed.ok, "越界 companion 不應被 pack");
+        assert!(!packed.ok, "out-of-scope companion must not be packed");
         assert!(!packed.diagnostics.is_empty());
     }
 
@@ -1630,7 +1631,7 @@ mod tests {
         fs::set_permissions(&config_path, permissions).unwrap();
 
         let result = init_asset_manifest(dir.path(), None, None);
-        assert!(!result.ok, "唯讀 project config 不應宣稱 init 成功");
+        assert!(!result.ok, "a read-only project config must not report init success");
         assert_eq!(result.diagnostics[0].code, "PROJECT_CONFIG_WRITE_FAILED");
         assert!(result.effects.iter().any(|effect| {
             effect.contains("assets\\manifest.json") || effect.contains("assets/manifest.json")

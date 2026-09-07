@@ -9,7 +9,10 @@
 //! change what the run means. This module reports numbers and never a verdict —
 //! "fast enough" depends on a target the engine does not know.
 
-use std::time::{Duration, Instant};
+use std::{
+    collections::VecDeque,
+    time::{Duration, Instant},
+};
 
 use serde::Serialize;
 
@@ -56,18 +59,20 @@ pub struct SlowestFrame {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct PerformanceReport {
+    /// Number of frames recorded, including frames outside the sample window.
     pub frames: u64,
     pub total_ms: f64,
     pub mean_frame_ms: f64,
+    /// Median of the most recent bounded sample window.
     pub median_frame_ms: f64,
-    /// The frame time 95% of frames came in under.
+    /// The frame time 95% of retained sample-window frames came in under.
     pub p95_frame_ms: f64,
     pub slowest_frame: Option<SlowestFrame>,
     /// Frames per second this run would sustain at the measured mean.
     pub sustained_fps: f64,
     /// Fixed timestep budget per frame, for comparison.
     pub frame_budget_ms: f64,
-    /// Frames that took longer than the fixed timestep budget.
+    /// Retained sample-window frames that took longer than the fixed timestep budget.
     pub frames_over_budget: u64,
     pub phases: Vec<PhaseCost>,
     pub counts: FrameCounts,
@@ -75,14 +80,65 @@ pub struct PerformanceReport {
     pub notes: Vec<String>,
 }
 
-#[derive(Debug, Default)]
+const MAX_FRAME_SAMPLES: usize = 1_024;
+
+#[derive(Debug, Clone, Copy)]
+struct FrameSample {
+    frame: u64,
+    timing: FrameTiming,
+}
+
+/// Retains exact cumulative counters for run-wide totals and a bounded recent
+/// window for distributional metrics. A long-lived runtime therefore cannot
+/// grow its profiling allocation once the window is full.
+#[derive(Debug)]
 pub(crate) struct PerformanceCollector {
-    frames: Vec<FrameTiming>,
+    samples: VecDeque<FrameSample>,
+    frame_count: u64,
+    total: Duration,
+    script: Duration,
+    physics: Duration,
+    observe: Duration,
+    slowest: Option<FrameSample>,
+}
+
+impl Default for PerformanceCollector {
+    fn default() -> Self {
+        Self {
+            samples: VecDeque::with_capacity(MAX_FRAME_SAMPLES),
+            frame_count: 0,
+            total: Duration::ZERO,
+            script: Duration::ZERO,
+            physics: Duration::ZERO,
+            observe: Duration::ZERO,
+            slowest: None,
+        }
+    }
 }
 
 impl PerformanceCollector {
     pub(crate) fn record(&mut self, timing: FrameTiming) {
-        self.frames.push(timing);
+        let frame = self.frame_count;
+        self.frame_count = self.frame_count.saturating_add(1);
+        self.total = self.total.saturating_add(timing.total);
+        self.script = self.script.saturating_add(timing.script);
+        self.physics = self.physics.saturating_add(timing.physics);
+        self.observe = self.observe.saturating_add(timing.observe);
+
+        let sample = FrameSample { frame, timing };
+        if self
+            .slowest
+            .map_or(true, |slowest| timing.total >= slowest.timing.total)
+        {
+            self.slowest = Some(sample);
+        }
+
+        if MAX_FRAME_SAMPLES != 0 {
+            if self.samples.len() == MAX_FRAME_SAMPLES {
+                self.samples.pop_front();
+            }
+            self.samples.push_back(sample);
+        }
     }
 
     pub(crate) fn report(
@@ -92,7 +148,7 @@ impl PerformanceCollector {
         frame_budget: Duration,
     ) -> PerformanceReport {
         let budget_ms = millis(frame_budget);
-        if self.frames.is_empty() {
+        if self.frame_count == 0 {
             return PerformanceReport {
                 frames: 0,
                 total_ms: 0.0,
@@ -110,27 +166,25 @@ impl PerformanceCollector {
             };
         }
 
-        let mut totals: Vec<Duration> = self.frames.iter().map(|frame| frame.total).collect();
+        let mut totals: Vec<Duration> = self
+            .samples
+            .iter()
+            .map(|sample| sample.timing.total)
+            .collect();
         totals.sort_unstable();
-        let total: Duration = totals.iter().sum();
-        let count = totals.len();
-        let mean = total / count as u32;
-        let median = totals[count / 2];
+        let sample_count = totals.len();
+        debug_assert!(sample_count > 0);
+        let mean = self.total.div_f64(self.frame_count as f64);
+        let median = totals[sample_count / 2];
         // Nearest-rank p95, which for small runs is simply the worst frames.
-        let p95_index = ((count as f64 * 0.95).ceil() as usize).clamp(1, count) - 1;
+        let p95_index = ((sample_count as f64 * 0.95).ceil() as usize).clamp(1, sample_count) - 1;
         let p95 = totals[p95_index];
 
-        let (slowest_index, slowest) = self
-            .frames
-            .iter()
-            .enumerate()
-            .max_by_key(|(_, frame)| frame.total)
-            .expect("frames is not empty");
-
-        let script: Duration = self.frames.iter().map(|frame| frame.script).sum();
-        let physics: Duration = self.frames.iter().map(|frame| frame.physics).sum();
-        let observe: Duration = self.frames.iter().map(|frame| frame.observe).sum();
-        let measured = script + physics + observe;
+        let slowest = self.slowest.expect("frame_count is not zero");
+        let measured = self
+            .script
+            .saturating_add(self.physics)
+            .saturating_add(self.observe);
         let share = |part: Duration| {
             if measured.is_zero() {
                 0.0
@@ -141,29 +195,29 @@ impl PerformanceCollector {
         let phase = |name: &str, part: Duration| PhaseCost {
             name: name.to_string(),
             total_ms: millis(part),
-            mean_ms: millis(part / count as u32),
+            mean_ms: millis(part.div_f64(self.frame_count as f64)),
             share: share(part),
         };
 
         let over_budget = self
-            .frames
+            .samples
             .iter()
-            .filter(|frame| frame.total > frame_budget)
+            .filter(|sample| sample.timing.total > frame_budget)
             .count() as u64;
         let mean_ms = millis(mean);
 
         PerformanceReport {
-            frames: count as u64,
-            total_ms: millis(total),
+            frames: self.frame_count,
+            total_ms: millis(self.total),
             mean_frame_ms: mean_ms,
             median_frame_ms: millis(median),
             p95_frame_ms: millis(p95),
             slowest_frame: Some(SlowestFrame {
-                frame: slowest_index as u64,
-                total_ms: millis(slowest.total),
-                script_ms: millis(slowest.script),
-                physics_ms: millis(slowest.physics),
-                observe_ms: millis(slowest.observe),
+                frame: slowest.frame,
+                total_ms: millis(slowest.timing.total),
+                script_ms: millis(slowest.timing.script),
+                physics_ms: millis(slowest.timing.physics),
+                observe_ms: millis(slowest.timing.observe),
             }),
             sustained_fps: if mean.is_zero() {
                 0.0
@@ -173,15 +227,18 @@ impl PerformanceCollector {
             frame_budget_ms: budget_ms,
             frames_over_budget: over_budget,
             phases: vec![
-                phase("script", script),
-                phase("physics", physics),
-                phase("observe", observe),
+                phase("script", self.script),
+                phase("physics", self.physics),
+                phase("observe", self.observe),
             ],
             counts,
             luau_memory_bytes,
             notes: vec![
                 "wall clock timings, excluded from the observation digest".to_string(),
                 "a debug build measures debug costs; compare like with like".to_string(),
+                format!(
+                    "median, p95, and frames-over-budget use the most recent bounded sample window (up to {MAX_FRAME_SAMPLES} frames)"
+                ),
             ],
         }
     }
@@ -202,8 +259,14 @@ pub fn to_markdown(report: &PerformanceReport) -> String {
         "- sustained {:.1} fps against a {:.3} ms fixed timestep budget\n",
         report.sustained_fps, report.frame_budget_ms
     ));
-    out.push_str(&format!("- {} frame(s) over budget\n", report.frames_over_budget));
-    out.push_str(&format!("- Luau heap {} bytes\n\n", report.luau_memory_bytes));
+    out.push_str(&format!(
+        "- {} frame(s) over budget\n",
+        report.frames_over_budget
+    ));
+    out.push_str(&format!(
+        "- Luau heap {} bytes\n\n",
+        report.luau_memory_bytes
+    ));
     out.push_str("| phase | total ms | mean ms | share |\n|---|---|---|---|\n");
     for phase in &report.phases {
         out.push_str(&format!(
@@ -249,7 +312,7 @@ pub(crate) fn timed<T>(work: impl FnOnce() -> T) -> (T, Duration) {
 mod tests {
     use std::time::Duration;
 
-    use super::{FrameCounts, FrameTiming, PerformanceCollector};
+    use super::{FrameCounts, FrameTiming, MAX_FRAME_SAMPLES, PerformanceCollector};
 
     fn frame(script_us: u64, physics_us: u64, observe_us: u64) -> FrameTiming {
         let script = Duration::from_micros(script_us);
@@ -311,5 +374,29 @@ mod tests {
         assert_eq!(report.frames, 0);
         assert!(report.slowest_frame.is_none());
         assert_eq!(report.sustained_fps, 0.0);
+    }
+
+    #[test]
+    fn it_bounds_samples_while_preserving_cumulative_totals_and_maxima() {
+        let mut collector = PerformanceCollector::default();
+        collector.record(frame(100_000, 0, 0));
+        for _ in 0..MAX_FRAME_SAMPLES {
+            collector.record(frame(1_000, 0, 0));
+        }
+
+        assert_eq!(collector.samples.len(), MAX_FRAME_SAMPLES);
+
+        let report = collector.report(FrameCounts::default(), 0, Duration::from_micros(16_667));
+
+        assert_eq!(report.frames, (MAX_FRAME_SAMPLES + 1) as u64);
+        assert_eq!(report.total_ms, 100.0 + MAX_FRAME_SAMPLES as f64);
+        assert!((report.mean_frame_ms - 1.097).abs() < 0.001, "{report:?}");
+        assert_eq!(report.median_frame_ms, 1.0);
+        assert_eq!(report.p95_frame_ms, 1.0);
+        assert_eq!(report.frames_over_budget, 0);
+
+        let slowest = report.slowest_frame.expect("a slowest frame");
+        assert_eq!(slowest.frame, 0);
+        assert_eq!(slowest.total_ms, 100.0);
     }
 }

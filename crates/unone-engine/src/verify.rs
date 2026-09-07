@@ -143,8 +143,8 @@ fn resolve_plan(
     if declared.steps.is_empty() {
         let mut diagnostic = Diagnostic::error(
             "VERIFY_STEPS_EMPTY",
-            "verify 宣告了一份空的 gate 清單",
-            "宣告 verify.steps 卻一個 gate 都沒有，等於關掉全部驗證但仍然回報通過。要放寬個別 gate 請用 required: false；要用預設順序請把整段移除。".to_string(),
+            "verify declared an empty gate list",
+            "verify.steps was declared without any gates, which disables every verification while still reporting success. Use required: false to make individual gates advisory; remove the entire field to use the default order.".to_string(),
         );
         diagnostic.facts = serde_json::json!({ "available": DEFAULT_VERIFY_STEPS });
         return Err(Box::new(diagnostic));
@@ -155,17 +155,17 @@ fn resolve_plan(
         if spec.reserved_command() {
             return Err(Box::new(Diagnostic::error(
                 "VERIFY_STEP_NOT_IMPLEMENTED",
-                "verify 的 command step 尚未實作",
+                "verify command steps are not implemented",
                 format!(
-                    "gate '{name}' 宣告了 command：專案自帶命令的擴充點已保留名稱，但本 build 沒有實作，宣告它不會執行任何東西，因此視為設定錯誤。"
+                    "gate '{name}' declares a command: the project-command extension point is reserved, but this build does not implement it. Declaring it executes nothing, so the configuration is invalid."
                 ),
             )));
         }
         if !DEFAULT_VERIFY_STEPS.contains(&name.as_str()) {
             let mut diagnostic = Diagnostic::error(
                 "VERIFY_STEP_UNKNOWN",
-                "verify 宣告了引擎沒有的 gate",
-                format!("引擎沒有 gate '{name}'；不會把 typo 當成少跑一個 gate。"),
+                "verify declared an unavailable gate",
+                format!("The engine does not provide gate '{name}'; a typo must not silently disable a gate."),
             );
             diagnostic.facts = serde_json::json!({
                 "step": name,
@@ -176,9 +176,9 @@ fn resolve_plan(
         if plan.iter().any(|(existing, _)| *existing == name) {
             return Err(Box::new(Diagnostic::error(
                 "VERIFY_STEP_DUPLICATED",
-                "verify 宣告了重複的 gate",
+                "verify declared a duplicate gate",
                 format!(
-                    "gate '{name}' 宣告了不只一次；同一個 gate 跑兩次不會多驗證任何東西，只會讓報告不好讀。"
+                    "gate '{name}' is declared more than once; running the same gate twice adds no verification and only makes the report harder to read."
                 ),
             )));
         }
@@ -291,8 +291,8 @@ fn finish(project: String, steps: Vec<VerifyStep>, step_source: &str) -> EngineR
     } else {
         let mut diagnostic = Diagnostic::error(
             "VERIFY_FAILED",
-            "有 gate 沒有通過",
-            format!("{failed} 個步驟失敗；每個步驟的 command 欄位可以單獨重跑。"),
+            "A verify gate failed",
+            format!("{failed} steps failed; each step's command field can be rerun independently."),
         );
         diagnostic.facts = serde_json::json!({
             "failed_steps": report
@@ -373,8 +373,8 @@ fn layout_step(
                     "the declared input sequence could not be read",
                     vec![Diagnostic::error(
                         "INPUT_SEQUENCE_INVALID",
-                        "無法讀取 ui_previews 宣告的 input sequence",
-                        format!("{path}：{error}"),
+                        "Could not read the input sequence declared by ui_previews",
+                        format!("{path}: {error}"),
                     )],
                 );
             }
@@ -422,7 +422,7 @@ fn layout_step(
         .map(|finding| {
             let mut diagnostic = Diagnostic::error(
                 finding.code.clone(),
-                "UI layout 有結構問題",
+                "UI layout has structural problems",
                 finding.detail.clone(),
             );
             diagnostic.facts = serde_json::json!({"nodes": finding.nodes});
@@ -461,8 +461,8 @@ fn tests_missing_diagnostic() -> Diagnostic {
     let mut diagnostic = Diagnostic {
         code: "TESTS_NOT_CONFIGURED".to_string(),
         severity: DiagnosticSeverity::Error,
-        summary: "專案沒有設定測試檔".to_string(),
-        explanation: "verify 要求可重播的 deterministic 測試；沒有測試就沒有通過的依據。".to_string(),
+        summary: "The project declares no test files".to_string(),
+        explanation: "verify requires replayable deterministic tests; without tests there is no basis for a passing result.".to_string(),
         facts: serde_json::json!({}),
         likely_causes: Vec::new(),
         suggested_actions: Vec::new(),
@@ -470,7 +470,7 @@ fn tests_missing_diagnostic() -> Diagnostic {
     };
     diagnostic.suggested_actions.push(ActionSuggestion {
         action: "add_test_files".to_string(),
-        description: "在 project.unone.json 的 test_files 加入 .test.json 檔案。".to_string(),
+        description: "Add .test.json files to test_files in project.unone.json.".to_string(),
         command: Some("game project inspect --json".to_string()),
     });
     diagnostic

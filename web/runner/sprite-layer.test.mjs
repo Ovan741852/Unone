@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-import { createSpriteLayer } from "./sprite-layer.js?v=1";
+import { createSpriteLayer } from "./sprite-layer.js?v=3";
 
 class FakeElement {
   constructor(tagName) {
@@ -30,9 +30,10 @@ const diagnostic = {
   explanation: "The asset bytes do not match the declared content digest.",
 };
 const loadCalls = [];
+let brokenAssetFails = true;
 const loadAssetUrl = (asset) => {
   loadCalls.push(asset.id);
-  if (asset.id === "asset://broken") {
+  if (asset.id === "asset://broken" && brokenAssetFails) {
     const error = new Error("asset bytes rejected");
     error.diagnostic = diagnostic;
     return Promise.reject(error);
@@ -125,8 +126,71 @@ assert.equal(broken.code, diagnostic.code);
 assert.equal(broken.message, diagnostic.explanation);
 assert.deepEqual(broken.diagnostic, diagnostic, "asset diagnostics must remain visible beside the fallback");
 
+const brokenCallsAfterFirstRender = loadCalls.filter((id) => id === "asset://broken").length;
+layer.render(snapshot, manifest, canvas);
+await Promise.resolve();
+await Promise.resolve();
+assert.equal(
+  loadCalls.filter((id) => id === "asset://broken").length,
+  brokenCallsAfterFirstRender,
+  "a second render must not silently retry a failed declared asset",
+);
+assert.equal(byId("é").children[0].className, "unone-asset-fallback");
+const secondRenderErrors = errorReports.at(-1);
+const secondRenderBroken = secondRenderErrors.find(({ entity_id }) => entity_id === "é");
+assert.equal(secondRenderBroken.code, diagnostic.code, "the second render must retain the machine-readable failure");
+assert.deepEqual(secondRenderBroken.diagnostic, diagnostic);
+
+brokenAssetFails = false;
+await layer.retry();
+assert.equal(byId("é").children[0].className, "unone-asset-image", "an explicit successful retry may replace the fallback");
+assert.equal(
+  loadCalls.filter((id) => id === "asset://broken").length,
+  brokenCallsAfterFirstRender + 1,
+);
+assert.deepEqual(errorReports.at(-1).map(({ entity_id }) => entity_id), ["10", "back"]);
+
+brokenAssetFails = true;
+const changedManifest = {
+  ...manifest,
+  version: 2,
+  assets: manifest.assets.map((asset) => ({ ...asset })),
+};
+layer.render(snapshot, changedManifest, canvas);
+assert.equal(
+  loadCalls.filter((id) => id === "asset://broken").length,
+  brokenCallsAfterFirstRender + 2,
+  "an explicit manifest change resets the failed declaration attempt",
+);
+await Promise.resolve();
+await Promise.resolve();
+assert.equal(byId("é").children[0].className, "unone-asset-fallback");
+assert.equal(errorReports.at(-1).find(({ entity_id }) => entity_id === "é").code, diagnostic.code);
+
 layer.clear();
 assert.equal(root.children.length, 0);
 assert.deepEqual(errorReports.at(-1), []);
+
+const lateRoot = new FakeElement("div");
+let resolveLateLoad;
+const lateLoad = new Promise((resolve) => { resolveLateLoad = resolve; });
+const lateErrors = [];
+const lateLayer = createSpriteLayer({
+  element: lateRoot,
+  loadAssetUrl: () => lateLoad,
+  onAssetErrors: (errors) => lateErrors.push(errors),
+});
+lateLayer.render({
+  world: {
+    camera,
+    entities: { late: sprite("late", "asset://ok") },
+  },
+}, manifest, canvas);
+lateLayer.clear();
+resolveLateLoad("blob:stale-generation");
+await Promise.resolve();
+await Promise.resolve();
+assert.equal(lateRoot.children.length, 0, "a cleared generation must not receive an old image completion");
+assert.deepEqual(lateErrors.at(-1), [], "a cleared generation must not publish an old load error");
 
 console.log("DOM sprite layer transform and fallback contract passed");
