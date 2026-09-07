@@ -36,6 +36,7 @@ Snapshots/journals expose definition and particle changes. Web/Mobile/core parit
 fixtures now include a seeded native effect. Raw `game perf` counts include particles.
 
 Rendering currently uses Three.js camera-facing glow sprites in the Web runner,
-player and particle lab. Native/Android presentation still needs particle adapters.
+player and particle lab, including the offline Android WebView player.
+The native Canvas/JNI Android host still needs a particle renderer.
 Texture emitters, mesh particles, trails, collisions, curves and GPU instancing
 are outside v1. Spine remains an external animation format.

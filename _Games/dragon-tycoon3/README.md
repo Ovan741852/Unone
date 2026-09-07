@@ -1,5 +1,19 @@
 # Dragon Tycoon 3 engine probe
 
+## Web and Android builds
+
+Local deliverables: `dist/dragon-tycoon3-web.zip` (deploy its contents to a static
+HTTP server) and `dist/dragon-tycoon3-android.apk` (offline WebView player, local
+test signature). `dist/web` is the unpacked Web version. Both contain the same
+verified release player/content. [distributions.json](distributions.json) records
+sizes, hashes, embedded-file verification and platform checks. Android 14 / WebView
+137 emulator testing covers 3D presentation, touch hits, visible particles and
+pause/resume; physical devices have not been tested.
+
+Rebuild Web with `game --project _Games/dragon-tycoon3 export web --output <new-dir>`;
+then use [the Android packaging script](../../platform/android-player/README.md)
+on that export. These outputs remain local under the ignored `dist` directory.
+
 Reference: https://www.slam777.com.tw/game/38 (獵龍戰紀 3, Creator 3.8.5).
 This is a small offline reconstruction experiment for finding engine gaps.
 It is not the original game's client or a complete remake. No account, wagering,

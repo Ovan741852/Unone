@@ -44,4 +44,6 @@ canvas.addEventListener('pointerup',e=>pointer(e,false,'edge'));
 canvas.addEventListener('pointercancel',()=>input.releaseAll());
 document.querySelector('#ui-layer').addEventListener('click',e=>{const action=e.target.closest('[data-action]')?.dataset.action;if(action)input.queueAction(action);audio?.unlock();});
 window.addEventListener('keydown',e=>input.setHeld(e.code,true));window.addEventListener('keyup',e=>input.setHeld(e.code,false));window.addEventListener('blur',()=>input.releaseAll());
+window.addEventListener('unone-host-pause',()=>{input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});
+window.addEventListener('unone-host-resume',()=>{scheduler?.resume();audio?.setVisibility(true);});
 start().catch(fail);
