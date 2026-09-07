@@ -1,4 +1,5 @@
-import { createWebGpuRenderer, frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=2";
+import { frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=2";
+import { createRenderer } from "../renderer/index.js?v=1";
 import { installGeneration, readActiveText } from "./bundle-store.js?v=1";
 
 const canvas = document.querySelector("#game");
@@ -151,7 +152,7 @@ async function start() {
   started = true;
   if (window.Module._unone_web_init() !== 0) throw new Error("live engine init failed");
   await loadProject();
-  renderer = await createWebGpuRenderer(canvas);
+  renderer = await createRenderer(canvas, { kind: "webgpu-raw" });
   reloadButton.disabled = false;
   bundleUpdateButton.disabled = false;
   reloadButton.addEventListener("click", () => reloadScript().catch((error) => {
