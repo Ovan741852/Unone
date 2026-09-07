@@ -1,4 +1,5 @@
-import { createWebGpuRenderer, frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=5";
+import { frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=5";
+import { createRenderer } from "../renderer/index.js?v=1";
 import { installGeneration, readActiveAsset, readActiveText } from "../live/bundle-store.js?v=3";
 import { readSave, writeSave } from "./save-store.js?v=1";
 import { createSpriteLayer } from "./sprite-layer.js?v=1";
@@ -9,6 +10,8 @@ const uiLayer = document.querySelector("#ui-layer");
 const status = document.querySelector("#status");
 const output = document.querySelector("#output");
 const query = new URLSearchParams(location.search);
+const rendererKind = query.get("renderer") || "three";
+const threeModuleUrl = query.get("three") ? new URL(query.get("three"), location.href).href : undefined;
 const DEFAULT_ENTRY_SCRIPT = "scripts/main.luau";
 const requestedProject = query.get("project") || "/Unone_Games/3d-racing/";
 const projectRoot = new URL(requestedProject, location.origin);
@@ -202,7 +205,9 @@ function renderUi(nextSnapshot) {
 function writeOutput() {
   output.textContent = JSON.stringify({
     project_root: projectRoot.pathname,
-    renderer: rendererError ? { available: false, error: rendererError } : { available: true },
+    renderer: rendererError
+      ? { available: false, requested: rendererKind, error: rendererError }
+      : { available: true, requested: rendererKind, implementation: renderer?.implementation ?? null, backend: renderer?.backend ?? null },
     save_store: { backend: "indexeddb", loaded: loadedSave },
     bundle: generationState && {
       status: generationState.status,
@@ -317,6 +322,7 @@ async function reloadActiveBundle() {
   bundleManifest = { manifest, manifestUrl: bundleManifest.manifestUrl };
   assetManifest = nextAssets;
   releaseAssetUrls();
+  renderer?.clearTextures?.();
   snapshot = readSnapshot();
   showState();
   status.textContent = `bundle generation ${generationState.generation} active; Luau hot reload accepted`;
@@ -390,10 +396,20 @@ async function start() {
   // already computed before anything is drawn, so a renderer failure degrades
   // to "no picture" instead of stopping the loop.
   try {
-    renderer = await createWebGpuRenderer(canvas, { suppress2dSprites: true });
+    renderer = await createRenderer(canvas, {
+      kind: rendererKind,
+      threeModuleUrl,
+      suppress2dSprites: true,
+      loadAssetUrl,
+      getAssetManifest: () => assetManifest,
+    });
+    // A successful WebGPU renderer owns sprite compositing. Keep the DOM layer
+    // available as the fallback only when WebGPU is unavailable.
+    assetLayer.hidden = Boolean(renderer.usesGpuSprites);
   } catch (error) {
     renderer = null;
     rendererError = error.message ?? String(error);
+    assetLayer.hidden = false;
     canvas.replaceChildren();
   }
   document.querySelector("#bundle-reload")?.addEventListener("click", () => reloadActiveBundle().catch((error) => {
