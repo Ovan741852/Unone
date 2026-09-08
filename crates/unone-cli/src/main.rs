@@ -24,6 +24,7 @@ use winit::{
 
 mod assets;
 mod export;
+mod sdk;
 mod mcp;
 mod native_capture;
 mod native_clock;
@@ -33,6 +34,13 @@ mod session;
 
 #[derive(Debug, Subcommand)]
 enum ExportCommand {
+    /// Select a compatible precompiled runtime from a portable SDK.
+    Platform {
+        #[arg(long)] target: String,
+        #[arg(long)] output: PathBuf,
+        #[arg(long)] runtime_id: Option<String>,
+        #[arg(long)] development: bool,
+    },
     Web {
         #[arg(long)]
         output: PathBuf,
@@ -44,9 +52,24 @@ enum ExportCommand {
     },
 }
 
+#[derive(Debug, Subcommand)]
+enum SdkCommand {
+    /// Validate the SDK and list installed runtimes and target support.
+    Inspect,
+    /// Publisher-only: package this release CLI, host templates and runtimes.
+    Pack {
+        #[arg(long)] source_root: PathBuf,
+        #[arg(long, required=true)] runtime: Vec<PathBuf>,
+        #[arg(long)] output: PathBuf,
+    },
+}
+
 #[derive(Debug, Parser)]
 #[command(name = "game", version, about = "Unone AI-native game developer CLI")]
 struct Cli {
+    /// Portable SDK root (otherwise environment or executable-relative discovery).
+    #[arg(long, global=true)]
+    sdk: Option<PathBuf>,
     #[arg(long, default_value = ".", global = true)]
     project: PathBuf,
     #[arg(long, global = true)]
@@ -57,6 +80,7 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    Sdk { #[command(subcommand)] command: SdkCommand },
     /// Export one game with the separately compiled release player.
     Export {
         #[command(subcommand)]
@@ -356,9 +380,27 @@ fn main() -> ExitCode {
     }
 }
 
+fn print_sdk_result(result: Result<serde_json::Value>, json:bool)->Result<ExitCode>{
+    match result {
+        Ok(value)=>print_result(EngineResult::success(value),json),
+        Err(error)=>print_result(EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error("SDK_OPERATION_FAILED","SDK operation failed",format!("{error:#}"))),json),
+    }
+}
+
 fn run() -> Result<ExitCode> {
     let cli = Cli::parse();
     match cli.command {
+        Command::Sdk { command } => {
+            let result=match command {
+                SdkCommand::Inspect=>sdk::inspect(cli.sdk.as_deref()),
+                SdkCommand::Pack{source_root,runtime,output}=>sdk::pack(&source_root,&runtime,&output),
+            };
+            print_sdk_result(result,cli.json)
+        }
+        Command::Export {command:ExportCommand::Platform{target,output,runtime_id,development}} => {
+            print_sdk_result(sdk::export(&cli.project,&output,cli.sdk.as_deref(),&target,runtime_id.as_deref(),development),cli.json)
+        }
+
         Command::Export {
             command:
                 ExportCommand::Web {
@@ -367,7 +409,9 @@ fn run() -> Result<ExitCode> {
                     development,
                 },
         } => {
-            let result = export::web(&cli.project, &output, runtime.as_deref(), development);
+            let result = if let Some(root)=cli.sdk.as_deref() {
+                sdk::template_root(Some(root)).and_then(|templates| export::web_with_templates(&cli.project,&output,runtime.as_deref(),development,&templates))
+            } else { export::web(&cli.project, &output, runtime.as_deref(), development) };
             match result {
                 Ok(value) => print_result(EngineResult::success(value), cli.json),
                 Err(error) => print_result(

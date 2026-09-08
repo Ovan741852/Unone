@@ -1,5 +1,9 @@
 # Unone
 
+[Portable Core SDK and platform export](docs/portable-sdk.md): ship precompiled
+Core binaries and Web host templates without the Rust checkout. Web packaging is
+implemented; native Windows, Android and iOS SDK packagers remain future work.
+
 Unone is an AI-native **3D game engine prototype with 2D workflows**: Rust owns engine mechanisms, while Luau owns game rules and content. The engine is still in early development; its long-term goal is complete only after seven game validations pass.
 
 The current contract boundaries and host limitations are recorded in [Runtime contracts](docs/runtime-contracts.md). 3D transforms, cameras and presentation are an existing direction; mature 3D physics and a universal asset importer remain unfinished.

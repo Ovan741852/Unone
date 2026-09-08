@@ -1,3 +1,32 @@
+pub(crate) const WEB_FILES: &[&str] = &[
+        "player/main.js",
+        "renderer/three.js",
+        "renderer/mesh.js",
+        "renderer/instances3d.js",
+        "renderer/bloom.js",
+        "renderer/effekseer.js",
+        "renderer/particles.js",
+        "shared/ui-tree.js",
+        "shared/host-input.js",
+        "shared/webgpu-snapshot.js",
+        "shared/audio-playback.js",
+        "shared/asset-encoding.js",
+        "shared/load-project.js",
+        "shared/fixed-step-scheduler.mjs",
+        "shared/async-scheduler.mjs",
+        "shared/runtime-core.mjs",
+        "shared/runtime-backend.mjs",
+        "shared/runtime-worker.js",
+        "shared/job-pool.mjs",
+        "shared/job-binary.mjs",
+        "shared/job-worker.js",
+        "shared/instance-transfer.mjs",
+        "shared/presentation-interpolation.mjs",
+        "shared/profile-window.js",
+        "vendor/three/three.player.min.js",
+        "vendor/three/LICENSE",
+        "vendor/rapier/LICENSE",
+    ];
 use anyhow::{Context, Result, bail, ensure};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
@@ -99,12 +128,17 @@ pub fn web(
     runtime: Option<&Path>,
     development: bool,
 ) -> Result<Value> {
+    ensure!(!output.exists(), "output already exists: {}", output.display());
+    let root = crate::sdk::template_root(None)?;
+    web_with_templates(project, output, runtime, development, &root)
+}
+
+pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>, development: bool, repo: &Path) -> Result<Value> {
     ensure!(
         !output.exists(),
         "output already exists: {}",
         output.display()
     );
-    let repo = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
     let runtime = runtime.map(Path::to_path_buf).unwrap_or_else(|| {
         project.join(if development {
             "dist/player-development-runtime"
@@ -318,34 +352,7 @@ pub fn web(
         "runtime/runtime.json".into(),
         serde_json::to_vec(&manifest)?,
     ));
-    for path in [
-        "player/main.js",
-        "renderer/three.js",
-        "renderer/mesh.js",
-        "renderer/instances3d.js",
-        "renderer/bloom.js",
-        "renderer/effekseer.js",
-        "renderer/particles.js",
-        "shared/ui-tree.js",
-        "shared/host-input.js",
-        "shared/webgpu-snapshot.js",
-        "shared/audio-playback.js",
-        "shared/asset-encoding.js",
-        "shared/load-project.js",
-        "shared/fixed-step-scheduler.mjs",
-        "shared/async-scheduler.mjs",
-        "shared/runtime-core.mjs",
-        "shared/runtime-backend.mjs",
-        "shared/runtime-worker.js",
-        "shared/job-pool.mjs",
-        "shared/job-binary.mjs",
-        "shared/job-worker.js",
-        "shared/instance-transfer.mjs",
-        "shared/presentation-interpolation.mjs",
-        "shared/profile-window.js",
-        "vendor/three/three.player.min.js",
-        "vendor/rapier/LICENSE",
-    ] {
+    for &path in WEB_FILES {
         if (path == "shared/profile-window.js" && !development)
             || (path == "shared/audio-playback.js" && !settings.is_enabled("audio"))
             || (path == "shared/ui-tree.js" && !settings.is_enabled("ui"))
