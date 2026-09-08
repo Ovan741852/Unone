@@ -1,0 +1,394 @@
+{
+  "camera3d": {
+    "position": {
+      "x": 0,
+      "y": 3,
+      "z": 17
+    },
+    "target": {
+      "x": 0,
+      "y": 1,
+      "z": 0
+    },
+    "fov_degrees": 48
+  },
+  "entities": [],
+  "particle_effects": {
+    "magic": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "glow",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 12,
+          "spread": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "velocity_min": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "gravity": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "size_start": 1.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.25,
+            0.7,
+            1,
+            0.95
+          ],
+          "color_end": [
+            0.1,
+            0.27999999999999997,
+            0.4,
+            0
+          ],
+          "additive": true
+        }
+      ]
+    },
+    "arrow": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "trail",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "spread": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "velocity_min": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "gravity": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "size_start": 0.36,
+          "size_end": 0.05,
+          "color_start": [
+            1,
+            0.7,
+            0.24,
+            0.85
+          ],
+          "color_end": [
+            0.4,
+            0.27999999999999997,
+            0.096,
+            0
+          ],
+          "additive": true
+        }
+      ]
+    },
+    "slash": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "blade",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 6,
+          "spread": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "velocity_min": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "gravity": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "size_start": 0.8,
+          "size_end": 0.1,
+          "color_start": [
+            0.6,
+            0.85,
+            1,
+            1
+          ],
+          "color_end": [
+            0.24,
+            0.34,
+            0.4,
+            0
+          ],
+          "additive": true
+        }
+      ]
+    },
+    "shock": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "ring",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 12,
+          "spread": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "velocity_min": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "gravity": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "size_start": 0.8,
+          "size_end": 2.4,
+          "color_start": [
+            1,
+            0.6,
+            0.15,
+            0.9
+          ],
+          "color_end": [
+            0.4,
+            0.24,
+            0.06,
+            0
+          ],
+          "additive": true
+        }
+      ]
+    },
+    "blood": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "blood",
+          "count": 6,
+          "interval_frames": 1,
+          "lifetime_frames": 15,
+          "spread": {
+            "x": 0.3,
+            "y": 0.2,
+            "z": 0.3
+          },
+          "velocity_min": {
+            "x": -3,
+            "y": 2,
+            "z": -3
+          },
+          "velocity_max": {
+            "x": 3,
+            "y": 5,
+            "z": 3
+          },
+          "gravity": {
+            "x": 0,
+            "y": -15,
+            "z": 0
+          },
+          "size_start": 0.3,
+          "size_end": 0.08,
+          "color_start": [
+            0.65,
+            0.015,
+            0.025,
+            0.95
+          ],
+          "color_end": [
+            0.26,
+            0.006,
+            0.010000000000000002,
+            0
+          ],
+          "additive": false
+        }
+      ]
+    },
+    "smoke": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "smoke",
+          "count": 8,
+          "interval_frames": 1,
+          "lifetime_frames": 36,
+          "spread": {
+            "x": 1,
+            "y": 0.2,
+            "z": 1
+          },
+          "velocity_min": {
+            "x": -1,
+            "y": 2,
+            "z": -1
+          },
+          "velocity_max": {
+            "x": 1,
+            "y": 5,
+            "z": 1
+          },
+          "gravity": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "size_start": 1.4,
+          "size_end": 5.5,
+          "color_start": [
+            0.3,
+            0.28,
+            0.23,
+            0.65
+          ],
+          "color_end": [
+            0.12,
+            0.11200000000000002,
+            0.09200000000000001,
+            0
+          ],
+          "additive": false
+        }
+      ]
+    },
+    "debris": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "debris",
+          "count": 6,
+          "interval_frames": 1,
+          "lifetime_frames": 24,
+          "spread": {
+            "x": 0.4,
+            "y": 0.2,
+            "z": 0.4
+          },
+          "velocity_min": {
+            "x": -7,
+            "y": 6,
+            "z": -7
+          },
+          "velocity_max": {
+            "x": 7,
+            "y": 9,
+            "z": 7
+          },
+          "gravity": {
+            "x": 0,
+            "y": -18,
+            "z": 0
+          },
+          "size_start": 0.65,
+          "size_end": 0.2,
+          "color_start": [
+            0.55,
+            0.38,
+            0.17,
+            1
+          ],
+          "color_end": [
+            0.22000000000000003,
+            0.15200000000000002,
+            0.068,
+            0
+          ],
+          "additive": false
+        }
+      ]
+    },
+    "dust": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "fairy-dust",
+          "count": 2,
+          "interval_frames": 1,
+          "lifetime_frames": 36,
+          "spread": {
+            "x": 0.35,
+            "y": 0.25,
+            "z": 0.35
+          },
+          "velocity_min": {
+            "x": -3,
+            "y": 1,
+            "z": -3
+          },
+          "velocity_max": {
+            "x": 3,
+            "y": 3,
+            "z": 3
+          },
+          "gravity": {
+            "x": 0,
+            "y": -14,
+            "z": 0
+          },
+          "size_start": 0.28,
+          "size_end": 0.025,
+          "color_start": [
+            0.65,
+            0.95,
+            1,
+            1
+          ],
+          "color_end": [
+            0.2,
+            0.4,
+            1,
+            0
+          ],
+          "additive": true
+        }
+      ]
+    }
+  }
+}

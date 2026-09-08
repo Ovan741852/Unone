@@ -1,0 +1,68 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "command": [
+        "<isolated>\\sdk\\bin\\game.exe",
+        "sdk",
+        "inspect",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"ok\": true,\n  \"value\": {\n    \"engine_version\": \"0.1.0\",\n    \"host\": \"windows-x86_64\",\n    \"runtimes\": [\n      {\n        \"bytes\": 12979712,\n        \"compiled_systems\": [\n          \"jobs\",\n          \"world\",\n          \"input\",\n          \"observation\",\n          \"physics3d\",\n          \"physics2d\",\n          \"camera2d\",\n          \"camera3d\",\n          \"random\",\n          \"ui\",\n          \"save\",\n          \"audio\",\n          \"spine\",\n          \"particle\",\n          \"effekseer\"\n        ],\n        \"id\": \"windows-production-0\",\n        \"path\": \"runtimes/windows-production-0\",\n        \"target\": \"windows\",\n        \"variant\": \"production\"\n      },\n      {\n        \"bytes\": 16889712,\n        \"compiled_systems\": [\n          \"jobs\",\n          \"world\",\n          \"input\",\n          \"observation\",\n          \"physics3d\",\n          \"physics2d\",\n          \"camera2d\",\n          \"camera3d\",\n          \"random\",\n          \"ui\",\n          \"save\",\n          \"audio\",\n          \"spine\",\n          \"particle\",\n          \"effekseer\"\n        ],\n        \"id\": \"android-x86_64-production-1\",\n        \"path\": \"runtimes/android-x86_64-production-1\",\n        \"target\": \"android-x86_64\",\n        \"variant\": \"production\"\n      }\n    ],\n    \"targets\": [\n      {\n        \"id\": \"web\",\n        \"packager\": \"web-directory\",\n        \"status\": \"supported\",\n        \"toolchain\": \"none\"\n      },\n      {\n        \"id\": \"android-arm64\",\n        \"renderer\": \"wgpu-native-instanced\",\n        \"requires\": [\n          \"Android SDK\",\n          \"JDK\",\n          \"local test signing\"\n        ],\n        \"status\": \"supported\"\n      },\n      {\n        \"id\": \"android-x86_64\",\n        \"renderer\": \"wgpu-native-instanced\",\n        \"requires\": [\n          \"Android SDK\",\n          \"JDK\",\n          \"local test signing\"\n        ],\n        \"status\": \"supported\"\n      },\n      {\n        \"id\": \"ios\",\n        \"requires\": [\n          \"iOS runtime\",\n          \"Xcode/macOS\",\n          \"signing\"\n        ],\n        \"status\": \"not_implemented\"\n      },\n      {\n        \"decoders\": [\n          \"unone-mesh-json\",\n          \"png-rgb-rgba\"\n        ],\n        \"id\": \"windows\",\n        \"presentation\": [\n          \"mesh3d\",\n          \"instances3d\"\n        ],\n        \"renderer\": \"wgpu-native-instanced\",\n        \"status\": \"supported\"\n      }\n    ],\n    \"verified\": true,\n    \"version\": 1\n  },\n  \"diagnostics\": [],\n  \"effects\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "<isolated>\\sdk\\bin\\game.exe",
+        "--project",
+        "<isolated>\\project",
+        "export",
+        "platform",
+        "--target",
+        "windows",
+        "--output",
+        "<isolated>\\game",
+        "--json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"ok\": true,\n  \"value\": {\n    \"dev_tools\": false,\n    \"files\": [\n      {\n        \"bytes\": 2558,\n        \"path\": \"content/assets/palette.png\",\n        \"sha256\": \"2251833af55c45f1c20fe4ae76d9ecbb75f30e49f0ceed63cb1ed5a08556fe19\"\n      },\n      {\n        \"bytes\": 22621,\n        \"path\": \"content/assets/arrow.mesh.json\",\n        \"sha256\": \"9dcca76b25cd559fb938932e47f28ed05eea7bdf9c02cd09d14d9da29d850aa2\"\n      },\n      {\n        \"bytes\": 53542,\n        \"path\": \"content/assets/blue-archer.mesh.json\",\n        \"sha256\": \"7ca6d3f0caebd4156707ed80f515a76bb8fb9258e201af109af9a7f5df1b8d20\"\n      },\n      {\n        \"bytes\": 33350,\n        \"path\": \"content/assets/blue-ballista.mesh.json\",\n        \"sha256\": \"985246fde4b3fb7917e32934618fe8928da4a4f68721c0642e111bcc584bd2d5\"\n      },\n      {\n        \"bytes\": 31463,\n        \"path\": \"content/assets/blue-catapult.mesh.json\",\n        \"sha256\": \"f66711938567df57c03acfc2ad8a82c61a69ae668072c0677635bc7f0be8c3de\"\n      },\n      {\n        \"bytes\": 55763,\n        \"path\": \"content/assets/blue-cavalry.mesh.json\",\n        \"sha256\": \"3364b00423017a006775e5bc1b4010552ab9198e483ed05d72ec015688fca309\"\n      },\n      {\n        \"bytes\": 26824,\n        \"path\": \"content/assets/blue-flyer.mesh.json\",\n        \"sha256\": \"9f49c9c81604b8145c8794e56475569ddfb0af4ffaf3d4eb1adf02bd483294ae\"\n      },\n      {\n        \"bytes\": 57205,\n        \"path\": \"content/assets/blue-infantry.mesh.json\",\n        \"sha256\": \"a11408ab375a5d491c72ad5e9c950c898c4a434e259e9a0d18290623e7d04df9\"\n      },\n      {\n        \"bytes\": 32465,\n        \"path\": \"content/assets/blue-mage.mesh.json\",\n        \"sha256\": \"7427ac32d9e4c33b9a64f0f27d08893c424fb9c94e13a602d08082c630d8f52a\"\n      },\n      {\n        \"bytes\": 1453,\n        \"path\": \"content/assets/bolt.mesh.json\",\n        \"sha256\": \"074dbef57a9df897b9902e1162400beab06ad06c84d668d1895bd8391c048d97\"\n      },\n      {\n        \"bytes\": 9272,\n        \"path\": \"content/assets/boulder.mesh.json\",\n        \"sha256\": \"7d55ebb8d7c849a81274d9ea637b126e98699aec0d1e6446c07cf0e40051e7c5\"\n      },\n      {\n        \"bytes\": 4060,\n        \"path\": \"content/assets/impact.mesh.json\",\n        \"sha256\": \"fb5555b52fcaf5f42510c2ba82b0cb33c733b5c312a119d03b4721c672b50ee0\"\n      },\n      {\n        \"bytes\": 904,\n        \"path\": \"content/assets/magic.mesh.json\",\n        \"sha256\": \"dd70790bc6000c9c201e6a49e75952d4f6791f7ebccdcf8f0e19233dab027ccf\"\n      },\n      {\n        \"bytes\": 53542,\n        \"path\": \"content/assets/red-archer.mesh.json\",\n        \"sha256\": \"0bcc27a1e95f03b323c4faeb00cd8651205d21102245bb78d0362ba50f81284f\"\n      },\n      {\n        \"bytes\": 33350,\n        \"path\": \"content/assets/red-ballista.mesh.json\",\n        \"sha256\": \"a3cb6e3a894d8a90d728604d858714fb9b098a5e8947f015d23cd60273e3e2a1\"\n      },\n      {\n        \"bytes\": 31463,\n        \"path\": \"content/assets/red-catapult.mesh.json\",\n        \"sha256\": \"2a52e67f5b8a9ce6f8f2be763bb24e69b92fb4584d9760e789faa84236274cae\"\n      },\n      {\n        \"bytes\": 55763,\n        \"path\": \"content/assets/red-cavalry.mesh.json\",\n        \"sha256\": \"8cd48523eaecf6cc03cf3b466b423a0f2219c803e4f35b4c40511e3b394a28df\"\n      },\n      {\n        \"bytes\": 26824,\n        \"path\": \"content/assets/red-flyer.mesh.json\",\n        \"sha256\": \"b40aa827f1560873f64747405c538d409570907cde57a136d416d787cb5d5328\"\n      },\n      {\n        \"bytes\": 57205,\n        \"path\": \"content/assets/red-infantry.mesh.json\",\n        \"sha256\": \"ec16db309631c97a7fcfe7e1d47a0b68f0574c0e05de1f25cbcc0ac483a5c5c5\"\n      },\n      {\n        \"bytes\": 32465,\n        \"path\": \"content/assets/red-mage.mesh.json\",\n        \"sha256\": \"edf2e4184e401d110a740d92eaf246a49a9e0f805743a2d9ce26851f58bfc772\"\n      },\n      {\n        \"bytes\": 172479,\n        \"path\": \"content/assets/terrain.mesh.json\",\n        \"sha256\": \"510defcb6b04d9a9318e624e8c6495df261ab15f975553f2b8068f712b52b3db\"\n      },\n      {\n        \"bytes\": 18410,\n        \"path\": \"content/project.json\",\n        \"sha256\": \"6113d137e3837603d9526c62396626da92e5b96039ed334bb80a429afa0ffe47\"\n      },\n      {\n        \"bytes\": 4097,\n        \"path\": \"content/assets.json\",\n        \"sha256\": \"2a933e4c272cc391e789f5aef53016c9d8f47c76bee4ea3aa5621dd5a2c51029\"\n      },\n      {\n        \"bytes\": 12979712,\n        \"path\": \"unone-native-player.exe\",\n        \"sha256\": \"7388243652498f201969391fe05a36fa119e96f5f388cafde75fb0e8df653570\"\n      }\n    ],\n    \"preview_tools\": false,\n    \"profile\": \"release\",\n    \"project\": \"LEGION NATIVE - 100,000 troops\",\n    \"renderer\": \"wgpu-native-instanced\",\n    \"sdk_selection\": {\n      \"engine_version\": \"0.1.0\",\n      \"runtime_id\": \"windows-production-0\",\n      \"target\": \"windows\",\n      \"variant\": \"production\"\n    },\n    \"target\": \"windows\",\n    \"version\": 1\n  },\n  \"diagnostics\": [],\n  \"effects\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "<isolated>\\game\\unone-native-player.exe",
+        "--root",
+        "<isolated>\\game",
+        "--headless",
+        "--frames",
+        "12",
+        "--warmup",
+        "0",
+        "--seed",
+        "42",
+        "--report",
+        "<isolated>\\run.json"
+      ],
+      "exit_code": 0,
+      "stdout": "UNONE_NATIVE_REPORT {\"adapter\":null,\"battle\":{\"attacks\":0,\"blue\":50000,\"blue_kills\":0,\"capped_attacks\":0,\"projectiles\":0,\"red\":50000,\"red_kills\":0,\"running\":true,\"seconds\":0.2,\"simulation_hz\":20,\"step\":4,\"stress\":false,\"total\":100000},\"boot_ms\":103.28089999999999,\"camera3d\":{\"fov_degrees\":48.0,\"position\":{\"x\":370.0,\"y\":560.0,\"z\":540.0},\"target\":{\"x\":0.0,\"y\":0.0,\"z\":0.0}},\"draw_calls_last_frame\":null,\"drawn\":0,\"dropped_ticks\":0,\"error\":null,\"fps\":0.0,\"frame\":12,\"fx\":{\"enabled\":true,\"skipped\":0,\"usage\":{\"active_handles\":0,\"live_particles\":0,\"max_handles\":64,\"max_particles\":4096,\"reserved_particles\":0}},\"host\":\"windows\",\"instance_prepare_ms_last_frame\":null,\"interval\":null,\"lod_instances_last_frame\":null,\"measured_seconds\":0.0,\"measurement\":{\"capture_enabled\":false,\"digest_outside_timing\":true,\"fixed_tick\":false,\"freeze_simulation\":false,\"gpu_time_available\":false,\"lod_enabled\":true,\"prewarm_ticks\":0,\"render_submit_includes_driver_wait\":true,\"seed\":42,\"submitted_is_not_visible_count\":true,\"timing_window_capacity\":16384,\"warmup_presentations\":0},\"mesh_triangles_last_frame\":null,\"native_codegen_compiled\":true,\"observation_digest\":\"sha256:0c63c25405ae404bc661c8edb9684be04ad24517ee6b937bfd3a055908328edc\",\"package_sha256\":\"a21881619fcca2e01d7048e15eadfde99a30b289e1cfc4b38590cfff2c1bce4a\",\"particle_count\":0,\"presentation_batches\":null,\"profile\":\"release\",\"render_submit\":null,\"renderer\":\"none\",\"renderer_cpu_phases\":{},\"resolution\":null,\"simulation_hz_measured\":null,\"submitted_instances_last_frame\":null,\"tick\":{\"count\":12,\"max_ms\":21.2453,\"mean_ms\":16.44865,\"p95_ms\":21.2453},\"upload_bytes_last_frame\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "<isolated>\\game\\unone-native-player.exe",
+        "--root",
+        "<isolated>\\game",
+        "--headless",
+        "--frames",
+        "1"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "NATIVE_HASH_MISMATCH: content/assets/palette.png\n"
+    }
+  ],
+  "frame": 12,
+  "digest": "sha256:0c63c25405ae404bc661c8edb9684be04ad24517ee6b937bfd3a055908328edc",
+  "runtime_sha256": "7388243652498f201969391fe05a36fa119e96f5f388cafde75fb0e8df653570"
+}

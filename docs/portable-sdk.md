@@ -57,14 +57,16 @@ export. Validate supplied runtime builds against intended games before releasing
 ## Platform extension boundary
 
 The manifest separates SDK host from game target, variant, capabilities and files.
-New packagers reuse discovery, verification and project inspection. Only Web is
-implemented in this SDK route. Experimental Android/native scripts elsewhere in
-the repository are not represented as finished SDK packagers.
+New packagers reuse discovery, verification and project inspection. Web, Windows native and Android native targets are implemented in this SDK route.
+The native host currently supports meshes/instances, PNG palettes and native particles;
+UI, audio playback and Spine/Effekseer rendering remain unsupported and fail explicitly.
+Android packaging requires a platform runtime plus SDK/Java/signing tools.
+See [native validation](native-battle.md).
 
 | Target | Work needed |
 |---|---|
-| Windows native | Standalone player, renderer/dependency packaging, content loading |
-| Android | Explicit native/WebView host choice, ABI runtimes, SDK packaging/signing |
+| Windows native | Implemented; wgpu native renderer and verified content package |
+| Android | NativeActivity packager implemented; x86_64 tested on BlueStacks, arm64 not device-tested |
 | iOS | iOS host/runtime and rendering integration, Xcode/macOS, provisioning/signing |
 
 Add versioned packager code and report toolchain prerequisites. Do not execute

@@ -6,16 +6,25 @@ pub struct InstanceBatch3D {
     pub asset: String,
     pub count: usize,
     pub format: &'static str,
-    pub data: String,
+    #[serde(serialize_with="serialize_shared_data")]
+    pub data: std::sync::Arc<String>,
     // Host presentation storage; excluded from canonical snapshots and replay.
     #[serde(skip)]
     pub packed: std::sync::Arc<[u8]>,
     #[serde(skip)]
     pub revision: u64,
 }
+fn serialize_shared_data<S:serde::Serializer>(value:&std::sync::Arc<String>,serializer:S)->Result<S::Ok,S::Error>{serializer.serialize_str(value.as_str())}
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn snapshot_clones_share_immutable_encoded_storage() {
+        let mut bytes=vec![0;40];bytes[24..28].copy_from_slice(&1f32.to_le_bytes());
+        let a=InstanceBatch3D::new("mesh://test".into(),&bytes).unwrap();let b=a.clone();
+        assert!(std::sync::Arc::ptr_eq(&a.data,&b.data));
+        let json=serde_json::to_value(&a).unwrap();assert_eq!(json["data"],base64::engine::general_purpose::STANDARD.encode(&bytes));
+    }
     #[test]
     fn packed_transforms_reject_invalid_payloads() {
         let mut bytes = vec![0; 40];
@@ -46,7 +55,7 @@ return Game
         let snapshot = runtime.observe();
         let batch = &snapshot.instances3d["units"];
         let bytes = base64::engine::general_purpose::STANDARD
-            .decode(&batch.data)
+            .decode(batch.data.as_bytes())
             .unwrap();
         assert_eq!(f32::from_le_bytes(bytes[..4].try_into().unwrap()), 0.);
     }
@@ -56,9 +65,9 @@ impl InstanceBatch3D {
         if asset.is_empty() || asset.len() > 256 {
             return Err("INSTANCE_INVALID: asset ID required (1..256 bytes)".into());
         }
-        if bytes.len() % 40 != 0 || bytes.len() > 40 * 100_000 {
+        if bytes.len() % 40 != 0 || bytes.len() > 40 * 262_144 {
             return Err(
-                "INSTANCE_INVALID: buffer must contain at most 100000 records of 40 bytes".into(),
+                "INSTANCE_INVALID: buffer must contain at most 262144 records of 40 bytes".into(),
             );
         }
         for record in bytes.chunks_exact(40) {
@@ -83,7 +92,7 @@ impl InstanceBatch3D {
             asset,
             count: bytes.len() / 40,
             format: "f32le-p3-q4-s3-v1",
-            data: base64::engine::general_purpose::STANDARD.encode(bytes),
+            data: std::sync::Arc::new(base64::engine::general_purpose::STANDARD.encode(bytes)),
             packed: bytes.into(),
             revision: NEXT_REVISION.fetch_add(1, std::sync::atomic::Ordering::Relaxed),
         })

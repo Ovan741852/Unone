@@ -1,0 +1,171 @@
+{
+  "criteria": {
+    "duration_seconds_min": 30,
+    "mean_60fps_class": "mean FPS >=59; simulation Hz >=59.5; zero dropped ticks; live release run, no capture/fixed tick/freeze",
+    "p95_within_60fps_budget": "p95 <=16.6667ms plus simulation Hz >=59.5 and zero dropped ticks; does not mean every frame meets budget",
+    "counts": "last-frame conservative frustum candidates, not unoccluded pixels; triangles exclude particle quads",
+    "scope": "highest TESTED loads on the recorded devices/resolutions, not engine-wide capacity"
+  },
+  "runs": [
+    {
+      "report": "native-final-android-40000.json",
+      "host": "android",
+      "resolution": [
+        1600,
+        900
+      ],
+      "population": 40000,
+      "frustum_troops_last_frame": 40000,
+      "troop_triangles_last_frame": 296000,
+      "all_mesh_triangles_last_frame": 548894,
+      "fps": 59.97614330547107,
+      "p95_ms": 20.838921,
+      "max_ms": 31.590051000000003,
+      "simulation_hz": 59.97614330547107,
+      "dropped_ticks": 0,
+      "eligible_live_benchmark": true,
+      "mean_60fps_class": true,
+      "p95_within_60fps_budget": false
+    },
+    {
+      "report": "native-final-android-50000.json",
+      "host": "android",
+      "resolution": [
+        1600,
+        900
+      ],
+      "population": 50000,
+      "frustum_troops_last_frame": 50000,
+      "troop_triangles_last_frame": 370000,
+      "all_mesh_triangles_last_frame": 639380,
+      "fps": 59.4669154190637,
+      "p95_ms": 21.327030999999998,
+      "max_ms": 62.391187,
+      "simulation_hz": 59.99995219592926,
+      "dropped_ticks": 0,
+      "eligible_live_benchmark": true,
+      "mean_60fps_class": true,
+      "p95_within_60fps_budget": false
+    },
+    {
+      "report": "native-final-android-60000.json",
+      "host": "android",
+      "resolution": [
+        1600,
+        900
+      ],
+      "population": 60000,
+      "frustum_troops_last_frame": 60000,
+      "troop_triangles_last_frame": 444000,
+      "all_mesh_triangles_last_frame": 735494,
+      "fps": 58.69076906888822,
+      "p95_ms": 22.866663,
+      "max_ms": 46.547966,
+      "simulation_hz": 59.990564636001594,
+      "dropped_ticks": 0,
+      "eligible_live_benchmark": true,
+      "mean_60fps_class": false,
+      "p95_within_60fps_budget": false
+    },
+    {
+      "report": "native-final-windows-70000.json",
+      "host": "windows",
+      "resolution": [
+        1280,
+        720
+      ],
+      "population": 70000,
+      "frustum_troops_last_frame": 70000,
+      "troop_triangles_last_frame": 518000,
+      "all_mesh_triangles_last_frame": 820102,
+      "fps": 113.12344559003236,
+      "p95_ms": 18.151,
+      "max_ms": 59.039300000000004,
+      "simulation_hz": 59.99475605835541,
+      "dropped_ticks": 0,
+      "eligible_live_benchmark": true,
+      "mean_60fps_class": true,
+      "p95_within_60fps_budget": false
+    },
+    {
+      "report": "native-final-windows-80000.json",
+      "host": "windows",
+      "resolution": [
+        1280,
+        720
+      ],
+      "population": 80000,
+      "frustum_troops_last_frame": 80000,
+      "troop_triangles_last_frame": 592000,
+      "all_mesh_triangles_last_frame": 922478,
+      "fps": 33.65324877984562,
+      "p95_ms": 93.23299999999999,
+      "max_ms": 117.7903,
+      "simulation_hz": 57.64368355359695,
+      "dropped_ticks": 102,
+      "eligible_live_benchmark": true,
+      "mean_60fps_class": false,
+      "p95_within_60fps_budget": false
+    },
+    {
+      "report": "native-publish-android-50000.json",
+      "host": "android",
+      "resolution": [
+        1600,
+        900
+      ],
+      "population": 50000,
+      "frustum_troops_last_frame": 50000,
+      "troop_triangles_last_frame": 370000,
+      "all_mesh_triangles_last_frame": 639380,
+      "fps": 59.99987640625135,
+      "p95_ms": 21.668021999999997,
+      "max_ms": 28.926206999999998,
+      "simulation_hz": 59.99987640625135,
+      "dropped_ticks": 0,
+      "eligible_live_benchmark": true,
+      "mean_60fps_class": true,
+      "p95_within_60fps_budget": false
+    },
+    {
+      "report": "native-publish-windows-60000.json",
+      "host": "windows",
+      "resolution": [
+        1280,
+        720
+      ],
+      "population": 60000,
+      "frustum_troops_last_frame": 60000,
+      "troop_triangles_last_frame": 444000,
+      "all_mesh_triangles_last_frame": 741350,
+      "fps": 164.90975301270686,
+      "p95_ms": 14.9353,
+      "max_ms": 28.218300000000003,
+      "simulation_hz": 59.9792999440033,
+      "dropped_ticks": 0,
+      "eligible_live_benchmark": true,
+      "mean_60fps_class": true,
+      "p95_within_60fps_budget": true
+    },
+    {
+      "report": "native-publish-windows-70000.json",
+      "host": "windows",
+      "resolution": [
+        1280,
+        720
+      ],
+      "population": 70000,
+      "frustum_troops_last_frame": 70000,
+      "troop_triangles_last_frame": 518000,
+      "all_mesh_triangles_last_frame": 820102,
+      "fps": 114.79021413424513,
+      "p95_ms": 20.3642,
+      "max_ms": 61.3955,
+      "simulation_hz": 60.028215927925515,
+      "dropped_ticks": 0,
+      "eligible_live_benchmark": true,
+      "mean_60fps_class": true,
+      "p95_within_60fps_budget": false
+    }
+  ]
+}

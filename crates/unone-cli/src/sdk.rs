@@ -37,6 +37,39 @@ struct Manifest {
     runtimes: Vec<Runtime>,
     files: Vec<File>,
 }
+fn runtime_files(r: &Value) -> Result<Vec<(String, String)>> {
+    if r.get("target").and_then(Value::as_str).unwrap_or("web") == "web" {
+        return ["javascript", "wasm"]
+            .into_iter()
+            .map(|key| {
+                Ok((
+                    r[key].as_str().context("SDK_RUNTIME_FILE_INVALID")?.into(),
+                    r[format!("{key}_sha256")]
+                        .as_str()
+                        .context("SDK_RUNTIME_HASH_INVALID")?
+                        .into(),
+                ))
+            })
+            .collect();
+    }
+    r["files"]
+        .as_array()
+        .context("SDK_RUNTIME_FILES_REQUIRED")?
+        .iter()
+        .map(|f| {
+            Ok((
+                f["path"]
+                    .as_str()
+                    .context("SDK_RUNTIME_PATH_REQUIRED")?
+                    .into(),
+                f["sha256"]
+                    .as_str()
+                    .context("SDK_RUNTIME_HASH_REQUIRED")?
+                    .into(),
+            ))
+        })
+        .collect()
+}
 fn hash(b: &[u8]) -> String {
     format!("{:x}", Sha256::digest(b))
 }
@@ -111,12 +144,20 @@ fn load(root: &Path) -> Result<Manifest> {
         );
     }
     ensure!(paths.contains(&m.cli.to_lowercase()), "SDK_CLI_UNLISTED");
-    ensure!(hash(&fs::read(std::env::current_exe()?)?) == hash(&fs::read(safe(root,&m.cli)?)?), "SDK_CLI_MISMATCH: use the CLI supplied with this SDK");
+    ensure!(
+        hash(&fs::read(std::env::current_exe()?)?) == hash(&fs::read(safe(root, &m.cli)?)?),
+        "SDK_CLI_MISMATCH: use the CLI supplied with this SDK"
+    );
+    ensure!(
+        paths.contains("scripts/pack-native-android.ps1"),
+        "SDK_PACKAGER_UNLISTED"
+    );
     let mut ids = BTreeSet::new();
     for runtime in &m.runtimes {
         ensure!(ids.insert(&runtime.id), "SDK_RUNTIME_DUPLICATE");
         ensure!(
-            runtime.target == "web"
+            ["web", "windows", "android-arm64", "android-x86_64"]
+                .contains(&runtime.target.as_str())
                 && ["production", "development"].contains(&runtime.variant.as_str()),
             "SDK_RUNTIME_UNSUPPORTED"
         );
@@ -133,16 +174,18 @@ fn load(root: &Path) -> Result<Manifest> {
             serde_json::to_value(&runtime.compiled_systems)? == r["compiled_systems"],
             "SDK_CAPABILITIES_MISMATCH"
         );
-        for key in ["javascript", "wasm"] {
-            let name = r[key].as_str().context("SDK_RUNTIME_FILE_INVALID")?;
+        ensure!(
+            r.get("target").and_then(Value::as_str).unwrap_or("web") == runtime.target,
+            "SDK_RUNTIME_TARGET_MISMATCH"
+        );
+        for (name, expected) in runtime_files(&r)? {
             let path = format!("{}/{name}", runtime.path);
             ensure!(
                 paths.contains(&path.to_lowercase()),
                 "SDK_RUNTIME_FILE_UNLISTED"
             );
-            let b = fs::read(safe(root, &path)?)?;
             ensure!(
-                r[format!("{key}_sha256")] == hash(&b),
+                hash(&fs::read(safe(root, &path)?)?) == expected,
                 "SDK_RUNTIME_HASH_MISMATCH"
             );
         }
@@ -191,7 +234,7 @@ pub fn inspect(explicit: Option<&Path>) -> Result<Value> {
     let root = root(explicit)?;
     let m = load(&root)?;
     Ok(
-        json!({"version":m.version,"engine_version":m.engine_version,"host":m.host,"verified":true,"runtimes":m.runtimes,"targets":[{"id":"web","status":"supported","packager":"web-directory","toolchain":"none"},{"id":"android","status":"not_implemented","requires":["android host template","SDK","signing"]},{"id":"ios","status":"not_implemented","requires":["iOS runtime","Xcode/macOS","signing"]},{"id":"windows","status":"not_implemented","requires":["standalone native player","runtime dependencies"]}]}),
+        json!({"version":m.version,"engine_version":m.engine_version,"host":m.host,"verified":true,"runtimes":m.runtimes,"targets":[{"id":"web","status":"supported","packager":"web-directory","toolchain":"none"},{"id":"android-arm64","status":"supported","renderer":"wgpu-native-instanced","requires":["Android SDK","JDK","local test signing"]},{"id":"android-x86_64","status":"supported","renderer":"wgpu-native-instanced","requires":["Android SDK","JDK","local test signing"]},{"id":"ios","status":"not_implemented","requires":["iOS runtime","Xcode/macOS","signing"]},{"id":"windows","status":"supported","renderer":"wgpu-native-instanced","presentation":["mesh3d","instances3d"],"decoders":["unone-mesh-json","png-rgb-rgba"]}]}),
     )
 }
 pub fn export(
@@ -203,7 +246,7 @@ pub fn export(
     development: bool,
 ) -> Result<Value> {
     ensure!(
-        target == "web",
+        ["web", "windows", "android-arm64", "android-x86_64"].contains(&target),
         "SDK_TARGET_UNSUPPORTED: {target}; run game sdk inspect --json to list implemented packagers"
     );
     let root = root(explicit)?;
@@ -230,13 +273,18 @@ pub fn export(
         .collect();
     candidates.sort_by(|a, b| a.bytes.cmp(&b.bytes).then(a.id.cmp(&b.id)));
     let selected=candidates.first().context("SDK_RUNTIME_UNAVAILABLE: no matching target/variant/systems; run game sdk inspect --json and install a compatible runtime pack")?;
-    let mut result = crate::export::web_with_templates(
-        project,
-        output,
-        Some(&safe(&root, &selected.path)?),
-        development,
-        &safe(&root, &m.templates)?,
-    )?;
+    let runtime_root = safe(&root, &selected.path)?;
+    let mut result = if target == "web" {
+        crate::export::web_with_templates(
+            project,
+            output,
+            Some(&runtime_root),
+            development,
+            &safe(&root, &m.templates)?,
+        )?
+    } else {
+        native_export(project, output, &root, &runtime_root, target, development)?
+    };
     result["sdk_selection"] = json!({"target":target,"runtime_id":selected.id,"variant":variant,"engine_version":m.engine_version});
     Ok(result)
 }
@@ -259,6 +307,10 @@ pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value>
             fs::read(safe(source, &format!("web/{name}"))?)?,
         ));
     }
+    files.push((
+        "scripts/pack-native-android.ps1".into(),
+        fs::read(safe(source, "scripts/pack-native-android.ps1")?)?,
+    ));
     let mut entries = Vec::new();
     for (i, dir) in runtimes.iter().enumerate() {
         let bytes = fs::read(dir.join("runtime.json"))?;
@@ -272,22 +324,19 @@ pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value>
         } else {
             "production"
         };
-        let id = format!("web-{variant}-{i}");
+        let target = r.get("target").and_then(Value::as_str).unwrap_or("web");
+        let id = format!("{target}-{variant}-{i}");
         let path = format!("runtimes/{id}");
         let mut size = 0;
-        for key in ["javascript", "wasm"] {
-            let name = r[key].as_str().context("SDK_RUNTIME_FILE_MISSING")?;
-            let data = fs::read(safe(dir, name)?)?;
-            ensure!(
-                r[format!("{key}_sha256")] == hash(&data),
-                "SDK_RUNTIME_HASH_MISMATCH"
-            );
+        for (name, expected) in runtime_files(&r)? {
+            let data = fs::read(safe(dir, &name)?)?;
+            ensure!(hash(&data) == expected, "SDK_RUNTIME_HASH_MISMATCH");
             size += data.len() as u64;
             files.push((format!("{path}/{name}"), data));
         }
         entries.push(Runtime {
             id,
-            target: "web".into(),
+            target: target.into(),
             variant: variant.into(),
             path: path.clone(),
             compiled_systems: serde_json::from_value(r["compiled_systems"].clone())?,
@@ -359,4 +408,104 @@ mod tests {
         );
         assert!(!out.exists());
     }
+}
+
+fn native_export(
+    project: &Path,
+    output: &Path,
+    sdk: &Path,
+    runtime: &Path,
+    target: &str,
+    development: bool,
+) -> Result<Value> {
+    ensure!(!output.exists(), "SDK_OUTPUT_EXISTS");
+    let staging = output.with_extension(format!(
+        "native-staging-{}",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)?
+            .as_nanos()
+    ));
+    ensure!(!staging.exists(), "SDK_STAGING_EXISTS");
+    let result = native_export_staged(project, &staging, sdk, runtime, target, development);
+    match result {
+        Ok(value) => {
+            fs::rename(&staging, output)?;
+            Ok(value)
+        }
+        Err(error) => {
+            if staging.exists() {
+                fs::remove_dir_all(&staging)?;
+            }
+            Err(error)
+        }
+    }
+}
+fn native_export_staged(
+    project: &Path,
+    output: &Path,
+    sdk: &Path,
+    runtime: &Path,
+    target: &str,
+    development: bool,
+) -> Result<Value> {
+    ensure!(!development, "NATIVE_DEVELOPMENT_VARIANT_UNAVAILABLE");
+    ensure!(!output.exists(), "SDK_OUTPUT_EXISTS");
+    let (config, _, assets, mut files) = crate::export::content(project)?;
+    for asset in assets["assets"].as_array().context("ASSETS_INVALID")? {
+        ensure!(
+            ["mesh3d", "texture2d"].contains(&asset["kind"].as_str().unwrap_or("")),
+            "NATIVE_DECODER_UNAVAILABLE: {}",
+            asset["kind"]
+        );
+        if asset["kind"] == "texture2d" {
+            ensure!(
+                asset["source"].as_str().unwrap_or("").ends_with(".png"),
+                "NATIVE_TEXTURE_FORMAT_UNSUPPORTED: PNG required"
+            );
+        }
+    }
+    let metadata: Value = serde_json::from_slice(&fs::read(runtime.join("runtime.json"))?)?;
+    let runtime_files = runtime_files(&metadata)?;
+    if target == "windows" {
+        for (name, _) in &runtime_files {
+            files.push((name.clone(), fs::read(safe(runtime, name)?)?));
+        }
+    }
+    let report = json!({"version":1,"project":config.name,"target":target,"profile":"release","renderer":"wgpu-native-instanced","dev_tools":false,"preview_tools":false,"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":hash(b)})).collect::<Vec<_>>()});
+    std::fs::create_dir_all(output)?;
+    for (path, bytes) in &files {
+        let p = output.join(path);
+        fs::create_dir_all(p.parent().unwrap())?;
+        fs::write(p, bytes)?;
+    }
+    fs::write(
+        output.join("export.json"),
+        serde_json::to_vec_pretty(&report)?,
+    )?;
+    fs::write(
+        output.join("native-player.json"),
+        br#"{"seed":42,"frames":0,"warmup":60,"headless":false,"fixed_tick":false}"#,
+    )?;
+    if target.starts_with("android-") {
+        let script = safe(sdk, "scripts/pack-native-android.ps1")?;
+        let status = std::process::Command::new("powershell.exe")
+            .args(["-NoProfile", "-ExecutionPolicy", "Bypass", "-File"])
+            .arg(script)
+            .arg("-ContentRoot")
+            .arg(output)
+            .arg("-RuntimeRoot")
+            .arg(runtime)
+            .arg("-Target")
+            .arg(target)
+            .arg("-AppName")
+            .arg(&config.name)
+            .output()?;
+        ensure!(
+            status.status.success(),
+            "ANDROID_PACKAGING_FAILED: {} {}",
+            String::from_utf8_lossy(&status.stdout),
+            String::from_utf8_lossy(&status.stderr)
+        );
+    }
+    Ok(report)
 }

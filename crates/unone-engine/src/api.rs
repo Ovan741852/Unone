@@ -212,7 +212,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "Copies the buffer. Included in snapshots and observation digests. Web renderer supports instancing; native currently does not.",
             vec![
                 "Invalid buffer or transform fails",
-                "Maximum 100000 instances and 256 batches per world",
+                "Maximum 262144 instances and 256 batches per world",
             ],
             "api.instances3d.set(\"crowd\", \"mesh://soldier\", transforms)",
             vec!["instances3d.remove"],
@@ -351,6 +351,20 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "local handle = api.particle.play(\"spark\", {x=0,y=0,z=0}, 42)",
             vec!["particle.stop"],
         ),
+        descriptor(
+            "particle.play_batch", "particle", "Emit one effect at packed positions using one handle.",
+            "For projectile trails and many small bursts.", "Gameplay selects positions and visual budgets.",
+            vec![parameter("effect","string","Scene particle_effects key."),parameter("positions","buffer","Packed f32le xyz positions; 12 bytes each, 1..4096 records; copied."),parameter("seed","number?","Each position uses seed plus its zero-based index, wrapping u64.")],
+            "string: handle stopping every origin in the batch.",vec!["Create a bounded particle batch"],
+            "Same fixed-frame lifetime as particle.play. Total 4096-particle reservation and 64-handle limits apply. Invalid calls leave the world unchanged.",
+            vec!["Unknown effect","Invalid positions","Particle capacity exceeded"],
+            "local h = api.particle.play_batch(\"trail\", positions, 42)",vec!["particle.stats","particle.stop"]),
+        descriptor(
+            "particle.stats", "particle", "Read particle handle and sample budgets.",
+            "For AI diagnostics and game-owned effect budgeting.", "Does not reserve capacity or change simulation.",
+            vec![],"table: active_handles, max_handles, reserved_particles, max_particles, live_particles.",
+            vec![],"Counts include active batches; live count samples the current frame.",vec!["Disabled particle system"],
+            "local usage = api.particle.stats()",vec!["particle.play_batch"]),
         descriptor(
             "particle.stop",
             "particle",

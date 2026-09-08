@@ -1,0 +1,320 @@
+   Compiling mlua v0.11.6
+   Compiling unone-engine v0.1.0 (<checkout>\crates\unone-engine)
+   Compiling unone-cli v0.1.0 (<checkout>\crates\unone-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 36.43s
+     Running unittests src\main.rs (target\debug\deps\game-871b75b2ac04651d.exe)
+
+running 21 tests
+test assets::tests::reports_source_formats_this_host_cannot_decode ... ok
+test native_clock::tests::pause_and_stalls_do_not_create_unbounded_catchup ... ok
+test mcp::tests::bundle_install_arguments_keep_id_false_and_all_false_meanings ... ok
+test mcp::tests::unknown_method_returns_json_rpc_error ... ok
+test native_clock::tests::refresh_rate_cannot_change_simulation_speed ... ok
+test mcp::tests::bundle_install_arguments_reject_wrong_types ... ok
+test native_capture::tests::capture_limits_keep_aspect_and_fail_on_typos ... ok
+test export::tests::mesh_contract_rejects_bad_topology_uvs_and_unknown_fields ... ok
+test export::tests::rejects_parent_paths_and_existing_output ... ok
+test assets::tests::decodes_svg_into_premultiplied_rgba ... ok
+test sdk::tests::unsupported_target_never_creates_output ... ok
+test sdk::tests::traversal_and_unknown_manifest_keys_fail ... ok
+test mcp::tests::run_rejects_conflicting_input_modes_with_semantic_tool_error ... ok
+test mcp::tests::tool_definitions_are_deterministic_and_semantic ... ok
+test tests::bundle_install_cli_preserves_all_selection_shapes_for_core ... ok
+test mcp::tests::initialize_requires_initialized_notification_before_tools ... ok
+test native_tools::tests::native_profile_windows_are_discoverable_and_do_not_tick ... ok
+test mcp::tests::advertised_argument_contract_rejects_typos_including_no_argument_tools ... ok
+test native_tools::tests::native_panel_api_invokes_the_same_lua_registry_and_steps_exactly ... ok
+test assets::tests::loads_verified_active_svg_without_reading_unpacked_source_bytes ... ok
+test assets::tests::rejects_authoring_metadata_changes_before_host_texture_decode ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+     Running tests\api_search_contract.rs (target\debug\deps\api_search_contract-5261800c9a26c85a.exe)
+
+running 8 tests
+test no_match_contract_has_fixed_facts_and_discovery_actions ... ok
+test empty_query_returns_the_full_index_without_empty_warning ... ok
+test full_index_action_executes_with_a_true_empty_query_from_an_unrelated_cwd ... ok
+test nonexistent_project_keeps_search_global_and_blocks_only_systems_action ... ok
+test invalid_project_keeps_matching_and_full_index_global_but_blocks_no_match_systems ... ok
+test relative_caller_project_is_canonicalized_before_systems_argv_runs_elsewhere ... ok
+test cli_and_mcp_unpacked_results_have_parity_for_no_match_and_full_index ... ok
+test systems_action_is_bound_to_the_caller_project_across_cwds ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.89s
+
+     Running tests\authoring_transport_contract.rs (target\debug\deps\authoring_transport_contract-49a97f3563a89dd1.exe)
+
+running 1 test
+test project_init_and_pointer_input_transport_contract ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.65s
+
+     Running tests\developer_transport_contract.rs (target\debug\deps\developer_transport_contract-91796172ca3ee423.exe)
+
+running 2 tests
+test jsonl_transport_flushes_each_response_and_keeps_the_session_alive ... ok
+test mcp_transport_preserves_the_same_session_across_tool_calls ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running unittests src\lib.rs (target\debug\deps\unone_engine-a7f0d08d0a0f3213.exe)
+
+running 231 tests
+test asset::tests::rejects_nonportable_asset_source_paths ... ok
+test asset::encoding_tests::explicit_encoding_requires_exact_companion_descriptors ... ok
+test api::tests::matching_query_keeps_existing_search_results_without_diagnostic ... ok
+test api::tests::empty_query_is_the_complete_index_without_empty_warning ... ok
+test api::tests::no_match_keeps_success_and_has_fixed_discovery_guidance ... ok
+test api::tests::the_type_contract_covers_every_documented_api ... ok
+test audio::tests::a_fade_in_becomes_playing_on_its_own ... ok
+test audio::tests::a_one_shot_exists_only_for_the_frame_it_fired ... ok
+test audio::tests::a_paused_loop_holds_its_place_in_a_fade ... ok
+test audio::tests::a_reserved_rule_is_refused_and_says_what_is_implemented ... ok
+test audio::tests::an_attached_loop_follows_its_entity_and_stops_when_it_is_gone ... ok
+test audio::tests::an_exclusive_category_fades_the_previous_track_out_on_an_exact_frame ... ok
+test audio::tests::an_unknown_rule_is_refused_at_parse_time ... ok
+test audio::tests::bad_values_are_refused_and_change_nothing ... ok
+test audio::tests::handles_are_ordered_so_the_same_input_reads_the_same ... ok
+test audio::tests::bus_levels_are_engine_state_and_only_appear_once_changed ... ok
+test audio::tests::the_loop_limit_is_refused_rather_than_grown_past ... ok
+test broadphase::tests::negative_cells_large_bodies_and_updates_remain_conservative ... ok
+test bundle::tests::accepts_only_portable_project_relative_bundle_sources ... ok
+test asset::tests::reports_scene_references_without_inventing_sources ... ok
+test asset::tests::asset_init_reports_a_manifest_write_when_the_followup_config_write_fails ... ok
+test asset::tests::companion_path_safety_is_shared_by_inspect_and_pack ... ok
+test asset::tests::empty_asset_init_reports_actual_writes_without_inventing_a_describe_id ... ok
+test asset::tests::strict_inspection_turns_unresolved_references_into_a_gate_failure ... ok
+test bundle::tests::incremental_verifier_accepts_multiple_chunks ... ok
+test asset::tests::asset_init_creates_contract_and_adds_explicit_declaration ... ok
+test asset::tests::duplicate_ids_fail_closed_for_manifest_read_and_describe ... ok
+test asset::tests::rejects_unsupported_manifest_version_and_kind ... ok
+test asset::tests::validates_sources_and_bundle_ids ... ok
+test broadphase::tests::sparse_thousands_have_no_quadratic_candidate_list ... ok
+test bundle::tests::detects_tampered_bundle_before_install ... ok
+test asset_workflow::tests::missing_authoring_source_stays_describable_and_blocks_mechanical_actions ... ok
+test bundle::tests::missing_bundles_field_is_invalid_while_empty_array_is_empty ... ok
+test bundle::tests::newest_corrupt_formal_generation_is_not_skipped ... ok
+test bundle::tests::observation_token_includes_manifest_and_active_record_state ... ok
+test bundle::tests::host_fetcher_can_install_without_local_source ... ok
+test bundle::tests::failed_host_fetch_keeps_previous_active_generation ... ok
+test bundle::tests::host_fetcher_installs_url_sources_for_all_roots ... ok
+test bundle::tests::installs_verified_bundle_and_dependencies ... ok
+test bundle::tests::install_report_rejects_unselected_escaping_cache_before_activation ... ok
+test bundle::tests::pack_rejects_invalid_main_scene_without_asset_manifest_before_writes ... ok
+test asset_workflow::tests::keeps_special_project_paths_and_asset_ids_as_argv_values ... ok
+test bundle::tests::pack_output_collision_protects_missing_declared_tests ... ok
+test bundle::tests::pack_output_collision_compares_windows_case_aliases ... ok
+test bundle::tests::packs_asset_archive_deterministically_and_declares_generated_bundle ... ok
+test bundle::tests::packs_minimal_project_and_only_increments_version_when_content_changes ... ok
+test bundle::tests::pack_output_collision_allows_distinct_outputs_and_repacking ... ok
+test bundle::tests::reads_packed_asset_bytes_back_out_of_the_archive ... ok
+test bundle::tests::rejects_archive_content_that_does_not_match_its_entry_digest ... ok
+test bundle::tests::rejects_archive_reads_that_are_not_declared_or_not_an_archive ... ok
+test bundle::tests::selected_install_requires_exactly_one_root_mode_and_all_is_one_generation ... ok
+test bundle::tests::writing_over_an_existing_file_succeeds_and_keeps_the_new_bytes ... ok
+test developer::tests::enact_dry_run_atomic_failure_and_revision_conflict_do_not_mutate ... ok
+test developer::tests::disabled_systems_and_invalid_selectors_are_rejected_before_batch_commit ... ok
+test developer::tests::edits_cover_camera_ui_animation_and_effect_handles_and_rollback_together ... ok
+test developer::tests::failure_freezes_mutations_but_preserves_partial_state_and_reproduction ... ok
+test bundle::tests::subset_install_reports_committed_generation_without_unioning_previous_roots ... ok
+test asset_workflow::tests::describes_selected_references_with_real_indexes_and_shared_paths_readonly ... ok
+test developer::tests::invalid_requests_and_recording_limits_reject_before_mutation ... ok
+test bundle::tests::validation_failure_does_not_leave_generated_outputs_or_config_mutation ... ok
+test asset::tests::reads_declared_asset_from_the_active_generation_and_reports_its_digest ... ok
+test developer::tests::perf_is_read_only_and_reports_measurements_without_a_bottleneck_verdict ... ok
+test developer::tests::native_particle_definition_spawn_and_stop_are_atomic_and_observable ... ok
+test bundle::tests::reads_assets_only_from_an_activated_generation ... ok
+test host::tests::queued_frames_never_resurrect_held_inputs ... ok
+test developer::tests::mixed_inputs_and_enact_round_trip_and_expose_first_divergence ... ok
+test host::tests::typo_payloads_and_nested_input_fail_before_running ... ok
+test developer::tests::reopening_invalidates_old_session_identity_and_preserves_no_transient_edits ... ok
+test instances3d::tests::packed_transforms_reject_invalid_payloads ... ok
+test developer::tests::snapshots_and_watch_follow_the_same_runtime_without_ticking_on_reads ... ok
+test instances3d::tests::snapshot_clones_share_immutable_encoded_storage ... ok
+test layout::tests::a_clean_screen_reports_no_findings_and_draws_its_boxes ... ok
+test layout::tests::overlapping_nodes_are_reported_and_marked_in_the_picture ... ok
+test instances3d::tests::luau_buffer_is_copied_and_invalid_replacement_is_atomic ... ok
+test host::tests::startup_restores_save_and_tick_observation_has_completed_audio_lifecycle ... ok
+test mesh::tests::lod_typo_and_invalid_order_fail ... ok
+test layout::tests::text_fullness_is_measured_but_never_becomes_a_finding ... ok
+test developer::tests::watch_preserves_array_shaped_physics_events_without_treating_them_as_deltas ... ok
+test particle::tests::capacity_and_unknown_fields_fail_closed ... ok
+test performance::tests::a_debug_profile_says_so_in_its_own_notes ... ok
+test particle::tests::stop_and_expiry_release_world_budget ... ok
+test particle::tests::batch_origins_are_bounded_atomic_and_share_a_handle ... ok
+test performance::tests::an_empty_run_reports_nothing_rather_than_dividing_by_zero ... ok
+test particle::tests::sampling_is_seeded_seekable_and_bounded ... ok
+test performance::tests::a_profile_reports_the_costs_a_frame_time_alone_hides ... ok
+test performance::tests::it_bounds_samples_while_preserving_cumulative_totals_and_maxima ... ok
+test performance::tests::it_counts_frames_that_missed_the_fixed_timestep_budget ... ok
+test performance::tests::it_names_the_phase_that_costs_the_most_and_the_worst_frame ... ok
+test physics3d::tests::sweep_catches_fast_projectile_and_moving_target ... ok
+test physics3d::tests::query_is_read_only_breaks_ties_and_rejects_invalid_targets ... ok
+test developer::tests::watch_reports_removed_ui_selection_instead_of_losing_the_removal_event ... ok
+test bundle::tests::shared_manifest_fixture_has_matching_native_validation_failures ... ok
+test developer::tests::three_dimensional_edits_replay_and_luau_retains_gameplay_ownership ... ok
+test asset_workflow::tests::corrupt_latest_active_record_has_one_diagnostic_and_no_repair_loop ... ok
+test diff::tests::an_unchanged_project_replays_identically ... ok
+test project::authoring::tests::init_rejects_windows_reparse_roots_and_ancestors ... ok
+test project::authoring::tests::init_rejects_a_file_as_root_without_touching_it ... ok
+test project::authoring::tests::test_assertions_reject_ambiguous_targets_and_comparators ... ok
+test rigid3d::tests::rigid3d_benchmark ... ignored, manual optimized solver-only performance; not an end-to-end frame-rate claim
+test project::authoring::tests::resolver_rejects_dangling_symlink_and_missing_linked_ancestor ... ok
+test diff::tests::a_changed_project_names_the_first_frame_and_the_field ... ok
+test project::authoring::tests::resolver_returns_safe_missing_leaf_and_rejects_lexical_escape ... ok
+test project::authoring::tests::resolver_returns_canonical_path_for_existing_contained_directory ... ok
+test rigid3d::tests::rigid3d_invalid_contracts_are_errors_before_mutation ... ok
+test rigid3d::tests::rigid3d_ccd_stops_fast_ball_at_thin_wall ... ok
+test rigid3d::tests::rigid3d_queries_cover_rotated_box_capsule_convex_and_mesh ... ok
+test rigid3d::tests::rigid3d_host_and_lua_enforce_ownership_and_lifecycle ... ok
+test rigid3d::tests::rigid3d_sensor_lifecycle_filter_and_removal ... ok
+test rigid3d::tests::rigid3d_sleeping_fast_path_preserves_removal_exit_and_static_teleport ... ok
+test runtime::determinism::tests::libraries_are_immutable_but_game_globals_remain_local ... ok
+test project::authoring::tests::init_create_failure_reports_directories_and_no_files ... ok
+test asset_workflow::tests::reports_uninstalled_and_repacked_but_not_activated_as_not_fresh ... ok
+test runtime::jobs::binary::tests::framing_rejects_truncation_versions_lengths_and_unknown_metadata ... ok
+test asset_workflow::tests::metadata_only_asset_spec_change_is_not_reported_as_fresh ... ok
+test runtime::jobs::program_cache::tests::exact_source_lru_is_bounded_and_errors_are_not_cached ... ok
+test project::authoring::tests::init_mid_write_failure_tracks_partial_file_and_retry_is_no_overwrite ... ok
+test runtime::jobs::tests::cached_program_keeps_fresh_globals_upvalues_and_current_path ... ok
+test runtime::determinism::tests::real_runtime_rejects_ambient_time_and_vm_random_before_start ... ok
+test runtime::jobs::binary::tests::binary_executor_preserves_every_byte_and_empty_buffer_and_error ... ok
+test runtime::jobs::tests::early_take_unknown_operation_and_wrong_phase_fail_without_silent_success ... ok
+test project::authoring::tests::init_rejects_parent_component_but_accepts_dot_and_unicode_paths ... ok
+test runtime::jobs::tests::native_pool_benchmark ... ignored, manual release-only throughput experiment, not a timing assertion
+test runtime::jobs::tests::cancellation_and_game_reset_reject_late_handles ... ok
+test runtime::jobs::tests::file_modules_require_complete_payload_and_preserve_error_location ... ok
+test project::authoring::tests::init_creates_the_five_file_starter_and_structured_actions ... ok
+test project::authoring::tests::init_rejects_empty_name_nonempty_root_and_repeat_without_mutation ... ok
+test runtime::jobs::tests::schedule_closures_do_not_retain_the_runtime_vm_after_drop ... ok
+test runtime::jobs::tests::reload_is_transactional_and_profile_totals_freeze ... ok
+test asset::tests::reads_primary_and_companions_with_verified_active_metadata ... ok
+test runtime::jobs::tests::schedule_options_and_callback_failures_are_explicit ... ok
+test runtime::preview::tests::malformed_definitions_and_requests_fail_closed ... ok
+test runtime::profiling::tests::errors_end_sampling_and_typo_is_rejected ... ok
+test runtime::jobs::tests::worker_has_no_world_rng_clock_or_print_and_returns_buffer_only ... ok
+test runtime::preview::tests::controls_are_inspectable_and_callbacks_are_explicit_between_ticks ... ok
+test runtime::jobs::tests::schedules_use_fresh_closures_next_tick_results_and_finite_counts ... ok
+test runtime::profiling::tests::stopped_window_freezes_heap_and_serialization_counters ... ok
+test runtime::tests::a_game_that_makes_no_sound_observes_exactly_what_it_did_before ... ok
+test runtime::jobs::tests::unconsumed_results_and_submission_limits_are_bounded ... ok
+test runtime::tests::a_disabled_audio_system_says_which_switch_turned_it_off ... ok
+test project::authoring::tests::generated_bootstrap_tests_run_and_wrong_movement_amount_fails ... ok
+test runtime::jobs::tests::real_lua_jobs_copy_input_and_match_inline_replay_every_tick ... ok
+test runtime::tests::an_analyzer_that_fails_silently_is_not_reported_as_a_type_error ... ok
+test runtime::tests::a_reserved_audio_rule_fails_the_load_and_names_what_is_implemented ... ok
+test runtime::jobs::tests::binary_and_inline_match_every_tick_without_json_byte_arrays ... ok
+test runtime::tests::a_sound_fired_in_start_is_still_heard_on_the_first_frame ... ok
+test runtime::jobs::tests::external_executor_matches_inline_with_reversed_completion_order ... ok
+test runtime::tests::failed_on_reload_rolls_back_all_owned_state_and_randomness ... ok
+test runtime::tests::memory_runtime_runs_without_project_files ... ok
+test runtime::tests::an_exclusive_switch_and_its_fade_are_decided_by_the_engine ... ok
+test runtime::tests::observation_digest_matches_snapshot_bytes_and_does_not_mutate_snapshot ... ok
+test runtime::tests::observation_rejects_integers_outside_portable_range ... ok
+test runtime::tests::a_restored_save_is_visible_inside_game_start ... ok
+test runtime::tests::observation_rejects_non_serializable_values_with_runtime_diagnostic ... ok
+test runtime::tests::an_unknown_system_switch_fails_the_project_load ... ok
+test runtime::tests::random_int_is_inclusive_and_rejects_invalid_range ... ok
+test runtime::tests::observation_state_serializes_typed_view_model_for_ai ... ok
+test runtime::tests::a_disabled_system_stops_stepping_and_says_so_when_called ... ok
+test runtime::tests::save_payload_round_trips_between_host_and_luau ... ok
+test runtime::tests::the_analyzer_argument_drops_the_extended_length_prefix ... ok
+test runtime::tests::animation_and_effect_state_reach_the_snapshot_for_a_host_to_play ... ok
+test runtime::tests::seed_controls_luau_random_sequence ... ok
+test runtime::tests::input_sequence_is_relative_to_run_and_clears_missing_frames ... ok
+test runtime::tests::failed_reload_keeps_previous_script_running ... ok
+test runtime::tests::three_d_script_api_updates_transform_and_camera_without_game_specific_rules ... ok
+test runtime::tests::two_d_script_api_updates_visual_transform_and_preserves_position_shape ... ok
+test runtime::tests::ui_set_root_rejects_unknown_nodes_with_runtime_diagnostic ... ok
+test runtime::tests::ui_set_root_validates_and_exposes_host_render_contract ... ok
+test runtime::vm_metrics::tests::counts_churn_and_incremental_gc_and_restores_hooks ... ok
+test runtime::tests::presentation_systems_are_off_until_a_game_declares_them ... ok
+test scene::tests::accepts_empty_scene_shapes ... ok
+test runtime::vm_metrics::tests::nested_vms_and_errors_restore_sampling ... ok
+test scene::tests::disk_parse_keeps_real_filename_and_fragment_locations ... ok
+test scene::tests::rejects_blank_and_duplicate_ids_without_rewriting_ids ... ok
+test runtime::tests::reload_if_changed_swaps_script_and_preserves_world_state ... ok
+test scene::tests::rejects_unknown_root_and_deep_vector_fields_with_context ... ok
+test scene::tests::shared_vec2_contract_rejects_extra_input_pointer_fields ... ok
+test scene::tests::typed_id_failure_happens_before_world_mutation ... ok
+test scene::tests::typed_runtime_rejects_semantic_negative_fixture_matrix ... ok
+test scene::tests::typed_validation_uses_typed_location_without_source_file ... ok
+test systems::tests::defaults_follow_the_engine_declaration ... ok
+test rigid3d::tests::rigid3d_kinematic_joint_and_clone_preserve_solver_state ... ok
+test systems::tests::finds_systems_by_meaning ... ok
+test ui::tests::a_centered_node_is_centered ... ok
+test systems::tests::resolves_declared_switches_and_rejects_impossible_ones ... ok
+test ui::tests::node_types_have_stable_typed_shape ... ok
+test ui::tests::an_anchored_node_keeps_its_corner_and_proportions_on_any_aspect ... ok
+test ui::tests::placement_must_be_declared_exactly_once ... ok
+test runtime::tests::tick_with_input_is_the_shared_host_frame_boundary ... ok
+test ui::tests::rejects_duplicate_ids_and_invalid_rectangles ... ok
+test ui::tests::validates_and_serializes_the_minimal_flat_tree ... ok
+test runtime::tests::same_seed_and_input_produce_same_observation_digest ... ok
+test runtime::tests::visual_transform_changes_snapshot_but_not_same_seed_physics ... ok
+test world::tests::a_resolved_collision_is_published_as_a_contact ... ok
+test world::tests::broadphase_benchmark ... ignored, manual release physics-only timing; not an end-to-end FPS claim
+test world::tests::despawn_removes_the_entity_and_its_contacts ... ok
+test runtime::tests::the_host_viewport_shape_decides_where_an_anchored_node_lands ... ok
+test world::tests::dynamic_body_resolves_against_static_circle ... ok
+test world::tests::dynamic_body_falls_and_stops_on_ground ... ok
+test world::tests::invalid_2d_scene_transform_does_not_pollute_existing_world ... ok
+test world::tests::invalid_2d_transform_update_does_not_mutate_entity ... ok
+test world::tests::ground_friction_stops_a_landed_body_sliding_forever ... ok
+test world::tests::invalid_sprite_size_is_rejected_with_semantic_diagnostic ... ok
+test world::tests::non_finite_runtime_vectors_are_rejected_before_world_mutation ... ok
+test world::tests::loads_minimal_3d_scene_and_exposes_quantized_snapshot ... ok
+test world::tests::rejects_invalid_3d_scale_with_semantic_diagnostic ... ok
+test world::tests::omitted_2d_visual_fields_keep_position_behavior_and_publish_defaults ... ok
+test world::tests::sprite_size_defaults_to_unit_dimensions ... ok
+test world::tests::two_d_visual_fields_are_serialized_and_quantized_without_changing_position ... ok
+test world::tests::visual_transform_does_not_change_physics_position_velocity_or_contacts ... ok
+test schema::tests::checked_in_schemas_match_runtime_types ... ok
+test bundle::tests::pack_output_collision_rejects_outputs_sharing_files_or_required_directories ... ok
+test rigid3d::tests::rigid3d_fixed_and_limited_revolute_joints_hold_and_remove ... ok
+test verify::tests::a_project_owns_its_gate_order_and_which_gates_are_advisory ... ok
+test asset::tests::read_rejects_every_unpacked_asset_spec_change_before_export ... ok
+test bundle::tests::pack_output_collision_rejects_manifest_over_every_authoring_input_without_writes ... ok
+test verify::tests::the_gates_a_project_owns_pass_when_the_project_is_sound ... ok
+test runtime::tests::the_type_gate_still_rejects_a_script_with_a_type_error ... ok
+test verify::tests::every_gate_runs_even_after_one_fails ... ok
+test rigid3d::tests::rigid3d_restitution_and_friction_change_physical_response ... ok
+test asset::tests::read_requires_verified_reserved_manifest_bundle_before_export ... ok
+test runtime::jobs::tests::errors_and_memory_budget_fail_at_the_next_barrier ... ok
+test developer::tests::journal_overflow_is_explicit_and_pagination_does_not_skip_events ... ok
+test runtime::profiling::tests::sampling_finds_function_preserves_digest_and_freezes_window ... ok
+test rigid3d::tests::rigid3d_drop_stacks_sleep_and_impulse_wakes ... ok
+test bundle::tests::pack_output_collision_rejects_archives_and_staging_over_authoring_inputs ... ok
+test scene::tests::all_disk_consumers_reject_the_shared_negative_fixture_matrix ... ok
+test asset_workflow::tests::active_content_failures_are_discoverable_once_with_file_locations ... ok
+test asset::tests::read_rejects_observation_changes_and_token_errors_before_export ... ok
+test asset::tests::read_validates_missing_and_invalid_active_declarations_before_export ... ok
+test canonical_hash::tests::arbitrary_edits_growth_shrink_and_boundaries_match_full_sha256 ... ok
+test world::tests::broadphase_matches_brute_solver_even_after_correction_creates_contacts ... ok
+
+test result: ok. 228 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 1.06s
+
+     Running tests\particle_batch.rs (target\debug\deps\particle_batch-2488b56cc9bdd9d1.exe)
+
+running 1 test
+test lua_batch_copies_buffer_and_rejects_invalid_calls_atomically ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests\system_features.rs (target\debug\deps\system_features-389b285de9cbc30a.exe)
+
+running 5 tests
+test cargo_feature_forwarding_matches_engine_descriptors ... ok
+test configuration_ids_cannot_silently_miss_the_canonical_switch ... ok
+test core_only_project_runs_with_every_optional_system_off ... ok
+test unavailable_physics_calls_are_explicit_errors ... ok
+test compiled_capabilities_and_project_requirements_agree ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+   Doc-tests unone_engine
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
