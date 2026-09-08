@@ -207,3 +207,27 @@ then checks the final digest against CLI. Use `_Games/jobs-scheduler-lab` and
 minimum-worker argument `1` for file-backed periodic callbacks. The pool remains
 lazy: a single periodic task does not need two active workers. Repeat against a
 production runtime to check Job execution without developer API exports.
+
+## Executor bytecode cache
+
+Native threads and Web WASM executors each retain an LRU of internally compiled
+Luau bytecode: at most 32 programs and 1 MiB of source plus bytecode. Exact source
+content is the key; edited source misses immediately. Paths are applied on each
+load so identical source in different files keeps the current error location.
+Compiler options are fixed to mlua defaults. This cache is process-local and
+accepts no user-supplied bytecode. It never retains a VM, globals or closures;
+each execution still creates an isolated VM and copies its input/output.
+
+AI `jobs` recent entries include `executor_profile`: `vm_ms`, `compile_ms`
+(lookup plus compilation on misses), `load_ms` (including module initialization),
+`call_copy_ms` (kernel plus buffer copies), `cache_hit`, `cache_bytes` (resident
+source plus bytecode, excluding allocator overhead). Worker histories expose the
+same object. These are host-local diagnostics, excluded from replay state.
+Phases are completed-phase measurements, not separate pure-copy attribution;
+failed phases can remain zero. Total execution time also includes teardown.
+Cache residency lasts for the executor thread/WASM instance, across profile
+windows; a window reset does not flush it.
+
+`node scripts/benchmark-job-cache.mjs BEFORE_RUNTIME AFTER_RUNTIME report.json`
+compares matching release feature sets using alternating runs and exact output
+checks. See [measurements](reviews/2026-09-08-job-cache.md).

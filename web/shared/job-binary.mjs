@@ -57,14 +57,14 @@ export function createBinaryJobTransport(module,now=()=>performance.now()){
   execute(work){
    fields(work,['id','path','source','input']);if(raw(work.input).length>MAX_BYTES)invalid('JOB_BINARY_LIMIT');
    const {header,payload}=request({kind:'execute',id:work.id,path:work.path,source:work.source},work.input,true);
-   fields(header,['kind','id','error','run_ms']);
+   fields(header,['kind','id','error','run_ms','profile']);
    if(header.kind!=='complete'||header.id!==work.id||!Number.isFinite(header.run_ms)||header.run_ms<0||(header.error!==null&&typeof header.error!=='string')||payload.length>MAX_BYTES||(header.error!==null&&payload.length!==0))invalid('JOB_BINARY_REPLY_INVALID');
    return {...header,output:header.error===null?owned(payload):null};
   },
   complete(result){
    if(result.kind!=='complete'||typeof result.id!=='string'||!Number.isFinite(result.run_ms)||result.run_ms<0||(result.error!==null&&(typeof result.error!=='string'||result.output!==null)))invalid('JOB_BINARY_REPLY_INVALID');
    if(result.error===null&&raw(result.output).length>MAX_BYTES)invalid('JOB_BINARY_LIMIT');
-   const {header,payload}=request({kind:'complete',id:result.id,error:result.error,run_ms:result.run_ms},result.error===null?result.output:empty);
+   const {header,payload}=request({kind:'complete',id:result.id,error:result.error,run_ms:result.run_ms,profile:result.profile},result.error===null?result.output:empty);
    fields(header,['kind']);if(header.kind!=='accepted'||payload.length)invalid('JOB_BINARY_ACK_INVALID');
   },
   report(){return {format:'UJB1',...totals,note:'Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms.'};}

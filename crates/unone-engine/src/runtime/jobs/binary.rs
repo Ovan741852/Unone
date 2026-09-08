@@ -50,6 +50,8 @@ enum Request {
         id: String,
         error: Option<String>,
         run_ms: f64,
+        #[serde(default)]
+        profile: super::program_cache::Profile,
     },
 }
 
@@ -85,7 +87,7 @@ pub(super) fn execute_binary(bytes: &[u8]) -> Result<Vec<u8>, String> {
         Err(error) => (Vec::new(), Some(error)),
     };
     packet(
-        &serde_json::json!({"kind":"complete","id":reply.id,"error":error,"run_ms":reply.run_ms}),
+        &serde_json::json!({"kind":"complete","id":reply.id,"error":error,"run_ms":reply.run_ms,"profile":reply.profile}),
         &output,
     )
 }
@@ -113,7 +115,12 @@ impl Jobs {
                 }
                 Ok(output)
             }
-            Request::Complete { id, error, run_ms } => {
+            Request::Complete {
+                id,
+                error,
+                run_ms,
+                profile,
+            } => {
                 if error.is_some() && !payload.is_empty() {
                     return Err(err("JOB_REPLY_INVALID"));
                 }
@@ -124,7 +131,12 @@ impl Jobs {
                     Some(error) => Err(error),
                     None => Ok(payload.to_vec()),
                 };
-                self.complete_external(Reply { id, output, run_ms })?;
+                self.complete_external(Reply {
+                    id,
+                    output,
+                    run_ms,
+                    profile,
+                })?;
                 packet(&serde_json::json!({"kind":"accepted"}), &[])
             }
             Request::Execute { .. } => Err(err("JOB_BINARY_MANAGER_REQUEST_REQUIRED")),

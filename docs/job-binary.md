@@ -37,6 +37,9 @@ Execute request metadata has `kind: "execute"` and required string fields
 `kind: "complete"`, the same `id`, `error` (null or string) and numeric `run_ms`,
 followed by raw output. A successful empty buffer has null error and zero payload length; failure
 has an error string and no payload. Stack text is bounded to 4096 UTF-8 bytes.
+Completion metadata can also contain `profile`, the strictly validated executor
+phase/cache diagnostics described in jobs.md. Older replies may omit it.
+This metadata never enters canonical state.
 The manager accepts that same complete packet, verifies the live handle/epoch and
 one-shot delivery, and replies `{"kind":"accepted"}` with no payload. Completion
 alone does not expose results to Lua; the next tick barrier still does that.

@@ -1,5 +1,6 @@
 //! Optional, game-owned Luau buffer jobs. Timing never enters gameplay state.
 mod binary;
+mod program_cache;
 pub(super) fn execute_binary(bytes: &[u8]) -> Result<Vec<u8>, String> {
     binary::execute_binary(bytes)
 }
@@ -53,6 +54,8 @@ enum HostRequest {
         output: Option<Vec<u8>>,
         error: Option<String>,
         run_ms: f64,
+        #[serde(default)]
+        profile: program_cache::Profile,
     },
 }
 #[derive(serde::Deserialize)]
@@ -83,10 +86,10 @@ pub(super) fn execute_host(request: serde_json::Value) -> Result<serde_json::Val
     });
     Ok(match reply.output {
         Ok(output) => {
-            serde_json::json!({"kind":"complete","id":reply.id,"output":output,"error":null,"run_ms":reply.run_ms})
+            serde_json::json!({"kind":"complete","id":reply.id,"output":output,"error":null,"run_ms":reply.run_ms,"profile":reply.profile})
         }
         Err(error) => {
-            serde_json::json!({"kind":"complete","id":reply.id,"output":null,"error":error,"run_ms":reply.run_ms})
+            serde_json::json!({"kind":"complete","id":reply.id,"output":null,"error":error,"run_ms":reply.run_ms,"profile":reply.profile})
         }
     })
 }
@@ -108,6 +111,7 @@ struct Reply {
     id: String,
     output: Result<Vec<u8>, String>,
     run_ms: f64,
+    profile: program_cache::Profile,
 }
 struct Entry {
     operation: String,
@@ -155,6 +159,7 @@ impl Pool {
                                 id,
                                 output: Err(err("JOB_EXECUTOR_PANIC")),
                                 run_ms: 0.,
+                                profile: Default::default(),
                             });
                             let _ = reply.send(result);
                         }
@@ -177,10 +182,12 @@ impl Drop for Pool {
 
 fn execute(work: Work) -> Reply {
     let started = Instant::now();
+    let mut profile = program_cache::Profile::default();
     let result = (|| -> Result<Vec<u8>, String> {
         if work.cancelled.load(Ordering::Relaxed) {
             return Err(err("JOB_CANCELLED"));
         }
+        let phase = Instant::now();
         let lua = super::determinism::new_job_vm().map_err(|e| e.explanation)?;
         lua.set_memory_limit(VM_BYTES).map_err(|e| e.to_string())?;
         let counter = std::cell::Cell::new(0u64);
@@ -194,17 +201,30 @@ fn execute(work: Work) -> Reply {
             }
             Ok(mlua::VmState::Continue)
         });
+        profile.vm_ms = phase.elapsed().as_secs_f64() * 1000.;
+        let phase = Instant::now();
+        let (code, hit, bytes) =
+            program_cache::get(&work.source).map_err(|e| format!("{}: {e}", work.path))?;
+        profile.compile_ms = phase.elapsed().as_secs_f64() * 1000.;
+        profile.cache_hit = hit;
+        profile.cache_bytes = bytes;
+        let phase = Instant::now();
         let function: Function = lua
-            .load(&*work.source)
+            .load(code.as_ref())
+            .set_mode(mlua::ChunkMode::Binary)
             .set_name(&work.path)
             .eval()
             .map_err(|e| e.to_string())?;
+        profile.load_ms = phase.elapsed().as_secs_f64() * 1000.;
+        let phase = Instant::now();
         let input = lua.create_buffer(&work.input).map_err(|e| e.to_string())?;
         let output: Buffer = function.call(input).map_err(|e| e.to_string())?;
         if output.len() > MAX_BYTES {
             return Err(err("JOB_OUTPUT_TOO_LARGE"));
         }
-        Ok(output.to_vec())
+        let output = output.to_vec();
+        profile.call_copy_ms = phase.elapsed().as_secs_f64() * 1000.;
+        Ok(output)
     })();
     Reply {
         id: work.id.clone(),
@@ -220,6 +240,7 @@ fn execute(work: Work) -> Reply {
             message
         }),
         run_ms: started.elapsed().as_secs_f64() * 1000.0,
+        profile,
     }
 }
 
@@ -444,6 +465,7 @@ impl Jobs {
                 output,
                 error,
                 run_ms,
+                profile,
             } => {
                 if output.is_some() == error.is_some() {
                     return Err(err("JOB_REPLY_INVALID"));
@@ -452,13 +474,18 @@ impl Jobs {
                     id,
                     output: output.ok_or_else(|| error.unwrap()),
                     run_ms,
+                    profile,
                 })?;
                 Ok(serde_json::json!({"accepted":true}))
             }
         }
     }
     fn complete_external(&mut self, reply: Reply) -> Result<(), String> {
-        if !self.external || !reply.run_ms.is_finite() || reply.run_ms < 0. {
+        if !self.external
+            || !reply.run_ms.is_finite()
+            || reply.run_ms < 0.
+            || !reply.profile.valid()
+        {
             return Err(err("JOB_REPLY_INVALID"));
         }
         self.validate_id(&reply.id)?;
@@ -720,7 +747,7 @@ impl Jobs {
                     self.metrics.recent.pop_front();
                 }
                 self.metrics.recent.push_back(serde_json::json!({"job":id,"operation":entry.operation,"source_path":self.operations[&entry.operation].path,"submit_tick":entry.submitted,
-                    "deliver_tick":frame+1,"input_bytes":entry.input_len,"output_bytes":output.len(),"execution_ms":reply.run_ms}));
+                    "deliver_tick":frame+1,"input_bytes":entry.input_len,"output_bytes":output.len(),"execution_ms":reply.run_ms,"executor_profile":reply.profile}));
             }
         }
         self.frame = frame;
@@ -828,6 +855,40 @@ end}
     fn runtime(source: &str) -> EngineRuntime {
         HostProject::parse(&serde_json::to_vec(&serde_json::json!({"config":{"name":"jobs-test","systems":{"jobs":true}},"script":source})).unwrap()).unwrap().into_runtime(42).unwrap()
     }
+    #[test]
+    fn cached_program_keeps_fresh_globals_upvalues_and_current_path() {
+        let source: Arc<str> = "counter = (counter or 0) + 1; local n=0; return function(b) n+=1; buffer.writeu8(b,0,counter+n); return b end".into();
+        for _ in 0..3 {
+            let reply = execute(Work {
+                id: "isolation".into(),
+                path: "fresh.luau".into(),
+                source: source.clone(),
+                input: vec![0],
+                cancelled: Arc::new(AtomicBool::new(false)),
+            });
+            assert_eq!(reply.output.unwrap(), vec![2]);
+            assert!(reply.profile.valid());
+        }
+        for path in ["first.luau", "second.luau"] {
+            let reply = execute(Work {
+                id: "path".into(),
+                path: path.into(),
+                source: "return function(b) error('failure') end".into(),
+                input: vec![],
+                cancelled: Arc::new(AtomicBool::new(false)),
+            });
+            assert!(reply.output.unwrap_err().contains(path));
+        }
+        let reply = execute(Work {
+            id: "expression".into(),
+            path: "expr.luau".into(),
+            source: "function(b) return b end".into(),
+            input: vec![7],
+            cancelled: Arc::new(AtomicBool::new(false)),
+        });
+        assert_eq!(reply.output.unwrap(), vec![7]);
+    }
+
     #[test]
     fn binary_and_inline_match_every_tick_without_json_byte_arrays() {
         let mut a = runtime(SOURCE);
