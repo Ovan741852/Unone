@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createDeveloperAPI} from './api.js';
+test('observations reads cached game state without a WASM call or packed scene snapshot',()=>{
+ const api=createDeveloperAPI({module:{},getSnapshot:()=>({world:{frame:9,observations:{alive:10000},entities:['excluded']}}),getStats:()=>({draw_calls:15}),getPaused:()=>true},{});
+ const result=api.request({method:'observations'});
+ assert.equal(result.ok,true);assert.deepEqual(result.value,{frame:9,observations:{alive:10000},renderer:{draw_calls:15},paused:true});
+ assert.equal(api.request({method:'observations',typo:true}).ok,false);
+});
 function setup(){let paused=false,ticks=0,queued=null;const host={module:{},getSnapshot:()=>({world:{frame:ticks}}),getPaused:()=>paused,setPaused:value=>{paused=value;},releaseInput(){},tick(){ticks++;},draw(){},queueInput:value=>{queued=value;}};return {api:createDeveloperAPI(host,{}),ticks:()=>ticks,queued:()=>queued};}
 test('step requires pause, validates bounds, and executes the exact requested count',()=>{
  const {api,ticks}=setup();assert.equal(api.request({method:'step'}).ok,false);assert.equal(ticks(),0);

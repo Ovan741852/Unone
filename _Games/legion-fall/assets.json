@@ -1,0 +1,230 @@
+{
+  "assets": [
+    {
+      "id": "texture://palette",
+      "kind": "texture2d",
+      "source": "assets/palette.png"
+    },
+    {
+      "id": "mesh://arrow",
+      "kind": "mesh3d",
+      "source": "assets/arrow.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://blue-archer",
+      "kind": "mesh3d",
+      "source": "assets/blue-archer.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://blue-ballista",
+      "kind": "mesh3d",
+      "source": "assets/blue-ballista.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://blue-catapult",
+      "kind": "mesh3d",
+      "source": "assets/blue-catapult.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://blue-cavalry",
+      "kind": "mesh3d",
+      "source": "assets/blue-cavalry.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://blue-flyer",
+      "kind": "mesh3d",
+      "source": "assets/blue-flyer.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://blue-infantry",
+      "kind": "mesh3d",
+      "source": "assets/blue-infantry.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://blue-mage",
+      "kind": "mesh3d",
+      "source": "assets/blue-mage.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://bolt",
+      "kind": "mesh3d",
+      "source": "assets/bolt.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://boulder",
+      "kind": "mesh3d",
+      "source": "assets/boulder.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://impact",
+      "kind": "mesh3d",
+      "source": "assets/impact.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://magic",
+      "kind": "mesh3d",
+      "source": "assets/magic.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://red-archer",
+      "kind": "mesh3d",
+      "source": "assets/red-archer.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://red-ballista",
+      "kind": "mesh3d",
+      "source": "assets/red-ballista.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://red-catapult",
+      "kind": "mesh3d",
+      "source": "assets/red-catapult.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://red-cavalry",
+      "kind": "mesh3d",
+      "source": "assets/red-cavalry.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://red-flyer",
+      "kind": "mesh3d",
+      "source": "assets/red-flyer.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://red-infantry",
+      "kind": "mesh3d",
+      "source": "assets/red-infantry.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://red-mage",
+      "kind": "mesh3d",
+      "source": "assets/red-mage.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://terrain",
+      "kind": "mesh3d",
+      "source": "assets/terrain.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    }
+  ],
+  "version": 1
+}

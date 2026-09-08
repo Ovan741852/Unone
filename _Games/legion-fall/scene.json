@@ -1,0 +1,1 @@
+{"camera3d":{"position":{"x":110,"y":155,"z":165},"target":{"x":0,"y":0,"z":0},"fov_degrees":48},"entities":[{"id":"terrain","mesh3d":{"asset":"mesh://terrain","visible":true},"transform3d":{"position":{"x":0,"y":0,"z":0},"rotation":{"x":0,"y":0,"z":0},"scale":{"x":1,"y":1,"z":1}}}]}

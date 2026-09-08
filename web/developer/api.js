@@ -1,6 +1,6 @@
 // One structured API for the human panel, browser agents and automation.
 export const methods = {
-  describe:[], snapshot:[], hierarchy:[], console:[], network:[], profile:[], memory:[],
+  describe:[], snapshot:[], observations:[], hierarchy:[], console:[], network:[], profile:[], memory:[],
   'tools.list':[], 'tools.invoke':['id','revision','value'], pause:['paused'], step:['count'],
   input:['frame'], bloom:['enabled'], journal:[], screenshot:['max_width','max_height'],
 };
@@ -34,6 +34,7 @@ export function createDeveloperAPI(host,telemetry){
       switch(input.method){
         case 'describe':value={version:1,schema:requestSchema,methods,limits:{step_frames:120,journal_entries:200},semantics:'Mutations execute between ticks. Tool callbacks are Lua gameplay code; failures may leave changes. No arbitrary eval.'};break;
         case 'snapshot':value=core();break;
+        case 'observations':{const s=host.getSnapshot();value={frame:s.world.frame,observations:s.world.observations,renderer:host.getStats(),paused:host.getPaused()};break;}
         case 'screenshot':{
           const max_width=input.max_width??1280,max_height=input.max_height??720;
           if(![max_width,max_height].every(v=>Number.isInteger(v)&&v>=16&&v<=2048))fail('DEVELOPER_REQUEST_INVALID','max_width/max_height must be integers 16..2048');

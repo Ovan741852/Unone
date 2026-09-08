@@ -4,10 +4,17 @@ Unone is an AI-native **3D game engine prototype with 2D workflows**: Rust owns 
 
 The current contract boundaries and host limitations are recorded in [Runtime contracts](docs/runtime-contracts.md). 3D transforms, cameras and presentation are an existing direction; mature 3D physics and a universal asset importer remain unfinished.
 
+## 10,000-unit battle demonstration
+
+[![Legion Fall — real-time battle excerpt](docs/media/legion-fall-preview.gif)](docs/media/legion-fall-demo.mp4)
+
+[Watch the full 54-second video](docs/media/legion-fall-demo.mp4) · [Run the demo](_Games/legion-fall/README.md) · [Measurements and limits](docs/legion-fall-demo.md)
+
+Two armies, seven unit types, combat rules in Luau and instanced 3D meshes. This is a performance probe: the recorded 9,500+ living-unit segment runs at **9–10 FPS**, with simulation falling behind wall time. Static model poses; no per-unit rigid-body physics. The demo exposes work still needed rather than claiming a finished 10,000-unit performance target.
+
 ## Getting started from a clone
 
-Everything below runs from the repository root. It does not need the validation
-games, which live in a separate directory and are **not part of this repository**.
+Everything below runs from the repository root. It does not need the private validation games. The public Legion Fall probe above is included under `_Games/legion-fall`.
 
 Prerequisites:
 

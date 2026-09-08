@@ -278,8 +278,8 @@ impl State {
             "step" => vec!["method", "count"],
             "input" => vec!["method", "frame"],
             "bloom" => vec!["method", "enabled"],
-            "describe" | "snapshot" | "hierarchy" | "console" | "network" | "profile"
-            | "memory" | "tools.list" | "journal" => vec!["method"],
+            "describe" | "snapshot" | "observations" | "hierarchy" | "console" | "network"
+            | "profile" | "memory" | "tools.list" | "journal" => vec!["method"],
             _ => return failure("DEVELOPER_REQUEST_INVALID", "Unknown method; use describe"),
         };
         if !request
@@ -297,9 +297,13 @@ impl State {
             };
             Ok(match method {
                 "describe" => {
-                    json!({"version":1,"host":"native","methods":["screenshot","describe","snapshot","hierarchy","console","network","profile","memory","tools.list","tools.invoke","pause","step","input","journal"],"unavailable":["bloom","js_heap","wasm_linear_memory","browser_network"],"semantics":"Same native runtime, between-tick commands. Lua callbacks are not transactional."})
+                    json!({"version":1,"host":"native","methods":["screenshot","describe","snapshot","observations","hierarchy","console","network","profile","memory","tools.list","tools.invoke","pause","step","input","journal"],"unavailable":["bloom","js_heap","wasm_linear_memory","browser_network"],"semantics":"Same native runtime, between-tick commands. Lua callbacks are not transactional."})
                 }
                 "snapshot" => snapshot()?,
+                "observations" => {
+                    let s = runtime.observe();
+                    json!({"frame":s.frame,"observations":s.observations,"host":"native","paused":self.paused})
+                }
                 "tools.list" => snapshot()?["tools"].clone(),
                 "hierarchy" => {
                     let s = runtime.observe();

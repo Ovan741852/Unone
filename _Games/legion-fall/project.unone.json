@@ -1,0 +1,1 @@
+{"name":"LEGION FALL · 萬軍戰場","entry_script":"main.luau","main_scene":"scene.json","asset_manifest":"assets.json","systems":{"physics2d":false,"physics3d":false},"test_files":["battle.test.json"]}
