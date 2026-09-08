@@ -603,6 +603,10 @@ fn run() -> Result<ExitCode> {
                     );
                 }
             };
+            // A profile should measure what a host actually pays, including
+            // handing the observation across the boundary. Only this command
+            // asks for it, so `run` and `test` stay free of it.
+            runtime.measure_serialization(true);
             let run = match input_sequence {
                 Some(path) => {
                     let sequence = match fs::read_to_string(&path)

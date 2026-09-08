@@ -81,7 +81,35 @@ pub struct PerformanceReport {
     pub phases: Vec<PhaseCost>,
     pub counts: FrameCounts,
     pub luau_memory_bytes: usize,
+    /// Bytes the game's script allocated per frame, on average.
+    ///
+    /// The Luau collector's cost is proportional to this, and it is the one
+    /// frame cost the engine cannot reduce on the game's behalf. Reporting the
+    /// level (`luau_memory_bytes`) without the rate leaves an author with a
+    /// p95 spike and nothing to attribute it to.
+    pub luau_allocated_bytes_per_frame: usize,
+    /// Size of the observation a host receives each frame, when measured.
+    ///
+    /// A Web host pays for this twice — once to serialize here, once to parse
+    /// on the other side — every frame, whether or not anything changed.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub observation_bytes: Option<usize>,
+    /// Which build produced these numbers.
+    ///
+    /// A debug build measures debug costs, and the difference is large enough
+    /// to invert a conclusion. Naming the profile in the report means nobody
+    /// has to remember to ask.
+    pub profile: &'static str,
     pub notes: Vec<String>,
+}
+
+/// The build these timings came from.
+pub const fn build_profile() -> &'static str {
+    if cfg!(debug_assertions) {
+        "debug"
+    } else {
+        "release"
+    }
 }
 
 const MAX_FRAME_SAMPLES: usize = 1_024;
@@ -103,6 +131,10 @@ pub(crate) struct PerformanceCollector {
     script: Duration,
     physics: Duration,
     observe: Duration,
+    serialize: Duration,
+    serialize_frames: u64,
+    observation_bytes: u64,
+    allocated_bytes: u64,
     slowest: Option<FrameSample>,
 }
 
@@ -115,12 +147,32 @@ impl Default for PerformanceCollector {
             script: Duration::ZERO,
             physics: Duration::ZERO,
             observe: Duration::ZERO,
+            serialize: Duration::ZERO,
+            serialize_frames: 0,
+            observation_bytes: 0,
+            allocated_bytes: 0,
             slowest: None,
         }
     }
 }
 
 impl PerformanceCollector {
+    /// Record what producing the host's observation cost this frame.
+    ///
+    /// Kept apart from `record` because only a profiling run pays for it: a
+    /// normal `run` or `test` never serializes a snapshot per frame, and
+    /// measuring a cost by adding it would be its own kind of lie.
+    pub(crate) fn record_serialization(&mut self, duration: Duration, bytes: usize) {
+        self.serialize = self.serialize.saturating_add(duration);
+        self.serialize_frames = self.serialize_frames.saturating_add(1);
+        self.observation_bytes = self.observation_bytes.saturating_add(bytes as u64);
+    }
+
+    /// Record how much the script allocated this frame.
+    pub(crate) fn record_allocation(&mut self, bytes: usize) {
+        self.allocated_bytes = self.allocated_bytes.saturating_add(bytes as u64);
+    }
+
     pub(crate) fn record(&mut self, frame: u64, timing: FrameTiming) {
         self.frame_count = self.frame_count.saturating_add(1);
         self.total = self.total.saturating_add(timing.total);
@@ -165,6 +217,9 @@ impl PerformanceCollector {
                 phases: Vec::new(),
                 counts,
                 luau_memory_bytes,
+                luau_allocated_bytes_per_frame: 0,
+                observation_bytes: None,
+                profile: build_profile(),
                 notes: vec!["no frames were run".to_string()],
             };
         }
@@ -229,20 +284,42 @@ impl PerformanceCollector {
             },
             frame_budget_ms: budget_ms,
             frames_over_budget: over_budget,
-            phases: vec![
-                phase("script", self.script),
-                phase("physics", self.physics),
-                phase("observe", self.observe),
-            ],
+            phases: {
+                let mut phases = vec![
+                    phase("script", self.script),
+                    phase("physics", self.physics),
+                    phase("observe", self.observe),
+                ];
+                if self.serialize_frames > 0 {
+                    phases.push(phase("serialize", self.serialize));
+                }
+                phases
+            },
             counts,
             luau_memory_bytes,
-            notes: vec![
-                "wall clock timings, excluded from the observation digest".to_string(),
-                "a debug build measures debug costs; compare like with like".to_string(),
-                format!(
+            luau_allocated_bytes_per_frame: (self.allocated_bytes / self.frame_count) as usize,
+            observation_bytes: (self.serialize_frames > 0)
+                .then(|| (self.observation_bytes / self.serialize_frames) as usize),
+            profile: build_profile(),
+            notes: {
+                let mut notes = vec![
+                    "wall clock timings, excluded from the observation digest".to_string(),
+                ];
+                if build_profile() == "debug" {
+                    notes.push(
+                        "THIS IS A DEBUG BUILD. These are debug costs and are not a shipping measurement; rebuild with --release before drawing a conclusion."
+                            .to_string(),
+                    );
+                }
+                notes.push(
+                    "serialize is what a host pays to receive one observation; a Web host pays it again to parse it"
+                        .to_string(),
+                );
+                notes.push(format!(
                     "median, p95, and frames-over-budget use the most recent bounded sample window (up to {MAX_FRAME_SAMPLES} frames)"
-                ),
-            ],
+                ));
+                notes
+            },
         }
     }
 }
@@ -315,7 +392,66 @@ pub(crate) fn timed<T>(work: impl FnOnce() -> T) -> (T, Duration) {
 mod tests {
     use std::time::Duration;
 
-    use super::{FrameCounts, FrameTiming, MAX_FRAME_SAMPLES, PerformanceCollector};
+    use super::{FrameCounts, FrameTiming, MAX_FRAME_SAMPLES, PerformanceCollector, build_profile};
+
+    /// A profile that cannot see the cost a host actually pays sends an author
+    /// optimising the wrong phase. These three were invisible until now.
+    #[test]
+    fn a_profile_reports_the_costs_a_frame_time_alone_hides() {
+        let mut collector = PerformanceCollector::default();
+        for index in 0..4 {
+            collector.record(index, frame(100, 200, 300));
+            collector.record_allocation(1_000);
+        }
+        // Nothing asked for it, so nothing paid for it, and it is not reported.
+        let quiet = collector.report(
+            FrameCounts::default(),
+            0,
+            std::time::Duration::from_millis(16),
+        );
+        assert!(quiet.observation_bytes.is_none());
+        assert!(!quiet.phases.iter().any(|phase| phase.name == "serialize"));
+        assert_eq!(quiet.luau_allocated_bytes_per_frame, 1_000);
+        assert_eq!(quiet.profile, build_profile());
+
+        for _ in 0..4 {
+            collector.record_serialization(std::time::Duration::from_micros(500), 2_048);
+        }
+        let measured = collector.report(
+            FrameCounts::default(),
+            0,
+            std::time::Duration::from_millis(16),
+        );
+        assert_eq!(measured.observation_bytes, Some(2_048));
+        let serialize = measured
+            .phases
+            .iter()
+            .find(|phase| phase.name == "serialize")
+            .expect("a measured serialization cost must be reported as a phase");
+        assert!(serialize.mean_ms > 0.0, "{serialize:?}");
+    }
+
+    /// A debug number read as a shipping number inverts conclusions, so the
+    /// report says which build it came from without being asked.
+    #[test]
+    fn a_debug_profile_says_so_in_its_own_notes() {
+        let mut collector = PerformanceCollector::default();
+        collector.record(0, frame(100, 200, 300));
+        let report = collector.report(
+            FrameCounts::default(),
+            0,
+            std::time::Duration::from_millis(16),
+        );
+        assert_eq!(report.profile, build_profile());
+        let warned = report.notes.iter().any(|note| note.contains("DEBUG BUILD"));
+        assert_eq!(
+            warned,
+            build_profile() == "debug",
+            "the warning must appear exactly when the build is a debug build: {:?}",
+            report.notes
+        );
+    }
+
 
     fn frame(script_us: u64, physics_us: u64, observe_us: u64) -> FrameTiming {
         let script = Duration::from_micros(script_us);

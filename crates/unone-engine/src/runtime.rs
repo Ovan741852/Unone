@@ -231,6 +231,9 @@ pub struct EngineRuntime {
     script_source: Option<String>,
     performance: PerformanceCollector,
     performance_counts: FrameCounts,
+    /// Whether to time the observation a host would receive. Off by default:
+    /// only a profiling run should pay for a cost it is measuring.
+    measure_serialization: bool,
     #[cfg(feature = "dev-tools")]
     loaded_script_digest: String,
 }
@@ -595,6 +598,7 @@ impl EngineRuntime {
             script_source,
             performance: PerformanceCollector::default(),
             performance_counts: FrameCounts::default(),
+            measure_serialization: false,
             #[cfg(feature = "dev-tools")]
             loaded_script_digest: String::new(),
         };
@@ -768,8 +772,19 @@ impl EngineRuntime {
         })
     }
 
+    /// Time what a host pays to receive each observation.
+    ///
+    /// A Web host serializes the whole world every frame and parses it again on
+    /// the other side. That is often the largest per-frame cost in a browser,
+    /// and no profile could see it, because `run` and `test` never serialize
+    /// per frame.
+    pub fn measure_serialization(&mut self, measure: bool) {
+        self.measure_serialization = measure;
+    }
+
     pub fn tick(&mut self) -> Result<WorldSnapshot, Box<Diagnostic>> {
         let started = std::time::Instant::now();
+        let allocated_before = self.lua.used_memory();
         {
             let mut world = self.world.borrow_mut();
             let frame = world.frame;
@@ -838,6 +853,26 @@ impl EngineRuntime {
         }
         let (snapshot, observe_time) = timed(|| self.observe());
         self.cache_performance_counts(&snapshot);
+        // What the game allocated this frame drives the Luau collector, and the
+        // collector is what turns a flat mean into a spiky p95. Reporting the
+        // heap level without the rate leaves that spike unattributable.
+        let allocated_now = self.lua.used_memory();
+        self.performance
+            .record_allocation(allocated_now.saturating_sub(allocated_before));
+        // Serializing the observation is the largest per-frame cost a Web host
+        // pays, and until now no measurement could see it: `run` and `test`
+        // never serialize per frame, so nothing timed it. Only a profiling run
+        // pays for this, because measuring a cost by adding it would be its own
+        // kind of lie.
+        if self.measure_serialization {
+            let (bytes, serialize_time) = timed(|| {
+                serde_json::to_vec(&snapshot)
+                    .map(|bytes| bytes.len())
+                    .unwrap_or(0)
+            });
+            self.performance
+                .record_serialization(serialize_time, bytes);
+        }
         #[cfg(feature = "preview-tools")]
         let record = {
             let p = profiling::state(&self.lua);
