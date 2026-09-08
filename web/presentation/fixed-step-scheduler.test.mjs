@@ -55,6 +55,21 @@ class FakeClock {
   }
 }
 
+test('wake observer records multi-step RAF and watchdog spans before an error freezes the window',()=>{
+ const clock=new FakeClock(),spans=[];let failed=false;
+ const {scheduler}=makeScheduler(clock,undefined,{stepMs:10,watchdogMs:20,
+  tick:()=>{clock.time+=2;if(failed)throw new Error('test failure');},
+  render:()=>{clock.time+=3;},onWake:s=>spans.push(s),
+  onError:()=>{assert.equal(spans.at(-1).error,'test failure');},
+ });
+ scheduler.start();clock.fireRaf(20);
+ assert.equal(spans[0].source,'raf');assert.equal(spans[0].result.steps,2);
+ assert.equal(spans[0].scheduled_ms,0);assert.equal(spans[0].start_ms,20);assert.equal(spans[0].end_ms,27);
+ clock.fireNextTimer();assert.equal(spans[1].source,'watchdog');
+ failed=true;clock.fireNextTimer();assert.equal(spans.length,3);assert.equal(spans[2].result,null);
+ assert.equal(scheduler.isStarted(),false);
+});
+
 class FakeVisibilityTarget {
   constructor() {
     this.visibilityState = "visible";

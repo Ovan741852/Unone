@@ -43,3 +43,56 @@ The Node runners accept `--checkpoint-every 1` for every-tick behavior compariso
 Use `--no-profile-window` for before/after throughput comparisons without active publication timers. This does not remove the engine's existing passive runtime timing. For overhead assessment on the same export, `compare-player.mjs --before-profile-window disabled --after-profile-window enabled` records both conditions. `repeat_variation` exposes each pair's change and the observed range; mixed signs are not a reliable optimization result. `--sampling` cannot be combined with `--no-profile-window`.
 
 Profiler output correction: luau_positive_heap_delta_bytes_per_frame measures positive net heap growth, not total allocation throughput. It replaces the misleading allocation key in new builds. See [proposal review and migration](performance-proposal-review.md); canonical replay bytes are unchanged.
+
+## AI-readable wake timeline and VM metrics
+
+Development player `describe.profiling` discovers report paths. Use the existing
+`profile.start` / `profile` / `profile.stop` API; the human panel reads exactly the
+same data. Core/Node requests use `profile_start` / `profile_stop` spelling.
+
+- `host_window.timeline.wakes`: last 120 settled RAF/watchdog wakes, including
+  scheduling, callback start/end, RAF timestamp, step/catch-up/drop result and
+  bounded error text. The failed wake is recorded before error handling freezes
+  the host window. Cancelled/hidden wakes have no callback span.
+- `timeline.ticks`: last 360 ticks with completed world `frame`, start/end and
+  input, WASM tick/publication, decode, post-tick CPU spans. Post-tick includes
+  audio synchronization and save JSON/localStorage. Exceptions before completion
+  appear in the wake error; they do not invent a successful tick span.
+- `timeline.renders`: last 120 full draw-call spans with world frame and paused
+  flag. `render_ms` covers renderer + DOM UI; span duration also includes metric
+  collection and frame-attribute updates. Manual draws need not have a wake.
+- All host times use this page's `performance.now()` clock. Join host ticks to
+  `window.vm.frames` by world frame, not by subtracting Rust and JS timestamps.
+  Total counts expose truncation relative to retained sample lengths. Stop
+  freezes data; restart clears all traces. Read occasionally or after stop;
+  repeatedly serializing a profile is itself work.
+
+`window.vm` is available in native and development WASM builds. It measures only
+the Luau update call (including its engine callbacks), not load/start or manually
+invoked developer tools. `frames[].completed=false` identifies a failed script
+update; its frame is the attempted next world frame. Totals span the window;
+per-frame details retain the most recent 1,024 attempted updates.
+
+`allocation_growth_bytes` sums `max(new_size-old_size,0)` from successful Luau
+allocation/reallocation callbacks. `allocation_growth_events` counts positive
+growth requests. This captures allocation churn even when objects die within
+the same update. It is not heap delta, retained memory, allocator page overhead,
+freed bytes, or Rust/JS allocation volume. Native and WASM object sizes can differ.
+
+`incremental_gc_ms`, `incremental_gc_steps`, and `incremental_gc_max_step_ms`
+measure paired Luau incremental-GC interrupts, including automatic assists.
+They measure wall time within the update, with instrumentation overhead. They
+are already inside script CPU time: **do not add them again**. Luau full GC does
+not emit these pairs. `full_gc_ms`, `js_gc_ms`, `rust_allocation_bytes` are null,
+with explicit false capability flags. A RAF gap alone cannot prove GC, queue
+blocking, or actual display presentation. GPU timing remains separate.
+
+A supported GC step may report 0 ms when shorter than the host clock resolution;
+its step count still increases. Zero measured time does not prove zero work.
+
+Hooks exist only during a profiled update and are restored on errors. They chain
+the existing function sampler and preserve mlua's callback userdata. No timing
+enters Lua or canonical observations. The callback interpretation is audited
+against vendored Luau 709 (`lmem.cpp`, `lgc.cpp`); dependency upgrades must recheck
+the callback pairing and allocation semantics. Production does not compile the
+VM probe or include the host profile module. See [validation](profiler-tools-validation.md).

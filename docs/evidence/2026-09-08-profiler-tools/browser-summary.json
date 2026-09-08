@@ -1,0 +1,33 @@
+{
+  "kind": "observed WebMCP validation summary, not a raw full-session trace",
+  "host": "in-app Chromium development player",
+  "url": "http://127.0.0.1:8211/",
+  "workload": "Legion Fall, normal battle with deaths; not constant 10000 population",
+  "first_frame": 3117,
+  "last_frame": 7728,
+  "wall_ms": 76854.69999998808,
+  "runtime_frames": 4611,
+  "vm_ticks": 4611,
+  "host_ticks": 4611,
+  "allocation_growth_bytes": 121248716,
+  "incremental_gc_ms": 108.2999929999993,
+  "retained_wakes": 120,
+  "retained_ticks": 360,
+  "retained_renders": 120,
+  "checks": {
+    "vm_frozen_after_stop": true,
+    "host_frozen_after_stop": true,
+    "all_retained_host_ticks_match_vm_frames": true,
+    "all_retained_render_spans_have_enclosing_wake": true
+  },
+  "last_tick": {
+    "frame": 7728,
+    "start_ms": 129596.5,
+    "end_ms": 129601.09999999404,
+    "input_ms": 0.09999999403953552,
+    "wasm_tick_publish_ms": 4.300000011920929,
+    "decode_ms": 0.19999998807907104,
+    "post_tick_ms": 0
+  },
+  "note": "Validates real exported-host collection and correlation, not a comparative FPS result. Source checkout was dirty; runtime hash is recorded in overhead.json. Stop was followed by pause and a second profile read."
+}

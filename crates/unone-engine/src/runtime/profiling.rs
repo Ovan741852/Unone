@@ -16,6 +16,9 @@ pub(super) struct Profile {
     pub stacks: BTreeMap<Vec<String>, u64>,
     last_sample: Option<Instant>,
     hooks: u64,
+    vm_frames: std::collections::VecDeque<super::vm_metrics::Frame>,
+    vm_total: super::vm_metrics::Frame,
+    vm_ticks: u64,
 }
 #[derive(Default, Serialize)]
 pub(super) struct FunctionSamples {
@@ -26,9 +29,39 @@ pub(super) struct FunctionSamples {
     inclusive_samples: u64,
 }
 impl Profile {
+    pub fn record_vm(&mut self, frame: super::vm_metrics::Frame) {
+        self.vm_ticks += 1;
+        self.vm_total.allocation_growth_bytes = self
+            .vm_total
+            .allocation_growth_bytes
+            .saturating_add(frame.allocation_growth_bytes);
+        self.vm_total.allocation_growth_events = self
+            .vm_total
+            .allocation_growth_events
+            .saturating_add(frame.allocation_growth_events);
+        self.vm_total.incremental_gc_steps += frame.incremental_gc_steps;
+        self.vm_total.incremental_gc_ms += frame.incremental_gc_ms;
+        self.vm_total.incremental_gc_max_step_ms = self
+            .vm_total
+            .incremental_gc_max_step_ms
+            .max(frame.incremental_gc_max_step_ms);
+        if self.vm_frames.len() == 1024 {
+            self.vm_frames.pop_front();
+        }
+        self.vm_frames.push_back(frame);
+    }
     pub fn report(&self) -> serde_json::Value {
         serde_json::json!({"id":self.id,"active":self.active,"first_frame":self.first_frame,"last_frame":self.last_frame,
             "sampling":self.sampling,"samples":self.samples,"dropped_samples":self.dropped,"truncated_stacks":self.truncated,
+            "vm":{"scope":"Luau update call, including engine callbacks; manual tools and load/start are excluded",
+                "allocation_method":"Luau onallocate: sum(max(new_size-old_size,0)) on successful requests; excludes frees, allocator overhead and Rust/JS allocations",
+                "gc_method":"Luau paired incremental-step interrupts; includes automatic assists, excludes full collections; timing includes instrumentation overhead",
+                "capabilities":{"allocation_growth":true,"incremental_gc_wall_time":true,"full_gc_wall_time":false,"js_gc":false,"rust_allocations":false},
+                "tick_count":self.vm_ticks,"retained_limit":1024,"frames":self.vm_frames,
+                "allocation_growth_bytes":self.vm_total.allocation_growth_bytes,"allocation_growth_events":self.vm_total.allocation_growth_events,
+                "incremental_gc_steps":self.vm_total.incremental_gc_steps,"incremental_gc_ms":self.vm_total.incremental_gc_ms,
+                "incremental_gc_max_step_ms":self.vm_total.incremental_gc_max_step_ms,
+                "full_gc_ms":null,"js_gc_ms":null,"rust_allocation_bytes":null},
             "functions":self.functions,"stacks":self.stacks.iter().map(|(stack,count)|serde_json::json!({"leaf_first":stack,"samples":count})).collect::<Vec<_>>(),
             "limits":{"functions":1024,"stacks":4096,"depth":32,"minimum_interval_ms":1},
             "semantics":"VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled."})
@@ -173,6 +206,8 @@ return {start=function()end,update=function(api) api.observation.set('sum',hot()
         assert_eq!(report["performance"]["frames"], 3);
         assert_eq!(report["window"]["first_frame"], 0);
         assert_eq!(report["window"]["last_frame"], 3);
+        assert_eq!(report["window"]["vm"]["tick_count"], 3);
+        assert_eq!(report["window"]["vm"]["frames"][2]["frame"], 3);
         assert!(report["window"]["samples"].as_u64().unwrap() > 0);
         assert!(
             report["window"]["functions"]
@@ -195,6 +230,7 @@ return {start=function()end,update=function(api) api.observation.set('sum',hot()
             .unwrap();
         assert_eq!(next["window"]["id"], 2);
         assert_eq!(next["window"]["samples"], 0);
+        assert_eq!(next["window"]["vm"]["tick_count"], 1);
         assert_eq!(next["performance"]["frames"], 1);
     }
     #[test]
@@ -209,10 +245,17 @@ return {start=function()end,update=function(api) api.observation.set('sum',hot()
             .unwrap();
         r.tick().unwrap();
         let stopped = r.preview_request(PreviewRequest::ProfileStop {}).unwrap();
+        assert!(
+            stopped["window"]["vm"]["allocation_growth_bytes"]
+                .as_u64()
+                .unwrap()
+                > 16000
+        );
         for _ in 0..3 {
             r.tick().unwrap();
         }
         let later = r.preview_request(PreviewRequest::Profile {}).unwrap();
+        assert_eq!(later["window"]["vm"], stopped["window"]["vm"]);
         for key in [
             "frames",
             "phases",

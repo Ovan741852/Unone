@@ -1,6 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createProfileWindow} from './profile-window.js';
+test('AI timeline correlates frame spans, bounds traces, freezes and resets',()=>{
+ let clock=0;const p=createProfileWindow(2048,()=>clock);p.start();
+ for(let frame=1;frame<=400;frame++){
+  clock=frame*10;
+  p.tick({frame,start_ms:clock,end_ms:clock+3,input_ms:0.5,wasm_tick_publish_ms:1,decode_ms:0.5,post_tick_ms:1});
+  clock+=5;p.frame(2,{frame,start_ms:clock-2,paused:false});
+  p.wake({source:'raf',scheduled_ms:clock-10,start_ms:clock-5,end_ms:clock,result:{steps:1},error:null});
+ }
+ p.stop();const r=p.read();assert.equal(r.timeline.wake_count,400);
+ assert.equal(r.timeline.wakes.length,120);assert.equal(r.timeline.ticks.length,360);assert.equal(r.timeline.renders.length,120);
+ assert.equal(r.timeline.ticks.at(-1).frame,400);assert.equal(r.cpu.post_tick_ms.mean_ms,1);
+ assert.equal(r.timeline.renders.at(-1).end_ms,r.timeline.wakes.at(-1).end_ms);
+ p.wake({});p.frame(99);p.tick({});assert.deepEqual(p.read(),r);
+ p.start();assert.deepEqual(p.read().timeline.ticks,[]);assert.equal(p.read().timeline.wake_count,0);
+});
 test('windows reset, freeze and bound samples independently of total counts',()=>{
  const p=createProfileWindow(2);p.start();
  for(const n of [1,2,3])p.tick({input_ms:n,wasm_tick_publish_ms:n*10,decode_ms:n*2});

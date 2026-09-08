@@ -24,6 +24,8 @@ mod determinism;
 mod preview;
 #[cfg(feature = "preview-tools")]
 mod profiling;
+#[cfg(feature = "preview-tools")]
+mod vm_metrics;
 use bindings::build_api;
 #[cfg(feature = "preview-tools")]
 pub use preview::{DebugControl, DebugTab, PreviewRequest};
@@ -792,11 +794,27 @@ impl EngineRuntime {
                 world.audio.begin_frame(frame);
             }
         }
+        #[cfg(feature = "preview-tools")]
+        let vm_probe = if profiling::state(&self.lua).borrow().active {
+            Some(
+                // SAFETY: this scope ends immediately after update.call, before
+                // removing/changing sampler callbacks, including on Lua errors.
+                unsafe { vm_metrics::Probe::begin(&self.lua) }
+                    .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?,
+            )
+        } else {
+            None
+        };
         let (script, script_time) = timed(|| {
             self.update_fn
                 .call::<()>((self.api.clone(), FIXED_DT))
                 .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))
         });
+        #[cfg(feature = "preview-tools")]
+        if let Some(probe) = vm_probe {
+            let frame = probe.finish(self.world.borrow().frame + 1, script.is_ok());
+            profiling::state(&self.lua).borrow_mut().record_vm(frame);
+        }
         #[cfg(feature = "preview-tools")]
         if script.is_err() {
             self.lua.remove_interrupt();

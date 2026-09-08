@@ -34,7 +34,7 @@ export function createDeveloperAPI(host,telemetry){
       const bool=(key)=>{if(typeof input[key]!=='boolean')fail('DEVELOPER_REQUEST_INVALID',key+' must be boolean');return input[key];};
       let value;
       switch(input.method){
-        case 'describe':value={version:1,schema:requestSchema,methods,limits:{step_frames:120,journal_entries:200},semantics:'Mutations execute between ticks. Tool callbacks are Lua gameplay code; failures may leave changes. No arbitrary eval.'};break;
+        case 'describe':value={version:1,schema:requestSchema,methods,limits:{step_frames:120,journal_entries:200},profiling:{start:'profile.start',read:'profile',stop:'profile.stop',paths:{vm:'window.vm',host_timeline:'host_window.timeline',function_samples:'window.functions',publication:'publication'},join:'VM and host tick entries share world frame; host spans use performance.now milliseconds. Check capabilities and retained limits before drawing conclusions.',unsupported:['JS GC pauses','Rust allocation throughput','full Luau GC duration','verified display presentation']},semantics:'Mutations execute between ticks. Tool callbacks are Lua gameplay code; failures may leave changes. No arbitrary eval.'};break;
         case 'snapshot':value=core();break;
         case 'observations':{const s=host.getSnapshot();value={frame:s.world.frame,observations:s.world.observations,renderer:host.getStats(),paused:host.getPaused()};break;}
         case 'instances.transport':{

@@ -20,13 +20,12 @@ let saved,key;
 const cpuSamples={on:[],off:[]};
 const summarize=values=>{if(!values.length)return null;const v=[...values].sort((a,b)=>a-b);return {samples:v.length,median_ms:v[Math.floor(v.length/2)],p95_ms:v[Math.floor(v.length*.95)]};};
 const metrics={};
-function fail(error){scheduler?.stop();status.textContent=String(error?.message??error);document.body.dataset.playerError=status.textContent;console.error(error);}
+function fail(error){scheduler?.stop();/* PROFILE_ERROR */status.textContent=String(error?.message??error);document.body.dataset.playerError=status.textContent;console.error(error);}
 async function json(path){const r=await fetch(path);if(!r.ok)throw new Error(`CONTENT_LOAD_FAILED: ${path} (${r.status})`);return r.json();}
 function read(){const m=window.Module;return JSON.parse(new TextDecoder().decode(m.HEAPU8.slice(m._unone_web_observation_ptr(),m._unone_web_observation_ptr()+m._unone_web_observation_len())));}
 function send(name,value,...args){const bytes=new TextEncoder().encode(JSON.stringify(value));const m=window.Module,p=m._unone_web_alloc(bytes.length);m.HEAPU8.set(bytes,p);if(m[name](p,bytes.length,...args)!==0)throw new Error(JSON.stringify(read()));}
 function draw(){
   const began=performance.now();renderer.draw(snapshot);renderUi(snapshot);renderMs=performance.now()-began;
-  /* PROFILE_FRAME */
   const measured=renderer.metrics(),bucket=cpuSamples[measured.bloom?'on':'off'];bucket.push(renderMs);if(bucket.length>240)bucket.shift();
   if(++renderCount%30===0){
     const stats={bridge_ms:bridgeMs,render_ms:renderMs,...measured,cpu_on:summarize(cpuSamples.on),cpu_off:summarize(cpuSamples.off),drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0};
@@ -35,6 +34,7 @@ function draw(){
 
   }
   document.body.dataset.playerFrame=String(snapshot.world?.frame??snapshot.frame??0);
+  /* PROFILE_FRAME */
 }
 function tickOnce(){
   const began=performance.now();send('_unone_web_set_input_frame',manualInput??input.consumeFrame());manualInput=null;
@@ -45,6 +45,7 @@ function tickOnce(){
   /* PROFILE_TICK */
   audio?.sync(snapshot);
   const next=JSON.stringify(snapshot.save_payload);if(next!==saved){localStorage.setItem(key,next);saved=next;}
+  /* PROFILE_POST_TICK */
 }
 async function start(){
   const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json'),window.runtimeReady]);
@@ -64,7 +65,7 @@ async function start(){
   metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));
   document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';
   saved=JSON.stringify(snapshot.save_payload);
-  scheduler=createFixedStepScheduler({tick(){if(!frozen)tickOnce();},render(){draw();},onError:fail,onVisibilityChange:visible=>{input.releaseAll();audio?.setVisibility(visible);}});
+  scheduler=createFixedStepScheduler({/* PROFILE_WAKE */tick(){if(!frozen)tickOnce();},render(){draw();},onError:fail,onVisibilityChange:visible=>{input.releaseAll();audio?.setVisibility(visible);}});
   /* DEVELOPER_CONNECT */
   scheduler.start();
   window.addEventListener('resize',()=>{const aspect=canvas.clientWidth/canvas.clientHeight;if(window.Module._unone_web_set_viewport_aspect(aspect)!==0)fail(new Error(JSON.stringify(read())));});

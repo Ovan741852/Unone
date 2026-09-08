@@ -55,6 +55,7 @@ export function createFixedStepScheduler({
     throw error;
   },
   onVisibilityChange = () => {},
+  onWake = null, // Optional development observer; never simulation input.
   stepMs = DEFAULT_STEP_MS,
   maxCatchUpSteps = DEFAULT_MAX_CATCH_UP_STEPS,
   watchdogMs = DEFAULT_WATCHDOG_MS,
@@ -81,6 +82,7 @@ export function createFixedStepScheduler({
     throw new RangeError('backgroundPolicy must be "pause" or "fallback"');
   }
 
+  if (onWake !== null && typeof onWake !== "function") throw new TypeError("onWake must be a function or null");
   const maxElapsedMs = stepMs * maxCatchUpSteps;
   let started = false;
   let manuallyPaused = false;
@@ -174,6 +176,7 @@ export function createFixedStepScheduler({
     if (isBlocked() || pendingWake) return;
 
     const wake = {
+      scheduledAt: onWake ? now() : null,
       token: generation,
       settled: false,
       rafId: null,
@@ -195,12 +198,20 @@ export function createFixedStepScheduler({
       if (pendingWake === wake) pendingWake = null;
       if (isBlocked()) return;
 
+      const callbackStart = onWake ? now() : null;
+      let failure = null;
       try {
         runWake(timestamp, source);
       } catch (error) {
+        failure = String(error?.message ?? error).slice(0, 256);
         stop();
+        if (onWake) onWake({source, scheduled_ms:wake.scheduledAt, start_ms:callbackStart,
+          end_ms:now(), timestamp_ms:timestamp, result:null, error:failure});
         onError(error);
         return;
+      } finally {
+        if (onWake && failure === null) onWake({source, scheduled_ms:wake.scheduledAt, start_ms:callbackStart,
+          end_ms:now(), timestamp_ms:timestamp, result:failure ? null : lastResult, error:failure});
       }
       scheduleWake();
     };

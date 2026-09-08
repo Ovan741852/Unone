@@ -22,7 +22,7 @@
 - **主動視窗也有成本。** 同一產物三組開關比較的中位數約增加 0.8%，但各組差異有正有負，且整體波動很大；這不足以保證固定的開銷比例。基準比較停用主動視窗，分項定位另開視窗。引擎原有的被動 runtime timers 仍存在。
 - **Node 吞吐量不是畫面 FPS。** Node 測試不含 renderer、GPU、音效 host 工作、RAF 排程或錄影；最後仍要跑真正的瀏覽器。CPU 繪製完成次數也不等同 GPU 已呈現到螢幕。
 - **GPU 不與 CPU 同步。** GPU query 是另一個滾動視窗，不能把其 p95 加到 CPU p95。不同 host/backend 的可用量測仍有差異；native host-window/publication 目前是 null。
-- **記憶體資訊有限。** Luau 使用量、WASM 容量與快取配置量可以查，但沒有完整的配置來源、保留路徑、GC 暫停或 GPU 資源 byte 歸因。WASM capacity 不是 live allocations。
+- **記憶體資訊有限。** 新版 `window.vm` 已量到 Luau 配置成長請求與 incremental GC 暫停，並保留逐 frame 資料；不再只有 heap delta。仍沒有完整配置來源、保留路徑、full GC／JS GC 暫停、Rust 配置量或 GPU byte 歸因。WASM capacity 不是 live allocations。新主動視窗的開銷必須重新量，不能沿用上面的舊比例；見 [新版驗證](profiler-tools-validation.md)。
 - **三組不是統計保證。** 報告記錄 seed、設定、產物 hashes、Node/CPU/平台、開始時間與可用記憶體；電源模式、熱降頻、其他程序和瀏覽器背景狀態仍需控制。區間與 p95 都必須隨條件一起看。
 
 ## 建議的 AI 工作流程

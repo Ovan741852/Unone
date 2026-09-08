@@ -1,5 +1,5 @@
 // Build a real single-game export; test its payload, loader and runtime together.
-import {mkdtempSync,readFileSync,writeFileSync,rmSync} from 'node:fs';
+import {mkdtempSync,readFileSync,writeFileSync,rmSync,existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {dirname,resolve,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -18,6 +18,16 @@ try {
   if(values.runtime)args.push('--runtime',resolve(values.runtime));
   const built=run(cli,args);
   if(built.status!==0)throw new Error(`PLAYER_EXPORT_FAILED: ${built.stdout}\n${built.stderr}`);
+  const manifest=JSON.parse(readFileSync(join(output,'runtime/runtime.json'),'utf8'));
+  const wasmExports=WebAssembly.Module.exports(new WebAssembly.Module(readFileSync(join(output,'runtime',manifest.wasm))));
+  const hasDeveloperABI=wasmExports.some(e=>e.name==='unone_web_developer_request');
+  const hasPanel=existsSync(join(output,'web/developer'));
+  const hasHostProfiler=existsSync(join(output,'web/shared/profile-window.js'));
+  if([manifest.preview_tools,hasDeveloperABI,hasPanel,hasHostProfiler].some(v=>v!==values.development))
+    throw new Error('PLAYER_VARIANT_ISOLATION_FAILED: manifest, actual WASM ABI and shipped tools must match development mode');
+  const playerScript=readFileSync(join(output,'web/player/main.js'),'utf8');
+  if(/\/\* PROFILE_/.test(playerScript)||(!values.development&&/profileWindow|unoneDeveloper/.test(playerScript)))
+    throw new Error('PLAYER_PROFILE_TEMPLATE_FAILED: unresolved instrumentation or production tool references');
   const verifyArgs=[join(root,'scripts/verify-host-parity.mjs'),'--cli',cli,'--fixture',fixture,'--export',output];
   if(values.development&&!values.fixture)verifyArgs.push('--exercise-tools');
   const good=run(process.execPath,verifyArgs);
