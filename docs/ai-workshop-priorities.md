@@ -4,6 +4,11 @@ This is a design assessment, not a claim that Worker/ECS APIs are implemented.
 The workshop should let AI discover capabilities, run controlled experiments,
 inspect evidence and choose changes. Human tools should consume the same APIs.
 
+Independent review did not approve a direct production implementation. See the
+[findings and narrowed scope](reviews/2026-09-08-worker-ecs-blind-review.md) and
+[executable contract model](../experiments/compute-contract/README.md). The model
+is isolated from engine/runtime/API discovery and does not establish a speedup.
+
 ## Existing playtesting is useful
 
 The developer API already supports input, pause/step, snapshots, screenshots,

@@ -2,6 +2,13 @@
 
 **Status: design only. The engine does not yet load gameplay WASM modules.** The APIs and manifest below are proposed, not callable today. Do not add module declarations to current `ProjectConfig`: its unknown-field rejection is intentional. Existing `unone.plugin.v1` plugins are AI-facing external processes, not gameplay compute modules.
 
+Independent review has **not approved production implementation** of this
+proposal. See [blocking findings](../reviews/2026-09-08-worker-ecs-blind-review.md).
+The isolated [v0 contract model](../../experiments/compute-contract/README.md)
+tests narrower lifecycle choices; it is not this proposed v1 ABI or a second
+supported API. Before implementation, reconcile those choices and the remaining
+host/executor/layout gates into one authoritative contract.
+
 ## Ownership
 
 Luau owns gameplay state, scheduling, rules and applying results. A game may package its own Rust/C/C++ algorithm as WASM without modifying engine Rust. The engine owns loading, ABI validation, buffer exchange, deterministic delivery, resource limits and measurement. Modules cannot access ECS, rendering, files, network, clocks or engine pointers.
