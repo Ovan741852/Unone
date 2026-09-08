@@ -2,11 +2,11 @@
 
 A Web battle prototype used to expose engine limits. Two armies start with 5,000 units each and fight automatically: infantry, archers, cavalry, ballistae, catapults, flyers and mages. The game includes melee, ranged trajectories, area damage, flying movement, deaths and selectable cameras.
 
-| 優化前（基準版本） | 第一輪優化後 |
-|---|---|
-| ![Before optimization](../../docs/media/legion-fall-preview.gif) | ![After round one](../../docs/media/legion-fall-optimized.gif) |
+| 優化前（基準版本） | 第一輪優化後 | 第二輪優化後 |
+|---|---|---|
+| ![Before optimization](../../docs/media/legion-fall-preview.gif) | ![After round one](../../docs/media/legion-fall-optimized.gif) | ![After round two](../../docs/media/legion-fall-round2.gif) |
 
-第二輪優化完成後再追加比較。These are different recording windows, not a controlled FPS A/B test.
+[第二輪：削減長幀，仍未穩定 60 FPS](../../docs/legion-fall-round2.md)。These are different recording windows, not a controlled FPS A/B test.
 
 Optimized build, 12 seconds at original playback speed, GIF encoded at 10 fps. [Capture details](../../docs/media/legion-fall-optimized.md) · [Optimization report](../../docs/legion-fall-optimization.md).
 
@@ -38,3 +38,9 @@ For recording, use `python _Games/legion-fall/serve_capture.py _Games/legion-fal
 Performance findings and capture conditions are in [the measurement record](../../docs/legion-fall-demo.md). Asset authors, licenses and conversion details are in [ASSETS.md](ASSETS.md).
 
 The original baseline recording predates the optimization. See [the optimization report](../../docs/legion-fall-optimization.md) for controlled CPU measurements; these are not a replacement browser FPS recording.
+
+## Round two work scheduling
+
+Combat still commits at 20 Hz. Each update is now prepared in three fixed Lua work partitions over the 60 Hz engine clock; the third tick resolves damage and publishes the complete state. Unit iteration and damage ordering are unchanged. There is no wall-clock budget in gameplay. The camera reads the last published battle time. Reset discards pending work; the game pause control freezes and resumes its current phase.
+
+Run `node _Games/legion-fall/verify-phases.mjs <development-export>` to verify no partial publication and reset/pause behavior at both unfinished phases. This test normalizes only engine frame/time when comparing a reset to a fresh game. For the full battle, compare every tick with the previous export using `scripts/compare-player.mjs --checkpoint-every 1`.

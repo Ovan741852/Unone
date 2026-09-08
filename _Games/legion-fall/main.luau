@@ -8,6 +8,8 @@ local Game={}
 local units,groups,shots,impacts={},{},{},{}
 local count=10000
 local step,elapsed,kills,attacks=0,0,{0,0},0
+local phase,publishedElapsed=0,0
+local teamShots={0,0}
 local running=true
 local stress=false
 local capped=0
@@ -51,13 +53,15 @@ local function resolveDamage()
  end
 end
 local function acquire(u,index)
- local best,bestD=nil,1e9;local gx,gz=floor(u.x/7),floor(u.z/7);local scanned=0
+ local ux,uz=u.x,u.z;local groundOnly=u.kind==1 or u.kind==3
+ local enemies=grid[3-u.team];local records=units
+ local best,bestD=nil,1e9;local gx,gz=floor(ux/7),floor(uz/7);local scanned=0
  for dx=-1,1 do for dz=-1,1 do
-  local bucket=grid[3-u.team][(gx+dx)*1000+gz+dz]
+  local bucket=enemies[(gx+dx)*1000+gz+dz]
   if bucket then for _,j in ipairs(bucket)do
-   local e=units[j]
-   if e.hp>0 and (u.kind~=1 and u.kind~=3 or e.kind~=6) then
-    local d=(e.x-u.x)^2+(e.z-u.z)^2
+   local e=records[j]
+   if e.hp>0 and (not groundOnly or e.kind~=6) then
+    local d=(e.x-ux)^2+(e.z-uz)^2
     if d<bestD then best=j;bestD=d end
    end
    scanned+=1;if scanned>=32 then break end
@@ -68,8 +72,8 @@ local function acquire(u,index)
  -- A bounded deterministic sample supplies a pursuit target when no enemy is nearby.
  local half=count/2;local offset=u.team==1 and half or 0
  for n=1,12 do
-  local j=offset+((index*17+step*7+n*397)%half)+1;local e=units[j]
-  if e.hp>0 and (u.kind~=1 and u.kind~=3 or e.kind~=6)then local d=(e.x-u.x)^2+(e.z-u.z)^2;if d<bestD then best=j;bestD=d end end
+  local j=offset+((index*17+step*7+n*397)%half)+1;local e=records[j]
+  if e.hp>0 and (not groundOnly or e.kind~=6)then local d=(e.x-ux)^2+(e.z-uz)^2;if d<bestD then best=j;bestD=d end end
  end
  return best
 end
@@ -117,6 +121,7 @@ local function publish(api)
 end
 local function reset(api,n)
  for key in pairs(groups)do api.instances3d.remove(key)end
+ phase=0;publishedElapsed=0;teamShots={0,0}
  capped=0;count=n;units={};groups={};shots={};impacts={};step=0;elapsed=0;kills={0,0};attacks=0;live={n/2,n/2};running=true
  shotCounts={arrow=0,bolt=0,boulder=0,magic=0}
  local half=count/2
@@ -159,14 +164,9 @@ function Game.start(api)
   api.debug.register({kind="checkbox",id="battle.running",tab="battle",label="戰鬥進行",checked=true},function(value)running=value end)
  end
 end
-shotCounts={arrow=0,bolt=0,boulder=0,magic=0}
-local ticks=0
-function Game.update(api,dt)
- if cinematic then api.camera3d.setPosition(v(cos(elapsed*.07)*52,24,sin(elapsed*.07)*52));api.camera3d.setTarget(v(0,1,0)) end
- ticks+=1;if ticks%3~=0 or not running then return end
- local delta=.05;step+=1;elapsed+=delta;rebuildGrid()
- local teamShots={0,0};for _,p in ipairs(shots)do teamShots[p.team]+=1 end
- for order=1,count do local i=floor((order-1)/2)+1+((order+step)%2)*(count/2);local u=units[i];if u.hp>0 then
+local function advanceUnits(first,last)
+ local delta=.05
+ for order=first,last do local i=floor((order-1)/2)+1+((order+step)%2)*(count/2);local u=units[i];if u.hp>0 then
   local t=types[u.kind]
   if i%6==step%6 or not u.target or units[u.target].hp<=0 then u.target=acquire(u,i)end
   local e=u.target and units[u.target]
@@ -192,6 +192,9 @@ function Game.update(api,dt)
    end
   end
  end end
+end
+local function finishBattle(api)
+ local delta=.05
  shotCounts={arrow=0,bolt=0,boulder=0,magic=0}
  for i=#shots,1,-1 do local p=shots[i];p.age+=delta
   if p.age>=p.duration then
@@ -206,5 +209,22 @@ function Game.update(api,dt)
  resolveDamage()
  for i=#impacts,1,-1 do local p=impacts[i];p.age+=delta;if p.age>=.5 then impacts[i]=impacts[#impacts];impacts[#impacts]=nil end end
  publish(api)
+ publishedElapsed=elapsed
+end
+function Game.update(api,dt)
+ if cinematic then api.camera3d.setPosition(v(cos(publishedElapsed*.07)*52,24,sin(publishedElapsed*.07)*52));api.camera3d.setTarget(v(0,1,0)) end
+ if not running then return end
+ -- Fixed work partitions, never a wall-clock budget. Internal work stays private
+ -- until the third tick publishes the same complete 20 Hz battle result.
+ phase+=1
+ local firstCut=floor(count*.34);local secondCut=floor(count*.82)
+ if phase==1 then
+  step+=1;elapsed+=.05;rebuildGrid()
+  teamShots={0,0};for _,p in ipairs(shots)do teamShots[p.team]+=1 end
+  advanceUnits(1,firstCut)
+ elseif phase==2 then advanceUnits(firstCut+1,secondCut)
+ else
+  advanceUnits(secondCut+1,count);finishBattle(api);phase=0
+ end
 end
 return Game

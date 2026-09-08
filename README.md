@@ -6,12 +6,12 @@ The current contract boundaries and host limitations are recorded in [Runtime co
 
 ## 10,000-unit battle demonstration
 
-| 優化前（基準版本） | 第一輪優化後 |
-|---|---|
-| ![Before optimization](docs/media/legion-fall-preview.gif) | ![After round one](docs/media/legion-fall-optimized.gif) |
-| 原始實際戰鬥錄影；9–10 FPS 片段 | Lua profiler、VM fast paths、WASM memory instance transport |
+| 優化前（基準版本） | 第一輪優化後 | 第二輪優化後 |
+|---|---|---|
+| ![Before optimization](docs/media/legion-fall-preview.gif) | ![After round one](docs/media/legion-fall-optimized.gif) | ![After round two](docs/media/legion-fall-round2.gif) |
+| 原始實際戰鬥錄影 | VM fast paths、WASM memory transport | Lua 固定分段更新、削減長幀 |
 
-第二輪優化：尚未進行，完成後追加實測與展示。兩張 GIF 取自不同錄製視窗，鏡位、存活兵力與錄影負擔可能不同，不能直接用畫面上的 FPS 計算改善幅度。
+[第二輪報告](docs/legion-fall-round2.md)：同解析度、全程一萬人存活的探索性瀏覽器測試，平均繪製完成次數 **31.6 → 53.2 次/秒**；尚未穩定 60 FPS。三張 GIF 取自不同錄製視窗，鏡位、存活兵力與錄影負擔可能不同，不能直接用畫面上的 FPS 計算改善幅度。
 
 [Run the demo](_Games/legion-fall/README.md) · [Optimization results](docs/legion-fall-optimization.md) · [Original baseline video](docs/media/legion-fall-demo.mp4)
 

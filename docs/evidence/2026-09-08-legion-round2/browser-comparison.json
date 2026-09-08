@@ -1,0 +1,46 @@
+{
+  "conditions": {
+    "population": 10000,
+    "stress": true,
+    "warmup_ticks": 30,
+    "resolution": [
+      1280,
+      720
+    ],
+    "sampling": false,
+    "recording": false,
+    "note": "Sequential exploratory browser windows; different durations; CPU render completions, not verified display presentation. Values transcribed from Developer profile responses."
+  },
+  "before": {
+    "wall_ms": 25056.40000000596,
+    "ticks": 1480,
+    "renders": 793,
+    "tick_publish_mean_ms": 15.3710135137914,
+    "tick_publish_p95_ms": 42.80000001192093,
+    "render_interval_p95_ms": 58.79999998211861,
+    "render_interval_max_ms": 107.19999998807907,
+    "render_interval_samples": 792,
+    "intervals_over_60hz": 469,
+    "script_mean_ms": 12.143,
+    "render_cpu_mean_ms": 1.3646910466056454,
+    "gpu_median_ms": 0.682304,
+    "render_completions_per_second": 31.648600756685372,
+    "simulation_ticks_per_second": 59.066745422313176
+  },
+  "after": {
+    "wall_ms": 27406.40000000596,
+    "ticks": 1641,
+    "renders": 1457,
+    "tick_publish_mean_ms": 14.907861060953808,
+    "tick_publish_p95_ms": 19.80000001192093,
+    "render_interval_p95_ms": 34.599999994039536,
+    "render_interval_max_ms": 54.400000005960464,
+    "render_interval_samples": 1456,
+    "intervals_over_60hz": 753,
+    "script_mean_ms": 11.633,
+    "render_cpu_mean_ms": 1.0202470829859938,
+    "gpu_median_ms": 0.661536,
+    "render_completions_per_second": 53.16276490161726,
+    "simulation_ticks_per_second": 59.8765251911832
+  }
+}
