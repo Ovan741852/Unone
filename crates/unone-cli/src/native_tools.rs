@@ -230,6 +230,7 @@ fn failure(code: &str, explanation: &str) -> Value {
 
 #[derive(Default)]
 pub struct State {
+    pub dropped_steps: u64,
     pub paused: bool,
     pending_input: Option<InputFrame>,
     clear_input: bool,
@@ -292,7 +293,7 @@ impl State {
                     json!({"resources":[],"note":"Browser ResourceTiming is not available in the native host."})
                 }
                 "profile" => {
-                    json!({"host":"native","runtime":snapshot()?["performance"],"renderer":{"render_ms":self.render_ms},"startup":null,"paused":self.paused})
+                    json!({"host":"native","runtime":snapshot()?["performance"],"renderer":{"render_ms":self.render_ms,"dropped_steps":self.dropped_steps},"startup":null,"paused":self.paused})
                 }
                 "memory" => {
                     json!({"host":"native","luau_used_bytes":snapshot()?["performance"]["luau_memory_bytes"],"wasm_linear_bytes":null,"js_heap":null,"note":"Native process RSS and GPU allocations are not currently instrumented; no browser memory is reported as native memory."})

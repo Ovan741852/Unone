@@ -225,6 +225,8 @@ export async function createThreeRenderer(canvas, options = {}) {
       }
       const t=entity.transform3d;
       mesh.position.set(t.position.x,t.position.y,t.position.z); mesh.rotation.set(t.rotation.x,t.rotation.y,t.rotation.z);
+      const physicsRotation=world.physics3d?.bodies?.[entity.id]?.rotation;
+      if(physicsRotation) mesh.quaternion.set(...physicsRotation);
       mesh.scale.set(t.scale.x,t.scale.y,t.scale.z); mesh.visible=true; alive3d.add(entity.id);
     }
     for (const [id,mesh] of meshes3d) mesh.visible=alive3d.has(id);

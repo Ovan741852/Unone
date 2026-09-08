@@ -1,0 +1,215 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$defs": {
+    "Pose3D": {
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "rotation": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        }
+      },
+      "required": [
+        "position"
+      ],
+      "type": "object"
+    },
+    "Query3DFilter": {
+      "additionalProperties": false,
+      "properties": {
+        "exclude": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "filter": {
+          "default": -1,
+          "format": "int32",
+          "type": "integer"
+        },
+        "include_sensors": {
+          "default": false,
+          "type": "boolean"
+        },
+        "membership": {
+          "default": -1,
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "Shape3D": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "sphere",
+              "type": "string"
+            },
+            "radius": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          "required": [
+            "kind",
+            "radius"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "half_extents": {
+              "$ref": "#/$defs/Vec3"
+            },
+            "kind": {
+              "const": "box",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "half_extents"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "half_height": {
+              "format": "double",
+              "type": "number"
+            },
+            "kind": {
+              "const": "capsule",
+              "type": "string"
+            },
+            "radius": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          "required": [
+            "kind",
+            "half_height",
+            "radius"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "convex",
+              "type": "string"
+            },
+            "vertices": {
+              "items": {
+                "$ref": "#/$defs/Vec3"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "vertices"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "indices": {
+              "items": {
+                "items": {
+                  "format": "uint32",
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "maxItems": 3,
+                "minItems": 3,
+                "type": "array"
+              },
+              "type": "array"
+            },
+            "kind": {
+              "const": "trimesh",
+              "type": "string"
+            },
+            "vertices": {
+              "items": {
+                "$ref": "#/$defs/Vec3"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "vertices",
+            "indices"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "Vec3": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        },
+        "z": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://unone.dev/schema/cast3d.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "filter": {
+      "$ref": "#/$defs/Query3DFilter"
+    },
+    "pose": {
+      "$ref": "#/$defs/Pose3D"
+    },
+    "shape": {
+      "$ref": "#/$defs/Shape3D"
+    },
+    "to": {
+      "$ref": "#/$defs/Vec3"
+    }
+  },
+  "required": [
+    "pose",
+    "to",
+    "shape"
+  ],
+  "title": "Cast3D",
+  "type": "object"
+}

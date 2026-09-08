@@ -521,6 +521,13 @@ impl EngineRuntime {
             save_payload: Rc::clone(&save_payload),
         };
         let systems = SystemSettings::from_config(&config)?;
+        if world.borrow().physics3d.is_some() && !systems.is_enabled("physics3d") {
+            return Err(Box::new(Diagnostic::error(
+                "SYSTEM_DISABLED",
+                "3D physics is declared but disabled",
+                "Set systems.physics3d=true in project.unone.json.",
+            )));
+        }
         if let Some(audio) = &config.audio {
             // A declared rule this build does not act on is a configuration
             // error, not a no-op: a game that believes it configured ducking
@@ -758,11 +765,28 @@ impl EngineRuntime {
                 .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))
         });
         script?;
-        let ((), physics_time) = timed(|| {
+        let (physics_result, physics_time) = timed(|| -> Result<(), Box<Diagnostic>> {
             if self.systems.is_enabled("physics2d") {
                 self.world.borrow_mut().step_physics(FIXED_DT);
             }
+            if self.systems.is_enabled("physics3d") {
+                let mut world = self.world.borrow_mut();
+                let world = &mut *world;
+                if let Some(physics) = &mut world.physics3d {
+                    physics
+                        .step(FIXED_DT, &mut world.entities)
+                        .map_err(|message| {
+                            Box::new(Diagnostic::error(
+                                "PHYSICS3D_STATE_INVALID",
+                                "3D simulation exceeded its numeric bounds",
+                                message,
+                            ))
+                        })?;
+                }
+            }
+            Ok(())
         });
+        physics_result?;
         {
             let mut world = self.world.borrow_mut();
             // Before the frame advances, so an attached source is observed at
@@ -796,7 +820,8 @@ impl EngineRuntime {
                 .entities
                 .values()
                 .filter(|entity| entity.rigidbody.is_some())
-                .count(),
+                .count()
+                + snapshot.physics3d.as_ref().map_or(0, |p| p.bodies.len()),
             ui_nodes: snapshot
                 .ui
                 .as_ref()

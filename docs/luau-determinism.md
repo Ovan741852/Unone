@@ -48,6 +48,14 @@ not yield the same number of ticks.
 
 ## Evidence and limits
 
+The opt-in [3D rigid-body backend](physics3d.md) uses pinned Rapier with
+`enhanced-determinism`, no parallel/SIMD solver features, fixed dt and stable
+command ordering. Its internal math uses the backend's deterministic math path;
+this does not extend the portable subset of Lua's own transcendental functions.
+The export gate also compares a rigid-body/CCD/kinematic/joint fixture through
+frame 360 and detects a gravity mutation in the actual emitted payload. Physics
+observations include body-definition digests; they are not full solver saves.
+
 The exported fixture exercises startup save/audio, normalized input, 3D transforms,
 2D contacts, native particles, seeded RNG, arithmetic/sqrt, sorted arrays and the
 ambient-source guards. The test compares five frame observations and corrupts the

@@ -1,0 +1,16 @@
+{
+  "name": "Unone 3D Physics Lab",
+  "entry_script": "main.luau",
+  "main_scene": "scene.json",
+  "systems": {
+    "physics3d": true,
+    "physics2d": false
+  },
+  "test_files": [
+    "frame-0.test.json",
+    "frame-1.test.json",
+    "frame-30.test.json",
+    "frame-120.test.json",
+    "frame-360.test.json"
+  ]
+}

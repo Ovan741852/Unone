@@ -27,6 +27,102 @@
       ],
       "type": "object"
     },
+    "Body3D": {
+      "additionalProperties": false,
+      "properties": {
+        "angular_damping": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "angular_velocity": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        },
+        "body_type": {
+          "$ref": "#/$defs/BodyKind"
+        },
+        "can_sleep": {
+          "default": true,
+          "type": "boolean"
+        },
+        "ccd": {
+          "default": false,
+          "type": "boolean"
+        },
+        "filter": {
+          "default": -1,
+          "format": "int32",
+          "type": "integer"
+        },
+        "friction": {
+          "default": 0.5,
+          "format": "double",
+          "type": "number"
+        },
+        "gravity_scale": {
+          "default": 1.0,
+          "format": "double",
+          "type": "number"
+        },
+        "linear_damping": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "lock_rotation": {
+          "default": false,
+          "type": "boolean"
+        },
+        "mass": {
+          "default": 1.0,
+          "format": "double",
+          "type": "number"
+        },
+        "membership": {
+          "default": -1,
+          "format": "int32",
+          "type": "integer"
+        },
+        "restitution": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "sensor": {
+          "default": false,
+          "type": "boolean"
+        },
+        "shape": {
+          "$ref": "#/$defs/Shape3D"
+        },
+        "velocity": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        }
+      },
+      "required": [
+        "body_type",
+        "shape"
+      ],
+      "type": "object"
+    },
+    "BodyKind": {
+      "enum": [
+        "dynamic",
+        "static",
+        "kinematic"
+      ],
+      "type": "string"
+    },
     "Camera2DData": {
       "additionalProperties": false,
       "properties": {
@@ -217,6 +313,27 @@
       ],
       "type": "object"
     },
+    "Physics3DScene": {
+      "additionalProperties": false,
+      "properties": {
+        "bodies": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Body3D"
+          },
+          "default": {},
+          "type": "object"
+        },
+        "gravity": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": -9.81,
+            "z": 0.0
+          }
+        }
+      },
+      "type": "object"
+    },
     "PhysicsSettings": {
       "additionalProperties": false,
       "properties": {
@@ -381,6 +498,122 @@
       ],
       "type": "object"
     },
+    "Shape3D": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "sphere",
+              "type": "string"
+            },
+            "radius": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          "required": [
+            "kind",
+            "radius"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "half_extents": {
+              "$ref": "#/$defs/Vec3"
+            },
+            "kind": {
+              "const": "box",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "half_extents"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "half_height": {
+              "format": "double",
+              "type": "number"
+            },
+            "kind": {
+              "const": "capsule",
+              "type": "string"
+            },
+            "radius": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          "required": [
+            "kind",
+            "half_height",
+            "radius"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "convex",
+              "type": "string"
+            },
+            "vertices": {
+              "items": {
+                "$ref": "#/$defs/Vec3"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "vertices"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "indices": {
+              "items": {
+                "items": {
+                  "format": "uint32",
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "maxItems": 3,
+                "minItems": 3,
+                "type": "array"
+              },
+              "type": "array"
+            },
+            "kind": {
+              "const": "trimesh",
+              "type": "string"
+            },
+            "vertices": {
+              "items": {
+                "$ref": "#/$defs/Vec3"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "kind",
+            "vertices",
+            "indices"
+          ],
+          "type": "object"
+        }
+      ]
+    },
     "SpriteData": {
       "additionalProperties": false,
       "properties": {
@@ -533,6 +766,16 @@
         "ground_y": null,
         "linear_damping": 0.0
       }
+    },
+    "physics3d": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Physics3DScene"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "title": "SceneFile",

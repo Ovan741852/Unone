@@ -15,6 +15,11 @@ pub const SCHEMA_NAMES: &[&str] = &[
     "preview-request",
     "debug-control",
     "debug-tab",
+    "body3d",
+    "ray3d",
+    "cast3d",
+    "overlap3d",
+    "joint3d",
 ];
 
 pub fn contract_schema(name: &str) -> Option<Value> {
@@ -31,6 +36,11 @@ pub fn contract_schema(name: &str) -> Option<Value> {
         "preview-request" => schemars::schema_for!(crate::PreviewRequest),
         "debug-control" => schemars::schema_for!(crate::DebugControl),
         "debug-tab" => schemars::schema_for!(crate::DebugTab),
+        "body3d" => schemars::schema_for!(crate::rigid3d::Body3D),
+        "ray3d" => schemars::schema_for!(crate::rigid3d::Ray3D),
+        "cast3d" => schemars::schema_for!(crate::rigid3d::Cast3D),
+        "overlap3d" => schemars::schema_for!(crate::rigid3d::Overlap3D),
+        "joint3d" => schemars::schema_for!(crate::rigid3d::Joint3D),
         _ => return None,
     };
     let mut value = serde_json::to_value(schema).expect("schema serializes");

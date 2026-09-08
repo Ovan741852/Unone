@@ -1,0 +1,121 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$defs": {
+    "JointKind3D": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "fixed",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "spherical",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "axis": {
+              "$ref": "#/$defs/Vec3"
+            },
+            "kind": {
+              "const": "revolute",
+              "type": "string"
+            },
+            "limits": {
+              "default": null,
+              "items": {
+                "format": "double",
+                "type": "number"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "type": [
+                "array",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "axis"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "Vec3": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        },
+        "z": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://unone.dev/schema/joint3d.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "anchor_a": {
+      "$ref": "#/$defs/Vec3"
+    },
+    "anchor_b": {
+      "$ref": "#/$defs/Vec3"
+    },
+    "body_a": {
+      "type": "string"
+    },
+    "body_b": {
+      "type": "string"
+    },
+    "contacts_enabled": {
+      "default": false,
+      "type": "boolean"
+    },
+    "joint": {
+      "$ref": "#/$defs/JointKind3D"
+    }
+  },
+  "required": [
+    "body_a",
+    "body_b",
+    "anchor_a",
+    "anchor_b",
+    "joint"
+  ],
+  "title": "Joint3D",
+  "type": "object"
+}

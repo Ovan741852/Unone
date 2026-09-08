@@ -1,0 +1,75 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$defs": {
+    "Query3DFilter": {
+      "additionalProperties": false,
+      "properties": {
+        "exclude": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "filter": {
+          "default": -1,
+          "format": "int32",
+          "type": "integer"
+        },
+        "include_sensors": {
+          "default": false,
+          "type": "boolean"
+        },
+        "membership": {
+          "default": -1,
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "Vec3": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        },
+        "z": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://unone.dev/schema/ray3d.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "filter": {
+      "$ref": "#/$defs/Query3DFilter"
+    },
+    "from": {
+      "$ref": "#/$defs/Vec3"
+    },
+    "to": {
+      "$ref": "#/$defs/Vec3"
+    }
+  },
+  "required": [
+    "from",
+    "to"
+  ],
+  "title": "Ray3D",
+  "type": "object"
+}

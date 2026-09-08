@@ -56,8 +56,33 @@ export type PhysicsApi = {
 export type SphereSweepTarget = { id: string, radius: number, previous_position: Vec3 }
 export type SphereSweepHit = { id: string, fraction: number, point: Vec3, normal: Vec3 }
 export type Physics3DApi = {
+    getBody: (id: string) -> Body3D,
+    addBody: (id: string, body: Body3D) -> (),
+    removeBody: (id: string) -> (),
+    setGravity: (value: Vec3) -> (),
+    setVelocity: (id: string, value: Vec3) -> (),
+    setAngularVelocity: (id: string, value: Vec3) -> (),
+    applyImpulse: (id: string, value: Vec3) -> (),
+    applyTorqueImpulse: (id: string, value: Vec3) -> (),
+    addForce: (id: string, value: Vec3) -> (),
+    addTorque: (id: string, value: Vec3) -> (),
+    clearForces: (id: string) -> (),
+    teleport: (id: string, pose: Pose3D) -> (),
+    moveKinematic: (id: string, pose: Pose3D) -> (),
+    raycast: (request: {from: Vec3, to: Vec3, filter: QueryFilter3D?}) -> SphereSweepHit?,
+    castShape: (request: {pose: Pose3D, to: Vec3, shape: Shape3D, filter: QueryFilter3D?}) -> SphereSweepHit?,
+    overlap: (request: {pose: Pose3D, shape: Shape3D, filter: QueryFilter3D?}) -> {string},
+    snapshot: () -> any,
+    contacts: () -> {{a: string,b: string,sensor: boolean,normal: Vec3,impulse: number,phase: string}},
+    addJoint: (id: string, joint: {body_a:string,body_b:string,anchor_a:Vec3,anchor_b:Vec3,joint:JointKind3D,contacts_enabled:boolean?}) -> (),
+    removeJoint: (id: string) -> (),
     sweepSphere: (request: { from: Vec3, to: Vec3, radius: number, targets: {SphereSweepTarget} }) -> SphereSweepHit?,
 }
+export type Pose3D = {position:Vec3,rotation:Vec3?}
+export type Shape3D = {kind:"sphere",radius:number} | {kind:"box",half_extents:Vec3} | {kind:"capsule",half_height:number,radius:number} | {kind:"convex",vertices:{Vec3}} | {kind:"trimesh",vertices:{Vec3},indices:{{number}}}
+export type Body3D = {body_type:"dynamic"|"static"|"kinematic",shape:Shape3D,mass:number?,velocity:Vec3?,angular_velocity:Vec3?,friction:number?,restitution:number?,linear_damping:number?,angular_damping:number?,gravity_scale:number?,sensor:boolean?,ccd:boolean?,lock_rotation:boolean?,can_sleep:boolean?,membership:number?,filter:number?}
+export type QueryFilter3D = {membership:number?,filter:number?,exclude:string?,include_sensors:boolean?}
+export type JointKind3D = {kind:"fixed"}|{kind:"spherical"}|{kind:"revolute",axis:Vec3,limits:{number}?}
 
 export type CameraApi = {
     getPosition: () -> Vec2,

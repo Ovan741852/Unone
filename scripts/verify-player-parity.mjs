@@ -33,6 +33,25 @@ try {
     throw new Error(`PLAYER_PARITY_NEGATIVE_CONTROL_FAILED: ${bad.stdout}\n${bad.stderr}`);
   }
   console.log(JSON.stringify({ok:true,exported_payload_audio_omission_detected:true}));
+  // Exercise the actual 3D solver through the exported host payload as well.
+  const physicsFixture=join(root,'_Games/physics3d-lab');
+  const physicsOutput=join(scratch,'physics');
+  const physicsArgs=['--project',physicsFixture,'export','web','--output',physicsOutput,'--json'];
+  if(values.development)physicsArgs.push('--development');
+  if(values.runtime)physicsArgs.push('--runtime',resolve(values.runtime));
+  const physicsExport=run(cli,physicsArgs);
+  if(physicsExport.status!==0)throw new Error(`PHYSICS3D_EXPORT_FAILED: ${physicsExport.stdout}\n${physicsExport.stderr}`);
+  const physicsVerify=[join(root,'scripts/verify-host-parity.mjs'),'--cli',cli,'--fixture',physicsFixture,'--export',physicsOutput];
+  const physicsGood=run(process.execPath,physicsVerify);
+  if(physicsGood.status!==0)throw new Error(`PHYSICS3D_PARITY_FAILED: ${physicsGood.stdout}\n${physicsGood.stderr}`);
+  console.log(physicsGood.stdout.trim());
+  const physicsPayloadPath=join(physicsOutput,'content/project.json');
+  const physicsPayload=JSON.parse(readFileSync(physicsPayloadPath,'utf8'));
+  physicsPayload.scene.physics3d.gravity.y=-2;
+  writeFileSync(physicsPayloadPath,JSON.stringify(physicsPayload));
+  const physicsBad=run(process.execPath,physicsVerify);
+  if(physicsBad.status===0||!/HOST_PARITY_MISMATCH/.test(physicsBad.stderr))throw new Error(`PHYSICS3D_NEGATIVE_CONTROL_FAILED: ${physicsBad.stdout}\n${physicsBad.stderr}`);
+  console.log(JSON.stringify({ok:true,exported_physics3d_gravity_mutation_detected:true}));
 } finally {
   // Only the exact private directory returned by mkdtempSync is removed.
   rmSync(scratch,{recursive:true,force:true});

@@ -25,6 +25,7 @@ use winit::{
 mod assets;
 mod export;
 mod mcp;
+mod native_clock;
 mod native_tools;
 mod plugins;
 mod session;
@@ -1071,6 +1072,8 @@ fn report_host_assets(project: &Path) {
 }
 
 struct PreviewApp {
+    clock: native_clock::NativeClock,
+    last_redraw: Option<std::time::Instant>,
     tools: native_tools::NativeTools,
     runtime: Option<EngineRuntime>,
     window: Option<Arc<Window>>,
@@ -1082,6 +1085,8 @@ impl PreviewApp {
     fn new(runtime: EngineRuntime, watch: bool, tools: native_tools::NativeTools) -> Self {
         Self {
             tools,
+            clock: Default::default(),
+            last_redraw: None,
             runtime: Some(runtime),
             window: None,
             renderer: None,
@@ -1176,18 +1181,27 @@ impl ApplicationHandler for PreviewApp {
                 let Some(runtime) = &mut self.runtime else {
                     return;
                 };
-                let snapshot = match if self.tools.state.paused {
-                    Ok(runtime.observe())
-                } else {
-                    self.tools.state.tick(runtime)
-                } {
-                    Ok(snapshot) => snapshot,
-                    Err(err) => {
-                        eprintln!("unone preview: {}: {}", err.code, err.explanation);
-                        event_loop.exit();
-                        return;
+                let now = std::time::Instant::now();
+                let elapsed = self
+                    .last_redraw
+                    .replace(now)
+                    .map_or(std::time::Duration::ZERO, |last| {
+                        now.saturating_duration_since(last)
+                    });
+                let steps = self.clock.advance(elapsed, self.tools.state.paused);
+                self.tools.state.dropped_steps = self.clock.dropped_steps;
+                let mut snapshot = None;
+                for _ in 0..steps {
+                    match self.tools.state.tick(runtime) {
+                        Ok(value) => snapshot = Some(value),
+                        Err(err) => {
+                            eprintln!("unone preview: {}: {}", err.code, err.explanation);
+                            event_loop.exit();
+                            return;
+                        }
                     }
-                };
+                }
+                let snapshot = snapshot.unwrap_or_else(|| runtime.observe());
                 let render_started = std::time::Instant::now();
                 if let Some(renderer) = &mut self.renderer
                     && let Err(err) = renderer.render(&snapshot)

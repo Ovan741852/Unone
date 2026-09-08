@@ -290,6 +290,7 @@ pub fn web(
         "shared/load-project.js",
         "shared/fixed-step-scheduler.mjs",
         "vendor/three/three.player.min.js",
+        "vendor/rapier/LICENSE",
     ] {
         let mut bytes = fs::read(repo.join("web").join(path))?;
         if path == "renderer/three.js" {

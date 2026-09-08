@@ -18,6 +18,7 @@ mod host;
 mod layout;
 mod performance;
 mod physics3d;
+mod rigid3d;
 mod platform;
 mod project;
 mod runtime;

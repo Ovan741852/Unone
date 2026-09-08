@@ -1,0 +1,1330 @@
+{
+  "camera3d": {
+    "position": {
+      "x": 17,
+      "y": 13,
+      "z": 21
+    },
+    "target": {
+      "x": 0,
+      "y": 3,
+      "z": 0
+    },
+    "fov_degrees": 50
+  },
+  "entities": [
+    {
+      "id": "floor",
+      "transform3d": {
+        "position": {
+          "x": 0,
+          "y": -0.5,
+          "z": 0
+        },
+        "scale": {
+          "x": 24,
+          "y": 1,
+          "z": 18
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "wall",
+      "transform3d": {
+        "position": {
+          "x": 9,
+          "y": 2,
+          "z": 0
+        },
+        "scale": {
+          "x": 0.2,
+          "y": 4,
+          "z": 16
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box00",
+      "transform3d": {
+        "position": {
+          "x": -2.8000000000000003,
+          "y": 0.6,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box01",
+      "transform3d": {
+        "position": {
+          "x": -1.6800000000000002,
+          "y": 0.6,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box02",
+      "transform3d": {
+        "position": {
+          "x": -0.56,
+          "y": 0.6,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box03",
+      "transform3d": {
+        "position": {
+          "x": 0.56,
+          "y": 0.6,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box04",
+      "transform3d": {
+        "position": {
+          "x": 1.6800000000000002,
+          "y": 0.6,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box05",
+      "transform3d": {
+        "position": {
+          "x": 2.8000000000000003,
+          "y": 0.6,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box06",
+      "transform3d": {
+        "position": {
+          "x": -2.8000000000000003,
+          "y": 1.6800000000000002,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box07",
+      "transform3d": {
+        "position": {
+          "x": -1.6800000000000002,
+          "y": 1.6800000000000002,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box08",
+      "transform3d": {
+        "position": {
+          "x": -0.56,
+          "y": 1.6800000000000002,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box09",
+      "transform3d": {
+        "position": {
+          "x": 0.56,
+          "y": 1.6800000000000002,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box10",
+      "transform3d": {
+        "position": {
+          "x": 1.6800000000000002,
+          "y": 1.6800000000000002,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box11",
+      "transform3d": {
+        "position": {
+          "x": 2.8000000000000003,
+          "y": 1.6800000000000002,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box12",
+      "transform3d": {
+        "position": {
+          "x": -2.8000000000000003,
+          "y": 2.7600000000000002,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box13",
+      "transform3d": {
+        "position": {
+          "x": -1.6800000000000002,
+          "y": 2.7600000000000002,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box14",
+      "transform3d": {
+        "position": {
+          "x": -0.56,
+          "y": 2.7600000000000002,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box15",
+      "transform3d": {
+        "position": {
+          "x": 0.56,
+          "y": 2.7600000000000002,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box16",
+      "transform3d": {
+        "position": {
+          "x": 1.6800000000000002,
+          "y": 2.7600000000000002,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box17",
+      "transform3d": {
+        "position": {
+          "x": 2.8000000000000003,
+          "y": 2.7600000000000002,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box18",
+      "transform3d": {
+        "position": {
+          "x": -2.8000000000000003,
+          "y": 3.8400000000000003,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box19",
+      "transform3d": {
+        "position": {
+          "x": -1.6800000000000002,
+          "y": 3.8400000000000003,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box20",
+      "transform3d": {
+        "position": {
+          "x": -0.56,
+          "y": 3.8400000000000003,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box21",
+      "transform3d": {
+        "position": {
+          "x": 0.56,
+          "y": 3.8400000000000003,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box22",
+      "transform3d": {
+        "position": {
+          "x": 1.6800000000000002,
+          "y": 3.8400000000000003,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box23",
+      "transform3d": {
+        "position": {
+          "x": 2.8000000000000003,
+          "y": 3.8400000000000003,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box24",
+      "transform3d": {
+        "position": {
+          "x": -2.8000000000000003,
+          "y": 4.92,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box25",
+      "transform3d": {
+        "position": {
+          "x": -1.6800000000000002,
+          "y": 4.92,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box26",
+      "transform3d": {
+        "position": {
+          "x": -0.56,
+          "y": 4.92,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box27",
+      "transform3d": {
+        "position": {
+          "x": 0.56,
+          "y": 4.92,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box28",
+      "transform3d": {
+        "position": {
+          "x": 1.6800000000000002,
+          "y": 4.92,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box29",
+      "transform3d": {
+        "position": {
+          "x": 2.8000000000000003,
+          "y": 4.92,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box30",
+      "transform3d": {
+        "position": {
+          "x": -2.8000000000000003,
+          "y": 6,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box31",
+      "transform3d": {
+        "position": {
+          "x": -1.6800000000000002,
+          "y": 6,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box32",
+      "transform3d": {
+        "position": {
+          "x": -0.56,
+          "y": 6,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box33",
+      "transform3d": {
+        "position": {
+          "x": 0.56,
+          "y": 6,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box34",
+      "transform3d": {
+        "position": {
+          "x": 1.6800000000000002,
+          "y": 6,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "box35",
+      "transform3d": {
+        "position": {
+          "x": 2.8000000000000003,
+          "y": 6,
+          "z": 0
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "ball",
+      "transform3d": {
+        "position": {
+          "x": -7,
+          "y": 3,
+          "z": 0
+        },
+        "scale": {
+          "x": 0.7,
+          "y": 0.7,
+          "z": 0.7
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "platform",
+      "transform3d": {
+        "position": {
+          "x": 0,
+          "y": 0.3,
+          "z": 5
+        },
+        "scale": {
+          "x": 3,
+          "y": 0.5,
+          "z": 3
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "capsule",
+      "transform3d": {
+        "position": {
+          "x": 0,
+          "y": 2,
+          "z": 5
+        },
+        "scale": {
+          "x": 0.8,
+          "y": 2.2,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "trigger",
+      "transform3d": {
+        "position": {
+          "x": 6,
+          "y": 2,
+          "z": 0
+        },
+        "scale": {
+          "x": 0.08,
+          "y": 4,
+          "z": 5
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/box"
+      }
+    },
+    {
+      "id": "anchor",
+      "transform3d": {
+        "position": {
+          "x": -5,
+          "y": 7,
+          "z": 3
+        },
+        "scale": {
+          "x": 0.3,
+          "y": 0.3,
+          "z": 0.3
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    },
+    {
+      "id": "pendulum",
+      "transform3d": {
+        "position": {
+          "x": -5,
+          "y": 5,
+          "z": 3
+        },
+        "scale": {
+          "x": 0.8,
+          "y": 0.8,
+          "z": 0.8
+        }
+      },
+      "mesh3d": {
+        "asset": "mesh://primitive/sphere"
+      }
+    }
+  ],
+  "physics3d": {
+    "gravity": {
+      "x": 0,
+      "y": -9.81,
+      "z": 0
+    },
+    "bodies": {
+      "floor": {
+        "body_type": "static",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 12,
+            "y": 0.5,
+            "z": 9
+          }
+        },
+        "friction": 0.7
+      },
+      "wall": {
+        "body_type": "static",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.1,
+            "y": 2,
+            "z": 8
+          }
+        },
+        "restitution": 0.8
+      },
+      "box00": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box01": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box02": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box03": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box04": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box05": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box06": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box07": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box08": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box09": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box10": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box11": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box12": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box13": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box14": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box15": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box16": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box17": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box18": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box19": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box20": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box21": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box22": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box23": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box24": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box25": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box26": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box27": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box28": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box29": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box30": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box31": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box32": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box33": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box34": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "box35": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
+        },
+        "friction": 0.7
+      },
+      "ball": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "sphere",
+          "radius": 0.35
+        },
+        "mass": 2,
+        "restitution": 0.85,
+        "ccd": true
+      },
+      "platform": {
+        "body_type": "kinematic",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 1.5,
+            "y": 0.25,
+            "z": 1.5
+          }
+        }
+      },
+      "capsule": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "capsule",
+          "radius": 0.4,
+          "half_height": 0.7
+        },
+        "friction": 0.6
+      },
+      "trigger": {
+        "body_type": "static",
+        "shape": {
+          "kind": "box",
+          "half_extents": {
+            "x": 0.04,
+            "y": 2,
+            "z": 2.5
+          }
+        },
+        "sensor": true
+      },
+      "anchor": {
+        "body_type": "static",
+        "shape": {
+          "kind": "sphere",
+          "radius": 0.15
+        }
+      },
+      "pendulum": {
+        "body_type": "dynamic",
+        "shape": {
+          "kind": "sphere",
+          "radius": 0.4
+        }
+      }
+    }
+  }
+}

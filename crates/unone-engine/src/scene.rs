@@ -107,6 +107,9 @@ fn parse_and_validate(text: &str, source: SceneSource<'_>) -> Result<SceneFile, 
 }
 
 fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<Diagnostic>> {
+    if let Some(physics) = &scene.physics3d {
+        physics.validate(scene).map_err(|message|scene_error(source,"SCENE_PHYSICS3D_INVALID","Invalid 3D physics",message))?;
+    }
     for (id, definition) in &scene.particle_effects {
         if id.trim().is_empty() {
             return Err(scene_error(

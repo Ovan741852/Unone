@@ -17,6 +17,7 @@ serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["raw_value"] }
 sha2 = "0.10"
 thiserror = "2"
+rapier3d = { version = "=0.26.1", default-features = false, features = ["dim3", "f32", "enhanced-determinism"] }
 
 [dev-dependencies]
 tempfile = "3"

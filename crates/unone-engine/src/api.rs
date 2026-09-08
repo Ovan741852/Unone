@@ -191,7 +191,7 @@ pub fn describe(name: &str) -> Option<ApiDescriptor> {
 }
 
 fn descriptors() -> Vec<ApiDescriptor> {
-    vec![
+    let mut result = vec![
         descriptor(
             "debug.registerTab",
             "debug",
@@ -1181,7 +1181,9 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "api.camera3d.setTarget({ x = 0, y = 0, z = 0 })",
             vec!["camera3d.getTransform", "camera3d.setPosition"],
         ),
-    ]
+    ];
+    result.extend(physics3d_descriptors());
+    result
 }
 
 fn parameter(name: &str, type_name: &str, meaning: &str) -> ApiParameter {
@@ -1190,6 +1192,42 @@ fn parameter(name: &str, type_name: &str, meaning: &str) -> ApiParameter {
         type_name: type_name.to_string(),
         meaning: meaning.to_string(),
     }
+}
+
+fn physics3d_descriptors() -> Vec<ApiDescriptor> {
+    [
+        ("getBody","id:string","Read immutable authored collider and body settings. Current velocity/pose comes from snapshot; definition_digest avoids repeating large mesh arrays every frame."),
+        ("addBody","id:string, body:Body3D (game schema body3d)","Attach a sphere, box, capsule, convex or static trimesh rigid body to an existing Transform3D; shape dimensions are explicit world units."),
+        ("removeBody","id:string","Remove a body, its collider and attached joints; leave the entity at its current pose."),
+        ("setGravity","value:Vec3","Set scene gravity and wake dynamic bodies."),
+        ("setVelocity","id:string, value:Vec3","Set dynamic linear velocity in world units per second."),
+        ("setAngularVelocity","id:string, value:Vec3","Set dynamic angular velocity in world radians per second."),
+        ("applyImpulse","id:string, value:Vec3","Apply an instantaneous world linear impulse and wake the dynamic body."),
+        ("applyTorqueImpulse","id:string, value:Vec3","Apply an instantaneous world angular impulse and wake the dynamic body."),
+        ("addForce","id:string, value:Vec3","Add a persistent world force; call clearForces to stop it."),
+        ("addTorque","id:string, value:Vec3","Add persistent world torque; call clearForces to stop it."),
+        ("clearForces","id:string","Clear persistent force and torque and wake the body."),
+        ("teleport","id:string, pose:Pose3D","Set position and XYZ Euler rotation immediately, retain velocity and synchronize Transform3D; no sweep along the teleport path."),
+        ("moveKinematic","id:string, pose:Pose3D","Set a kinematic body's next fixed-step pose; the solver derives velocity and pushes dynamic bodies."),
+        ("raycast","request:Ray3D (game schema ray3d)","Query the closest collider along from/to using a spatial index; returns nil or id, fraction, point and normal."),
+        ("castShape","request:Cast3D (game schema cast3d)","Sweep a convex shape at fixed orientation against indexed colliders; returns nil or id, fraction, world point and outward normal."),
+        ("overlap","request:Overlap3D (game schema overlap3d)","Return sorted collider entity IDs intersecting a convex shape. Sensors excluded unless requested."),
+        ("snapshot","none","Read 3D gravity, body poses/quaternions/velocities/sleep states, joint definitions and contact lifecycle without advancing time."),
+        ("contacts","none","Read last completed step's sorted enter/stay/exit contact and sensor pairs; normal points from a toward b, exit has zero normal/impulse."),
+        ("addJoint","id:string, joint:Joint3D (game schema joint3d)","Connect distinct bodies with fixed, spherical or limited revolute joints using local anchors; contacts disabled by default."),
+        ("removeJoint","id:string","Remove a joint by ID and wake its connected bodies."),
+    ].into_iter().map(|(name,args,purpose)|descriptor(
+        &format!("physics3d.{name}"),"physics3d",purpose,
+        "For opt-in 3D rigid-body games and AI physics inspection.",
+        "Enable systems.physics3d. Gameplay rules, damage and effect selection remain in Lua. Physics owns registered transforms; use teleport/moveKinematic instead of setTransform3D.",
+        if args=="none" {vec![]}else{vec![parameter("arguments","typed",args)]},
+        match name {"getBody"=>"Body3D","snapshot"=>"Physics3D snapshot or nil","contacts"=>"Collision3D[]","raycast"|"castShape"=>"QueryHit3D or nil","overlap"=>"string[]",_=>"nil"},
+        vec![if matches!(name,"getBody"|"snapshot"|"contacts"|"raycast"|"castShape"|"overlap") {"Read physics state; no implicit step"}else{"Change solver configuration/state; no implicit step"}],
+        "Fixed 60 Hz, single-threaded Rapier enhanced-determinism. Snapshot is an observation, not a complete resumable solver save. Contacts are read on the following Game.update.",
+        vec!["SYSTEM_DISABLED","PHYSICS3D_BODY_MISSING","invalid/unknown fields","PHYSICS3D_OWNERSHIP"],
+        "local state = api.physics3d.snapshot()",
+        vec!["physics3d.snapshot","physics3d.contacts","physics3d.raycast"]
+    )).collect()
 }
 
 #[allow(clippy::too_many_arguments)]
