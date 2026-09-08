@@ -68,13 +68,8 @@ deterministic and the AI can inspect its capabilities before using it.
 
 ## Workspace
 
-The paths in the command examples below are the ones this engine is developed
-against. They are **one machine's layout**, not a requirement: the validation
-games are a separate directory that this repository does not contain, and every
-command takes `--project <path>`.
+Commands below run from your repository checkout. Use `--project <path>` to select a game; no drive letter or developer-specific directory layout is required. Legion Fall is included under `_Games/legion-fall`; older private validation games are not included.
 
-- Engine: `D:/Projects/Unone`
-- Validation games: `D:/Projects/Unone_Games` (separate; not in this repository)
 - Engine roadmap: [docs/roadmap.md](docs/roadmap.md)
 - Technical plan: [docs/ai-native-game-engine-plan-v0.1.md](docs/ai-native-game-engine-plan-v0.1.md)
 - AI CLI workflow: [docs/ai-workflow.md](docs/ai-workflow.md)
@@ -99,23 +94,14 @@ Run these from the engine workspace:
 ```powershell
 cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json project inspect
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json verify
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json asset inspect
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json asset inspect --strict
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json bundle install --all
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset describe --id asset://characters/bird/red
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/angry-birds-2d --json asset read --id asset://characters/bird/red
+$game = (Resolve-Path _Games/legion-fall).Path
+cargo run -p unone-cli -- --project $game --json project inspect
+cargo run -p unone-cli -- --project $game --json asset inspect --strict
+cargo run -p unone-cli -- --project $game --json systems list
+cargo run -p unone-cli -- --project $game --json api describe entity.setPosition
+cargo run -p unone-cli -- --project $game --json run --frames 60
+cargo run -p unone-cli -- --project $game --json test
 cargo run -p unone-cli -- --json platform capabilities
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems list
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems set --id physics2d --enabled false
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json api describe entity.setPosition
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d ui preview
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json run --frames 60 --action Right
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json run --frames 2 --input-sequence D:/Projects/Unone_Games/minimal-2d/tests/input-sequence.json
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json test
-cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview --watch
 ```
 
 Use verify as the aggregate author gate: it covers the typed check, strict asset
@@ -126,7 +112,7 @@ An AI host can also use the same Developer Protocol through a thin MCP stdio ada
 
 ```powershell
 cargo build -p unone-cli
-target/debug/game.exe --project D:/Projects/Unone_Games/minimal-2d mcp
+target/debug/game.exe --project _Games/legion-fall mcp
 # Validate lifecycle, tool discovery, deterministic run, and semantic errors
 .\scripts\mcp-smoke.ps1
 ```
@@ -139,17 +125,7 @@ For complete type checking, use `game check --types`. A formal engine package pl
 
 ## Open it and look
 
-From `D:/Projects`, start a static server; `http://127.0.0.1:8001/Unone/web/` is the entry point for the three validation games:
-
-```powershell
-python -m http.server 8001
-```
-
-The slot machine uses `web/presentation/` (Spine + Effekseer, requiring WebGL2); Xiao Mary and Angry Birds use `web/runner/`.
-A browser without WebGPU can still run the semantic layer: the default Three.js
-adapter falls back to WebGL, and a browser without any usable GPU reports
-`renderer.available=false` while continuing simulation, UI, and save execution.
-The slot-machine wasm host must first run `scripts/build-web-live.ps1`.
+For the included 3D battle, follow [Legion Fall's build and run instructions](_Games/legion-fall/README.md). They export a self-contained player and serve its output directory. The older `web/presentation/` and `web/runner/` validation hosts require their own game resources; cloning this repository alone does not provide those private games.
 
 ## Current Web status
 
@@ -165,13 +141,9 @@ The first Bundle version contains only a manifest, dependencies, host-provided f
 
 ## Validation games
 
-In the medium term, use `D:/Projects/Unone_Games/` and Angry Birds 2D to stress 2D physics, camera, input replay, scene/prefab, assets, UI, hot reload, headless tests, and AI teaching. Long-term acceptance still includes 3D Racing, Red Alert-style RTS, Dota-style Idle Battle, AVG Romance, Auto Chess, Slot Machine, and Fish Machine.
+The included Legion Fall probe stresses 3D crowds and Luau combat. Separate validation projects cover physics, cameras, input replay, scene/prefab, assets, UI, hot reload, headless tests, and AI authoring. Long-term acceptance still includes 3D Racing, Red Alert-style RTS, Dota-style Idle Battle, AVG Romance, Auto Chess, Slot Machine, and Fish Machine.
 
-The formal gate is defined by `D:/Projects/Unone_Games/validation/acceptance-matrix.json`. Use the following command to check it; any incomplete gate returns a non-zero status:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File D:/Projects/Unone/scripts/validate-game-matrix.ps1 -MatrixPath D:/Projects/Unone_Games/validation/acceptance-matrix.json
-```
+The broader acceptance matrix belongs to the separate validation suite and is not included here. If you have that suite, pass the path to its `acceptance-matrix.json` explicitly to `scripts/validate-game-matrix.ps1`; incomplete gates return a non-zero status.
 
 Release player/export: [build and measurements](docs/player-export.md).
 Native 3D particle JSON, API and preview: [particle v1](docs/native-particles.md).
