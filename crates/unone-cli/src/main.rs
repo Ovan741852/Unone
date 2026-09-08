@@ -25,6 +25,7 @@ use winit::{
 mod assets;
 mod export;
 mod mcp;
+mod native_capture;
 mod native_clock;
 mod native_tools;
 mod plugins;
@@ -1217,7 +1218,12 @@ impl ApplicationHandler for PreviewApp {
 
     fn about_to_wait(&mut self, _event_loop: &ActiveEventLoop) {
         if let Some(runtime) = &mut self.runtime {
-            self.tools.drain(runtime);
+            let renderer = &mut self.renderer;
+            self.tools.drain(runtime, |snapshot, request| {
+                renderer.as_mut()
+                    .ok_or_else(|| "CAPTURE_UNAVAILABLE: native renderer is not ready".to_string())?
+                    .capture(snapshot, request)
+            });
         }
         if self.watch
             && let Some(runtime) = &mut self.runtime
@@ -1407,7 +1413,7 @@ impl Renderer {
         }
     }
 
-    fn render(&mut self, snapshot: &WorldSnapshot) -> Result<(), String> {
+    fn vertices(&self, snapshot: &WorldSnapshot) -> Vec<Vertex> {
         let mut vertices = Vec::with_capacity(snapshot.entities.len() * 6);
         if let Some(camera3d) = &snapshot.camera3d {
             self.build_3d_vertices(snapshot, camera3d, &mut vertices);
@@ -1465,6 +1471,11 @@ impl Renderer {
                 ]);
             }
         }
+        vertices
+    }
+
+    fn render(&mut self, snapshot: &WorldSnapshot) -> Result<(), String> {
+        let vertices = self.vertices(snapshot);
         self.ensure_vertex_buffer(vertices.len());
         if !vertices.is_empty() {
             self.queue
@@ -1492,6 +1503,13 @@ impl Renderer {
             .create_command_encoder(&wgpu::CommandEncoderDescriptor {
                 label: Some("unone-preview-encoder"),
             });
+        self.draw_pass(&mut encoder, &view, vertices.len() as u32);
+        self.queue.submit(Some(encoder.finish()));
+        self.queue.present(output);
+        Ok(())
+    }
+
+    fn draw_pass(&self, encoder: &mut wgpu::CommandEncoder, view: &wgpu::TextureView, vertex_count: u32) {
         {
             let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("unone-preview-pass"),
@@ -1516,11 +1534,8 @@ impl Renderer {
             });
             pass.set_pipeline(&self.pipeline);
             pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
-            pass.draw(0..vertices.len() as u32, 0..1);
+            pass.draw(0..vertex_count, 0..1);
         }
-        self.queue.submit(Some(encoder.finish()));
-        self.queue.present(output);
-        Ok(())
     }
 
     fn build_3d_vertices(

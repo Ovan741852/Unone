@@ -14,3 +14,13 @@ test('unknown method/typo fails and injected input does not silently tick',()=>{
  assert.equal(api.request({method:'input',frame:{actions:{Fire:true}}}).ok,true);assert.equal(ticks(),0);assert.equal(queued().actions.Fire,true);
  assert.equal(api.request({method:'journal'}).value.events.length,3);
 });
+test('screenshot validates dimensions before readback and never ticks',()=>{
+ let captures=0,ticks=0;
+ const api=createDeveloperAPI({getSnapshot:()=>({world:{frame:7}}),capture:options=>{captures++;return {frame:7,...options};},tick:()=>ticks++},{});
+ assert.equal(api.request({method:'screenshot',max_width:9000}).ok,false);
+ assert.equal(api.request({method:'screenshot',width:640}).ok,false);
+ assert.equal(captures,0);
+ const result=api.request({method:'screenshot',max_width:640});
+ assert.equal(result.ok,true);assert.equal(result.value.max_height,720);
+ assert.equal(result.value.frame,7);assert.equal(captures,1);assert.equal(ticks,0);assert.deepEqual(result.effects,[]);
+});

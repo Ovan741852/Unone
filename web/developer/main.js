@@ -14,6 +14,17 @@ export function createDeveloper(){
   const observer=new PerformanceObserver(list=>{for(const r of list.getEntries())retain(resources,{url:r.name,initiator:r.initiatorType,duration_ms:r.duration,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,decoded_bytes:r.decodedBodySize,status:Number.isFinite(r.responseStatus)&&r.responseStatus!==0?r.responseStatus:null});});
   observer.observe({type:'resource',buffered:true});
   return {connect(host){
+    host.capture=({max_width,max_height})=>{
+      // Capture immediately after drawing: no permanent preserveDrawingBuffer or per-frame readback.
+      host.draw();
+      const canvas=document.querySelector('#game'),output=document.createElement('canvas');
+      const scale=Math.min(1,max_width/canvas.width,max_height/canvas.height);
+      output.width=Math.max(1,Math.floor(canvas.width*scale));output.height=Math.max(1,Math.floor(canvas.height*scale));
+      const context=output.getContext('2d');if(!context)throw new Error('CAPTURE_UNAVAILABLE: 2D canvas context unavailable');
+      context.drawImage(canvas,0,0,output.width,output.height);
+      const snapshot=host.getSnapshot();
+      return {host:'web',mime_type:'image/png',width:output.width,height:output.height,frame:snapshot.world.frame,observation_digest:snapshot.observation_digest,data_url:output.toDataURL('image/png'),scope:'game_viewport',includes_ui:false,source:'web_renderer',note:'Current game canvas including canvas post-processing; excludes DOM UI and developer panel. No simulation tick.'};
+    };
     const api=createDeveloperAPI(host,{console:()=>messages,network:()=>resources,heap:()=>performance.memory?{used_bytes:performance.memory.usedJSHeapSize,total_bytes:performance.memory.totalJSHeapSize,limit_bytes:performance.memory.jsHeapSizeLimit}:null});
     Object.defineProperty(window,'unoneDeveloper',{value:api,configurable:false,writable:false});
     const context=document.modelContext??navigator.modelContext;

@@ -2,12 +2,12 @@
 export const methods = {
   describe:[], snapshot:[], hierarchy:[], console:[], network:[], profile:[], memory:[],
   'tools.list':[], 'tools.invoke':['id','revision','value'], pause:['paused'], step:['count'],
-  input:['frame'], bloom:['enabled'], journal:[],
+  input:['frame'], bloom:['enabled'], journal:[], screenshot:['max_width','max_height'],
 };
 export const requestSchema={type:'object',additionalProperties:false,required:['method'],properties:{
   method:{type:'string',enum:Object.keys(methods)},id:{type:'string'},revision:{type:'integer',minimum:0},
   value:{type:'boolean'},paused:{type:'boolean'},count:{type:'integer',minimum:1,maximum:120},
-  frame:{type:'object'},enabled:{type:'boolean'},
+  frame:{type:'object'},enabled:{type:'boolean'},max_width:{type:'integer',minimum:16,maximum:2048},max_height:{type:'integer',minimum:16,maximum:2048},
 }};
 const fail=(code,message)=>{const e=new Error(message);e.code=code;throw e;};
 const clone=value=>JSON.parse(JSON.stringify(value));
@@ -34,6 +34,11 @@ export function createDeveloperAPI(host,telemetry){
       switch(input.method){
         case 'describe':value={version:1,schema:requestSchema,methods,limits:{step_frames:120,journal_entries:200},semantics:'Mutations execute between ticks. Tool callbacks are Lua gameplay code; failures may leave changes. No arbitrary eval.'};break;
         case 'snapshot':value=core();break;
+        case 'screenshot':{
+          const max_width=input.max_width??1280,max_height=input.max_height??720;
+          if(![max_width,max_height].every(v=>Number.isInteger(v)&&v>=16&&v<=2048))fail('DEVELOPER_REQUEST_INVALID','max_width/max_height must be integers 16..2048');
+          value=host.capture({max_width,max_height});break;
+        }
         case 'hierarchy':value={entities:host.getSnapshot().world.entities,ui:host.getSnapshot().world.ui??null,note:'Entities are flat roots: this runtime has no entity parenting contract.'};break;
         case 'tools.list':value=core().tools;break;
         case 'console':value={game:core().logs,browser:telemetry.console(),retention:200};break;

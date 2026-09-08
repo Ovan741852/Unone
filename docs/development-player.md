@@ -124,6 +124,37 @@ with detection for older navigator-based implementations.
 
 ## Verified on 2026-09-08
 
+### On-demand viewport screenshots (Web and native)
+
+Both development hosts expose `{ "method": "screenshot", "max_width": 1280,
+"max_height": 720 }` through the same API and the panel's **截圖** button.
+Dimensions are optional integer bounds (16–2048); aspect ratio is preserved and
+small viewports are not upscaled. Unknown fields and unsupported captures fail.
+The result contains a PNG `data_url`, `width`, `height`, simulation `frame`,
+`observation_digest`, `host`, `source`, `scope: "game_viewport"`, and
+`includes_ui: false`. It excludes DOM UI, developer panels and desktop chrome.
+Use hierarchy/UI state separately; this is not a full-window screenshot.
+
+Web calls `window.unoneDeveloper.request(...)`; native accepts the same JSON at
+its loopback `/request` endpoint. AI may decode the returned base64 PNG directly.
+Pause first when comparing captures and state. Capture does not advance simulation
+or execute Lua. Web renders then reads the canvas immediately; native renders the
+same vertex/draw path to an offscreen target. GPU readback/PNG encoding occurs only
+on request, can stall that request, and is not part of normal frame processing.
+This adds no screenshot dependency or API to production Web exports.
+
+The native renderer still uses primitive box proxies and flat colors without
+Web's asset/material presentation. Screenshot availability does **not** establish
+visual parity. Frame/digest identify simulation state, not pixel equality.
+
+Actual WebMCP and native HTTP captures were inspected at frame 813, 960 × 540.
+Both returned `sha256:cf4404cd5ae5fe72077960df6662f0fcfe6a875ca401bc4728a1c3c65d224b66`,
+with visibly different native/Web output. Both panel buttons displayed PNGs.
+CLI unit tests: 18 passed; developer JavaScript tests: 3 passed. Actual exported
+development payload parity passed, including audio and physics negative controls.
+
+### Earlier development-tools baseline
+
 Workspace tests: 231 passed, 1 ignored. JavaScript developer API tests: 2 passed.
 Both optimized player variants passed actual exported-payload parity, including
 the audio-omission negative control. The development fixture also exercised Lua

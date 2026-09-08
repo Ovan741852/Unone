@@ -10,6 +10,8 @@ path = "src/main.rs"
 
 [dependencies]
 anyhow = "1"
+base64 = "0.23"
+png = "0.18"
 bytemuck = { version = "1", features = ["derive"] }
 clap = { version = "4", features = ["derive"] }
 pollster = "0.4"

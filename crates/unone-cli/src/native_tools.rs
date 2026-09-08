@@ -56,13 +56,30 @@ impl NativeTools {
             state: State::default(),
         })
     }
-    pub fn drain(&mut self, runtime: &mut EngineRuntime) {
+    pub fn drain(
+        &mut self,
+        runtime: &mut EngineRuntime,
+        mut capture: impl FnMut(
+            &WorldSnapshot,
+            crate::native_capture::CaptureRequest,
+        ) -> Result<Value, String>,
+    ) {
         for _ in 0..16 {
             let Ok(pending) = self.pending.try_recv() else {
                 break;
             };
             let result = if Instant::now() > pending.deadline {
                 failure("REQUEST_EXPIRED", "Native request expired before execution")
+            } else if pending.request["method"] == "screenshot" {
+                match serde_json::from_value::<crate::native_capture::CaptureRequest>(
+                    pending.request,
+                )
+                .map_err(|e| e.to_string())
+                .and_then(|request| capture(&runtime.observe(), request))
+                {
+                    Ok(value) => json!({"ok":true,"value":value,"diagnostics":[],"effects":[]}),
+                    Err(message) => failure("CAPTURE_FAILED", &message),
+                }
             } else {
                 self.state.request(runtime, pending.request)
             };
@@ -280,7 +297,7 @@ impl State {
             };
             Ok(match method {
                 "describe" => {
-                    json!({"version":1,"host":"native","methods":["describe","snapshot","hierarchy","console","network","profile","memory","tools.list","tools.invoke","pause","step","input","journal"],"unavailable":["bloom","js_heap","wasm_linear_memory","browser_network"],"semantics":"Same native runtime, between-tick commands. Lua callbacks are not transactional."})
+                    json!({"version":1,"host":"native","methods":["screenshot","describe","snapshot","hierarchy","console","network","profile","memory","tools.list","tools.invoke","pause","step","input","journal"],"unavailable":["bloom","js_heap","wasm_linear_memory","browser_network"],"semantics":"Same native runtime, between-tick commands. Lua callbacks are not transactional."})
                 }
                 "snapshot" => snapshot()?,
                 "tools.list" => snapshot()?["tools"].clone(),

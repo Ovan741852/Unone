@@ -4,6 +4,19 @@ export function mountPanel(api){
   const root=document.createElement('section');root.id='unone-developer';root.setAttribute('aria-label','Unone 開發工具');
   root.innerHTML=`<button class="dev-launch" aria-expanded="true">◈ 開發工具</button><div class="dev-panel"><header><div><small>UNONE / DEVELOPMENT</small><h2>看見狀態，驗證想法</h2></div><button class="dev-close" aria-label="收起開發工具">×</button></header><div class="dev-toolbar"><button data-method="pause">暫停</button><button data-method="step">前進 1 幀</button><button data-method="bloom">Bloom</button><span class="dev-frame"></span></div><nav aria-label="除錯分頁"></nav><div class="dev-summary"></div><div class="dev-body"></div><footer><span class="dev-status">AI 與面板共用同一套 API</span><button class="dev-copy">複製資料</button></footer></div>`;
   document.body.append(root);
+  const captureButton=document.createElement('button');captureButton.textContent='截圖';root.querySelector('.dev-toolbar').append(captureButton);
+  captureButton.onclick=async()=>{
+    captureButton.disabled=true;
+    try{
+      const result=await send({method:'screenshot'});if(!result.ok)return;
+      const capture=result.value,dialog=el('dialog',null,'dev-capture'),img=document.createElement('img');
+      img.src=capture.data_url;img.alt=`${capture.host} game viewport frame ${capture.frame}`;img.style.cssText='display:block;max-width:80vw;max-height:70vh';
+      const download=el('a','下載 PNG');download.href=capture.data_url;download.download=`unone-${capture.host}-${capture.frame}.png`;
+      const close=el('button','關閉');close.onclick=()=>dialog.close();
+      dialog.append(el('p',`${capture.host} · frame ${capture.frame} · ${capture.width} × ${capture.height} · 遊戲畫布（不含 DOM UI／開發面板）`),img,download,close);
+      dialog.addEventListener('close',()=>dialog.remove());document.body.append(dialog);dialog.showModal();
+    }finally{captureButton.disabled=false;}
+  };
   const panel=root.querySelector('.dev-panel'),body=root.querySelector('.dev-body'),nav=root.querySelector('nav'),status=root.querySelector('.dev-status');
   let active='tools',open=true,selected=null,filter='',lastValue=null,tabSignature='',lastBodySignature='',refreshGeneration=0;
   const builtin=[['tools','遊戲工具'],['hierarchy','Hierarchy'],['console','Console'],['network','Network'],['profile','Profile'],['memory','Memory'],['journal','操作紀錄']];
