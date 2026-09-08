@@ -1,0 +1,10 @@
+{
+ "conditions":{"artifact":"round4-reviewed","drawing_buffer":[1280,720],"camera":"wide","population":10000,"stress":true,"sampling":false,"start_battle_seconds":2,"note":"86.4-second exploratory foreground browser run; no CPU benchmark/build concurrently. Some short shell documentation/check tasks occurred. Distributions retain latest 2048 samples; totals cover entire window. CPU render completion is not verified screen presentation."},
+ "wall_ms":86404.30000001192,"tick_count":5184,"render_count":9495,"dropped_steps_delta":0,
+ "wasm_tick_publish_mean_ms":9.959228515537689,"wasm_tick_publish_p95_ms":15.599999994039536,
+ "render_cpu_mean_ms":1.0256347657123115,"render_cpu_p95_ms":3.4000000059604645,
+ "render_interval_mean_ms":8.97998046875,"render_interval_p95_ms":24.30000001192093,"render_interval_max_ms":27.399999976158142,
+ "interval_count":9494,"intervals_over_60hz":1776,
+ "renderer_last":{"instances":11032,"submitted_instances":11032,"culled_instances":0,"instance_cells":67,"draw_calls":68,"triangles":3485779},
+ "stable_60fps_proven":false
+}

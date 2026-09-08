@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import * as THREE from '../vendor/three/three.player.min.js';
+import {Frustum,Matrix4} from '../vendor/three/three.module.js';
+import {createInstanceRenderer} from './instances3d.js';
+test('real instance bounds follow motion, scale and removal without touching simulation bytes',()=>{
+ const scene=new THREE.Scene(),geometry=new THREE.BoxGeometry(2,2,2),material=new THREE.MeshBasicMaterial();
+ const render=createInstanceRenderer(THREE,scene,()=>({geometry,material}));
+ const bytes=Buffer.alloc(80);
+ const set=(i,x,s)=>{const o=i*40;bytes.writeFloatLE(x,o);bytes.writeFloatLE(1,o+24);for(const d of [28,32,36])bytes.writeFloatLE(s,o+d);};
+ set(0,0,1);set(1,500,10);
+ const batch=()=>({asset:'mesh://unit',format:'f32le-p3-q4-s3-v1',count:2,data:bytes.toString('base64')});
+ const original=Buffer.from(bytes);render.draw({units:batch()},{});assert.equal(scene.children.length,2);assert.deepEqual(bytes,original);
+ const camera=new THREE.PerspectiveCamera(60,1,.1,100);camera.position.set(0,0,10);camera.lookAt(0,0,0);camera.updateMatrixWorld();
+ const frustum=new Frustum().setFromProjectionMatrix(new Matrix4().multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
+ scene.updateMatrixWorld();assert.equal(scene.children.filter(m=>frustum.intersectsObject(m)).length,1);
+ assert.ok(scene.children.every(m=>m.frustumCulled));assert.ok(scene.children[1].boundingSphere.radius>=17);
+ set(0,500,1);render.draw({units:batch()},{});scene.updateMatrixWorld();assert.equal(scene.children.length,1);assert.equal(frustum.intersectsObject(scene.children[0]),false);
+ render.draw({},{});assert.equal(scene.children.length,0);geometry.dispose();material.dispose();
+});

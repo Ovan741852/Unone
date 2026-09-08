@@ -15,6 +15,7 @@ local stress=false
 local capped=0
 local cinematic=false
 local grid={{},{}}
+local regionTargets={{},{}}
 local live={5000,5000}
 local shotCounts={arrow=0,bolt=0,boulder=0,magic=0}
 local types={
@@ -37,6 +38,7 @@ end
 local function cell(x,z)return floor(x/7)*1000+floor(z/7)end
 local function rebuildGrid()
  grid={{},{}}
+ regionTargets={{},{}}
  for i,u in ipairs(units)do if u.hp>0 then local key=cell(u.x,u.z);local bucket=grid[u.team][key];if not bucket then bucket={};grid[u.team][key]=bucket end;bucket[#bucket+1]=i end end
 end
 local function damage(target,amount,team)
@@ -53,9 +55,16 @@ local function resolveDamage()
  end
 end
 local function acquire(u,index)
- local ux,uz=u.x,u.z;local groundOnly=u.kind==1 or u.kind==3
+ -- Nearby units share a regional engagement target. Separate air eligibility.
+ -- Cache lifetime is one completed grid rebuild; no wall-clock decisions.
+ local groundOnly=u.kind==1 or u.kind==3
+ local gx,gz=floor(u.x/7),floor(u.z/7)
+ local key=(gx*1000+gz)*2+(groundOnly and 1 or 0)
+ local cached=regionTargets[u.team][key]
+ if cached~=nil then return cached~=0 and cached or nil end
+ local ux,uz=(gx+.5)*7,(gz+.5)*7
  local enemies=grid[3-u.team];local records=units
- local best,bestD=nil,1e9;local gx,gz=floor(ux/7),floor(uz/7);local scanned=0
+ local best,bestD=nil,1e9;local scanned=0
  for dx=-1,1 do for dz=-1,1 do
   local bucket=enemies[(gx+dx)*1000+gz+dz]
   if bucket then for _,j in ipairs(bucket)do
@@ -68,13 +77,14 @@ local function acquire(u,index)
   end end
   if scanned>=32 then break end
  end;if scanned>=32 then break end end
- if best then return best end
+ if best then regionTargets[u.team][key]=best;return best end
  -- A bounded deterministic sample supplies a pursuit target when no enemy is nearby.
  local half=count/2;local offset=u.team==1 and half or 0
  for n=1,12 do
-  local j=offset+((index*17+step*7+n*397)%half)+1;local e=records[j]
+  local j=offset+((key*17+step*7+n*397)%half)+1;local e=records[j]
   if e.hp>0 and (not groundOnly or e.kind~=6)then local d=(e.x-ux)^2+(e.z-uz)^2;if d<bestD then best=j;bestD=d end end
  end
+ regionTargets[u.team][key]=best or 0
  return best
 end
 local function hitArea(p,radius,limit)
@@ -217,7 +227,7 @@ function Game.update(api,dt)
  -- Fixed work partitions, never a wall-clock budget. Internal work stays private
  -- until the third tick publishes the same complete 20 Hz battle result.
  phase+=1
- local firstCut=floor(count*.37);local secondCut=floor(count*.90)
+ local firstCut=floor(count*.40);local secondCut=count
  if phase==1 then
   step+=1;elapsed+=.05;rebuildGrid()
   teamShots={0,0};for _,p in ipairs(shots)do teamShots[p.team]+=1 end

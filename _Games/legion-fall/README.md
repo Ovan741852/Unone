@@ -46,3 +46,5 @@ Combat still commits at 20 Hz. Each update is now prepared in three fixed Lua wo
 Run `node _Games/legion-fall/verify-phases.mjs <development-export>` to verify no partial publication and reset/pause behavior at both unfinished phases. This test normalizes only engine frame/time when comparing a reset to a fresh game. For the full battle, compare every tick with the previous export using `scripts/compare-player.mjs --checkpoint-every 1`.
 
 [第三輪：精確 hash 重用與工具量測](../../docs/legion-fall-round3.md)。目前工作分配為 37/53/10，遊戲規則維持 Lua。
+
+[第四輪報告](../../docs/legion-fall-round4.md)：Lua 改用區域共享目標，工作分配 40/60/0；Web instance 空間裁切預設啟用。這輪會改變目標選擇，不能與舊版戰鬥 digest 當成同一個 replay。

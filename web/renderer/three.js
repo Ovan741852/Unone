@@ -265,7 +265,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     resetMeasurements:()=>bloom?.resetMeasurements(),
     implementation: "three.js",
     backend,
-    metrics: () => ({instances:instances.count,draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,effects:effects?.count??0,...bloom?.metrics()}),
+      metrics: () => ({instances:instances.count,...instances.metrics(),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 

@@ -160,3 +160,5 @@ AI-directed optimization: [measured results](docs/legion-fall-optimization.md), 
 Game-owned WASM extensions: [proposed ABI and AI implementation contract](docs/proposals/wasm-compute-v1.md) (design only; no module loader yet).
 
 [第三輪報告](docs/legion-fall-round3.md)：固定 replay CPU 成本降低 9.8%，持續萬人壓測降低 10.7%；逐 tick digest 一致。另附 [AI 效能工具檢視](docs/performance-tools-review.md)。
+
+[第四輪：區域共享尋敵與攝影機裁切](docs/legion-fall-round4.md)：萬人不減員跑 86.4 秒、維持 60 tick/s 且無掉 tick；平均繪製完成 109.9 次/s，但間隔 p95 為 24.3 ms，尚未證明穩定 60 FPS。

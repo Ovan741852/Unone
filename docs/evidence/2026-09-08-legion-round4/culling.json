@@ -1,0 +1,7 @@
+{
+ "method":"Same paused world frame 1768, 2 battle seconds, 10000 living units, 150 projectiles. Only camera changed. Not an FPS benchmark.",
+ "drawing_buffer":[1280,720],
+ "wide":{"instances":10150,"instance_cells":67,"submitted_instances":10150,"submitted_instance_cells":67,"culled_instances":0,"draw_calls":68,"triangles":3390056},
+ "front":{"instances":10150,"instance_cells":67,"submitted_instances":7779,"submitted_instance_cells":34,"culled_instances":2371,"draw_calls":35,"triangles":2645024},
+ "observations_equal":true
+}
