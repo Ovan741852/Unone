@@ -74,6 +74,13 @@ end,update=function(api)counter+=1;api.observation.set('counter',counter);api.ob
 }
 
 pub(super) fn new_vm() -> Result<Lua, Box<crate::Diagnostic>> {
+    create_vm(false)
+}
+#[cfg(feature = "jobs")]
+pub(super) fn new_job_vm() -> Result<Lua, Box<crate::Diagnostic>> {
+    create_vm(true)
+}
+fn create_vm(job:bool) -> Result<Lua, Box<crate::Diagnostic>> {
     let lua = Lua::new();
     install(&lua).map_err(|error| {
         Box::new(crate::Diagnostic::error(
@@ -82,6 +89,11 @@ pub(super) fn new_vm() -> Result<Lua, Box<crate::Diagnostic>> {
             error.to_string(),
         ))
     })?;
+    if job {
+        let blocked=lua.create_function(|_,_:mlua::MultiValue|Err::<Value,_>(mlua::Error::RuntimeError("JOB_SIDE_EFFECT_FORBIDDEN: print".into())))
+            .and_then(|f|lua.globals().set("print",f));
+        blocked.map_err(|e|Box::new(crate::Diagnostic::error("ENGINE_INIT_FAILED","Unable to isolate job output",e.to_string())))?;
+    }
     // Keep standard libraries immutable and activate Luau's builtin fast paths.
     // Script globals still write into the VM-local environment supplied by mlua.
     lua.sandbox(true).map_err(|error| {

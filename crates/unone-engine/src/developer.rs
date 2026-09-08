@@ -762,6 +762,7 @@ impl DeveloperSession {
             DeveloperRequest::Perf { .. } => {
                 let mut report = self.metadata();
                 report["performance"] = json!(self.runtime.developer_performance());
+                report["jobs"] = json!(self.runtime.jobs_report());
                 report["measurement_scope"] = json!(
                     "runtime script/physics/observe; excludes rendering, transport and developer diff overhead"
                 );

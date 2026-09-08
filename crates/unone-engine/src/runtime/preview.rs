@@ -179,9 +179,13 @@ impl EngineRuntime {
                     )));
                 }
                 self.performance = PerformanceCollector::default();
+                #[cfg(feature = "jobs")]
+                self.jobs.borrow_mut().profile_start();
                 profiling::start(&self.lua, self.world.borrow().frame, *sampling);
             }
             PreviewRequest::ProfileStop {} => {
+                #[cfg(feature = "jobs")]
+                self.jobs.borrow_mut().profile_stop();
                 self.lua.remove_interrupt();
                 profiling::state(&self.lua).borrow_mut().active = false;
             }
@@ -195,7 +199,7 @@ impl EngineRuntime {
         ) {
             return Ok(
                 serde_json::json!({"performance":self.performance_report(),"window":profiling::state(&self.lua).borrow().report(),
-                "build":{"debug_assertions":cfg!(debug_assertions),"preview_tools":true},"counts_frame":self.world.borrow().frame}),
+                "build":{"debug_assertions":cfg!(debug_assertions),"preview_tools":true},"counts_frame":self.world.borrow().frame,"jobs":self.jobs_report()}),
             );
         }
         if let PreviewRequest::Invoke {

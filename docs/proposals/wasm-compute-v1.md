@@ -9,6 +9,8 @@ tests narrower lifecycle choices; it is not this proposed v1 ABI or a second
 supported API. Before implementation, reconcile those choices and the remaining
 host/executor/layout gates into one authoritative contract.
 
+The separate [implemented Luau jobs API](../jobs.md) accepts Luau source and buffers. It does not implement this WASM module ABI or Web Worker backend.
+
 ## Ownership
 
 Luau owns gameplay state, scheduling, rules and applying results. A game may package its own Rust/C/C++ algorithm as WASM without modifying engine Rust. The engine owns loading, ABI validation, buffer exchange, deterministic delivery, resource limits and measurement. Modules cannot access ECS, rendering, files, network, clocks or engine pointers.

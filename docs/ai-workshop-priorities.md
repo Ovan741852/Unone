@@ -1,6 +1,6 @@
 # AI workshop: what to strengthen next
 
-This is a design assessment, not a claim that Worker/ECS APIs are implemented.
+This is a design assessment. Optional [Luau jobs](jobs.md) are now callable with a native thread pool and a Web inline backend; Web Worker/ECS APIs remain unimplemented.
 The workshop should let AI discover capabilities, run controlled experiments,
 inspect evidence and choose changes. Human tools should consume the same APIs.
 

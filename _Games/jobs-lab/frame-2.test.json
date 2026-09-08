@@ -1,0 +1,1 @@
+{"name":"jobs-deliver","frames":2,"seed":42,"assertions":[{"observation":{"key":"verified_batches","equals":4}}]}

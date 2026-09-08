@@ -1222,6 +1222,29 @@ fn descriptors() -> Vec<ApiDescriptor> {
         ),
     ];
     result.extend(physics3d_descriptors());
+    for (name,purpose,parameters,returns,example) in [
+        ("jobs.register","Register a game-owned isolated Luau function source during start/onReload.",
+            vec![parameter("id","string","1..64 ASCII alphanumeric/underscore/hyphen bytes"),parameter("source","string","1..16384 bytes; return function(input: buffer): buffer; fresh sandbox VM per execution")],"nil",
+            "api.jobs.register('copy', 'return function(input) return input end')"),
+        ("jobs.submit","Copy one batch input and stage work for next-tick delivery.",
+            vec![parameter("operation","string","Previously registered operation ID"),parameter("input","buffer","At most 262144 bytes; caller retains its buffer")],"string job handle",
+            "job = api.jobs.submit('copy', input)"),
+        ("jobs.take","Consume one result during a later update, after the job barrier.",
+            vec![parameter("handle","string","One-shot handle from jobs.submit")],"buffer",
+            "local output = api.jobs.take(job) -- next update, never the submission update"),
+        ("jobs.cancel","Invalidate a not-yet-consumed job and discard its eventual result.",
+            vec![parameter("handle","string","Live job handle; late background result is ignored")],"nil",
+            "api.jobs.cancel(job)"),
+        ("jobs.reset","Invalidate all job handles for a gameplay reset; keep registered operations.",vec![],"nil",
+            "api.jobs.reset() -- alongside the game's own round reset"),
+    ] {
+        result.push(descriptor(name,"jobs",purpose,"Independent coarse buffer batches; game rules remain in Luau.",
+            "Not per-entity callbacks, shared mutable world, a Web Worker backend, or arbitrary WASM modules.",parameters,returns,
+            vec!["Updates bounded job state; job source/input/delivered output hashes participate in replay snapshots."],
+            "Enable systems.jobs. Submit only during update; dispatch after success; join before next update. Native uses two background threads, WASM executes inline with identical next-tick visibility. Budget/cancellation is cooperative at VM safe points.",
+            vec!["Disabled/missing capability, unknown operation, invalid or stale handle, early take, input/output/queue/memory/budget limits fail explicitly."],example,
+            vec!["jobs.register","jobs.submit","jobs.take","jobs.cancel","jobs.reset"]));
+    }
     result
 }
 

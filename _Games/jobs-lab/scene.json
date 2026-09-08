@@ -1,0 +1,10 @@
+{
+  "camera3d": {"position":{"x":16,"y":14,"z":22},"target":{"x":0,"y":3,"z":0},"fov_degrees":50},
+  "entities": [
+    {"id":"floor","transform3d":{"position":{"x":0,"y":-0.5,"z":0},"scale":{"x":18,"y":1,"z":10}},"mesh3d":{"asset":"mesh://primitive/box"}},
+    {"id":"bar1","transform3d":{"position":{"x":-4.5,"y":1,"z":0}},"mesh3d":{"asset":"mesh://primitive/box"}},
+    {"id":"bar2","transform3d":{"position":{"x":-1.5,"y":1,"z":0}},"mesh3d":{"asset":"mesh://primitive/box"}},
+    {"id":"bar3","transform3d":{"position":{"x":1.5,"y":1,"z":0}},"mesh3d":{"asset":"mesh://primitive/box"}},
+    {"id":"bar4","transform3d":{"position":{"x":4.5,"y":1,"z":0}},"mesh3d":{"asset":"mesh://primitive/box"}}
+  ]
+}

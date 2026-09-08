@@ -1,0 +1,1 @@
+{"name":"jobs-replay-30","frames":30,"seed":42,"assertions":[{"observation":{"key":"verified_batches","equals":116}}]}

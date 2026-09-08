@@ -1,0 +1,7 @@
+{
+  "name": "Unone Jobs Lab — Luau batch jobs",
+  "entry_script": "main.luau",
+  "main_scene": "scene.json",
+  "systems": {"jobs": true, "physics2d": false, "physics3d": false, "audio": false, "particle": false},
+  "test_files": ["frame-1.test.json", "frame-2.test.json", "frame-30.test.json", "frame-120.test.json"]
+}

@@ -20,6 +20,8 @@ use crate::{
 const FIXED_DT: f64 = 1.0 / 60.0;
 mod bindings;
 mod determinism;
+#[cfg(feature = "jobs")]
+mod jobs;
 #[cfg(feature = "preview-tools")]
 mod preview;
 #[cfg(feature = "preview-tools")]
@@ -82,6 +84,8 @@ pub struct TypeCheckReport {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct RunReport {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub jobs: Option<serde_json::Value>,
     pub project: String,
     pub seed: u64,
     pub status: String,
@@ -133,6 +137,8 @@ struct PointerState {
 
 #[derive(Clone)]
 struct ApiState {
+    #[cfg(feature = "jobs")]
+    jobs: Rc<RefCell<jobs::Jobs>>,
     #[cfg(feature = "preview-tools")]
     debug_tools: Rc<RefCell<preview::DebugTools>>,
     world: Rc<RefCell<World>>,
@@ -209,6 +215,8 @@ struct ReloadRollbackState {
 }
 
 pub struct EngineRuntime {
+    #[cfg(feature = "jobs")]
+    jobs: Rc<RefCell<jobs::Jobs>>,
     #[cfg(feature = "preview-tools")]
     debug_tools: Rc<RefCell<preview::DebugTools>>,
     config: ProjectConfig,
@@ -526,6 +534,8 @@ impl EngineRuntime {
         #[cfg(feature = "preview-tools")]
         let debug_tools = Rc::new(RefCell::new(preview::DebugTools::default()));
         let api_state = ApiState {
+            #[cfg(feature = "jobs")]
+            jobs: Rc::new(RefCell::new(jobs::Jobs::default())),
             #[cfg(feature = "preview-tools")]
             debug_tools: Rc::clone(&debug_tools),
             world: Rc::clone(&world),
@@ -576,6 +586,8 @@ impl EngineRuntime {
             ))
         })?;
         let mut runtime = Self {
+            #[cfg(feature = "jobs")]
+            jobs: Rc::clone(&api_state.jobs),
             #[cfg(feature = "preview-tools")]
             debug_tools,
             config,
@@ -608,6 +620,8 @@ impl EngineRuntime {
             runtime.set_viewport_aspect(aspect)?;
         }
         runtime.load_script(false, None)?;
+        #[cfg(feature = "jobs")]
+        runtime.jobs.borrow_mut().loaded();
         runtime.cache_performance_counts(&runtime.observe());
         Ok(runtime)
     }
@@ -762,6 +776,7 @@ impl EngineRuntime {
             }
         };
         EngineResult::success(RunReport {
+            jobs: self.jobs_report(),
             project: self.config.name.clone(),
             seed,
             status: "completed".to_string(),
@@ -785,6 +800,11 @@ impl EngineRuntime {
 
     pub fn tick(&mut self) -> Result<WorldSnapshot, Box<Diagnostic>> {
         let started = std::time::Instant::now();
+        #[cfg(feature = "jobs")]
+        if self.systems.is_enabled("jobs") {
+            self.jobs.borrow_mut().begin(self.world.borrow().frame)
+                .map_err(|e|Box::new(script_diagnostic(&self.paths,e)))?;
+        }
         let allocated_before = self.lua.used_memory();
         {
             let mut world = self.world.borrow_mut();
@@ -820,6 +840,8 @@ impl EngineRuntime {
             self.lua.remove_interrupt();
             profiling::state(&self.lua).borrow_mut().active = false;
         }
+        #[cfg(feature = "jobs")]
+        if let Err(error)=&script { self.jobs.borrow_mut().fail(error.explanation.clone()); }
         script?;
         let (physics_result, physics_time) = timed(|| -> Result<(), Box<Diagnostic>> {
             #[cfg(feature = "physics2d")]
@@ -844,7 +866,13 @@ impl EngineRuntime {
             }
             Ok(())
         });
+        #[cfg(feature = "jobs")]
+        if let Err(error)=&physics_result { self.jobs.borrow_mut().fail(error.explanation.clone()); }
         physics_result?;
+        #[cfg(feature = "jobs")]
+        if self.systems.is_enabled("jobs") {
+            self.jobs.borrow_mut().finish().map_err(|e|Box::new(script_diagnostic(&self.paths,e)))?;
+        }
         {
             let mut world = self.world.borrow_mut();
             // Before the frame advances, so an attached source is observed at
@@ -1034,9 +1062,18 @@ impl EngineRuntime {
 
     pub fn observe(&self) -> WorldSnapshot {
         let mut snapshot = self.world.borrow().snapshot();
+        #[cfg(feature = "jobs")]
+        if self.systems.is_enabled("jobs") { snapshot.jobs=Some(self.jobs.borrow().snapshot()); }
         snapshot.observations = self.observations.borrow().clone();
         snapshot.ui = self.ui.borrow().clone();
         snapshot
+    }
+
+    /// Diagnostic-only executor capabilities and costs; never available to gameplay.
+    pub fn jobs_report(&self) -> Option<serde_json::Value> {
+        #[cfg(feature = "jobs")]
+        if self.systems.is_enabled("jobs") { return Some(self.jobs.borrow().report()); }
+        None
     }
 
     #[cfg(feature = "dev-tools")]
@@ -1163,6 +1200,8 @@ impl EngineRuntime {
             Rc::clone(&self.world)
         };
         let candidate_api_state = ApiState {
+            #[cfg(feature = "jobs")]
+            jobs: Rc::new(RefCell::new(self.jobs.borrow().reload_candidate())),
             debug_tools: Rc::new(RefCell::new(preview::DebugTools::with_revision(
                 self.debug_tools.borrow().revision + 1,
             ))),
@@ -1195,6 +1234,11 @@ impl EngineRuntime {
 
         if has_on_reload {
             self.world = candidate_world;
+        }
+        #[cfg(feature = "jobs")]
+        {
+            candidate_api_state.jobs.borrow_mut().loaded();
+            self.jobs=Rc::clone(&candidate_api_state.jobs);
         }
         self.generation += 1;
         self.trace.borrow_mut().push(TraceEvent {

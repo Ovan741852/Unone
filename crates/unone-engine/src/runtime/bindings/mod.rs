@@ -7,6 +7,8 @@ mod camera;
 mod debug;
 mod entity;
 mod input;
+#[cfg(feature = "jobs")]
+mod jobs;
 mod physics;
 mod presentation;
 mod state;
@@ -18,6 +20,10 @@ pub(super) fn build_api(
     systems: &SystemSettings,
 ) -> mlua::Result<Table> {
     let api = lua.create_table()?;
+    #[cfg(feature = "jobs")]
+    api.set("jobs",disable_if_off(lua,systems,"jobs",jobs::bind(lua,state)?)?)?;
+    #[cfg(not(feature = "jobs"))]
+    api.set("jobs",unavailable(lua,"jobs")?)?;
     api.set("instances3d", presentation::instances3d(lua, state)?)?;
     api.set("debug", debug::bind(lua, state)?)?;
     state::log(lua, state, &api)?;

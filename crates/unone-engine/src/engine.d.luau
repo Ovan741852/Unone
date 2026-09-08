@@ -208,7 +208,15 @@ export type DebugApi = {
     register: (control: DebugControl, callback: ((value: boolean?) -> ())?) -> (),
     set: (id: string, value: string | boolean) -> (),
 }
+export type JobsApi = {
+    register: (id: string, source: string) -> (),
+    submit: (operation: string, input: buffer) -> string,
+    take: (handle: string) -> buffer,
+    cancel: (handle: string) -> (),
+    reset: () -> (),
+}
 export type EngineApi = {
+    jobs: JobsApi,
     instances3d: Instances3DApi,
     debug: DebugApi,
     particle: ParticleApi,

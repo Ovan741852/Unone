@@ -423,6 +423,8 @@ pub struct RigidBodySnapshot {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct WorldSnapshot {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub jobs: Option<serde_json::Value>,
     #[serde(skip_serializing_if = "BTreeMap::is_empty")]
     pub instances3d: BTreeMap<String, crate::instances3d::InstanceBatch3D>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -669,6 +671,7 @@ impl World {
                 })
                 .collect();
         WorldSnapshot {
+            jobs: None,
             instances3d: self.instances3d.clone(),
             #[cfg(feature = "physics3d")]
             physics3d: self.physics3d.as_ref().map(|p| p.snapshot()),

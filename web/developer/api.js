@@ -34,7 +34,7 @@ export function createDeveloperAPI(host,telemetry){
       const bool=(key)=>{if(typeof input[key]!=='boolean')fail('DEVELOPER_REQUEST_INVALID',key+' must be boolean');return input[key];};
       let value;
       switch(input.method){
-        case 'describe':value={version:1,schema:requestSchema,methods,limits:{step_frames:120,journal_entries:200},profiling:{start:'profile.start',read:'profile',stop:'profile.stop',paths:{vm:'window.vm',host_timeline:'host_window.timeline',function_samples:'window.functions',publication:'publication'},join:'VM and host tick entries share world frame; host spans use performance.now milliseconds. Check capabilities and retained limits before drawing conclusions.',unsupported:['JS GC pauses','Rust allocation throughput','full Luau GC duration','verified display presentation']},semantics:'Mutations execute between ticks. Tool callbacks are Lua gameplay code; failures may leave changes. No arbitrary eval.'};break;
+        case 'describe':value={version:1,schema:requestSchema,methods,limits:{step_frames:120,journal_entries:200},profiling:{start:'profile.start',read:'profile',stop:'profile.stop',paths:{vm:'window.vm',host_timeline:'host_window.timeline',function_samples:'window.functions',publication:'publication',jobs:'jobs',jobs:'jobs'},join:'VM and host tick entries share world frame; host spans use performance.now milliseconds. Check capabilities and retained limits before drawing conclusions.',unsupported:['JS GC pauses','Rust allocation throughput','full Luau GC duration','verified display presentation']},semantics:'Mutations execute between ticks. Tool callbacks are Lua gameplay code; failures may leave changes. No arbitrary eval.'};break;
         case 'snapshot':value=core();break;
         case 'observations':{const s=host.getSnapshot();value={frame:s.world.frame,observations:s.world.observations,renderer:host.getStats(),paused:host.getPaused()};break;}
         case 'instances.transport':{
@@ -59,7 +59,7 @@ export function createDeveloperAPI(host,telemetry){
           const data=core({method,...(sampling===undefined?{}:{sampling})});
           if(input.method==='profile.start'){host.profileWindow?.start(host.getStats()??{});mutating=true;}
           if(input.method==='profile.stop'){host.profileWindow?.stop(host.getStats()??{});mutating=true;}
-          value={frame:data.counts_frame,runtime:data.performance,window:data.window,build:data.build,host_window:host.profileWindow?.read(host.getStats()??{})??null,publication:data.publication??null,renderer:host.getStats(),paused:host.getPaused(),note:'renderer counters may use a different rolling window; bridge_ms includes WASM tick, not pure bridge cost'};break;
+          value={frame:data.counts_frame,runtime:data.performance,window:data.window,build:data.build,jobs:data.jobs??null,host_window:host.profileWindow?.read(host.getStats()??{})??null,publication:data.publication??null,renderer:host.getStats(),paused:host.getPaused(),note:'renderer counters may use a different rolling window; bridge_ms includes WASM tick, not pure bridge cost'};break;
         }
         case 'memory':{const data=core({method:'profile'});value={luau_used_bytes:data.performance.luau_memory_bytes,wasm_linear_bytes:host.module.HEAPU8.buffer.byteLength,js_heap:telemetry.heap(),renderer:host.getStats(),note:'WASM capacity is not live allocation; renderer counters are not GPU byte usage. Unsupported JS heap is null.'};break;}
         case 'journal':value={events:journal};break;
