@@ -4,8 +4,8 @@ use serde::Serialize;
 use std::{
     collections::BTreeMap,
     sync::{
-        atomic::{AtomicBool, Ordering},
         Arc,
+        atomic::{AtomicBool, Ordering},
     },
     time::Instant,
 };
@@ -25,13 +25,77 @@ fn hash(b: &[u8]) -> String {
     super::hex_digest(b)
 }
 
+fn native_workers() -> usize {
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        std::thread::available_parallelism()
+            .map(|n| n.get().saturating_sub(1).min(2))
+            .unwrap_or(0)
+    }
+    #[cfg(target_arch = "wasm32")]
+    {
+        0
+    }
+}
+#[derive(serde::Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+enum HostRequest {
+    Configure {
+        workers: usize,
+    },
+    Drain {},
+    Complete {
+        id: String,
+        output: Option<Vec<u8>>,
+        error: Option<String>,
+        run_ms: f64,
+    },
+}
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ExecuteRequest {
+    id: String,
+    path: String,
+    source: String,
+    input: Vec<u8>,
+}
+pub(super) fn execute_host(request: serde_json::Value) -> Result<serde_json::Value, String> {
+    let r: ExecuteRequest =
+        serde_json::from_value(request).map_err(|e| format!("JOB_EXECUTE_INVALID: {e}"))?;
+    if r.id.len() > 64
+        || r.path.len() > 256
+        || r.source.is_empty()
+        || r.source.len() > MAX_SOURCE
+        || r.input.len() > MAX_BYTES
+    {
+        return Err(err("JOB_EXECUTE_LIMIT"));
+    }
+    let reply = execute(Work {
+        id: r.id,
+        path: r.path,
+        source: r.source.into(),
+        input: r.input,
+        cancelled: Arc::new(AtomicBool::new(false)),
+    });
+    Ok(match reply.output {
+        Ok(output) => {
+            serde_json::json!({"kind":"complete","id":reply.id,"output":output,"error":null,"run_ms":reply.run_ms})
+        }
+        Err(error) => {
+            serde_json::json!({"kind":"complete","id":reply.id,"output":null,"error":error,"run_ms":reply.run_ms})
+        }
+    })
+}
+
 #[derive(Clone)]
 struct Operation {
+    path: String,
     source: Arc<str>,
     hash: String,
 }
 struct Work {
     id: String,
+    path: String,
     source: Arc<str>,
     input: Vec<u8>,
     cancelled: Arc<AtomicBool>,
@@ -60,7 +124,7 @@ struct Pool {
 }
 #[cfg(not(target_arch = "wasm32"))]
 impl Pool {
-    fn new() -> Result<Self, String> {
+    fn new(workers: usize) -> Result<Self, String> {
         let (send, receive) =
             std::sync::mpsc::sync_channel::<(Work, std::sync::mpsc::Sender<Reply>)>(MAX_JOBS);
         let receive = Arc::new(std::sync::Mutex::new(receive));
@@ -68,7 +132,7 @@ impl Pool {
             send: Some(send),
             threads: Vec::new(),
         };
-        for _ in 0..2 {
+        for _ in 0..workers {
             let receive = Arc::clone(&receive);
             pool.threads.push(
                 std::thread::Builder::new()
@@ -128,7 +192,7 @@ fn execute(work: Work) -> Reply {
         });
         let function: Function = lua
             .load(&*work.source)
-            .set_name("job.luau")
+            .set_name(&work.path)
             .eval()
             .map_err(|e| e.to_string())?;
         let input = lua.create_buffer(&work.input).map_err(|e| e.to_string())?;
@@ -139,15 +203,94 @@ fn execute(work: Work) -> Reply {
         Ok(output.to_vec())
     })();
     Reply {
-        id: work.id,
+        id: work.id.clone(),
         output: result.map_err(|e| {
             format!(
-                "JOB_EXECUTION_FAILED: {}",
+                "JOB_EXECUTION_FAILED [{}]: {}",
+                work.id,
                 e.chars().take(2048).collect::<String>()
             )
         }),
         run_ms: started.elapsed().as_secs_f64() * 1000.0,
     }
+}
+
+#[derive(Clone)]
+struct Schedule {
+    operation: String,
+    every: u64,
+    remaining: Option<u64>,
+    next_tick: u64,
+    occurrence: u64,
+    pending: Option<String>,
+    prepare: std::rc::Rc<mlua::RegistryKey>,
+    apply: std::rc::Rc<mlua::RegistryKey>,
+}
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct ScheduleOptions {
+    pub every_ticks: u64,
+    pub times: Option<u64>,
+}
+
+/// Call callbacks without retaining a RefCell borrow: callbacks may cancel/reset jobs.
+pub(super) fn pump_schedules(
+    lua: &mlua::Lua,
+    jobs: &std::rc::Rc<std::cell::RefCell<Jobs>>,
+    api: &mlua::Table,
+) -> mlua::Result<()> {
+    let ids: Vec<_> = jobs.borrow().schedules.keys().cloned().collect();
+    for id in ids {
+        let Some(schedule) = jobs.borrow().schedules.get(&id).cloned() else {
+            continue;
+        };
+        if let Some(pending) = schedule.pending {
+            let output = jobs
+                .borrow_mut()
+                .take(pending)
+                .map_err(mlua::Error::RuntimeError)?;
+            if let Some(s) = jobs.borrow_mut().schedules.get_mut(&id) {
+                s.pending = None;
+            }
+            lua.registry_value::<Function>(&schedule.apply)?
+                .call::<()>((api.clone(), lua.create_buffer(output)?, schedule.occurrence))?;
+        }
+        let Some(schedule) = jobs.borrow().schedules.get(&id).cloned() else {
+            continue;
+        };
+        if schedule.remaining == Some(0) {
+            jobs.borrow_mut().schedules.remove(&id);
+            continue;
+        }
+        let tick = jobs.borrow().frame + 1;
+        if tick < schedule.next_tick {
+            continue;
+        }
+        let input: Buffer = lua
+            .registry_value::<Function>(&schedule.prepare)?
+            .call((api.clone(), schedule.occurrence + 1))?;
+        if !jobs.borrow().schedules.contains_key(&id) {
+            continue;
+        }
+        if input.len() > MAX_BYTES {
+            return Err(mlua::Error::RuntimeError(err("JOB_INPUT_TOO_LARGE")));
+        }
+        let handle = jobs
+            .borrow_mut()
+            .submit(schedule.operation, input.to_vec())
+            .map_err(mlua::Error::RuntimeError)?;
+        let mut state = jobs.borrow_mut();
+        let schedule = state.schedules.get_mut(&id).unwrap();
+        schedule.pending = Some(handle);
+        schedule.occurrence += 1;
+        schedule.next_tick = tick
+            .checked_add(schedule.every)
+            .ok_or_else(|| mlua::Error::RuntimeError(err("JOB_SCHEDULE_EXHAUSTED")))?;
+        if let Some(n) = &mut schedule.remaining {
+            *n -= 1;
+        }
+    }
+    Ok(())
 }
 
 #[derive(Default, Serialize)]
@@ -162,6 +305,10 @@ struct Metrics {
 }
 pub(super) struct Jobs {
     inline: bool,
+    external: bool,
+    workers: usize,
+    schedules: BTreeMap<String, Schedule>,
+    schedule_sequence: u64,
     operations: BTreeMap<String, Operation>,
     entries: BTreeMap<String, Entry>,
     epoch: u64,
@@ -186,7 +333,11 @@ impl Default for Jobs {
         #[cfg(not(target_arch = "wasm32"))]
         let (send, receive) = std::sync::mpsc::channel();
         Self {
-            inline: cfg!(target_arch = "wasm32"),
+            inline: cfg!(target_arch = "wasm32") || native_workers() == 0,
+            external: false,
+            workers: native_workers(),
+            schedules: BTreeMap::new(),
+            schedule_sequence: 0,
             operations: BTreeMap::new(),
             entries: BTreeMap::new(),
             epoch: 1,
@@ -214,6 +365,103 @@ impl Drop for Jobs {
     }
 }
 impl Jobs {
+    pub fn schedule(
+        &mut self,
+        operation: String,
+        options: ScheduleOptions,
+        prepare: std::rc::Rc<mlua::RegistryKey>,
+        apply: std::rc::Rc<mlua::RegistryKey>,
+    ) -> Result<String, String> {
+        self.alive()?;
+        if !self.loading && !self.updating {
+            return Err(err("JOB_SCHEDULE_OUTSIDE_UPDATE"));
+        }
+        if options.every_ticks == 0
+            || options.every_ticks > 1_000_000_000
+            || options.times == Some(0)
+            || options.times.is_some_and(|n| n > 1_000_000_000)
+        {
+            return Err(err("JOB_SCHEDULE_OPTIONS_INVALID"));
+        }
+        if !self.operations.contains_key(&operation) {
+            return Err(err("JOB_OPERATION_UNKNOWN"));
+        }
+        if self.schedules.len() >= MAX_JOBS {
+            return Err(err("JOB_SCHEDULE_LIMIT"));
+        }
+        self.schedule_sequence = self
+            .schedule_sequence
+            .checked_add(1)
+            .ok_or_else(|| err("JOB_HANDLE_EXHAUSTED"))?;
+        let id = format!("schedule:{}:{:020}", self.epoch, self.schedule_sequence);
+        self.schedules.insert(
+            id.clone(),
+            Schedule {
+                operation,
+                every: options.every_ticks,
+                remaining: options.times,
+                next_tick: self.frame + 1,
+                occurrence: 0,
+                pending: None,
+                prepare,
+                apply,
+            },
+        );
+        Ok(id)
+    }
+    pub fn host(&mut self, request: serde_json::Value) -> Result<serde_json::Value, String> {
+        self.alive()?;
+        let request: HostRequest = serde_json::from_value(request)
+            .map_err(|e| format!("JOB_HOST_REQUEST_INVALID: {e}"))?;
+        match request {
+            HostRequest::Configure { workers } => {
+                if workers > 4 || !self.entries.is_empty() || self.updating {
+                    return Err(err("JOB_EXECUTOR_CONFIGURATION_INVALID"));
+                }
+                self.external = workers > 0;
+                self.inline = workers == 0;
+                self.workers = workers;
+                Ok(serde_json::json!({"workers":workers}))
+            }
+            HostRequest::Drain {} => {
+                if !self.external || self.updating {
+                    return Err(err("JOB_EXTERNAL_EXECUTOR_REQUIRED"));
+                }
+                let tasks: Vec<_> = self.entries.values_mut().filter_map(|e|e.work.take()).map(|w|
+                    serde_json::json!({"id":w.id,"source":&*w.source,"path":w.path,"input":w.input})).collect();
+                Ok(serde_json::json!({"tasks":tasks}))
+            }
+            HostRequest::Complete {
+                id,
+                output,
+                error,
+                run_ms,
+            } => {
+                if !self.external
+                    || !run_ms.is_finite()
+                    || run_ms < 0.
+                    || output.is_some() == error.is_some()
+                {
+                    return Err(err("JOB_REPLY_INVALID"));
+                }
+                self.validate_id(&id)?;
+                let e = &self.entries[&id];
+                if e.work.is_some()
+                    || e.reply.is_some()
+                    || output.as_ref().is_some_and(|b| b.len() > MAX_BYTES)
+                    || error.as_ref().is_some_and(|s| s.len() > 4096)
+                {
+                    return Err(err("JOB_REPLY_INVALID"));
+                }
+                self.accept(Reply {
+                    id,
+                    output: output.ok_or_else(|| error.unwrap()),
+                    run_ms,
+                });
+                Ok(serde_json::json!({"accepted":true}))
+            }
+        }
+    }
     fn alive(&self) -> Result<(), String> {
         self.fault.as_ref().map_or(Ok(()), |e| Err(e.clone()))
     }
@@ -222,6 +470,7 @@ impl Jobs {
             entry.cancelled.store(true, Ordering::Relaxed);
         }
         self.entries.clear();
+        self.schedules.clear();
     }
     pub fn loaded(&mut self) {
         self.loading = false;
@@ -239,6 +488,9 @@ impl Jobs {
     #[cfg(feature = "dev-tools")]
     pub fn reload_candidate(&self) -> Self {
         let mut candidate = Self::default();
+        candidate.inline = self.inline;
+        candidate.external = self.external;
+        candidate.workers = self.workers;
         candidate.operations = self.operations.clone();
         candidate.epoch = self.epoch + 1;
         #[cfg(not(target_arch = "wasm32"))]
@@ -267,12 +519,26 @@ impl Jobs {
             return Err(err("JOB_OPERATION_LIMIT"));
         }
         self.operations.insert(
-            id,
+            id.clone(),
             Operation {
+                path: format!("jobs/{id}.luau"),
                 hash: hash(source.as_bytes()),
                 source: source.into(),
             },
         );
+        Ok(())
+    }
+    pub fn register_file(
+        &mut self,
+        id: String,
+        source: String,
+        path: String,
+    ) -> Result<(), String> {
+        if path.len() > 256 {
+            return Err(err("JOB_MODULE_PATH_INVALID"));
+        }
+        self.register(id.clone(), source)?;
+        self.operations.get_mut(&id).unwrap().path = path;
         Ok(())
     }
     pub fn submit(&mut self, operation: String, input: Vec<u8>) -> Result<String, String> {
@@ -307,6 +573,7 @@ impl Jobs {
             submitted: self.frame + 1,
             work: Some(Work {
                 id: id.clone(),
+                path: op.path.clone(),
                 source: Arc::clone(&op.source),
                 input,
                 cancelled: Arc::clone(&cancelled),
@@ -344,6 +611,16 @@ impl Jobs {
     }
     pub fn cancel(&mut self, id: String) -> Result<(), String> {
         self.alive()?;
+        if id.starts_with("schedule:") {
+            let s = self
+                .schedules
+                .remove(&id)
+                .ok_or_else(|| err("JOB_SCHEDULE_UNKNOWN"))?;
+            if let Some(pending) = s.pending {
+                self.cancel(pending)?;
+            }
+            return Ok(());
+        }
         self.validate_id(&id)?;
         self.entries
             .remove(&id)
@@ -379,10 +656,11 @@ impl Jobs {
         #[cfg(not(target_arch = "wasm32"))]
         {
             self.drain();
-            while self
-                .entries
-                .values()
-                .any(|e| !e.delivered && e.reply.is_none())
+            while !self.external
+                && self
+                    .entries
+                    .values()
+                    .any(|e| !e.delivered && e.reply.is_none())
             {
                 let reply = self
                     .receive
@@ -390,6 +668,13 @@ impl Jobs {
                     .map_err(|_| err("JOB_EXECUTOR_DISCONNECTED"))?;
                 self.accept(reply);
             }
+        }
+        if self
+            .entries
+            .values()
+            .any(|e| !e.delivered && e.reply.is_none())
+        {
+            return Err(err("JOB_BARRIER_NOT_READY"));
         }
         let recording = self.profile_id == 0 || self.profile_active;
         if recording {
@@ -423,7 +708,7 @@ impl Jobs {
                 if self.metrics.recent.len() == 64 {
                     self.metrics.recent.pop_front();
                 }
-                self.metrics.recent.push_back(serde_json::json!({"job":id,"operation":entry.operation,"submit_tick":entry.submitted,
+                self.metrics.recent.push_back(serde_json::json!({"job":id,"operation":entry.operation,"source_path":self.operations[&entry.operation].path,"submit_tick":entry.submitted,
                     "deliver_tick":frame+1,"input_bytes":entry.input_len,"output_bytes":output.len(),"execution_ms":reply.run_ms}));
             }
         }
@@ -441,6 +726,9 @@ impl Jobs {
     }
     fn finish_inner(&mut self) -> Result<(), String> {
         self.updating = false;
+        if self.external {
+            return Ok(());
+        }
         #[cfg(not(target_arch = "wasm32"))]
         {
             self.drain();
@@ -448,7 +736,7 @@ impl Jobs {
                 && self.entries.values().any(|e| e.work.is_some())
                 && self.pool.is_none()
             {
-                self.pool = Some(Arc::new(Pool::new()?));
+                self.pool = Some(Arc::new(Pool::new(self.workers)?));
             }
         }
         let ids: Vec<_> = self
@@ -485,27 +773,32 @@ impl Jobs {
         self.entries.values().map(|e| e.input_len + MAX_BYTES).sum()
     }
     pub fn snapshot(&self) -> serde_json::Value {
-        serde_json::json!({"epoch":self.epoch,"sequence":self.sequence,
+        let mut value = serde_json::json!({"epoch":self.epoch,"sequence":self.sequence,
             "operations":self.operations.iter().map(|(id,op)|serde_json::json!({"id":id,"source_sha256":op.hash})).collect::<Vec<_>>(),
             "jobs":self.entries.iter().map(|(id,e)|serde_json::json!({"id":id,"operation":e.operation,"source_sha256":e.source_hash,
                 "input_sha256":e.input_hash,"submit_tick":e.submitted,"delivered":e.delivered,
-                "output_sha256":if e.delivered {e.reply.as_ref().and_then(|r|r.output.as_ref().ok()).map(|b|hash(b))} else {None}})).collect::<Vec<_>>()})
+                "output_sha256":if e.delivered {e.reply.as_ref().and_then(|r|r.output.as_ref().ok()).map(|b|hash(b))} else {None}})).collect::<Vec<_>>()});
+        if self.schedule_sequence > 0 {
+            value["schedule_sequence"] = serde_json::json!(self.schedule_sequence);
+            value["schedules"]=serde_json::json!(self.schedules.iter().map(|(id,s)|serde_json::json!({"id":id,"operation":s.operation,"every_ticks":s.every,"remaining":s.remaining,"next_tick":s.next_tick,"occurrence":s.occurrence,"pending":s.pending})).collect::<Vec<_>>());
+        }
+        value
     }
     pub fn report(&self) -> serde_json::Value {
         serde_json::json!({"fault":self.fault,"profile_id":self.profile_id,"profile_active":self.profile_active,"scope":"Totals record jobs delivered within the measurement window; active counts are live. Without an explicit window, totals cover runtime lifetime.",
-            "backend":if self.inline {if cfg!(target_arch="wasm32") {"wasm-inline"} else {"native-inline-test"}} else {"native-thread-pool"},
-            "parallel":!self.inline,"workers":if self.inline {0} else {2},
-            "active_jobs":self.entries.len(),"reserved_payload_bytes":self.reserved(),"totals":self.metrics,"recent":self.metrics.recent,
+            "backend":if self.external {"web-worker-pool"} else if self.inline {if cfg!(target_arch="wasm32") {"wasm-inline"} else {"native-inline"}} else {"native-thread-pool"},
+            "parallel":self.external || !self.inline,"workers":if self.inline {0} else {self.workers},
+            "schedules":self.snapshot().get("schedules"),"operations":self.operations.iter().map(|(id,op)|serde_json::json!({"id":id,"source_path":op.path,"source_sha256":op.hash})).collect::<Vec<_>>(),"active_jobs":self.entries.len(),"reserved_payload_bytes":self.reserved(),"totals":self.metrics,"recent":self.metrics.recent,
             "limits":{"active_jobs":MAX_JOBS,"submissions_per_tick":PER_TICK,"input_or_output_bytes":MAX_BYTES,"reserved_payload_bytes":MAX_RESERVED,
                 "operation_source_bytes":MAX_SOURCE,"operations":MAX_OPERATIONS,"vm_bytes_per_worker":VM_BYTES,"safe_points_per_job":SAFE_POINTS},
-            "note":"Native background jobs join before next update; WASM computes inline after update. Safe-point budget/cancellation is cooperative, not a hard native wall-time deadline. Timings include VM setup/compile/copy. Not an arbitrary WASM module executor."})
+            "note":"All backends expose results no earlier than the next update. Native chooses up to two threads; supported Web hosts choose inline or a bounded Worker pool. Safe-point budget/cancellation is cooperative, not a hard native wall-time deadline. Timings include VM setup/compile/copy. Not an arbitrary WASM module executor."})
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{observation_digest, EngineRuntime, HostProject};
+    use crate::{EngineRuntime, HostProject, observation_digest};
     const SOURCE: &str = r#"
 local id=nil
 local n=0
@@ -523,6 +816,118 @@ end}
 "#;
     fn runtime(source: &str) -> EngineRuntime {
         HostProject::parse(&serde_json::to_vec(&serde_json::json!({"config":{"name":"jobs-test","systems":{"jobs":true}},"script":source})).unwrap()).unwrap().into_runtime(42).unwrap()
+    }
+    #[test]
+    fn external_executor_matches_inline_with_reversed_completion_order() {
+        let source=SOURCE.replace("id=api.jobs.submit('twice',input)","id=api.jobs.submit('twice',input);local extra=api.jobs.submit('twice',input);api.jobs.cancel(extra)");
+        let mut external = runtime(&source);
+        let mut inline = runtime(&source);
+        inline.jobs.borrow_mut().inline = true;
+        external
+            .jobs_host_request(serde_json::json!({"kind":"configure","workers":2}))
+            .unwrap();
+        for _ in 0..30 {
+            let a = external.tick().unwrap();
+            let b = inline.tick().unwrap();
+            assert_eq!(
+                observation_digest(&a).unwrap(),
+                observation_digest(&b).unwrap()
+            );
+            let tasks = external
+                .jobs_host_request(serde_json::json!({"kind":"drain"}))
+                .unwrap();
+            for task in tasks["tasks"].as_array().unwrap().iter().rev() {
+                let reply = execute_host(task.clone()).unwrap();
+                external.jobs_host_request(reply.clone()).unwrap();
+                assert!(external.jobs_host_request(reply).is_err());
+            }
+        }
+    }
+    #[test]
+    fn schedule_closures_do_not_retain_the_runtime_vm_after_drop() {
+        let r = runtime(
+            "return {start=function(api)api.jobs.register('a','return function(b)return b end');api.jobs.schedule('a',{every_ticks=1},function()local unused=api;return buffer.create(0)end,function()local unused=api end)end,update=function()end}",
+        );
+        let weak = std::rc::Rc::downgrade(&r.jobs);
+        drop(r);
+        assert!(
+            weak.upgrade().is_none(),
+            "Closure registry must not strongly own its VM"
+        );
+    }
+    #[test]
+    fn schedules_use_fresh_closures_next_tick_results_and_finite_counts() {
+        let source = r#"local n=0
+return {start=function(api)
+ api.jobs.register('copy','return function(b)return b end')
+ api.jobs.schedule('copy',{every_ticks=3,times=3},function(api,k)
+   local b=buffer.create(4);buffer.writeu32(b,0,n);return b
+ end,function(api,b,k)api.observation.set('value',buffer.readu32(b,0));api.observation.set('occurrence',k)end)
+end,update=function(api)n+=1 end}"#;
+        let mut a = runtime(source);
+        let mut b = runtime(source);
+        b.jobs.borrow_mut().inline = true;
+        for tick in 1..=10 {
+            let x = a.tick().unwrap();
+            let y = b.tick().unwrap();
+            assert_eq!(
+                observation_digest(&x).unwrap(),
+                observation_digest(&y).unwrap()
+            );
+            if tick == 1 {
+                assert!(!x.observations.contains_key("value"));
+            }
+            if tick >= 8 {
+                assert_eq!(x.observations["value"], 6);
+                assert_eq!(x.observations["occurrence"], 3);
+            }
+        }
+        assert!(a.jobs.borrow().schedules.is_empty());
+        assert_eq!(a.jobs_report().unwrap()["totals"]["completed"], 3);
+    }
+    #[test]
+    fn schedule_options_and_callback_failures_are_explicit() {
+        for opts in [
+            "{every_ticks=0}",
+            "{every_ticks=1.5}",
+            "{every_ticks=1,times=0}",
+            "{every_ticks=1,typo=4}",
+        ] {
+            let source = format!(
+                "return {{start=function(api)api.jobs.register('a','return function(b)return b end');api.jobs.schedule('a',{opts},function()return buffer.create(0)end,function()end)end,update=function()end}}"
+            );
+            let payload=serde_json::to_vec(&serde_json::json!({"config":{"name":"invalid","systems":{"jobs":true}},"script":source})).unwrap();
+            assert!(
+                HostProject::parse(&payload)
+                    .unwrap()
+                    .into_runtime(42)
+                    .is_err()
+            );
+        }
+        let mut r = runtime(
+            "return {start=function(api)api.jobs.register('a','return function(b)return b end');api.jobs.schedule('a',{every_ticks=1},function()error('prepare failed')end,function()end)end,update=function()end}",
+        );
+        assert!(r.tick().unwrap_err().explanation.contains("prepare failed"));
+        assert!(r.tick().is_err());
+    }
+    #[test]
+    fn file_modules_require_complete_payload_and_preserve_error_location() {
+        let mut payload = serde_json::json!({"config":{"name":"modules","systems":{"jobs":true},"job_scripts":{"a":"jobs/copy.luau"}},"script":"return {start=function()end,update=function(api)api.jobs.submit('a',buffer.create(0))end}"});
+        assert!(
+            HostProject::parse(&serde_json::to_vec(&payload).unwrap())
+                .unwrap()
+                .into_runtime(42)
+                .is_err()
+        );
+        payload["job_sources"] =
+            serde_json::json!({"a":"return function(b)error('module failure')end"});
+        let mut r = HostProject::parse(&serde_json::to_vec(&payload).unwrap())
+            .unwrap()
+            .into_runtime(42)
+            .unwrap();
+        r.tick().unwrap();
+        let e = r.tick().unwrap_err();
+        assert!(e.explanation.contains("jobs/copy.luau"));
     }
     #[test]
     fn real_lua_jobs_copy_input_and_match_inline_replay_every_tick() {
@@ -545,19 +950,25 @@ end}
     }
     #[test]
     fn early_take_unknown_operation_and_wrong_phase_fail_without_silent_success() {
-        let mut r=runtime("return {start=function(api) api.jobs.register('a','return function(b) return b end') end, update=function(api) local id=api.jobs.submit('a',buffer.create(0));api.jobs.take(id) end}");
-        assert!(r
-            .tick()
-            .unwrap_err()
-            .explanation
-            .contains("JOB_RESULT_NEXT_TICK"));
+        let mut r = runtime(
+            "return {start=function(api) api.jobs.register('a','return function(b) return b end') end, update=function(api) local id=api.jobs.submit('a',buffer.create(0));api.jobs.take(id) end}",
+        );
+        assert!(
+            r.tick()
+                .unwrap_err()
+                .explanation
+                .contains("JOB_RESULT_NEXT_TICK")
+        );
         assert_eq!(r.observe().frame, 0);
-        let mut r=runtime("return {start=function() end, update=function(api) api.jobs.submit('missing',buffer.create(0)) end}");
-        assert!(r
-            .tick()
-            .unwrap_err()
-            .explanation
-            .contains("JOB_OPERATION_UNKNOWN"));
+        let mut r = runtime(
+            "return {start=function() end, update=function(api) api.jobs.submit('missing',buffer.create(0)) end}",
+        );
+        assert!(
+            r.tick()
+                .unwrap_err()
+                .explanation
+                .contains("JOB_OPERATION_UNKNOWN")
+        );
     }
     #[test]
     fn cancellation_and_game_reset_reject_late_handles() {
@@ -584,11 +995,12 @@ end}
         for _ in 0..15 {
             r.tick().unwrap();
         }
-        assert!(r
-            .tick()
-            .unwrap_err()
-            .explanation
-            .contains("JOB_TOTAL_BYTES_LIMIT"));
+        assert!(
+            r.tick()
+                .unwrap_err()
+                .explanation
+                .contains("JOB_TOTAL_BYTES_LIMIT")
+        );
         let mut jobs = Jobs::default();
         jobs.register("a".into(), "return function(b)return b end".into())
             .unwrap();
@@ -597,10 +1009,11 @@ end}
         for _ in 0..PER_TICK {
             jobs.submit("a".into(), vec![]).unwrap();
         }
-        assert!(jobs
-            .submit("a".into(), vec![])
-            .unwrap_err()
-            .contains("JOB_LIMIT"));
+        assert!(
+            jobs.submit("a".into(), vec![])
+                .unwrap_err()
+                .contains("JOB_LIMIT")
+        );
     }
     #[test]
     fn errors_and_memory_budget_fail_at_the_next_barrier() {
@@ -631,6 +1044,7 @@ end}
         ] {
             let reply = execute(Work {
                 id: "test".into(),
+                path: "test.luau".into(),
                 source: source.into(),
                 input: vec![],
                 cancelled: Arc::new(AtomicBool::new(false)),
@@ -663,12 +1077,13 @@ end}
         assert_eq!(later["jobs"]["recent"], stopped["jobs"]["recent"]);
         let old = r.jobs.borrow().entries.keys().next().unwrap().clone();
         r.reload_source("return {start=function()end,update=function()end,onReload=function(api)api.jobs.register('twice','return function(b)return b end')end}").unwrap();
-        assert!(r
-            .jobs
-            .borrow()
-            .validate_id(&old)
-            .unwrap_err()
-            .contains("JOB_HANDLE_STALE"));
+        assert!(
+            r.jobs
+                .borrow()
+                .validate_id(&old)
+                .unwrap_err()
+                .contains("JOB_HANDLE_STALE")
+        );
         assert!(r.jobs.borrow().entries.is_empty());
         r.tick().unwrap();
     }
@@ -676,7 +1091,10 @@ end}
     #[ignore = "manual release-only throughput experiment, not a timing assertion"]
     #[cfg(all(feature = "dev-tools", not(target_arch = "wasm32")))]
     fn native_pool_benchmark() {
-        assert!(!cfg!(debug_assertions),"Run cargo test --release -p unone-engine native_pool_benchmark -- --ignored --nocapture");
+        assert!(
+            !cfg!(debug_assertions),
+            "Run cargo test --release -p unone-engine native_pool_benchmark -- --ignored --nocapture"
+        );
         let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../_Games/jobs-lab");
         let source = std::fs::read_to_string(root.join("main.luau"))
             .unwrap()

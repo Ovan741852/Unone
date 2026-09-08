@@ -18,6 +18,6 @@ export function createProfileWindow(limit=2048,now=()=>performance.now()){
    cpu:Object.fromEntries(['input_ms','wasm_tick_publish_ms','decode_ms','post_tick_ms'].map(k=>[k,stats(ticks.map(v=>v[k]).filter(Number.isFinite))])),render_cpu:stats(frames),
    render_cadence:{interval_ms:stats(intervals),interval_count:intervalCount,intervals_over_60hz:overBudget,
     note:'CPU render completion intervals, not verified display presentation. Includes scheduling and simulation; paused renders must not be used as gameplay FPS.'},
-   note:'Disjoint host CPU spans. WASM tick includes runtime and publication. GPU timing is separate. Distributions cover retained samples only.'};},
+   note:'Host spans use elapsed wall time. With an async backend, wasm_tick_publish_ms includes queue/barrier waiting and is not CPU time; consult backend.jobs for executor costs. GPU timing is separate. Distributions cover retained samples only.'};},
  };
 }

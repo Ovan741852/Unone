@@ -163,6 +163,13 @@
       "default": "scripts/main.luau",
       "type": "string"
     },
+    "job_scripts": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Isolated Luau job modules, keyed by operation name.",
+      "type": "object"
+    },
     "main_scene": {
       "default": null,
       "type": [

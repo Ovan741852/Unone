@@ -10,6 +10,8 @@ use std::collections::BTreeMap;
 pub struct HostProject {
     pub config: ProjectConfig,
     pub script: String,
+    #[serde(default)]
+    pub job_sources: BTreeMap<String,String>,
     // Preserve original JSON locations for the common scene validator.
     #[serde(default)]
     #[cfg_attr(feature = "dev-tools", schemars(with = "Option<crate::SceneFile>"))]
@@ -42,6 +44,7 @@ impl HostProject {
         EngineRuntime::load_source_project(SourceProject {
             config: self.config,
             source: self.script,
+            job_sources: self.job_sources,
             scene,
             seed,
             restored_save: self.restored_save,

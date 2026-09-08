@@ -448,6 +448,13 @@
           "default": "scripts/main.luau",
           "type": "string"
         },
+        "job_scripts": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Isolated Luau job modules, keyed by operation name.",
+          "type": "object"
+        },
         "main_scene": {
           "default": null,
           "type": [
@@ -996,6 +1003,13 @@
   "properties": {
     "config": {
       "$ref": "#/$defs/ProjectConfig"
+    },
+    "job_sources": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "default": {},
+      "type": "object"
     },
     "restored_save": {
       "default": null,

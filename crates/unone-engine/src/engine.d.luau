@@ -209,6 +209,7 @@ export type DebugApi = {
     set: (id: string, value: string | boolean) -> (),
 }
 export type JobsApi = {
+    schedule: (operation: string, options: {every_ticks: number, times: number?}, prepare: (api: any, occurrence: number) -> buffer, apply: (api: any, output: buffer, occurrence: number) -> ()) -> string,
     register: (id: string, source: string) -> (),
     submit: (operation: string, input: buffer) -> string,
     take: (handle: string) -> buffer,

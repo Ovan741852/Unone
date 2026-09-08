@@ -280,7 +280,7 @@ impl State {
             "input" => vec!["method", "frame"],
             "bloom" => vec!["method", "enabled"],
             "profile.stop" | "describe" | "snapshot" | "observations" | "hierarchy" | "console"
-            | "network" | "profile" | "memory" | "tools.list" | "journal" => vec!["method"],
+            | "network" | "jobs" | "profile" | "memory" | "tools.list" | "journal" => vec!["method"],
             _ => return failure("DEVELOPER_REQUEST_INVALID", "Unknown method; use describe"),
         };
         if !request
@@ -301,8 +301,9 @@ impl State {
             };
             Ok(match method {
                 "describe" => {
-                    json!({"version":1,"host":"native","methods":["profile.start","profile.stop","screenshot","describe","snapshot","observations","hierarchy","console","network","profile","memory","tools.list","tools.invoke","pause","step","input","journal"],"unavailable":["instances.transport","bloom","js_heap","wasm_linear_memory","browser_network"],"semantics":"Same native runtime, between-tick commands. Lua callbacks are not transactional."})
+                    json!({"version":1,"host":"native","methods":["jobs","profile.start","profile.stop","screenshot","describe","snapshot","observations","hierarchy","console","network","profile","memory","tools.list","tools.invoke","pause","step","input","journal"],"unavailable":["instances.transport","bloom","js_heap","wasm_linear_memory","browser_network"],"semantics":"Same native runtime, between-tick commands. Lua callbacks are not transactional."})
                 }
+                "jobs" => json!({"runtime":runtime.jobs_report(),"host":{"backend":"native"},"note":"Timing does not affect next-tick delivery; source paths and job IDs join runtime traces."}),
                 "snapshot" => snapshot()?,
                 "observations" => {
                     let s = runtime.observe();

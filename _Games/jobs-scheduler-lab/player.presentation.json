@@ -1,0 +1,1 @@
+{"job_policy":{"mode":"auto","max_workers":2,"memory_budget_mb":128}}

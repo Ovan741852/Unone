@@ -23,6 +23,7 @@ function unavailableState(declared, reason) {
     unlock() { return Promise.resolve(false); },
     setVisibility() {},
     dispose() {},
+    reset() {},
     report() {
       return {
         available: false,
@@ -222,6 +223,10 @@ export async function createAudioPlayback({
     }
   };
 
+  state.reset = () => {
+    for (const playing of state.live.values()) {try { playing.node.stop(); } catch { /* ended */ }}
+    state.live.clear();state.processedEvents.clear();state.processedEventFrame=null;state.lastWorld=null;
+  };
   state.dispose = () => {
     for (const playing of state.live.values()) {
       try { playing.node.stop(); } catch (_error) { /* already stopped */ }

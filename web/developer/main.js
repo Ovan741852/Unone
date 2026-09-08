@@ -28,7 +28,7 @@ export function createDeveloper(){
     const api=createDeveloperAPI(host,{console:()=>messages,network:()=>resources,heap:()=>performance.memory?{used_bytes:performance.memory.usedJSHeapSize,total_bytes:performance.memory.totalJSHeapSize,limit_bytes:performance.memory.jsHeapSizeLimit}:null});
     Object.defineProperty(window,'unoneDeveloper',{value:api,configurable:false,writable:false});
     const context=document.modelContext??navigator.modelContext;
-    if(context?.registerTool){Promise.resolve(context.registerTool({name:'unone_developer_request',description:'Inspect this running Unone development player or invoke its registered Lua test tools. Call describe for methods and tools.list for game tool IDs. Mutations affect this local game only.',inputSchema:requestSchema,execute:async request=>JSON.stringify(api.request(request))})).catch(error=>console.warn('WebMCP registration unavailable',error.message));}
+    if(context?.registerTool){Promise.resolve(context.registerTool({name:'unone_developer_request',description:'Inspect this running Unone development player or invoke its registered Lua test tools. Call describe for methods and tools.list for game tool IDs. Mutations affect this local game only.',inputSchema:requestSchema,execute:async request=>JSON.stringify(await api.request(request))})).catch(error=>console.warn('WebMCP registration unavailable',error.message));}
     mountPanel(api);
   }};
 }

@@ -1,0 +1,18 @@
+{
+  "name": "Jobs Scheduler Lab",
+  "entry_script": "main.luau",
+  "main_scene": "scene.json",
+  "systems": {
+    "jobs": true,
+    "physics2d": false,
+    "physics3d": false,
+    "audio": false,
+    "particle": false
+  },
+  "test_files": [
+    "schedule.test.json"
+  ],
+  "job_scripts": {
+    "copy": "jobs/copy.luau"
+  }
+}

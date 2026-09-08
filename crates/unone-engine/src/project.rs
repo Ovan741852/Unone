@@ -11,6 +11,9 @@ pub struct ProjectConfig {
     pub name: String,
     #[serde(default = "default_entry_script")]
     pub entry_script: String,
+    /// Isolated Luau job modules, keyed by operation name.
+    #[serde(default, skip_serializing_if="BTreeMap::is_empty")]
+    pub job_scripts: BTreeMap<String,String>,
     #[serde(default)]
     pub main_scene: Option<String>,
     #[serde(default)]

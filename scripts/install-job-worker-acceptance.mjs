@@ -1,0 +1,12 @@
+import {copyFileSync,readFileSync,writeFileSync} from 'node:fs';
+import {resolve,join,dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {spawnSync} from 'node:child_process';
+const [exportRoot,project,min='2']=process.argv.slice(2);
+if(!exportRoot||!project||!['1','2'].includes(min))throw Error('Usage: node scripts/install-job-worker-acceptance.mjs EXPORT PROJECT [minimum-workers: 1|2]');
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const run=spawnSync(join(root,'target/debug/game.exe'),['--project',resolve(project),'run','--frames','30','--json'],{encoding:'utf8'});
+if(run.status!==0)throw Error(run.stdout+'\n'+run.stderr);const value=JSON.parse(run.stdout);if(!value.ok)throw Error(run.stdout);
+for(const name of ['job-acceptance.html','job-acceptance.mjs'])copyFileSync(join(root,'scripts/fixtures/job-worker',name),join(exportRoot,name));
+writeFileSync(join(exportRoot,'job-acceptance-input.json'),JSON.stringify({digest:value.value.observation_digest,minimum_workers:Number(min)}));
+console.log(JSON.stringify({ok:true,page:'job-acceptance.html',digest:value.value.observation_digest}));

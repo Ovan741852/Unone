@@ -1,0 +1,19 @@
+{
+  "name": "three fresh inputs; no same-tick results",
+  "frames": 10,
+  "seed": 42,
+  "assertions": [
+    {
+      "observation": {
+        "key": "last_value",
+        "equals": 6
+      }
+    },
+    {
+      "observation": {
+        "key": "completed",
+        "equals": 3
+      }
+    }
+  ]
+}

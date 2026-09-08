@@ -19,11 +19,29 @@ struct StaticMesh {
     indices: Vec<usize>,
     texture: String,
 }
+#[derive(serde::Deserialize,serde::Serialize)]
+#[serde(default,deny_unknown_fields)]
+struct JobPolicy { mode: JobMode, max_workers: u8, memory_budget_mb: u16 }
+impl Default for JobPolicy {fn default()->Self{Self{mode:JobMode::Auto,max_workers:2,memory_budget_mb:128}}}
+#[derive(serde::Deserialize,serde::Serialize)]
+#[serde(rename_all="snake_case")]
+enum JobMode {Auto,Inline,Workers}
 #[derive(Default, serde::Deserialize, serde::Serialize)]
 #[serde(default, deny_unknown_fields)]
 struct PresentationSettings {
     bloom: bool,
     show_performance: bool,
+    runtime_backend: RuntimeBackend,
+    job_policy: JobPolicy,
+    interpolation: bool,
+    interpolate_instances: Vec<String>,
+}
+#[derive(Default, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+enum RuntimeBackend {
+    #[default]
+    Main,
+    Worker,
 }
 impl StaticMesh {
     fn validate(&self) -> Result<()> {
@@ -158,7 +176,8 @@ pub fn web(
     } else {
         Value::Null
     };
-    let payload = json!({"config":config,"script":fs::read_to_string(inside(project,&config.entry_script)?)?,"scene":scene});
+    let job_sources: std::collections::BTreeMap<_,_>=config.job_scripts.iter().map(|(id,path)|Ok((id.clone(),fs::read_to_string(inside(project,path)?)?))).collect::<Result<_>>()?;
+    let payload = json!({"job_sources":job_sources,"config":config,"script":fs::read_to_string(inside(project,&config.entry_script)?)?,"scene":scene});
     // Exercise the exact player ingestion contract before creating any output.
     unone_engine::HostProject::parse(&serde_json::to_vec(&payload)?)
         .map_err(|e| anyhow::anyhow!(e.explanation))?
@@ -290,6 +309,7 @@ pub fn web(
     } else {
         PresentationSettings::default()
     };
+    ensure!(presentation.job_policy.max_workers<=4 && presentation.job_policy.memory_budget_mb<=1024,"JOB_POLICY_INVALID: max_workers must be 0..4 and memory_budget_mb 0..1024");
     files.push((
         "content/presentation.json".into(),
         serde_json::to_vec(&presentation)?,
@@ -313,6 +333,14 @@ pub fn web(
         "shared/asset-encoding.js",
         "shared/load-project.js",
         "shared/fixed-step-scheduler.mjs",
+        "shared/async-scheduler.mjs",
+        "shared/runtime-core.mjs",
+        "shared/runtime-backend.mjs",
+        "shared/runtime-worker.js",
+        "shared/job-pool.mjs",
+        "shared/job-worker.js",
+        "shared/instance-transfer.mjs",
+        "shared/presentation-interpolation.mjs",
         "shared/profile-window.js",
         "vendor/three/three.player.min.js",
         "vendor/rapier/LICENSE",
@@ -410,7 +438,7 @@ pub fn web(
             ] {
                 text = replace_required(text, marker, if development { code } else { "" })?;
             }
-            bytes=if development {text.replace("/* DEVELOPER_IMPORT */", "import {createDeveloper} from '../developer/main.js';\nconst developer=createDeveloper();").replace("/* DEVELOPER_CONNECT */", "developer.connect({profileWindow,getSnapshot:()=>snapshot,acceptSnapshot:value=>{snapshot=value;},module:window.Module,getStats:()=>({...lastStats,dropped_steps:scheduler?.totalDroppedSteps??0}),getBoot:()=>metrics,draw,tick:tickOnce,releaseInput:()=>input.releaseAll(),setPaused:value=>{frozen=value;manualInput=null;},getPaused:()=>frozen,setBloom:value=>renderer.setBloom(value),queueInput:frame=>{send('_unone_web_set_input_frame',frame);manualInput=frame;}});")} else {text.replace("/* DEVELOPER_IMPORT */", "").replace("/* DEVELOPER_CONNECT */", "")}.into_bytes();
+            bytes=if development {text.replace("/* DEVELOPER_IMPORT */", "import {createDeveloper} from '../developer/main.js';\nconst developer=createDeveloper();").replace("/* DEVELOPER_CONNECT */", "developer.connect({profileWindow,getSnapshot:()=>snapshot,acceptSnapshot,coreRequest,setTransport,restart,backendReport:()=>backend.report(),getStats:()=>({...lastStats,dropped_steps:scheduler?.totalDroppedSteps??0}),getBoot:()=>metrics,draw,tick:tickOnce,releaseInput:()=>input.releaseAll(),setPaused,getPaused:()=>frozen,setBloom:value=>renderer.setBloom(value),queueInput:frame=>{manualInput=frame;}});")} else {text.replace("/* DEVELOPER_IMPORT */", "").replace("/* DEVELOPER_CONNECT */", "")}.into_bytes();
         }
         files.push((format!("web/{path}"), bytes));
     }

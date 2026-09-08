@@ -1,82 +1,72 @@
 import {createThreeRenderer} from '../renderer/three.js';
 import {createUiTree} from '../shared/ui-tree.js';
 import {createHostInput} from '../shared/host-input.js';
-import {createFixedStepScheduler} from '../shared/fixed-step-scheduler.mjs';
+import {createAsyncScheduler} from '../shared/async-scheduler.mjs';
+import {createRuntimeBackend} from '../shared/runtime-backend.mjs';
+import {createPresentationInterpolator} from '../shared/presentation-interpolation.mjs';
 import {createAudioPlayback} from '../shared/audio-playback.js';
 import {requireAssetEncoding} from '../shared/asset-encoding.js';
 import {worldFromPointer} from '../shared/webgpu-snapshot.js';
-import {loadProject} from '../shared/load-project.js';
 /* PROFILE_IMPORT */
-
 /* DEVELOPER_IMPORT */
-
-const canvas=document.querySelector('#game'), status=document.querySelector('#status');
-const input=createHostInput(), renderUi=createUiTree(document.querySelector('#ui-layer'));
-let snapshot, renderer, scheduler, audio;
-let bridgeMs=0,renderMs=0,renderCount=0;
+const canvas=document.querySelector('#game'),status=document.querySelector('#status');
+const input=createHostInput(),renderUi=createUiTree(document.querySelector('#ui-layer'));
+let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null;
+let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=null;
+let saved,key,projectPayload;
 /* PROFILE_INIT */
-let frozen=false,manualInput=null,lastStats=null;
-let saved,key;
-const cpuSamples={on:[],off:[]};
-const summarize=values=>{if(!values.length)return null;const v=[...values].sort((a,b)=>a-b);return {samples:v.length,median_ms:v[Math.floor(v.length/2)],p95_ms:v[Math.floor(v.length*.95)]};};
 const metrics={};
 function fail(error){scheduler?.stop();/* PROFILE_ERROR */status.textContent=String(error?.message??error);document.body.dataset.playerError=status.textContent;console.error(error);}
-async function json(path){const r=await fetch(path);if(!r.ok)throw new Error(`CONTENT_LOAD_FAILED: ${path} (${r.status})`);return r.json();}
-function read(){const m=window.Module;return JSON.parse(new TextDecoder().decode(m.HEAPU8.slice(m._unone_web_observation_ptr(),m._unone_web_observation_ptr()+m._unone_web_observation_len())));}
-function send(name,value,...args){const bytes=new TextEncoder().encode(JSON.stringify(value));const m=window.Module,p=m._unone_web_alloc(bytes.length);m.HEAPU8.set(bytes,p);if(m[name](p,bytes.length,...args)!==0)throw new Error(JSON.stringify(read()));}
+async function json(path){const r=await fetch(path);if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${path} (${r.status})`);return r.json();}
+function acceptSnapshot(value,{reset=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
 function draw(){
-  const began=performance.now();renderer.draw(snapshot);renderUi(snapshot);renderMs=performance.now()-began;
-  const measured=renderer.metrics(),bucket=cpuSamples[measured.bloom?'on':'off'];bucket.push(renderMs);if(bucket.length>240)bucket.shift();
-  if(++renderCount%30===0){
-    const stats={bridge_ms:bridgeMs,render_ms:renderMs,...measured,cpu_on:summarize(cpuSamples.on),cpu_off:summarize(cpuSamples.off),drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0};
-    lastStats=stats;
-    document.body.dataset.playerPerformance=JSON.stringify(stats);
-
-  }
-  document.body.dataset.playerFrame=String(snapshot.world?.frame??snapshot.frame??0);
-  /* PROFILE_FRAME */
+ const began=performance.now(),display=interpolator?.sample({snap:frozen})??{snapshot};presentationMemory=display.memory;
+ renderer.draw(display.snapshot);renderUi(snapshot);renderMs=performance.now()-began;
+ if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report()};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
+ document.body.dataset.playerFrame=String(snapshot.world.frame);
+ /* PROFILE_FRAME */
 }
-function tickOnce(){
-  const began=performance.now();send('_unone_web_set_input_frame',manualInput??input.consumeFrame());manualInput=null;
-  /* PROFILE_INPUT */
-  if(window.Module._unone_web_tick()!==0)throw new Error(JSON.stringify(read()));
-  /* PROFILE_TICK_END */
-  snapshot=read();const decodeEnd=performance.now();bridgeMs=decodeEnd-began;
-  /* PROFILE_TICK */
-  audio?.sync(snapshot);
-  const next=JSON.stringify(snapshot.save_payload);if(next!==saved){localStorage.setItem(key,next);saved=next;}
-  /* PROFILE_POST_TICK */
+async function advance(){
+ const began=performance.now(),frame=manualInput??input.consumeFrame();manualInput=null;
+ /* PROFILE_INPUT */
+ const nextSnapshot=await backend.request({kind:'tick',input:frame});
+ /* PROFILE_TICK_END */
+ acceptSnapshot(nextSnapshot);const decodeEnd=performance.now();bridgeMs=decodeEnd-began;
+ /* PROFILE_TICK */
+ audio?.sync(snapshot.world);
+ const next=JSON.stringify(snapshot.save_payload);if(next!==saved){localStorage.setItem(key,next);saved=next;}
+ /* PROFILE_POST_TICK */
 }
+function tickOnce(){if(tickFlight)return tickFlight;tickFlight=advance().finally(()=>{tickFlight=null;});return tickFlight;}
+async function setPaused(value){frozen=value;manualInput=null;input.releaseAll();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
+async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
+async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
+async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.restored_save=JSON.parse(saved??'null');acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:'42'}),{reset:true});audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();await setPaused(wasPaused);}
 async function start(){
-  const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json'),window.runtimeReady]);
-  metrics.runtime_ready_ms=performance.now()-window.playerBoot;
-  document.title=project.config.name;
-  key=`unone-player:${location.pathname}:${project.config.name}`;
-  try{project.restored_save=JSON.parse(localStorage.getItem(key)??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}
-  project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
-  snapshot=loadProject(window.Module,project,42n);
-  if(window.Module._unone_web_set_instance_transport){if(window.Module._unone_web_set_instance_transport(1)!==0)throw new Error(JSON.stringify(read()));snapshot=read();}
-  renderer=await createThreeRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,instanceMemory:()=>window.Module.HEAPU8.buffer,getAssetManifest:()=>assets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,location.href).href;}});
-  audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',location.href)});
-  if(audio?.report().failures.length)throw new Error(JSON.stringify(audio.report()));
-  draw();await renderer.ready();draw();
-  await new Promise(requestAnimationFrame);
-  metrics.first_presented_ms=performance.now()-window.playerBoot;
-  metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));
-  document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';
-  saved=JSON.stringify(snapshot.save_payload);
-  scheduler=createFixedStepScheduler({/* PROFILE_WAKE */tick(){if(!frozen)tickOnce();},render(){draw();},onError:fail,onVisibilityChange:visible=>{input.releaseAll();audio?.setVisibility(visible);}});
-  /* DEVELOPER_CONNECT */
-  scheduler.start();
-  window.addEventListener('resize',()=>{const aspect=canvas.clientWidth/canvas.clientHeight;if(window.Module._unone_web_set_viewport_aspect(aspect)!==0)fail(new Error(JSON.stringify(read())));});
+ const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);projectPayload=project;
+ const runtimeURL=new URL(document.querySelector('meta[name="unone-runtime"]').content,location.href).href;
+ const kind=new URLSearchParams(location.search).get('backend')??presentation.runtime_backend??'main';
+ backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy});metrics.runtime_ready_ms=performance.now()-window.playerBoot;
+ document.title=project.config.name;key=`unone-player:${location.pathname}:${project.config.name}`;
+ try{project.restored_save=JSON.parse(localStorage.getItem(key)??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}
+ project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
+ interpolator=createPresentationInterpolator({enabled:presentation.interpolation??false,instanceBatches:presentation.interpolate_instances??[]});
+ acceptSnapshot(await backend.request({kind:'load',payload:project,seed:'42'}),{reset:true});
+ renderer=await createThreeRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,location.href).href;}});
+ audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',location.href)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));
+ draw();await renderer.ready();draw();await new Promise(requestAnimationFrame);
+ metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';saved=JSON.stringify(snapshot.save_payload);
+ scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,onVisibilityChange:({visible})=>{input.releaseAll();audio?.setVisibility(visible);}});
+ /* DEVELOPER_CONNECT */
+ scheduler.start();
+ window.addEventListener('resize',()=>{backend.request({kind:'aspect',value:canvas.clientWidth/canvas.clientHeight}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);});
 }
-function pointer(event,down,kind){if(!snapshot)return;const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height;const screen={x:x*100,y:(1-y)*100};const normalized={position:worldFromPointer(canvas,event,snapshot),screen_position:screen,down};document.body.dataset.playerPointer=JSON.stringify(normalized);input.updatePointer(normalized,kind);}
+function pointer(event,down,kind){if(!snapshot)return;const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height;const normalized={position:worldFromPointer(canvas,event,snapshot),screen_position:{x:x*100,y:(1-y)*100},down};input.updatePointer(normalized,kind);}
 canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);audio?.unlock();pointer(e,true,'edge');});
-canvas.addEventListener('pointermove',e=>pointer(e,Boolean(e.buttons),'move'));
-canvas.addEventListener('pointerup',e=>pointer(e,false,'edge'));
-canvas.addEventListener('pointercancel',()=>input.releaseAll());
+canvas.addEventListener('pointermove',e=>pointer(e,Boolean(e.buttons),'move'));canvas.addEventListener('pointerup',e=>pointer(e,false,'edge'));canvas.addEventListener('pointercancel',()=>input.releaseAll());
 document.querySelector('#ui-layer').addEventListener('click',e=>{const action=e.target.closest('[data-action]')?.dataset.action;if(action)input.queueAction(action);audio?.unlock();});
 window.addEventListener('keydown',e=>input.setHeld(e.code,true));window.addEventListener('keyup',e=>input.setHeld(e.code,false));window.addEventListener('blur',()=>input.releaseAll());
-window.addEventListener('unone-host-pause',()=>{input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});
-window.addEventListener('unone-host-resume',()=>{scheduler?.resume();audio?.setVisibility(true);});
+window.addEventListener('unone-host-pause',()=>{input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
+window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
+window.addEventListener('pagehide',()=>{scheduler?.stop();backend?.close();});
 start().catch(fail);

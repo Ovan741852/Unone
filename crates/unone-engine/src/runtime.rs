@@ -59,6 +59,7 @@ pub fn encode_observation(
 pub struct SourceProject {
     pub config: ProjectConfig,
     pub source: String,
+    pub job_sources: BTreeMap<String,String>,
     pub scene: Option<SceneFile>,
     pub seed: u64,
     pub restored_save: Option<serde_json::Value>,
@@ -381,7 +382,7 @@ impl EngineRuntime {
         if let Some(scene) = &paths.main_scene {
             world.borrow_mut().load_scene(scene)?;
         }
-        Self::with_world(config, paths, world, None, seed, restored_save, None)
+        Self::with_world(config, paths, world, None, seed, restored_save, None, None)
     }
 
     /// Create a runtime from host-provided source instead of a native filesystem.
@@ -475,6 +476,7 @@ impl EngineRuntime {
         let SourceProject {
             mut config,
             source,
+            job_sources,
             scene,
             seed,
             restored_save,
@@ -507,6 +509,7 @@ impl EngineRuntime {
             seed,
             restored_save,
             viewport_aspect,
+            Some(job_sources),
         )
     }
 
@@ -519,6 +522,7 @@ impl EngineRuntime {
         seed: u64,
         restored_save: Option<serde_json::Value>,
         initial_viewport_aspect: Option<f64>,
+        job_sources: Option<BTreeMap<String,String>>,
     ) -> Result<Self, Box<Diagnostic>> {
         let input = Rc::new(RefCell::new(InputState::default()));
         let random = Rc::new(RefCell::new(DeterministicRng::new(seed)));
@@ -618,6 +622,24 @@ impl EngineRuntime {
         };
         if let Some(aspect) = initial_viewport_aspect {
             runtime.set_viewport_aspect(aspect)?;
+        }
+        if !runtime.config.job_scripts.is_empty() && !runtime.systems.is_enabled("jobs") {
+            return Err(Box::new(script_diagnostic(&runtime.paths,"JOB_MODULES_REQUIRE_JOBS_SYSTEM".into())));
+        }
+        if let Some(sources)=&job_sources {
+            if sources.keys().ne(runtime.config.job_scripts.keys()) {return Err(Box::new(script_diagnostic(&runtime.paths,"JOB_MODULE_SOURCE_MISMATCH".into())));}
+        }
+        #[cfg(feature="jobs")]
+        for (id,path) in &runtime.config.job_scripts {
+            let invalid=||Box::new(script_diagnostic(&runtime.paths,format!("JOB_MODULE_PATH_INVALID: {path}")));
+            if path.is_empty() || !path.ends_with(".luau") || path.contains('\\') || path.contains(':') || path.split('/').any(|s|s.is_empty()||s==".."||s==".") {return Err(invalid());}
+            let source=if let Some(sources)=&job_sources {sources[id].clone()} else {
+                let root=runtime.paths.root.canonicalize().map_err(|_|invalid())?;
+                let file=root.join(path).canonicalize().map_err(|_|invalid())?;
+                if !file.starts_with(&root) {return Err(invalid());}
+                std::fs::read_to_string(file).map_err(|e|Box::new(script_diagnostic(&runtime.paths,format!("JOB_MODULE_READ_FAILED: {path}: {e}"))))?
+            };
+            runtime.jobs.borrow_mut().register_file(id.clone(),source,path.clone()).map_err(|e|Box::new(script_diagnostic(&runtime.paths,e)))?;
         }
         runtime.load_script(false, None)?;
         #[cfg(feature = "jobs")]
@@ -826,6 +848,8 @@ impl EngineRuntime {
             None
         };
         let (script, script_time) = timed(|| {
+            #[cfg(feature="jobs")]
+            if self.systems.is_enabled("jobs") { jobs::pump_schedules(&self.lua,&self.jobs,&self.api).map_err(|e|Box::new(script_diagnostic(&self.paths,e.to_string())))?; }
             self.update_fn
                 .call::<()>((self.api.clone(), FIXED_DT))
                 .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))
@@ -1067,6 +1091,20 @@ impl EngineRuntime {
         snapshot.observations = self.observations.borrow().clone();
         snapshot.ui = self.ui.borrow().clone();
         snapshot
+    }
+
+    /// Host-only executor transport. Never exposed to game Lua.
+    pub fn jobs_host_request(&mut self, request: serde_json::Value) -> Result<serde_json::Value,String> {
+        #[cfg(feature="jobs")]
+        if self.systems.is_enabled("jobs") { return self.jobs.borrow_mut().host(request); }
+        let _=request;
+        Err("JOBS_SYSTEM_DISABLED".into())
+    }
+    pub fn execute_job_host(request: serde_json::Value) -> Result<serde_json::Value,String> {
+        #[cfg(feature="jobs")]
+        { jobs::execute_host(request) }
+        #[cfg(not(feature="jobs"))]
+        { let _=request; Err("JOBS_SYSTEM_NOT_COMPILED".into()) }
     }
 
     /// Diagnostic-only executor capabilities and costs; never available to gameplay.

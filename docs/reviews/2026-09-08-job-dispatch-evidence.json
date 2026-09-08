@@ -1,0 +1,1924 @@
+{
+  "date": "2026-09-08",
+  "status": "passed",
+  "tests": {
+    "engine_passed": 220,
+    "engine_ignored": 3,
+    "focused_job_passed": 12,
+    "web_js_passed": 24,
+    "native_tools_passed": 2,
+    "web_abi_passed": 9
+  },
+  "source_sha256": {
+    "crates/unone-engine/src/runtime/jobs.rs": "6e4e4aca32e7dd56fdf98b99f8f3b7f3c2d8e0a927c4f0ffde53bdeca7fca899",
+    "crates/unone-engine/src/runtime/bindings/jobs.rs": "ffbd2a4d16025d7d6b51d4b151f09b6485631cdd7f3168b91cb4b523db04bed1",
+    "crates/unone-engine/src/runtime.rs": "a29d7bf5915b90fed3f0b361a835f7051dd200d45f9a828ee77d994bd89eabdd",
+    "crates/unone-web-live-smoke/src/main.rs": "0e0b0a50bb500d3f91012c0d4fca9c1ac06dd9f7989b6f76fefc06e5e759cca4",
+    "web/shared/job-pool.mjs": "781c2741f8582b844ef2182deb37a3c667e59cf0a47ef6a3c18d60edbd211457",
+    "web/shared/job-worker.js": "54f7542ec75dd8ef6a5ee765bea61e8d83cca35fd402fbe22cca5d926f4926e3",
+    "web/shared/runtime-core.mjs": "94f38196766540a4809ababd2ec7e65523f79b41fd8ba991a75fdbfcc99c58bb",
+    "web/shared/runtime-worker.js": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1",
+    "web/shared/runtime-backend.mjs": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592",
+    "web/shared/instance-transfer.mjs": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8",
+    "web/shared/async-scheduler.mjs": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+  },
+  "browser": {
+    "parallel": {
+      "status": "passed",
+      "ticks": 30,
+      "parity": true,
+      "cli_parity": true,
+      "runtime": {
+        "cargo_features": [
+          "camera2d",
+          "camera3d",
+          "jobs",
+          "random",
+          "save",
+          "ui",
+          "preview-tools"
+        ],
+        "compiled_systems": [
+          "camera2d",
+          "camera3d",
+          "input",
+          "jobs",
+          "observation",
+          "random",
+          "save",
+          "ui",
+          "world"
+        ],
+        "dev_tools": false,
+        "exports": [
+          "init",
+          "alloc",
+          "load_project",
+          "set_save_payload",
+          "set_input_frame",
+          "set_viewport_aspect",
+          "set_instance_transport",
+          "tick",
+          "jobs_request",
+          "observation_ptr",
+          "observation_len",
+          "developer_request"
+        ],
+        "javascript": "unone-player.js",
+        "javascript_sha256": "4354a28da3899a17570477fbd516074d838ef561b56c722d7f8b10640f9e1ada",
+        "preview_tools": true,
+        "profile": "release",
+        "source_commit": "7f3db187283b036054ef10f5b9b48fb1538f0e82",
+        "source_dirty": true,
+        "wasm": "unone_player.wasm",
+        "wasm_bytes": 1724550,
+        "wasm_sha256": "23e931f15605f1b85dce742e26b65c05403ee12fe4f35ac827c5fb1c32af114e"
+      },
+      "runs": [
+        {
+          "kind": "worker",
+          "mode": "inline",
+          "digests": [
+            "sha256:e64bb9a73762f4bf241bbefb9f6906013918ce70ecd32a1379c9ef818fd00813",
+            "sha256:116ccfbc1a39e032ae683c8ecfa0a0939ae625a7c0a42517c463b3cb1c63252d",
+            "sha256:e27809db2cc857b5857d606ec8e1f4b23210d1ec586ee317598b1e9cba6a11ed",
+            "sha256:c9b3e51c163da7f6d5a79436529ccfe0775f7cdea2edae29d3706e9133c4471d",
+            "sha256:5abe291563128560444472edd1c9b5d85687a555653aa2cb7905f3b25da5162b",
+            "sha256:8ecce4d5b4b2b232f556a54e9a319d85cea5cd7f1bbb3b5e27d2329f8d0f53f8",
+            "sha256:14f597bf78b6068b4beb8063d04ca7bc4848dca7e7491b2b609c29e26f834a14",
+            "sha256:a6088ec0239ae68e80bd3f3c4edc6689f2024cafc698791f4f0c5b8c4f69aaf2",
+            "sha256:dba6974f97988f7b5b45d9085ae065d6381a1c36cdb70fabff9d3b067b7dfabd",
+            "sha256:aaa837b245d95bdc8bad5f0f640a4a059a4a57dff9e642142059c877ac02d470",
+            "sha256:7923f0887e17010cbf62d423cd0b1f67feea4fde8f1fab1c5d6a024e4bf8c02c",
+            "sha256:b85b8e33efdd822bbaa38c94e8a07072e2538e35613cc1daacecbe72b6141f73",
+            "sha256:3f3e8aeef81c639cc2add4020695bbbefafec07ccdd491cb3d6706baec3422cc",
+            "sha256:ffe9414bf9e5609be2f7f8eadad90aed298aebd55437885eb0c9923bf3dc95d8",
+            "sha256:fc38803da41ebcafb3828bac7f2dcf9faf4308a8507388dd6d008b6752a69d5c",
+            "sha256:d8f625e7122789e8e5b43a273d00dbe5a68f96b855eae6c319e7df164bb2703b",
+            "sha256:379d3d5f9b0f5153a70776f05eb4e3bc247b528988865072e8aa042c39feb7f6",
+            "sha256:bf339d54fdef9e6990232f618f04d182bacf10753e3ebc6faabcad0a1e730e3e",
+            "sha256:d46efc3e7e616a0f3f794398275996bdd97ecc14f5cd8175f72aa4c4c2470999",
+            "sha256:68c56f41ee069b90ac1545cd27e1afbbee77fd22273bf2e6d94e23731dce9386",
+            "sha256:ea1b09e83315ea3a3dae6d70c4846ca4c1af16b7b3648ee16a4a14cc918d0b3b",
+            "sha256:382e152f2e6887eb313fcd06344b6ee7b59a9579b02fb14ccc333282ba119451",
+            "sha256:4e0a53209e143d1765f20b87f7890aceeb8ea8ab314b8ef4cd18be3ed1fcbaa4",
+            "sha256:27b34c7b469cd0ebaced0f691b92dbff586b83b70ddefb20bcbceae12e0b470d",
+            "sha256:168cdb18523133750c10d958e555324d05a329925964b88ce23f6bea7f3966f9",
+            "sha256:b4c03fb44b9129a08cff34f71a4dd62338e1dc355cc7af24bfaed8b32b4b443e",
+            "sha256:9abaf5d89182ebb11628b69d30f071bb93df6999419fcb911b6e12228cd8c97e",
+            "sha256:3671b7320f898b2e0b77220dac0c7c5571274013d6b0f285bb6646ae9b658707",
+            "sha256:ace0d74b2d6612f4b1c9da75cc4253bca6fd5b739be3d93ace60a9bf3706f4e3",
+            "sha256:88a274cd7dd7cc303e2b9650a3e89440cd0f5de46f6ffbee988f4054b7aaf6d3"
+          ],
+          "report": {
+            "backend": "worker",
+            "jobs": {
+              "policy": {
+                "workers": 0,
+                "reason": "explicit_inline",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "inline"
+              },
+              "pool": null,
+              "fault": null
+            },
+            "execute_ms": 17.900000005960464,
+            "pack_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "transfer": {
+              "copied_bytes": 0,
+              "allocated_bytes": 0,
+              "reused_bytes": 0,
+              "unchanged_batches": 0,
+              "pooled_bytes": 0,
+              "pooled_buffers": 0
+            },
+            "pending": 0,
+            "closed": false
+          }
+        },
+        {
+          "kind": "main",
+          "mode": "workers",
+          "digests": [
+            "sha256:e64bb9a73762f4bf241bbefb9f6906013918ce70ecd32a1379c9ef818fd00813",
+            "sha256:116ccfbc1a39e032ae683c8ecfa0a0939ae625a7c0a42517c463b3cb1c63252d",
+            "sha256:e27809db2cc857b5857d606ec8e1f4b23210d1ec586ee317598b1e9cba6a11ed",
+            "sha256:c9b3e51c163da7f6d5a79436529ccfe0775f7cdea2edae29d3706e9133c4471d",
+            "sha256:5abe291563128560444472edd1c9b5d85687a555653aa2cb7905f3b25da5162b",
+            "sha256:8ecce4d5b4b2b232f556a54e9a319d85cea5cd7f1bbb3b5e27d2329f8d0f53f8",
+            "sha256:14f597bf78b6068b4beb8063d04ca7bc4848dca7e7491b2b609c29e26f834a14",
+            "sha256:a6088ec0239ae68e80bd3f3c4edc6689f2024cafc698791f4f0c5b8c4f69aaf2",
+            "sha256:dba6974f97988f7b5b45d9085ae065d6381a1c36cdb70fabff9d3b067b7dfabd",
+            "sha256:aaa837b245d95bdc8bad5f0f640a4a059a4a57dff9e642142059c877ac02d470",
+            "sha256:7923f0887e17010cbf62d423cd0b1f67feea4fde8f1fab1c5d6a024e4bf8c02c",
+            "sha256:b85b8e33efdd822bbaa38c94e8a07072e2538e35613cc1daacecbe72b6141f73",
+            "sha256:3f3e8aeef81c639cc2add4020695bbbefafec07ccdd491cb3d6706baec3422cc",
+            "sha256:ffe9414bf9e5609be2f7f8eadad90aed298aebd55437885eb0c9923bf3dc95d8",
+            "sha256:fc38803da41ebcafb3828bac7f2dcf9faf4308a8507388dd6d008b6752a69d5c",
+            "sha256:d8f625e7122789e8e5b43a273d00dbe5a68f96b855eae6c319e7df164bb2703b",
+            "sha256:379d3d5f9b0f5153a70776f05eb4e3bc247b528988865072e8aa042c39feb7f6",
+            "sha256:bf339d54fdef9e6990232f618f04d182bacf10753e3ebc6faabcad0a1e730e3e",
+            "sha256:d46efc3e7e616a0f3f794398275996bdd97ecc14f5cd8175f72aa4c4c2470999",
+            "sha256:68c56f41ee069b90ac1545cd27e1afbbee77fd22273bf2e6d94e23731dce9386",
+            "sha256:ea1b09e83315ea3a3dae6d70c4846ca4c1af16b7b3648ee16a4a14cc918d0b3b",
+            "sha256:382e152f2e6887eb313fcd06344b6ee7b59a9579b02fb14ccc333282ba119451",
+            "sha256:4e0a53209e143d1765f20b87f7890aceeb8ea8ab314b8ef4cd18be3ed1fcbaa4",
+            "sha256:27b34c7b469cd0ebaced0f691b92dbff586b83b70ddefb20bcbceae12e0b470d",
+            "sha256:168cdb18523133750c10d958e555324d05a329925964b88ce23f6bea7f3966f9",
+            "sha256:b4c03fb44b9129a08cff34f71a4dd62338e1dc355cc7af24bfaed8b32b4b443e",
+            "sha256:9abaf5d89182ebb11628b69d30f071bb93df6999419fcb911b6e12228cd8c97e",
+            "sha256:3671b7320f898b2e0b77220dac0c7c5571274013d6b0f285bb6646ae9b658707",
+            "sha256:ace0d74b2d6612f4b1c9da75cc4253bca6fd5b739be3d93ace60a9bf3706f4e3",
+            "sha256:88a274cd7dd7cc303e2b9650a3e89440cd0f5de46f6ffbee988f4054b7aaf6d3"
+          ],
+          "report": {
+            "backend": "main",
+            "jobs": {
+              "policy": {
+                "workers": 2,
+                "reason": "bounded_device_budget",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "workers"
+              },
+              "pool": {
+                "submitted": 120,
+                "completed": 116,
+                "inline_jobs": 0,
+                "worker_jobs": 118,
+                "queue_ms": 284.80000016093254,
+                "roundtrip_ms": 335.19999998807907,
+                "execution_ms": 291.400002,
+                "kernel_errors": 0,
+                "failures": 0,
+                "recent": [
+                  {
+                    "job": "1:00000000000000000054",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.9000000059604645,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000053",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.300000011920929,
+                    "execution_ms": 2.8999989999999998,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000055",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.9000000059604645,
+                    "roundtrip_ms": 3,
+                    "execution_ms": 2.6,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000056",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.300000011920929,
+                    "roundtrip_ms": 3.4000000059604645,
+                    "execution_ms": 2.8999989999999998,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000057",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.300000011920929,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000058",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.5,
+                    "execution_ms": 2.3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000059",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.300000011920929,
+                    "roundtrip_ms": 2.2999999821186066,
+                    "execution_ms": 2,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000060",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.5,
+                    "roundtrip_ms": 2.4000000059604645,
+                    "execution_ms": 2,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000061",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.300000011920929,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000062",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.300000011920929,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000063",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.300000011920929,
+                    "roundtrip_ms": 3.2999999821186066,
+                    "execution_ms": 3.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000064",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.300000011920929,
+                    "roundtrip_ms": 3.2999999821186066,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000066",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.5,
+                    "execution_ms": 2.2,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000065",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.5999999940395355,
+                    "execution_ms": 2.200001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000068",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.5999999940395355,
+                    "roundtrip_ms": 2.9000000059604645,
+                    "execution_ms": 2.700001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000067",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.5,
+                    "roundtrip_ms": 3.0999999940395355,
+                    "execution_ms": 2.8,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000070",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.300000011920929,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000069",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.300000011920929,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000071",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.300000011920929,
+                    "roundtrip_ms": 3.0999999940395355,
+                    "execution_ms": 2.8999989999999998,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000072",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.300000011920929,
+                    "roundtrip_ms": 3.0999999940395355,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000074",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.2999999821186066,
+                    "execution_ms": 1.9000009999999998,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000073",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.5,
+                    "execution_ms": 2.299999,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000075",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.2999999821186066,
+                    "roundtrip_ms": 2.4000000059604645,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000076",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.5,
+                    "roundtrip_ms": 2.5,
+                    "execution_ms": 2.1999989999999996,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000078",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.600000023841858,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000077",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.4000000059604645,
+                    "execution_ms": 2.7,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000079",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.600000023841858,
+                    "roundtrip_ms": 3,
+                    "execution_ms": 2.400001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000080",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.4000000059604645,
+                    "roundtrip_ms": 3,
+                    "execution_ms": 2.700001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000081",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 4.699999988079071,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000082",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 4.699999988079071,
+                    "execution_ms": 2.600001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000083",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 4.699999988079071,
+                    "roundtrip_ms": 3.2000000178813934,
+                    "execution_ms": 2.8,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000084",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 4.699999988079071,
+                    "roundtrip_ms": 3.5999999940395355,
+                    "execution_ms": 3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000085",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3,
+                    "execution_ms": 2.6,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000086",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.300000011920929,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000087",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.9000000059604645,
+                    "roundtrip_ms": 2.5999999940395355,
+                    "execution_ms": 2.300001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000088",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.300000011920929,
+                    "roundtrip_ms": 2.4000000059604645,
+                    "execution_ms": 2.3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000090",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.899999976158142,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000089",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.199999988079071,
+                    "execution_ms": 3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000091",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.899999976158142,
+                    "roundtrip_ms": 3.4000000059604645,
+                    "execution_ms": 3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000092",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.199999988079071,
+                    "roundtrip_ms": 3.199999988079071,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000094",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.300000011920929,
+                    "execution_ms": 1.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000093",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.800000011920929,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000095",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.300000011920929,
+                    "roundtrip_ms": 2.4000000059604645,
+                    "execution_ms": 2.2,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000096",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.800000011920929,
+                    "roundtrip_ms": 2.2999999821186066,
+                    "execution_ms": 2,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000097",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.199999988079071,
+                    "execution_ms": 2,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000098",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.5999999940395355,
+                    "execution_ms": 2.400001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000099",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.199999988079071,
+                    "roundtrip_ms": 2.5999999940395355,
+                    "execution_ms": 2.300001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000100",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.5999999940395355,
+                    "roundtrip_ms": 2.5,
+                    "execution_ms": 2,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000101",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000102",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.100000023841858,
+                    "execution_ms": 2.799999,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000104",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.100000023841858,
+                    "roundtrip_ms": 2.5,
+                    "execution_ms": 2.2,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000103",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3,
+                    "roundtrip_ms": 2.800000011920929,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000105",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.199999988079071,
+                    "execution_ms": 1.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000106",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.2999999821186066,
+                    "execution_ms": 2,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000108",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.2999999821186066,
+                    "roundtrip_ms": 2.7000000178813934,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000107",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.199999988079071,
+                    "roundtrip_ms": 3.300000011920929,
+                    "execution_ms": 3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000110",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.4000000059604645,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000109",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.300000011920929,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000111",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.5,
+                    "roundtrip_ms": 2.5,
+                    "execution_ms": 2.300001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000112",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.300000011920929,
+                    "roundtrip_ms": 3.2999999821186066,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000113",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.4000000059604645,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000114",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.699999988079071,
+                    "execution_ms": 2.3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000115",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.4000000059604645,
+                    "roundtrip_ms": 2.7999999821186066,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000116",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.699999988079071,
+                    "roundtrip_ms": 2.7000000178813934,
+                    "execution_ms": 2.5,
+                    "error": null
+                  }
+                ],
+                "worker_limit": 2,
+                "workers_started": 2,
+                "active": 2,
+                "queued": 2,
+                "closed": false,
+                "transport": "bounded JSON byte arrays; encoding and copying included in roundtrip",
+                "timing_scope": "host-local, excluded from canonical state"
+              },
+              "fault": null
+            },
+            "execute_ms": 12.599999994039536,
+            "wasm_linear_bytes": 16777216,
+            "pending": 0,
+            "closed": false
+          }
+        },
+        {
+          "kind": "worker",
+          "mode": "workers",
+          "digests": [
+            "sha256:e64bb9a73762f4bf241bbefb9f6906013918ce70ecd32a1379c9ef818fd00813",
+            "sha256:116ccfbc1a39e032ae683c8ecfa0a0939ae625a7c0a42517c463b3cb1c63252d",
+            "sha256:e27809db2cc857b5857d606ec8e1f4b23210d1ec586ee317598b1e9cba6a11ed",
+            "sha256:c9b3e51c163da7f6d5a79436529ccfe0775f7cdea2edae29d3706e9133c4471d",
+            "sha256:5abe291563128560444472edd1c9b5d85687a555653aa2cb7905f3b25da5162b",
+            "sha256:8ecce4d5b4b2b232f556a54e9a319d85cea5cd7f1bbb3b5e27d2329f8d0f53f8",
+            "sha256:14f597bf78b6068b4beb8063d04ca7bc4848dca7e7491b2b609c29e26f834a14",
+            "sha256:a6088ec0239ae68e80bd3f3c4edc6689f2024cafc698791f4f0c5b8c4f69aaf2",
+            "sha256:dba6974f97988f7b5b45d9085ae065d6381a1c36cdb70fabff9d3b067b7dfabd",
+            "sha256:aaa837b245d95bdc8bad5f0f640a4a059a4a57dff9e642142059c877ac02d470",
+            "sha256:7923f0887e17010cbf62d423cd0b1f67feea4fde8f1fab1c5d6a024e4bf8c02c",
+            "sha256:b85b8e33efdd822bbaa38c94e8a07072e2538e35613cc1daacecbe72b6141f73",
+            "sha256:3f3e8aeef81c639cc2add4020695bbbefafec07ccdd491cb3d6706baec3422cc",
+            "sha256:ffe9414bf9e5609be2f7f8eadad90aed298aebd55437885eb0c9923bf3dc95d8",
+            "sha256:fc38803da41ebcafb3828bac7f2dcf9faf4308a8507388dd6d008b6752a69d5c",
+            "sha256:d8f625e7122789e8e5b43a273d00dbe5a68f96b855eae6c319e7df164bb2703b",
+            "sha256:379d3d5f9b0f5153a70776f05eb4e3bc247b528988865072e8aa042c39feb7f6",
+            "sha256:bf339d54fdef9e6990232f618f04d182bacf10753e3ebc6faabcad0a1e730e3e",
+            "sha256:d46efc3e7e616a0f3f794398275996bdd97ecc14f5cd8175f72aa4c4c2470999",
+            "sha256:68c56f41ee069b90ac1545cd27e1afbbee77fd22273bf2e6d94e23731dce9386",
+            "sha256:ea1b09e83315ea3a3dae6d70c4846ca4c1af16b7b3648ee16a4a14cc918d0b3b",
+            "sha256:382e152f2e6887eb313fcd06344b6ee7b59a9579b02fb14ccc333282ba119451",
+            "sha256:4e0a53209e143d1765f20b87f7890aceeb8ea8ab314b8ef4cd18be3ed1fcbaa4",
+            "sha256:27b34c7b469cd0ebaced0f691b92dbff586b83b70ddefb20bcbceae12e0b470d",
+            "sha256:168cdb18523133750c10d958e555324d05a329925964b88ce23f6bea7f3966f9",
+            "sha256:b4c03fb44b9129a08cff34f71a4dd62338e1dc355cc7af24bfaed8b32b4b443e",
+            "sha256:9abaf5d89182ebb11628b69d30f071bb93df6999419fcb911b6e12228cd8c97e",
+            "sha256:3671b7320f898b2e0b77220dac0c7c5571274013d6b0f285bb6646ae9b658707",
+            "sha256:ace0d74b2d6612f4b1c9da75cc4253bca6fd5b739be3d93ace60a9bf3706f4e3",
+            "sha256:88a274cd7dd7cc303e2b9650a3e89440cd0f5de46f6ffbee988f4054b7aaf6d3"
+          ],
+          "report": {
+            "backend": "worker",
+            "jobs": {
+              "policy": {
+                "workers": 2,
+                "reason": "bounded_device_budget",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "workers"
+              },
+              "pool": {
+                "submitted": 120,
+                "completed": 116,
+                "inline_jobs": 0,
+                "worker_jobs": 118,
+                "queue_ms": 238.99999964237213,
+                "roundtrip_ms": 324.89999985694885,
+                "execution_ms": 288.199997,
+                "kernel_errors": 0,
+                "failures": 0,
+                "recent": [
+                  {
+                    "job": "1:00000000000000000053",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.399999976158142,
+                    "execution_ms": 2.2,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000054",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.899999976158142,
+                    "execution_ms": 2.4,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000055",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.399999976158142,
+                    "roundtrip_ms": 2.9000000059604645,
+                    "execution_ms": 2.4,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000056",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.899999976158142,
+                    "roundtrip_ms": 2.600000023841858,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000057",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.399999976158142,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000058",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.5,
+                    "execution_ms": 2.299999,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000059",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.399999976158142,
+                    "roundtrip_ms": 2.300000011920929,
+                    "execution_ms": 1.899999,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000060",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.5,
+                    "roundtrip_ms": 2.5999999940395355,
+                    "execution_ms": 2.299999,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000061",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.699999988079071,
+                    "execution_ms": 2.4,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000062",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.0999999940395355,
+                    "execution_ms": 2.700001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000064",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.0999999940395355,
+                    "roundtrip_ms": 2.5,
+                    "execution_ms": 2.3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000063",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.699999988079071,
+                    "roundtrip_ms": 3,
+                    "execution_ms": 2.7,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000065",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.7999999821186066,
+                    "execution_ms": 2.6,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000066",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3,
+                    "execution_ms": 2.800001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000067",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.7999999821186066,
+                    "roundtrip_ms": 2.600000023841858,
+                    "execution_ms": 2.2,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000068",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3,
+                    "roundtrip_ms": 2.5,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000069",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.5999999940395355,
+                    "execution_ms": 2.4,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000070",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.2999999821186066,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000071",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.5999999940395355,
+                    "roundtrip_ms": 2.4000000059604645,
+                    "execution_ms": 2.1999989999999996,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000072",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.2999999821186066,
+                    "roundtrip_ms": 3.2000000178813934,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000073",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.0999999940395355,
+                    "execution_ms": 2.700001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000074",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.2000000178813934,
+                    "execution_ms": 3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000075",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.0999999940395355,
+                    "roundtrip_ms": 3.2000000178813934,
+                    "execution_ms": 3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000076",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.2000000178813934,
+                    "roundtrip_ms": 3.2999999821186066,
+                    "execution_ms": 2.800001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000078",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.2999999821186066,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000077",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.4000000059604645,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000079",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.2999999821186066,
+                    "roundtrip_ms": 3.100000023841858,
+                    "execution_ms": 2.799999,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000080",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.4000000059604645,
+                    "roundtrip_ms": 3.199999988079071,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000082",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.5,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000081",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.899999976158142,
+                    "execution_ms": 2.6,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000083",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.5,
+                    "roundtrip_ms": 3.2999999821186066,
+                    "execution_ms": 3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000084",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.899999976158142,
+                    "roundtrip_ms": 3.100000023841858,
+                    "execution_ms": 2.6,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000085",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.5999999940395355,
+                    "execution_ms": 2.400001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000086",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.0999999940395355,
+                    "execution_ms": 2.7,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000087",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.5999999940395355,
+                    "roundtrip_ms": 3.2000000178813934,
+                    "execution_ms": 3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000088",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3,
+                    "roundtrip_ms": 3.5,
+                    "execution_ms": 3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000090",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.5999999940395355,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000089",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.7999999821186066,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000091",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.5999999940395355,
+                    "roundtrip_ms": 2.4000000059604645,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000092",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.7999999821186066,
+                    "roundtrip_ms": 2.5,
+                    "execution_ms": 2.200001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000093",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.399999976158142,
+                    "execution_ms": 2.299999,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000094",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.7999999821186066,
+                    "execution_ms": 2.400001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000095",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.399999976158142,
+                    "roundtrip_ms": 2.800000011920929,
+                    "execution_ms": 2.3999989999999998,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000096",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.7999999821186066,
+                    "roundtrip_ms": 2.5999999940395355,
+                    "execution_ms": 2.4,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000097",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.300000011920929,
+                    "execution_ms": 2.8999989999999998,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000098",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.4000000059604645,
+                    "execution_ms": 2.8999989999999998,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000100",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.2999999821186066,
+                    "roundtrip_ms": 2.4000000059604645,
+                    "execution_ms": 2.1,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000099",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.199999988079071,
+                    "roundtrip_ms": 2.800000011920929,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000102",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.7000000178813934,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000101",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.100000023841858,
+                    "execution_ms": 2.799999,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000104",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.100000023841858,
+                    "roundtrip_ms": 2.199999988079071,
+                    "execution_ms": 2,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000103",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.7000000178813934,
+                    "roundtrip_ms": 2.699999988079071,
+                    "execution_ms": 2.3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000105",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3,
+                    "execution_ms": 2.6,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000106",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.199999988079071,
+                    "execution_ms": 2.7,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000107",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3,
+                    "roundtrip_ms": 2.899999976158142,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000108",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.199999988079071,
+                    "roundtrip_ms": 3.300000011920929,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000109",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.4000000059604645,
+                    "execution_ms": 2.1999989999999996,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000110",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.7999999821186066,
+                    "execution_ms": 2.5,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000111",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.4000000059604645,
+                    "roundtrip_ms": 3.2999999821186066,
+                    "execution_ms": 2.799999,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000112",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.7999999821186066,
+                    "roundtrip_ms": 3.300000011920929,
+                    "execution_ms": 2.799999,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000113",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 2.7999999821186066,
+                    "execution_ms": 2.6,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000114",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 3.199999988079071,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000115",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 2.7999999821186066,
+                    "roundtrip_ms": 3.100000023841858,
+                    "execution_ms": 2.9,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000116",
+                    "source_path": "jobs/field.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 3.199999988079071,
+                    "roundtrip_ms": 3.4000000059604645,
+                    "execution_ms": 2.8999989999999998,
+                    "error": null
+                  }
+                ],
+                "worker_limit": 2,
+                "workers_started": 2,
+                "active": 2,
+                "queued": 2,
+                "closed": false,
+                "transport": "bounded JSON byte arrays; encoding and copying included in roundtrip",
+                "timing_scope": "host-local, excluded from canonical state"
+              },
+              "fault": null
+            },
+            "execute_ms": 12.5,
+            "pack_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "transfer": {
+              "copied_bytes": 0,
+              "allocated_bytes": 0,
+              "reused_bytes": 0,
+              "unchanged_batches": 0,
+              "pooled_bytes": 0,
+              "pooled_buffers": 0
+            },
+            "pending": 0,
+            "closed": false
+          }
+        }
+      ]
+    },
+    "periodic_production": {
+      "status": "passed",
+      "ticks": 30,
+      "parity": true,
+      "cli_parity": true,
+      "runtime": {
+        "cargo_features": [
+          "camera2d",
+          "camera3d",
+          "jobs",
+          "random",
+          "save",
+          "ui"
+        ],
+        "compiled_systems": [
+          "camera2d",
+          "camera3d",
+          "input",
+          "jobs",
+          "observation",
+          "random",
+          "save",
+          "ui",
+          "world"
+        ],
+        "dev_tools": false,
+        "exports": [
+          "init",
+          "alloc",
+          "load_project",
+          "set_save_payload",
+          "set_input_frame",
+          "set_viewport_aspect",
+          "set_instance_transport",
+          "tick",
+          "jobs_request",
+          "observation_ptr",
+          "observation_len"
+        ],
+        "javascript": "unone-player.js",
+        "javascript_sha256": "70a9119779925602c4d6eef171a44658615e7e16c79a216b69a7184ea985e8e5",
+        "preview_tools": false,
+        "profile": "release",
+        "source_commit": "7f3db187283b036054ef10f5b9b48fb1538f0e82",
+        "source_dirty": true,
+        "wasm": "unone_player.wasm",
+        "wasm_bytes": 1580741,
+        "wasm_sha256": "076ee81e973ad59d1922a2b49e07a82b4f8c7c03454810304b0bfc43f649be87"
+      },
+      "runs": [
+        {
+          "kind": "worker",
+          "mode": "inline",
+          "digests": [
+            "sha256:6468d1d95117ff0a7ea9c91ddf8c89a69af85ef9389118106b1eaf10f877f668",
+            "sha256:d9660f015745bbf5bee1ad13183bf6f5dffc2cf7c1b381cd40fd8ff818ea0dca",
+            "sha256:2f62825b7deff55df4a2ffd41f82b4825c31e049880bacf7325fd756bb431345",
+            "sha256:1ce80032b4bd696ae4e9d8d48f67a2c99062c2736516fa3c51d2703f90e38d35",
+            "sha256:77c48a3db12ddbfcb065b9eb6516f8e1d584dc1bc1e680899620ee4f07f59194",
+            "sha256:7b2b1a48cff8c0251f13c45a667f120640457d70f625857986dd5b7ca53f69b8",
+            "sha256:c48cf7895d924171071833517fc5cabae17a580750307a4e45b9406d7c3199f2",
+            "sha256:f31860e1dfcfe1012c7871418dd764658a5051b69967eefa567ce494d4ff4abd",
+            "sha256:b7246e00988a8d81c2f67dedd390278a22cd19225166b6c138fc603c8b48aa23",
+            "sha256:8079b3a05ad3815fcaccff8823f3e47d8d7f99065b1b9075b80f13210a4d160a",
+            "sha256:3a7d8abdd04aee80e3924fc9addb998b63126ccd95704cea1ecd0ca21c7179e1",
+            "sha256:6391cf99ddfa0f3af98c7167b70b47baa766e6c3d321ed5b95c0b7ab78f8c255",
+            "sha256:6375465e48860102ce0f1ced4da5c9194aa90497d20fb9c9f48611398c6635be",
+            "sha256:fdc42034b0b8bb6cd1f1c2fd8e6b43489efd8f4aa1d1d9db676627a2b0588c78",
+            "sha256:587c8c84828a7fcd1a0f281744dc696780cf20ee1214ba49443f88e52e374ecf",
+            "sha256:00845f9e5e33cec7c32ef2f0a9de3298b64b92285608d2d5f73c65381f0a0560",
+            "sha256:6fe0df0193f276f55bd2c9f57db1b3ea559b5af5c15e66469ce53a8fea261570",
+            "sha256:a1f20be37ab9df6e9516e06a19b6def569d8e0b2e5e991c50981ef4827f9dcc2",
+            "sha256:c8a40836af5c0985fc24b9365410aeee85493291f429c2350bfd82e9248abb67",
+            "sha256:23dd936c7250b67bf52d6c1461b1275db09c8b60459cbee60573510932243a48",
+            "sha256:115b8b458e84ae7a8a97b3c895a40886dc06d768cb44f85e7c70919ee254ceea",
+            "sha256:3b2997919cf927ad102ecf8553f38ddad8de13b632bba863a62b669f40ae86ad",
+            "sha256:03bcd36345092131720a092766a8478a8ca97b79d5d9b2582d3b1b9608681f2f",
+            "sha256:3941da1a0a4f12322eb45088fd73effa431d040917a81b692e0d0b794d2df18f",
+            "sha256:14b13ec7bfe19280c66421087669aac6aa497f0508ba3c615527c0faebf46139",
+            "sha256:9f74f86829bf59da37808a996be2824a8979bf27439a2b45006880d487ae425d",
+            "sha256:3df99b0331c6b33966f400daf445b2a60462e1d8ef05fad6acbcf85071169948",
+            "sha256:ba47d0f4b9c81f93fe4110f121c6131c05ff16d3612b0a6732135378ab691cbb",
+            "sha256:f19490aa4d1b0b7dcf5d53a56b5095a267635e658db2d32bc8d26e04bb0e044d",
+            "sha256:aba8ce6b4d875964c162348bdf57e2b418ce8ad3aa49d78003f67cfb48108b11"
+          ],
+          "report": {
+            "backend": "worker",
+            "jobs": {
+              "policy": {
+                "workers": 0,
+                "reason": "explicit_inline",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "inline"
+              },
+              "pool": null,
+              "fault": null
+            },
+            "execute_ms": 0.09999999403953552,
+            "pack_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "transfer": {
+              "copied_bytes": 0,
+              "allocated_bytes": 0,
+              "reused_bytes": 0,
+              "unchanged_batches": 0,
+              "pooled_bytes": 0,
+              "pooled_buffers": 0
+            },
+            "pending": 0,
+            "closed": false
+          }
+        },
+        {
+          "kind": "main",
+          "mode": "workers",
+          "digests": [
+            "sha256:6468d1d95117ff0a7ea9c91ddf8c89a69af85ef9389118106b1eaf10f877f668",
+            "sha256:d9660f015745bbf5bee1ad13183bf6f5dffc2cf7c1b381cd40fd8ff818ea0dca",
+            "sha256:2f62825b7deff55df4a2ffd41f82b4825c31e049880bacf7325fd756bb431345",
+            "sha256:1ce80032b4bd696ae4e9d8d48f67a2c99062c2736516fa3c51d2703f90e38d35",
+            "sha256:77c48a3db12ddbfcb065b9eb6516f8e1d584dc1bc1e680899620ee4f07f59194",
+            "sha256:7b2b1a48cff8c0251f13c45a667f120640457d70f625857986dd5b7ca53f69b8",
+            "sha256:c48cf7895d924171071833517fc5cabae17a580750307a4e45b9406d7c3199f2",
+            "sha256:f31860e1dfcfe1012c7871418dd764658a5051b69967eefa567ce494d4ff4abd",
+            "sha256:b7246e00988a8d81c2f67dedd390278a22cd19225166b6c138fc603c8b48aa23",
+            "sha256:8079b3a05ad3815fcaccff8823f3e47d8d7f99065b1b9075b80f13210a4d160a",
+            "sha256:3a7d8abdd04aee80e3924fc9addb998b63126ccd95704cea1ecd0ca21c7179e1",
+            "sha256:6391cf99ddfa0f3af98c7167b70b47baa766e6c3d321ed5b95c0b7ab78f8c255",
+            "sha256:6375465e48860102ce0f1ced4da5c9194aa90497d20fb9c9f48611398c6635be",
+            "sha256:fdc42034b0b8bb6cd1f1c2fd8e6b43489efd8f4aa1d1d9db676627a2b0588c78",
+            "sha256:587c8c84828a7fcd1a0f281744dc696780cf20ee1214ba49443f88e52e374ecf",
+            "sha256:00845f9e5e33cec7c32ef2f0a9de3298b64b92285608d2d5f73c65381f0a0560",
+            "sha256:6fe0df0193f276f55bd2c9f57db1b3ea559b5af5c15e66469ce53a8fea261570",
+            "sha256:a1f20be37ab9df6e9516e06a19b6def569d8e0b2e5e991c50981ef4827f9dcc2",
+            "sha256:c8a40836af5c0985fc24b9365410aeee85493291f429c2350bfd82e9248abb67",
+            "sha256:23dd936c7250b67bf52d6c1461b1275db09c8b60459cbee60573510932243a48",
+            "sha256:115b8b458e84ae7a8a97b3c895a40886dc06d768cb44f85e7c70919ee254ceea",
+            "sha256:3b2997919cf927ad102ecf8553f38ddad8de13b632bba863a62b669f40ae86ad",
+            "sha256:03bcd36345092131720a092766a8478a8ca97b79d5d9b2582d3b1b9608681f2f",
+            "sha256:3941da1a0a4f12322eb45088fd73effa431d040917a81b692e0d0b794d2df18f",
+            "sha256:14b13ec7bfe19280c66421087669aac6aa497f0508ba3c615527c0faebf46139",
+            "sha256:9f74f86829bf59da37808a996be2824a8979bf27439a2b45006880d487ae425d",
+            "sha256:3df99b0331c6b33966f400daf445b2a60462e1d8ef05fad6acbcf85071169948",
+            "sha256:ba47d0f4b9c81f93fe4110f121c6131c05ff16d3612b0a6732135378ab691cbb",
+            "sha256:f19490aa4d1b0b7dcf5d53a56b5095a267635e658db2d32bc8d26e04bb0e044d",
+            "sha256:aba8ce6b4d875964c162348bdf57e2b418ce8ad3aa49d78003f67cfb48108b11"
+          ],
+          "report": {
+            "backend": "main",
+            "jobs": {
+              "policy": {
+                "workers": 2,
+                "reason": "bounded_device_budget",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "workers"
+              },
+              "pool": {
+                "submitted": 3,
+                "completed": 3,
+                "inline_jobs": 0,
+                "worker_jobs": 3,
+                "queue_ms": 22.599999994039536,
+                "roundtrip_ms": 2.0999999940395355,
+                "execution_ms": 1.2999999999999998,
+                "kernel_errors": 0,
+                "failures": 0,
+                "recent": [
+                  {
+                    "job": "1:00000000000000000001",
+                    "source_path": "jobs/copy.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 22.599999994039536,
+                    "roundtrip_ms": 1.0999999940395355,
+                    "execution_ms": 0.7,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000002",
+                    "source_path": "jobs/copy.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 0.4000000059604645,
+                    "execution_ms": 0.2,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000003",
+                    "source_path": "jobs/copy.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 0.5999999940395355,
+                    "execution_ms": 0.4,
+                    "error": null
+                  }
+                ],
+                "worker_limit": 2,
+                "workers_started": 1,
+                "active": 0,
+                "queued": 0,
+                "closed": false,
+                "transport": "bounded JSON byte arrays; encoding and copying included in roundtrip",
+                "timing_scope": "host-local, excluded from canonical state"
+              },
+              "fault": null
+            },
+            "execute_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "pending": 0,
+            "closed": false
+          }
+        },
+        {
+          "kind": "worker",
+          "mode": "workers",
+          "digests": [
+            "sha256:6468d1d95117ff0a7ea9c91ddf8c89a69af85ef9389118106b1eaf10f877f668",
+            "sha256:d9660f015745bbf5bee1ad13183bf6f5dffc2cf7c1b381cd40fd8ff818ea0dca",
+            "sha256:2f62825b7deff55df4a2ffd41f82b4825c31e049880bacf7325fd756bb431345",
+            "sha256:1ce80032b4bd696ae4e9d8d48f67a2c99062c2736516fa3c51d2703f90e38d35",
+            "sha256:77c48a3db12ddbfcb065b9eb6516f8e1d584dc1bc1e680899620ee4f07f59194",
+            "sha256:7b2b1a48cff8c0251f13c45a667f120640457d70f625857986dd5b7ca53f69b8",
+            "sha256:c48cf7895d924171071833517fc5cabae17a580750307a4e45b9406d7c3199f2",
+            "sha256:f31860e1dfcfe1012c7871418dd764658a5051b69967eefa567ce494d4ff4abd",
+            "sha256:b7246e00988a8d81c2f67dedd390278a22cd19225166b6c138fc603c8b48aa23",
+            "sha256:8079b3a05ad3815fcaccff8823f3e47d8d7f99065b1b9075b80f13210a4d160a",
+            "sha256:3a7d8abdd04aee80e3924fc9addb998b63126ccd95704cea1ecd0ca21c7179e1",
+            "sha256:6391cf99ddfa0f3af98c7167b70b47baa766e6c3d321ed5b95c0b7ab78f8c255",
+            "sha256:6375465e48860102ce0f1ced4da5c9194aa90497d20fb9c9f48611398c6635be",
+            "sha256:fdc42034b0b8bb6cd1f1c2fd8e6b43489efd8f4aa1d1d9db676627a2b0588c78",
+            "sha256:587c8c84828a7fcd1a0f281744dc696780cf20ee1214ba49443f88e52e374ecf",
+            "sha256:00845f9e5e33cec7c32ef2f0a9de3298b64b92285608d2d5f73c65381f0a0560",
+            "sha256:6fe0df0193f276f55bd2c9f57db1b3ea559b5af5c15e66469ce53a8fea261570",
+            "sha256:a1f20be37ab9df6e9516e06a19b6def569d8e0b2e5e991c50981ef4827f9dcc2",
+            "sha256:c8a40836af5c0985fc24b9365410aeee85493291f429c2350bfd82e9248abb67",
+            "sha256:23dd936c7250b67bf52d6c1461b1275db09c8b60459cbee60573510932243a48",
+            "sha256:115b8b458e84ae7a8a97b3c895a40886dc06d768cb44f85e7c70919ee254ceea",
+            "sha256:3b2997919cf927ad102ecf8553f38ddad8de13b632bba863a62b669f40ae86ad",
+            "sha256:03bcd36345092131720a092766a8478a8ca97b79d5d9b2582d3b1b9608681f2f",
+            "sha256:3941da1a0a4f12322eb45088fd73effa431d040917a81b692e0d0b794d2df18f",
+            "sha256:14b13ec7bfe19280c66421087669aac6aa497f0508ba3c615527c0faebf46139",
+            "sha256:9f74f86829bf59da37808a996be2824a8979bf27439a2b45006880d487ae425d",
+            "sha256:3df99b0331c6b33966f400daf445b2a60462e1d8ef05fad6acbcf85071169948",
+            "sha256:ba47d0f4b9c81f93fe4110f121c6131c05ff16d3612b0a6732135378ab691cbb",
+            "sha256:f19490aa4d1b0b7dcf5d53a56b5095a267635e658db2d32bc8d26e04bb0e044d",
+            "sha256:aba8ce6b4d875964c162348bdf57e2b418ce8ad3aa49d78003f67cfb48108b11"
+          ],
+          "report": {
+            "backend": "worker",
+            "jobs": {
+              "policy": {
+                "workers": 2,
+                "reason": "bounded_device_budget",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "workers"
+              },
+              "pool": {
+                "submitted": 3,
+                "completed": 3,
+                "inline_jobs": 0,
+                "worker_jobs": 3,
+                "queue_ms": 24.599999994039536,
+                "roundtrip_ms": 2.199999988079071,
+                "execution_ms": 1.200001,
+                "kernel_errors": 0,
+                "failures": 0,
+                "recent": [
+                  {
+                    "job": "1:00000000000000000001",
+                    "source_path": "jobs/copy.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 24.599999994039536,
+                    "roundtrip_ms": 1.0999999940395355,
+                    "execution_ms": 0.600001,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000002",
+                    "source_path": "jobs/copy.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 0.5,
+                    "execution_ms": 0.3,
+                    "error": null
+                  },
+                  {
+                    "job": "1:00000000000000000003",
+                    "source_path": "jobs/copy.luau",
+                    "backend": "worker",
+                    "reason": "parallel_kernel",
+                    "queue_ms": 0,
+                    "roundtrip_ms": 0.5999999940395355,
+                    "execution_ms": 0.3,
+                    "error": null
+                  }
+                ],
+                "worker_limit": 2,
+                "workers_started": 1,
+                "active": 0,
+                "queued": 0,
+                "closed": false,
+                "transport": "bounded JSON byte arrays; encoding and copying included in roundtrip",
+                "timing_scope": "host-local, excluded from canonical state"
+              },
+              "fault": null
+            },
+            "execute_ms": 0,
+            "pack_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "transfer": {
+              "copied_bytes": 0,
+              "allocated_bytes": 0,
+              "reused_bytes": 0,
+              "unchanged_batches": 0,
+              "pooled_bytes": 0,
+              "pooled_buffers": 0
+            },
+            "pending": 0,
+            "closed": false
+          }
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Not a before/after FPS benchmark or a device-farm test.",
+    "Worker count is a conservative device-resource policy, not a measured optimum.",
+    "Job byte arrays still use bounded JSON; not zero-copy.",
+    "Inline and Worker have next-tick barriers; late computation can stall simulation.",
+    "Kernel costs include isolated VM creation and compilation.",
+    "Presentation interpolation and buffer recycling have focused tests; no new 10000-unit performance claim.",
+    "Binary manifests identify pre-commit dirty builds; hashes identify the artifacts tested."
+  ]
+}

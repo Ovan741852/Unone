@@ -2,7 +2,7 @@
 export function instanceView(batch,memory){
   if(!Number.isSafeInteger(batch.count)||batch.count<0||batch.count>100000)throw new Error('INSTANCE_BUFFER_INVALID: count');
   if(batch.memory){
-    const {offset,byte_length,revision}=batch.memory,buffer=memory?.();
+    const {offset,byte_length,revision}=batch.memory,buffer=memory?.(batch);
     if(!(buffer instanceof ArrayBuffer)||!Number.isSafeInteger(offset)||offset<0||!Number.isSafeInteger(byte_length)||byte_length!==batch.count*40||typeof revision!=='string'||!/^[0-9]{1,20}$/.test(revision)||offset+byte_length>buffer.byteLength)throw new Error('INSTANCE_MEMORY_INVALID: invalid pointer, length or memory provider');
     return new DataView(buffer,offset,byte_length);
   }
@@ -32,7 +32,7 @@ export function createInstanceRenderer(THREE,scene,assetFor,memory){
       if(r&&r.asset!==batch.asset){dispose(r);records.delete(id);r=null;}
       if(!r){r={asset:batch.asset,cells:new Map(),data:null,count:0};records.set(id,r);}
       count+=batch.count;
-      const key=batch.memory?'memory:'+batch.memory.revision:'json:'+batch.data;
+      const key=batch.presentation_revision!==undefined?'presentation:'+batch.presentation_revision:batch.memory?'memory:'+batch.memory.revision:'json:'+batch.data;
       if(r.data===key&&r.count===batch.count)continue;
       const view=instanceView(batch,memory),cells=partitionInstances(view,batch.count);
       for(const [cell,ids] of cells){

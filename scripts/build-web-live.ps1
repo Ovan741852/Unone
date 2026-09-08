@@ -64,7 +64,7 @@ if ($Player) {
         if (Test-Path (Join-Path $candidate 'bin/wasm-opt.exe')) { $BinaryenRoot = $candidate }
     }
     if ($BinaryenRoot) { $env:EM_BINARYEN_ROOT = [IO.Path]::GetFullPath($BinaryenRoot) }
-    $exports = @('init','alloc','load_project','set_save_payload','set_input_frame','set_viewport_aspect','set_instance_transport','tick','observation_ptr','observation_len')
+    $exports = @('init','alloc','load_project','set_save_payload','set_input_frame','set_viewport_aspect','set_instance_transport','tick','jobs_request','observation_ptr','observation_len')
     if ($Development) { $exports += 'developer_request' }
     $cli = Join-Path $repoRoot 'target/debug/game.exe'
     if (-not (Test-Path -LiteralPath $cli)) { throw 'Build the current CLI first: cargo build -p unone-cli' }

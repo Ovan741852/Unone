@@ -634,6 +634,27 @@ pub extern "C" fn unone_web_set_screen_pointer(x: f64, y: f64) -> i32 {
     }
 }
 
+/// Host-only bounded job transport; kind=execute works without a loaded game.
+/// # Safety
+/// pointer must reference length readable bytes for this call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_web_jobs_request(pointer: *const u8, length: usize) -> i32 {
+    if pointer.is_null() || length > 2*1024*1024 { write_error("JOB_HOST_PAYLOAD_INVALID"); return -1; }
+    let result=(|| -> Result<serde_json::Value,String> {
+        let mut value: serde_json::Value=serde_json::from_slice(unsafe{std::slice::from_raw_parts(pointer,length)}).map_err(|e|e.to_string())?;
+        if value["kind"]=="execute" {
+            value.as_object_mut().ok_or("JOB_HOST_PAYLOAD_INVALID")?.remove("kind");
+            EngineRuntime::execute_job_host(value)
+        } else {
+            RUNTIME.with(|r|r.borrow_mut().as_mut().ok_or_else(||"RUNTIME_NOT_LOADED".to_string())?.jobs_host_request(value))
+        }
+    })();
+    match result {
+        Ok(value)=>{OUTPUT.with(|o|*o.borrow_mut()=serde_json::to_vec(&value).unwrap());0},
+        Err(e)=>{write_error(e);-1}
+    }
+}
+
 #[unsafe(no_mangle)]
 pub extern "C" fn unone_web_tick() -> i32 {
     if unone_web_init() != 0 {
