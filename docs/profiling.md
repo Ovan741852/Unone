@@ -41,3 +41,5 @@ The Node runners accept `--checkpoint-every 1` for every-tick behavior compariso
 `runtime.slowest_frame.frame` is the completed world frame (older reports used the window's sample index). `host_window.dropped_steps_delta` excludes events before the window and becomes null for unavailable/reset counters. It freezes on stop.
 
 Use `--no-profile-window` for before/after throughput comparisons without active publication timers. This does not remove the engine's existing passive runtime timing. For overhead assessment on the same export, `compare-player.mjs --before-profile-window disabled --after-profile-window enabled` records both conditions. `repeat_variation` exposes each pair's change and the observed range; mixed signs are not a reliable optimization result. `--sampling` cannot be combined with `--no-profile-window`.
+
+Profiler output correction: luau_positive_heap_delta_bytes_per_frame measures positive net heap growth, not total allocation throughput. It replaces the misleading allocation key in new builds. See [proposal review and migration](performance-proposal-review.md); canonical replay bytes are unchanged.

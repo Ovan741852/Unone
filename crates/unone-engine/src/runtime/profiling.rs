@@ -198,6 +198,34 @@ return {start=function()end,update=function(api) api.observation.set('sum',hot()
         assert_eq!(next["performance"]["frames"], 1);
     }
     #[test]
+    fn stopped_window_freezes_heap_and_serialization_counters() {
+        let mut r = EngineRuntime::load_source(
+            "heap-window", "heap.luau",
+            "local held={} return {start=function()end,update=function() held[#held+1]=table.create(1000,1) end}",
+            None,
+        ).unwrap();
+        r.measure_serialization(true);
+        r.preview_request(PreviewRequest::ProfileStart { sampling: false })
+            .unwrap();
+        r.tick().unwrap();
+        let stopped = r.preview_request(PreviewRequest::ProfileStop {}).unwrap();
+        for _ in 0..3 {
+            r.tick().unwrap();
+        }
+        let later = r.preview_request(PreviewRequest::Profile {}).unwrap();
+        for key in [
+            "frames",
+            "phases",
+            "observation_bytes",
+            "luau_positive_heap_delta_bytes_per_frame",
+        ] {
+            assert_eq!(
+                later["performance"][key], stopped["performance"][key],
+                "{key}"
+            );
+        }
+    }
+    #[test]
     fn errors_end_sampling_and_typo_is_rejected() {
         let mut r = EngineRuntime::load_source(
             "error",

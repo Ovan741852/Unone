@@ -774,10 +774,9 @@ impl EngineRuntime {
 
     /// Time what a host pays to receive each observation.
     ///
-    /// A Web host serializes the whole world every frame and parses it again on
-    /// the other side. That is often the largest per-frame cost in a browser,
-    /// and no profile could see it, because `run` and `test` never serialize
-    /// per frame.
+    /// Opt-in canonical JSON serialization probe for CLI profiling. This adds
+    /// work to the measured tick. It is not the Web bridge's presentation or
+    /// decode cost; use its publication and host-window metrics for those.
     pub fn measure_serialization(&mut self, measure: bool) {
         self.measure_serialization = measure;
     }
@@ -853,26 +852,6 @@ impl EngineRuntime {
         }
         let (snapshot, observe_time) = timed(|| self.observe());
         self.cache_performance_counts(&snapshot);
-        // What the game allocated this frame drives the Luau collector, and the
-        // collector is what turns a flat mean into a spiky p95. Reporting the
-        // heap level without the rate leaves that spike unattributable.
-        let allocated_now = self.lua.used_memory();
-        self.performance
-            .record_allocation(allocated_now.saturating_sub(allocated_before));
-        // Serializing the observation is the largest per-frame cost a Web host
-        // pays, and until now no measurement could see it: `run` and `test`
-        // never serialize per frame, so nothing timed it. Only a profiling run
-        // pays for this, because measuring a cost by adding it would be its own
-        // kind of lie.
-        if self.measure_serialization {
-            let (bytes, serialize_time) = timed(|| {
-                serde_json::to_vec(&snapshot)
-                    .map(|bytes| bytes.len())
-                    .unwrap_or(0)
-            });
-            self.performance
-                .record_serialization(serialize_time, bytes);
-        }
         #[cfg(feature = "preview-tools")]
         let record = {
             let p = profiling::state(&self.lua);
@@ -885,6 +864,18 @@ impl EngineRuntime {
         #[cfg(not(feature = "preview-tools"))]
         let record = true;
         if record {
+            // Freeze heap and serialization counters with the same frame window.
+            self.performance
+                .record_heap_delta(self.lua.used_memory().saturating_sub(allocated_before));
+            if self.measure_serialization {
+                let (bytes, serialize_time) = timed(|| {
+                    serde_json::to_vec(&snapshot)
+                        .map(|bytes| bytes.len())
+                        .unwrap_or(0)
+                });
+                self.performance.record_serialization(serialize_time, bytes);
+            }
+
             self.performance.record(
                 snapshot.frame,
                 FrameTiming {
