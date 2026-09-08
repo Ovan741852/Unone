@@ -16,6 +16,9 @@ thread_local! {
     static OUTPUT: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static INPUT_BUFFER: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static PROJECT_NAME: RefCell<String> = const { RefCell::new(String::new()) };
+    static INSTANCE_MEMORY: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+    // Pointers remain valid until the next successful world publication.
+    static INSTANCE_BUFFERS: RefCell<Vec<std::sync::Arc<[u8]>>> = const { RefCell::new(Vec::new()) };
     #[cfg(feature = "dev-tools")]
     static BUNDLE_VERIFIER: RefCell<Option<BundleVerifier>> = const { RefCell::new(None) };
 }
@@ -28,9 +31,11 @@ fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Box<
 struct ProjectObservation<'a> {
     compiled_systems: &'static [String],
     project: &'a str,
-    world: &'a WorldSnapshot,
+    world: &'a serde_json::value::RawValue,
     observation_digest: &'a str,
     save_payload: Option<serde_json::Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    instance_transport: Option<&'static str>,
 }
 
 fn write_snapshot(
@@ -38,19 +43,57 @@ fn write_snapshot(
     snapshot: &WorldSnapshot,
     save_payload: Option<serde_json::Value>,
 ) -> Result<(), String> {
-    let observation_digest = unone_engine::observation_digest(snapshot)
+    let (world, observation_digest) = unone_engine::encode_observation(snapshot)
         .map_err(|error| format!("snapshot digest serialization failed: {error}"))?;
+    let mut retained = Vec::new();
+    let world = if INSTANCE_MEMORY.with(|m| m.get()) {
+        let mut value = serde_json::to_value(snapshot).map_err(|e| e.to_string())?;
+        for (id, batch) in &snapshot.instances3d {
+            value["instances3d"][id] = serde_json::json!({"asset":batch.asset,"count":batch.count,"format":batch.format,
+                "memory":{"offset":batch.packed.as_ptr() as usize,"byte_length":batch.packed.len(),"revision":batch.revision.to_string()}});
+            retained.push(batch.packed.clone());
+        }
+        serde_json::value::to_raw_value(&value).map_err(|e| e.to_string())?
+    } else {
+        world
+    };
     let observation = ProjectObservation {
         compiled_systems: unone_engine::compiled_systems(),
         project,
-        world: snapshot,
+        world: &world,
         observation_digest: &observation_digest,
         save_payload,
+        instance_transport: INSTANCE_MEMORY.with(|m| {
+            if m.get() {
+                Some("wasm-memory-v1")
+            } else {
+                None
+            }
+        }),
     };
     let bytes = serde_json::to_vec(&observation)
         .map_err(|error| format!("snapshot serialization failed: {error}"))?;
     OUTPUT.with(|output| *output.borrow_mut() = bytes);
+    INSTANCE_BUFFERS.with(|buffers| *buffers.borrow_mut() = retained);
     Ok(())
+}
+
+/// Opt in to presentation-only instance pointers. Canonical digest stays unchanged.
+#[unsafe(no_mangle)]
+pub extern "C" fn unone_web_set_instance_transport(mode: i32) -> i32 {
+    if mode != 0 && mode != 1 {
+        write_error("INSTANCE_TRANSPORT_INVALID: use 0 (JSON) or 1 (wasm-memory-v1)");
+        return -1;
+    }
+    RUNTIME.with(|runtime| {
+        let runtime = runtime.borrow();
+        let Some(runtime) = runtime.as_ref() else {
+            write_error("runtime is not initialized");
+            return -1;
+        };
+        INSTANCE_MEMORY.with(|m| m.set(mode == 1));
+        write_runtime_snapshot(runtime)
+    })
 }
 
 fn publish_snapshot(
@@ -261,6 +304,7 @@ pub unsafe extern "C" fn unone_web_load_project(
     let project_name = payload.config.name.clone();
     match create_runtime(payload, seed) {
         Ok(runtime_value) => {
+            INSTANCE_MEMORY.with(|mode| mode.set(false));
             INPUT.with(|input| *input.borrow_mut() = HostInputState::default());
             let snapshot = runtime_value.observe();
             let save_payload = runtime_value.save_payload();
@@ -272,6 +316,65 @@ pub unsafe extern "C" fn unone_web_load_project(
             write_diagnostic(&diagnostic);
             -1
         }
+    }
+}
+
+#[cfg(test)]
+mod instance_memory_tests {
+    use super::*;
+    fn output() -> serde_json::Value {
+        OUTPUT.with(|o| serde_json::from_slice(&o.borrow()).unwrap())
+    }
+    #[test]
+    fn memory_transport_preserves_digest_and_owns_pointer_lifetime() {
+        let payload = serde_json::to_vec(
+            &serde_json::json!({"config":{"name":"binary","entry_script":"main.luau"},"script":r#"
+local n=0
+local function publish(api)
+ local b=buffer.create(40);buffer.writef32(b,0,n);buffer.writef32(b,24,1)
+ buffer.writef32(b,28,1);buffer.writef32(b,32,1);buffer.writef32(b,36,1)
+ api.instances3d.set('crowd','mesh://unit',b)
+end
+return {start=publish,update=function(api)n+=1;publish(api)end}
+"#}),
+        )
+        .unwrap();
+        assert_eq!(
+            unsafe { unone_web_load_project(payload.as_ptr(), payload.len(), 42) },
+            0
+        );
+        let json = output();
+        assert_eq!(unone_web_set_instance_transport(1), 0);
+        let binary = output();
+        assert_eq!(binary["observation_digest"], json["observation_digest"]);
+        assert!(
+            binary["world"]["instances3d"]["crowd"]
+                .get("data")
+                .is_none()
+        );
+        let old = INSTANCE_BUFFERS.with(|b| {
+            let b = b.borrow();
+            assert_eq!(b[0].len(), 40);
+            assert_eq!(
+                binary["world"]["instances3d"]["crowd"]["memory"]["offset"],
+                b[0].as_ptr() as usize
+            );
+            std::sync::Arc::downgrade(&b[0])
+        });
+        assert_eq!(unone_web_tick(), 0);
+        let updated = output();
+        assert_ne!(
+            binary["world"]["instances3d"]["crowd"]["memory"]["revision"],
+            updated["world"]["instances3d"]["crowd"]["memory"]["revision"]
+        );
+        assert!(old.upgrade().is_none());
+        assert_eq!(unone_web_set_instance_transport(0), 0);
+        assert_eq!(
+            updated["observation_digest"],
+            output()["observation_digest"]
+        );
+        assert!(INSTANCE_BUFFERS.with(|b| b.borrow().is_empty()));
+        assert_eq!(unone_web_set_instance_transport(7), -1);
     }
 }
 

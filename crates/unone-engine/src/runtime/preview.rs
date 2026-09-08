@@ -147,6 +147,13 @@ fn valid_text(value: &str) -> mlua::Result<()> {
 #[serde(tag = "method", rename_all = "snake_case", deny_unknown_fields)]
 pub enum PreviewRequest {
     Snapshot {},
+    Tools {},
+    Profile {},
+    ProfileStart {
+        #[serde(default)]
+        sampling: bool,
+    },
+    ProfileStop {},
     Invoke {
         id: String,
         revision: u64,
@@ -159,6 +166,38 @@ impl EngineRuntime {
         &mut self,
         request: PreviewRequest,
     ) -> Result<serde_json::Value, Box<Diagnostic>> {
+        if matches!(request, PreviewRequest::Tools {}) {
+            return Ok(serde_json::json!({"tools":self.debug_tools.borrow().describe()}));
+        }
+        match &request {
+            PreviewRequest::ProfileStart { sampling } => {
+                if profiling::state(&self.lua).borrow().active {
+                    return Err(Box::new(Diagnostic::error(
+                        "PROFILE_ACTIVE",
+                        "A measurement is already active",
+                        "Call profile.stop before starting another window.",
+                    )));
+                }
+                self.performance = PerformanceCollector::default();
+                profiling::start(&self.lua, self.world.borrow().frame, *sampling);
+            }
+            PreviewRequest::ProfileStop {} => {
+                self.lua.remove_interrupt();
+                profiling::state(&self.lua).borrow_mut().active = false;
+            }
+            _ => {}
+        }
+        if matches!(
+            request,
+            PreviewRequest::Profile {}
+                | PreviewRequest::ProfileStart { .. }
+                | PreviewRequest::ProfileStop {}
+        ) {
+            return Ok(
+                serde_json::json!({"performance":self.performance_report(),"window":profiling::state(&self.lua).borrow().report(),
+                "build":{"debug_assertions":cfg!(debug_assertions),"preview_tools":true},"counts_frame":self.world.borrow().frame}),
+            );
+        }
         if let PreviewRequest::Invoke {
             id,
             revision,

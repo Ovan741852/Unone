@@ -22,6 +22,8 @@ mod bindings;
 mod determinism;
 #[cfg(feature = "preview-tools")]
 mod preview;
+#[cfg(feature = "preview-tools")]
+mod profiling;
 use bindings::build_api;
 #[cfg(feature = "preview-tools")]
 pub use preview::{DebugControl, DebugTab, PreviewRequest};
@@ -34,6 +36,15 @@ pub use preview::{DebugControl, DebugTab, PreviewRequest};
 pub fn observation_digest(snapshot: &WorldSnapshot) -> Result<String, serde_json::Error> {
     let bytes = serde_json::to_vec(snapshot)?;
     Ok(format!("sha256:{}", hex_digest(&bytes)))
+}
+
+/// Serialize once for hosts that need both a JSON world and its canonical digest.
+pub fn encode_observation(
+    snapshot: &WorldSnapshot,
+) -> Result<(Box<serde_json::value::RawValue>, String), serde_json::Error> {
+    let raw = serde_json::value::to_raw_value(snapshot)?;
+    let digest = format!("sha256:{}", hex_digest(raw.get().as_bytes()));
+    Ok((raw, digest))
 }
 
 /// A project a host assembled from bytes it fetched itself.
@@ -219,6 +230,7 @@ pub struct EngineRuntime {
     last_seen_script_stamp: Option<ScriptStamp>,
     script_source: Option<String>,
     performance: PerformanceCollector,
+    performance_counts: FrameCounts,
     #[cfg(feature = "dev-tools")]
     loaded_script_digest: String,
 }
@@ -582,6 +594,7 @@ impl EngineRuntime {
             last_seen_script_stamp: None,
             script_source,
             performance: PerformanceCollector::default(),
+            performance_counts: FrameCounts::default(),
             #[cfg(feature = "dev-tools")]
             loaded_script_digest: String::new(),
         };
@@ -589,6 +602,7 @@ impl EngineRuntime {
             runtime.set_viewport_aspect(aspect)?;
         }
         runtime.load_script(false, None)?;
+        runtime.cache_performance_counts(&runtime.observe());
         Ok(runtime)
     }
 
@@ -769,6 +783,11 @@ impl EngineRuntime {
                 .call::<()>((self.api.clone(), FIXED_DT))
                 .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))
         });
+        #[cfg(feature = "preview-tools")]
+        if script.is_err() {
+            self.lua.remove_interrupt();
+            profiling::state(&self.lua).borrow_mut().active = false;
+        }
         script?;
         let (physics_result, physics_time) = timed(|| -> Result<(), Box<Diagnostic>> {
             #[cfg(feature = "physics2d")]
@@ -818,37 +837,50 @@ impl EngineRuntime {
             }
         }
         let (snapshot, observe_time) = timed(|| self.observe());
-        self.performance.record(FrameTiming {
-            script: script_time,
-            physics: physics_time,
-            observe: observe_time,
-            total: started.elapsed(),
-        });
+        self.cache_performance_counts(&snapshot);
+        #[cfg(feature = "preview-tools")]
+        let record = {
+            let p = profiling::state(&self.lua);
+            let mut p = p.borrow_mut();
+            if p.active {
+                p.last_frame = snapshot.frame;
+            }
+            p.id == 0 || p.active
+        };
+        #[cfg(not(feature = "preview-tools"))]
+        let record = true;
+        if record {
+            self.performance.record(FrameTiming {
+                script: script_time,
+                physics: physics_time,
+                observe: observe_time,
+                total: started.elapsed(),
+            });
+        }
         Ok(snapshot)
     }
 
-    /// What the last run measured, ready to report.
-    fn performance_report(&self) -> PerformanceReport {
-        let snapshot = self.observe();
-        let counts = FrameCounts {
+    fn cache_performance_counts(&mut self, snapshot: &WorldSnapshot) {
+        self.performance_counts = FrameCounts {
             entities: snapshot.entities.len(),
             rigidbodies: snapshot
                 .entities
                 .values()
-                .filter(|entity| entity.rigidbody.is_some())
+                .filter(|e| e.rigidbody.is_some())
                 .count()
                 + snapshot.physics3d.as_ref().map_or(0, |p| p.bodies.len()),
-            ui_nodes: snapshot
-                .ui
-                .as_ref()
-                .map(|tree| tree.children.len())
-                .unwrap_or(0),
+            ui_nodes: snapshot.ui.as_ref().map_or(0, |t| t.children.len()),
             effects: snapshot.effects.len(),
             particles: snapshot.particles.len(),
             observations: snapshot.observations.len(),
+            instances: snapshot.instances3d.values().map(|b| b.count).sum(),
+            instance_bytes: snapshot.instances3d.values().map(|b| b.count * 40).sum(),
         };
+    }
+    /// Cached counters: profiling must not clone/serialize the full scene.
+    fn performance_report(&self) -> PerformanceReport {
         self.performance.report(
-            counts,
+            self.performance_counts,
             self.lua.used_memory(),
             std::time::Duration::from_secs_f64(FIXED_DT),
         )

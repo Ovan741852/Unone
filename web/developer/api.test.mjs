@@ -1,6 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createDeveloperAPI} from './api.js';
+test('profile reads and controls use the lightweight ABI and validate sampling',()=>{
+ const commands=[];let bytes=new Uint8Array(8192),length=0;
+ const module={HEAPU8:bytes,_unone_web_alloc:()=>0,_unone_web_observation_ptr:()=>4096,_unone_web_observation_len:()=>length,
+  _unone_web_developer_request(p,n){const command=JSON.parse(new TextDecoder().decode(bytes.slice(p,p+n)));commands.push(command);const data=new TextEncoder().encode(JSON.stringify({ok:true,value:{performance:{frames:1},window:{active:command.method==='profile_start'}}}));bytes.set(data,4096);length=data.length;return 0;}};
+ const calls=[];const api=createDeveloperAPI({module,getSnapshot:()=>({world:{frame:1}}),getStats:()=>null,getPaused:()=>true,profileWindow:{start:()=>calls.push('start'),stop:()=>calls.push('stop'),read:()=>({})}},{});
+ assert.equal(api.request({method:'profile.start',sampling:'yes'}).ok,false);assert.equal(commands.length,0);
+ assert.equal(api.request({method:'profile.start',sampling:true}).ok,true);
+ assert.equal(api.request({method:'profile'}).ok,true);assert.equal(api.request({method:'profile.stop'}).ok,true);
+ assert.deepEqual(commands,[{method:'profile_start',sampling:true},{method:'profile'},{method:'profile_stop'}]);assert.deepEqual(calls,['start','stop']);
+});
 test('observations reads cached game state without a WASM call or packed scene snapshot',()=>{
  const api=createDeveloperAPI({module:{},getSnapshot:()=>({world:{frame:9,observations:{alive:10000},entities:['excluded']}}),getStats:()=>({draw_calls:15}),getPaused:()=>true},{});
  const result=api.request({method:'observations'});

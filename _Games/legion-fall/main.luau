@@ -1,5 +1,9 @@
 -- LEGION FALL: all unit movement, targeting, combat and presentation poses live here.
 -- Simulation: fixed 20 Hz game rules over the engine's fixed 60 Hz clock.
+-- Cache immutable standard-library functions used by the crowd hot loops.
+local sin,cos,sqrt,atan2,floor,abs,min,max=math.sin,math.cos,math.sqrt,math.atan2,math.floor,math.abs,math.min,math.max
+local writef32,createBuffer,bufferLen=buffer.writef32,buffer.create,buffer.len
+local ipairs,pairs=ipairs,pairs
 local Game={}
 local units,groups,shots,impacts={},{},{},{}
 local count=10000
@@ -24,11 +28,11 @@ local names={"red","blue"}
 local function v(x,y,z)return{x=x,y=y,z=z}end
 local function pack(b,i,x,y,z,yaw,sx,sy,sz)
  local o=(i-1)*40
- buffer.writef32(b,o,x);buffer.writef32(b,o+4,y);buffer.writef32(b,o+8,z)
- buffer.writef32(b,o+12,0);buffer.writef32(b,o+16,math.sin(yaw*.5));buffer.writef32(b,o+20,0);buffer.writef32(b,o+24,math.cos(yaw*.5))
- buffer.writef32(b,o+28,sx);buffer.writef32(b,o+32,sy);buffer.writef32(b,o+36,sz)
+ writef32(b,o,x);writef32(b,o+4,y);writef32(b,o+8,z)
+ writef32(b,o+12,0);writef32(b,o+16,sin(yaw*.5));writef32(b,o+20,0);writef32(b,o+24,cos(yaw*.5))
+ writef32(b,o+28,sx);writef32(b,o+32,sy);writef32(b,o+36,sz)
 end
-local function cell(x,z)return math.floor(x/7)*1000+math.floor(z/7)end
+local function cell(x,z)return floor(x/7)*1000+floor(z/7)end
 local function rebuildGrid()
  grid={{},{}}
  for i,u in ipairs(units)do if u.hp>0 then local key=cell(u.x,u.z);local bucket=grid[u.team][key];if not bucket then bucket={};grid[u.team][key]=bucket end;bucket[#bucket+1]=i end end
@@ -47,7 +51,7 @@ local function resolveDamage()
  end
 end
 local function acquire(u,index)
- local best,bestD=nil,1e9;local gx,gz=math.floor(u.x/7),math.floor(u.z/7);local scanned=0
+ local best,bestD=nil,1e9;local gx,gz=floor(u.x/7),floor(u.z/7);local scanned=0
  for dx=-1,1 do for dz=-1,1 do
   local bucket=grid[3-u.team][(gx+dx)*1000+gz+dz]
   if bucket then for _,j in ipairs(bucket)do
@@ -70,7 +74,7 @@ local function acquire(u,index)
  return best
 end
 local function hitArea(p,radius,limit)
- local gx,gz=math.floor(p.tx/7),math.floor(p.tz/7);local hit=0
+ local gx,gz=floor(p.tx/7),floor(p.tz/7);local hit=0
  for dx=-1,1 do for dz=-1,1 do local bucket=grid[3-p.team][(gx+dx)*1000+gz+dz]
   if bucket then for _,j in ipairs(bucket)do local e=units[j]
    if e.hp>0 and (p.source~=5 or e.kind~=6) and (e.x-p.tx)^2+(e.z-p.tz)^2<radius*radius then damage(e,p.damage,p.team);hit+=1;if hit>=limit then return end end
@@ -81,15 +85,15 @@ local function publish(api)
  for key,g in pairs(groups)do
   local visible=0
   for _,index in ipairs(g.ids)do local u=units[index];if u.hp>0 or elapsed-u.dead<1.4 then visible+=1 end end
-  if buffer.len(g.buffer)~=visible*40 then g.buffer=buffer.create(visible*40) end
+  if bufferLen(g.buffer)~=visible*40 then g.buffer=createBuffer(visible*40) end
   local b=g.buffer;local n=0
   for _,index in ipairs(g.ids)do local u=units[index]
    if u.hp>0 or elapsed-u.dead<1.4 then
     n+=1;local scale=1;local y=u.kind==6 and 6 or 0
-    if u.hp<=0 then scale=math.max(0,1-(elapsed-u.dead)/1.4);y-=.3
+    if u.hp<=0 then scale=max(0,1-(elapsed-u.dead)/1.4);y-=.3
     else
-     if u.moving or u.kind==6 then local wave=math.sin(elapsed*(u.kind==3 and 13 or 9)+index*.71);y+=u.kind==6 and wave*.65 or math.abs(wave)*.14 end
-     if u.attack>0 then y+=.1;u.attack=math.max(0,u.attack-.05) end
+     if u.moving or u.kind==6 then local wave=sin(elapsed*(u.kind==3 and 13 or 9)+index*.71);y+=u.kind==6 and wave*.65 or abs(wave)*.14 end
+     if u.attack>0 then y+=.1;u.attack=max(0,u.attack-.05) end
     end
     pack(b,n,u.x,y,u.z,u.yaw,scale,scale*(1+(u.attack>0 and .1 or 0)),scale)
    end
@@ -97,19 +101,19 @@ local function publish(api)
   api.instances3d.set(key,"mesh://"..key,b)
  end
  for _,kind in ipairs({"arrow","bolt","boulder","magic"})do
-  local b=buffer.create(shotCounts[kind]*40);local i=0
+  local b=createBuffer(shotCounts[kind]*40);local i=0
   for _,p in ipairs(shots)do if p.kind==kind then
-   i+=1;local a=math.min(1,p.age/p.duration);local y=p.y+(p.ty-p.y)*a+4*p.arc*a*(1-a)
+   i+=1;local a=min(1,p.age/p.duration);local y=p.y+(p.ty-p.y)*a+4*p.arc*a*(1-a)
    pack(b,i,p.x+(p.tx-p.x)*a,y,p.z+(p.tz-p.z)*a,p.yaw,p.kind=="bolt" and 1 or .8,p.kind=="boulder" and 1.3 or .8,p.kind=="arrow" and 1.4 or 1)
   end end
   api.instances3d.set("projectile-"..kind,"mesh://"..kind,b)
  end
- local b=buffer.create(#impacts*40)
+ local b=createBuffer(#impacts*40)
  for i,p in ipairs(impacts)do local s=p.radius*(1-p.age/.5);pack(b,i,p.x,.06,p.z,0,s,1,s)end
  api.instances3d.set("impacts","mesh://impact",b)
  api.observation.set("unit_count_conserved",live[1]+live[2]+kills[1]+kills[2]==count)
  api.observation.set("combat_has_losses",kills[1]+kills[2]>0)
- api.observation.set("battle",{total=count,red=live[1],blue=live[2],red_kills=kills[1],blue_kills=kills[2],seconds=math.floor(elapsed*10)/10,attacks=attacks,projectiles=#shots,simulation_hz=20,running=running,stress=stress,capped_attacks=capped,step=step})
+ api.observation.set("battle",{total=count,red=live[1],blue=live[2],red_kills=kills[1],blue_kills=kills[2],seconds=floor(elapsed*10)/10,attacks=attacks,projectiles=#shots,simulation_hz=20,running=running,stress=stress,capped_attacks=capped,step=step})
 end
 local function reset(api,n)
  for key in pairs(groups)do api.instances3d.remove(key)end
@@ -119,15 +123,15 @@ local function reset(api,n)
  for team=1,2 do
   local dir=team==1 and 1 or -1;local ordinal=0
   for kind,t in ipairs(types)do
-   local amount=math.floor(half*t.weight/100);local key=names[team].."-"..t.name
-   local g={ids={},buffer=buffer.create(amount*40)};groups[key]=g
+   local amount=floor(half*t.weight/100);local key=names[team].."-"..t.name
+   local g={ids={},buffer=createBuffer(amount*40)};groups[key]=g
    for j=1,amount do
     ordinal+=1
-    local col=(j-1)%72;local row=math.floor((j-1)/72)
+    local col=(j-1)%72;local row=floor((j-1)/72)
     local depth=12+row*2.0;local z=(col-35.5)*2.05
     if kind==2 then depth=78+row*1.9
-    elseif kind==3 then depth=18+math.floor((j-1)/16)*1.9;z=(j%2==0 and 1 or -1)*(78+(j%8)*2.0)
-    elseif kind==4 or kind==5 then depth=(kind==4 and 82 or 109)+math.floor((j-1)/24)*5.5;z=((j-1)%24-11.5)*6
+    elseif kind==3 then depth=18+floor((j-1)/16)*1.9;z=(j%2==0 and 1 or -1)*(78+(j%8)*2.0)
+    elseif kind==4 or kind==5 then depth=(kind==4 and 82 or 109)+floor((j-1)/24)*5.5;z=((j-1)%24-11.5)*6
     elseif kind==6 then depth=22+row*3
     elseif kind==7 then depth=104+row*2.2 end
     local x=-dir*depth
@@ -158,19 +162,19 @@ end
 shotCounts={arrow=0,bolt=0,boulder=0,magic=0}
 local ticks=0
 function Game.update(api,dt)
- if cinematic then api.camera3d.setPosition(v(math.cos(elapsed*.07)*52,24,math.sin(elapsed*.07)*52));api.camera3d.setTarget(v(0,1,0)) end
+ if cinematic then api.camera3d.setPosition(v(cos(elapsed*.07)*52,24,sin(elapsed*.07)*52));api.camera3d.setTarget(v(0,1,0)) end
  ticks+=1;if ticks%3~=0 or not running then return end
  local delta=.05;step+=1;elapsed+=delta;rebuildGrid()
  local teamShots={0,0};for _,p in ipairs(shots)do teamShots[p.team]+=1 end
- for order=1,count do local i=math.floor((order-1)/2)+1+((order+step)%2)*(count/2);local u=units[i];if u.hp>0 then
+ for order=1,count do local i=floor((order-1)/2)+1+((order+step)%2)*(count/2);local u=units[i];if u.hp>0 then
   local t=types[u.kind]
   if i%6==step%6 or not u.target or units[u.target].hp<=0 then u.target=acquire(u,i)end
   local e=u.target and units[u.target]
   u.cool-=delta;u.moving=false
   if e and e.hp>0 then
-   local dx,dz=e.x-u.x,e.z-u.z;local distance=math.sqrt(dx*dx+dz*dz);u.yaw=math.atan2(dx,dz)
+   local dx,dz=e.x-u.x,e.z-u.z;local distance=sqrt(dx*dx+dz*dz);u.yaw=atan2(dx,dz)
    if distance>t.range*.88 then
-    local speed=t.speed;local advance=math.min(speed*delta,math.max(0,distance-t.range*.8))
+    local speed=t.speed;local advance=min(speed*delta,max(0,distance-t.range*.8))
     -- Stable lateral lanes prevent a single point pile-up without all-pairs rigid bodies.
     local lane=((i%7)-3)*.08
     if distance>0 then u.x+=dx/distance*advance-dz/distance*lane*delta;u.z+=dz/distance*advance+dx/distance*lane*delta end
@@ -182,7 +186,7 @@ function Game.update(api,dt)
     elseif teamShots[u.team]<1200 then
      attacks+=1;teamShots[u.team]+=1
      local kind=t.shot
-     local p={kind=kind,team=u.team,damage=t.damage,target=u.target,x=u.x,z=u.z,y=u.kind==6 and 6 or 1.2,tx=e.x,tz=e.z,ty=e.kind==6 and 6 or .7,duration=math.max(.15,distance/t.flight),age=0,arc=u.kind==5 and distance*.3 or u.kind==2 and distance*.11 or 0,yaw=u.yaw,source=u.kind}
+     local p={kind=kind,team=u.team,damage=t.damage,target=u.target,x=u.x,z=u.z,y=u.kind==6 and 6 or 1.2,tx=e.x,tz=e.z,ty=e.kind==6 and 6 or .7,duration=max(.15,distance/t.flight),age=0,arc=u.kind==5 and distance*.3 or u.kind==2 and distance*.11 or 0,yaw=u.yaw,source=u.kind}
      shots[#shots+1]=p
     else capped+=1 end
    end

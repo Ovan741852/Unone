@@ -6,6 +6,7 @@ import {createAudioPlayback} from '../shared/audio-playback.js';
 import {requireAssetEncoding} from '../shared/asset-encoding.js';
 import {worldFromPointer} from '../shared/webgpu-snapshot.js';
 import {loadProject} from '../shared/load-project.js';
+/* PROFILE_IMPORT */
 
 /* DEVELOPER_IMPORT */
 
@@ -13,6 +14,7 @@ const canvas=document.querySelector('#game'), status=document.querySelector('#st
 const input=createHostInput(), renderUi=createUiTree(document.querySelector('#ui-layer'));
 let snapshot, renderer, scheduler, audio;
 let bridgeMs=0,renderMs=0,renderCount=0;
+/* PROFILE_INIT */
 let frozen=false,manualInput=null,lastStats=null;
 let saved,key;
 const cpuSamples={on:[],off:[]};
@@ -24,6 +26,7 @@ function read(){const m=window.Module;return JSON.parse(new TextDecoder().decode
 function send(name,value,...args){const bytes=new TextEncoder().encode(JSON.stringify(value));const m=window.Module,p=m._unone_web_alloc(bytes.length);m.HEAPU8.set(bytes,p);if(m[name](p,bytes.length,...args)!==0)throw new Error(JSON.stringify(read()));}
 function draw(){
   const began=performance.now();renderer.draw(snapshot);renderUi(snapshot);renderMs=performance.now()-began;
+  /* PROFILE_FRAME */
   const measured=renderer.metrics(),bucket=cpuSamples[measured.bloom?'on':'off'];bucket.push(renderMs);if(bucket.length>240)bucket.shift();
   if(++renderCount%30===0){
     const stats={bridge_ms:bridgeMs,render_ms:renderMs,...measured,cpu_on:summarize(cpuSamples.on),cpu_off:summarize(cpuSamples.off),drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0};
@@ -35,8 +38,12 @@ function draw(){
 }
 function tickOnce(){
   const began=performance.now();send('_unone_web_set_input_frame',manualInput??input.consumeFrame());manualInput=null;
+  /* PROFILE_INPUT */
   if(window.Module._unone_web_tick()!==0)throw new Error(JSON.stringify(read()));
-  snapshot=read();bridgeMs=performance.now()-began;audio?.sync(snapshot);
+  /* PROFILE_TICK_END */
+  snapshot=read();const decodeEnd=performance.now();bridgeMs=decodeEnd-began;
+  /* PROFILE_TICK */
+  audio?.sync(snapshot);
   const next=JSON.stringify(snapshot.save_payload);if(next!==saved){localStorage.setItem(key,next);saved=next;}
 }
 async function start(){
@@ -47,7 +54,8 @@ async function start(){
   try{project.restored_save=JSON.parse(localStorage.getItem(key)??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}
   project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
   snapshot=loadProject(window.Module,project,42n);
-  renderer=await createThreeRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,getAssetManifest:()=>assets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,location.href).href;}});
+  if(window.Module._unone_web_set_instance_transport){if(window.Module._unone_web_set_instance_transport(1)!==0)throw new Error(JSON.stringify(read()));snapshot=read();}
+  renderer=await createThreeRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,instanceMemory:()=>window.Module.HEAPU8.buffer,getAssetManifest:()=>assets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,location.href).href;}});
   audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',location.href)});
   if(audio?.report().failures.length)throw new Error(JSON.stringify(audio.report()));
   draw();await renderer.ready();draw();

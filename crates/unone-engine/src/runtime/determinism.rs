@@ -35,6 +35,21 @@ mod tests {
     use crate::EngineRuntime;
 
     #[test]
+    fn libraries_are_immutable_but_game_globals_remain_local() {
+        let mut r=EngineRuntime::load_source("environment","env.luau",r#"
+counter=0
+return {start=function(api)
+ assert(not pcall(function() math.sqrt=function() return 0 end end))
+ assert(not pcall(function() buffer.writef32=function()end end))
+ assert(not pcall(function() collectgarbage('collect') end))
+end,update=function(api)counter+=1;api.observation.set('counter',counter);api.observation.set('sqrt',math.sqrt(9))end}
+"#,None).unwrap();
+        let s = r.tick().unwrap();
+        assert_eq!(s.observations["counter"], 1);
+        assert_eq!(s.observations["sqrt"], 3.0);
+    }
+
+    #[test]
     fn real_runtime_rejects_ambient_time_and_vm_random_before_start() {
         for expression in [
             "math.random()",
@@ -64,6 +79,15 @@ pub(super) fn new_vm() -> Result<Lua, Box<crate::Diagnostic>> {
         Box::new(crate::Diagnostic::error(
             "ENGINE_INIT_FAILED",
             "Unable to install Luau replay guards",
+            error.to_string(),
+        ))
+    })?;
+    // Keep standard libraries immutable and activate Luau's builtin fast paths.
+    // Script globals still write into the VM-local environment supplied by mlua.
+    lua.sandbox(true).map_err(|error| {
+        Box::new(crate::Diagnostic::error(
+            "ENGINE_INIT_FAILED",
+            "Unable to initialize the Luau environment",
             error.to_string(),
         ))
     })?;

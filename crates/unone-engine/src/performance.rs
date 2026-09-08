@@ -33,6 +33,8 @@ pub(crate) struct FrameTiming {
 #[derive(Debug, Clone, Copy, Default, Serialize, PartialEq, Eq)]
 pub struct FrameCounts {
     pub entities: usize,
+    pub instances: usize,
+    pub instance_bytes: usize,
     pub rigidbodies: usize,
     pub ui_nodes: usize,
     pub effects: usize,

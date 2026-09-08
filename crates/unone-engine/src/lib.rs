@@ -96,7 +96,7 @@ pub use project::{
 };
 pub use runtime::{
     CheckReport, EngineRuntime, RunReport, SourceProject, TestCaseReport, TestSuiteReport,
-    TypeCheckReport, observation_digest,
+    TypeCheckReport, encode_observation, observation_digest,
 };
 pub use scene::parse_scene_fragment;
 #[cfg(feature = "dev-tools")]

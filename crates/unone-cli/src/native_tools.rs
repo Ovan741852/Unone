@@ -273,13 +273,14 @@ impl State {
     pub fn request(&mut self, runtime: &mut EngineRuntime, request: Value) -> Value {
         let method = request["method"].as_str().unwrap_or("");
         let allowed = match method {
+            "profile.start" => vec!["method", "sampling"],
             "tools.invoke" => vec!["method", "id", "revision", "value"],
             "pause" => vec!["method", "paused"],
             "step" => vec!["method", "count"],
             "input" => vec!["method", "frame"],
             "bloom" => vec!["method", "enabled"],
-            "describe" | "snapshot" | "observations" | "hierarchy" | "console" | "network"
-            | "profile" | "memory" | "tools.list" | "journal" => vec!["method"],
+            "profile.stop" | "describe" | "snapshot" | "observations" | "hierarchy" | "console"
+            | "network" | "profile" | "memory" | "tools.list" | "journal" => vec!["method"],
             _ => return failure("DEVELOPER_REQUEST_INVALID", "Unknown method; use describe"),
         };
         if !request
@@ -288,7 +289,10 @@ impl State {
         {
             return failure("DEVELOPER_REQUEST_INVALID", "Unknown field");
         }
-        let mutating = matches!(method, "pause" | "step" | "input" | "tools.invoke");
+        let mutating = matches!(
+            method,
+            "profile.start" | "profile.stop" | "pause" | "step" | "input" | "tools.invoke"
+        );
         let result = (|| -> anyhow::Result<Value> {
             let mut snapshot = || {
                 runtime
@@ -297,14 +301,17 @@ impl State {
             };
             Ok(match method {
                 "describe" => {
-                    json!({"version":1,"host":"native","methods":["screenshot","describe","snapshot","observations","hierarchy","console","network","profile","memory","tools.list","tools.invoke","pause","step","input","journal"],"unavailable":["bloom","js_heap","wasm_linear_memory","browser_network"],"semantics":"Same native runtime, between-tick commands. Lua callbacks are not transactional."})
+                    json!({"version":1,"host":"native","methods":["profile.start","profile.stop","screenshot","describe","snapshot","observations","hierarchy","console","network","profile","memory","tools.list","tools.invoke","pause","step","input","journal"],"unavailable":["instances.transport","bloom","js_heap","wasm_linear_memory","browser_network"],"semantics":"Same native runtime, between-tick commands. Lua callbacks are not transactional."})
                 }
                 "snapshot" => snapshot()?,
                 "observations" => {
                     let s = runtime.observe();
                     json!({"frame":s.frame,"observations":s.observations,"host":"native","paused":self.paused})
                 }
-                "tools.list" => snapshot()?["tools"].clone(),
+                "tools.list" => runtime
+                    .preview_request(PreviewRequest::Tools {})
+                    .map_err(|e| anyhow::anyhow!(e.explanation))?["tools"]
+                    .clone(),
                 "hierarchy" => {
                     let s = runtime.observe();
                     json!({"entities":s.entities,"ui":s.ui,"note":"Flat runtime entity roots"})
@@ -313,11 +320,26 @@ impl State {
                 "network" => {
                     json!({"resources":[],"note":"Browser ResourceTiming is not available in the native host."})
                 }
-                "profile" => {
-                    json!({"host":"native","runtime":snapshot()?["performance"],"renderer":{"render_ms":self.render_ms,"dropped_steps":self.dropped_steps},"startup":null,"paused":self.paused})
+                "profile" | "profile.start" | "profile.stop" => {
+                    let command = match method {
+                        "profile.start" => PreviewRequest::ProfileStart {
+                            sampling: match request.get("sampling") {
+                                None => false,
+                                Some(v) => v
+                                    .as_bool()
+                                    .ok_or_else(|| anyhow::anyhow!("sampling must be boolean"))?,
+                            },
+                        },
+                        "profile.stop" => PreviewRequest::ProfileStop {},
+                        _ => PreviewRequest::Profile {},
+                    };
+                    let data = runtime
+                        .preview_request(command)
+                        .map_err(|e| anyhow::anyhow!("{}: {}", e.code, e.explanation))?;
+                    json!({"host":"native","frame":data["counts_frame"],"runtime":data["performance"],"window":data["window"],"build":data["build"],"host_window":null,"renderer":{"render_ms":self.render_ms,"dropped_steps":self.dropped_steps},"paused":self.paused})
                 }
                 "memory" => {
-                    json!({"host":"native","luau_used_bytes":snapshot()?["performance"]["luau_memory_bytes"],"wasm_linear_bytes":null,"js_heap":null,"note":"Native process RSS and GPU allocations are not currently instrumented; no browser memory is reported as native memory."})
+                    json!({"host":"native","luau_used_bytes":runtime.preview_request(PreviewRequest::Profile {}).map_err(|e|anyhow::anyhow!(e.explanation))?["performance"]["luau_memory_bytes"],"wasm_linear_bytes":null,"js_heap":null,"note":"Native process RSS and GPU allocations are not currently instrumented; no browser memory is reported as native memory."})
                 }
                 "journal" => json!({"events":self.journal}),
                 "pause" => {
@@ -393,6 +415,46 @@ impl State {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn native_profile_windows_are_discoverable_and_do_not_tick() {
+        let mut runtime = unone_engine::EngineRuntime::load_source(
+            "profile",
+            "main.luau",
+            "return {start=function()end,update=function()end}",
+            None,
+        )
+        .unwrap();
+        let mut state = State::default();
+        let description = state.request(&mut runtime, json!({"method":"describe"}));
+        assert!(
+            description["value"]["methods"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|m| m == "profile.start")
+        );
+        assert_eq!(
+            state.request(
+                &mut runtime,
+                json!({"method":"profile.start","sampling":"yes"})
+            )["ok"],
+            false
+        );
+        assert_eq!(
+            state.request(
+                &mut runtime,
+                json!({"method":"profile.start","sampling":false})
+            )["ok"],
+            true
+        );
+        assert_eq!(runtime.observe().frame, 0);
+        runtime.tick().unwrap();
+        let result = state.request(&mut runtime, json!({"method":"profile.stop"}));
+        assert_eq!(result["ok"], true);
+        assert_eq!(result["value"]["runtime"]["frames"], 1);
+        assert_eq!(result["value"]["window"]["active"], false);
+        assert!(result["value"].get("observation").is_none());
+    }
     use super::*;
     #[test]
     fn native_panel_api_invokes_the_same_lua_registry_and_steps_exactly() {

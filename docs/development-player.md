@@ -79,7 +79,10 @@ There is no arbitrary JavaScript/Lua eval console. Start with `describe`, then
 | `snapshot`, `hierarchy` | Actual world/component data and UI tree. Entity roots are flat until the engine has a parenting contract. |
 | `console` | Game trace and Web console/error events. Browser entries and returned game logs retain the latest 200; engine trace is bounded to roughly 512 and individual game messages to 8192 bytes. |
 | `network` | Last 200 resource timings, sizes, available status codes. No request bodies/headers. Zero transfer size is ambiguous (cache/restricted timing). |
-| `profile` | Core script/physics/observation phases, counts, Web bridge/render CPU and supported GPU timer data. These are measurements, not a bottleneck classifier. |
+| `profile` | Lightweight cached core counters and bounded Lua function samples, without a world snapshot/digest. Host CPU window and separate rolling renderer/GPU counters. |
+| `profile.start` | Begin a fresh measurement window between ticks. Optional `sampling: true` enables automatic Luau function/stack sampling. An already active window is an explicit error. |
+| `profile.stop` | Freeze the core and host measurement windows and remove the Lua interrupt hook; does not pause gameplay. |
+| `instances.transport` | Web-only A/B control: `mode: "memory"` or `"json"`. Republish and redraw the same frame without advancing gameplay. |
 | `memory` | Luau used bytes; Web WASM capacity and optional JS heap separately. WASM capacity is not live usage. No invented native RSS or GPU byte totals. |
 | `tools.list`, `tools.invoke` | Discover and invoke the exact Lua controls shown to humans. |
 | `pause`, `step` | Pause/resume; advance 1..120 exact ticks only while paused. |

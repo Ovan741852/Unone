@@ -7,19 +7,31 @@ pub struct InstanceBatch3D {
     pub count: usize,
     pub format: &'static str,
     pub data: String,
+    // Host presentation storage; excluded from canonical snapshots and replay.
+    #[serde(skip)]
+    pub packed: std::sync::Arc<[u8]>,
+    #[serde(skip)]
+    pub revision: u64,
 }
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
-    fn packed_transforms_reject_invalid_payloads(){
-        let mut bytes=vec![0;40];bytes[24..28].copy_from_slice(&1f32.to_le_bytes());
-        assert_eq!(InstanceBatch3D::new("mesh://test".into(),&bytes).unwrap().count,1);
-        assert!(InstanceBatch3D::new("mesh://test".into(),&bytes[..39]).is_err());
-        bytes[0..4].copy_from_slice(&f32::NAN.to_le_bytes());assert!(InstanceBatch3D::new("mesh://test".into(),&bytes).is_err());
+    fn packed_transforms_reject_invalid_payloads() {
+        let mut bytes = vec![0; 40];
+        bytes[24..28].copy_from_slice(&1f32.to_le_bytes());
+        assert_eq!(
+            InstanceBatch3D::new("mesh://test".into(), &bytes)
+                .unwrap()
+                .count,
+            1
+        );
+        assert!(InstanceBatch3D::new("mesh://test".into(), &bytes[..39]).is_err());
+        bytes[0..4].copy_from_slice(&f32::NAN.to_le_bytes());
+        assert!(InstanceBatch3D::new("mesh://test".into(), &bytes).is_err());
     }
     #[test]
-    fn luau_buffer_is_copied_and_invalid_replacement_is_atomic(){
+    fn luau_buffer_is_copied_and_invalid_replacement_is_atomic() {
         let runtime=crate::EngineRuntime::load_source("instances","main.luau",r#"
 local Game={}
 function Game.start(api)
@@ -31,21 +43,49 @@ end
 function Game.update() end
 return Game
 "#,None).unwrap();
-        let snapshot=runtime.observe();let batch=&snapshot.instances3d["units"];
-        let bytes=base64::engine::general_purpose::STANDARD.decode(&batch.data).unwrap();
-        assert_eq!(f32::from_le_bytes(bytes[..4].try_into().unwrap()),0.);
+        let snapshot = runtime.observe();
+        let batch = &snapshot.instances3d["units"];
+        let bytes = base64::engine::general_purpose::STANDARD
+            .decode(&batch.data)
+            .unwrap();
+        assert_eq!(f32::from_le_bytes(bytes[..4].try_into().unwrap()), 0.);
     }
 }
 impl InstanceBatch3D {
-    pub fn new(asset:String, bytes:&[u8])->Result<Self,String>{
-        if asset.is_empty()||asset.len()>256 {return Err("INSTANCE_INVALID: asset ID required (1..256 bytes)".into());}
-        if bytes.len()%40!=0||bytes.len()>40*100_000 {return Err("INSTANCE_INVALID: buffer must contain at most 100000 records of 40 bytes".into());}
-        for record in bytes.chunks_exact(40){
-            let v:[f32;10]=std::array::from_fn(|i|f32::from_le_bytes(record[i*4..i*4+4].try_into().unwrap()));
-            if v.iter().any(|v|!v.is_finite()||v.abs()>100000.)||v[7..].iter().any(|v|*v<0.) {return Err("INSTANCE_INVALID: finite bounded transforms and nonnegative scales required".into());}
-            let q=v[3..7].iter().map(|v|v*v).sum::<f32>();
-            if (q-1.).abs()>0.002 {return Err("INSTANCE_INVALID: quaternion must be normalized".into());}
+    pub fn new(asset: String, bytes: &[u8]) -> Result<Self, String> {
+        if asset.is_empty() || asset.len() > 256 {
+            return Err("INSTANCE_INVALID: asset ID required (1..256 bytes)".into());
         }
-        Ok(Self{asset,count:bytes.len()/40,format:"f32le-p3-q4-s3-v1",data:base64::engine::general_purpose::STANDARD.encode(bytes)})
+        if bytes.len() % 40 != 0 || bytes.len() > 40 * 100_000 {
+            return Err(
+                "INSTANCE_INVALID: buffer must contain at most 100000 records of 40 bytes".into(),
+            );
+        }
+        for record in bytes.chunks_exact(40) {
+            let v: [f32; 10] = std::array::from_fn(|i| {
+                f32::from_le_bytes(record[i * 4..i * 4 + 4].try_into().unwrap())
+            });
+            if v.iter().any(|v| !v.is_finite() || v.abs() > 100000.)
+                || v[7..].iter().any(|v| *v < 0.)
+            {
+                return Err(
+                    "INSTANCE_INVALID: finite bounded transforms and nonnegative scales required"
+                        .into(),
+                );
+            }
+            let q = v[3..7].iter().map(|v| v * v).sum::<f32>();
+            if (q - 1.).abs() > 0.002 {
+                return Err("INSTANCE_INVALID: quaternion must be normalized".into());
+            }
+        }
+        static NEXT_REVISION: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
+        Ok(Self {
+            asset,
+            count: bytes.len() / 40,
+            format: "f32le-p3-q4-s3-v1",
+            data: base64::engine::general_purpose::STANDARD.encode(bytes),
+            packed: bytes.into(),
+            revision: NEXT_REVISION.fetch_add(1, std::sync::atomic::Ordering::Relaxed),
+        })
     }
 }

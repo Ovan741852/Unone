@@ -6,7 +6,7 @@ root.innerHTML=`<header><div class="brand"><span class="sigil">╱╲</span><div
 <footer><div class="controls"><small>BATTLE SIZE</small><div id="sizes">${[1000,5000,10000].map(n=>`<button data-size="${n}" class="${n===10000?'selected':''}">${n.toLocaleString()}</button>`).join('')}</div><button id="restart">↻ 重新開戰</button><button id="pause">Ⅱ 暫停</button></div><div class="camera"><small>CAMERA</small><button data-camera="wide" class="selected">全景</button><button data-camera="front">前線</button><button data-camera="top">俯瞰</button></div><div class="performance"><strong id="fps">— <small>FPS</small></strong><span id="perf">正在載入戰場…</span><small id="events">20 Hz 戰鬥模擬 · GPU instancing</small></div></footer><div id="toast"></div>`;
 document.body.append(root);
 let size=10000,paused=false,samples=[],previous=performance.now(),fps=0;
-function measure(now){const dt=now-previous;previous=now;samples.push(dt);if(samples.length>180)samples.shift();requestAnimationFrame(measure);}requestAnimationFrame(measure);
+function measure(now){const dt=now-previous;previous=now;if(!paused)samples.push(dt);if(samples.length>180)samples.shift();requestAnimationFrame(measure);}requestAnimationFrame(measure);
 const api=()=>window.unoneDeveloper;
 async function invoke(id,value){const a=api();if(!a)return;const tools=await a.request({method:'tools.list'});const result=await a.request({method:'tools.invoke',id,revision:tools.value.revision,...(value===undefined?{}:{value})});if(!result.ok){document.querySelector('#toast').textContent=result.diagnostics.map(d=>d.explanation).join(' / ');}}
 root.querySelectorAll('[data-size]').forEach(b=>b.onclick=()=>{size=Number(b.dataset.size);root.querySelectorAll('[data-size]').forEach(x=>x.classList.toggle('selected',x===b));invoke('battle.reset'+size);});
@@ -20,11 +20,13 @@ setInterval(async()=>{
  if(!initialized){const close=document.querySelector('#unone-developer .dev-close');if(close)close.click();initialized=true;}
  const r=await api().request({method:'observations'});if(!r.ok)return;
  const b=r.value.observations?.battle;if(!b)return;
+ if(paused!==r.value.paused){paused=r.value.paused;samples=[];previous=performance.now();}
+ root.querySelector('#pause').textContent=paused?'▶ 繼續':'Ⅱ 暫停';
  root.querySelector('#red').textContent=b.red.toLocaleString();root.querySelector('#blue').textContent=b.blue.toLocaleString();root.querySelector('.versus b').textContent=b.total.toLocaleString();
  root.querySelector('#redbar').style.flex=Math.max(1,b.red);root.querySelector('#bluebar').style.flex=Math.max(1,b.blue);
  root.querySelector('#clock').textContent=String(Math.floor(b.seconds/60)).padStart(2,'0')+':'+String(Math.floor(b.seconds%60)).padStart(2,'0');
  const avg=samples.reduce((a,b)=>a+b,0)/(samples.length||1);fps=avg?Math.round(1000/avg):0;
- root.querySelector('#fps').innerHTML=fps+' <small>FPS</small>';
+ root.querySelector('#fps').innerHTML=paused||!b.running?'已暫停':fps+' <small>FPS</small>';
  const stats=r.value.renderer??{};
  root.querySelector('#perf').textContent=`${stats.draw_calls??'—'} draws · ${((stats.triangles??0)/1e6).toFixed(2)}M triangles · ${avg.toFixed(1)} ms/frame`;
  root.querySelector('#events').textContent=`${b.stress?'壓測：不計傷亡 · ':''}${b.attacks.toLocaleString()} 次攻擊 · ${b.projectiles} 飛行彈體 · ${b.red_kills+b.blue_kills} 陣亡`;

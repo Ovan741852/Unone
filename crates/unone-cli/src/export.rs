@@ -313,10 +313,12 @@ pub fn web(
         "shared/asset-encoding.js",
         "shared/load-project.js",
         "shared/fixed-step-scheduler.mjs",
+        "shared/profile-window.js",
         "vendor/three/three.player.min.js",
         "vendor/rapier/LICENSE",
     ] {
-        if (path == "shared/audio-playback.js" && !settings.is_enabled("audio"))
+        if (path == "shared/profile-window.js" && !development)
+            || (path == "shared/audio-playback.js" && !settings.is_enabled("audio"))
             || (path == "shared/ui-tree.js" && !settings.is_enabled("ui"))
             || (path == "renderer/particles.js" && !settings.is_enabled("particle"))
             || (path == "renderer/effekseer.js" && !settings.is_enabled("effekseer"))
@@ -377,7 +379,15 @@ pub fn web(
                     "project.restored_save=null;",
                 )?;
             }
-            bytes=if development {text.replace("/* DEVELOPER_IMPORT */", "import {createDeveloper} from '../developer/main.js';\nconst developer=createDeveloper();").replace("/* DEVELOPER_CONNECT */", "developer.connect({getSnapshot:()=>snapshot,acceptSnapshot:value=>{snapshot=value;},module:window.Module,getStats:()=>lastStats,getBoot:()=>metrics,draw,tick:tickOnce,releaseInput:()=>input.releaseAll(),setPaused:value=>{frozen=value;manualInput=null;},getPaused:()=>frozen,setBloom:value=>renderer.setBloom(value),queueInput:frame=>{send('_unone_web_set_input_frame',frame);manualInput=frame;}});")} else {text.replace("/* DEVELOPER_IMPORT */", "").replace("/* DEVELOPER_CONNECT */", "")}.into_bytes();
+            for (marker, code) in [
+                ("/* PROFILE_IMPORT */", "import {createProfileWindow} from '../shared/profile-window.js';"),
+                ("/* PROFILE_INIT */", "const profileWindow=createProfileWindow();"),
+                ("/* PROFILE_FRAME */", "profileWindow.frame(renderMs);"),
+                ("/* PROFILE_INPUT */", "const inputEnd=performance.now();"),
+                ("/* PROFILE_TICK_END */", "const tickEnd=performance.now();"),
+                ("/* PROFILE_TICK */", "profileWindow.tick({input_ms:inputEnd-began,wasm_tick_publish_ms:tickEnd-inputEnd,decode_ms:decodeEnd-tickEnd});"),
+            ] { text=replace_required(text,marker,if development {code} else {""})?; }
+            bytes=if development {text.replace("/* DEVELOPER_IMPORT */", "import {createDeveloper} from '../developer/main.js';\nconst developer=createDeveloper();").replace("/* DEVELOPER_CONNECT */", "developer.connect({profileWindow,getSnapshot:()=>snapshot,acceptSnapshot:value=>{snapshot=value;},module:window.Module,getStats:()=>lastStats,getBoot:()=>metrics,draw,tick:tickOnce,releaseInput:()=>input.releaseAll(),setPaused:value=>{frozen=value;manualInput=null;},getPaused:()=>frozen,setBloom:value=>renderer.setBloom(value),queueInput:frame=>{send('_unone_web_set_input_frame',frame);manualInput=frame;}});")} else {text.replace("/* DEVELOPER_IMPORT */", "").replace("/* DEVELOPER_CONNECT */", "")}.into_bytes();
         }
         files.push((format!("web/{path}"), bytes));
     }

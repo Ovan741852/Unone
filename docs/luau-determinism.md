@@ -36,6 +36,8 @@ compiler constant folding can differ. The engine does not inspect all bytecode
 or prove that these results never reach gameplay. Avoid them in authoritative
 state or use authored/precomputed data with fixed interpolation instead.
 
+The VM now initializes with Luau's sandbox environment after installing replay guards. Standard libraries and builtin metatables are read-only; replacing functions such as `math.sqrt` or `buffer.writef32` is rejected. Game globals remain writable in the VM-local environment. `collectgarbage` supports the informational `count` operation, not explicit collection control. This enables builtin fast paths while preventing library mutation; projects that monkey-patched standard libraries must instead use game-local helper functions. It does not turn arbitrary Luau into a deterministic language or a hostile-code security boundary.
+
 Likewise, object/function address strings, GC/weak-table behavior, memory/timing
 observations, locale-dependent formatting and incidental hash iteration cannot
 drive gameplay. Finite JSON observations are validated and object keys are

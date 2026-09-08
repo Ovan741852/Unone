@@ -148,3 +148,6 @@ The broader acceptance matrix belongs to the separate validation suite and is no
 Release player/export: [build and measurements](docs/player-export.md).
 Native 3D particle JSON, API and preview: [particle v1](docs/native-particles.md).
 Reference-game capability probe: [_Games/dragon-tycoon3](_Games/dragon-tycoon3/README.md).
+
+AI-directed optimization: [measured results](docs/legion-fall-optimization.md), [profiling API](docs/profiling.md), [instance memory transport](docs/instance-memory-transport.md).
+Game-owned WASM extensions: [proposed ABI and AI implementation contract](docs/proposals/wasm-compute-v1.md) (design only; no module loader yet).

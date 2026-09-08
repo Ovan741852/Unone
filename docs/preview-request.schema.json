@@ -19,6 +19,62 @@
     {
       "additionalProperties": false,
       "properties": {
+        "method": {
+          "const": "tools",
+          "type": "string"
+        }
+      },
+      "required": [
+        "method"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "const": "profile",
+          "type": "string"
+        }
+      },
+      "required": [
+        "method"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "const": "profile_start",
+          "type": "string"
+        },
+        "sampling": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "method"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "const": "profile_stop",
+          "type": "string"
+        }
+      },
+      "required": [
+        "method"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
         "id": {
           "type": "string"
         },

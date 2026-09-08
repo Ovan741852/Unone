@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "artifact": {
+    "payload_sha256": "d26276fd110f46b1eb28a4a3b4c69fed04120f835f7c8fb2183a76ac49670b1f",
+    "wasm_sha256": "7638faba14316d2b6839286033638766eed8abe48987fa496351602a3e7189bf",
+    "javascript_sha256": "c5f02c1eab0c205a04035bbd30d7b22945a0e12008e67040185bf245179a35ba",
+    "manifest": {
+      "cargo_features": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "particle",
+        "random",
+        "save",
+        "ui",
+        "preview-tools"
+      ],
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "input",
+        "observation",
+        "particle",
+        "random",
+        "save",
+        "ui",
+        "world"
+      ],
+      "dev_tools": false,
+      "exports": [
+        "init",
+        "alloc",
+        "load_project",
+        "set_save_payload",
+        "set_input_frame",
+        "set_viewport_aspect",
+        "set_instance_transport",
+        "tick",
+        "observation_ptr",
+        "observation_len",
+        "developer_request"
+      ],
+      "javascript": "unone-player.js",
+      "javascript_sha256": "c5f02c1eab0c205a04035bbd30d7b22945a0e12008e67040185bf245179a35ba",
+      "preview_tools": true,
+      "profile": "release",
+      "source_commit": "2a49c1da72cf8cb8d11d6b83690526ca72d162e8",
+      "source_dirty": true,
+      "wasm": "unone_player.wasm",
+      "wasm_bytes": 1624831,
+      "wasm_sha256": "7638faba14316d2b6839286033638766eed8abe48987fa496351602a3e7189bf"
+    }
+  },
+  "environment": {
+    "node": "v24.14.1",
+    "platform": "win32",
+    "cpu": "AMD Ryzen 9 9900X 12-Core Processor            "
+  },
+  "conditions": {
+    "instance_transport": "wasm-memory-v1",
+    "frames": 3,
+    "warmup": 30,
+    "repeats": 1,
+    "seed": "42",
+    "sampling": false,
+    "input": "empty input every tick",
+    "excluded": [
+      "renderer",
+      "GPU",
+      "RAF scheduler",
+      "recording",
+      "human tools panel"
+    ],
+    "note": "CPU throughput, not interactive FPS. Compare like-for-like unprofiled runs; sampling has overhead."
+  },
+  "runs": [
+    {
+      "repeat": 0,
+      "summary": {
+        "tick_publish": {
+          "mean_ms": 17.673766666666666,
+          "median_ms": 7.4728000000000065,
+          "p95_ms": 43.24419999999998,
+          "max_ms": 43.24419999999998
+        },
+        "decode": {
+          "mean_ms": 0.19613333333328833,
+          "median_ms": 0.1935999999999467,
+          "p95_ms": 0.3165000000000191,
+          "max_ms": 0.3165000000000191
+        },
+        "total": {
+          "mean_ms": 17.869899999999955,
+          "median_ms": 7.666399999999953,
+          "p95_ms": 43.5607,
+          "max_ms": 43.5607
+        }
+      },
+      "checkpoints": [
+        {
+          "frame": 33,
+          "digest": "sha256:319533aa24f11f8b2ceb2eabfcc191e9808fc1d5ef8a3221dfd39f9b9870f163"
+        }
+      ],
+      "observations": {
+        "battle": {
+          "attacks": 0,
+          "blue": 5000,
+          "blue_kills": 0,
+          "capped_attacks": 0,
+          "projectiles": 0,
+          "red": 5000,
+          "red_kills": 0,
+          "running": true,
+          "seconds": 0.5,
+          "simulation_hz": 20,
+          "step": 11,
+          "stress": false,
+          "total": 10000
+        },
+        "combat_has_losses": false,
+        "unit_count_conserved": true
+      },
+      "profile": {
+        "build": {
+          "debug_assertions": false,
+          "preview_tools": true
+        },
+        "counts_frame": 33,
+        "performance": {
+          "counts": {
+            "effects": 0,
+            "entities": 1,
+            "instance_bytes": 400000,
+            "instances": 10000,
+            "observations": 3,
+            "particles": 0,
+            "rigidbodies": 0,
+            "ui_nodes": 0
+          },
+          "frame_budget_ms": 16.667,
+          "frames": 3,
+          "frames_over_budget": 1,
+          "luau_memory_bytes": 10811852,
+          "mean_frame_ms": 13.558,
+          "median_frame_ms": 0.095,
+          "notes": [
+            "wall clock timings, excluded from the observation digest",
+            "a debug build measures debug costs; compare like with like",
+            "median, p95, and frames-over-budget use the most recent bounded sample window (up to 1024 frames)"
+          ],
+          "p95_frame_ms": 40.493,
+          "phases": [
+            {
+              "mean_ms": 13.463,
+              "name": "script",
+              "share": 0.994,
+              "total_ms": 40.39
+            },
+            {
+              "mean_ms": 0.001,
+              "name": "physics",
+              "share": 0,
+              "total_ms": 0.003
+            },
+            {
+              "mean_ms": 0.085,
+              "name": "observe",
+              "share": 0.006,
+              "total_ms": 0.254
+            }
+          ],
+          "slowest_frame": {
+            "frame": 2,
+            "observe_ms": 0.103,
+            "physics_ms": 0.002,
+            "script_ms": 40.371,
+            "total_ms": 40.493
+          },
+          "sustained_fps": 73.8,
+          "total_ms": 40.676
+        },
+        "window": {
+          "active": false,
+          "dropped_samples": 0,
+          "first_frame": 30,
+          "functions": {},
+          "id": 1,
+          "last_frame": 33,
+          "limits": {
+            "depth": 32,
+            "functions": 1024,
+            "minimum_interval_ms": 1,
+            "stacks": 4096
+          },
+          "samples": 0,
+          "sampling": false,
+          "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled.",
+          "stacks": [],
+          "truncated_stacks": 0
+        }
+      },
+      "raw_columns": [
+        "tick_publish_ms",
+        "decode_ms",
+        "total_ms",
+        "output_bytes"
+      ],
+      "raw": [
+        [
+          2.304300000000012,
+          0.07829999999989923,
+          2.3825999999999112,
+          3991
+        ],
+        [
+          7.4728000000000065,
+          0.1935999999999467,
+          7.666399999999953,
+          3991
+        ],
+        [
+          43.24419999999998,
+          0.3165000000000191,
+          43.5607,
+          3976
+        ]
+      ]
+    }
+  ],
+  "memory_verification": {
+    "batches": 19,
+    "memory_growth": true,
+    "bytes_equal": true,
+    "digest_equal": true,
+    "note": "Verification run; allocation overhead makes it unsuitable as a clean timing baseline"
+  }
+}

@@ -53,7 +53,7 @@ export function mountPanel(api){
     const tools=toolResult.value,p=profile.value;
     root.querySelector('header small').textContent=p.host==='native'?'UNONE / NATIVE DEVELOPMENT':'UNONE / WEB DEVELOPMENT';
     root.querySelector('[data-method="bloom"]').disabled=p.host==='native';
-    root.querySelector('.dev-frame').textContent='FRAME '+p.runtime.frames;
+    root.querySelector('.dev-frame').textContent='FRAME '+p.frame??p.runtime.frames;
     root.querySelector('[data-method="pause"]').textContent=p.paused?'繼續':'暫停';root.querySelector('[data-method="step"]').disabled=!p.paused;
     root.querySelector('[data-method="bloom"]').textContent=p.renderer?.bloom?'Bloom ON':'Bloom OFF';
     root.querySelector('.dev-summary').textContent=`${p.runtime.counts.entities} entities · Lua ${ms(p.runtime.phases.find(v=>v.name==='script')?.mean_ms)} · `+(p.host==='native'?`render ${ms(p.renderer?.render_ms)}`:`${p.renderer?.draw_calls??'—'} Three draws`);
@@ -85,10 +85,16 @@ export function mountPanel(api){
       for(const r of value.resources){const row=el('div',null,'dev-resource');row.append(el('strong',decodeURIComponent(r.url.split('/').pop()||r.url)),el('small',`${r.initiator} · ${ms(r.duration_ms)} · ${bytes(r.encoded_bytes)} · HTTP ${r.status??'—'}`));row.title=r.url;body.append(row);}return;
     }
     if(method==='profile'){
+      const actions=el('div',null,'dev-control');
+      for(const [label,request] of [['開始量測',{method:'profile.start',sampling:false}],['取樣 Lua 函式',{method:'profile.start',sampling:true}],['停止量測',{method:'profile.stop'}]]){const button=el('button',label,'dev-action');button.disabled=request.method==='profile.stop'?!value.window?.active:!!value.window?.active;button.onclick=()=>send(request);actions.append(button);}body.append(actions);
+      empty(`量測 #${value.window?.id??0} · ${value.window?.active?'進行中':'已停止／尚未開始'} · frame ${value.window?.first_frame??'—'} → ${value.window?.last_frame??'—'}`);
       card('Simulation P50 / P95',ms(value.runtime.median_frame_ms)+' / '+ms(value.runtime.p95_frame_ms),'固定步長模擬耗時，不是螢幕 FPS');
       card('Render CPU / GPU',ms(value.renderer?.render_ms)+' / '+ms((value.renderer?.bloom?value.renderer?.gpu_on:value.renderer?.gpu_off)?.median_ms),'GPU timer 不支援時顯示不可取得');
       for(const phase of value.runtime.phases){const row=el('div',null,'dev-phase');row.append(el('span',phase.name),el('span',ms(phase.mean_ms)));const bar=el('i');bar.style.width=Math.max(0,Math.min(100,phase.share*100))+'%';row.append(bar);body.append(row);}
-      body.append(json({counts:value.runtime.counts,renderer:value.renderer}));return;
+      const functions=Object.values(value.window?.functions??{}).sort((a,b)=>b.self_samples-a.self_samples);
+      if(functions.length){const table=el('table');const head=el('tr');for(const text of ['Lua 函式','自身樣本','含子呼叫'])head.append(el('th',text));table.append(head);for(const f of functions.slice(0,30)){const row=el('tr');for(const text of [`${f.name} (${f.source}:${f.line??'?'})`,f.self_samples,f.inclusive_samples])row.append(el('td',String(text)));table.append(row);}body.append(table);}
+      empty('函式取樣不是精確耗時；原生呼叫內部無法取樣。比較效能時請關閉取樣。');
+      body.append(json({counts:value.runtime.counts,host_window:value.host_window,window:value.window,renderer:value.renderer}));return;
     }
     if(method==='memory'){
       card('Luau 使用量',bytes(value.luau_used_bytes));if(value.host==='native'){empty(value.note);return;}card('WASM 線性記憶體容量',bytes(value.wasm_linear_bytes),'容量包含未使用空間，並非活躍配置量');card('JavaScript heap 使用量',bytes(value.js_heap?.used_bytes),'瀏覽器未提供時不估算');empty('貼圖／geometry 計數不是 GPU 記憶體位元組數。');return;
