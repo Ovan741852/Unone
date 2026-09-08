@@ -38,6 +38,13 @@ export type EntityApi = {
     setTransform3D: (id: string, transform: Transform3D) -> (),
 }
 
+export type Instances3DApi = {
+    -- Packed little-endian f32 records: position.xyz, quaternion.xyzw, scale.xyz (40 bytes).
+    -- Replaces a complete batch atomically; max 100000 instances / 256 batches per world.
+    set: (id: string, asset: string, transforms: buffer) -> (),
+    remove: (id: string) -> (),
+}
+
 export type InputApi = {
     isDown: (action: string) -> boolean,
     getPointerPosition: () -> Vec2,
@@ -202,6 +209,7 @@ export type DebugApi = {
     set: (id: string, value: string | boolean) -> (),
 }
 export type EngineApi = {
+    instances3d: Instances3DApi,
     debug: DebugApi,
     particle: ParticleApi,
     entity: EntityApi,

@@ -1,0 +1,178 @@
+{
+  "ok": true,
+  "environment": "Node v24.14.1 on win32 x64",
+  "measurement_scope": "WASM initialization and project load in Node, five same-process instances; excludes network, renderer and browser first paint; first initialization includes cold compilation",
+  "measurements": [
+    {
+      "variant": "full",
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "effekseer",
+        "input",
+        "observation",
+        "particle",
+        "physics2d",
+        "physics3d",
+        "random",
+        "save",
+        "spine",
+        "ui",
+        "world"
+      ],
+      "wasm_bytes": 2393583,
+      "gzip_bytes": 910848,
+      "brotli_bytes": 702055,
+      "timings": [
+        {
+          "initialize_ms": 16.838799999999992,
+          "project_load_ms": 29.019499999999994
+        },
+        {
+          "initialize_ms": 10.539700000000039,
+          "project_load_ms": 2.8846999999999525
+        },
+        {
+          "initialize_ms": 11.460199999999986,
+          "project_load_ms": 1.6712999999999738
+        },
+        {
+          "initialize_ms": 15.300400000000081,
+          "project_load_ms": 1.570799999999963
+        },
+        {
+          "initialize_ms": 13.022799999999961,
+          "project_load_ms": 2.0148999999998978
+        }
+      ],
+      "wasm_sha256": "b452e9424ab29aa801fe4d7dd99531a785670735ed0807e88cd01dd8870e6ab4",
+      "median_initialize_ms": 13.022799999999961
+    },
+    {
+      "variant": "minimal",
+      "compiled_systems": [
+        "input",
+        "observation",
+        "world"
+      ],
+      "wasm_bytes": 1349613,
+      "gzip_bytes": 508084,
+      "brotli_bytes": 406380,
+      "timings": [
+        {
+          "initialize_ms": 15.909300000000258,
+          "project_load_ms": 34.782899999999245
+        },
+        {
+          "initialize_ms": 12.647399999999834,
+          "project_load_ms": 1.396099999999933
+        },
+        {
+          "initialize_ms": 7.810599999999795,
+          "project_load_ms": 1.882900000000518
+        },
+        {
+          "initialize_ms": 12.64009999999962,
+          "project_load_ms": 2.2262000000000626
+        },
+        {
+          "initialize_ms": 11.132700000000114,
+          "project_load_ms": 1.6932999999999083
+        }
+      ],
+      "wasm_sha256": "345cf1a30e2d3424257f161a0b1a6ee8027decffa60ec95c2da44d36aa4f890c",
+      "median_initialize_ms": 12.64009999999962
+    },
+    {
+      "variant": "development",
+      "compiled_systems": [
+        "input",
+        "observation",
+        "world"
+      ],
+      "wasm_bytes": 1457461,
+      "gzip_bytes": 544872,
+      "brotli_bytes": 431033,
+      "timings": [
+        {
+          "initialize_ms": 17.019800000000032,
+          "project_load_ms": 41.3080000000009
+        },
+        {
+          "initialize_ms": 13.76339999999982,
+          "project_load_ms": 1.834100000000035
+        },
+        {
+          "initialize_ms": 19.816399999999703,
+          "project_load_ms": 2.1154999999998836
+        },
+        {
+          "initialize_ms": 14.3757999999998,
+          "project_load_ms": 1.9578000000001339
+        },
+        {
+          "initialize_ms": 17.346999999999753,
+          "project_load_ms": 1.8571999999985565
+        }
+      ],
+      "wasm_sha256": "3e4621c4897b5a4bf6e11e0ff1d4a0ca2bd6edbcc493f763d8648ab7b5332d3f",
+      "median_initialize_ms": 17.019800000000032
+    }
+  ],
+  "date": "2026-09-08",
+  "verification": {
+    "workspace_tests_passed": 251,
+    "workspace_tests_ignored": 2,
+    "feature_matrix": [
+      "none",
+      "physics2d",
+      "physics3d",
+      "default"
+    ],
+    "actual_export_parity": true,
+    "disabled_lua_calls_rejected": true,
+    "missing_binary_capabilities_rejected": true,
+    "scene_solver_bypass_rejected": true,
+    "manifest_capability_mutation_detected": true,
+    "no_test_file_fallback_replayed_60_ticks": true,
+    "development_lua_callback_with_ui_and_physics_disabled": true,
+    "minimal_normal_dependency_tree_has_no_rapier_parry_nalgebra": true
+  },
+  "legion_fall": {
+    "player-runtime": {
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "input",
+        "observation",
+        "particle",
+        "random",
+        "save",
+        "ui",
+        "world"
+      ],
+      "wasm_bytes": 1468295,
+      "wasm_sha256": "52eb2de1100c306bebc2fac97dd93b6f1ce20fa785f6894a685d5e0fd1c2df3e",
+      "preview_tools": false
+    },
+    "player-development-runtime": {
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "input",
+        "observation",
+        "particle",
+        "random",
+        "save",
+        "ui",
+        "world"
+      ],
+      "wasm_bytes": 1574172,
+      "wasm_sha256": "cec9daba03b9005749d8ff9d7517d89a4d2fae049fc2ab1646a7255077980778",
+      "preview_tools": true
+    }
+  }
+}

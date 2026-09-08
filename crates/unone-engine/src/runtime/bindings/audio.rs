@@ -2,6 +2,7 @@ use super::{ApiState, Lua, Table};
 use crate::{audio::AudioOptions, world::Vec2};
 use std::rc::Rc;
 
+#[cfg(feature = "audio")]
 pub(super) fn audio(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let world = Rc::clone(&state.world);
     let audio_api = lua.create_table()?;

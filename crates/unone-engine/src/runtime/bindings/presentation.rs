@@ -2,6 +2,7 @@ use super::{ApiState, Lua, Table};
 use crate::world::{Vec2, Vec3};
 use std::rc::Rc;
 
+#[cfg(feature = "spine")]
 pub(super) fn animation(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let world = Rc::clone(&state.world);
     let animation_api = lua.create_table()?;
@@ -38,6 +39,7 @@ pub(super) fn animation(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     Ok(animation_api)
 }
 
+#[cfg(feature = "particle")]
 pub(super) fn particle(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let world = Rc::clone(&state.world);
     let particle_api = lua.create_table()?;
@@ -70,6 +72,7 @@ pub(super) fn particle(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     Ok(particle_api)
 }
 
+#[cfg(feature = "effekseer")]
 pub(super) fn effect(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let world = Rc::clone(&state.world);
     let effect_api = lua.create_table()?;
@@ -105,4 +108,56 @@ pub(super) fn effect(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         })?,
     )?;
     Ok(effect_api)
+}
+pub(super) fn instances3d(lua: &mlua::Lua, state: &super::ApiState) -> mlua::Result<mlua::Table> {
+    let api = lua.create_table()?;
+    let world = std::rc::Rc::clone(&state.world);
+    api.set(
+        "set",
+        lua.create_function(
+            move |_, (id, asset, buffer): (String, String, mlua::Buffer)| {
+                if id.is_empty() || id.len() > 128 {
+                    return Err(mlua::Error::RuntimeError(
+                        "INSTANCE_INVALID: batch ID required (1..128 bytes)".into(),
+                    ));
+                }
+                if buffer.len() > 40 * 100_000 {
+                    return Err(mlua::Error::RuntimeError(
+                        "INSTANCE_LIMIT: at most 100000 instances".into(),
+                    ));
+                }
+                let batch = crate::instances3d::InstanceBatch3D::new(asset, &buffer.to_vec())
+                    .map_err(mlua::Error::RuntimeError)?;
+                let mut w = world.borrow_mut();
+                let total: usize = w
+                    .instances3d
+                    .iter()
+                    .filter(|(key, _)| **key != id)
+                    .map(|(_, b)| b.count)
+                    .sum();
+                if total + batch.count > 100_000
+                    || (!w.instances3d.contains_key(&id) && w.instances3d.len() >= 256)
+                {
+                    return Err(mlua::Error::RuntimeError(
+                        "INSTANCE_LIMIT: 100000 instances / 256 batches per world".into(),
+                    ));
+                }
+                w.instances3d.insert(id, batch);
+                Ok(())
+            },
+        )?,
+    )?;
+    let world = std::rc::Rc::clone(&state.world);
+    api.set(
+        "remove",
+        lua.create_function(move |_, id: String| {
+            world
+                .borrow_mut()
+                .instances3d
+                .remove(&id)
+                .ok_or_else(|| mlua::Error::RuntimeError(format!("INSTANCE_MISSING: {id}")))?;
+            Ok(())
+        })?,
+    )?;
+    Ok(api)
 }

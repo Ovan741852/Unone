@@ -1,14 +1,20 @@
 //! Opt-in rigid-body simulation. Gameplay commands and collision responses stay in Lua.
-use crate::world::{EntityState, Vec3};
+#[cfg(feature = "physics3d")]
+use crate::world::EntityState;
+use crate::world::Vec3;
+#[cfg(feature = "physics3d")]
 use rapier3d::{
     na::{Isometry3, Translation3, UnitQuaternion},
     prelude::*,
 };
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+#[cfg(feature = "physics3d")]
+use std::collections::BTreeSet;
 
+#[cfg(feature = "physics3d")]
 const MAX_BODIES: usize = 16384;
-#[cfg(test)]
+#[cfg(all(test, feature = "physics3d"))]
 #[path = "rigid3d_tests.rs"]
 mod tests;
 fn one() -> f64 {
@@ -30,9 +36,11 @@ fn gravity() -> Vec3 {
         z: 0.,
     }
 }
+#[cfg(feature = "physics3d")]
 fn v(a: Vec3) -> Vector<f32> {
     Vector::new(a.x as f32, a.y as f32, a.z as f32)
 }
+#[cfg(feature = "physics3d")]
 fn out(a: Vector<f32>) -> Vec3 {
     Vec3 {
         x: a.x as f64,
@@ -40,6 +48,7 @@ fn out(a: Vector<f32>) -> Vec3 {
         z: a.z as f64,
     }
 }
+#[cfg(feature = "physics3d")]
 fn check(a: Vec3) -> Result<(), String> {
     if [a.x, a.y, a.z]
         .iter()
@@ -50,6 +59,7 @@ fn check(a: Vec3) -> Result<(), String> {
         Err("PHYSICS3D_INVALID: vector must be finite within +/-100000".into())
     }
 }
+#[cfg(feature = "physics3d")]
 fn positive(x: f64) -> bool {
     x.is_finite() && x >= 0.0001 && x <= 10000.
 }
@@ -76,6 +86,7 @@ pub enum Shape3D {
         indices: Vec<[u32; 3]>,
     },
 }
+#[cfg(feature = "physics3d")]
 impl Shape3D {
     fn build(&self) -> Result<SharedShape, String> {
         let invalid = || {
@@ -170,6 +181,7 @@ pub struct Body3D {
     #[serde(default = "all")]
     pub filter: i32,
 }
+#[cfg(feature = "physics3d")]
 impl Body3D {
     fn validate(&self) -> Result<(), String> {
         check(self.velocity)?;
@@ -204,6 +216,7 @@ pub struct Physics3DScene {
     #[serde(default)]
     pub bodies: BTreeMap<String, Body3D>,
 }
+#[cfg(feature = "physics3d")]
 impl Physics3DScene {
     pub fn validate(&self, scene: &crate::world::SceneFile) -> Result<(), String> {
         check(self.gravity)?;
@@ -232,6 +245,7 @@ pub struct Pose3D {
     #[serde(default)]
     pub rotation: Vec3,
 }
+#[cfg(feature = "physics3d")]
 fn pose(p: &Pose3D) -> Result<Isometry3<f32>, String> {
     check(p.position)?;
     check(p.rotation)?;
@@ -297,6 +311,7 @@ pub struct Joint3D {
     pub contacts_enabled: bool,
 }
 
+#[cfg(feature = "physics3d")]
 #[derive(Clone)]
 pub(crate) struct PhysicsWorld3D {
     pipeline: Pipeline,
@@ -319,6 +334,7 @@ pub(crate) struct PhysicsWorld3D {
     dirty: bool,
     simulation_dirty: bool,
 }
+#[cfg(feature = "physics3d")]
 impl std::fmt::Debug for PhysicsWorld3D {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("PhysicsWorld3D")
@@ -326,13 +342,16 @@ impl std::fmt::Debug for PhysicsWorld3D {
             .finish()
     }
 }
+#[cfg(feature = "physics3d")]
 struct Pipeline(PhysicsPipeline);
 // Pipeline contains temporary solver buffers; persistent solver state is cloned above.
+#[cfg(feature = "physics3d")]
 impl Clone for Pipeline {
     fn clone(&self) -> Self {
         Self(PhysicsPipeline::new())
     }
 }
+#[cfg(feature = "physics3d")]
 impl Default for PhysicsWorld3D {
     fn default() -> Self {
         Self {
@@ -358,6 +377,7 @@ impl Default for PhysicsWorld3D {
         }
     }
 }
+#[cfg(feature = "physics3d")]
 impl PhysicsWorld3D {
     pub fn definition(&self, id: &str) -> Result<&Body3D, String> {
         self.ids
@@ -800,6 +820,7 @@ impl Default for Query3DFilter {
         }
     }
 }
+#[cfg(feature = "physics3d")]
 impl Query3DFilter {
     fn filter(&self, p: &PhysicsWorld3D) -> Result<QueryFilter<'static>, String> {
         Ok(QueryFilter {
@@ -852,6 +873,7 @@ pub struct QueryHit3D {
     pub point: Vec3,
     pub normal: Vec3,
 }
+#[cfg(feature = "physics3d")]
 impl PhysicsWorld3D {
     pub fn raycast(&mut self, r: Ray3D) -> Result<Option<QueryHit3D>, String> {
         check(r.from)?;
@@ -926,5 +948,12 @@ impl PhysicsWorld3D {
         );
         ids.sort();
         Ok(ids)
+    }
+}
+
+#[cfg(not(feature = "physics3d"))]
+impl Physics3DScene {
+    pub fn validate(&self, _: &crate::world::SceneFile) -> Result<(), String> {
+        Err("SYSTEM_NOT_COMPILED: scene.physics3d requires a runtime built with physics3d; rebuild for this project or remove the physics scene.".into())
     }
 }

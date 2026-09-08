@@ -4,6 +4,7 @@ use crate::diagnostics::EngineResult;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct PlatformCapabilities {
+    pub compiled_systems: Vec<String>,
     pub target_family: String,
     pub target_os: String,
     pub target_arch: String,
@@ -40,6 +41,7 @@ pub fn capabilities() -> EngineResult<PlatformCapabilities> {
     };
 
     EngineResult::success(PlatformCapabilities {
+        compiled_systems: crate::systems::compiled_systems().to_vec(),
         target_family: if is_wasm { "wasm" } else { "native" }.to_string(),
         target_os: std::env::consts::OS.to_string(),
         target_arch: std::env::consts::ARCH.to_string(),

@@ -24,6 +24,7 @@ pub(super) fn observation(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     Ok(observation_api)
 }
 
+#[cfg(feature = "ui")]
 pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let ui = Rc::clone(&state.ui);
     let viewport_aspect = Rc::clone(&state.viewport_aspect);
@@ -53,6 +54,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     Ok(ui_api)
 }
 
+#[cfg(feature = "save")]
 pub(super) fn save(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let save_payload = Rc::clone(&state.save_payload);
     let save_api = lua.create_table()?;

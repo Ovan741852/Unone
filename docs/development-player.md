@@ -1,7 +1,7 @@
 # Development player and shared Lua tools
 
 Production and development are distinct exports, both optimized release builds.
-Development enables only the `preview-tools` feature; it does not enable the
+Development additionally enables the `preview-tools` feature; it does not enable the
 editor/authoring `dev-tools` dependency. Production has no developer C ABI export,
 no `web/developer` files, no panel or browser agent API. The game's authored Luau
 is preserved; guard auxiliary registrations with `api.debug.enabled` (false in
@@ -9,11 +9,13 @@ production). Calling registration unguarded fails with `DEVELOPMENT_ONLY`.
 
 ```powershell
 cargo build -p unone-cli
-./scripts/build-web-live.ps1 -Player
-./scripts/build-web-live.ps1 -Player -Development
+./scripts/build-web-live.ps1 -Player -Project <game>
+./scripts/build-web-live.ps1 -Player -Development -Project <game>
 ./target/debug/game.exe --project <game> export web --output <production-directory>
 ./target/debug/game.exe --project <game> export web --development --output <development-directory>
 ```
+
+Both variants select the same project systems; see [optional systems](optional-systems.md).
 
 Build scripts may update the invoking shell's SDK environment; run independent
 build invocations from a fresh shell when selecting Node/toolchains. Runtime

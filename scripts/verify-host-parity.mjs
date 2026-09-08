@@ -16,9 +16,13 @@ const js=exported?join(exported,'runtime',runtime.javascript):resolve(values.was
 const {loadProject,readObservation}=await import(pathToFileURL(join(exported??root,'web/shared/load-project.js')).href);
 const fixture=resolve(values.fixture??join(root,'tests/host-parity-project'));
 const config=JSON.parse(readFileSync(join(fixture,'project.unone.json'),'utf8'));
-const native=spawnSync(cli,['--project',fixture,'test','--json'],{encoding:'utf8',maxBuffer:16*1024*1024});
+const hasTests=Boolean(config.test_files?.length);
+const native=spawnSync(cli,['--project',fixture,...(hasTests?['test']:['run','--frames','60']),'--json'],{encoding:'utf8',maxBuffer:16*1024*1024});
 if(native.status!==0)throw new Error(`CLI_PARITY_FAILED: ${native.stdout}\n${native.stderr}`);
-const cases=JSON.parse(native.stdout).value.cases;
+const nativeResult=JSON.parse(native.stdout);
+if(!nativeResult.ok)throw new Error(`CLI_PARITY_FAILED: ${native.stdout}`);
+const cases=hasTests?nativeResult.value.cases:[nativeResult.value];
+const specs=hasTests?config.test_files.map(path=>JSON.parse(readFileSync(join(fixture,path),'utf8'))):[{frames:60,seed:42}];
 // Execute the actual emitted JavaScript and WASM. A minimal Web environment
 // permits both the Web-only release build and the developer Emscripten build.
 const module=await new Promise((resolveReady,reject)=>{
@@ -37,10 +41,11 @@ function replay(data,spec){
     if(module._unone_web_set_input_frame(address,bytes.length)!==0 || module._unone_web_tick()!==0)throw new Error(`WASM_PARITY_TICK_FAILED frame=${frame+1}: ${JSON.stringify(readObservation(module))}`);
     result=readObservation(module);
   }
+  if(runtime?.compiled_systems && JSON.stringify([...result.compiled_systems??[]].sort())!==JSON.stringify([...runtime.compiled_systems].sort()))throw new Error('RUNTIME_CAPABILITIES_MISMATCH: compiled WASM capabilities differ from runtime.json');
   return result;
 }
-for(let i=0;i<config.test_files.length;i++){
-  const spec=JSON.parse(readFileSync(join(fixture,config.test_files[i]),'utf8'));
+for(let i=0;i<specs.length;i++){
+  const spec=specs[i];
   const result=replay(payload,spec);
   if(result.observation_digest!==cases[i].observation_digest)throw new Error(`HOST_PARITY_MISMATCH frame=${spec.frames}: CLI=${cases[i].observation_digest} WASM=${result.observation_digest}. Rebuild both artifacts and inspect the shared host payload.`);
   compared++;
@@ -69,7 +74,7 @@ if(values['exercise-tools']) {
 let detectsAudioOmission=null;
 if(config.audio){
 const missingAudio=structuredClone(payload);delete missingAudio.config.audio;
-const initial=JSON.parse(readFileSync(join(fixture,config.test_files[0]),'utf8'));
+const initial=specs[0];
 detectsAudioOmission=false;
 try{detectsAudioOmission=replay(missingAudio,initial).observation_digest!==cases[0].observation_digest;}catch(error){if(!String(error).includes('HOST_PROJECT_REJECTED'))throw error;detectsAudioOmission=true;}
 if(!detectsAudioOmission)throw new Error('PARITY_FIXTURE_INEFFECTIVE: omitting audio did not change the observation');

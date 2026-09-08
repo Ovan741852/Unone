@@ -39,6 +39,10 @@ pub struct SystemDescriptor {
     pub default_enabled: bool,
     /// Whether a game may turn this system off at all.
     pub optional: bool,
+    /// Cargo feature controlling this system, or null for required core.
+    pub build_feature: Option<String>,
+    /// Whether this particular binary contains the capability.
+    pub compiled: bool,
     /// Luau API surface this system owns.
     pub luau_api: Vec<String>,
     /// Observation/snapshot fields this system produces.
@@ -106,7 +110,7 @@ impl SystemSettings {
     pub fn resolve(declared: &BTreeMap<String, bool>) -> Result<Self, Box<Diagnostic>> {
         let mut settings = Self::default();
         for (id, enabled) in declared {
-            let Some(descriptor) = describe(id) else {
+            let Some(descriptor) = describe(id).filter(|descriptor| descriptor.id == *id) else {
                 let mut diagnostic = Diagnostic::error(
                     "SYSTEM_UNKNOWN",
                     "project.unone.json declares an unavailable system",
@@ -158,6 +162,25 @@ impl SystemSettings {
     /// Resolve the systems a loaded project asks for.
     pub fn from_config(config: &ProjectConfig) -> Result<Self, Box<Diagnostic>> {
         Self::resolve(&config.systems)
+    }
+
+    pub fn validate_compiled(&self) -> Result<(), Box<Diagnostic>> {
+        for id in self.enabled_ids() {
+            if !is_compiled(&id) {
+                let mut diagnostic = Diagnostic::error(
+                    "SYSTEM_NOT_COMPILED",
+                    "Project requires an excluded runtime capability",
+                    format!(
+                        "System '{id}' is enabled but absent from this binary. Rebuild the player for this project, or explicitly disable it in project.unone.json."
+                    ),
+                );
+                diagnostic.facts =
+                    serde_json::json!({"system": id, "compiled_systems": compiled_systems()});
+                diagnostic.suggested_actions.push(ActionSuggestion { action: "rebuild_player".into(), description: "Build the project's selected runtime capabilities.".into(), command: Some("powershell -File scripts/build-web-live.ps1 -Player -Project <project-directory>".into()) });
+                return Err(Box::new(diagnostic));
+            }
+        }
+        Ok(())
     }
 
     pub fn is_enabled(&self, id: &str) -> bool {
@@ -352,6 +375,8 @@ fn descriptor(
     disable_when: &str,
 ) -> SystemDescriptor {
     SystemDescriptor {
+        build_feature: build_feature(id).map(str::to_string),
+        compiled: is_compiled(id),
         id: id.to_string(),
         summary: summary.to_string(),
         status,
@@ -405,7 +430,14 @@ fn descriptors() -> Vec<SystemDescriptor> {
             SystemStatus::Available,
             false,
             true,
-            vec!["api.physics3d.sweepSphere", "api.physics3d.addBody", "api.physics3d.raycast", "api.physics3d.castShape", "api.physics3d.overlap", "api.physics3d.contacts"],
+            vec![
+                "api.physics3d.sweepSphere",
+                "api.physics3d.addBody",
+                "api.physics3d.raycast",
+                "api.physics3d.castShape",
+                "api.physics3d.overlap",
+                "api.physics3d.contacts",
+            ],
             vec!["physics3d"],
             "api.physics3d reports SYSTEM_DISABLED.",
             "Games without 3D projectile queries.",
@@ -589,4 +621,47 @@ mod tests {
         assert!(describe("PHYSICS2D").is_some());
         assert!(describe("nope").is_none());
     }
+}
+
+pub fn build_feature(id: &str) -> Option<&'static str> {
+    match id {
+        "physics2d" => Some("physics2d"),
+        "physics3d" => Some("physics3d"),
+        "camera2d" => Some("camera2d"),
+        "camera3d" => Some("camera3d"),
+        "random" => Some("random"),
+        "ui" => Some("ui"),
+        "save" => Some("save"),
+        "audio" => Some("audio"),
+        "spine" => Some("spine"),
+        "particle" => Some("particle"),
+        "effekseer" => Some("effekseer"),
+        _ => None,
+    }
+}
+pub fn is_compiled(id: &str) -> bool {
+    match id {
+        "physics2d" => cfg!(feature = "physics2d"),
+        "physics3d" => cfg!(feature = "physics3d"),
+        "camera2d" => cfg!(feature = "camera2d"),
+        "camera3d" => cfg!(feature = "camera3d"),
+        "random" => cfg!(feature = "random"),
+        "ui" => cfg!(feature = "ui"),
+        "save" => cfg!(feature = "save"),
+        "audio" => cfg!(feature = "audio"),
+        "spine" => cfg!(feature = "spine"),
+        "particle" => cfg!(feature = "particle"),
+        "effekseer" => cfg!(feature = "effekseer"),
+        _ => matches!(id, "world" | "input" | "observation"),
+    }
+}
+pub fn compiled_systems() -> &'static [String] {
+    static IDS: std::sync::LazyLock<Vec<String>> = std::sync::LazyLock::new(|| {
+        descriptors()
+            .into_iter()
+            .filter(|d| d.compiled)
+            .map(|d| d.id)
+            .collect()
+    });
+    &IDS
 }

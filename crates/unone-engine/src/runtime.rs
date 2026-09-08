@@ -521,6 +521,8 @@ impl EngineRuntime {
             save_payload: Rc::clone(&save_payload),
         };
         let systems = SystemSettings::from_config(&config)?;
+        systems.validate_compiled()?;
+        #[cfg(feature = "physics3d")]
         if world.borrow().physics3d.is_some() && !systems.is_enabled("physics3d") {
             return Err(Box::new(Diagnostic::error(
                 "SYSTEM_DISABLED",
@@ -757,7 +759,10 @@ impl EngineRuntime {
         {
             let mut world = self.world.borrow_mut();
             let frame = world.frame;
-            world.audio.begin_frame(frame);
+            #[cfg(feature = "audio")]
+            if self.systems.is_enabled("audio") {
+                world.audio.begin_frame(frame);
+            }
         }
         let (script, script_time) = timed(|| {
             self.update_fn
@@ -766,9 +771,11 @@ impl EngineRuntime {
         });
         script?;
         let (physics_result, physics_time) = timed(|| -> Result<(), Box<Diagnostic>> {
+            #[cfg(feature = "physics2d")]
             if self.systems.is_enabled("physics2d") {
                 self.world.borrow_mut().step_physics(FIXED_DT);
             }
+            #[cfg(feature = "physics3d")]
             if self.systems.is_enabled("physics3d") {
                 let mut world = self.world.borrow_mut();
                 let world = &mut *world;
@@ -791,15 +798,24 @@ impl EngineRuntime {
             let mut world = self.world.borrow_mut();
             // Before the frame advances, so an attached source is observed at
             // the position its entity actually holds this frame.
-            world.follow_audio_entities();
+            #[cfg(feature = "audio")]
+            if self.systems.is_enabled("audio") {
+                world.follow_audio_entities();
+            }
             world.frame += 1;
             world.time_seconds = world.frame as f64 / 60.0;
         }
         {
             let mut world = self.world.borrow_mut();
             let frame = world.frame;
-            world.audio.end_frame(frame);
-            world.particles.advance(frame);
+            #[cfg(feature = "audio")]
+            if self.systems.is_enabled("audio") {
+                world.audio.end_frame(frame);
+            }
+            #[cfg(feature = "particle")]
+            if self.systems.is_enabled("particle") {
+                world.particles.advance(frame);
+            }
         }
         let (snapshot, observe_time) = timed(|| self.observe());
         self.performance.record(FrameTiming {

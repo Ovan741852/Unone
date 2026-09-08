@@ -26,6 +26,7 @@ fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Box<
 
 #[derive(Debug, Serialize)]
 struct ProjectObservation<'a> {
+    compiled_systems: &'static [String],
     project: &'a str,
     world: &'a WorldSnapshot,
     observation_digest: &'a str,
@@ -40,6 +41,7 @@ fn write_snapshot(
     let observation_digest = unone_engine::observation_digest(snapshot)
         .map_err(|error| format!("snapshot digest serialization failed: {error}"))?;
     let observation = ProjectObservation {
+        compiled_systems: unone_engine::compiled_systems(),
         project,
         world: snapshot,
         observation_digest: &observation_digest,

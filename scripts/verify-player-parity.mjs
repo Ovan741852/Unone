@@ -6,9 +6,9 @@ import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {parseArgs} from 'node:util';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-const {values}=parseArgs({options:{cli:{type:'string'},runtime:{type:'string'},development:{type:'boolean',default:false}}});
+const {values}=parseArgs({options:{cli:{type:'string'},runtime:{type:'string'},fixture:{type:'string'},development:{type:'boolean',default:false}}});
 const cli=resolve(values.cli??join(root,'target/debug/game.exe'));
-const fixture=join(root,'tests/host-parity-project');
+const fixture=resolve(values.fixture??join(root,'tests/host-parity-project'));
 const scratch=mkdtempSync(join(tmpdir(),'unone-player-parity-'));
 const output=join(scratch,'player');
 function run(command,args){return spawnSync(command,args,{encoding:'utf8',timeout:120000,maxBuffer:16*1024*1024});}
@@ -19,10 +19,13 @@ try {
   const built=run(cli,args);
   if(built.status!==0)throw new Error(`PLAYER_EXPORT_FAILED: ${built.stdout}\n${built.stderr}`);
   const verifyArgs=[join(root,'scripts/verify-host-parity.mjs'),'--cli',cli,'--fixture',fixture,'--export',output];
-  if(values.development)verifyArgs.push('--exercise-tools');
+  if(values.development&&!values.fixture)verifyArgs.push('--exercise-tools');
   const good=run(process.execPath,verifyArgs);
   if(good.status!==0)throw new Error(`PLAYER_PARITY_FAILED: ${good.stdout}\n${good.stderr}`);
   console.log(good.stdout.trim());
+  if(values.fixture) {
+    console.log(JSON.stringify({ok:true,selected_project_export_verified:fixture}));
+  } else {
   // Mutate the actual emitted file, not an independently assembled test payload.
   const payloadPath=join(output,'content/project.json');
   const payload=JSON.parse(readFileSync(payloadPath,'utf8'));
@@ -52,6 +55,7 @@ try {
   const physicsBad=run(process.execPath,physicsVerify);
   if(physicsBad.status===0||!/HOST_PARITY_MISMATCH/.test(physicsBad.stderr))throw new Error(`PHYSICS3D_NEGATIVE_CONTROL_FAILED: ${physicsBad.stdout}\n${physicsBad.stderr}`);
   console.log(JSON.stringify({ok:true,exported_physics3d_gravity_mutation_detected:true}));
+  }
 } finally {
   // Only the exact private directory returned by mkdtempSync is removed.
   rmSync(scratch,{recursive:true,force:true});

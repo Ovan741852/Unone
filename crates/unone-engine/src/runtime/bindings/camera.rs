@@ -2,6 +2,7 @@ use super::{ApiState, Lua, Table};
 use crate::world::{Vec2, Vec3};
 use std::rc::Rc;
 
+#[cfg(feature = "camera2d")]
 pub(super) fn camera(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let world = Rc::clone(&state.world);
     let camera = lua.create_table()?;
@@ -51,6 +52,7 @@ pub(super) fn camera(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     Ok(camera)
 }
 
+#[cfg(feature = "camera3d")]
 pub(super) fn camera3d(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let world = Rc::clone(&state.world);
     let camera3d = lua.create_table()?;

@@ -18,7 +18,7 @@ From the repository root:
 ./scripts/install-binaryen.ps1
 cargo build -p unone-cli
 node scripts/build-three-player.mjs
-./scripts/build-web-live.ps1 -Player
+./scripts/build-web-live.ps1 -Player -Project _Games/dragon-tycoon3
 ./target/debug/game.exe --project _Games/dragon-tycoon3 export web --output _Games/dragon-tycoon3/dist/release --json
 python scripts/serve-export.py _Games/dragon-tycoon3/dist/release --port 8176 --gzip
 ```
@@ -31,7 +31,9 @@ WASM that links successfully but fails browser instantiation. Rust/Luau still us
 the size-optimized release profile with LTO. Runtime assertions are not editor code.
 
 Export requires a new destination and a matching release runtime manifest/hashes;
-`--runtime <directory>` overrides the default `artifacts/player-runtime`.
+`--runtime <directory>` overrides the default `<project>/dist/player-runtime`.
+Build with `-Project <directory>` to select the project's declared systems and
+exclude unused capabilities from WASM. See [optional systems](optional-systems.md).
 It validates the exact HostProject ingestion before writing, rejects path escapes
 and destination collisions, and creates an inventory with file hashes and sizes.
 Only declared content is copied. The output has one game, local JS/WASM/assets,
@@ -47,7 +49,7 @@ native observation digests. It also corrupts the emitted audio declaration and
 requires the comparison to fail. Run it independently with
 `node scripts/verify-player-parity.mjs`, or check an existing game export with
 `node scripts/verify-host-parity.mjs --export <directory> --fixture <source-project>`.
-The latter requires the source project's replay tests. This is separate from the
+Without replay tests, the latter compares a 60-frame replay. This is separate from the
 developer-host gate, which assembles a payload from source and identifies itself
 as `assembled-host`; it is not evidence for an exported player.
 

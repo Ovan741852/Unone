@@ -423,6 +423,8 @@ pub struct RigidBodySnapshot {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct WorldSnapshot {
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub instances3d: BTreeMap<String, crate::instances3d::InstanceBatch3D>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub physics3d: Option<crate::rigid3d::Snapshot3D>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
@@ -492,6 +494,8 @@ pub(crate) struct RigidBodyState {
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct World {
+    pub instances3d: BTreeMap<String, crate::instances3d::InstanceBatch3D>,
+    #[cfg(feature = "physics3d")]
     pub physics3d: Option<crate::rigid3d::PhysicsWorld3D>,
     pub particles: crate::particle::ParticleWorld,
     pub frame: u64,
@@ -525,6 +529,8 @@ impl World {
     }
 
     fn apply_scene(&mut self, scene: SceneFile) {
+        self.instances3d.clear();
+        #[cfg(feature = "physics3d")]
         let physics3d = scene.physics3d;
         self.particles.definitions = scene.particle_effects;
         self.physics = scene.physics;
@@ -560,29 +566,32 @@ impl World {
                 },
             );
         }
-        self.physics3d = physics3d.map(|scene| {
-            let mut physics = crate::rigid3d::PhysicsWorld3D::default();
-            physics
-                .set_gravity(scene.gravity)
-                .expect("validated gravity");
-            for (id, body) in scene.bodies {
-                let transform = self.entities[&id]
-                    .transform3d
-                    .as_ref()
-                    .expect("validated Transform3D");
+        #[cfg(feature = "physics3d")]
+        {
+            self.physics3d = physics3d.map(|scene| {
+                let mut physics = crate::rigid3d::PhysicsWorld3D::default();
                 physics
-                    .add(
-                        id,
-                        body,
-                        crate::rigid3d::Pose3D {
-                            position: transform.position,
-                            rotation: transform.rotation,
-                        },
-                    )
-                    .expect("validated body");
-            }
-            physics
-        });
+                    .set_gravity(scene.gravity)
+                    .expect("validated gravity");
+                for (id, body) in scene.bodies {
+                    let transform = self.entities[&id]
+                        .transform3d
+                        .as_ref()
+                        .expect("validated Transform3D");
+                    physics
+                        .add(
+                            id,
+                            body,
+                            crate::rigid3d::Pose3D {
+                                position: transform.position,
+                                rotation: transform.rotation,
+                            },
+                        )
+                        .expect("validated body");
+                }
+                physics
+            });
+        }
     }
 
     pub(crate) fn spawn(&mut self, name: &str) -> String {
@@ -660,7 +669,11 @@ impl World {
                 })
                 .collect();
         WorldSnapshot {
+            instances3d: self.instances3d.clone(),
+            #[cfg(feature = "physics3d")]
             physics3d: self.physics3d.as_ref().map(|p| p.snapshot()),
+            #[cfg(not(feature = "physics3d"))]
+            physics3d: None,
             frame: self.frame,
             time_seconds: self.time_seconds,
             camera: Camera2DData {
@@ -680,7 +693,10 @@ impl World {
             observations: BTreeMap::new(),
             ui: None,
             particle_effects: self.particles.definitions.clone(),
+            #[cfg(feature = "particle")]
             particles: self.particles.snapshot(self.frame),
+            #[cfg(not(feature = "particle"))]
+            particles: Vec::new(),
             effects: self
                 .effects
                 .iter()
@@ -783,6 +799,7 @@ impl World {
         self.contacts
             .retain(|contact| contact.a != id && contact.b != id);
         self.ground_contacts.retain(|entity| entity != id);
+        #[cfg(feature = "physics3d")]
         if let Some(p) = &mut self.physics3d {
             if p.contains(id) {
                 p.remove(id)?;
@@ -999,6 +1016,7 @@ impl World {
         id: &str,
         transform: Transform3DData,
     ) -> Result<(), String> {
+        #[cfg(feature = "physics3d")]
         if self.physics3d.as_ref().is_some_and(|p| p.contains(id)) {
             return Err("PHYSICS3D_OWNERSHIP: use physics3d.teleport or moveKinematic for a physics-owned Transform3D".into());
         }
@@ -1109,6 +1127,7 @@ impl World {
         Ok(())
     }
 
+    #[cfg(feature = "physics2d")]
     pub(crate) fn step_physics(&mut self, dt: f64) {
         self.contacts.clear();
         self.ground_contacts.clear();
@@ -1416,6 +1435,7 @@ mod tests {
 
     fn world_with(entities: BTreeMap<String, EntityState>) -> World {
         World {
+            instances3d: BTreeMap::new(),
             physics3d: None,
             frame: 0,
             time_seconds: 0.0,

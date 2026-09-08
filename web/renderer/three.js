@@ -1,5 +1,6 @@
 import { createParticleRenderer } from "./particles.js";
 import { meshGeometry, validateMesh } from "./mesh.js";
+import {createInstanceRenderer} from './instances3d.js';
 import {createBloom} from './bloom.js';
 import {createEffects} from './effekseer.js';
 import { compareSpriteEntities, worldOf } from "../shared/webgpu-snapshot.js";
@@ -79,6 +80,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   const camera3d = new THREE.PerspectiveCamera(60,1,0.05,2000);
   const meshes3d = new Map();
   const meshAssets = new Map();
+  const instances = createInstanceRenderer(THREE,scene,meshAssetFor);
   const particles = createParticleRenderer(THREE,scene);
   const camera = new THREE.OrthographicCamera(-8, 8, 4.5, -4.5, -1000, 1000);
   camera.position.z = 10;
@@ -230,6 +232,7 @@ export async function createThreeRenderer(canvas, options = {}) {
       mesh.scale.set(t.scale.x,t.scale.y,t.scale.z); mesh.visible=true; alive3d.add(entity.id);
     }
     for (const [id,mesh] of meshes3d) mesh.visible=alive3d.has(id);
+    instances.draw(world.instances3d,specs);
     particles.draw(world.particles);
     const overlay=effects?()=>{effects.draw(world,activeCamera);renderer.resetState();}:null;
     if(bloom) bloom.draw(scene,activeCamera,overlay);
@@ -237,6 +240,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   }
 
   function clearTextures() {
+    instances.clear();
     for (const mesh of meshes3d.values()) {
       scene.remove(mesh);
       if (mesh.userData.asset.startsWith('mesh://primitive/')) { mesh.geometry.dispose(); mesh.material.dispose(); }
@@ -261,7 +265,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     resetMeasurements:()=>bloom?.resetMeasurements(),
     implementation: "three.js",
     backend,
-    metrics: () => ({draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,effects:effects?.count??0,...bloom?.metrics()}),
+    metrics: () => ({instances:instances.count,draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 

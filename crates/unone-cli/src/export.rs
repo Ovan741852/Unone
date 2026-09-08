@@ -67,6 +67,14 @@ fn inside(root: &Path, relative: &str) -> Result<PathBuf> {
     Ok(path)
 }
 
+fn replace_required(text: String, old: &str, new: &str) -> Result<String> {
+    ensure!(
+        text.matches(old).count() == 1,
+        "PLAYER_MODULE_CONTRACT_CHANGED: expected exactly one {old}"
+    );
+    Ok(text.replacen(old, new, 1))
+}
+
 pub fn web(
     project: &Path,
     output: &Path,
@@ -80,13 +88,13 @@ pub fn web(
     );
     let repo = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
     let runtime = runtime.map(Path::to_path_buf).unwrap_or_else(|| {
-        repo.join(if development {
-            "artifacts/player-development-runtime"
+        project.join(if development {
+            "dist/player-development-runtime"
         } else {
-            "artifacts/player-runtime"
+            "dist/player-runtime"
         })
     });
-    let manifest: Value = serde_json::from_slice(&fs::read(runtime.join("runtime.json"))?)?;
+    let manifest: Value = serde_json::from_slice(&fs::read(runtime.join("runtime.json")).with_context(|| format!("Build this project runtime first: powershell -File scripts/build-web-live.ps1 -Player -Project \"{}\"{}; or pass --runtime <directory>", project.display(), if development { " -Development" } else { "" }))?)?;
     ensure!(
         manifest["profile"] == "release"
             && manifest["dev_tools"] == false
@@ -134,6 +142,17 @@ pub fn web(
     }
     let (config, _) = unone_engine::ProjectPaths::discover(project)
         .map_err(|e| anyhow::anyhow!(e.explanation))?;
+    let settings = unone_engine::SystemSettings::from_config(&config)
+        .map_err(|e| anyhow::anyhow!(e.explanation))?;
+    let compiled = manifest["compiled_systems"].as_array()
+        .context("RUNTIME_CAPABILITIES_MISSING: rebuild the runtime with scripts/build-web-live.ps1 -Player -Project <project-directory>")?;
+    for id in settings.enabled_ids() {
+        ensure!(
+            compiled.iter().any(|entry| entry.as_str() == Some(&id)),
+            "SYSTEM_NOT_COMPILED: runtime does not contain {id}; rebuild with scripts/build-web-live.ps1 -Player -Project {} and pass its directory using --runtime",
+            project.display()
+        );
+    }
     let scene: Value = if let Some(path) = &config.main_scene {
         serde_json::from_slice(&fs::read(inside(project, path)?)?)?
     } else {
@@ -154,6 +173,10 @@ pub fn web(
                 bail!("PLAYER_DECODER_UNAVAILABLE: {} ({})", asset.id, asset.kind);
             }
             if asset.kind == "effekseer" {
+                ensure!(
+                    settings.is_enabled("effekseer"),
+                    "SYSTEM_DISABLED: effekseer assets require systems.effekseer=true"
+                );
                 let bytes = fs::read(inside(project, &asset.source)?)?;
                 ensure!(
                     bytes.starts_with(b"SKFE")
@@ -279,6 +302,7 @@ pub fn web(
         "player/main.js",
         "renderer/three.js",
         "renderer/mesh.js",
+        "renderer/instances3d.js",
         "renderer/bloom.js",
         "renderer/effekseer.js",
         "renderer/particles.js",
@@ -292,8 +316,32 @@ pub fn web(
         "vendor/three/three.player.min.js",
         "vendor/rapier/LICENSE",
     ] {
+        if (path == "shared/audio-playback.js" && !settings.is_enabled("audio"))
+            || (path == "shared/ui-tree.js" && !settings.is_enabled("ui"))
+            || (path == "renderer/particles.js" && !settings.is_enabled("particle"))
+            || (path == "renderer/effekseer.js" && !settings.is_enabled("effekseer"))
+            || (path == "vendor/rapier/LICENSE" && !compiled.iter().any(|v| v == "physics3d"))
+        {
+            continue;
+        }
         let mut bytes = fs::read(repo.join("web").join(path))?;
         if path == "renderer/three.js" {
+            let mut text = String::from_utf8(bytes)?;
+            if !settings.is_enabled("particle") {
+                text = replace_required(
+                    text,
+                    "import { createParticleRenderer } from \"./particles.js\";",
+                    "const createParticleRenderer = () => ({draw(){}, clear(){}, count:0});",
+                )?;
+            }
+            if !settings.is_enabled("effekseer") {
+                text = replace_required(
+                    text,
+                    "import {createEffects} from './effekseer.js';",
+                    "const createEffects = async () => null;",
+                )?;
+            }
+            bytes = text.into_bytes();
             bytes = String::from_utf8(bytes)?
                 .replace(
                     "../vendor/three/three.module.js",
@@ -302,7 +350,33 @@ pub fn web(
                 .into_bytes();
         }
         if path == "player/main.js" {
-            let text = String::from_utf8(bytes)?;
+            let mut text = String::from_utf8(bytes)?;
+            if !settings.is_enabled("ui") {
+                text = replace_required(
+                    text,
+                    "import {createUiTree} from '../shared/ui-tree.js';",
+                    "const createUiTree = () => () => {};",
+                )?;
+            }
+            if !settings.is_enabled("audio") {
+                text = replace_required(
+                    text,
+                    "import {createAudioPlayback} from '../shared/audio-playback.js';",
+                    "const createAudioPlayback = async () => null;",
+                )?;
+            }
+            if !settings.is_enabled("save") {
+                text = replace_required(
+                    text,
+                    "const next=JSON.stringify(snapshot.save_payload);if(next!==saved){localStorage.setItem(key,next);saved=next;}",
+                    "",
+                )?;
+                text = replace_required(
+                    text,
+                    "try{project.restored_save=JSON.parse(localStorage.getItem(key)??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}",
+                    "project.restored_save=null;",
+                )?;
+            }
             bytes=if development {text.replace("/* DEVELOPER_IMPORT */", "import {createDeveloper} from '../developer/main.js';\nconst developer=createDeveloper();").replace("/* DEVELOPER_CONNECT */", "developer.connect({getSnapshot:()=>snapshot,acceptSnapshot:value=>{snapshot=value;},module:window.Module,getStats:()=>lastStats,getBoot:()=>metrics,draw,tick:tickOnce,releaseInput:()=>input.releaseAll(),setPaused:value=>{frozen=value;manualInput=null;},getPaused:()=>frozen,setBloom:value=>renderer.setBloom(value),queueInput:frame=>{send('_unone_web_set_input_frame',frame);manualInput=frame;}});")} else {text.replace("/* DEVELOPER_IMPORT */", "").replace("/* DEVELOPER_CONNECT */", "")}.into_bytes();
         }
         files.push((format!("web/{path}"), bytes));
@@ -341,7 +415,7 @@ pub fn web(
             "export destination collision: {path}"
         );
     }
-    let report = json!({"version":1,"project":config.name,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer":"three-webgl","total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
+    let report = json!({"version":1,"project":config.name,"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer":"three-webgl","total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
     // All validation and reads finish first. Remove only our newly created tree on write failure.
     fs::create_dir_all(output)?;
     let write = (|| -> Result<()> {

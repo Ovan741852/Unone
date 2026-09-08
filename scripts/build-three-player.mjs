@@ -1,11 +1,11 @@
-import {readFileSync} from 'node:fs';
+import {readFileSync,readdirSync} from 'node:fs';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const names=new Set();
-for(const file of ['three.js','mesh.js','particles.js','bloom.js']) {
+for(const file of readdirSync(resolve(root,'web/renderer')).filter(file=>file.endsWith('.js'))) {
   for(const match of readFileSync(resolve(root,'web/renderer',file),'utf8').matchAll(/THREE\.([A-Za-z0-9_]+)/g)) {
     if(match[1]!=='WebGPURenderer')names.add(match[1]);
   }

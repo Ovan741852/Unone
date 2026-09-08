@@ -3,11 +3,14 @@ param(
     # Where Emscripten lives. Defaults to $env:UNONE_EMSDK_ROOT, then $env:EMSDK.
     [switch]$Player,
     [switch]$Development,
+    [string]$Project,
+    [string]$OutputRoot,
     [string]$BinaryenRoot = $env:UNONE_BINARYEN_ROOT,
     [string]$EmsdkRoot = $(if ($env:UNONE_EMSDK_ROOT) { $env:UNONE_EMSDK_ROOT } elseif ($env:EMSDK) { $env:EMSDK } else { '' })
 )
 
 $ErrorActionPreference = 'Stop'
+if ($Project -and -not $Player) { throw '-Project requires -Player' }
 if ($Development -and -not $Player) { throw '-Development requires -Player' }
 $parityNode = if ($Player) { (Get-Command node -ErrorAction Stop).Source } else { $null }
 
@@ -63,7 +66,19 @@ if ($Player) {
     if ($BinaryenRoot) { $env:EM_BINARYEN_ROOT = [IO.Path]::GetFullPath($BinaryenRoot) }
     $exports = @('init','alloc','load_project','set_save_payload','set_input_frame','set_viewport_aspect','tick','observation_ptr','observation_len')
     if ($Development) { $exports += 'developer_request' }
-    $featureArgs = if ($Development) { @('--features','preview-tools') } else { @() }
+    $cli = Join-Path $repoRoot 'target/debug/game.exe'
+    if (-not (Test-Path -LiteralPath $cli)) { throw 'Build the current CLI first: cargo build -p unone-cli' }
+    $systemsProject = if ($Project) { [IO.Path]::GetFullPath($Project) } else { Join-Path $repoRoot 'tests/host-parity-project' }
+    $systemJson = & $cli --project $systemsProject systems list --json
+    if ($LASTEXITCODE -ne 0) { throw "Cannot resolve project systems: $systemJson" }
+    $systemReport = $systemJson | ConvertFrom-Json
+    if (-not $systemReport.ok) { throw "Cannot resolve project systems: $systemJson" }
+    $selected = @($systemReport.value.systems | Where-Object { (-not $Project) -or $_.enabled })
+    $compiledSystems = @($selected | ForEach-Object { $_.id } | Sort-Object)
+    $features = @($selected | Where-Object { $_.build_feature } | ForEach-Object { $_.build_feature } | Sort-Object -Unique)
+    if ($Development) { $features += 'preview-tools' }
+    $featureArgs = @('--no-default-features')
+    if ($features.Count) { $featureArgs += @('--features', ($features -join ',')) }
     $env:RUSTFLAGS = (($exports | ForEach-Object { "-C link-arg=--export=unone_web_$_" }) -join ' ') + ' -C link-arg=-sENVIRONMENT=web -C link-arg=-sALLOW_MEMORY_GROWTH=1 -C link-arg=-sASSERTIONS=1'
     cargo build --manifest-path (Join-Path $repoRoot 'crates/unone-player/Cargo.toml') --target-dir (Join-Path $repoRoot 'target/player') --release --target wasm32-unknown-emscripten @featureArgs
     if ($LASTEXITCODE -ne 0) { throw 'Player release build failed; no debug fallback is allowed.' }
@@ -71,17 +86,22 @@ if ($Player) {
     $wasm = Get-ChildItem -LiteralPath $releaseRoot -Filter '*.wasm' | Select-Object -First 1
     $javascript = Get-ChildItem -LiteralPath $releaseRoot -Filter '*.js' | Select-Object -First 1
     if (-not $wasm -or -not $javascript) { throw 'Release output missing.' }
-    $outputRoot = Join-Path $repoRoot $(if ($Development) { 'artifacts/player-development-runtime' } else { 'artifacts/player-runtime' })
+    if (-not $OutputRoot) {
+        $variant = if ($Development) { 'player-development-runtime' } else { 'player-runtime' }
+        $OutputRoot = if ($Project) { Join-Path $systemsProject "dist/$variant" } else { Join-Path $repoRoot "artifacts/$variant" }
+    }
+    $outputRoot = [IO.Path]::GetFullPath($OutputRoot)
     New-Item -ItemType Directory -Force $outputRoot | Out-Null
     Copy-Item -LiteralPath $wasm.FullName -Destination $outputRoot -Force
     Copy-Item -LiteralPath $javascript.FullName -Destination $outputRoot -Force
-    $report = @{ profile='release'; dev_tools=$false; preview_tools=[bool]$Development; javascript=$javascript.Name; wasm=$wasm.Name;
+    $report = @{ compiled_systems=$compiledSystems; cargo_features=$features; profile='release'; dev_tools=$false; preview_tools=[bool]$Development; javascript=$javascript.Name; wasm=$wasm.Name;
         wasm_bytes=$wasm.Length; wasm_sha256=(Get-FileHash $wasm.FullName -Algorithm SHA256).Hash.ToLowerInvariant();
         javascript_sha256=(Get-FileHash $javascript.FullName -Algorithm SHA256).Hash.ToLowerInvariant();
         exports=$exports; source_commit=(git -C $repoRoot rev-parse HEAD); source_dirty=[bool](git -C $repoRoot status --porcelain) }
     [IO.File]::WriteAllText((Join-Path $outputRoot 'runtime.json'), ($report | ConvertTo-Json -Depth 6), [Text.UTF8Encoding]::new($false))
     # Run the actual export gate with Node selected before the SDK changed PATH.
     [string[]]$parityArgs = if ($Development) { @('--development') } else { @() }
+    if ($Project) { $parityArgs += @('--fixture', $systemsProject) }
     & $parityNode (Join-Path $repoRoot 'scripts/verify-player-parity.mjs') --runtime $outputRoot @parityArgs
     if ($LASTEXITCODE -ne 0) { throw 'Player artifact parity failed. Build the current native CLI with cargo build -p unone-cli, fix any mismatch, then rerun this player build.' }
     Write-Output ($report | ConvertTo-Json -Depth 6)

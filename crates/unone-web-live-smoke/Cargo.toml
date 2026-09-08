@@ -16,4 +16,4 @@ preview-tools = ["unone-engine/preview-tools"]
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["raw_value"] }
-unone-engine = { path = "../unone-engine", default-features = false }
+unone-engine = { path = "../unone-engine", default-features = false, features = ["all-systems"] }

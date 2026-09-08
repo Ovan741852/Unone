@@ -3,6 +3,7 @@ use super::{ApiState, Lua, Table, Value};
 use crate::world::Vec2;
 use std::rc::Rc;
 
+#[cfg(feature = "physics2d")]
 pub(super) fn physics(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let world = Rc::clone(&state.world);
     let physics = lua.create_table()?;
@@ -23,6 +24,7 @@ pub(super) fn physics(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     Ok(physics)
 }
 
+#[cfg(feature = "physics3d")]
 pub(super) fn physics3d(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let world = Rc::clone(&state.world);
     let physics3d_api = lua.create_table()?;
@@ -61,6 +63,7 @@ fn encode<T: serde::Serialize>(lua: &Lua, value: T) -> mlua::Result<Value> {
         serde_json::to_value(value).map_err(mlua::Error::external)?,
     )
 }
+#[cfg(feature = "physics3d")]
 fn rigid3d(lua: &Lua, api: &Table, state: &ApiState) -> mlua::Result<()> {
     use crate::rigid3d::*;
     use crate::world::World;

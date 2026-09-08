@@ -193,6 +193,45 @@ pub fn describe(name: &str) -> Option<ApiDescriptor> {
 fn descriptors() -> Vec<ApiDescriptor> {
     let mut result = vec![
         descriptor(
+            "instances3d.set",
+            "presentation",
+            "Replace a packed batch of 3D mesh instances.",
+            "Render large populations sharing a mesh; gameplay remains in Lua.",
+            "Not entities or rigid bodies; no per-instance callbacks or skeletal animation.",
+            vec![
+                parameter("id", "string", "Stable batch ID, 1..128 bytes"),
+                parameter("asset", "string", "Mesh asset ID"),
+                parameter(
+                    "transforms",
+                    "buffer",
+                    "40-byte little-endian f32 records: position.xyz, normalized quaternion.xyzw, nonnegative scale.xyz",
+                ),
+            ],
+            "nil",
+            vec!["Replace presentation batch atomically"],
+            "Copies the buffer. Included in snapshots and observation digests. Web renderer supports instancing; native currently does not.",
+            vec![
+                "Invalid buffer or transform fails",
+                "Maximum 100000 instances and 256 batches per world",
+            ],
+            "api.instances3d.set(\"crowd\", \"mesh://soldier\", transforms)",
+            vec!["instances3d.remove"],
+        ),
+        descriptor(
+            "instances3d.remove",
+            "presentation",
+            "Remove a 3D instance batch.",
+            "Release a game-owned presentation batch.",
+            "Does not despawn entities.",
+            vec![parameter("id", "string", "Existing batch ID")],
+            "nil",
+            vec!["Remove presentation batch"],
+            "Immediate; missing IDs fail.",
+            vec!["Unknown ID fails"],
+            "api.instances3d.remove(\"crowd\")",
+            vec!["instances3d.set"],
+        ),
+        descriptor(
             "debug.registerTab",
             "debug",
             "Register a development-only tab with stable ID and label.",

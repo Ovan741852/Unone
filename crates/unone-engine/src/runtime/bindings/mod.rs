@@ -18,47 +18,76 @@ pub(super) fn build_api(
     systems: &SystemSettings,
 ) -> mlua::Result<Table> {
     let api = lua.create_table()?;
+    api.set("instances3d", presentation::instances3d(lua, state)?)?;
     api.set("debug", debug::bind(lua, state)?)?;
     state::log(lua, state, &api)?;
     api.set("entity", entity::entity(lua, state)?)?;
     api.set("input", input::input(lua, state)?)?;
+    api.set("observation", state::observation(lua, state)?)?;
+    #[cfg(feature = "random")]
     api.set(
         "random",
         disable_if_off(lua, systems, "random", input::random(lua, state)?)?,
     )?;
+    #[cfg(not(feature = "random"))]
+    api.set("random", unavailable(lua, "random")?)?;
+    #[cfg(feature = "physics2d")]
     api.set(
         "physics",
         disable_if_off(lua, systems, "physics2d", physics::physics(lua, state)?)?,
     )?;
+    #[cfg(not(feature = "physics2d"))]
+    api.set("physics", unavailable(lua, "physics2d")?)?;
+    #[cfg(feature = "physics3d")]
     api.set(
         "physics3d",
         disable_if_off(lua, systems, "physics3d", physics::physics3d(lua, state)?)?,
     )?;
+    #[cfg(not(feature = "physics3d"))]
+    api.set("physics3d", unavailable(lua, "physics3d")?)?;
+    #[cfg(feature = "camera2d")]
     api.set(
         "camera",
         disable_if_off(lua, systems, "camera2d", camera::camera(lua, state)?)?,
     )?;
+    #[cfg(not(feature = "camera2d"))]
+    api.set("camera", unavailable(lua, "camera2d")?)?;
+    #[cfg(feature = "camera3d")]
     api.set(
         "camera3d",
         disable_if_off(lua, systems, "camera3d", camera::camera3d(lua, state)?)?,
     )?;
-    api.set("observation", state::observation(lua, state)?)?;
+    #[cfg(not(feature = "camera3d"))]
+    api.set("camera3d", unavailable(lua, "camera3d")?)?;
+    #[cfg(feature = "ui")]
     api.set(
         "ui",
         disable_if_off(lua, systems, "ui", state::ui(lua, state)?)?,
     )?;
+    #[cfg(not(feature = "ui"))]
+    api.set("ui", unavailable(lua, "ui")?)?;
+    #[cfg(feature = "save")]
     api.set(
         "save",
         disable_if_off(lua, systems, "save", state::save(lua, state)?)?,
     )?;
+    #[cfg(not(feature = "save"))]
+    api.set("save", unavailable(lua, "save")?)?;
+    #[cfg(feature = "spine")]
     api.set(
         "animation",
         disable_if_off(lua, systems, "spine", presentation::animation(lua, state)?)?,
     )?;
+    #[cfg(not(feature = "spine"))]
+    api.set("animation", unavailable(lua, "spine")?)?;
+    #[cfg(feature = "effekseer")]
     api.set(
         "effect",
         disable_if_off(lua, systems, "effekseer", presentation::effect(lua, state)?)?,
     )?;
+    #[cfg(not(feature = "effekseer"))]
+    api.set("effect", unavailable(lua, "effekseer")?)?;
+    #[cfg(feature = "particle")]
     api.set(
         "particle",
         disable_if_off(
@@ -68,10 +97,15 @@ pub(super) fn build_api(
             presentation::particle(lua, state)?,
         )?,
     )?;
+    #[cfg(not(feature = "particle"))]
+    api.set("particle", unavailable(lua, "particle")?)?;
+    #[cfg(feature = "audio")]
     api.set(
         "audio",
         disable_if_off(lua, systems, "audio", audio::audio(lua, state)?)?,
     )?;
+    #[cfg(not(feature = "audio"))]
+    api.set("audio", unavailable(lua, "audio")?)?;
     Ok(api)
 }
 
@@ -105,4 +139,18 @@ fn disable_if_off(
         )?;
     }
     Ok(disabled)
+}
+
+// No backend or binding closures are constructed for a compiled-out capability.
+#[allow(dead_code)] // Used only by feature-selected builds.
+fn unavailable(lua: &Lua, system: &'static str) -> mlua::Result<Table> {
+    let table = lua.create_table()?;
+    let meta = lua.create_table()?;
+    meta.set("__index", lua.create_function(move |_, _: mlua::MultiValue| {
+        Err::<(), _>(mlua::Error::RuntimeError(format!(
+            "SYSTEM_NOT_COMPILED: system '{system}' was excluded from this runtime. Enable it in project.unone.json and rebuild the player for that project."
+        )))
+    })?)?;
+    table.set_metatable(Some(meta))?;
+    Ok(table)
 }

@@ -5,8 +5,20 @@ edition = "2024"
 license = "MIT OR Apache-2.0"
 
 [features]
-default = []
+default = ["all-systems"]
 dev-tools = []
+all-systems = ["physics2d", "physics3d", "camera2d", "camera3d", "random", "ui", "save", "audio", "spine", "particle", "effekseer"]
+physics2d = ["unone-engine/physics2d"]
+physics3d = ["unone-engine/physics3d"]
+camera2d = ["unone-engine/camera2d"]
+camera3d = ["unone-engine/camera3d"]
+random = ["unone-engine/random"]
+ui = ["unone-engine/ui"]
+save = ["unone-engine/save"]
+audio = ["unone-engine/audio"]
+spine = ["unone-engine/spine"]
+particle = ["unone-engine/particle"]
+effekseer = ["unone-engine/effekseer"]
 preview-tools = ["unone-engine/preview-tools"]
 
 [dependencies]

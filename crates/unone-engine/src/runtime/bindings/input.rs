@@ -52,6 +52,7 @@ pub(super) fn input(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     Ok(input_api)
 }
 
+#[cfg(feature = "random")]
 pub(super) fn random(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let random = Rc::clone(&state.random);
     let random_api = lua.create_table()?;

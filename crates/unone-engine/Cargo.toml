@@ -5,19 +5,32 @@ edition.workspace = true
 license.workspace = true
 
 [features]
-default = ["dev-tools"]
+default = ["dev-tools", "all-systems"]
 dev-tools = ["dep:schemars", "preview-tools"]
 preview-tools = []
+all-systems = ["physics2d", "physics3d", "camera2d", "camera3d", "random", "ui", "save", "audio", "spine", "particle", "effekseer"]
+physics2d = []
+physics3d = ["dep:rapier3d"]
+camera2d = []
+camera3d = []
+random = []
+ui = []
+save = []
+audio = []
+spine = []
+particle = []
+effekseer = []
 
 [dependencies]
 anyhow = "1"
+base64 = "0.23"
 mlua = { version = "0.11", features = ["luau", "vendored"] }
 schemars = { version = "1", optional = true }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["raw_value"] }
 sha2 = "0.10"
 thiserror = "2"
-rapier3d = { version = "=0.26.1", default-features = false, features = ["dim3", "f32", "enhanced-determinism"] }
+rapier3d = { optional = true, version = "=0.26.1", default-features = false, features = ["dim3", "f32", "enhanced-determinism"] }
 
 [dev-dependencies]
 tempfile = "3"

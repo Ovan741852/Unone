@@ -5,6 +5,7 @@ mod asset;
 #[cfg(feature = "dev-tools")]
 mod asset_workflow;
 mod audio;
+#[cfg(feature = "physics2d")]
 mod broadphase;
 #[cfg(feature = "dev-tools")]
 mod bundle;
@@ -14,13 +15,15 @@ mod diagnostics;
 #[cfg(feature = "dev-tools")]
 mod diff;
 mod host;
+mod instances3d;
 #[cfg(feature = "dev-tools")]
 mod layout;
 mod performance;
+#[cfg(feature = "physics3d")]
 mod physics3d;
-mod rigid3d;
 mod platform;
 mod project;
+mod rigid3d;
 mod runtime;
 #[cfg(feature = "preview-tools")]
 pub use runtime::{DebugControl, DebugTab, PreviewRequest};
@@ -100,7 +103,8 @@ pub use scene::parse_scene_fragment;
 pub use schema::{SCHEMA_NAMES, contract_schema};
 pub use systems::{
     SystemDescriptor, SystemReport, SystemSearchReport, SystemSetReport, SystemSettings,
-    SystemState, SystemStatus, describe as describe_system, search as search_systems,
+    SystemState, SystemStatus, compiled_systems, describe as describe_system,
+    search as search_systems,
 };
 pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiNode, UiRect, UiTree};
 #[cfg(feature = "dev-tools")]
