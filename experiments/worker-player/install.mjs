@@ -1,0 +1,15 @@
+import {readFileSync,writeFileSync,copyFileSync,mkdirSync} from 'node:fs';
+import {resolve,join,dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+const source=dirname(fileURLToPath(import.meta.url)),out=resolve(process.argv[2]??'');
+if(!process.argv[2])throw Error('Pass an exported Legion Fall development player directory');
+const runtime=JSON.parse(readFileSync(join(out,'runtime/runtime.json')));
+if(!runtime.preview_tools)throw Error('Fixture setup requires the development tools ABI');
+mkdirSync(join(out,'experiment'),{recursive:true});
+const files=['runtime-host.mjs','worker.js','main.mjs'];
+for(const file of files)copyFileSync(join(source,file),join(out,'experiment',file));
+copyFileSync(join(source,'index.html'),join(out,'worker.html'));
+const hash=path=>createHash('sha256').update(readFileSync(join(out,path))).digest('hex');
+writeFileSync(join(out,'experiment/build.json'),JSON.stringify({scope:'Experimental worker player, separate from shipping export manifest',files:Object.fromEntries(['content/project.json','runtime/'+runtime.wasm,'runtime/'+runtime.javascript,'worker.html',...files.map(f=>'experiment/'+f)].map(f=>[f,hash(f)]))},null,2));
+console.log(join(out,'worker.html'));

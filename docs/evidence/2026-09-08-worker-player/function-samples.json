@@ -1,0 +1,134 @@
+{
+  "scope": "Separate Node VM-safe-point sampling probe; not a browser FPS benchmark or exact function duration",
+  "conditions": {
+    "instance_transport": "wasm-memory-v1",
+    "frames": 900,
+    "warmup": 120,
+    "repeats": 1,
+    "seed": "42",
+    "sampling": true,
+    "profile_window": true,
+    "checkpoint_every": 30,
+    "setup_requests": [
+      {
+        "method": "invoke",
+        "id": "battle.stress",
+        "revision": 11,
+        "value": true
+      }
+    ],
+    "input": "empty input every tick",
+    "excluded": [
+      "renderer",
+      "GPU",
+      "RAF scheduler",
+      "recording",
+      "human tools panel"
+    ],
+    "note": "CPU throughput, not interactive FPS. Compare like-for-like unprofiled runs; sampling has overhead."
+  },
+  "artifact_hashes": {
+    "payload_sha256": "3136ae7d329a5e09686d1b70dcce7ed588abd68e3152aa8e04f4f18b0ec4373f",
+    "wasm_sha256": "c5adf83b924325e986b70bdf53592b8998d050f7e2205e7646c9b45e9a29af2d",
+    "javascript_sha256": "c76513ca8f57e8e965f92dafbe90dd04a61a0e3a7ed9582314fb90e4385d0b0c"
+  },
+  "samples": 4635,
+  "functions": {
+    "main.luau:177:advanceUnits": {
+      "inclusive_samples": 1738,
+      "line": 177,
+      "name": "advanceUnits",
+      "self_samples": 903,
+      "source": "main.luau"
+    },
+    "main.luau:206:finishBattle": {
+      "inclusive_samples": 1933,
+      "line": 206,
+      "name": "finishBattle",
+      "self_samples": 184,
+      "source": "main.luau"
+    },
+    "main.luau:224:update": {
+      "inclusive_samples": 4635,
+      "line": 224,
+      "name": "update",
+      "self_samples": 20,
+      "source": "main.luau"
+    },
+    "main.luau:32:pack": {
+      "inclusive_samples": 419,
+      "line": 32,
+      "name": "pack",
+      "self_samples": 419,
+      "source": "main.luau"
+    },
+    "main.luau:38:cell": {
+      "inclusive_samples": 312,
+      "line": 38,
+      "name": "cell",
+      "self_samples": 312,
+      "source": "main.luau"
+    },
+    "main.luau:39:rebuildGrid": {
+      "inclusive_samples": 944,
+      "line": 39,
+      "name": "rebuildGrid",
+      "self_samples": 632,
+      "source": "main.luau"
+    },
+    "main.luau:44:damage": {
+      "inclusive_samples": 14,
+      "line": 44,
+      "name": "damage",
+      "self_samples": 14,
+      "source": "main.luau"
+    },
+    "main.luau:47:resolveDamage": {
+      "inclusive_samples": 96,
+      "line": 47,
+      "name": "resolveDamage",
+      "self_samples": 96,
+      "source": "main.luau"
+    },
+    "main.luau:57:acquire": {
+      "inclusive_samples": 823,
+      "line": 57,
+      "name": "acquire",
+      "self_samples": 823,
+      "source": "main.luau"
+    },
+    "main.luau:90:hitArea": {
+      "inclusive_samples": 2,
+      "line": 90,
+      "name": "hitArea",
+      "self_samples": 2,
+      "source": "main.luau"
+    },
+    "main.luau:98:publish": {
+      "inclusive_samples": 1649,
+      "line": 98,
+      "name": "publish",
+      "self_samples": 1230,
+      "source": "main.luau"
+    }
+  },
+  "observations": {
+    "battle": {
+      "attacks": 62002,
+      "blue": 5000,
+      "blue_kills": 0,
+      "capped_attacks": 0,
+      "projectiles": 1163,
+      "red": 5000,
+      "red_kills": 0,
+      "running": true,
+      "seconds": 17,
+      "simulation_hz": 20,
+      "step": 340,
+      "stress": true,
+      "total": 10000
+    },
+    "combat_has_losses": false,
+    "unit_count_conserved": true
+  }
+}

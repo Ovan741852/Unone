@@ -1,0 +1,12 @@
+{
+  "scope": "Experimental worker player, separate from shipping export manifest",
+  "files": {
+    "content/project.json": "3136ae7d329a5e09686d1b70dcce7ed588abd68e3152aa8e04f4f18b0ec4373f",
+    "runtime/unone_player.wasm": "c5adf83b924325e986b70bdf53592b8998d050f7e2205e7646c9b45e9a29af2d",
+    "runtime/unone-player.js": "c76513ca8f57e8e965f92dafbe90dd04a61a0e3a7ed9582314fb90e4385d0b0c",
+    "worker.html": "fb40e84212df392ed49b5d9d4f1110a5eb3b403475869e51616a8d20cd4d9b0f",
+    "experiment/runtime-host.mjs": "0ca55bfbba0c4b47859a151cbfa846af4df40f1dd1a6e6c547ccee50414283c6",
+    "experiment/worker.js": "5c7e86b5017fc43eaeec6ad1e57c79982fc7afef563ebbea4f06c46c3095eddc",
+    "experiment/main.mjs": "437290a79d8e5e643173874899980eb5aeb853d7cb52f3439142c85c6a27b779"
+  }
+}

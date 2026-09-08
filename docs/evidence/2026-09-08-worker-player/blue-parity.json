@@ -1,0 +1,21 @@
+{
+  "compared_frames": [
+    240,
+    360,
+    480,
+    600,
+    720,
+    840,
+    960,
+    1080,
+    1200,
+    1320,
+    1440,
+    1560,
+    1680,
+    1800,
+    1920
+  ],
+  "identical": true,
+  "scope": "Matching absolute frame checkpoints across actual BlueStacks main and Worker runs"
+}

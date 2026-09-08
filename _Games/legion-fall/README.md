@@ -54,3 +54,7 @@ Run `node _Games/legion-fall/verify-phases.mjs <development-export>` to verify n
 [第三輪：精確 hash 重用與工具量測](../../docs/legion-fall-round3.md)。目前工作分配為 37/53/10，遊戲規則維持 Lua。
 
 [第四輪報告](../../docs/legion-fall-round4.md)：Lua 改用區域共享目標，工作分配 40/60/0；Web instance 空間裁切預設啟用。這輪會改變目標選擇，不能與舊版戰鬥 digest 當成同一個 replay。
+
+## Web Worker 與 BlueStacks
+
+[真正 Worker 的對照報告](../../docs/legion-fall-worker.md) · [20 秒 BlueStacks 實錄](../../docs/media/legion-fall-worker-bluestacks.mp4)。整個 Lua 模擬移到 Worker；這是實驗 player，尚未取代一般 export 的正式 host。

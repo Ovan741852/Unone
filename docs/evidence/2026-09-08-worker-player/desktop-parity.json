@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "frames": 180,
+  "checked_bytes": 72623880,
+  "scope": "Actual browser Worker vs main WASM: every-tick canonical digest and every instance byte"
+}
