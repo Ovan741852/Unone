@@ -16,6 +16,7 @@ try {
  const parity=runs.every(r=>JSON.stringify(r.digests)===JSON.stringify(runs[0].digests));
  if(!parity)throw Error('WORKER_PARITY_MISMATCH');
  if(runs.slice(1).some(r=>r.report.jobs.pool.workers_started<expected.minimum_workers))throw Error('MULTIPLE_WORKERS_NOT_EXERCISED');
+ if(runs.slice(1).some(r=>r.report.jobs.binary_transport?.format!=='UJB1'||!(r.report.jobs.binary_transport.payload_sent_bytes>0)||!r.report.jobs.pool.worker_transport.some(t=>t?.format==='UJB1'&&t.payload_received_bytes>0)))throw Error('BINARY_PAYLOAD_NOT_EXERCISED');
  if(runs[0].digests.at(-1)!==expected.digest)throw Error('CLI_JOB_PARITY_MISMATCH');
  result={status:'passed',ticks:30,parity,cli_parity:true,runtime:manifest,runs};
 }catch(e){result={status:'failed',error:String(e.stack??e)};}

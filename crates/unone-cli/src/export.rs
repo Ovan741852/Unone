@@ -338,6 +338,7 @@ pub fn web(
         "shared/runtime-backend.mjs",
         "shared/runtime-worker.js",
         "shared/job-pool.mjs",
+        "shared/job-binary.mjs",
         "shared/job-worker.js",
         "shared/instance-transfer.mjs",
         "shared/presentation-interpolation.mjs",

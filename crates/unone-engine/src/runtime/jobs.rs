@@ -1,4 +1,8 @@
 //! Optional, game-owned Luau buffer jobs. Timing never enters gameplay state.
+mod binary;
+pub(super) fn execute_binary(bytes: &[u8]) -> Result<Vec<u8>, String> {
+    binary::execute_binary(bytes)
+}
 use mlua::{Buffer, Function};
 use serde::Serialize;
 use std::{
@@ -205,11 +209,15 @@ fn execute(work: Work) -> Reply {
     Reply {
         id: work.id.clone(),
         output: result.map_err(|e| {
-            format!(
+            let mut message = format!(
                 "JOB_EXECUTION_FAILED [{}]: {}",
                 work.id,
                 e.chars().take(2048).collect::<String>()
-            )
+            );
+            while message.len() > 4096 {
+                message.pop();
+            }
+            message
         }),
         run_ms: started.elapsed().as_secs_f64() * 1000.0,
     }
@@ -437,30 +445,33 @@ impl Jobs {
                 error,
                 run_ms,
             } => {
-                if !self.external
-                    || !run_ms.is_finite()
-                    || run_ms < 0.
-                    || output.is_some() == error.is_some()
-                {
+                if output.is_some() == error.is_some() {
                     return Err(err("JOB_REPLY_INVALID"));
                 }
-                self.validate_id(&id)?;
-                let e = &self.entries[&id];
-                if e.work.is_some()
-                    || e.reply.is_some()
-                    || output.as_ref().is_some_and(|b| b.len() > MAX_BYTES)
-                    || error.as_ref().is_some_and(|s| s.len() > 4096)
-                {
-                    return Err(err("JOB_REPLY_INVALID"));
-                }
-                self.accept(Reply {
+                self.complete_external(Reply {
                     id,
                     output: output.ok_or_else(|| error.unwrap()),
                     run_ms,
-                });
+                })?;
                 Ok(serde_json::json!({"accepted":true}))
             }
         }
+    }
+    fn complete_external(&mut self, reply: Reply) -> Result<(), String> {
+        if !self.external || !reply.run_ms.is_finite() || reply.run_ms < 0. {
+            return Err(err("JOB_REPLY_INVALID"));
+        }
+        self.validate_id(&reply.id)?;
+        let entry = &self.entries[&reply.id];
+        if entry.work.is_some()
+            || entry.reply.is_some()
+            || reply.output.as_ref().is_ok_and(|b| b.len() > MAX_BYTES)
+            || reply.output.as_ref().is_err_and(|e| e.len() > 4096)
+        {
+            return Err(err("JOB_REPLY_INVALID"));
+        }
+        self.accept(reply);
+        Ok(())
     }
     fn alive(&self) -> Result<(), String> {
         self.fault.as_ref().map_or(Ok(()), |e| Err(e.clone()))
@@ -816,6 +827,38 @@ end}
 "#;
     fn runtime(source: &str) -> EngineRuntime {
         HostProject::parse(&serde_json::to_vec(&serde_json::json!({"config":{"name":"jobs-test","systems":{"jobs":true}},"script":source})).unwrap()).unwrap().into_runtime(42).unwrap()
+    }
+    #[test]
+    fn binary_and_inline_match_every_tick_without_json_byte_arrays() {
+        let mut a = runtime(SOURCE);
+        let mut b = runtime(SOURCE);
+        b.jobs.borrow_mut().inline = true;
+        a.jobs_host_request(serde_json::json!({"kind":"configure","workers":2}))
+            .unwrap();
+        for _ in 0..30 {
+            let x = a.tick().unwrap();
+            let y = b.tick().unwrap();
+            assert_eq!(
+                observation_digest(&x).unwrap(),
+                observation_digest(&y).unwrap()
+            );
+            let packet = a
+                .jobs_binary_request(
+                    &binary::packet(&serde_json::json!({"kind":"drain"}), &[]).unwrap(),
+                )
+                .unwrap();
+            let (header, data) = binary::split(&packet).unwrap();
+            let header: serde_json::Value = serde_json::from_slice(header).unwrap();
+            for task in header["tasks"].as_array().unwrap().iter().rev() {
+                assert!(task.get("input").is_none());
+                let offset = task["offset"].as_u64().unwrap() as usize;
+                let length = task["byte_length"].as_u64().unwrap() as usize;
+                let request=binary::packet(&serde_json::json!({"kind":"execute","id":task["id"],"path":task["path"],"source":task["source"]}),&data[offset..offset+length]).unwrap();
+                let reply = EngineRuntime::execute_job_binary(&request).unwrap();
+                a.jobs_binary_request(&reply).unwrap();
+                assert!(a.jobs_binary_request(&reply).is_err());
+            }
+        }
     }
     #[test]
     fn external_executor_matches_inline_with_reversed_completion_order() {

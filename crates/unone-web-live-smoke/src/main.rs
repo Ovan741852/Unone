@@ -634,6 +634,22 @@ pub extern "C" fn unone_web_set_screen_pointer(x: f64, y: f64) -> i32 {
     }
 }
 
+/// UJB1 binary jobs. mode=0 routes manager requests; mode=1 executes an isolated job.
+/// # Safety
+/// pointer must reference length readable bytes for this call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_web_jobs_binary(pointer: *const u8, length: usize, mode: i32) -> i32 {
+    if pointer.is_null() || length>2*1024*1024 || !(0..=1).contains(&mode) {write_error("JOB_BINARY_REQUEST_INVALID");return -1;}
+    let bytes=unsafe{std::slice::from_raw_parts(pointer,length)};
+    let result=if mode==1 {EngineRuntime::execute_job_binary(bytes)} else {
+        RUNTIME.with(|r|r.borrow_mut().as_mut().ok_or_else(||"RUNTIME_NOT_LOADED".to_string())?.jobs_binary_request(bytes))
+    };
+    match result {
+        Ok(bytes)=>{OUTPUT.with(|o|*o.borrow_mut()=bytes);0},
+        Err(e)=>{write_error(e);-1}
+    }
+}
+
 /// Host-only bounded job transport; kind=execute works without a loaded game.
 /// # Safety
 /// pointer must reference length readable bytes for this call.
@@ -702,6 +718,18 @@ mod tests {
     use serde_json::json;
     use unone_engine::InputFrame;
 
+    #[test]
+    fn binary_job_abi_preserves_raw_bytes_and_rejects_invalid_framing() {
+        for length in [0usize,256,262144] {
+            let header=serde_json::to_vec(&json!({"kind":"execute","id":"test","path":"copy.luau","source":"return function(b)return b end"})).unwrap();
+            let data:Vec<u8>=(0..length).map(|i|i as u8).collect();
+            let mut packet=b"UJB1".to_vec();packet.extend_from_slice(&(header.len() as u32).to_le_bytes());packet.extend_from_slice(&(length as u32).to_le_bytes());packet.extend_from_slice(&header);packet.extend_from_slice(&data);
+            assert_eq!(unsafe{super::unone_web_jobs_binary(packet.as_ptr(),packet.len(),1)},0);
+            OUTPUT.with(|output|{let bytes=output.borrow();assert_eq!(&bytes[..4],b"UJB1");let n=u32::from_le_bytes(bytes[4..8].try_into().unwrap()) as usize;assert_eq!(&bytes[12+n..],data);});
+            packet[3]=b'2';assert_eq!(unsafe{super::unone_web_jobs_binary(packet.as_ptr(),packet.len(),1)},-1);
+            assert_eq!(unsafe{super::unone_web_jobs_binary(packet.as_ptr(),packet.len(),2)},-1);
+        }
+    }
     #[test]
     fn web_normalized_3d_replay_matches_core_every_frame() {
         let fixture: serde_json::Value = serde_json::from_str(include_str!(

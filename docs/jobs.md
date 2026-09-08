@@ -83,10 +83,23 @@ measurement; host pool totals currently cover the loaded session (take differenc
 between reports). Native DeveloperSession exposes jobs in profile reports and CLI
 run/perf JSON. Unsupported hosts report no pool; no invented zero timings.
 
-The current Web **Job** transport uses bounded JSON byte arrays, not shared memory.
-Roundtrip includes structured cloning and decoding; host ABI encoding adds more
-cost. Rendering instance buffers use a separate delta/recycling transport. Do not
-confuse the two or claim zero-copy Jobs. Worker crashes/timeouts are explicit errors;
+The Web Job data path uses **UJB1 binary payloads** and transfers ownership of
+standalone `ArrayBuffer`s between Workers. Only bounded metadata is JSON;
+input/output bytes never become JSON numeric arrays. Legacy JSON job ABI remains
+for older clients and A/B measurement, but the exported player uses binary.
+New hosts fail explicitly if their WASM binary lacks the binary ABI.
+
+This is not end-to-end zero-copy: Lua isolation, packet construction, and crossing
+WASM memory boundaries still copy. WASM heaps are never detached or shared with
+other workers. The JS-to-Worker handoff uses transfer lists, so the sending owner
+can no longer read that buffer. See [UJB1 wire contract](job-binary.md).
+`jobs.host.binary_transport` reports manager/inline wire bytes and codec costs;
+`jobs.host.pool.worker_transport` contains each worker's counters. Root transport
+totals cover backend lifetime (including project restarts); worker counters cover
+that worker's lifetime. Take differences for a measurement window. `abi_ms`
+includes Rust work; do not add it to kernel `run_ms` as disjoint CPU time.
+
+Worker crashes/timeouts are explicit errors;
 there is no silent retry that might hide an invalid task. Each worker owns a WASM
 instance and job VM allocation/compilation remains a real per-job cost.
 

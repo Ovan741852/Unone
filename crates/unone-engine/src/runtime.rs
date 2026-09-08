@@ -1093,6 +1093,19 @@ impl EngineRuntime {
         snapshot
     }
 
+    /// UJB1 host transport; opaque payloads never pass through JSON values.
+    pub fn jobs_binary_request(&mut self, bytes: &[u8]) -> Result<Vec<u8>,String> {
+        #[cfg(feature="jobs")]
+        if self.systems.is_enabled("jobs") {return self.jobs.borrow_mut().binary(bytes);}
+        let _=bytes;Err("JOBS_SYSTEM_DISABLED".into())
+    }
+    pub fn execute_job_binary(bytes: &[u8]) -> Result<Vec<u8>,String> {
+        #[cfg(feature="jobs")]
+        {jobs::execute_binary(bytes)}
+        #[cfg(not(feature="jobs"))]
+        {let _=bytes;Err("JOBS_SYSTEM_NOT_COMPILED".into())}
+    }
+
     /// Host-only executor transport. Never exposed to game Lua.
     pub fn jobs_host_request(&mut self, request: serde_json::Value) -> Result<serde_json::Value,String> {
         #[cfg(feature="jobs")]

@@ -1,13 +1,14 @@
+import {createBinaryJobTransport} from './job-binary.mjs';
 import {chooseJobWorkers,createJobPool,jobRequest} from './job-pool.mjs';
 import {loadProject,readObservation} from './load-project.js';
 export function createRuntimeCore(module,{url,jobPolicy={},device={}}={}){
- const read=()=>readObservation(module);
+ const read=()=>readObservation(module),binary=createBinaryJobTransport(module);
  function send(name,value){const bytes=new TextEncoder().encode(JSON.stringify(value)),p=module._unone_web_alloc(bytes.length);module.HEAPU8.set(bytes,p);if(module[name](p,bytes.length)!==0)throw Error(JSON.stringify(read()));}
  let loaded=false,latest,pool,policy={workers:0,reason:'jobs_disabled'},pending=[],fault=null;
- async function barrier(){const results=await Promise.all(pending);pending=[];for(const r of results){if(r.error){fault=r.error;throw fault;}jobRequest(module,r.value);}}
- function dispatchJobs(){if(!pool)return;const {tasks}=jobRequest(module,{kind:'drain'});pending=tasks.map(work=>pool.submit(work).then(value=>({value}),error=>({error})));}
+ async function barrier(){const results=await Promise.all(pending);pending=[];for(const r of results){if(r.error){fault=r.error;throw fault;}binary.complete(r.value);}}
+ function dispatchJobs(){if(!pool)return;const tasks=binary.drain();pending=tasks.map(work=>pool.submit(work).then(value=>({value}),error=>({error})));}
 
- return {module,close(){pool?.close();},report(){return {policy,pool:pool?.report()??null,fault:fault?String(fault):null};},async execute(command){
+ return {module,close(){pool?.close();},report(){return {policy,pool:pool?.report()??null,binary_transport:binary.report(),fault:fault?String(fault):null};},async execute(command){
   const allowed={load:['payload','seed'],tick:['input'],aspect:['value'],transport:['mode'],developer:['request']};
   if(!command||!Object.hasOwn(allowed,command.kind)||Object.keys(command).some(k=>k!=='kind'&&!allowed[command.kind].includes(k)))throw Error('RUNTIME_COMMAND_INVALID');
   if(command.kind!=='load'&&!loaded)throw Error('RUNTIME_NOT_LOADED');
@@ -19,7 +20,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={}}={}){
     if(module._unone_web_set_instance_transport?.(1)!==0)throw Error('INSTANCE_TRANSPORT_UNAVAILABLE');latest=read();
     if(command.payload.config?.systems?.jobs===true){
       policy=chooseJobWorkers(jobPolicy,{...device,workerAvailable:typeof globalThis.Worker==='function',heapBytes:module.HEAPU8.buffer.byteLength});
-      if(policy.workers>0){jobRequest(module,{kind:'configure',workers:policy.workers});pool=createJobPool({url,workers:policy.workers,executeInline:work=>jobRequest(module,{kind:'execute',...work})});}
+      if(policy.workers>0){jobRequest(module,{kind:'configure',workers:policy.workers});pool=createJobPool({url,workers:policy.workers,executeInline:work=>binary.execute(work)});}
     } else policy={workers:0,reason:'jobs_disabled'};
     return latest;
    }

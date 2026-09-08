@@ -1,0 +1,1721 @@
+{
+  "benchmark": {
+    "profile": "release",
+    "runtime": {
+      "exports": [
+        "init",
+        "alloc",
+        "load_project",
+        "set_save_payload",
+        "set_input_frame",
+        "set_viewport_aspect",
+        "set_instance_transport",
+        "tick",
+        "jobs_request",
+        "jobs_binary",
+        "observation_ptr",
+        "observation_len",
+        "developer_request"
+      ],
+      "compiled_systems": [
+        "camera2d",
+        "camera3d",
+        "input",
+        "jobs",
+        "observation",
+        "random",
+        "save",
+        "ui",
+        "world"
+      ],
+      "source_commit": "45c15ace2a6ee8d12fdb7f3127a9ad48be16026a",
+      "javascript_sha256": "3671223e0dc36b22a39e4baf28dd4831441bfb71e469cc8bcc808d1774d9c270",
+      "dev_tools": false,
+      "wasm": "unone_player.wasm",
+      "cargo_features": [
+        "camera2d",
+        "camera3d",
+        "jobs",
+        "random",
+        "save",
+        "ui",
+        "preview-tools"
+      ],
+      "profile": "release",
+      "source_dirty": true,
+      "preview_tools": true,
+      "javascript": "unone-player.js",
+      "wasm_sha256": "bd6ebc69bb087166b9349aade35bff792dee687872d8b86e4c1ecb265ce6e046",
+      "wasm_bytes": 1750071
+    },
+    "host": {
+      "node": "v24.19.0",
+      "platform": "win32",
+      "arch": "x64"
+    },
+    "cases": [
+      {
+        "payload_bytes": 0,
+        "request_bytes": {
+          "json": 110,
+          "binary": 111
+        },
+        "rounds": [
+          {
+            "order": [
+              "json",
+              "binary"
+            ],
+            "runs": {
+              "json": {
+                "mean_ms": 0.16036000000000072,
+                "response_bytes_mean": 73.9,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.18430000000000035,
+                    "response_bytes": 74
+                  },
+                  {
+                    "elapsed_ms": 0.17830000000000013,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.1583000000000041,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.15350000000000108,
+                    "response_bytes": 74
+                  },
+                  {
+                    "elapsed_ms": 0.17190000000000083,
+                    "response_bytes": 85
+                  },
+                  {
+                    "elapsed_ms": 0.15339999999999776,
+                    "response_bytes": 74
+                  },
+                  {
+                    "elapsed_ms": 0.14789999999999992,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.14090000000000202,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.14240000000000208,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.17269999999999897,
+                    "response_bytes": 72
+                  }
+                ]
+              },
+              "binary": {
+                "mean_ms": 0.1905300000000004,
+                "response_bytes_mean": 76.3,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.2717000000000027,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.215600000000002,
+                    "response_bytes": 74
+                  },
+                  {
+                    "elapsed_ms": 0.1700000000000017,
+                    "response_bytes": 85
+                  },
+                  {
+                    "elapsed_ms": 0.1630000000000038,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.2423999999999964,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.1758000000000024,
+                    "response_bytes": 85
+                  },
+                  {
+                    "elapsed_ms": 0.18430000000000035,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.15570000000000306,
+                    "response_bytes": 85
+                  },
+                  {
+                    "elapsed_ms": 0.16249999999999432,
+                    "response_bytes": 74
+                  },
+                  {
+                    "elapsed_ms": 0.16429999999999723,
+                    "response_bytes": 72
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "order": [
+              "binary",
+              "json"
+            ],
+            "runs": {
+              "binary": {
+                "mean_ms": 0.17149999999999962,
+                "response_bytes_mean": 75,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.1617999999999995,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.14939999999999998,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.14969999999999573,
+                    "response_bytes": 74
+                  },
+                  {
+                    "elapsed_ms": 0.20109999999999673,
+                    "response_bytes": 85
+                  },
+                  {
+                    "elapsed_ms": 0.19760000000000133,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.1623000000000019,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.23849999999999483,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.14350000000000307,
+                    "response_bytes": 74
+                  },
+                  {
+                    "elapsed_ms": 0.17139999999999844,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.13970000000000482,
+                    "response_bytes": 85
+                  }
+                ]
+              },
+              "json": {
+                "mean_ms": 0.17557999999999935,
+                "response_bytes_mean": 73.4,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.1512999999999991,
+                    "response_bytes": 74
+                  },
+                  {
+                    "elapsed_ms": 0.14099999999999824,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.1728999999999985,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.1389999999999958,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.1385000000000005,
+                    "response_bytes": 85
+                  },
+                  {
+                    "elapsed_ms": 0.1366000000000014,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.1348999999999947,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.3033000000000001,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.2359000000000009,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.20240000000000435,
+                    "response_bytes": 71
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "order": [
+              "json",
+              "binary"
+            ],
+            "runs": {
+              "json": {
+                "mean_ms": 0.18171999999999927,
+                "response_bytes_mean": 74.8,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.16679999999999495,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.1507000000000005,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.13949999999999818,
+                    "response_bytes": 74
+                  },
+                  {
+                    "elapsed_ms": 0.15429999999999922,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.14229999999999876,
+                    "response_bytes": 85
+                  },
+                  {
+                    "elapsed_ms": 0.13690000000000424,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.1722999999999999,
+                    "response_bytes": 85
+                  },
+                  {
+                    "elapsed_ms": 0.2680000000000007,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.2949999999999946,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.19140000000000157,
+                    "response_bytes": 72
+                  }
+                ]
+              },
+              "binary": {
+                "mean_ms": 0.19212999999999952,
+                "response_bytes_mean": 74.8,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.18670000000000186,
+                    "response_bytes": 85
+                  },
+                  {
+                    "elapsed_ms": 0.4369000000000014,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.2680000000000007,
+                    "response_bytes": 74
+                  },
+                  {
+                    "elapsed_ms": 0.164200000000001,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.14730000000000132,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.15080000000000382,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.14379999999999882,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.13919999999999533,
+                    "response_bytes": 85
+                  },
+                  {
+                    "elapsed_ms": 0.1442999999999941,
+                    "response_bytes": 72
+                  },
+                  {
+                    "elapsed_ms": 0.14009999999999678,
+                    "response_bytes": 72
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "all_output_bytes_equal": true
+      },
+      {
+        "payload_bytes": 4096,
+        "request_bytes": {
+          "json": 14733,
+          "binary": 4207
+        },
+        "rounds": [
+          {
+            "order": [
+              "json",
+              "binary"
+            ],
+            "runs": {
+              "json": {
+                "mean_ms": 0.6138999999999981,
+                "response_bytes_mean": 14697.9,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.5803999999999974,
+                    "response_bytes": 14695
+                  },
+                  {
+                    "elapsed_ms": 0.5453000000000046,
+                    "response_bytes": 14697
+                  },
+                  {
+                    "elapsed_ms": 0.5177000000000049,
+                    "response_bytes": 14694
+                  },
+                  {
+                    "elapsed_ms": 0.9108999999999909,
+                    "response_bytes": 14694
+                  },
+                  {
+                    "elapsed_ms": 0.6384999999999934,
+                    "response_bytes": 14697
+                  },
+                  {
+                    "elapsed_ms": 0.7715000000000032,
+                    "response_bytes": 14708
+                  },
+                  {
+                    "elapsed_ms": 0.5456999999999965,
+                    "response_bytes": 14697
+                  },
+                  {
+                    "elapsed_ms": 0.6029999999999944,
+                    "response_bytes": 14694
+                  },
+                  {
+                    "elapsed_ms": 0.5260999999999996,
+                    "response_bytes": 14708
+                  },
+                  {
+                    "elapsed_ms": 0.4998999999999967,
+                    "response_bytes": 14695
+                  }
+                ]
+              },
+              "binary": {
+                "mean_ms": 0.23454000000000264,
+                "response_bytes_mean": 4173.3,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.18670000000000186,
+                    "response_bytes": 4168
+                  },
+                  {
+                    "elapsed_ms": 0.20080000000000098,
+                    "response_bytes": 4167
+                  },
+                  {
+                    "elapsed_ms": 0.6749999999999972,
+                    "response_bytes": 4166
+                  },
+                  {
+                    "elapsed_ms": 0.19899999999999807,
+                    "response_bytes": 4168
+                  },
+                  {
+                    "elapsed_ms": 0.16270000000000095,
+                    "response_bytes": 4181
+                  },
+                  {
+                    "elapsed_ms": 0.15080000000000382,
+                    "response_bytes": 4170
+                  },
+                  {
+                    "elapsed_ms": 0.14520000000000266,
+                    "response_bytes": 4170
+                  },
+                  {
+                    "elapsed_ms": 0.15750000000001307,
+                    "response_bytes": 4181
+                  },
+                  {
+                    "elapsed_ms": 0.1881000000000057,
+                    "response_bytes": 4181
+                  },
+                  {
+                    "elapsed_ms": 0.27960000000000207,
+                    "response_bytes": 4181
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "order": [
+              "binary",
+              "json"
+            ],
+            "runs": {
+              "binary": {
+                "mean_ms": 0.19443000000000268,
+                "response_bytes_mean": 4174.7,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.19310000000000116,
+                    "response_bytes": 4168
+                  },
+                  {
+                    "elapsed_ms": 0.4830999999999932,
+                    "response_bytes": 4168
+                  },
+                  {
+                    "elapsed_ms": 0.20700000000000784,
+                    "response_bytes": 4170
+                  },
+                  {
+                    "elapsed_ms": 0.16840000000000543,
+                    "response_bytes": 4181
+                  },
+                  {
+                    "elapsed_ms": 0.1536000000000115,
+                    "response_bytes": 4181
+                  },
+                  {
+                    "elapsed_ms": 0.14939999999999998,
+                    "response_bytes": 4181
+                  },
+                  {
+                    "elapsed_ms": 0.14939999999999998,
+                    "response_bytes": 4168
+                  },
+                  {
+                    "elapsed_ms": 0.1506000000000114,
+                    "response_bytes": 4168
+                  },
+                  {
+                    "elapsed_ms": 0.14449999999999363,
+                    "response_bytes": 4181
+                  },
+                  {
+                    "elapsed_ms": 0.14520000000000266,
+                    "response_bytes": 4181
+                  }
+                ]
+              },
+              "json": {
+                "mean_ms": 0.6933900000000008,
+                "response_bytes_mean": 14699.3,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.6629999999999967,
+                    "response_bytes": 14708
+                  },
+                  {
+                    "elapsed_ms": 0.7690999999999946,
+                    "response_bytes": 14695
+                  },
+                  {
+                    "elapsed_ms": 0.7878000000000043,
+                    "response_bytes": 14697
+                  },
+                  {
+                    "elapsed_ms": 0.6812999999999931,
+                    "response_bytes": 14695
+                  },
+                  {
+                    "elapsed_ms": 1.4382999999999981,
+                    "response_bytes": 14695
+                  },
+                  {
+                    "elapsed_ms": 0.6420000000000101,
+                    "response_bytes": 14708
+                  },
+                  {
+                    "elapsed_ms": 0.5180000000000007,
+                    "response_bytes": 14695
+                  },
+                  {
+                    "elapsed_ms": 0.49390000000001066,
+                    "response_bytes": 14695
+                  },
+                  {
+                    "elapsed_ms": 0.4843999999999937,
+                    "response_bytes": 14697
+                  },
+                  {
+                    "elapsed_ms": 0.4561000000000064,
+                    "response_bytes": 14708
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "order": [
+              "json",
+              "binary"
+            ],
+            "runs": {
+              "json": {
+                "mean_ms": 0.46771000000000384,
+                "response_bytes_mean": 14700.7,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.651600000000002,
+                    "response_bytes": 14694
+                  },
+                  {
+                    "elapsed_ms": 0.7133000000000038,
+                    "response_bytes": 14708
+                  },
+                  {
+                    "elapsed_ms": 0.433400000000006,
+                    "response_bytes": 14708
+                  },
+                  {
+                    "elapsed_ms": 0.3825000000000074,
+                    "response_bytes": 14695
+                  },
+                  {
+                    "elapsed_ms": 0.3675000000000068,
+                    "response_bytes": 14697
+                  },
+                  {
+                    "elapsed_ms": 0.34600000000000364,
+                    "response_bytes": 14697
+                  },
+                  {
+                    "elapsed_ms": 0.6684999999999945,
+                    "response_bytes": 14708
+                  },
+                  {
+                    "elapsed_ms": 0.41450000000000387,
+                    "response_bytes": 14697
+                  },
+                  {
+                    "elapsed_ms": 0.3564000000000078,
+                    "response_bytes": 14708
+                  },
+                  {
+                    "elapsed_ms": 0.3434000000000026,
+                    "response_bytes": 14695
+                  }
+                ]
+              },
+              "binary": {
+                "mean_ms": 0.13173999999999922,
+                "response_bytes_mean": 4173.3,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.19239999999999213,
+                    "response_bytes": 4167
+                  },
+                  {
+                    "elapsed_ms": 0.14260000000000161,
+                    "response_bytes": 4168
+                  },
+                  {
+                    "elapsed_ms": 0.1255000000000024,
+                    "response_bytes": 4181
+                  },
+                  {
+                    "elapsed_ms": 0.11700000000000443,
+                    "response_bytes": 4181
+                  },
+                  {
+                    "elapsed_ms": 0.12449999999999761,
+                    "response_bytes": 4168
+                  },
+                  {
+                    "elapsed_ms": 0.11639999999999873,
+                    "response_bytes": 4168
+                  },
+                  {
+                    "elapsed_ms": 0.12000000000000455,
+                    "response_bytes": 4181
+                  },
+                  {
+                    "elapsed_ms": 0.13309999999999889,
+                    "response_bytes": 4181
+                  },
+                  {
+                    "elapsed_ms": 0.11829999999999075,
+                    "response_bytes": 4170
+                  },
+                  {
+                    "elapsed_ms": 0.12760000000000105,
+                    "response_bytes": 4168
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "all_output_bytes_equal": true
+      },
+      {
+        "payload_bytes": 262144,
+        "request_bytes": {
+          "json": 936045,
+          "binary": 262255
+        },
+        "rounds": [
+          {
+            "order": [
+              "json",
+              "binary"
+            ],
+            "runs": {
+              "json": {
+                "mean_ms": 13.953610000000003,
+                "response_bytes_mean": 936012.6,
+                "samples": [
+                  {
+                    "elapsed_ms": 13.024200000000008,
+                    "response_bytes": 936009
+                  },
+                  {
+                    "elapsed_ms": 13.431299999999993,
+                    "response_bytes": 936020
+                  },
+                  {
+                    "elapsed_ms": 13.299900000000008,
+                    "response_bytes": 936007
+                  },
+                  {
+                    "elapsed_ms": 13.617899999999992,
+                    "response_bytes": 936007
+                  },
+                  {
+                    "elapsed_ms": 13.591899999999981,
+                    "response_bytes": 936007
+                  },
+                  {
+                    "elapsed_ms": 18.044200000000018,
+                    "response_bytes": 936020
+                  },
+                  {
+                    "elapsed_ms": 13.497199999999992,
+                    "response_bytes": 936009
+                  },
+                  {
+                    "elapsed_ms": 13.918900000000008,
+                    "response_bytes": 936020
+                  },
+                  {
+                    "elapsed_ms": 13.456300000000056,
+                    "response_bytes": 936020
+                  },
+                  {
+                    "elapsed_ms": 13.654299999999978,
+                    "response_bytes": 936007
+                  }
+                ]
+              },
+              "binary": {
+                "mean_ms": 0.23079999999999928,
+                "response_bytes_mean": 262219.2,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.41809999999998126,
+                    "response_bytes": 262218
+                  },
+                  {
+                    "elapsed_ms": 0.2699000000000069,
+                    "response_bytes": 262218
+                  },
+                  {
+                    "elapsed_ms": 0.244199999999978,
+                    "response_bytes": 262216
+                  },
+                  {
+                    "elapsed_ms": 0.19929999999999382,
+                    "response_bytes": 262216
+                  },
+                  {
+                    "elapsed_ms": 0.18599999999997863,
+                    "response_bytes": 262216
+                  },
+                  {
+                    "elapsed_ms": 0.17959999999999354,
+                    "response_bytes": 262229
+                  },
+                  {
+                    "elapsed_ms": 0.19130000000001246,
+                    "response_bytes": 262229
+                  },
+                  {
+                    "elapsed_ms": 0.1886000000000081,
+                    "response_bytes": 262216
+                  },
+                  {
+                    "elapsed_ms": 0.22020000000003392,
+                    "response_bytes": 262218
+                  },
+                  {
+                    "elapsed_ms": 0.2108000000000061,
+                    "response_bytes": 262216
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "order": [
+              "binary",
+              "json"
+            ],
+            "runs": {
+              "binary": {
+                "mean_ms": 0.17881999999999607,
+                "response_bytes_mean": 262217.8,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.19540000000000646,
+                    "response_bytes": 262229
+                  },
+                  {
+                    "elapsed_ms": 0.1822999999999979,
+                    "response_bytes": 262218
+                  },
+                  {
+                    "elapsed_ms": 0.17540000000002465,
+                    "response_bytes": 262215
+                  },
+                  {
+                    "elapsed_ms": 0.183400000000006,
+                    "response_bytes": 262216
+                  },
+                  {
+                    "elapsed_ms": 0.18559999999996535,
+                    "response_bytes": 262218
+                  },
+                  {
+                    "elapsed_ms": 0.16489999999998872,
+                    "response_bytes": 262216
+                  },
+                  {
+                    "elapsed_ms": 0.20139999999997826,
+                    "response_bytes": 262216
+                  },
+                  {
+                    "elapsed_ms": 0.16769999999996799,
+                    "response_bytes": 262218
+                  },
+                  {
+                    "elapsed_ms": 0.17180000000001883,
+                    "response_bytes": 262216
+                  },
+                  {
+                    "elapsed_ms": 0.16030000000000655,
+                    "response_bytes": 262216
+                  }
+                ]
+              },
+              "json": {
+                "mean_ms": 13.81732,
+                "response_bytes_mean": 936009.6,
+                "samples": [
+                  {
+                    "elapsed_ms": 13.088200000000029,
+                    "response_bytes": 936005
+                  },
+                  {
+                    "elapsed_ms": 14.856100000000026,
+                    "response_bytes": 936007
+                  },
+                  {
+                    "elapsed_ms": 15.67149999999998,
+                    "response_bytes": 936009
+                  },
+                  {
+                    "elapsed_ms": 13.818899999999985,
+                    "response_bytes": 936007
+                  },
+                  {
+                    "elapsed_ms": 13.15730000000002,
+                    "response_bytes": 936020
+                  },
+                  {
+                    "elapsed_ms": 13.860099999999989,
+                    "response_bytes": 936007
+                  },
+                  {
+                    "elapsed_ms": 13.376899999999978,
+                    "response_bytes": 936007
+                  },
+                  {
+                    "elapsed_ms": 13.194999999999993,
+                    "response_bytes": 936007
+                  },
+                  {
+                    "elapsed_ms": 13.13209999999998,
+                    "response_bytes": 936007
+                  },
+                  {
+                    "elapsed_ms": 14.017100000000028,
+                    "response_bytes": 936020
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "order": [
+              "json",
+              "binary"
+            ],
+            "runs": {
+              "json": {
+                "mean_ms": 13.420309999999995,
+                "response_bytes_mean": 936012.1,
+                "samples": [
+                  {
+                    "elapsed_ms": 13.1644,
+                    "response_bytes": 936007
+                  },
+                  {
+                    "elapsed_ms": 13.253700000000038,
+                    "response_bytes": 936020
+                  },
+                  {
+                    "elapsed_ms": 12.932999999999993,
+                    "response_bytes": 936007
+                  },
+                  {
+                    "elapsed_ms": 13.75279999999998,
+                    "response_bytes": 936006
+                  },
+                  {
+                    "elapsed_ms": 13.088999999999999,
+                    "response_bytes": 936020
+                  },
+                  {
+                    "elapsed_ms": 13.327699999999993,
+                    "response_bytes": 936020
+                  },
+                  {
+                    "elapsed_ms": 13.637999999999977,
+                    "response_bytes": 936020
+                  },
+                  {
+                    "elapsed_ms": 14.33159999999998,
+                    "response_bytes": 936007
+                  },
+                  {
+                    "elapsed_ms": 13.516300000000001,
+                    "response_bytes": 936007
+                  },
+                  {
+                    "elapsed_ms": 13.19659999999999,
+                    "response_bytes": 936007
+                  }
+                ]
+              },
+              "binary": {
+                "mean_ms": 0.2461499999999887,
+                "response_bytes_mean": 262218.9,
+                "samples": [
+                  {
+                    "elapsed_ms": 0.7186000000000377,
+                    "response_bytes": 262216
+                  },
+                  {
+                    "elapsed_ms": 0.2758000000000038,
+                    "response_bytes": 262229
+                  },
+                  {
+                    "elapsed_ms": 0.20109999999999673,
+                    "response_bytes": 262218
+                  },
+                  {
+                    "elapsed_ms": 0.1817999999999529,
+                    "response_bytes": 262229
+                  },
+                  {
+                    "elapsed_ms": 0.19909999999993033,
+                    "response_bytes": 262216
+                  },
+                  {
+                    "elapsed_ms": 0.19790000000000418,
+                    "response_bytes": 262218
+                  },
+                  {
+                    "elapsed_ms": 0.1713999999999487,
+                    "response_bytes": 262216
+                  },
+                  {
+                    "elapsed_ms": 0.16840000000001965,
+                    "response_bytes": 262216
+                  },
+                  {
+                    "elapsed_ms": 0.17089999999996053,
+                    "response_bytes": 262216
+                  },
+                  {
+                    "elapsed_ms": 0.17650000000003274,
+                    "response_bytes": 262215
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "all_output_bytes_equal": true
+      }
+    ],
+    "binary_transport": {
+      "format": "UJB1",
+      "requests": 99,
+      "metadata_sent_bytes": 9801,
+      "metadata_received_bytes": 6311,
+      "payload_sent_bytes": 8785920,
+      "payload_received_bytes": 8785920,
+      "copied_payload_from_wasm_bytes": 8785920,
+      "encode_ms": 0.6979000000002245,
+      "abi_ms": 17.9421999999999,
+      "decode_ms": 2.480099999999858,
+      "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+    },
+    "note": "Three alternating pairs of ten executions after warmup. Complete JS->WASM->JS isolated-copy jobs, including VM creation and compilation; excludes Worker scheduling and renderer. Input preparation and assertions excluded from timing. Not a game FPS claim."
+  },
+  "browser_acceptance": [
+    {
+      "case": "jobs-binary-final-web",
+      "status": "passed",
+      "ticks": 30,
+      "parity": true,
+      "cli_parity": true,
+      "runtime": {
+        "cargo_features": [
+          "camera2d",
+          "camera3d",
+          "jobs",
+          "random",
+          "save",
+          "ui",
+          "preview-tools"
+        ],
+        "compiled_systems": [
+          "camera2d",
+          "camera3d",
+          "input",
+          "jobs",
+          "observation",
+          "random",
+          "save",
+          "ui",
+          "world"
+        ],
+        "dev_tools": false,
+        "exports": [
+          "init",
+          "alloc",
+          "load_project",
+          "set_save_payload",
+          "set_input_frame",
+          "set_viewport_aspect",
+          "set_instance_transport",
+          "tick",
+          "jobs_request",
+          "jobs_binary",
+          "observation_ptr",
+          "observation_len",
+          "developer_request"
+        ],
+        "javascript": "unone-player.js",
+        "javascript_sha256": "3671223e0dc36b22a39e4baf28dd4831441bfb71e469cc8bcc808d1774d9c270",
+        "preview_tools": true,
+        "profile": "release",
+        "source_commit": "45c15ace2a6ee8d12fdb7f3127a9ad48be16026a",
+        "source_dirty": true,
+        "wasm": "unone_player.wasm",
+        "wasm_bytes": 1750071,
+        "wasm_sha256": "bd6ebc69bb087166b9349aade35bff792dee687872d8b86e4c1ecb265ce6e046"
+      },
+      "runs": [
+        {
+          "kind": "worker",
+          "mode": "inline",
+          "digests": [
+            "sha256:e64bb9a73762f4bf241bbefb9f6906013918ce70ecd32a1379c9ef818fd00813",
+            "sha256:116ccfbc1a39e032ae683c8ecfa0a0939ae625a7c0a42517c463b3cb1c63252d",
+            "sha256:e27809db2cc857b5857d606ec8e1f4b23210d1ec586ee317598b1e9cba6a11ed",
+            "sha256:c9b3e51c163da7f6d5a79436529ccfe0775f7cdea2edae29d3706e9133c4471d",
+            "sha256:5abe291563128560444472edd1c9b5d85687a555653aa2cb7905f3b25da5162b",
+            "sha256:8ecce4d5b4b2b232f556a54e9a319d85cea5cd7f1bbb3b5e27d2329f8d0f53f8",
+            "sha256:14f597bf78b6068b4beb8063d04ca7bc4848dca7e7491b2b609c29e26f834a14",
+            "sha256:a6088ec0239ae68e80bd3f3c4edc6689f2024cafc698791f4f0c5b8c4f69aaf2",
+            "sha256:dba6974f97988f7b5b45d9085ae065d6381a1c36cdb70fabff9d3b067b7dfabd",
+            "sha256:aaa837b245d95bdc8bad5f0f640a4a059a4a57dff9e642142059c877ac02d470",
+            "sha256:7923f0887e17010cbf62d423cd0b1f67feea4fde8f1fab1c5d6a024e4bf8c02c",
+            "sha256:b85b8e33efdd822bbaa38c94e8a07072e2538e35613cc1daacecbe72b6141f73",
+            "sha256:3f3e8aeef81c639cc2add4020695bbbefafec07ccdd491cb3d6706baec3422cc",
+            "sha256:ffe9414bf9e5609be2f7f8eadad90aed298aebd55437885eb0c9923bf3dc95d8",
+            "sha256:fc38803da41ebcafb3828bac7f2dcf9faf4308a8507388dd6d008b6752a69d5c",
+            "sha256:d8f625e7122789e8e5b43a273d00dbe5a68f96b855eae6c319e7df164bb2703b",
+            "sha256:379d3d5f9b0f5153a70776f05eb4e3bc247b528988865072e8aa042c39feb7f6",
+            "sha256:bf339d54fdef9e6990232f618f04d182bacf10753e3ebc6faabcad0a1e730e3e",
+            "sha256:d46efc3e7e616a0f3f794398275996bdd97ecc14f5cd8175f72aa4c4c2470999",
+            "sha256:68c56f41ee069b90ac1545cd27e1afbbee77fd22273bf2e6d94e23731dce9386",
+            "sha256:ea1b09e83315ea3a3dae6d70c4846ca4c1af16b7b3648ee16a4a14cc918d0b3b",
+            "sha256:382e152f2e6887eb313fcd06344b6ee7b59a9579b02fb14ccc333282ba119451",
+            "sha256:4e0a53209e143d1765f20b87f7890aceeb8ea8ab314b8ef4cd18be3ed1fcbaa4",
+            "sha256:27b34c7b469cd0ebaced0f691b92dbff586b83b70ddefb20bcbceae12e0b470d",
+            "sha256:168cdb18523133750c10d958e555324d05a329925964b88ce23f6bea7f3966f9",
+            "sha256:b4c03fb44b9129a08cff34f71a4dd62338e1dc355cc7af24bfaed8b32b4b443e",
+            "sha256:9abaf5d89182ebb11628b69d30f071bb93df6999419fcb911b6e12228cd8c97e",
+            "sha256:3671b7320f898b2e0b77220dac0c7c5571274013d6b0f285bb6646ae9b658707",
+            "sha256:ace0d74b2d6612f4b1c9da75cc4253bca6fd5b739be3d93ace60a9bf3706f4e3",
+            "sha256:88a274cd7dd7cc303e2b9650a3e89440cd0f5de46f6ffbee988f4054b7aaf6d3"
+          ],
+          "report": {
+            "backend": "worker",
+            "jobs": {
+              "policy": {
+                "workers": 0,
+                "reason": "explicit_inline",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "inline"
+              },
+              "pool": null,
+              "binary_transport": {
+                "format": "UJB1",
+                "requests": 0,
+                "metadata_sent_bytes": 0,
+                "metadata_received_bytes": 0,
+                "payload_sent_bytes": 0,
+                "payload_received_bytes": 0,
+                "copied_payload_from_wasm_bytes": 0,
+                "encode_ms": 0,
+                "abi_ms": 0,
+                "decode_ms": 0,
+                "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+              },
+              "fault": null
+            },
+            "execute_ms": 15.5,
+            "pack_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "transfer": {
+              "copied_bytes": 0,
+              "allocated_bytes": 0,
+              "reused_bytes": 0,
+              "unchanged_batches": 0,
+              "pooled_bytes": 0,
+              "pooled_buffers": 0
+            },
+            "pending": 0,
+            "closed": false
+          }
+        },
+        {
+          "kind": "main",
+          "mode": "workers",
+          "digests": [
+            "sha256:e64bb9a73762f4bf241bbefb9f6906013918ce70ecd32a1379c9ef818fd00813",
+            "sha256:116ccfbc1a39e032ae683c8ecfa0a0939ae625a7c0a42517c463b3cb1c63252d",
+            "sha256:e27809db2cc857b5857d606ec8e1f4b23210d1ec586ee317598b1e9cba6a11ed",
+            "sha256:c9b3e51c163da7f6d5a79436529ccfe0775f7cdea2edae29d3706e9133c4471d",
+            "sha256:5abe291563128560444472edd1c9b5d85687a555653aa2cb7905f3b25da5162b",
+            "sha256:8ecce4d5b4b2b232f556a54e9a319d85cea5cd7f1bbb3b5e27d2329f8d0f53f8",
+            "sha256:14f597bf78b6068b4beb8063d04ca7bc4848dca7e7491b2b609c29e26f834a14",
+            "sha256:a6088ec0239ae68e80bd3f3c4edc6689f2024cafc698791f4f0c5b8c4f69aaf2",
+            "sha256:dba6974f97988f7b5b45d9085ae065d6381a1c36cdb70fabff9d3b067b7dfabd",
+            "sha256:aaa837b245d95bdc8bad5f0f640a4a059a4a57dff9e642142059c877ac02d470",
+            "sha256:7923f0887e17010cbf62d423cd0b1f67feea4fde8f1fab1c5d6a024e4bf8c02c",
+            "sha256:b85b8e33efdd822bbaa38c94e8a07072e2538e35613cc1daacecbe72b6141f73",
+            "sha256:3f3e8aeef81c639cc2add4020695bbbefafec07ccdd491cb3d6706baec3422cc",
+            "sha256:ffe9414bf9e5609be2f7f8eadad90aed298aebd55437885eb0c9923bf3dc95d8",
+            "sha256:fc38803da41ebcafb3828bac7f2dcf9faf4308a8507388dd6d008b6752a69d5c",
+            "sha256:d8f625e7122789e8e5b43a273d00dbe5a68f96b855eae6c319e7df164bb2703b",
+            "sha256:379d3d5f9b0f5153a70776f05eb4e3bc247b528988865072e8aa042c39feb7f6",
+            "sha256:bf339d54fdef9e6990232f618f04d182bacf10753e3ebc6faabcad0a1e730e3e",
+            "sha256:d46efc3e7e616a0f3f794398275996bdd97ecc14f5cd8175f72aa4c4c2470999",
+            "sha256:68c56f41ee069b90ac1545cd27e1afbbee77fd22273bf2e6d94e23731dce9386",
+            "sha256:ea1b09e83315ea3a3dae6d70c4846ca4c1af16b7b3648ee16a4a14cc918d0b3b",
+            "sha256:382e152f2e6887eb313fcd06344b6ee7b59a9579b02fb14ccc333282ba119451",
+            "sha256:4e0a53209e143d1765f20b87f7890aceeb8ea8ab314b8ef4cd18be3ed1fcbaa4",
+            "sha256:27b34c7b469cd0ebaced0f691b92dbff586b83b70ddefb20bcbceae12e0b470d",
+            "sha256:168cdb18523133750c10d958e555324d05a329925964b88ce23f6bea7f3966f9",
+            "sha256:b4c03fb44b9129a08cff34f71a4dd62338e1dc355cc7af24bfaed8b32b4b443e",
+            "sha256:9abaf5d89182ebb11628b69d30f071bb93df6999419fcb911b6e12228cd8c97e",
+            "sha256:3671b7320f898b2e0b77220dac0c7c5571274013d6b0f285bb6646ae9b658707",
+            "sha256:ace0d74b2d6612f4b1c9da75cc4253bca6fd5b739be3d93ace60a9bf3706f4e3",
+            "sha256:88a274cd7dd7cc303e2b9650a3e89440cd0f5de46f6ffbee988f4054b7aaf6d3"
+          ],
+          "report": {
+            "backend": "main",
+            "jobs": {
+              "policy": {
+                "workers": 2,
+                "reason": "bounded_device_budget",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "workers"
+              },
+              "pool": {
+                "submitted": 120,
+                "completed": 116,
+                "inline_jobs": 0,
+                "worker_jobs": 118,
+                "input_bytes": 960,
+                "output_bytes": 475136,
+                "queue_ms": 219.29999995231628,
+                "roundtrip_ms": 260.1999998688698,
+                "execution_ms": 241.30000299999995,
+                "kernel_errors": 0,
+                "failures": 0,
+                "worker_limit": 2,
+                "workers_started": 2,
+                "active": 2,
+                "queued": 2,
+                "closed": false,
+                "transport": "UJB1 binary payloads + transferable ArrayBuffer",
+                "worker_transport": [
+                  {
+                    "format": "UJB1",
+                    "requests": 58,
+                    "metadata_sent_bytes": 26042,
+                    "metadata_received_bytes": 4485,
+                    "payload_sent_bytes": 464,
+                    "payload_received_bytes": 237568,
+                    "copied_payload_from_wasm_bytes": 237568,
+                    "encode_ms": 1.199999988079071,
+                    "abi_ms": 122.19999998807907,
+                    "decode_ms": 1.1000000536441803,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  },
+                  {
+                    "format": "UJB1",
+                    "requests": 58,
+                    "metadata_sent_bytes": 26042,
+                    "metadata_received_bytes": 4350,
+                    "payload_sent_bytes": 464,
+                    "payload_received_bytes": 237568,
+                    "copied_payload_from_wasm_bytes": 237568,
+                    "encode_ms": 1.2000000178813934,
+                    "abi_ms": 121.10000002384186,
+                    "decode_ms": 1.5,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  }
+                ],
+                "timing_scope": "host-local, excluded from canonical state"
+              },
+              "binary_transport": {
+                "format": "UJB1",
+                "requests": 146,
+                "metadata_sent_bytes": 9311,
+                "metadata_received_bytes": 58244,
+                "payload_sent_bytes": 475136,
+                "payload_received_bytes": 960,
+                "copied_payload_from_wasm_bytes": 960,
+                "encode_ms": 1,
+                "abi_ms": 1.4000000059604645,
+                "decode_ms": 1.199999988079071,
+                "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+              },
+              "fault": null
+            },
+            "execute_ms": 11.199999988079071,
+            "wasm_linear_bytes": 16777216,
+            "pending": 0,
+            "closed": false
+          }
+        },
+        {
+          "kind": "worker",
+          "mode": "workers",
+          "digests": [
+            "sha256:e64bb9a73762f4bf241bbefb9f6906013918ce70ecd32a1379c9ef818fd00813",
+            "sha256:116ccfbc1a39e032ae683c8ecfa0a0939ae625a7c0a42517c463b3cb1c63252d",
+            "sha256:e27809db2cc857b5857d606ec8e1f4b23210d1ec586ee317598b1e9cba6a11ed",
+            "sha256:c9b3e51c163da7f6d5a79436529ccfe0775f7cdea2edae29d3706e9133c4471d",
+            "sha256:5abe291563128560444472edd1c9b5d85687a555653aa2cb7905f3b25da5162b",
+            "sha256:8ecce4d5b4b2b232f556a54e9a319d85cea5cd7f1bbb3b5e27d2329f8d0f53f8",
+            "sha256:14f597bf78b6068b4beb8063d04ca7bc4848dca7e7491b2b609c29e26f834a14",
+            "sha256:a6088ec0239ae68e80bd3f3c4edc6689f2024cafc698791f4f0c5b8c4f69aaf2",
+            "sha256:dba6974f97988f7b5b45d9085ae065d6381a1c36cdb70fabff9d3b067b7dfabd",
+            "sha256:aaa837b245d95bdc8bad5f0f640a4a059a4a57dff9e642142059c877ac02d470",
+            "sha256:7923f0887e17010cbf62d423cd0b1f67feea4fde8f1fab1c5d6a024e4bf8c02c",
+            "sha256:b85b8e33efdd822bbaa38c94e8a07072e2538e35613cc1daacecbe72b6141f73",
+            "sha256:3f3e8aeef81c639cc2add4020695bbbefafec07ccdd491cb3d6706baec3422cc",
+            "sha256:ffe9414bf9e5609be2f7f8eadad90aed298aebd55437885eb0c9923bf3dc95d8",
+            "sha256:fc38803da41ebcafb3828bac7f2dcf9faf4308a8507388dd6d008b6752a69d5c",
+            "sha256:d8f625e7122789e8e5b43a273d00dbe5a68f96b855eae6c319e7df164bb2703b",
+            "sha256:379d3d5f9b0f5153a70776f05eb4e3bc247b528988865072e8aa042c39feb7f6",
+            "sha256:bf339d54fdef9e6990232f618f04d182bacf10753e3ebc6faabcad0a1e730e3e",
+            "sha256:d46efc3e7e616a0f3f794398275996bdd97ecc14f5cd8175f72aa4c4c2470999",
+            "sha256:68c56f41ee069b90ac1545cd27e1afbbee77fd22273bf2e6d94e23731dce9386",
+            "sha256:ea1b09e83315ea3a3dae6d70c4846ca4c1af16b7b3648ee16a4a14cc918d0b3b",
+            "sha256:382e152f2e6887eb313fcd06344b6ee7b59a9579b02fb14ccc333282ba119451",
+            "sha256:4e0a53209e143d1765f20b87f7890aceeb8ea8ab314b8ef4cd18be3ed1fcbaa4",
+            "sha256:27b34c7b469cd0ebaced0f691b92dbff586b83b70ddefb20bcbceae12e0b470d",
+            "sha256:168cdb18523133750c10d958e555324d05a329925964b88ce23f6bea7f3966f9",
+            "sha256:b4c03fb44b9129a08cff34f71a4dd62338e1dc355cc7af24bfaed8b32b4b443e",
+            "sha256:9abaf5d89182ebb11628b69d30f071bb93df6999419fcb911b6e12228cd8c97e",
+            "sha256:3671b7320f898b2e0b77220dac0c7c5571274013d6b0f285bb6646ae9b658707",
+            "sha256:ace0d74b2d6612f4b1c9da75cc4253bca6fd5b739be3d93ace60a9bf3706f4e3",
+            "sha256:88a274cd7dd7cc303e2b9650a3e89440cd0f5de46f6ffbee988f4054b7aaf6d3"
+          ],
+          "report": {
+            "backend": "worker",
+            "jobs": {
+              "policy": {
+                "workers": 2,
+                "reason": "bounded_device_budget",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "workers"
+              },
+              "pool": {
+                "submitted": 120,
+                "completed": 116,
+                "inline_jobs": 0,
+                "worker_jobs": 118,
+                "input_bytes": 960,
+                "output_bytes": 475136,
+                "queue_ms": 200.39999997615814,
+                "roundtrip_ms": 259.5999998450279,
+                "execution_ms": 242.69999899999996,
+                "kernel_errors": 0,
+                "failures": 0,
+                "worker_limit": 2,
+                "workers_started": 2,
+                "active": 2,
+                "queued": 2,
+                "closed": false,
+                "transport": "UJB1 binary payloads + transferable ArrayBuffer",
+                "worker_transport": [
+                  {
+                    "format": "UJB1",
+                    "requests": 58,
+                    "metadata_sent_bytes": 26042,
+                    "metadata_received_bytes": 4535,
+                    "payload_sent_bytes": 464,
+                    "payload_received_bytes": 237568,
+                    "copied_payload_from_wasm_bytes": 237568,
+                    "encode_ms": 0.7000000476837158,
+                    "abi_ms": 126.2000000178814,
+                    "decode_ms": 1.199999988079071,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  },
+                  {
+                    "format": "UJB1",
+                    "requests": 58,
+                    "metadata_sent_bytes": 26042,
+                    "metadata_received_bytes": 4480,
+                    "payload_sent_bytes": 464,
+                    "payload_received_bytes": 237568,
+                    "copied_payload_from_wasm_bytes": 237568,
+                    "encode_ms": 0.5999999642372131,
+                    "abi_ms": 118.3999999165535,
+                    "decode_ms": 0.7000000774860382,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  }
+                ],
+                "timing_scope": "host-local, excluded from canonical state"
+              },
+              "binary_transport": {
+                "format": "UJB1",
+                "requests": 146,
+                "metadata_sent_bytes": 9471,
+                "metadata_received_bytes": 58244,
+                "payload_sent_bytes": 475136,
+                "payload_received_bytes": 960,
+                "copied_payload_from_wasm_bytes": 960,
+                "encode_ms": 0.5999999940395355,
+                "abi_ms": 0.8999999761581421,
+                "decode_ms": 1.2000000476837158,
+                "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+              },
+              "fault": null
+            },
+            "execute_ms": 11.700000017881393,
+            "pack_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "transfer": {
+              "copied_bytes": 0,
+              "allocated_bytes": 0,
+              "reused_bytes": 0,
+              "unchanged_batches": 0,
+              "pooled_bytes": 0,
+              "pooled_buffers": 0
+            },
+            "pending": 0,
+            "closed": false
+          }
+        }
+      ]
+    },
+    {
+      "case": "jobs-binary-prod-web",
+      "status": "passed",
+      "ticks": 30,
+      "parity": true,
+      "cli_parity": true,
+      "runtime": {
+        "cargo_features": [
+          "camera2d",
+          "camera3d",
+          "jobs",
+          "random",
+          "save",
+          "ui"
+        ],
+        "compiled_systems": [
+          "camera2d",
+          "camera3d",
+          "input",
+          "jobs",
+          "observation",
+          "random",
+          "save",
+          "ui",
+          "world"
+        ],
+        "dev_tools": false,
+        "exports": [
+          "init",
+          "alloc",
+          "load_project",
+          "set_save_payload",
+          "set_input_frame",
+          "set_viewport_aspect",
+          "set_instance_transport",
+          "tick",
+          "jobs_request",
+          "jobs_binary",
+          "observation_ptr",
+          "observation_len"
+        ],
+        "javascript": "unone-player.js",
+        "javascript_sha256": "1365a54841b987d6b49697b5b891139332f6c1a56e8f565bd99dd8c06377f418",
+        "preview_tools": false,
+        "profile": "release",
+        "source_commit": "45c15ace2a6ee8d12fdb7f3127a9ad48be16026a",
+        "source_dirty": true,
+        "wasm": "unone_player.wasm",
+        "wasm_bytes": 1606834,
+        "wasm_sha256": "1ac4af864b173614cae1a77caadb797134392d2ed7005089684dbd70e038e295"
+      },
+      "runs": [
+        {
+          "kind": "worker",
+          "mode": "inline",
+          "digests": [
+            "sha256:6468d1d95117ff0a7ea9c91ddf8c89a69af85ef9389118106b1eaf10f877f668",
+            "sha256:d9660f015745bbf5bee1ad13183bf6f5dffc2cf7c1b381cd40fd8ff818ea0dca",
+            "sha256:2f62825b7deff55df4a2ffd41f82b4825c31e049880bacf7325fd756bb431345",
+            "sha256:1ce80032b4bd696ae4e9d8d48f67a2c99062c2736516fa3c51d2703f90e38d35",
+            "sha256:77c48a3db12ddbfcb065b9eb6516f8e1d584dc1bc1e680899620ee4f07f59194",
+            "sha256:7b2b1a48cff8c0251f13c45a667f120640457d70f625857986dd5b7ca53f69b8",
+            "sha256:c48cf7895d924171071833517fc5cabae17a580750307a4e45b9406d7c3199f2",
+            "sha256:f31860e1dfcfe1012c7871418dd764658a5051b69967eefa567ce494d4ff4abd",
+            "sha256:b7246e00988a8d81c2f67dedd390278a22cd19225166b6c138fc603c8b48aa23",
+            "sha256:8079b3a05ad3815fcaccff8823f3e47d8d7f99065b1b9075b80f13210a4d160a",
+            "sha256:3a7d8abdd04aee80e3924fc9addb998b63126ccd95704cea1ecd0ca21c7179e1",
+            "sha256:6391cf99ddfa0f3af98c7167b70b47baa766e6c3d321ed5b95c0b7ab78f8c255",
+            "sha256:6375465e48860102ce0f1ced4da5c9194aa90497d20fb9c9f48611398c6635be",
+            "sha256:fdc42034b0b8bb6cd1f1c2fd8e6b43489efd8f4aa1d1d9db676627a2b0588c78",
+            "sha256:587c8c84828a7fcd1a0f281744dc696780cf20ee1214ba49443f88e52e374ecf",
+            "sha256:00845f9e5e33cec7c32ef2f0a9de3298b64b92285608d2d5f73c65381f0a0560",
+            "sha256:6fe0df0193f276f55bd2c9f57db1b3ea559b5af5c15e66469ce53a8fea261570",
+            "sha256:a1f20be37ab9df6e9516e06a19b6def569d8e0b2e5e991c50981ef4827f9dcc2",
+            "sha256:c8a40836af5c0985fc24b9365410aeee85493291f429c2350bfd82e9248abb67",
+            "sha256:23dd936c7250b67bf52d6c1461b1275db09c8b60459cbee60573510932243a48",
+            "sha256:115b8b458e84ae7a8a97b3c895a40886dc06d768cb44f85e7c70919ee254ceea",
+            "sha256:3b2997919cf927ad102ecf8553f38ddad8de13b632bba863a62b669f40ae86ad",
+            "sha256:03bcd36345092131720a092766a8478a8ca97b79d5d9b2582d3b1b9608681f2f",
+            "sha256:3941da1a0a4f12322eb45088fd73effa431d040917a81b692e0d0b794d2df18f",
+            "sha256:14b13ec7bfe19280c66421087669aac6aa497f0508ba3c615527c0faebf46139",
+            "sha256:9f74f86829bf59da37808a996be2824a8979bf27439a2b45006880d487ae425d",
+            "sha256:3df99b0331c6b33966f400daf445b2a60462e1d8ef05fad6acbcf85071169948",
+            "sha256:ba47d0f4b9c81f93fe4110f121c6131c05ff16d3612b0a6732135378ab691cbb",
+            "sha256:f19490aa4d1b0b7dcf5d53a56b5095a267635e658db2d32bc8d26e04bb0e044d",
+            "sha256:aba8ce6b4d875964c162348bdf57e2b418ce8ad3aa49d78003f67cfb48108b11"
+          ],
+          "report": {
+            "backend": "worker",
+            "jobs": {
+              "policy": {
+                "workers": 0,
+                "reason": "explicit_inline",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "inline"
+              },
+              "pool": null,
+              "binary_transport": {
+                "format": "UJB1",
+                "requests": 0,
+                "metadata_sent_bytes": 0,
+                "metadata_received_bytes": 0,
+                "payload_sent_bytes": 0,
+                "payload_received_bytes": 0,
+                "copied_payload_from_wasm_bytes": 0,
+                "encode_ms": 0,
+                "abi_ms": 0,
+                "decode_ms": 0,
+                "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+              },
+              "fault": null
+            },
+            "execute_ms": 0.10000002384185791,
+            "pack_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "transfer": {
+              "copied_bytes": 0,
+              "allocated_bytes": 0,
+              "reused_bytes": 0,
+              "unchanged_batches": 0,
+              "pooled_bytes": 0,
+              "pooled_buffers": 0
+            },
+            "pending": 0,
+            "closed": false
+          }
+        },
+        {
+          "kind": "main",
+          "mode": "workers",
+          "digests": [
+            "sha256:6468d1d95117ff0a7ea9c91ddf8c89a69af85ef9389118106b1eaf10f877f668",
+            "sha256:d9660f015745bbf5bee1ad13183bf6f5dffc2cf7c1b381cd40fd8ff818ea0dca",
+            "sha256:2f62825b7deff55df4a2ffd41f82b4825c31e049880bacf7325fd756bb431345",
+            "sha256:1ce80032b4bd696ae4e9d8d48f67a2c99062c2736516fa3c51d2703f90e38d35",
+            "sha256:77c48a3db12ddbfcb065b9eb6516f8e1d584dc1bc1e680899620ee4f07f59194",
+            "sha256:7b2b1a48cff8c0251f13c45a667f120640457d70f625857986dd5b7ca53f69b8",
+            "sha256:c48cf7895d924171071833517fc5cabae17a580750307a4e45b9406d7c3199f2",
+            "sha256:f31860e1dfcfe1012c7871418dd764658a5051b69967eefa567ce494d4ff4abd",
+            "sha256:b7246e00988a8d81c2f67dedd390278a22cd19225166b6c138fc603c8b48aa23",
+            "sha256:8079b3a05ad3815fcaccff8823f3e47d8d7f99065b1b9075b80f13210a4d160a",
+            "sha256:3a7d8abdd04aee80e3924fc9addb998b63126ccd95704cea1ecd0ca21c7179e1",
+            "sha256:6391cf99ddfa0f3af98c7167b70b47baa766e6c3d321ed5b95c0b7ab78f8c255",
+            "sha256:6375465e48860102ce0f1ced4da5c9194aa90497d20fb9c9f48611398c6635be",
+            "sha256:fdc42034b0b8bb6cd1f1c2fd8e6b43489efd8f4aa1d1d9db676627a2b0588c78",
+            "sha256:587c8c84828a7fcd1a0f281744dc696780cf20ee1214ba49443f88e52e374ecf",
+            "sha256:00845f9e5e33cec7c32ef2f0a9de3298b64b92285608d2d5f73c65381f0a0560",
+            "sha256:6fe0df0193f276f55bd2c9f57db1b3ea559b5af5c15e66469ce53a8fea261570",
+            "sha256:a1f20be37ab9df6e9516e06a19b6def569d8e0b2e5e991c50981ef4827f9dcc2",
+            "sha256:c8a40836af5c0985fc24b9365410aeee85493291f429c2350bfd82e9248abb67",
+            "sha256:23dd936c7250b67bf52d6c1461b1275db09c8b60459cbee60573510932243a48",
+            "sha256:115b8b458e84ae7a8a97b3c895a40886dc06d768cb44f85e7c70919ee254ceea",
+            "sha256:3b2997919cf927ad102ecf8553f38ddad8de13b632bba863a62b669f40ae86ad",
+            "sha256:03bcd36345092131720a092766a8478a8ca97b79d5d9b2582d3b1b9608681f2f",
+            "sha256:3941da1a0a4f12322eb45088fd73effa431d040917a81b692e0d0b794d2df18f",
+            "sha256:14b13ec7bfe19280c66421087669aac6aa497f0508ba3c615527c0faebf46139",
+            "sha256:9f74f86829bf59da37808a996be2824a8979bf27439a2b45006880d487ae425d",
+            "sha256:3df99b0331c6b33966f400daf445b2a60462e1d8ef05fad6acbcf85071169948",
+            "sha256:ba47d0f4b9c81f93fe4110f121c6131c05ff16d3612b0a6732135378ab691cbb",
+            "sha256:f19490aa4d1b0b7dcf5d53a56b5095a267635e658db2d32bc8d26e04bb0e044d",
+            "sha256:aba8ce6b4d875964c162348bdf57e2b418ce8ad3aa49d78003f67cfb48108b11"
+          ],
+          "report": {
+            "backend": "main",
+            "jobs": {
+              "policy": {
+                "workers": 2,
+                "reason": "bounded_device_budget",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "workers"
+              },
+              "pool": {
+                "submitted": 3,
+                "completed": 3,
+                "inline_jobs": 0,
+                "worker_jobs": 3,
+                "input_bytes": 12,
+                "output_bytes": 12,
+                "queue_ms": 37.79999998211861,
+                "roundtrip_ms": 3.800000011920929,
+                "execution_ms": 2.200001,
+                "kernel_errors": 0,
+                "failures": 0,
+                "worker_limit": 2,
+                "workers_started": 1,
+                "active": 0,
+                "queued": 0,
+                "closed": false,
+                "transport": "UJB1 binary payloads + transferable ArrayBuffer",
+                "worker_transport": [
+                  {
+                    "format": "UJB1",
+                    "requests": 3,
+                    "metadata_sent_bytes": 459,
+                    "metadata_received_bytes": 241,
+                    "payload_sent_bytes": 12,
+                    "payload_received_bytes": 12,
+                    "copied_payload_from_wasm_bytes": 12,
+                    "encode_ms": 0.09999999403953552,
+                    "abi_ms": 2.7000000178813934,
+                    "decode_ms": 0.09999999403953552,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  }
+                ],
+                "timing_scope": "host-local, excluded from canonical state"
+              },
+              "binary_transport": {
+                "format": "UJB1",
+                "requests": 33,
+                "metadata_sent_bytes": 721,
+                "metadata_received_bytes": 1356,
+                "payload_sent_bytes": 12,
+                "payload_received_bytes": 12,
+                "copied_payload_from_wasm_bytes": 12,
+                "encode_ms": 0.5,
+                "abi_ms": 1,
+                "decode_ms": 0.19999998807907104,
+                "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+              },
+              "fault": null
+            },
+            "execute_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "pending": 0,
+            "closed": false
+          }
+        },
+        {
+          "kind": "worker",
+          "mode": "workers",
+          "digests": [
+            "sha256:6468d1d95117ff0a7ea9c91ddf8c89a69af85ef9389118106b1eaf10f877f668",
+            "sha256:d9660f015745bbf5bee1ad13183bf6f5dffc2cf7c1b381cd40fd8ff818ea0dca",
+            "sha256:2f62825b7deff55df4a2ffd41f82b4825c31e049880bacf7325fd756bb431345",
+            "sha256:1ce80032b4bd696ae4e9d8d48f67a2c99062c2736516fa3c51d2703f90e38d35",
+            "sha256:77c48a3db12ddbfcb065b9eb6516f8e1d584dc1bc1e680899620ee4f07f59194",
+            "sha256:7b2b1a48cff8c0251f13c45a667f120640457d70f625857986dd5b7ca53f69b8",
+            "sha256:c48cf7895d924171071833517fc5cabae17a580750307a4e45b9406d7c3199f2",
+            "sha256:f31860e1dfcfe1012c7871418dd764658a5051b69967eefa567ce494d4ff4abd",
+            "sha256:b7246e00988a8d81c2f67dedd390278a22cd19225166b6c138fc603c8b48aa23",
+            "sha256:8079b3a05ad3815fcaccff8823f3e47d8d7f99065b1b9075b80f13210a4d160a",
+            "sha256:3a7d8abdd04aee80e3924fc9addb998b63126ccd95704cea1ecd0ca21c7179e1",
+            "sha256:6391cf99ddfa0f3af98c7167b70b47baa766e6c3d321ed5b95c0b7ab78f8c255",
+            "sha256:6375465e48860102ce0f1ced4da5c9194aa90497d20fb9c9f48611398c6635be",
+            "sha256:fdc42034b0b8bb6cd1f1c2fd8e6b43489efd8f4aa1d1d9db676627a2b0588c78",
+            "sha256:587c8c84828a7fcd1a0f281744dc696780cf20ee1214ba49443f88e52e374ecf",
+            "sha256:00845f9e5e33cec7c32ef2f0a9de3298b64b92285608d2d5f73c65381f0a0560",
+            "sha256:6fe0df0193f276f55bd2c9f57db1b3ea559b5af5c15e66469ce53a8fea261570",
+            "sha256:a1f20be37ab9df6e9516e06a19b6def569d8e0b2e5e991c50981ef4827f9dcc2",
+            "sha256:c8a40836af5c0985fc24b9365410aeee85493291f429c2350bfd82e9248abb67",
+            "sha256:23dd936c7250b67bf52d6c1461b1275db09c8b60459cbee60573510932243a48",
+            "sha256:115b8b458e84ae7a8a97b3c895a40886dc06d768cb44f85e7c70919ee254ceea",
+            "sha256:3b2997919cf927ad102ecf8553f38ddad8de13b632bba863a62b669f40ae86ad",
+            "sha256:03bcd36345092131720a092766a8478a8ca97b79d5d9b2582d3b1b9608681f2f",
+            "sha256:3941da1a0a4f12322eb45088fd73effa431d040917a81b692e0d0b794d2df18f",
+            "sha256:14b13ec7bfe19280c66421087669aac6aa497f0508ba3c615527c0faebf46139",
+            "sha256:9f74f86829bf59da37808a996be2824a8979bf27439a2b45006880d487ae425d",
+            "sha256:3df99b0331c6b33966f400daf445b2a60462e1d8ef05fad6acbcf85071169948",
+            "sha256:ba47d0f4b9c81f93fe4110f121c6131c05ff16d3612b0a6732135378ab691cbb",
+            "sha256:f19490aa4d1b0b7dcf5d53a56b5095a267635e658db2d32bc8d26e04bb0e044d",
+            "sha256:aba8ce6b4d875964c162348bdf57e2b418ce8ad3aa49d78003f67cfb48108b11"
+          ],
+          "report": {
+            "backend": "worker",
+            "jobs": {
+              "policy": {
+                "workers": 2,
+                "reason": "bounded_device_budget",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "workers"
+              },
+              "pool": {
+                "submitted": 3,
+                "completed": 3,
+                "inline_jobs": 0,
+                "worker_jobs": 3,
+                "input_bytes": 12,
+                "output_bytes": 12,
+                "queue_ms": 30.400000005960464,
+                "roundtrip_ms": 2.899999976158142,
+                "execution_ms": 1.799998,
+                "kernel_errors": 0,
+                "failures": 0,
+                "worker_limit": 2,
+                "workers_started": 1,
+                "active": 0,
+                "queued": 0,
+                "closed": false,
+                "transport": "UJB1 binary payloads + transferable ArrayBuffer",
+                "worker_transport": [
+                  {
+                    "format": "UJB1",
+                    "requests": 3,
+                    "metadata_sent_bytes": 459,
+                    "metadata_received_bytes": 235,
+                    "payload_sent_bytes": 12,
+                    "payload_received_bytes": 12,
+                    "copied_payload_from_wasm_bytes": 12,
+                    "encode_ms": 0.20000001788139343,
+                    "abi_ms": 1.7999999523162842,
+                    "decode_ms": 0.10000002384185791,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  }
+                ],
+                "timing_scope": "host-local, excluded from canonical state"
+              },
+              "binary_transport": {
+                "format": "UJB1",
+                "requests": 33,
+                "metadata_sent_bytes": 715,
+                "metadata_received_bytes": 1356,
+                "payload_sent_bytes": 12,
+                "payload_received_bytes": 12,
+                "copied_payload_from_wasm_bytes": 12,
+                "encode_ms": 0.10000002384185791,
+                "abi_ms": 0.09999999403953552,
+                "decode_ms": 0.40000003576278687,
+                "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+              },
+              "fault": null
+            },
+            "execute_ms": 0.20000001788139343,
+            "pack_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "transfer": {
+              "copied_bytes": 0,
+              "allocated_bytes": 0,
+              "reused_bytes": 0,
+              "unchanged_batches": 0,
+              "pooled_bytes": 0,
+              "pooled_buffers": 0
+            },
+            "pending": 0,
+            "closed": false
+          }
+        }
+      ]
+    }
+  ]
+}

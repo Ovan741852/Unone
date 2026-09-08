@@ -13,13 +13,13 @@ test('device policy caps resources, supports inline, and rejects typos',()=>{
 class FakeWorker {
  static created=[];
  constructor(){FakeWorker.created.push(this);}
- postMessage(data){if(data.kind==='init')queueMicrotask(()=>this.onmessage({data:{kind:'ready'}}));else this.message=data;}
- complete(){const m=this.message;this.message=null;this.onmessage({data:{id:m.id,ok:true,result:{kind:'complete',id:m.work.id,run_ms:1,output:[1],error:null}}});}
+ postMessage(data,transfer){if(data.kind==='init')queueMicrotask(()=>this.onmessage({data:{kind:'ready'}}));else{assert.deepEqual(transfer,[data.work.input]);this.message=structuredClone(data,{transfer});}}
+ complete(){const m=this.message;this.message=null;this.onmessage({data:{id:m.id,ok:true,result:{kind:'complete',id:m.work.id,run_ms:1,output:new Uint8Array([1]).buffer,error:null}}});}
  terminate(){this.terminated=true;}
 }
 test('two slots run concurrently; queue stays bounded and closes cleanly',async()=>{
  FakeWorker.created=[];const p=createJobPool({url:'http://example.test/a.js',workers:2,WorkerClass:FakeWorker});
- const jobs=Array.from({length:16},(_,i)=>p.submit({id:String(i),source:'copy',input:[1]}));
+ const jobs=Array.from({length:16},(_,i)=>p.submit({id:String(i),source:'copy',input:new Uint8Array([1]).buffer}));
  await assert.rejects(p.submit({id:'overflow'}),/JOB_QUEUE_FULL/);
  await new Promise(resolve=>setImmediate(resolve));assert.equal(p.report().active,2);assert.equal(FakeWorker.created.length,2);
  // Deliberately complete the second slot first.
@@ -30,6 +30,6 @@ test('two slots run concurrently; queue stays bounded and closes cleanly',async(
 });
 test('shutdown rejects active and queued jobs; no orphan promises',async()=>{
  FakeWorker.created=[];const p=createJobPool({url:'a',workers:1,WorkerClass:FakeWorker});
- const results=Promise.allSettled([p.submit({id:'a',source:'a'}),p.submit({id:'b',source:'a'})]);
+ const results=Promise.allSettled([p.submit({id:'a',source:'a',input:new ArrayBuffer(0)}),p.submit({id:'b',source:'a',input:new ArrayBuffer(0)})]);
  await new Promise(resolve=>setImmediate(resolve));p.close();assert.ok((await results).every(r=>r.status==='rejected'));
 });
