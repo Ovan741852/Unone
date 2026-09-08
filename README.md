@@ -6,11 +6,18 @@ The current contract boundaries and host limitations are recorded in [Runtime co
 
 ## 10,000-unit battle demonstration
 
-[![Legion Fall — real-time battle excerpt](docs/media/legion-fall-preview.gif)](docs/media/legion-fall-demo.mp4)
+| 優化前（基準版本） | 第一輪優化後 |
+|---|---|
+| ![Before optimization](docs/media/legion-fall-preview.gif) | ![After round one](docs/media/legion-fall-optimized.gif) |
+| 原始實際戰鬥錄影；9–10 FPS 片段 | Lua profiler、VM fast paths、WASM memory instance transport |
 
-[Watch the full 54-second video](docs/media/legion-fall-demo.mp4) · [Run the demo](_Games/legion-fall/README.md) · [Measurements and limits](docs/legion-fall-demo.md)
+第二輪優化：尚未進行，完成後追加實測與展示。兩張 GIF 取自不同錄製視窗，鏡位、存活兵力與錄影負擔可能不同，不能直接用畫面上的 FPS 計算改善幅度。
 
-Two armies, seven unit types, combat rules in Luau and instanced 3D meshes. This is a performance probe: the recorded 9,500+ living-unit segment runs at **9–10 FPS**, with simulation falling behind wall time. Static model poses; no per-unit rigid-body physics. The demo exposes work still needed rather than claiming a finished 10,000-unit performance target.
+[Run the demo](_Games/legion-fall/README.md) · [Optimization results](docs/legion-fall-optimization.md) · [Original baseline video](docs/media/legion-fall-demo.mp4)
+
+Optimized build: 12-second excerpt at actual playback speed, starting with approximately 9,800 surviving units. The GIF is encoded at 10 fps to limit download size; its visible FPS counter belongs to the recorded player, not the GIF. Capture overhead is included. Controlled CPU replay measurements improved from **22.65 to 16.47 ms/tick (−27.3%)**; this is not a claim of stable 60 FPS in the browser.
+
+Two armies, seven unit types, combat rules in Luau and instanced 3D meshes. Static model poses; no per-unit rigid-body physics. The original 9–10 FPS recording remains available as a historical baseline. [Capture details](docs/media/legion-fall-optimized.md).
 
 ## Getting started from a clone
 

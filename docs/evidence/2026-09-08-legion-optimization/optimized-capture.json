@@ -1,0 +1,3186 @@
+{
+  "capture": "real-time canvas, no offline frame synthesis",
+  "target_resolution": [
+    1280,
+    720
+  ],
+  "target_video_fps": 30,
+  "wall_duration_ms": 54013.59999999404,
+  "samples": [
+    {
+      "wall_s": 0.10909999998211879,
+      "simulation": {
+        "attacks": 0,
+        "blue": 5000,
+        "blue_kills": 0,
+        "capped_attacks": 0,
+        "projectiles": 0,
+        "red": 5000,
+        "red_kills": 0,
+        "running": true,
+        "seconds": 0.1,
+        "simulation_hz": 20,
+        "step": 2,
+        "stress": false,
+        "total": 10000
+      }
+    },
+    {
+      "wall_s": 1.0204999999821194,
+      "fps": 15,
+      "frame_ms": 65.61428571258277,
+      "raf_p95_ms": 172.60000000000036,
+      "simulation": {
+        "attacks": 0,
+        "blue": 5000,
+        "blue_kills": 0,
+        "capped_attacks": 0,
+        "projectiles": 0,
+        "red": 5000,
+        "red_kills": 0,
+        "running": true,
+        "seconds": 0.9,
+        "simulation_hz": 20,
+        "step": 19,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 43,
+        "render_ms": 2.7999999821186066,
+        "instances": 10060,
+        "draw_calls": 16,
+        "triangles": 3375675,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.631136,
+          "p95_ms": 1.869024
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.7000000178813934,
+          "p95_ms": 2.7999999821186066
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 0
+      }
+    },
+    {
+      "wall_s": 2.0434999999821195,
+      "fps": 15,
+      "frame_ms": 64.6956521733947,
+      "raf_p95_ms": 105.60000000000036,
+      "simulation": {
+        "attacks": 185,
+        "blue": 5000,
+        "blue_kills": 0,
+        "capped_attacks": 0,
+        "projectiles": 103,
+        "red": 5000,
+        "red_kills": 0,
+        "running": true,
+        "seconds": 1.9,
+        "simulation_hz": 20,
+        "step": 39,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 3.2999999821186066,
+        "render_ms": 2.0999999940395355,
+        "instances": 10000,
+        "draw_calls": 15,
+        "triangles": 3389006,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.635808,
+          "p95_ms": 1.976256
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.9000000059604645,
+          "p95_ms": 3
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 8
+      }
+    },
+    {
+      "wall_s": 3.0219999999821194,
+      "fps": 16,
+      "frame_ms": 60.88571428547102,
+      "raf_p95_ms": 94.60000000000036,
+      "simulation": {
+        "attacks": 1219,
+        "blue": 4997,
+        "blue_kills": 1,
+        "capped_attacks": 0,
+        "projectiles": 248,
+        "red": 4999,
+        "red_kills": 3,
+        "running": true,
+        "seconds": 2.8,
+        "simulation_hz": 20,
+        "step": 58,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 3.2999999821186066,
+        "render_ms": 1.300000011920929,
+        "instances": 10221,
+        "draw_calls": 16,
+        "triangles": 3390553,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.646016,
+          "p95_ms": 1.976256
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 1.4000000059604645,
+          "p95_ms": 3.2000000178813934
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 8
+      }
+    },
+    {
+      "wall_s": 4.0006999999821184,
+      "fps": 16,
+      "frame_ms": 61.31578947347506,
+      "raf_p95_ms": 100.10000000000036,
+      "simulation": {
+        "attacks": 2460,
+        "blue": 4986,
+        "blue_kills": 6,
+        "capped_attacks": 0,
+        "projectiles": 71,
+        "red": 4994,
+        "red_kills": 14,
+        "running": true,
+        "seconds": 3.8,
+        "simulation_hz": 20,
+        "step": 77,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 3.2999999821186066,
+        "render_ms": 1.300000011920929,
+        "instances": 10221,
+        "draw_calls": 16,
+        "triangles": 3390553,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.646016,
+          "p95_ms": 1.976256
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 1.4000000059604645,
+          "p95_ms": 3.2000000178813934
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 8
+      }
+    },
+    {
+      "wall_s": 5.040199999982118,
+      "fps": 16,
+      "frame_ms": 61.60987654306271,
+      "raf_p95_ms": 100.10000000000036,
+      "simulation": {
+        "attacks": 4286,
+        "blue": 4969,
+        "blue_kills": 11,
+        "capped_attacks": 0,
+        "projectiles": 127,
+        "red": 4989,
+        "red_kills": 31,
+        "running": true,
+        "seconds": 4.7,
+        "simulation_hz": 20,
+        "step": 96,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 4.0999999940395355,
+        "render_ms": 2.2000000178813934,
+        "instances": 10084,
+        "draw_calls": 16,
+        "triangles": 3389594,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.65776,
+          "p95_ms": 1.821632
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 1.5999999940395355,
+          "p95_ms": 3.2999999821186066
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 11
+      }
+    },
+    {
+      "wall_s": 6.057499999982119,
+      "fps": 16,
+      "frame_ms": 62.830526315663995,
+      "raf_p95_ms": 100.10000000000036,
+      "simulation": {
+        "attacks": 6259,
+        "blue": 4942,
+        "blue_kills": 20,
+        "capped_attacks": 0,
+        "projectiles": 73,
+        "red": 4980,
+        "red_kills": 58,
+        "running": true,
+        "seconds": 5.7,
+        "simulation_hz": 20,
+        "step": 115,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 4.0999999940395355,
+        "render_ms": 2.2000000178813934,
+        "instances": 10084,
+        "draw_calls": 16,
+        "triangles": 3389594,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.65776,
+          "p95_ms": 1.821632
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 1.5999999940395355,
+          "p95_ms": 3.2999999821186066
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 11
+      }
+    },
+    {
+      "wall_s": 7.013799999982119,
+      "fps": 16,
+      "frame_ms": 63.455339805709514,
+      "raf_p95_ms": 100.10000000000036,
+      "simulation": {
+        "attacks": 8699,
+        "blue": 4896,
+        "blue_kills": 26,
+        "capped_attacks": 0,
+        "projectiles": 131,
+        "red": 4974,
+        "red_kills": 104,
+        "running": true,
+        "seconds": 6.5,
+        "simulation_hz": 20,
+        "step": 132,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 44.5,
+        "render_ms": 2.5999999940395355,
+        "instances": 10064,
+        "draw_calls": 16,
+        "triangles": 3377566,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.747584,
+          "p95_ms": 2.201184
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 1.600000023841858,
+          "p95_ms": 3.4000000059604645
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 18
+      }
+    },
+    {
+      "wall_s": 8.020099999982119,
+      "fps": 15,
+      "frame_ms": 64.65384615374425,
+      "raf_p95_ms": 105.60000000000036,
+      "simulation": {
+        "attacks": 11710,
+        "blue": 4824,
+        "blue_kills": 56,
+        "capped_attacks": 0,
+        "projectiles": 86,
+        "red": 4944,
+        "red_kills": 176,
+        "running": true,
+        "seconds": 7.5,
+        "simulation_hz": 20,
+        "step": 151,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 44.5,
+        "render_ms": 2.5999999940395355,
+        "instances": 10064,
+        "draw_calls": 16,
+        "triangles": 3377566,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.747584,
+          "p95_ms": 2.201184
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 1.600000023841858,
+          "p95_ms": 3.4000000059604645
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 18
+      }
+    },
+    {
+      "wall_s": 9.020799999982119,
+      "fps": 16,
+      "frame_ms": 64.50071942437468,
+      "raf_p95_ms": 100.10000000000036,
+      "simulation": {
+        "attacks": 15359,
+        "blue": 4757,
+        "blue_kills": 81,
+        "capped_attacks": 0,
+        "projectiles": 246,
+        "red": 4919,
+        "red_kills": 243,
+        "running": true,
+        "seconds": 8.5,
+        "simulation_hz": 20,
+        "step": 171,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 3.2999999821186066,
+        "render_ms": 1.600000023841858,
+        "instances": 10023,
+        "draw_calls": 19,
+        "triangles": 3349901,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.760864,
+          "p95_ms": 1.821632
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 1.7999999821186066,
+          "p95_ms": 3.4000000059604645
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 25
+      }
+    },
+    {
+      "wall_s": 10.021599999982119,
+      "fps": 16,
+      "frame_ms": 64.37032258056826,
+      "raf_p95_ms": 100.10000000000036,
+      "simulation": {
+        "attacks": 18709,
+        "blue": 4690,
+        "blue_kills": 106,
+        "capped_attacks": 0,
+        "projectiles": 331,
+        "red": 4894,
+        "red_kills": 310,
+        "running": true,
+        "seconds": 9.4,
+        "simulation_hz": 20,
+        "step": 189,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 3.2999999821186066,
+        "render_ms": 1.600000023841858,
+        "instances": 10023,
+        "draw_calls": 19,
+        "triangles": 3349901,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.760864,
+          "p95_ms": 1.821632
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 1.7999999821186066,
+          "p95_ms": 3.4000000059604645
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 25
+      }
+    },
+    {
+      "wall_s": 11.050099999982118,
+      "fps": 16,
+      "frame_ms": 64.29707602332209,
+      "raf_p95_ms": 100.10000000000036,
+      "simulation": {
+        "attacks": 23327,
+        "blue": 4590,
+        "blue_kills": 136,
+        "capped_attacks": 0,
+        "projectiles": 401,
+        "red": 4864,
+        "red_kills": 410,
+        "running": true,
+        "seconds": 10.4,
+        "simulation_hz": 20,
+        "step": 209,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.5999999940395355,
+        "render_ms": 1.800000011920929,
+        "instances": 10070,
+        "draw_calls": 19,
+        "triangles": 3324290,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.771264,
+          "p95_ms": 2.201184
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 1.9000000059604645,
+          "p95_ms": 3.9000000059604645
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 27
+      }
+    },
+    {
+      "wall_s": 12.09519999998212,
+      "fps": 16,
+      "frame_ms": 63.75000000000001,
+      "raf_p95_ms": 100.10000000000036,
+      "simulation": {
+        "attacks": 27789,
+        "blue": 4490,
+        "blue_kills": 182,
+        "capped_attacks": 0,
+        "projectiles": 430,
+        "red": 4818,
+        "red_kills": 510,
+        "running": true,
+        "seconds": 11.4,
+        "simulation_hz": 20,
+        "step": 229,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 38.79999998211861,
+        "render_ms": 1.9000000059604645,
+        "instances": 9961,
+        "draw_calls": 19,
+        "triangles": 3262974,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.762848,
+          "p95_ms": 1.841824
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 30
+      }
+    },
+    {
+      "wall_s": 13.006999999982119,
+      "fps": 16,
+      "frame_ms": 64.46055555555554,
+      "raf_p95_ms": 100.10000000000036,
+      "simulation": {
+        "attacks": 32246,
+        "blue": 4397,
+        "blue_kills": 237,
+        "capped_attacks": 0,
+        "projectiles": 572,
+        "red": 4763,
+        "red_kills": 603,
+        "running": true,
+        "seconds": 12.3,
+        "simulation_hz": 20,
+        "step": 247,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 38.79999998211861,
+        "render_ms": 1.9000000059604645,
+        "instances": 9961,
+        "draw_calls": 19,
+        "triangles": 3262974,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.762848,
+          "p95_ms": 1.841824
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 30
+      }
+    },
+    {
+      "wall_s": 14.035599999982118,
+      "fps": 15,
+      "frame_ms": 64.83166666666668,
+      "raf_p95_ms": 100.10000000000036,
+      "simulation": {
+        "attacks": 37129,
+        "blue": 4293,
+        "blue_kills": 306,
+        "capped_attacks": 0,
+        "projectiles": 644,
+        "red": 4694,
+        "red_kills": 707,
+        "running": true,
+        "seconds": 13.3,
+        "simulation_hz": 20,
+        "step": 266,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 38.79999998211861,
+        "render_ms": 1.9000000059604645,
+        "instances": 9961,
+        "draw_calls": 19,
+        "triangles": 3262974,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.762848,
+          "p95_ms": 1.841824
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 30
+      }
+    },
+    {
+      "wall_s": 15.091899999982116,
+      "fps": 15,
+      "frame_ms": 66.22055555555556,
+      "raf_p95_ms": 100.10000000000036,
+      "simulation": {
+        "attacks": 42086,
+        "blue": 4188,
+        "blue_kills": 377,
+        "capped_attacks": 0,
+        "projectiles": 827,
+        "red": 4623,
+        "red_kills": 812,
+        "running": true,
+        "seconds": 14.2,
+        "simulation_hz": 20,
+        "step": 284,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 43.20000001788139,
+        "render_ms": 3.0999999940395355,
+        "instances": 9895,
+        "draw_calls": 19,
+        "triangles": 3189874,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.765536,
+          "p95_ms": 1.698912
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4.0999999940395355
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 35
+      }
+    },
+    {
+      "wall_s": 16.00909999998212,
+      "fps": 15,
+      "frame_ms": 67.30166666666666,
+      "raf_p95_ms": 100.19999999999709,
+      "simulation": {
+        "attacks": 46773,
+        "blue": 4104,
+        "blue_kills": 449,
+        "capped_attacks": 0,
+        "projectiles": 850,
+        "red": 4551,
+        "red_kills": 896,
+        "running": true,
+        "seconds": 15,
+        "simulation_hz": 20,
+        "step": 301,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 43.20000001788139,
+        "render_ms": 3.0999999940395355,
+        "instances": 9895,
+        "draw_calls": 19,
+        "triangles": 3189874,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.765536,
+          "p95_ms": 1.698912
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4.0999999940395355
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 35
+      }
+    },
+    {
+      "wall_s": 17.04899999998212,
+      "fps": 15,
+      "frame_ms": 67.05444444444444,
+      "raf_p95_ms": 100.20000000000073,
+      "simulation": {
+        "attacks": 51923,
+        "blue": 3993,
+        "blue_kills": 515,
+        "capped_attacks": 0,
+        "projectiles": 1010,
+        "red": 4485,
+        "red_kills": 1007,
+        "running": true,
+        "seconds": 16,
+        "simulation_hz": 20,
+        "step": 320,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 48.30000001192093,
+        "render_ms": 2.0999999940395355,
+        "instances": 9763,
+        "draw_calls": 20,
+        "triangles": 3078980,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.757152,
+          "p95_ms": 1.43536
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4.0999999940395355
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 44
+      }
+    },
+    {
+      "wall_s": 18.01069999998212,
+      "fps": 15,
+      "frame_ms": 67.0861111111111,
+      "raf_p95_ms": 105.60000000000218,
+      "simulation": {
+        "attacks": 56744,
+        "blue": 3857,
+        "blue_kills": 574,
+        "capped_attacks": 0,
+        "projectiles": 1099,
+        "red": 4426,
+        "red_kills": 1143,
+        "running": true,
+        "seconds": 16.9,
+        "simulation_hz": 20,
+        "step": 338,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 48.30000001192093,
+        "render_ms": 2.0999999940395355,
+        "instances": 9763,
+        "draw_calls": 20,
+        "triangles": 3078980,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.757152,
+          "p95_ms": 1.43536
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4.0999999940395355
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 44
+      }
+    },
+    {
+      "wall_s": 19.00019999998212,
+      "fps": 15,
+      "frame_ms": 66.90055555555557,
+      "raf_p95_ms": 105.60000000000218,
+      "simulation": {
+        "attacks": 61449,
+        "blue": 3720,
+        "blue_kills": 633,
+        "capped_attacks": 0,
+        "projectiles": 1069,
+        "red": 4367,
+        "red_kills": 1280,
+        "running": true,
+        "seconds": 17.8,
+        "simulation_hz": 20,
+        "step": 357,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.5,
+        "render_ms": 2,
+        "instances": 9743,
+        "draw_calls": 20,
+        "triangles": 2978156,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.750656,
+          "p95_ms": 1.5224
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4.299999982118607
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 50
+      }
+    },
+    {
+      "wall_s": 20.01769999998212,
+      "fps": 16,
+      "frame_ms": 64.02722222222224,
+      "raf_p95_ms": 100.19999999999709,
+      "simulation": {
+        "attacks": 66625,
+        "blue": 3582,
+        "blue_kills": 702,
+        "capped_attacks": 0,
+        "projectiles": 1142,
+        "red": 4298,
+        "red_kills": 1418,
+        "running": true,
+        "seconds": 18.9,
+        "simulation_hz": 20,
+        "step": 378,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.7000000178813934,
+        "render_ms": 1.7999999821186066,
+        "instances": 9409,
+        "draw_calls": 20,
+        "triangles": 2857407,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.69392,
+          "p95_ms": 1.737696
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4.299999982118607
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 50
+      }
+    },
+    {
+      "wall_s": 21.034899999982116,
+      "fps": 16,
+      "frame_ms": 62.66888888888888,
+      "raf_p95_ms": 100.09999999999854,
+      "simulation": {
+        "attacks": 71182,
+        "blue": 3448,
+        "blue_kills": 766,
+        "capped_attacks": 0,
+        "projectiles": 1207,
+        "red": 4234,
+        "red_kills": 1552,
+        "running": true,
+        "seconds": 19.9,
+        "simulation_hz": 20,
+        "step": 398,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.7000000178813934,
+        "render_ms": 1.7999999821186066,
+        "instances": 9409,
+        "draw_calls": 20,
+        "triangles": 2857407,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.69392,
+          "p95_ms": 1.737696
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4.299999982118607
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 50
+      }
+    },
+    {
+      "wall_s": 22.03019999998212,
+      "fps": 16,
+      "frame_ms": 63.28666666666666,
+      "raf_p95_ms": 100.19999999999709,
+      "simulation": {
+        "attacks": 75400,
+        "blue": 3344,
+        "blue_kills": 828,
+        "capped_attacks": 0,
+        "projectiles": 1222,
+        "red": 4172,
+        "red_kills": 1656,
+        "running": true,
+        "seconds": 20.8,
+        "simulation_hz": 20,
+        "step": 416,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.699999988079071,
+        "render_ms": 2.7000000178813934,
+        "instances": 9205,
+        "draw_calls": 20,
+        "triangles": 2745833,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.678784,
+          "p95_ms": 1.423872
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4.0999999940395355
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 50
+      }
+    },
+    {
+      "wall_s": 23.00869999998212,
+      "fps": 16,
+      "frame_ms": 62.544999999999995,
+      "raf_p95_ms": 100.19999999999709,
+      "simulation": {
+        "attacks": 79917,
+        "blue": 3215,
+        "blue_kills": 920,
+        "capped_attacks": 0,
+        "projectiles": 1176,
+        "red": 4080,
+        "red_kills": 1785,
+        "running": true,
+        "seconds": 21.8,
+        "simulation_hz": 20,
+        "step": 436,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.699999988079071,
+        "render_ms": 2.7000000178813934,
+        "instances": 9205,
+        "draw_calls": 20,
+        "triangles": 2745833,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.678784,
+          "p95_ms": 1.423872
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4.0999999940395355
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 50
+      }
+    },
+    {
+      "wall_s": 24.00939999998212,
+      "fps": 16,
+      "frame_ms": 61.15500000000001,
+      "raf_p95_ms": 100.19999999999709,
+      "simulation": {
+        "attacks": 84054,
+        "blue": 3105,
+        "blue_kills": 1031,
+        "capped_attacks": 0,
+        "projectiles": 1159,
+        "red": 3969,
+        "red_kills": 1895,
+        "running": true,
+        "seconds": 22.7,
+        "simulation_hz": 20,
+        "step": 455,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 3.5999999940395355,
+        "render_ms": 1.5999999940395355,
+        "instances": 8880,
+        "draw_calls": 20,
+        "triangles": 2620845,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.660928,
+          "p95_ms": 1.423872
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 53
+      }
+    },
+    {
+      "wall_s": 25.010099999982117,
+      "fps": 16,
+      "frame_ms": 60.66055555555556,
+      "raf_p95_ms": 100.19999999999709,
+      "simulation": {
+        "attacks": 88252,
+        "blue": 2949,
+        "blue_kills": 1152,
+        "capped_attacks": 0,
+        "projectiles": 1110,
+        "red": 3848,
+        "red_kills": 2051,
+        "running": true,
+        "seconds": 23.7,
+        "simulation_hz": 20,
+        "step": 475,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 3.5999999940395355,
+        "render_ms": 1.5999999940395355,
+        "instances": 8880,
+        "draw_calls": 20,
+        "triangles": 2620845,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.660928,
+          "p95_ms": 1.423872
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 4
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 53
+      }
+    },
+    {
+      "wall_s": 26.04979999998212,
+      "fps": 17,
+      "frame_ms": 57.78888888888889,
+      "raf_p95_ms": 100,
+      "simulation": {
+        "attacks": 92248,
+        "blue": 2808,
+        "blue_kills": 1241,
+        "capped_attacks": 0,
+        "projectiles": 1139,
+        "red": 3759,
+        "red_kills": 2192,
+        "running": true,
+        "seconds": 24.7,
+        "simulation_hz": 20,
+        "step": 495,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.9000000059604645,
+        "render_ms": 2.0999999940395355,
+        "instances": 8556,
+        "draw_calls": 20,
+        "triangles": 2496247,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.649696,
+          "p95_ms": 1.423872
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2.0999999940395355,
+          "p95_ms": 3.5999999940395355
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 55
+      }
+    },
+    {
+      "wall_s": 27.006099999982123,
+      "fps": 19,
+      "frame_ms": 51.67277777777777,
+      "raf_p95_ms": 94.59999999999854,
+      "simulation": {
+        "attacks": 95652,
+        "blue": 2726,
+        "blue_kills": 1323,
+        "capped_attacks": 0,
+        "projectiles": 1098,
+        "red": 3677,
+        "red_kills": 2274,
+        "running": true,
+        "seconds": 25.7,
+        "simulation_hz": 20,
+        "step": 514,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 3.199999988079071,
+        "render_ms": 2,
+        "instances": 8054,
+        "draw_calls": 20,
+        "triangles": 2343809,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.63984,
+          "p95_ms": 1.41376
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 2,
+          "p95_ms": 3.899999976158142
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 28.00669999998212,
+      "fps": 26,
+      "frame_ms": 38.45444444444446,
+      "raf_p95_ms": 83.30000000000291,
+      "simulation": {
+        "attacks": 99213,
+        "blue": 2635,
+        "blue_kills": 1420,
+        "capped_attacks": 0,
+        "projectiles": 1173,
+        "red": 3580,
+        "red_kills": 2365,
+        "running": true,
+        "seconds": 26.7,
+        "simulation_hz": 20,
+        "step": 534,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.2000000178813934,
+        "render_ms": 0.4000000059604645,
+        "instances": 7840,
+        "draw_calls": 20,
+        "triangles": 2255897,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.597376,
+          "p95_ms": 1.311136
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 1.800000011920929,
+          "p95_ms": 3.5999999940395355
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 29.00189999998212,
+      "fps": 40,
+      "frame_ms": 25.234444444444428,
+      "raf_p95_ms": 55.599999999998545,
+      "simulation": {
+        "attacks": 102330,
+        "blue": 2550,
+        "blue_kills": 1499,
+        "capped_attacks": 0,
+        "projectiles": 1046,
+        "red": 3501,
+        "red_kills": 2450,
+        "running": true,
+        "seconds": 27.7,
+        "simulation_hz": 20,
+        "step": 554,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 3,
+        "render_ms": 1,
+        "instances": 7669,
+        "draw_calls": 20,
+        "triangles": 2193471,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.5648,
+          "p95_ms": 1.09584
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 1.5999999940395355,
+          "p95_ms": 3.4000000059604645
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 30.00259999998212,
+      "fps": 66,
+      "frame_ms": 15.258333333333333,
+      "raf_p95_ms": 38.900000000001455,
+      "simulation": {
+        "attacks": 104696,
+        "blue": 2516,
+        "blue_kills": 1558,
+        "capped_attacks": 0,
+        "projectiles": 1007,
+        "red": 3442,
+        "red_kills": 2484,
+        "running": true,
+        "seconds": 28.7,
+        "simulation_hz": 20,
+        "step": 574,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.4000000059604645,
+        "render_ms": 0.19999998807907104,
+        "instances": 7341,
+        "draw_calls": 20,
+        "triangles": 2098099,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.48144,
+          "p95_ms": 0.982496
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.800000011920929,
+          "p95_ms": 3
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 31.00329999998212,
+      "fps": 80,
+      "frame_ms": 12.447222222222223,
+      "raf_p95_ms": 33.5,
+      "simulation": {
+        "attacks": 106880,
+        "blue": 2490,
+        "blue_kills": 1636,
+        "capped_attacks": 0,
+        "projectiles": 909,
+        "red": 3364,
+        "red_kills": 2510,
+        "running": true,
+        "seconds": 29.7,
+        "simulation_hz": 20,
+        "step": 594,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.399999976158142,
+        "render_ms": 0.29999998211860657,
+        "instances": 7064,
+        "draw_calls": 19,
+        "triangles": 2030694,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.385952,
+          "p95_ms": 0.89296
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.6000000238418579,
+          "p95_ms": 2.199999988079071
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 32.00399999998211,
+      "fps": 88,
+      "frame_ms": 11.367222222222214,
+      "raf_p95_ms": 33.400000000001455,
+      "simulation": {
+        "attacks": 109130,
+        "blue": 2442,
+        "blue_kills": 1719,
+        "capped_attacks": 0,
+        "projectiles": 708,
+        "red": 3281,
+        "red_kills": 2558,
+        "running": true,
+        "seconds": 30.7,
+        "simulation_hz": 20,
+        "step": 614,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 32.19999998807907,
+        "render_ms": 1.300000011920929,
+        "instances": 6787,
+        "draw_calls": 19,
+        "triangles": 1975985,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.346272,
+          "p95_ms": 0.967232
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 2
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 33.00469999998212,
+      "fps": 92,
+      "frame_ms": 10.87277777777777,
+      "raf_p95_ms": 33.299999999995634,
+      "simulation": {
+        "attacks": 112063,
+        "blue": 2372,
+        "blue_kills": 1770,
+        "capped_attacks": 0,
+        "projectiles": 776,
+        "red": 3230,
+        "red_kills": 2628,
+        "running": true,
+        "seconds": 31.7,
+        "simulation_hz": 20,
+        "step": 634,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.4000000059604645,
+        "render_ms": 0.5,
+        "instances": 6721,
+        "draw_calls": 19,
+        "triangles": 1947604,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.304736,
+          "p95_ms": 0.891456
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 2
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 34.005599999982124,
+      "fps": 97,
+      "frame_ms": 10.315555555555532,
+      "raf_p95_ms": 27.900000000001455,
+      "simulation": {
+        "attacks": 114800,
+        "blue": 2297,
+        "blue_kills": 1844,
+        "capped_attacks": 0,
+        "projectiles": 749,
+        "red": 3156,
+        "red_kills": 2703,
+        "running": true,
+        "seconds": 32.7,
+        "simulation_hz": 20,
+        "step": 654,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 3.100000023841858,
+        "render_ms": 0.30000001192092896,
+        "instances": 6581,
+        "draw_calls": 19,
+        "triangles": 1907885,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.318688,
+          "p95_ms": 0.866048
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 2
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 35.00049999998212,
+      "fps": 101,
+      "frame_ms": 9.945000000000032,
+      "raf_p95_ms": 27.80000000000291,
+      "simulation": {
+        "attacks": 117397,
+        "blue": 2217,
+        "blue_kills": 1923,
+        "capped_attacks": 0,
+        "projectiles": 715,
+        "red": 3077,
+        "red_kills": 2783,
+        "running": true,
+        "seconds": 33.7,
+        "simulation_hz": 20,
+        "step": 674,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.199999988079071,
+        "render_ms": 0.7000000178813934,
+        "instances": 6412,
+        "draw_calls": 19,
+        "triangles": 1850591,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.329824,
+          "p95_ms": 0.644224
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 2
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 36.00139999998212,
+      "fps": 103,
+      "frame_ms": 9.728333333333325,
+      "raf_p95_ms": 27.80000000000291,
+      "simulation": {
+        "attacks": 119936,
+        "blue": 2104,
+        "blue_kills": 1993,
+        "capped_attacks": 0,
+        "projectiles": 646,
+        "red": 3007,
+        "red_kills": 2896,
+        "running": true,
+        "seconds": 34.7,
+        "simulation_hz": 20,
+        "step": 694,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 22.5,
+        "render_ms": 1.300000011920929,
+        "instances": 6231,
+        "draw_calls": 19,
+        "triangles": 1806018,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.339104,
+          "p95_ms": 0.62736
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.7999999821186066
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 37.00209999998212,
+      "fps": 106,
+      "frame_ms": 9.451111111111135,
+      "raf_p95_ms": 27.80000000000291,
+      "simulation": {
+        "attacks": 122460,
+        "blue": 2026,
+        "blue_kills": 2112,
+        "capped_attacks": 0,
+        "projectiles": 589,
+        "red": 2888,
+        "red_kills": 2974,
+        "running": true,
+        "seconds": 35.7,
+        "simulation_hz": 20,
+        "step": 714,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.9000000059604645,
+        "render_ms": 0.3999999761581421,
+        "instances": 5936,
+        "draw_calls": 19,
+        "triangles": 1733337,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.30816,
+          "p95_ms": 0.5888
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.7999999821186066
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 38.002799999982116,
+      "fps": 106,
+      "frame_ms": 9.419999999999991,
+      "raf_p95_ms": 27.80000000000291,
+      "simulation": {
+        "attacks": 124934,
+        "blue": 1950,
+        "blue_kills": 2202,
+        "capped_attacks": 0,
+        "projectiles": 632,
+        "red": 2798,
+        "red_kills": 3050,
+        "running": true,
+        "seconds": 36.7,
+        "simulation_hz": 20,
+        "step": 734,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.9000000059604645,
+        "render_ms": 0.4000000059604645,
+        "instances": 5768,
+        "draw_calls": 19,
+        "triangles": 1691414,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.235072,
+          "p95_ms": 0.544352
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.7000000178813934
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 39.00349999998212,
+      "fps": 112,
+      "frame_ms": 8.89555555555558,
+      "raf_p95_ms": 22.400000000001455,
+      "simulation": {
+        "attacks": 126860,
+        "blue": 1875,
+        "blue_kills": 2287,
+        "capped_attacks": 0,
+        "projectiles": 632,
+        "red": 2713,
+        "red_kills": 3125,
+        "running": true,
+        "seconds": 37.6,
+        "simulation_hz": 20,
+        "step": 754,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.9000000059604645,
+        "render_ms": 0.4000000059604645,
+        "instances": 5612,
+        "draw_calls": 19,
+        "triangles": 1634541,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.22144,
+          "p95_ms": 0.586816
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.699999988079071
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 40.00419999998212,
+      "fps": 110,
+      "frame_ms": 9.11111111111111,
+      "raf_p95_ms": 27.69999999999709,
+      "simulation": {
+        "attacks": 128933,
+        "blue": 1793,
+        "blue_kills": 2340,
+        "capped_attacks": 0,
+        "projectiles": 778,
+        "red": 2660,
+        "red_kills": 3207,
+        "running": true,
+        "seconds": 38.6,
+        "simulation_hz": 20,
+        "step": 774,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.100000023841858,
+        "render_ms": 0.29999998211860657,
+        "instances": 5543,
+        "draw_calls": 19,
+        "triangles": 1588090,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.220992,
+          "p95_ms": 0.55088
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5,
+          "p95_ms": 1.5999999940395355
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 41.00499999998212,
+      "fps": 108,
+      "frame_ms": 9.235555555555523,
+      "raf_p95_ms": 27.799999999995634,
+      "simulation": {
+        "attacks": 130777,
+        "blue": 1671,
+        "blue_kills": 2379,
+        "capped_attacks": 0,
+        "projectiles": 678,
+        "red": 2621,
+        "red_kills": 3329,
+        "running": true,
+        "seconds": 39.6,
+        "simulation_hz": 20,
+        "step": 794,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.4000000059604645,
+        "render_ms": 0.29999998211860657,
+        "instances": 5362,
+        "draw_calls": 19,
+        "triangles": 1544595,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.22272,
+          "p95_ms": 0.553344
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.7000000178813934
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 42.00009999998212,
+      "fps": 112,
+      "frame_ms": 8.89555555555558,
+      "raf_p95_ms": 27.700000000004366,
+      "simulation": {
+        "attacks": 132846,
+        "blue": 1558,
+        "blue_kills": 2433,
+        "capped_attacks": 0,
+        "projectiles": 652,
+        "red": 2567,
+        "red_kills": 3442,
+        "running": true,
+        "seconds": 40.6,
+        "simulation_hz": 20,
+        "step": 814,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 2.800000011920929,
+        "render_ms": 0.6000000238418579,
+        "instances": 5218,
+        "draw_calls": 19,
+        "triangles": 1501891,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.227104,
+          "p95_ms": 0.629152
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5,
+          "p95_ms": 1.7000000178813934
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 43.00079999998212,
+      "fps": 112,
+      "frame_ms": 8.89555555555554,
+      "raf_p95_ms": 27.69999999999709,
+      "simulation": {
+        "attacks": 134786,
+        "blue": 1446,
+        "blue_kills": 2495,
+        "capped_attacks": 0,
+        "projectiles": 613,
+        "red": 2505,
+        "red_kills": 3554,
+        "running": true,
+        "seconds": 41.6,
+        "simulation_hz": 20,
+        "step": 834,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.9000000059604645,
+        "render_ms": 0.699999988079071,
+        "instances": 4940,
+        "draw_calls": 19,
+        "triangles": 1442941,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.220832,
+          "p95_ms": 0.631296
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.5999999940395355
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 44.00159999998212,
+      "fps": 109,
+      "frame_ms": 9.142777777777802,
+      "raf_p95_ms": 27.799999999995634,
+      "simulation": {
+        "attacks": 136692,
+        "blue": 1325,
+        "blue_kills": 2535,
+        "capped_attacks": 0,
+        "projectiles": 585,
+        "red": 2465,
+        "red_kills": 3675,
+        "running": true,
+        "seconds": 42.6,
+        "simulation_hz": 20,
+        "step": 854,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.5,
+        "render_ms": 0.5,
+        "instances": 4768,
+        "draw_calls": 19,
+        "triangles": 1397381,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.219872,
+          "p95_ms": 0.609984
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.800000011920929
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 45.00229999998212,
+      "fps": 119,
+      "frame_ms": 8.401666666666683,
+      "raf_p95_ms": 22.30000000000291,
+      "simulation": {
+        "attacks": 138584,
+        "blue": 1202,
+        "blue_kills": 2585,
+        "capped_attacks": 0,
+        "projectiles": 590,
+        "red": 2415,
+        "red_kills": 3798,
+        "running": true,
+        "seconds": 43.6,
+        "simulation_hz": 20,
+        "step": 874,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.7000000178813934,
+        "render_ms": 0.4000000059604645,
+        "instances": 4578,
+        "draw_calls": 19,
+        "triangles": 1341157,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.234368,
+          "p95_ms": 0.707552
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.5999999940395355
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 46.002999999982116,
+      "fps": 123,
+      "frame_ms": 8.123888888888905,
+      "raf_p95_ms": 22.30000000000291,
+      "simulation": {
+        "attacks": 140283,
+        "blue": 1078,
+        "blue_kills": 2626,
+        "capped_attacks": 0,
+        "projectiles": 537,
+        "red": 2374,
+        "red_kills": 3922,
+        "running": true,
+        "seconds": 44.6,
+        "simulation_hz": 20,
+        "step": 894,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.300000011920929,
+        "render_ms": 0.30000001192092896,
+        "instances": 4397,
+        "draw_calls": 19,
+        "triangles": 1291478,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.22496,
+          "p95_ms": 0.706464
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.5999999940395355
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 47.00379999998212,
+      "fps": 125,
+      "frame_ms": 8.030555555555555,
+      "raf_p95_ms": 22.30000000000291,
+      "simulation": {
+        "attacks": 141827,
+        "blue": 957,
+        "blue_kills": 2666,
+        "capped_attacks": 0,
+        "projectiles": 510,
+        "red": 2334,
+        "red_kills": 4043,
+        "running": true,
+        "seconds": 45.6,
+        "simulation_hz": 20,
+        "step": 914,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.5,
+        "render_ms": 0.5999999940395355,
+        "instances": 4123,
+        "draw_calls": 19,
+        "triangles": 1214258,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.202848,
+          "p95_ms": 0.498464
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.5999999940395355
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 48.00469999998212,
+      "fps": 120,
+      "frame_ms": 8.308888888888921,
+      "raf_p95_ms": 22.400000000001455,
+      "simulation": {
+        "attacks": 143068,
+        "blue": 827,
+        "blue_kills": 2694,
+        "capped_attacks": 0,
+        "projectiles": 511,
+        "red": 2306,
+        "red_kills": 4173,
+        "running": true,
+        "seconds": 46.6,
+        "simulation_hz": 20,
+        "step": 934,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.7000000178813934,
+        "render_ms": 0.699999988079071,
+        "instances": 3954,
+        "draw_calls": 19,
+        "triangles": 1162059,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.195552,
+          "p95_ms": 0.62816
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.4000000059604645
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 49.00509999998212,
+      "fps": 127,
+      "frame_ms": 7.876111111111135,
+      "raf_p95_ms": 22.299999999995634,
+      "simulation": {
+        "attacks": 144400,
+        "blue": 710,
+        "blue_kills": 2719,
+        "capped_attacks": 0,
+        "projectiles": 478,
+        "red": 2281,
+        "red_kills": 4290,
+        "running": true,
+        "seconds": 47.6,
+        "simulation_hz": 20,
+        "step": 954,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.9000000059604645,
+        "render_ms": 0.4000000059604645,
+        "instances": 3814,
+        "draw_calls": 18,
+        "triangles": 1114436,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.189888,
+          "p95_ms": 0.526112
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.5
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 50.00029999998212,
+      "fps": 132,
+      "frame_ms": 7.566666666666666,
+      "raf_p95_ms": 22.19999999999709,
+      "simulation": {
+        "attacks": 145404,
+        "blue": 593,
+        "blue_kills": 2731,
+        "capped_attacks": 0,
+        "projectiles": 397,
+        "red": 2269,
+        "red_kills": 4407,
+        "running": true,
+        "seconds": 48.6,
+        "simulation_hz": 20,
+        "step": 974,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.5,
+        "render_ms": 0.699999988079071,
+        "instances": 3570,
+        "draw_calls": 18,
+        "triangles": 1059810,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.190208,
+          "p95_ms": 0.51088
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.5
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 51.001099999982124,
+      "fps": 133,
+      "frame_ms": 7.5055555555555555,
+      "raf_p95_ms": 16.80000000000291,
+      "simulation": {
+        "attacks": 146311,
+        "blue": 484,
+        "blue_kills": 2749,
+        "capped_attacks": 0,
+        "projectiles": 327,
+        "red": 2251,
+        "red_kills": 4516,
+        "running": true,
+        "seconds": 49.6,
+        "simulation_hz": 20,
+        "step": 994,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.2000000178813934,
+        "render_ms": 0.699999988079071,
+        "instances": 3328,
+        "draw_calls": 18,
+        "triangles": 992716,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.184128,
+          "p95_ms": 0.529792
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.5
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 52.00179999998212,
+      "fps": 134,
+      "frame_ms": 7.474444444444453,
+      "raf_p95_ms": 16.799999999995634,
+      "simulation": {
+        "attacks": 147262,
+        "blue": 410,
+        "blue_kills": 2768,
+        "capped_attacks": 0,
+        "projectiles": 338,
+        "red": 2232,
+        "red_kills": 4590,
+        "running": true,
+        "seconds": 50.6,
+        "simulation_hz": 20,
+        "step": 1014,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.5,
+        "render_ms": 0.699999988079071,
+        "instances": 3204,
+        "draw_calls": 18,
+        "triangles": 956618,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.17536,
+          "p95_ms": 0.534432
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.4000000059604645
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 53.002599999982124,
+      "fps": 137,
+      "frame_ms": 7.319999999999992,
+      "raf_p95_ms": 16.700000000004366,
+      "simulation": {
+        "attacks": 148151,
+        "blue": 328,
+        "blue_kills": 2787,
+        "capped_attacks": 0,
+        "projectiles": 308,
+        "red": 2213,
+        "red_kills": 4672,
+        "running": true,
+        "seconds": 51.6,
+        "simulation_hz": 20,
+        "step": 1034,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 1.300000011920929,
+        "render_ms": 0.4000000059604645,
+        "instances": 3057,
+        "draw_calls": 18,
+        "triangles": 915769,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.153568,
+          "p95_ms": 0.534432
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.399999976158142
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    },
+    {
+      "wall_s": 54.00319999998212,
+      "fps": 139,
+      "frame_ms": 7.196666666666674,
+      "raf_p95_ms": 16.700000000004366,
+      "simulation": {
+        "attacks": 149049,
+        "blue": 245,
+        "blue_kills": 2797,
+        "capped_attacks": 0,
+        "projectiles": 283,
+        "red": 2203,
+        "red_kills": 4755,
+        "running": true,
+        "seconds": 52.6,
+        "simulation_hz": 20,
+        "step": 1054,
+        "stress": false,
+        "total": 10000
+      },
+      "renderer": {
+        "bridge_ms": 14.599999994039536,
+        "render_ms": 0.9000000059604645,
+        "instances": 2947,
+        "draw_calls": 18,
+        "triangles": 882339,
+        "textures": 1,
+        "particles": 0,
+        "effects": 0,
+        "bloom": false,
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 240,
+          "median_ms": 0.15024,
+          "p95_ms": 0.466336
+        },
+        "cpu_on": null,
+        "cpu_off": {
+          "samples": 240,
+          "median_ms": 0.5999999940395355,
+          "p95_ms": 1.4000000059604645
+        },
+        "drawing_buffer": [
+          1280,
+          720
+        ],
+        "frozen": false,
+        "dropped_steps": 57
+      }
+    }
+  ],
+  "profile": {
+    "frame": 3590,
+    "runtime": {
+      "counts": {
+        "effects": 0,
+        "entities": 1,
+        "instance_bytes": 116720,
+        "instances": 2918,
+        "observations": 3,
+        "particles": 0,
+        "rigidbodies": 0,
+        "ui_nodes": 0
+      },
+      "frame_budget_ms": 16.667,
+      "frames": 3590,
+      "frames_over_budget": 256,
+      "luau_memory_bytes": 14377292,
+      "mean_frame_ms": 10.369,
+      "median_frame_ms": 0.2,
+      "notes": [
+        "wall clock timings, excluded from the observation digest",
+        "a debug build measures debug costs; compare like with like",
+        "median, p95, and frames-over-budget use the most recent bounded sample window (up to 1024 frames)"
+      ],
+      "p95_frame_ms": 23.7,
+      "phases": [
+        {
+          "mean_ms": 10.251,
+          "name": "script",
+          "share": 0.99,
+          "total_ms": 36800.9
+        },
+        {
+          "mean_ms": 0.001,
+          "name": "physics",
+          "share": 0,
+          "total_ms": 1.8
+        },
+        {
+          "mean_ms": 0.107,
+          "name": "observe",
+          "share": 0.01,
+          "total_ms": 384.3
+        }
+      ],
+      "slowest_frame": {
+        "frame": 428,
+        "observe_ms": 0,
+        "physics_ms": 0,
+        "script_ms": 86.4,
+        "total_ms": 86.4
+      },
+      "sustained_fps": 96.4,
+      "total_ms": 37224.6
+    },
+    "window": {
+      "active": false,
+      "dropped_samples": 0,
+      "first_frame": 0,
+      "functions": {},
+      "id": 0,
+      "last_frame": 0,
+      "limits": {
+        "depth": 32,
+        "functions": 1024,
+        "minimum_interval_ms": 1,
+        "stacks": 4096
+      },
+      "samples": 0,
+      "sampling": false,
+      "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled.",
+      "stacks": [],
+      "truncated_stacks": 0
+    },
+    "build": {
+      "debug_assertions": false,
+      "preview_tools": true
+    },
+    "host_window": {
+      "id": 0,
+      "active": false,
+      "wall_ms": 0,
+      "tick_count": 0,
+      "render_count": 0,
+      "retained_limit": 2048,
+      "cpu": {
+        "input_ms": null,
+        "wasm_tick_publish_ms": null,
+        "decode_ms": null
+      },
+      "render_cpu": null,
+      "note": "Disjoint host CPU spans. WASM tick includes runtime and publication. GPU timing is separate. Distributions cover retained samples only."
+    },
+    "renderer": {
+      "bridge_ms": 3.0999999940395355,
+      "render_ms": 0.30000001192092896,
+      "instances": 2918,
+      "draw_calls": 18,
+      "triangles": 874895,
+      "textures": 1,
+      "particles": 0,
+      "effects": 0,
+      "bloom": false,
+      "bloom_resolution": [
+        1,
+        1
+      ],
+      "hdr": true,
+      "gpu_timer_available": true,
+      "gpu_on": null,
+      "gpu_off": {
+        "samples": 240,
+        "median_ms": 0.15024,
+        "p95_ms": 0.453952
+      },
+      "cpu_on": null,
+      "cpu_off": {
+        "samples": 240,
+        "median_ms": 0.5999999940395355,
+        "p95_ms": 1.4000000059604645
+      },
+      "drawing_buffer": [
+        1280,
+        720
+      ],
+      "frozen": false,
+      "dropped_steps": 57
+    },
+    "paused": true,
+    "note": "renderer counters may use a different rolling window; bridge_ms includes WASM tick, not pure bridge cost"
+  },
+  "source_commit": "4ce04d4",
+  "source_webm_sha256": "01dada5f9d75e14601aa316611d6c3fd9d21a76184e45b5feebc766d88b7941c"
+}

@@ -2,9 +2,15 @@
 
 A Web battle prototype used to expose engine limits. Two armies start with 5,000 units each and fight automatically: infantry, archers, cavalry, ballistae, catapults, flyers and mages. The game includes melee, ranged trajectories, area damage, flying movement, deaths and selectable cameras.
 
-[![Real-time battle excerpt](../../docs/media/legion-fall-preview.gif)](../../docs/media/legion-fall-demo.mp4)
+| 優化前（基準版本） | 第一輪優化後 |
+|---|---|
+| ![Before optimization](../../docs/media/legion-fall-preview.gif) | ![After round one](../../docs/media/legion-fall-optimized.gif) |
 
-[Full 54-second recording](../../docs/media/legion-fall-demo.mp4). The recording preserves wall-clock playback speed and displays living units, RAF FPS, simulation time and wall time. The GIF is only a short excerpt. This is a working demonstration, **not a claim that 10,000-unit performance is solved**.
+第二輪優化完成後再追加比較。These are different recording windows, not a controlled FPS A/B test.
+
+Optimized build, 12 seconds at original playback speed, GIF encoded at 10 fps. [Capture details](../../docs/media/legion-fall-optimized.md) · [Optimization report](../../docs/legion-fall-optimization.md).
+
+The [original 54-second baseline recording](../../docs/media/legion-fall-demo.mp4) predates optimization. Neither recording proves stable 60 FPS with 10,000 units.
 
 ## Run
 
@@ -31,4 +37,4 @@ For recording, use `python _Games/legion-fall/serve_capture.py _Games/legion-fal
 
 Performance findings and capture conditions are in [the measurement record](../../docs/legion-fall-demo.md). Asset authors, licenses and conversion details are in [ASSETS.md](ASSETS.md).
 
-The recording above predates the optimization. See [the optimization report](../../docs/legion-fall-optimization.md) for controlled CPU measurements; these are not a replacement browser FPS recording.
+The original baseline recording predates the optimization. See [the optimization report](../../docs/legion-fall-optimization.md) for controlled CPU measurements; these are not a replacement browser FPS recording.
