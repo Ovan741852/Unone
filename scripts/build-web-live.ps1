@@ -7,6 +7,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$parityNode = if ($Player) { (Get-Command node -ErrorAction Stop).Source } else { $null }
 
 # The SDK path belongs to the machine, not to this repository. It used to be one
 # hardcoded Unity install path, so on any other machine this script set bogus
@@ -75,6 +76,9 @@ if ($Player) {
         javascript_sha256=(Get-FileHash $javascript.FullName -Algorithm SHA256).Hash.ToLowerInvariant();
         exports=$exports; source_commit=(git -C $repoRoot rev-parse HEAD); source_dirty=[bool](git -C $repoRoot status --porcelain) }
     [IO.File]::WriteAllText((Join-Path $outputRoot 'runtime.json'), ($report | ConvertTo-Json -Depth 6), [Text.UTF8Encoding]::new($false))
+    # Run the actual export gate with Node selected before the SDK changed PATH.
+    & $parityNode (Join-Path $repoRoot 'scripts/verify-player-parity.mjs') --runtime $outputRoot
+    if ($LASTEXITCODE -ne 0) { throw 'Player artifact parity failed. Build the current native CLI with cargo build -p unone-cli, fix any mismatch, then rerun this player build.' }
     Write-Output ($report | ConvertTo-Json -Depth 6)
 } else {
     cargo build --quiet -p unone-web-live-smoke --target wasm32-unknown-emscripten

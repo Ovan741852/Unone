@@ -11,9 +11,9 @@ From the repository root:
 
 ```powershell
 ./scripts/install-binaryen.ps1
-./scripts/build-web-live.ps1 -Player
-node scripts/build-three-player.mjs
 cargo build -p unone-cli
+node scripts/build-three-player.mjs
+./scripts/build-web-live.ps1 -Player
 ./target/debug/game.exe --project _Games/dragon-tycoon3 export web --output _Games/dragon-tycoon3/dist/release --json
 python scripts/serve-export.py _Games/dragon-tycoon3/dist/release --port 8176 --gzip
 ```
@@ -34,6 +34,21 @@ no project switcher, no debug panel, no authoring source directory dependency,
 and no CDN. It can be served from a subdirectory. Export currently requires this
 source checkout's presentation files; a standalone installed CLI distribution
 must ship them before it can support this command.
+
+The player build requires Node.js 22+ and the current native CLI. Its acceptance
+gate runs `game export web` on the replay fixture, loads the emitted
+`content/project.json`, exported loader and exported release WASM, and compares
+native observation digests. It also corrupts the emitted audio declaration and
+requires the comparison to fail. Run it independently with
+`node scripts/verify-player-parity.mjs`, or check an existing game export with
+`node scripts/verify-host-parity.mjs --export <directory> --fixture <source-project>`.
+The latter requires the source project's replay tests. This is separate from the
+developer-host gate, which assembles a payload from source and identifies itself
+as `assembled-host`; it is not evidence for an exported player.
+
+For a local emulator on the LAN, the measurement server supports an explicit
+`--bind <your-LAN-IP>`; its default remains loopback. For example:
+`python scripts/serve-export.py <export> --port 8187 --gzip --bind 192.168.0.100`.
 
 Supported presentation: Three.js WebGL primitive boxes/spheres, textured
 [static mesh JSON](static-mesh.md), image sprites, DOM UI, Web Audio, and native

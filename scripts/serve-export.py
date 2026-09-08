@@ -1,7 +1,7 @@
 """Local release measurement server. Not a production deployment server."""
 import argparse, gzip, http.server, json
 from pathlib import Path
-parser=argparse.ArgumentParser();parser.add_argument('root',type=Path);parser.add_argument('--port',type=int,default=8174);parser.add_argument('--gzip',action='store_true');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('root',type=Path);parser.add_argument('--port',type=int,default=8174);parser.add_argument('--gzip',action='store_true');parser.add_argument('--bind',default='127.0.0.1');args=parser.parse_args()
 root=args.root.resolve(strict=True)
 class Handler(http.server.SimpleHTTPRequestHandler):
     extensions_map={**http.server.SimpleHTTPRequestHandler.extensions_map,'.mjs':'text/javascript','.js':'text/javascript','.wasm':'application/wasm'}
@@ -17,4 +17,4 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         import io
         print(json.dumps({'path':self.path,'raw_bytes':len(raw),'body_bytes':len(data)}),flush=True)
         return io.BytesIO(data)
-http.server.ThreadingHTTPServer(('127.0.0.1',args.port),Handler).serve_forever()
+http.server.ThreadingHTTPServer((args.bind,args.port),Handler).serve_forever()

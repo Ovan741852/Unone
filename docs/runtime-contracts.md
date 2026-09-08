@@ -52,6 +52,10 @@ time point. It includes an audio-omission negative control. Package verification
 runs this against its packaged binaries; binary string searches are removed.
 This proves the exercised replay contracts, not every possible future declaration
 or rendering equivalence. Extend the fixture as observable contracts grow.
+Player release acceptance additionally uses the actual export's payload, loader
+and runtime (`verify-player-parity.mjs`), including an on-disk payload corruption
+negative control. See [Luau replay boundary](luau-determinism.md) for the supported
+numeric/ordering discipline, enforced ambient-source guards and exclusions.
 
 Normalized `InputFrame` is the replay boundary. Every field is checked before
 runtime mutation. Explicit frames are consumed once; omitted pointers release

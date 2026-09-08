@@ -1,0 +1,71 @@
+//! Narrow guards against ambient time and the VM's independently seeded RNG.
+//! This is not a verifier for arbitrary Luau. See docs/luau-determinism.md.
+use mlua::{Lua, Table, Value};
+
+fn install(lua: &Lua) -> mlua::Result<()> {
+    for (library, names, guidance) in [
+        (
+            "math",
+            &["random", "randomseed"][..],
+            "Use api.random.nextFloat/nextInt and the replay seed.",
+        ),
+        (
+            "os",
+            &["clock", "time", "date"][..],
+            "Use fixed update dt or recorded input; measure performance outside gameplay.",
+        ),
+    ] {
+        let table: Table = lua.globals().get(library)?;
+        for name in names {
+            let message =
+                format!("LUA_NONDETERMINISTIC_SOURCE: {library}.{name} is unavailable. {guidance}");
+            table.set(
+                *name,
+                lua.create_function(move |_, _: mlua::MultiValue| {
+                    Err::<Value, _>(mlua::Error::RuntimeError(message.clone()))
+                })?,
+            )?;
+        }
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::EngineRuntime;
+
+    #[test]
+    fn real_runtime_rejects_ambient_time_and_vm_random_before_start() {
+        for expression in [
+            "math.random()",
+            "math.randomseed(42)",
+            "os.clock()",
+            "os.time()",
+            "os.date()",
+        ] {
+            let source = format!(
+                "local value = {expression}; return {{start=function() end, update=function() end}}"
+            );
+            let error = EngineRuntime::load_source("guard", "main.luau", &source, None)
+                .err()
+                .expect("ambient source must fail");
+            assert!(
+                error.explanation.contains("LUA_NONDETERMINISTIC_SOURCE"),
+                "{}",
+                error.explanation
+            );
+        }
+    }
+}
+
+pub(super) fn new_vm() -> Result<Lua, Box<crate::Diagnostic>> {
+    let lua = Lua::new();
+    install(&lua).map_err(|error| {
+        Box::new(crate::Diagnostic::error(
+            "ENGINE_INIT_FAILED",
+            "Unable to install Luau replay guards",
+            error.to_string(),
+        ))
+    })?;
+    Ok(lua)
+}
