@@ -336,7 +336,7 @@ impl State {
                     let data = runtime
                         .preview_request(command)
                         .map_err(|e| anyhow::anyhow!("{}: {}", e.code, e.explanation))?;
-                    json!({"host":"native","frame":data["counts_frame"],"runtime":data["performance"],"window":data["window"],"build":data["build"],"host_window":null,"renderer":{"render_ms":self.render_ms,"dropped_steps":self.dropped_steps},"paused":self.paused})
+                    json!({"host":"native","frame":data["counts_frame"],"runtime":data["performance"],"window":data["window"],"build":data["build"],"host_window":null,"publication":null,"renderer":{"render_ms":self.render_ms,"dropped_steps":self.dropped_steps},"paused":self.paused})
                 }
                 "memory" => {
                     json!({"host":"native","luau_used_bytes":runtime.preview_request(PreviewRequest::Profile {}).map_err(|e|anyhow::anyhow!(e.explanation))?["performance"]["luau_memory_bytes"],"wasm_linear_bytes":null,"js_heap":null,"note":"Native process RSS and GPU allocations are not currently instrumented; no browser memory is reported as native memory."})

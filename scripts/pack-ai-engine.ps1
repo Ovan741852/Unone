@@ -103,6 +103,9 @@ foreach ($directory in @('web/shared','web/renderer','web/vendor/three','tests/h
     }
 }
 Copy-PackageFile (Join-Path $engineRoot 'scripts/verify-host-parity.mjs') 'scripts/verify-host-parity.mjs'
+foreach ($tool in @('profile-player.mjs','compare-player.mjs')) {
+    Copy-PackageFile (Join-Path $engineRoot "scripts/$tool") "scripts/$tool"
+}
 Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.js") "web\runtime\unone_web_live_smoke.js"
 Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.wasm") "web\runtime\unone_web_live_smoke.wasm"
 Copy-PackageFile (Join-Path $engineRoot "scripts\verify-ai-engine-package.ps1") "scripts\verify-ai-engine-package.ps1"
@@ -133,6 +136,8 @@ runtime/tool input a game subagent should need. Read docs/ai-agent-game-handoff.
 before writing game code.
 
 Native command: bin/game.exe
+Profiling: scripts/profile-player.mjs and scripts/compare-player.mjs
+(Node.js 22+; supply an exported development game with --export or --before/--after)
 Luau analyzer: bin/luau-analyze.exe (game check --types finds it automatically)
 Optional AI plugins: docs/plugin-protocol.md and plugins/
 Web runner: web/runner/index.html

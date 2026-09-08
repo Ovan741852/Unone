@@ -44,3 +44,5 @@ The original baseline recording predates the optimization. See [the optimization
 Combat still commits at 20 Hz. Each update is now prepared in three fixed Lua work partitions over the 60 Hz engine clock; the third tick resolves damage and publishes the complete state. Unit iteration and damage ordering are unchanged. There is no wall-clock budget in gameplay. The camera reads the last published battle time. Reset discards pending work; the game pause control freezes and resumes its current phase.
 
 Run `node _Games/legion-fall/verify-phases.mjs <development-export>` to verify no partial publication and reset/pause behavior at both unfinished phases. This test normalizes only engine frame/time when comparing a reset to a fresh game. For the full battle, compare every tick with the previous export using `scripts/compare-player.mjs --checkpoint-every 1`.
+
+[第三輪：精確 hash 重用與工具量測](../../docs/legion-fall-round3.md)。目前工作分配為 37/53/10，遊戲規則維持 Lua。

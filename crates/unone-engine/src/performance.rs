@@ -53,6 +53,7 @@ pub struct PhaseCost {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct SlowestFrame {
+    /// Completed world frame, not the index within a profiling window.
     pub frame: u64,
     pub total_ms: f64,
     pub script_ms: f64,
@@ -120,8 +121,7 @@ impl Default for PerformanceCollector {
 }
 
 impl PerformanceCollector {
-    pub(crate) fn record(&mut self, timing: FrameTiming) {
-        let frame = self.frame_count;
+    pub(crate) fn record(&mut self, frame: u64, timing: FrameTiming) {
         self.frame_count = self.frame_count.saturating_add(1);
         self.total = self.total.saturating_add(timing.total);
         self.script = self.script.saturating_add(timing.script);
@@ -332,9 +332,9 @@ mod tests {
     #[test]
     fn it_names_the_phase_that_costs_the_most_and_the_worst_frame() {
         let mut collector = PerformanceCollector::default();
-        collector.record(frame(1_000, 100, 100));
-        collector.record(frame(1_000, 100, 100));
-        collector.record(frame(9_000, 100, 100));
+        collector.record(40, frame(1_000, 100, 100));
+        collector.record(41, frame(1_000, 100, 100));
+        collector.record(42, frame(9_000, 100, 100));
 
         let report = collector.report(
             FrameCounts {
@@ -350,7 +350,7 @@ mod tests {
         assert_eq!(script.name, "script");
         assert!(script.share > 0.9, "script share was {}", script.share);
         let slowest = report.slowest_frame.expect("a slowest frame");
-        assert_eq!(slowest.frame, 2);
+        assert_eq!(slowest.frame, 42);
         assert!((slowest.script_ms - 9.0).abs() < 0.01, "{slowest:?}");
         assert_eq!(report.counts.entities, 3);
         assert_eq!(report.luau_memory_bytes, 2048);
@@ -359,8 +359,8 @@ mod tests {
     #[test]
     fn it_counts_frames_that_missed_the_fixed_timestep_budget() {
         let mut collector = PerformanceCollector::default();
-        collector.record(frame(1_000, 0, 0));
-        collector.record(frame(20_000, 0, 0));
+        collector.record(collector.frame_count, frame(1_000, 0, 0));
+        collector.record(1, frame(20_000, 0, 0));
         let report = collector.report(FrameCounts::default(), 0, Duration::from_micros(16_667));
         assert_eq!(report.frames_over_budget, 1);
         assert!(report.sustained_fps > 0.0);
@@ -382,9 +382,9 @@ mod tests {
     #[test]
     fn it_bounds_samples_while_preserving_cumulative_totals_and_maxima() {
         let mut collector = PerformanceCollector::default();
-        collector.record(frame(100_000, 0, 0));
+        collector.record(0, frame(100_000, 0, 0));
         for _ in 0..MAX_FRAME_SAMPLES {
-            collector.record(frame(1_000, 0, 0));
+            collector.record(collector.frame_count, frame(1_000, 0, 0));
         }
 
         assert_eq!(collector.samples.len(), MAX_FRAME_SAMPLES);

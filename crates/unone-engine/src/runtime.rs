@@ -850,12 +850,15 @@ impl EngineRuntime {
         #[cfg(not(feature = "preview-tools"))]
         let record = true;
         if record {
-            self.performance.record(FrameTiming {
-                script: script_time,
-                physics: physics_time,
-                observe: observe_time,
-                total: started.elapsed(),
-            });
+            self.performance.record(
+                snapshot.frame,
+                FrameTiming {
+                    script: script_time,
+                    physics: physics_time,
+                    observe: observe_time,
+                    total: started.elapsed(),
+                },
+            );
         }
         Ok(snapshot)
     }

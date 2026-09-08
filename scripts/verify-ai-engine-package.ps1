@@ -66,6 +66,8 @@ $requiredFiles = @(
     "docs\platform-toolchain.md",
     "docs\review-process.md",
     "scripts\verify-ai-engine-package.ps1",
+    "scripts\profile-player.mjs",
+    "scripts\compare-player.mjs",
     "web\runner\index.html",
     "web\runner\main.js",
     "web\runner\save-store.js",
@@ -118,6 +120,10 @@ foreach ($helper in @(
 # Execute the actual packaged CLI and WASM against the same project and inputs.
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
     throw "Node.js is required for behavioral parity. Install Node.js 22+ and rerun this verifier."
+}
+foreach ($tool in @('profile-player.mjs','compare-player.mjs')) {
+    & node --check (Join-Path $packageRoot "scripts/$tool")
+    if ($LASTEXITCODE -ne 0) { throw "Invalid packaged profiling tool: $tool" }
 }
 & node (Join-Path $packageRoot 'scripts/verify-host-parity.mjs') --cli (Join-Path $packageRoot 'bin/game.exe') --wasm (Join-Path $packageRoot 'web/runtime/unone_web_live_smoke.js') --fixture (Join-Path $packageRoot 'tests/host-parity-project')
 if ($LASTEXITCODE -ne 0) { throw 'CLI/WASM behavioral parity failed. Rebuild both artifacts and inspect the shared host payload.' }

@@ -1,0 +1,5 @@
+{
+  "conditions": {"population":10000,"stress":true,"sampling":false,"warmup_ticks":30,"drawing_buffer":[1280,720],"order":"after, before","note":"Single exploratory window per artifact, different durations. CPU render completions are not display FPS. Baseline lacks dropped-step window delta. Counts include projectile/effect instances."},
+  "before": {"wall_ms":29295.19999998808,"tick_count":1756,"render_count":2024,"wasm_tick_publish_mean_ms":14.353815489875021,"wasm_tick_publish_p95_ms":19.100000023841858,"render_cpu_mean_ms":0.7983201582853502,"render_interval_p95_ms":23.900000005960464,"dropped_steps_delta":null,"lua_mean_ms":11.206,"gpu_rolling_median_ms":0.541216},
+  "after": {"wall_ms":17778.79999998212,"tick_count":1065,"render_count":1646,"wasm_tick_publish_mean_ms":12.528356807360627,"wasm_tick_publish_p95_ms":16.599999994039536,"render_cpu_mean_ms":0.7010328071882195,"render_interval_p95_ms":23.400000005960464,"dropped_steps_delta":0,"lua_mean_ms":10.989,"gpu_rolling_median_ms":0.532704,"publication_encode_mean_ms":0.3022535211267608,"publication_hash_mean_ms":0.8985915492957832,"publication_count":1065,"hash_cache_hits":710}
+}

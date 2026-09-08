@@ -217,7 +217,7 @@ function Game.update(api,dt)
  -- Fixed work partitions, never a wall-clock budget. Internal work stays private
  -- until the third tick publishes the same complete 20 Hz battle result.
  phase+=1
- local firstCut=floor(count*.34);local secondCut=floor(count*.82)
+ local firstCut=floor(count*.37);local secondCut=floor(count*.90)
  if phase==1 then
   step+=1;elapsed+=.05;rebuildGrid()
   teamShots={0,0};for _,p in ipairs(shots)do teamShots[p.team]+=1 end

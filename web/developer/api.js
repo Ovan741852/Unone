@@ -57,9 +57,9 @@ export function createDeveloperAPI(host,telemetry){
           const method=input.method==='profile'?'profile':input.method.replace('.','_');
           const sampling=input.method==='profile.start'?('sampling'in input?bool('sampling'):false):undefined;
           const data=core({method,...(sampling===undefined?{}:{sampling})});
-          if(input.method==='profile.start'){host.profileWindow?.start();mutating=true;}
-          if(input.method==='profile.stop'){host.profileWindow?.stop();mutating=true;}
-          value={frame:data.counts_frame,runtime:data.performance,window:data.window,build:data.build,host_window:host.profileWindow?.read()??null,renderer:host.getStats(),paused:host.getPaused(),note:'renderer counters may use a different rolling window; bridge_ms includes WASM tick, not pure bridge cost'};break;
+          if(input.method==='profile.start'){host.profileWindow?.start(host.getStats()??{});mutating=true;}
+          if(input.method==='profile.stop'){host.profileWindow?.stop(host.getStats()??{});mutating=true;}
+          value={frame:data.counts_frame,runtime:data.performance,window:data.window,build:data.build,host_window:host.profileWindow?.read(host.getStats()??{})??null,publication:data.publication??null,renderer:host.getStats(),paused:host.getPaused(),note:'renderer counters may use a different rolling window; bridge_ms includes WASM tick, not pure bridge cost'};break;
         }
         case 'memory':{const data=core({method:'profile'});value={luau_used_bytes:data.performance.luau_memory_bytes,wasm_linear_bytes:host.module.HEAPU8.buffer.byteLength,js_heap:telemetry.heap(),renderer:host.getStats(),note:'WASM capacity is not live allocation; renderer counters are not GPU byte usage. Unsupported JS heap is null.'};break;}
         case 'journal':value={events:journal};break;

@@ -16,12 +16,73 @@ thread_local! {
     static OUTPUT: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static INPUT_BUFFER: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static PROJECT_NAME: RefCell<String> = const { RefCell::new(String::new()) };
+    static CANONICAL_HASHER: RefCell<unone_engine::CanonicalHasher> = RefCell::new(unone_engine::CanonicalHasher::default());
     static INSTANCE_MEMORY: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
     // Pointers remain valid until the next successful world publication.
     static INSTANCE_BUFFERS: RefCell<Vec<std::sync::Arc<[u8]>>> = const { RefCell::new(Vec::new()) };
     #[cfg(feature = "dev-tools")]
     static BUNDLE_VERIFIER: RefCell<Option<BundleVerifier>> = const { RefCell::new(None) };
 }
+
+#[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+#[derive(Default)]
+struct PublicationProfile {
+    active: bool,
+    id: u64,
+    count: u64,
+    input_bytes: u64,
+    reused_bytes: u64,
+    hashed_bytes: u64,
+    cache_hits: u64,
+    cache_storage_bytes: usize,
+    totals: [f64; 4],
+    samples: std::collections::VecDeque<[f64; 4]>,
+}
+#[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+impl PublicationProfile {
+    fn record(&mut self, sample: [f64; 4], work: unone_engine::CanonicalHashWork) {
+        if !self.active {
+            return;
+        }
+        self.count += 1;
+        self.cache_storage_bytes = work.cache_storage_bytes;
+        self.input_bytes += work.input_bytes as u64;
+        self.reused_bytes += work.reused_bytes as u64;
+        self.hashed_bytes += work.hashed_bytes as u64;
+        if work.reused_bytes > 0 {
+            self.cache_hits += 1;
+        }
+        for (total, value) in self.totals.iter_mut().zip(sample) {
+            *total += value;
+        }
+        if self.samples.len() == 1024 {
+            self.samples.pop_front();
+        }
+        self.samples.push_back(sample);
+    }
+    fn report(&self) -> serde_json::Value {
+        let mut phases = serde_json::Map::new();
+        for (i, name) in [
+            "canonical_encode_ms",
+            "canonical_hash_ms",
+            "presentation_ms",
+            "envelope_ms",
+        ]
+        .iter()
+        .enumerate()
+        {
+            let mut values: Vec<f64> = self.samples.iter().map(|v| v[i]).collect();
+            values.sort_by(f64::total_cmp);
+            phases.insert(name.to_string(), serde_json::json!({"total_ms": self.totals[i],
+                "mean_ms": if self.count == 0 { 0. } else { self.totals[i] / self.count as f64 },
+                "p95_ms": if values.is_empty() { None } else { Some(values[(values.len()*95).div_ceil(100)-1]) }}));
+        }
+        serde_json::json!({"id":self.id,"active":self.active,"publications":self.count,"retained":self.samples.len(),"limit":1024,"phases":phases,"hash_work":{"input_bytes":self.input_bytes,"reused_bytes":self.reused_bytes,"hashed_bytes":self.hashed_bytes,"cache_hit_publications":self.cache_hits,"max_retained_prefix_bytes":unone_engine::CanonicalHasher::MAX_PREFIX_BYTES,"last_cache_storage_bytes":self.cache_storage_bytes},
+            "note":"Disjoint successful world-publication CPU spans. Excludes simulation and initial world capture; includes extra timing/collection overhead. Totals span the window; p95 uses retained samples. Not GPU or browser decode time."})
+    }
+}
+#[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+thread_local! { static PUBLICATION_PROFILE: RefCell<PublicationProfile> = RefCell::new(PublicationProfile::default()); }
 
 fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Box<Diagnostic>> {
     project.into_runtime(seed)
@@ -43,8 +104,28 @@ fn write_snapshot(
     snapshot: &WorldSnapshot,
     save_payload: Option<serde_json::Value>,
 ) -> Result<(), String> {
-    let (world, observation_digest) = unone_engine::encode_observation(snapshot)
-        .map_err(|error| format!("snapshot digest serialization failed: {error}"))?;
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let measuring = PUBLICATION_PROFILE.with(|p| p.borrow().active);
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let encode_started = measuring.then(std::time::Instant::now);
+    let world = serde_json::value::to_raw_value(snapshot).map_err(|e| e.to_string())?;
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let encode_ms = encode_started
+        .map(|s| s.elapsed().as_secs_f64() * 1000.)
+        .unwrap_or(0.);
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let hash_started = measuring.then(std::time::Instant::now);
+    let (observation_digest, _hash_work) =
+        CANONICAL_HASHER.with(|h| h.borrow_mut().hash(world.get().as_bytes()));
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let encoding_times = [
+        encode_ms,
+        hash_started
+            .map(|s| s.elapsed().as_secs_f64() * 1000.)
+            .unwrap_or(0.),
+    ];
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let presentation_started = measuring.then(std::time::Instant::now);
     let mut retained = Vec::new();
     let world = if INSTANCE_MEMORY.with(|m| m.get()) {
         let mut value = serde_json::to_value(snapshot).map_err(|e| e.to_string())?;
@@ -57,6 +138,12 @@ fn write_snapshot(
     } else {
         world
     };
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let presentation_ms = presentation_started
+        .map(|s| s.elapsed().as_secs_f64() * 1000.)
+        .unwrap_or(0.);
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let envelope_started = measuring.then(std::time::Instant::now);
     let observation = ProjectObservation {
         compiled_systems: unone_engine::compiled_systems(),
         project,
@@ -75,6 +162,20 @@ fn write_snapshot(
         .map_err(|error| format!("snapshot serialization failed: {error}"))?;
     OUTPUT.with(|output| *output.borrow_mut() = bytes);
     INSTANCE_BUFFERS.with(|buffers| *buffers.borrow_mut() = retained);
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    if let Some(start) = envelope_started {
+        PUBLICATION_PROFILE.with(|p| {
+            p.borrow_mut().record(
+                [
+                    encoding_times[0],
+                    encoding_times[1],
+                    presentation_ms,
+                    start.elapsed().as_secs_f64() * 1000.,
+                ],
+                _hash_work,
+            )
+        });
+    }
     Ok(())
 }
 
@@ -165,8 +266,26 @@ pub unsafe extern "C" fn unone_web_developer_request(pointer: *const u8, length:
             write_error("Load a project before using developer tools");
             return -1;
         };
+        let start_profile = matches!(&request, unone_engine::PreviewRequest::ProfileStart { .. });
+        let stop_profile = matches!(&request, unone_engine::PreviewRequest::ProfileStop {});
         match runtime.preview_request(request) {
-            Ok(value) => {
+            Ok(mut value) => {
+                if value.get("window").is_some() {
+                    PUBLICATION_PROFILE.with(|p| {
+                        let mut p = p.borrow_mut();
+                        if start_profile {
+                            *p = PublicationProfile {
+                                active: true,
+                                id: value["window"]["id"].as_u64().unwrap_or(0),
+                                ..Default::default()
+                            };
+                        }
+                        if stop_profile || value["window"]["active"] == false {
+                            p.active = false;
+                        }
+                        value["publication"] = p.report();
+                    });
+                }
                 OUTPUT.with(|output| {
                     *output.borrow_mut() = serde_json::to_vec(
                         &serde_json::json!({"ok":true,"value":value,"diagnostics":[],"effects":[]}),
@@ -304,7 +423,10 @@ pub unsafe extern "C" fn unone_web_load_project(
     let project_name = payload.config.name.clone();
     match create_runtime(payload, seed) {
         Ok(runtime_value) => {
+            CANONICAL_HASHER.with(|h| *h.borrow_mut() = unone_engine::CanonicalHasher::default());
             INSTANCE_MEMORY.with(|mode| mode.set(false));
+            #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+            PUBLICATION_PROFILE.with(|p| *p.borrow_mut() = PublicationProfile::default());
             INPUT.with(|input| *input.borrow_mut() = HostInputState::default());
             let snapshot = runtime_value.observe();
             let save_payload = runtime_value.save_payload();
@@ -527,6 +649,8 @@ pub extern "C" fn unone_web_tick() -> i32 {
         match runtime.tick_with_input(&frame) {
             Ok(snapshot) => write_runtime_observation(runtime, &snapshot),
             Err(diagnostic) => {
+                #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+                PUBLICATION_PROFILE.with(|p| p.borrow_mut().active = false);
                 write_diagnostic(&diagnostic);
                 -1
             }
@@ -1011,4 +1135,24 @@ return Game
             json!(false)
         );
     }
+}
+
+#[cfg(all(test, any(feature = "dev-tools", feature = "preview-tools")))]
+#[test]
+fn publication_profile_is_bounded_and_frozen_outside_window() {
+    let mut p = PublicationProfile {
+        active: true,
+        id: 7,
+        ..Default::default()
+    };
+    for _ in 0..1100 {
+        p.record([1., 2., 3., 4.], unone_engine::CanonicalHashWork::default());
+    }
+    assert_eq!(p.report()["publications"], 1100);
+    assert_eq!(p.report()["retained"], 1024);
+    assert_eq!(p.report()["phases"]["canonical_hash_ms"]["mean_ms"], 2.);
+    p.active = false;
+    let stopped = p.report();
+    p.record([99.; 4], unone_engine::CanonicalHashWork::default());
+    assert_eq!(p.report(), stopped);
 }

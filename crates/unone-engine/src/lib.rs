@@ -125,3 +125,6 @@ pub const DEV_TOOLS_ENABLED: bool = cfg!(feature = "dev-tools");
 
 mod particle;
 pub use particle::{ParticleDefinition, ParticleEmitter, ParticleSnapshot};
+
+mod canonical_hash;
+pub use canonical_hash::{CanonicalHasher, CanonicalHashWork};

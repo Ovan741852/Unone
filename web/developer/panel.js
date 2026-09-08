@@ -94,7 +94,7 @@ export function mountPanel(api){
       const functions=Object.values(value.window?.functions??{}).sort((a,b)=>b.self_samples-a.self_samples);
       if(functions.length){const table=el('table');const head=el('tr');for(const text of ['Lua 函式','自身樣本','含子呼叫'])head.append(el('th',text));table.append(head);for(const f of functions.slice(0,30)){const row=el('tr');for(const text of [`${f.name} (${f.source}:${f.line??'?'})`,f.self_samples,f.inclusive_samples])row.append(el('td',String(text)));table.append(row);}body.append(table);}
       empty('函式取樣不是精確耗時；原生呼叫內部無法取樣。比較效能時請關閉取樣。');
-      body.append(json({counts:value.runtime.counts,host_window:value.host_window,window:value.window,renderer:value.renderer}));return;
+      body.append(json({counts:value.runtime.counts,host_window:value.host_window,publication:value.publication,window:value.window,renderer:value.renderer}));return;
     }
     if(method==='memory'){
       card('Luau 使用量',bytes(value.luau_used_bytes));if(value.host==='native'){empty(value.note);return;}card('WASM 線性記憶體容量',bytes(value.wasm_linear_bytes),'容量包含未使用空間，並非活躍配置量');card('JavaScript heap 使用量',bytes(value.js_heap?.used_bytes),'瀏覽器未提供時不估算');empty('貼圖／geometry 計數不是 GPU 記憶體位元組數。');return;

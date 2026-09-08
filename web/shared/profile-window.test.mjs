@@ -17,3 +17,11 @@ test('render cadence measures scheduling gaps, freezes, resets and retains bound
  p.stop();clock=100;assert.deepEqual(p.read().render_cadence,c);
  p.start();p.frame(1);assert.equal(p.read().render_cadence.interval_count,0);
 });
+
+test('drop counters are window deltas and freeze; reset or unavailable counters are null',()=>{
+ const p=createProfileWindow();p.start({dropped_steps:100});
+ assert.equal(p.read({dropped_steps:103}).dropped_steps_delta,3);
+ p.stop({dropped_steps:104});assert.equal(p.read({dropped_steps:999}).dropped_steps_delta,4);
+ p.start({dropped_steps:100});assert.equal(p.read({dropped_steps:0}).dropped_steps_delta,null);
+ p.start();assert.equal(p.read({dropped_steps:100}).dropped_steps_delta,null);
+});
