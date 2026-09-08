@@ -86,7 +86,16 @@ pub(super) fn log(lua: &Lua, state: &ApiState, api: &Table) -> mlua::Result<()> 
     api.set(
         "log",
         lua.create_function(move |_, message: String| {
-            log_trace.borrow_mut().push(TraceEvent {
+            if message.len() > 8192 {
+                return Err(mlua::Error::RuntimeError(
+                    "LOG_MESSAGE_LIMIT: maximum 8192 UTF-8 bytes".into(),
+                ));
+            }
+            let mut trace = log_trace.borrow_mut();
+            if trace.len() >= 512 {
+                trace.remove(0);
+            }
+            trace.push(TraceEvent {
                 frame: log_world.borrow().frame,
                 event: "script_log".to_string(),
                 details: serde_json::json!({"message": message}),

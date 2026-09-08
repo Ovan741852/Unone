@@ -193,6 +193,82 @@ pub fn describe(name: &str) -> Option<ApiDescriptor> {
 fn descriptors() -> Vec<ApiDescriptor> {
     vec![
         descriptor(
+            "debug.registerTab",
+            "debug",
+            "Register a development-only tab with stable ID and label.",
+            "Expose game-owned test actions to AI and the human development player.",
+            "Never use developer tools for required production gameplay. Guard registration with api.debug.enabled.",
+            vec![parameter(
+                "tab",
+                "DebugTab",
+                "Exactly {id,label}; see generated debug-tab schema",
+            )],
+            "nil",
+            vec!["Update development-only metadata; callbacks run only when explicitly invoked"],
+            "Registration does not advance simulation. Callback invocation is between ticks and is not a Lua-heap transaction.",
+            vec![
+                "DEVELOPMENT_ONLY",
+                "duplicate/unknown ID",
+                "invalid callback/value",
+            ],
+            "if api.debug.enabled then api.debug.registerTab({id=\"qa\",label=\"QA\"}) end",
+            vec!["debug.registerTab", "debug.register", "debug.set"],
+        ),
+        descriptor(
+            "debug.register",
+            "debug",
+            "Register a button/label/checkbox; Lua callback owns the actual game behavior.",
+            "Expose game-owned test actions to AI and the human development player.",
+            "Never use developer tools for required production gameplay. Guard registration with api.debug.enabled.",
+            vec![
+                parameter(
+                    "control",
+                    "DebugControl",
+                    "Tagged button/label/checkbox definition; see debug-control schema",
+                ),
+                parameter(
+                    "callback",
+                    "function?",
+                    "Required for button/checkbox, forbidden for label",
+                ),
+            ],
+            "nil",
+            vec!["Update development-only metadata; callbacks run only when explicitly invoked"],
+            "Registration does not advance simulation. Callback invocation is between ticks and is not a Lua-heap transaction.",
+            vec![
+                "DEVELOPMENT_ONLY",
+                "duplicate/unknown ID",
+                "invalid callback/value",
+            ],
+            "api.debug.register({id=\"qa.fire\",tab=\"qa\",kind=\"button\",label=\"Fire\"},function() pendingShot=true end)",
+            vec!["debug.registerTab", "debug.register", "debug.set"],
+        ),
+        descriptor(
+            "debug.set",
+            "debug",
+            "Update a registered label string or checkbox boolean without invoking its callback.",
+            "Expose game-owned test actions to AI and the human development player.",
+            "Never use developer tools for required production gameplay. Guard registration with api.debug.enabled.",
+            vec![
+                parameter("id", "string", "Registered label or checkbox ID"),
+                parameter(
+                    "value",
+                    "string | boolean",
+                    "Label text or checkbox state; does not invoke callback",
+                ),
+            ],
+            "nil",
+            vec!["Update development-only metadata; callbacks run only when explicitly invoked"],
+            "Registration does not advance simulation. Callback invocation is between ticks and is not a Lua-heap transaction.",
+            vec![
+                "DEVELOPMENT_ONLY",
+                "duplicate/unknown ID",
+                "invalid callback/value",
+            ],
+            "api.debug.set(\"qa.status\",\"Ready\")",
+            vec!["debug.registerTab", "debug.register", "debug.set"],
+        ),
+        descriptor(
             "physics3d.sweepSphere",
             "physics3d",
             "Query the earliest continuous sphere contact along a 3D segment against moving sphere targets.",

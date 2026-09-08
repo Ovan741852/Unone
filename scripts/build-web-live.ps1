@@ -2,11 +2,13 @@
 param(
     # Where Emscripten lives. Defaults to $env:UNONE_EMSDK_ROOT, then $env:EMSDK.
     [switch]$Player,
+    [switch]$Development,
     [string]$BinaryenRoot = $env:UNONE_BINARYEN_ROOT,
     [string]$EmsdkRoot = $(if ($env:UNONE_EMSDK_ROOT) { $env:UNONE_EMSDK_ROOT } elseif ($env:EMSDK) { $env:EMSDK } else { '' })
 )
 
 $ErrorActionPreference = 'Stop'
+if ($Development -and -not $Player) { throw '-Development requires -Player' }
 $parityNode = if ($Player) { (Get-Command node -ErrorAction Stop).Source } else { $null }
 
 # The SDK path belongs to the machine, not to this repository. It used to be one
@@ -50,7 +52,7 @@ $env:CC_wasm32_unknown_emscripten = Join-Path $emscriptenRoot 'emcc.bat'
 $env:CXX_wasm32_unknown_emscripten = Join-Path $emscriptenRoot 'em++.bat'
 $env:AR_wasm32_unknown_emscripten = Join-Path $emscriptenRoot 'emar.bat'
 $env:CXXFLAGS_wasm32_unknown_emscripten = '-fwasm-exceptions'
-$env:RUSTFLAGS = '-C link-arg=--export=unone_web_init -C link-arg=--export=unone_web_alloc -C link-arg=--export=unone_web_bundle_begin -C link-arg=--export=unone_web_bundle_write -C link-arg=--export=unone_web_bundle_finish -C link-arg=--export=unone_web_load_project -C link-arg=--export=unone_web_set_save_payload -C link-arg=--export=unone_web_reload_script -C link-arg=--export=unone_web_set_pointer -C link-arg=--export=unone_web_set_input_frame -C link-arg=--export=unone_web_set_viewport_aspect -C link-arg=--export=unone_web_set_screen_pointer -C link-arg=--export=unone_web_tick -C link-arg=--export=unone_web_observation_ptr -C link-arg=--export=unone_web_observation_len'
+$env:RUSTFLAGS = '-C link-arg=--export=unone_web_init -C link-arg=--export=unone_web_alloc -C link-arg=--export=unone_web_bundle_begin -C link-arg=--export=unone_web_bundle_write -C link-arg=--export=unone_web_bundle_finish -C link-arg=--export=unone_web_load_project -C link-arg=--export=unone_web_set_save_payload -C link-arg=--export=unone_web_reload_script -C link-arg=--export=unone_web_set_pointer -C link-arg=--export=unone_web_set_input_frame -C link-arg=--export=unone_web_set_viewport_aspect -C link-arg=--export=unone_web_set_screen_pointer -C link-arg=--export=unone_web_tick -C link-arg=--export=unone_web_observation_ptr -C link-arg=--export=unone_web_observation_len -C link-arg=--export=unone_web_developer_request'
 
 if ($Player) {
     $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -60,24 +62,27 @@ if ($Player) {
     }
     if ($BinaryenRoot) { $env:EM_BINARYEN_ROOT = [IO.Path]::GetFullPath($BinaryenRoot) }
     $exports = @('init','alloc','load_project','set_save_payload','set_input_frame','set_viewport_aspect','tick','observation_ptr','observation_len')
+    if ($Development) { $exports += 'developer_request' }
+    $featureArgs = if ($Development) { @('--features','preview-tools') } else { @() }
     $env:RUSTFLAGS = (($exports | ForEach-Object { "-C link-arg=--export=unone_web_$_" }) -join ' ') + ' -C link-arg=-sENVIRONMENT=web -C link-arg=-sALLOW_MEMORY_GROWTH=1 -C link-arg=-sASSERTIONS=1'
-    cargo build --manifest-path (Join-Path $repoRoot 'crates/unone-player/Cargo.toml') --target-dir (Join-Path $repoRoot 'target/player') --release --target wasm32-unknown-emscripten
+    cargo build --manifest-path (Join-Path $repoRoot 'crates/unone-player/Cargo.toml') --target-dir (Join-Path $repoRoot 'target/player') --release --target wasm32-unknown-emscripten @featureArgs
     if ($LASTEXITCODE -ne 0) { throw 'Player release build failed; no debug fallback is allowed.' }
     $releaseRoot = Join-Path $repoRoot 'target/player/wasm32-unknown-emscripten/release'
     $wasm = Get-ChildItem -LiteralPath $releaseRoot -Filter '*.wasm' | Select-Object -First 1
     $javascript = Get-ChildItem -LiteralPath $releaseRoot -Filter '*.js' | Select-Object -First 1
     if (-not $wasm -or -not $javascript) { throw 'Release output missing.' }
-    $outputRoot = Join-Path $repoRoot 'artifacts/player-runtime'
+    $outputRoot = Join-Path $repoRoot $(if ($Development) { 'artifacts/player-development-runtime' } else { 'artifacts/player-runtime' })
     New-Item -ItemType Directory -Force $outputRoot | Out-Null
     Copy-Item -LiteralPath $wasm.FullName -Destination $outputRoot -Force
     Copy-Item -LiteralPath $javascript.FullName -Destination $outputRoot -Force
-    $report = @{ profile='release'; dev_tools=$false; javascript=$javascript.Name; wasm=$wasm.Name;
+    $report = @{ profile='release'; dev_tools=$false; preview_tools=[bool]$Development; javascript=$javascript.Name; wasm=$wasm.Name;
         wasm_bytes=$wasm.Length; wasm_sha256=(Get-FileHash $wasm.FullName -Algorithm SHA256).Hash.ToLowerInvariant();
         javascript_sha256=(Get-FileHash $javascript.FullName -Algorithm SHA256).Hash.ToLowerInvariant();
         exports=$exports; source_commit=(git -C $repoRoot rev-parse HEAD); source_dirty=[bool](git -C $repoRoot status --porcelain) }
     [IO.File]::WriteAllText((Join-Path $outputRoot 'runtime.json'), ($report | ConvertTo-Json -Depth 6), [Text.UTF8Encoding]::new($false))
     # Run the actual export gate with Node selected before the SDK changed PATH.
-    & $parityNode (Join-Path $repoRoot 'scripts/verify-player-parity.mjs') --runtime $outputRoot
+    [string[]]$parityArgs = if ($Development) { @('--development') } else { @() }
+    & $parityNode (Join-Path $repoRoot 'scripts/verify-player-parity.mjs') --runtime $outputRoot @parityArgs
     if ($LASTEXITCODE -ne 0) { throw 'Player artifact parity failed. Build the current native CLI with cargo build -p unone-cli, fix any mismatch, then rerun this player build.' }
     Write-Output ($report | ConvertTo-Json -Depth 6)
 } else {

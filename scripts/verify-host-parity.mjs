@@ -8,7 +8,7 @@ import {webcrypto} from 'node:crypto';
 import {assembleProject} from '../web/shared/load-project.js';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-const {values}=parseArgs({options:{cli:{type:'string'},wasm:{type:'string'},'wasm-binary':{type:'string'},fixture:{type:'string'},export:{type:'string'}}});
+const {values}=parseArgs({options:{cli:{type:'string'},wasm:{type:'string'},'wasm-binary':{type:'string'},fixture:{type:'string'},export:{type:'string'},'exercise-tools':{type:'boolean',default:false}}});
 const cli=resolve(values.cli??join(root,'target/debug/game.exe'));
 const exported=values.export?resolve(values.export):null;
 const runtime=exported?JSON.parse(readFileSync(join(exported,'runtime/runtime.json'),'utf8')):null;
@@ -44,6 +44,26 @@ for(let i=0;i<config.test_files.length;i++){
   const result=replay(payload,spec);
   if(result.observation_digest!==cases[i].observation_digest)throw new Error(`HOST_PARITY_MISMATCH frame=${spec.frames}: CLI=${cases[i].observation_digest} WASM=${result.observation_digest}. Rebuild both artifacts and inspect the shared host payload.`);
   compared++;
+}
+// Artifact variant isolation is checked against the actual loaded module.
+if(exported && Boolean(module._unone_web_developer_request)!==Boolean(runtime.preview_tools))throw new Error('PLAYER_VARIANT_MISMATCH: development API export does not match manifest');
+if(values['exercise-tools']) {
+  if(!runtime?.preview_tools)throw new Error('Development runtime required for tool acceptance');
+  function command(request){
+    const bytes=new TextEncoder().encode(JSON.stringify(request));const ptr=module._unone_web_alloc(bytes.length);module.HEAPU8.set(bytes,ptr);
+    module._unone_web_developer_request(ptr,bytes.length);return readObservation(module);
+  }
+  const snapshot=command({method:'snapshot'});if(!snapshot.ok)throw new Error(JSON.stringify(snapshot));
+  const revision=snapshot.value.tools.revision,frame=snapshot.value.observation.world.frame;
+  for(const request of [{method:'snapshot',typo:true},{method:'invoke',id:'missing',revision},{method:'invoke',id:'fixture.bump',revision:revision+1},{method:'invoke',id:'fixture.flag',revision}]) {
+    if(command(request).ok)throw new Error('Invalid development request accepted: '+JSON.stringify(request));
+  }
+  const button=command({method:'invoke',id:'fixture.bump',revision});
+  if(!button.ok||button.value.observation.world.observations.debug_bump!==1||button.value.observation.world.frame!==frame)throw new Error('Button callback did not run correctly between ticks');
+  if(!button.value.tools.controls.some(c=>c.id==='fixture.status'&&c.text==='invoked'))throw new Error('Lua label update did not reach host');
+  const checkbox=command({method:'invoke',id:'fixture.flag',revision,value:true});
+  if(!checkbox.ok||checkbox.value.observation.world.observations.debug_flag!==true)throw new Error('Checkbox callback did not receive boolean');
+  console.log(JSON.stringify({ok:true,exported_lua_tools_verified:true,invalid_requests_rejected:true,callback_did_not_advance_frame:true}));
 }
 // A negative control proves this gate detects the earlier audio omission class.
 let detectsAudioOmission=null;

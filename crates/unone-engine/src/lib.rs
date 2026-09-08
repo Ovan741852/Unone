@@ -17,10 +17,12 @@ mod host;
 #[cfg(feature = "dev-tools")]
 mod layout;
 mod performance;
+mod physics3d;
 mod platform;
 mod project;
-mod physics3d;
 mod runtime;
+#[cfg(feature = "preview-tools")]
+pub use runtime::{DebugControl, DebugTab, PreviewRequest};
 mod scene;
 #[cfg(feature = "dev-tools")]
 mod schema;

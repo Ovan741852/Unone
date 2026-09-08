@@ -6,7 +6,8 @@ license.workspace = true
 
 [features]
 default = ["dev-tools"]
-dev-tools = ["dep:schemars"]
+dev-tools = ["dep:schemars", "preview-tools"]
+preview-tools = []
 
 [dependencies]
 anyhow = "1"

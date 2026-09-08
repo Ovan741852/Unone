@@ -1,5 +1,10 @@
 # Player build and single-game export
 
+The default export is production. Use `-Player -Development` when building and
+`export web --development` when exporting to include the shared AI/human tools.
+See [development player and native tools](development-player.md) for the variant
+contract, Lua registrations and native companion panel.
+
 The player is a separate Cargo workspace at `crates/unone-player` to prevent
 workspace feature unification with the CLI. It depends on `unone-engine` with
 default features disabled. A compile-time assertion rejects an engine built with

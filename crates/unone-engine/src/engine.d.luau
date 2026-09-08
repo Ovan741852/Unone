@@ -165,7 +165,19 @@ export type ParticleApi = {
     stop: (handle: string) -> boolean,
 }
 
+export type DebugTab = {id: string, label: string}
+export type DebugControl =
+    {kind: "button", id: string, tab: string, label: string}
+    | {kind: "label", id: string, tab: string, text: string}
+    | {kind: "checkbox", id: string, tab: string, label: string, checked: boolean}
+export type DebugApi = {
+    enabled: boolean,
+    registerTab: (tab: DebugTab) -> (),
+    register: (control: DebugControl, callback: ((value: boolean?) -> ())?) -> (),
+    set: (id: string, value: string | boolean) -> (),
+}
 export type EngineApi = {
+    debug: DebugApi,
     particle: ParticleApi,
     entity: EntityApi,
     input: InputApi,

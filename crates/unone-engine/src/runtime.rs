@@ -20,7 +20,11 @@ use crate::{
 const FIXED_DT: f64 = 1.0 / 60.0;
 mod bindings;
 mod determinism;
+#[cfg(feature = "preview-tools")]
+mod preview;
 use bindings::build_api;
+#[cfg(feature = "preview-tools")]
+pub use preview::{DebugControl, DebugTab, PreviewRequest};
 
 /// Compute the canonical digest for an already generated observation snapshot.
 ///
@@ -116,6 +120,8 @@ struct PointerState {
 
 #[derive(Clone)]
 struct ApiState {
+    #[cfg(feature = "preview-tools")]
+    debug_tools: Rc<RefCell<preview::DebugTools>>,
     world: Rc<RefCell<World>>,
     input: Rc<RefCell<InputState>>,
     random: Rc<RefCell<DeterministicRng>>,
@@ -190,6 +196,8 @@ struct ReloadRollbackState {
 }
 
 pub struct EngineRuntime {
+    #[cfg(feature = "preview-tools")]
+    debug_tools: Rc<RefCell<preview::DebugTools>>,
     config: ProjectConfig,
     paths: ProjectPaths,
     systems: SystemSettings,
@@ -498,7 +506,11 @@ impl EngineRuntime {
         // injection after start would both hide the payload and silently
         // overwrite anything start saved.
         let save_payload = Rc::new(RefCell::new(restored_save));
+        #[cfg(feature = "preview-tools")]
+        let debug_tools = Rc::new(RefCell::new(preview::DebugTools::default()));
         let api_state = ApiState {
+            #[cfg(feature = "preview-tools")]
+            debug_tools: Rc::clone(&debug_tools),
             world: Rc::clone(&world),
             input: Rc::clone(&input),
             random: Rc::clone(&random),
@@ -538,6 +550,8 @@ impl EngineRuntime {
             ))
         })?;
         let mut runtime = Self {
+            #[cfg(feature = "preview-tools")]
+            debug_tools,
             config,
             paths,
             systems,
@@ -1029,6 +1043,9 @@ impl EngineRuntime {
             Rc::clone(&self.world)
         };
         let candidate_api_state = ApiState {
+            debug_tools: Rc::new(RefCell::new(preview::DebugTools::with_revision(
+                self.debug_tools.borrow().revision + 1,
+            ))),
             world: Rc::clone(&candidate_world),
             input: Rc::clone(&self.input),
             random: Rc::clone(&self.random),
@@ -1065,6 +1082,7 @@ impl EngineRuntime {
             event: "script_reloaded".to_string(),
             details: serde_json::json!({"generation": self.generation, "state_policy": "rust_owned_state_preserved"}),
         });
+        self.debug_tools = Rc::clone(&candidate_api_state.debug_tools);
         self.lua = candidate_lua;
         self.api = candidate_api;
         self.update_fn = update_fn;

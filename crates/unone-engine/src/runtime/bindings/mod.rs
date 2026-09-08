@@ -4,6 +4,7 @@ use crate::systems::SystemSettings;
 use mlua::{Lua, Table, Value};
 mod audio;
 mod camera;
+mod debug;
 mod entity;
 mod input;
 mod physics;
@@ -17,6 +18,7 @@ pub(super) fn build_api(
     systems: &SystemSettings,
 ) -> mlua::Result<Table> {
     let api = lua.create_table()?;
+    api.set("debug", debug::bind(lua, state)?)?;
     state::log(lua, state, &api)?;
     api.set("entity", entity::entity(lua, state)?)?;
     api.set("input", input::input(lua, state)?)?;

@@ -96,6 +96,48 @@ pub extern "C" fn unone_web_init() -> i32 {
     0
 }
 
+/// Structured development-only inspection and Lua tool invocation.
+/// # Safety
+/// `pointer` must reference `length` readable JSON bytes for this call.
+#[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_web_developer_request(pointer: *const u8, length: usize) -> i32 {
+    if pointer.is_null() || length > 65536 {
+        write_error("Invalid developer request buffer (maximum 65536 bytes)");
+        return -1;
+    }
+    let bytes = unsafe { std::slice::from_raw_parts(pointer, length) };
+    let request = match serde_json::from_slice::<unone_engine::PreviewRequest>(bytes) {
+        Ok(request) => request,
+        Err(error) => {
+            write_error(error.to_string());
+            return -1;
+        }
+    };
+    RUNTIME.with(|runtime| {
+        let mut runtime = runtime.borrow_mut();
+        let Some(runtime) = runtime.as_mut() else {
+            write_error("Load a project before using developer tools");
+            return -1;
+        };
+        match runtime.preview_request(request) {
+            Ok(value) => {
+                OUTPUT.with(|output| {
+                    *output.borrow_mut() = serde_json::to_vec(
+                        &serde_json::json!({"ok":true,"value":value,"diagnostics":[],"effects":[]}),
+                    )
+                    .unwrap()
+                });
+                0
+            }
+            Err(error) => {
+                write_diagnostic(&error);
+                -1
+            }
+        }
+    })
+}
+
 #[unsafe(no_mangle)]
 pub extern "C" fn unone_web_alloc(length: usize) -> *mut u8 {
     INPUT_BUFFER.with(|buffer| {

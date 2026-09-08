@@ -12,6 +12,9 @@ pub const SCHEMA_NAMES: &[&str] = &[
     "input",
     "host-project",
     "developer",
+    "preview-request",
+    "debug-control",
+    "debug-tab",
 ];
 
 pub fn contract_schema(name: &str) -> Option<Value> {
@@ -25,6 +28,9 @@ pub fn contract_schema(name: &str) -> Option<Value> {
         "input" => schemars::schema_for!(crate::InputFrame),
         "host-project" => schemars::schema_for!(crate::HostProject),
         "developer" => schemars::schema_for!(crate::DeveloperRequest),
+        "preview-request" => schemars::schema_for!(crate::PreviewRequest),
+        "debug-control" => schemars::schema_for!(crate::DebugControl),
+        "debug-tab" => schemars::schema_for!(crate::DebugTab),
         _ => return None,
     };
     let mut value = serde_json::to_value(schema).expect("schema serializes");

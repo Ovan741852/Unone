@@ -25,6 +25,7 @@ use winit::{
 mod assets;
 mod export;
 mod mcp;
+mod native_tools;
 mod plugins;
 mod session;
 
@@ -35,6 +36,9 @@ enum ExportCommand {
         output: PathBuf,
         #[arg(long)]
         runtime: Option<PathBuf>,
+        /// Include development inspection APIs and the human debug panel.
+        #[arg(long)]
+        development: bool,
     },
 }
 
@@ -132,6 +136,12 @@ enum Command {
     Preview {
         #[arg(long, help = "Reload the entry Luau script when its file changes")]
         watch: bool,
+        #[arg(
+            long,
+            default_value_t = 8190,
+            help = "Loopback companion panel/API port for this native runtime"
+        )]
+        tools_port: u16,
     },
     Bundle {
         #[command(subcommand)]
@@ -348,9 +358,14 @@ fn run() -> Result<ExitCode> {
     let cli = Cli::parse();
     match cli.command {
         Command::Export {
-            command: ExportCommand::Web { output, runtime },
+            command:
+                ExportCommand::Web {
+                    output,
+                    runtime,
+                    development,
+                },
         } => {
-            let result = export::web(&cli.project, &output, runtime.as_deref());
+            let result = export::web(&cli.project, &output, runtime.as_deref(), development);
             match result {
                 Ok(value) => print_result(EngineResult::success(value), cli.json),
                 Err(error) => print_result(
@@ -915,7 +930,7 @@ fn run() -> Result<ExitCode> {
             };
             print_result(EngineResult::success(runtime.observe()), cli.json)
         }
-        Command::Preview { watch } => preview(&cli.project, watch),
+        Command::Preview { watch, tools_port } => preview(&cli.project, watch, tools_port),
         Command::Bundle { command } => {
             if let BundleCommand::Pack { output } = command {
                 return print_result(pack_project(&cli.project, output.as_deref()), cli.json);
@@ -1020,12 +1035,13 @@ fn read_input_frames(path: &Path) -> Result<Vec<InputFrame>, Box<unone_engine::D
         })
 }
 
-fn preview(project: &PathBuf, watch: bool) -> Result<ExitCode> {
+fn preview(project: &PathBuf, watch: bool, tools_port: u16) -> Result<ExitCode> {
     let runtime = EngineRuntime::load(project)
         .map_err(|diagnostic| anyhow::anyhow!("{}: {}", diagnostic.code, diagnostic.explanation))?;
     report_host_assets(project);
     let event_loop = EventLoop::new()?;
-    let mut app = PreviewApp::new(runtime, watch);
+    let tools = native_tools::NativeTools::start(tools_port, event_loop.create_proxy())?;
+    let mut app = PreviewApp::new(runtime, watch, tools);
     event_loop.run_app(&mut app)?;
     Ok(ExitCode::SUCCESS)
 }
@@ -1055,6 +1071,7 @@ fn report_host_assets(project: &Path) {
 }
 
 struct PreviewApp {
+    tools: native_tools::NativeTools,
     runtime: Option<EngineRuntime>,
     window: Option<Arc<Window>>,
     renderer: Option<Renderer>,
@@ -1062,8 +1079,9 @@ struct PreviewApp {
 }
 
 impl PreviewApp {
-    fn new(runtime: EngineRuntime, watch: bool) -> Self {
+    fn new(runtime: EngineRuntime, watch: bool, tools: native_tools::NativeTools) -> Self {
         Self {
+            tools,
             runtime: Some(runtime),
             window: None,
             renderer: None,
@@ -1158,7 +1176,11 @@ impl ApplicationHandler for PreviewApp {
                 let Some(runtime) = &mut self.runtime else {
                     return;
                 };
-                let snapshot = match runtime.tick() {
+                let snapshot = match if self.tools.state.paused {
+                    Ok(runtime.observe())
+                } else {
+                    self.tools.state.tick(runtime)
+                } {
                     Ok(snapshot) => snapshot,
                     Err(err) => {
                         eprintln!("unone preview: {}: {}", err.code, err.explanation);
@@ -1166,18 +1188,23 @@ impl ApplicationHandler for PreviewApp {
                         return;
                     }
                 };
+                let render_started = std::time::Instant::now();
                 if let Some(renderer) = &mut self.renderer
                     && let Err(err) = renderer.render(&snapshot)
                 {
                     eprintln!("unone preview: render failed: {err}");
                     event_loop.exit();
                 }
+                self.tools.state.render_ms = Some(render_started.elapsed().as_secs_f64() * 1000.0);
             }
             _ => {}
         }
     }
 
     fn about_to_wait(&mut self, _event_loop: &ActiveEventLoop) {
+        if let Some(runtime) = &mut self.runtime {
+            self.tools.drain(runtime);
+        }
         if self.watch
             && let Some(runtime) = &mut self.runtime
         {

@@ -67,20 +67,31 @@ fn inside(root: &Path, relative: &str) -> Result<PathBuf> {
     Ok(path)
 }
 
-pub fn web(project: &Path, output: &Path, runtime: Option<&Path>) -> Result<Value> {
+pub fn web(
+    project: &Path,
+    output: &Path,
+    runtime: Option<&Path>,
+    development: bool,
+) -> Result<Value> {
     ensure!(
         !output.exists(),
         "output already exists: {}",
         output.display()
     );
     let repo = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
-    let runtime = runtime
-        .map(Path::to_path_buf)
-        .unwrap_or_else(|| repo.join("artifacts/player-runtime"));
+    let runtime = runtime.map(Path::to_path_buf).unwrap_or_else(|| {
+        repo.join(if development {
+            "artifacts/player-development-runtime"
+        } else {
+            "artifacts/player-runtime"
+        })
+    });
     let manifest: Value = serde_json::from_slice(&fs::read(runtime.join("runtime.json"))?)?;
     ensure!(
-        manifest["profile"] == "release" && manifest["dev_tools"] == false,
-        "requires release player without dev-tools"
+        manifest["profile"] == "release"
+            && manifest["dev_tools"] == false
+            && manifest["preview_tools"].as_bool().unwrap_or(false) == development,
+        "runtime variant mismatch; build -Player (production) or -Player -Development (development)"
     );
     let mut files: Vec<(String, Vec<u8>)> = Vec::new();
     for (field, hash) in [("javascript", "javascript_sha256"), ("wasm", "wasm_sha256")] {
@@ -108,6 +119,14 @@ pub fn web(project: &Path, output: &Path, runtime: Option<&Path>) -> Result<Valu
                         .windows(forbidden.len())
                         .any(|v| v == forbidden.as_bytes()),
                     "player contains development section/export: {forbidden}"
+                );
+            }
+            if !development {
+                ensure!(
+                    !bytes
+                        .windows("unone_web_developer_request".len())
+                        .any(|v| v == b"unone_web_developer_request"),
+                    "production runtime contains developer operation export"
                 );
             }
         }
@@ -281,7 +300,19 @@ pub fn web(project: &Path, output: &Path, runtime: Option<&Path>) -> Result<Valu
                 )
                 .into_bytes();
         }
+        if path == "player/main.js" {
+            let text = String::from_utf8(bytes)?;
+            bytes=if development {text.replace("/* DEVELOPER_IMPORT */", "import {createDeveloper} from '../developer/main.js';\nconst developer=createDeveloper();").replace("/* DEVELOPER_CONNECT */", "developer.connect({getSnapshot:()=>snapshot,acceptSnapshot:value=>{snapshot=value;},module:window.Module,getStats:()=>lastStats,getBoot:()=>metrics,draw,tick:tickOnce,releaseInput:()=>input.releaseAll(),setPaused:value=>{frozen=value;manualInput=null;},getPaused:()=>frozen,setBloom:value=>renderer.setBloom(value),queueInput:frame=>{send('_unone_web_set_input_frame',frame);manualInput=frame;}});")} else {text.replace("/* DEVELOPER_IMPORT */", "").replace("/* DEVELOPER_CONNECT */", "")}.into_bytes();
+        }
         files.push((format!("web/{path}"), bytes));
+    }
+    if development {
+        for path in ["main.js", "api.js", "panel.js", "panel.css"] {
+            files.push((
+                format!("web/developer/{path}"),
+                fs::read(repo.join("web/developer").join(path))?,
+            ));
+        }
     }
     if assets["assets"]
         .as_array()
@@ -309,7 +340,7 @@ pub fn web(project: &Path, output: &Path, runtime: Option<&Path>) -> Result<Valu
             "export destination collision: {path}"
         );
     }
-    let report = json!({"version":1,"project":config.name,"profile":"release","dev_tools":false,"renderer":"three-webgl","total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
+    let report = json!({"version":1,"project":config.name,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer":"three-webgl","total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
     // All validation and reads finish first. Remove only our newly created tree on write failure.
     fs::create_dir_all(output)?;
     let write = (|| -> Result<()> {
@@ -364,7 +395,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         assert!(inside(dir.path(), "../secret").is_err());
         assert!(
-            web(dir.path(), dir.path(), None)
+            web(dir.path(), dir.path(), None, false)
                 .unwrap_err()
                 .to_string()
                 .contains("already exists")

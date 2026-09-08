@@ -1,0 +1,87 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$id": "https://unone.dev/schema/debug-control.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "button",
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "tab": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "tab",
+        "label"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "label",
+          "type": "string"
+        },
+        "tab": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "tab",
+        "text"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "checked": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "const": "checkbox",
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "tab": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "tab",
+        "label",
+        "checked"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "DebugControl"
+}

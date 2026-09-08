@@ -7,11 +7,14 @@ import {requireAssetEncoding} from '../shared/asset-encoding.js';
 import {worldFromPointer} from '../shared/webgpu-snapshot.js';
 import {loadProject} from '../shared/load-project.js';
 
+/* DEVELOPER_IMPORT */
+
 const canvas=document.querySelector('#game'), status=document.querySelector('#status');
 const input=createHostInput(), renderUi=createUiTree(document.querySelector('#ui-layer'));
 let snapshot, renderer, scheduler, audio;
 let bridgeMs=0,renderMs=0,renderCount=0;
-let frozen=false;
+let frozen=false,manualInput=null,lastStats=null;
+let saved,key;
 const cpuSamples={on:[],off:[]};
 const summarize=values=>{if(!values.length)return null;const v=[...values].sort((a,b)=>a-b);return {samples:v.length,median_ms:v[Math.floor(v.length/2)],p95_ms:v[Math.floor(v.length*.95)]};};
 const metrics={};
@@ -24,28 +27,27 @@ function draw(){
   const measured=renderer.metrics(),bucket=cpuSamples[measured.bloom?'on':'off'];bucket.push(renderMs);if(bucket.length>240)bucket.shift();
   if(++renderCount%30===0){
     const stats={bridge_ms:bridgeMs,render_ms:renderMs,...measured,cpu_on:summarize(cpuSamples.on),cpu_off:summarize(cpuSamples.off),drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0};
+    lastStats=stats;
     document.body.dataset.playerPerformance=JSON.stringify(stats);
-    const label=document.querySelector('#render-stats');
-    const gpu=(stats.bloom?stats.gpu_on:stats.gpu_off)?.median_ms;
-    if(label)label.textContent=`CPU ${renderMs.toFixed(2)} ms · GPU ${gpu==null?'n/a':gpu.toFixed(2)+' ms'} · ${stats.draw_calls} Three draws`;
+
   }
   document.body.dataset.playerFrame=String(snapshot.world?.frame??snapshot.frame??0);
+}
+function tickOnce(){
+  const began=performance.now();send('_unone_web_set_input_frame',manualInput??input.consumeFrame());manualInput=null;
+  if(window.Module._unone_web_tick()!==0)throw new Error(JSON.stringify(read()));
+  snapshot=read();bridgeMs=performance.now()-began;audio?.sync(snapshot);
+  const next=JSON.stringify(snapshot.save_payload);if(next!==saved){localStorage.setItem(key,next);saved=next;}
 }
 async function start(){
   const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json'),window.runtimeReady]);
   metrics.runtime_ready_ms=performance.now()-window.playerBoot;
   document.title=project.config.name;
-  const key=`unone-player:${location.pathname}:${project.config.name}`;
+  key=`unone-player:${location.pathname}:${project.config.name}`;
   try{project.restored_save=JSON.parse(localStorage.getItem(key)??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}
   project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
   snapshot=loadProject(window.Module,project,42n);
   renderer=await createThreeRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,getAssetManifest:()=>assets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,location.href).href;}});
-  if(presentation.show_performance){
-    const settings=document.createElement('div');settings.style.cssText='position:absolute;right:12px;top:12px;z-index:20;font:12px monospace;background:#111b;padding:8px;border-radius:8px';settings.innerHTML='<button id="bloom-toggle" type="button"></button> <button id="freeze-scene" type="button">固定場景</button> <span id="render-stats"></span>';document.body.appendChild(settings);
-    const toggle=document.querySelector('#bloom-toggle');toggle.textContent=presentation.bloom?'Bloom ON':'Bloom OFF';
-    toggle.addEventListener('click',event=>{const enabled=event.target.textContent==='Bloom OFF';renderer.setBloom(enabled);event.target.textContent=enabled?'Bloom ON':'Bloom OFF';});
-    document.querySelector('#freeze-scene').addEventListener('click',event=>{frozen=!frozen;event.target.textContent=frozen?'繼續場景':'固定場景';cpuSamples.on.length=0;cpuSamples.off.length=0;renderer.resetMeasurements();input.releaseAll();});
-  }
   audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',location.href)});
   if(audio?.report().failures.length)throw new Error(JSON.stringify(audio.report()));
   draw();await renderer.ready();draw();
@@ -53,8 +55,9 @@ async function start(){
   metrics.first_presented_ms=performance.now()-window.playerBoot;
   metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));
   document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';
-  let saved=JSON.stringify(snapshot.save_payload);
-  scheduler=createFixedStepScheduler({tick(){if(frozen)return;const began=performance.now();send('_unone_web_set_input_frame',input.consumeFrame());if(window.Module._unone_web_tick()!==0)throw new Error(JSON.stringify(read()));snapshot=read();bridgeMs=performance.now()-began;audio?.sync(snapshot);const next=JSON.stringify(snapshot.save_payload);if(next!==saved){localStorage.setItem(key,next);saved=next;}},render(){draw();},onError:fail,onVisibilityChange:visible=>{input.releaseAll();audio?.setVisibility(visible);}});
+  saved=JSON.stringify(snapshot.save_payload);
+  scheduler=createFixedStepScheduler({tick(){if(!frozen)tickOnce();},render(){draw();},onError:fail,onVisibilityChange:visible=>{input.releaseAll();audio?.setVisibility(visible);}});
+  /* DEVELOPER_CONNECT */
   scheduler.start();
   window.addEventListener('resize',()=>{const aspect=canvas.clientWidth/canvas.clientHeight;if(window.Module._unone_web_set_viewport_aspect(aspect)!==0)fail(new Error(JSON.stringify(read())));});
 }

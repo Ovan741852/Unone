@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {parseArgs} from 'node:util';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-const {values}=parseArgs({options:{cli:{type:'string'},runtime:{type:'string'}}});
+const {values}=parseArgs({options:{cli:{type:'string'},runtime:{type:'string'},development:{type:'boolean',default:false}}});
 const cli=resolve(values.cli??join(root,'target/debug/game.exe'));
 const fixture=join(root,'tests/host-parity-project');
 const scratch=mkdtempSync(join(tmpdir(),'unone-player-parity-'));
@@ -14,10 +14,12 @@ const output=join(scratch,'player');
 function run(command,args){return spawnSync(command,args,{encoding:'utf8',timeout:120000,maxBuffer:16*1024*1024});}
 try {
   const args=['--project',fixture,'export','web','--output',output,'--json'];
+  if(values.development)args.push('--development');
   if(values.runtime)args.push('--runtime',resolve(values.runtime));
   const built=run(cli,args);
   if(built.status!==0)throw new Error(`PLAYER_EXPORT_FAILED: ${built.stdout}\n${built.stderr}`);
   const verifyArgs=[join(root,'scripts/verify-host-parity.mjs'),'--cli',cli,'--fixture',fixture,'--export',output];
+  if(values.development)verifyArgs.push('--exercise-tools');
   const good=run(process.execPath,verifyArgs);
   if(good.status!==0)throw new Error(`PLAYER_PARITY_FAILED: ${good.stdout}\n${good.stderr}`);
   console.log(good.stdout.trim());
