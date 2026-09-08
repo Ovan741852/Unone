@@ -6,6 +6,12 @@ The current contract boundaries and host limitations are recorded in [Runtime co
 
 ## 10,000-unit battle demonstration
 
+**第四輪優化：區域共享尋敵＋攝影機空間裁切**
+
+![Fourth-round battle demonstration](docs/media/legion-fall-round4.gif)
+
+實際網頁戰鬥錄影，以原速播放；GIF 為 10 fps，不代表遊戲 FPS。這段從 10,000 人開戰後節錄，正常計算傷亡。[第四輪效能報告](docs/legion-fall-round4.md) · [錄製資訊](docs/media/legion-fall-round4.md)。
+
 | 優化前（基準版本） | 第一輪優化後 | 第二輪優化後 |
 |---|---|---|
 | ![Before optimization](docs/media/legion-fall-preview.gif) | ![After round one](docs/media/legion-fall-optimized.gif) | ![After round two](docs/media/legion-fall-round2.gif) |

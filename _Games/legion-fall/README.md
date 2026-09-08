@@ -2,6 +2,12 @@
 
 A Web battle prototype used to expose engine limits. Two armies start with 5,000 units each and fight automatically: infantry, archers, cavalry, ballistae, catapults, flyers and mages. The game includes melee, ranged trajectories, area damage, flying movement, deaths and selectable cameras.
 
+**第四輪：區域共享尋敵與空間裁切**
+
+![Fourth-round battle demonstration](../../docs/media/legion-fall-round4.gif)
+
+實際錄影、原速播放、GIF 10 fps；正常戰鬥會減員，不是效能 A/B。[錄製資訊](../../docs/media/legion-fall-round4.md) · [第四輪報告](../../docs/legion-fall-round4.md)。
+
 | 優化前（基準版本） | 第一輪優化後 | 第二輪優化後 |
 |---|---|---|
 | ![Before optimization](../../docs/media/legion-fall-preview.gif) | ![After round one](../../docs/media/legion-fall-optimized.gif) | ![After round two](../../docs/media/legion-fall-round2.gif) |
