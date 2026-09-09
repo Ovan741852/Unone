@@ -17,6 +17,9 @@ documented in [Platform architecture](docs/platform-architecture.md). The
 marketplace is a replaceable distribution and revenue layer; it is not a Core
 runtime dependency.
 
+Lottie overlays are currently unsupported. The proposed, engine-owned contract
+and acceptance gates are in [Lottie UI capability](docs/proposals/lottie-ui-v1.md).
+
 ## Native Windows / Android battle results
 
 | 平台（已測裝置） | 最高已測平均 60 FPS 等級 | 末幀 mesh 三角面 | 平均 FPS | p95 幀時間 |
