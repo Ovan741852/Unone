@@ -25,7 +25,7 @@ AI ── Workshop ──> Editor ── unone.plugin.v1 ──> Core / Host ada
 | 層 | 負責 | 不負責 |
 |---|---|---|
 | **Game/App Luau** | ViewModel、遊戲規則、狀態、語意 action、流程 | 像素、DPI、UIKit/Android 物件、Rust handle |
-| **Unone Core** | deterministic tick、Luau VM、輸入邊界、UI/scene/save contract、驗證、diagnostics、replay | 商店帳戶、定價、遊戲商業規則、Widget theme |
+| **Unone Core（凍結）** | 既有 deterministic tick、Luau VM、輸入邊界、UI/scene/save contract、驗證、diagnostics、replay | MVVM、UI Manager、新 UI primitive、商店帳戶、定價、遊戲商業規則、Widget theme |
 | **Host adapters** | viewport、GPU、鍵盤/IME、clipboard、camera、share、accessibility、平台權限 | 決定 gameplay outcome、假裝缺少的能力存在 |
 | **Editor** | 專案/scene tree、inspector、asset browser、preview、logs、package lock | 成為唯一能執行 reusable package 的地方 |
 | **AI Workshop** | goal→requirement→capability→package→evidence、任務排程、diff、測試與 release checklist | 隱藏 mutation、取代 source control、默默啟用套件 |
@@ -159,7 +159,7 @@ creator analytics、moderation、檢舉與支援。創作者提供 package、lic
 
 ### Next
 
-- native toggle/disabled 與 semantic text-input/IME/focus host bridge；
+- Plugin/Luau fallback 與 host capability bridge（toggle/disabled、text-input、IME、focus），不修改 Core；
 - host capability handshake（accessibility、camera、share 等）；
 - Editor preview 與 runtime 共用 descriptor，並加入 package lock/migrations；
 - Workshop requirement/evidence graph、asset provenance UI、衝突 diff；
@@ -167,8 +167,8 @@ creator analytics、moderation、檢舉與支援。創作者提供 package、lic
 
 ### Later
 
-- native Panel、ProgressBar、Tabs、Dialog、Tooltip、focus navigation、style
-  tokens；
+- Plugin/host 實作 Panel、ProgressBar、Tabs、Dialog、Tooltip、focus navigation、
+  style tokens，最後投影到既有 Core transport；
 - public catalog、creator portal、checkout/payout、signed artifacts、offline
   entitlement；
 - iOS/Android/Web/Desktop host capability parity；
@@ -176,8 +176,8 @@ creator analytics、moderation、檢舉與支援。創作者提供 package、lic
 
 ## 不變的設計原則
 
-1. Gameplay/business rules 留在 Luau；只有可證明可重用的 primitive 才升進
-   Core。
+1. Gameplay/business rules 留在 Luau；本產品方向凍結 Core，新增能力只進
+   Plugin SDK、Luau 或 host adapter。
 2. Editor、Workshop、Marketplace 都可替換；專案由 lockfile/cache 保持可重現。
 3. Contract version 與 package version 分離，任何 breaking change 都有 migration。
 4. Composition 可以先交付，但一定標明 composition-only，不能偽裝成 native widget。

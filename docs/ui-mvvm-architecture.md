@@ -2,8 +2,9 @@
 
 這是建立在 [ADR 0004](decisions/0004-mvvm-presentation-boundary.md) 上的
 UI 專用提案。四層是責任分法，不代表每個小畫面都必須建立四個檔案或四個
-plugin。先在 Workshop/遊戲端實驗，跨至少三個情境重複出現後才考慮升成
-Core primitive。
+plugin。**Unone Core 在此方向凍結，不再加入 MVVM、UI Manager 或新的 UI
+primitive**；所有新增能力都必須在 Plugin SDK、Luau 或 host adapter 完成，
+最後投影到既有 Core UI transport。
 
 ## 四層各自做什麼
 
@@ -26,7 +27,8 @@ ViewProperties ── component declaration ──> View
 | **UI Manager / Layer** | screen mount/unmount、layer/overlay stack、focus/route、binding lifecycle、hot-reload safe-point | 保存遊戲真實狀態；替 Model 做決策；把 host 缺少的能力假裝存在 |
 
 Model 與 ViewModel 是遊戲/應用程式 Luau；ViewProperties、View、Manager 可以
-由 `unone-ui` SDK 提供預設實作，但仍由專案決定資料與 commands。
+由 `unone-ui` SDK 提供預設實作，但仍由專案決定資料與 commands；Core 不需
+知道這些層。
 
 ## 這是不是兩個新 plugin？
 
@@ -39,8 +41,9 @@ Model 與 ViewModel 是遊戲/應用程式 Luau；ViewProperties、View、Manage
    ViewProperties、schema、generate/validate、host readiness。
 
 Model、ViewModel 和各遊戲的 View 不應變成 marketplace plugin；它們是專案
-原始碼。當 foundation 與 components 的版本、權限或替換頻率真的不同，再
-把兩個 namespace 拆成兩個 package。AI 仍應只看見一個 capability entry，
+原始碼，由 plugin scaffold/contract 協助產生。當 foundation 與 components
+的版本、權限或替換頻率真的不同，再把兩個 namespace 拆成兩個 package。
+AI 仍應只看見一個 capability entry，
 由 manifest 表達 optional dependency，而不是自己猜安裝順序。
 
 ## Lua 的 reactive 方向
@@ -155,4 +158,3 @@ YesSir 可用三個情境做對照：王破防條（ProgressBar + computed）、
 實驗通過後才決定 foundation/components 是否各自發佈；目前先維持
 [UnoneUI](../../UnoneUI/docs/platform-vision.md) 為可選 package，Core 不引入
 UI Manager、reactive scheduler 或商店依賴。
-
