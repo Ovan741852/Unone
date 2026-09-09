@@ -47,3 +47,11 @@ test("host provides passthrough mount, control commands and inspection", () => {
   assert.equal(host.dispose("overlay").value.disposed, true);
   host.disposeHost();
 });
+
+test("host fails closed when a Canvas2D context is unavailable", () => {
+  const host = createLottieHost({ assets: { reward: documentFixture() } });
+  const mounted = host.mount({ instanceId: "no-canvas", asset: "reward" });
+  assert.equal(mounted.ok, false);
+  assert.equal(mounted.error.code, "UNONE_LOTTIE_CONTEXT_MISSING");
+  host.disposeHost();
+});

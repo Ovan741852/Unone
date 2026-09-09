@@ -380,6 +380,7 @@ export function createLottieHost({ assets = {}, createCanvas, onEvent } = {}) {
     if (issues.length) return responseError("UNONE_LOTTIE_INVALID_SOURCE", "Cannot mount an invalid Lottie asset.", issues[0].path);
     const canvas = node.canvas ?? createCanvas?.(data?.w ?? 1, data?.h ?? 1);
     const context = node.context ?? canvas?.getContext?.("2d");
+    if (!context || typeof context.clearRect !== "function") return responseError("UNONE_LOTTIE_CONTEXT_MISSING", "A Canvas2D context is required for this host.", "/canvas");
     const player = createLottiePlayer({ data, context, instanceId, reducedMotion: node.playback?.reducedMotion === true, reducedMotionFrame: node.playback?.reducedMotionFrame, pointerEvents: node.pointerEvents ?? "passthrough", onEvent: (event) => onEvent?.(event) });
     instances.set(instanceId, { instanceId, canvas, player, bounds: { x: node.rect?.x ?? 0, y: node.rect?.y ?? 0, w: node.rect?.w ?? 100, h: node.rect?.h ?? 100 }, asset: node.asset ?? null });
     if (node.playback?.mode || node.playback?.speed !== undefined) player.play({ mode: node.playback.mode, speed: node.playback.speed });
