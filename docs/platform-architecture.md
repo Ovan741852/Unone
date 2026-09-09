@@ -189,6 +189,6 @@ creator analytics、moderation、檢舉與支援。創作者提供 package、lic
 - [Portable Core SDK](portable-sdk.md)
 - [AI workshop priorities](ai-workshop-priorities.md)
 - [AI workflow](ai-workflow.md)
+- [UI Manager / MVVM architecture proposal](ui-mvvm-architecture.md)
 - [Asset workflow](asset-workflow.md)
 - [UnoneUI component architecture](../../UnoneUI/docs/platform-vision.md)
-
