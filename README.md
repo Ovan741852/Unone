@@ -17,8 +17,12 @@ documented in [Platform architecture](docs/platform-architecture.md). The
 marketplace is a replaceable distribution and revenue layer; it is not a Core
 runtime dependency.
 
-Lottie overlays are currently unsupported. The proposed, engine-owned contract
-and acceptance gates are in [Lottie UI capability](docs/proposals/lottie-ui-v1.md).
+Lottie is not part of Core `ui.setRoot`; the optional `org.unone.lottie` plugin
+now supports the reviewed shape-only Canvas2D subset used by the Ashen Legion
+reward fixtures. Its host API, validation and boundaries are documented in
+[`plugins/org.unone.lottie/README.md`](plugins/org.unone.lottie/README.md).
+The Core/UI-tree extension and broader Lottie feature set remain proposal-level
+work in [Lottie UI capability](docs/proposals/lottie-ui-v1.md).
 
 ## Native Windows / Android battle results
 
