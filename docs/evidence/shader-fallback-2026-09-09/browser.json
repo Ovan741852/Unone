@@ -1,0 +1,373 @@
+{
+  "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "three": "179",
+  "timerAvailable": true,
+  "glError": 0,
+  "programs": [
+    {
+      "name": "",
+      "runnable": true
+    },
+    {
+      "name": "",
+      "runnable": true
+    },
+    {
+      "name": "",
+      "runnable": true
+    },
+    {
+      "name": "",
+      "runnable": true
+    },
+    {
+      "name": "",
+      "runnable": true
+    }
+  ],
+  "wgsl": [],
+  "probes": [
+    {
+      "on": false,
+      "ao": false,
+      "pixel": [
+        80,
+        80,
+        80,
+        255
+      ]
+    },
+    {
+      "on": true,
+      "ao": false,
+      "pixel": [
+        80,
+        80,
+        80,
+        255
+      ]
+    },
+    {
+      "on": false,
+      "ao": true,
+      "pixel": [
+        80,
+        80,
+        80,
+        255
+      ]
+    },
+    {
+      "on": true,
+      "ao": true,
+      "pixel": [
+        80,
+        80,
+        80,
+        255
+      ]
+    }
+  ],
+  "fallbacks": [
+    {
+      "missing": "EXT_color_buffer_float",
+      "on": false,
+      "ao": false,
+      "pixel": [
+        80,
+        80,
+        80,
+        255
+      ],
+      "metrics": {
+        "bloom": false,
+        "ao": false,
+        "ao_method": "depth-ssao-12",
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": false,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_off_ao_off"
+        }
+      }
+    },
+    {
+      "missing": "EXT_color_buffer_float",
+      "on": true,
+      "ao": false,
+      "pixel": [
+        79,
+        79,
+        79,
+        255
+      ],
+      "metrics": {
+        "bloom": true,
+        "ao": false,
+        "ao_method": "depth-ssao-12",
+        "bloom_resolution": [
+          160,
+          90
+        ],
+        "hdr": false,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_on_ao_off"
+        }
+      }
+    },
+    {
+      "missing": "EXT_color_buffer_float",
+      "on": false,
+      "ao": true,
+      "pixel": [
+        79,
+        79,
+        79,
+        255
+      ],
+      "metrics": {
+        "bloom": false,
+        "ao": true,
+        "ao_method": "depth-ssao-12",
+        "bloom_resolution": [
+          160,
+          90
+        ],
+        "hdr": false,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_off_ao_on"
+        }
+      }
+    },
+    {
+      "missing": "EXT_color_buffer_float",
+      "on": true,
+      "ao": true,
+      "pixel": [
+        79,
+        79,
+        79,
+        255
+      ],
+      "metrics": {
+        "bloom": true,
+        "ao": true,
+        "ao_method": "depth-ssao-12",
+        "bloom_resolution": [
+          160,
+          90
+        ],
+        "hdr": false,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_on_ao_on"
+        }
+      }
+    },
+    {
+      "missing": "EXT_disjoint_timer_query_webgl2",
+      "on": false,
+      "ao": false,
+      "pixel": [
+        80,
+        80,
+        80,
+        255
+      ],
+      "metrics": {
+        "bloom": false,
+        "ao": false,
+        "ao_method": "depth-ssao-12",
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": false,
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_off_ao_off"
+        }
+      }
+    },
+    {
+      "missing": "EXT_disjoint_timer_query_webgl2",
+      "on": true,
+      "ao": false,
+      "pixel": [
+        80,
+        80,
+        80,
+        255
+      ],
+      "metrics": {
+        "bloom": true,
+        "ao": false,
+        "ao_method": "depth-ssao-12",
+        "bloom_resolution": [
+          160,
+          90
+        ],
+        "hdr": true,
+        "gpu_timer_available": false,
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_on_ao_off"
+        }
+      }
+    },
+    {
+      "missing": "EXT_disjoint_timer_query_webgl2",
+      "on": false,
+      "ao": true,
+      "pixel": [
+        80,
+        80,
+        80,
+        255
+      ],
+      "metrics": {
+        "bloom": false,
+        "ao": true,
+        "ao_method": "depth-ssao-12",
+        "bloom_resolution": [
+          160,
+          90
+        ],
+        "hdr": true,
+        "gpu_timer_available": false,
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_off_ao_on"
+        }
+      }
+    },
+    {
+      "missing": "EXT_disjoint_timer_query_webgl2",
+      "on": true,
+      "ao": true,
+      "pixel": [
+        80,
+        80,
+        80,
+        255
+      ],
+      "metrics": {
+        "bloom": true,
+        "ao": true,
+        "ao_method": "depth-ssao-12",
+        "bloom_resolution": [
+          160,
+          90
+        ],
+        "hdr": true,
+        "gpu_timer_available": false,
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_on_ao_on"
+        }
+      }
+    }
+  ],
+  "ldrFirstAO": {
+    "hdr": false,
+    "pixel": [
+      79,
+      79,
+      79,
+      255
+    ]
+  },
+  "runs": [],
+  "samples": [],
+  "errors": []
+}

@@ -3,15 +3,34 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three/three.core.js';
 import {createBloom,bloomMeasurementMode} from './bloom.js';
 
-function fixture(){
-  let ready=false,id=0;const draws=[],deleted=[];
+function fixture({timerAvailable=true}={}){
+  let ready=false,id=0,disjoint=false;const draws=[],deleted=[];
   const timer={TIME_ELAPSED_EXT:1,GPU_DISJOINT_EXT:2};
-  const gl={QUERY_RESULT_AVAILABLE:3,QUERY_RESULT:4,getExtension:n=>n==='EXT_disjoint_timer_query_webgl2'?timer:null,getParameter:()=>false,
+  const gl={QUERY_RESULT_AVAILABLE:3,QUERY_RESULT:4,getExtension:n=>n==='EXT_disjoint_timer_query_webgl2'&&timerAvailable?timer:null,getParameter:()=>disjoint,
     createQuery:()=>({id:++id}),beginQuery(){},endQuery(){},deleteQuery:q=>deleted.push(q.id),
     getQueryParameter:(q,p)=>p===3?ready:q.id*1e6};
   const renderer={getContext:()=>gl,getDrawingBufferSize:v=>v.set(1,1),setRenderTarget(){},render:s=>draws.push(s.children?.[0]?.material)};
-  return {bloom:createBloom(THREE,renderer),draws,deleted,ready:()=>ready=true};
+  return {bloom:createBloom(THREE,renderer),draws,deleted,ready:()=>ready=true,disjoint:value=>disjoint=value,queries:()=>id};
 }
+function assertNoGpuSamples(metrics){
+  for(const key of ['gpu_on','gpu_off','gpu_ao_only','gpu_bloom_with_ao'])assert.equal(metrics[key],null,key);
+  assert.ok(Object.values(metrics.gpu_samples_by_mode).every(v=>v===null));
+}
+test('missing GPU timer still draws all modes and exposes null rather than zero timings',()=>{
+  const f=fixture({timerAvailable:false});
+  for(const [on,ao,passes]of [[false,false,1],[true,false,5],[false,true,2],[true,true,5]]){
+    f.bloom.setEnabled(on);f.bloom.setAO(ao);const before=f.draws.length;
+    f.bloom.draw({},new THREE.PerspectiveCamera());assert.equal(f.draws.length-before,passes);
+    assert.equal(f.bloom.metrics().gpu_timer_available,false);assertNoGpuSamples(f.bloom.metrics());
+  }
+  assert.equal(f.queries(),0);
+});
+test('disjoint drops pending invalid samples without inventing GPU time',()=>{
+  const f=fixture();f.bloom.draw({},new THREE.PerspectiveCamera());f.ready();f.disjoint(true);
+  f.bloom.draw({},new THREE.PerspectiveCamera());assert.deepEqual(f.deleted,[1]);assertNoGpuSamples(f.bloom.metrics());
+  f.bloom.draw({},new THREE.PerspectiveCamera());assert.deepEqual(f.deleted,[1,2]);assertNoGpuSamples(f.bloom.metrics());
+  assert.equal(f.draws.length,15);
+});
 test('AO-only skips Bloom extraction and both blur passes, including first frame',()=>{
   const f=fixture();f.bloom.setEnabled(false);f.bloom.setAO(true);f.bloom.draw({},new THREE.PerspectiveCamera());
   assert.equal(f.draws.length,2);
