@@ -208,5 +208,5 @@ YesSir 可用三個情境做對照：王破防條（ProgressBar + computed）、
 9. host 缺少 IME、focus、hover 時是否 fail-closed。
 
 實驗通過後才決定 foundation/components 是否各自發佈；目前先維持
-[UnoneUI](../../UnoneUI/docs/platform-vision.md) 為可選 package，Core 不引入
+[UnoneUI](https://github.com/Ovan741852/UnoneUI/blob/main/docs/platform-vision.md) 為可選 package，Core 不引入
 UI Manager、reactive scheduler 或商店依賴。
