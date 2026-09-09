@@ -120,6 +120,55 @@ stack、input/replay reference 與 timestamp；必須去除帳號、token、原�
 使用者或 policy 批准、safe-point atomic switch，保留上一代供 rollback。遠端
 服務可以是 Koncrate 或其他 backend，Core 只吃 host 提供的已驗證 bytes。
 
+## AI 可追蹤工具契約
+
+MVVM 如果只有分層而沒有觀測工具，AI 仍然只能猜「是哪一層壞掉」。因此
+foundation plugin 必須一起提供以下 read-only／可重播工具；它們不是 Core
+新增 API，也不應把 Model 的內部資料偷偷送到遠端。
+
+| 工具 | 目的 | 最小輸出 |
+|---|---|---|
+| `ui.test` | headless 測試 Model→VM→binding→View 的語意與 descriptor | scenario、seed、input/replay、expected/actual snapshot、descriptor hash、diagnostics、pass/fail |
+| `ui.replay_diff` | 比較兩次輸入或兩個 package 版本的結果 | replay id、first divergent step、Model/VM/View diff、binding/component source map |
+| `ui.debug_snapshot` | 在安全點查看目前 MVVM 圖，不改狀態 | screen/layer stack、Model/VM generation、binding edges、watcher count、pending effects、last-known-good、redacted values |
+| `ui.profile` | 量測更新與渲染前置成本，不假裝是 GPU benchmark | sample window、mount/update/unmount time、reactive invalidations、computed evaluations、descriptor diff size、listener/queue count、memory estimate |
+| `ui.diagnose` | 將錯誤映回作者檔案 | error code/path、layer、source file/line、generation、replay reference、likely causes、suggested actions |
+
+每個結果都應帶 `project_id`、plugin/package/artifact hash、host/target、
+`screen_id`、`ui_generation`、`model_generation`、`view_generation`、
+`binding_generation`、`correlation_id` 與 timestamp。錯誤 stack 要保留安全的
+source map，不要把 token、帳號或原始個資放入 snapshot。
+
+### 測試、除錯、效能的分工
+
+```text
+author change
+    ↓
+ui.test / ui.replay_diff ── semantic correctness + deterministic digest
+    ↓
+ui.debug_snapshot ───────── layer/binding/watcher/source-map location
+    ↓
+ui.profile ──────────────── cost evidence and declared budget comparison
+    ↓
+safe-point reload → preview → evidence record
+```
+
+- `ui.test` 是行為 gate；它必須能在沒有 GPU 的環境重播，並保留第一個
+  divergent step，而不是只回傳最後的 `false`。
+- `ui.debug_snapshot` 是 read-only 且要有明確 owner；每個 watcher、command、
+  overlay token 都能追到建立它的 screen/component/binding。stale generation
+  event 應明確列出並拒絕。
+- `ui.profile` 先回報測量值，再與作者宣告的 budget 比較；不得把某台機器的
+  guessed frame time 當成跨平台 verdict。至少要能看出 reactive invalidation
+  是否造成不必要的全樹更新。
+- hot reload 前後要各保存一次 debug snapshot 與 descriptor digest；若 compile、
+  schema、binding 或 host capability 失敗，測試結果與 source map 必須指向
+  rejected generation，畫面繼續使用 last-known-good。
+
+這些工具可以由同一個 foundation plugin 暴露，也可以由 Editor/Workshop
+包一層 facade；對 AI 仍應是固定名稱、固定結果 shape、固定 evidence 欄位，
+不要要求 AI 解析不同語言的 log。
+
 ## 對 AI 會不會太重？
 
 四層對人類架構是清楚的，對 AI 是否太重取決於是否要求 AI 手動接線：
@@ -151,9 +200,12 @@ YesSir 可用三個情境做對照：王破防條（ProgressBar + computed）、
 1. plain table View 與 reactive View 的 AI 操作步數；
 2. mount/unmount 後 Model 是否保留、舊 binding 是否清除；
 3. View compile/schema 失敗是否保留上一版；
-4. remote diagnostic 是否能定位 screen/component/binding；
-5. signed update hash、safe-point switch 與 rollback 是否可重播；
-6. host 缺少 IME、focus、hover 時是否 fail-closed。
+4. `ui.test` 是否保留 first divergent step 與 deterministic digest；
+5. `ui.debug_snapshot` 是否能定位 screen/component/binding、owner 與 stale watcher；
+6. `ui.profile` 是否能量出 invalidation、recompute、descriptor diff 與 listener 成本；
+7. remote diagnostic 是否能沿 source map 定位原始檔案與行號；
+8. signed update hash、safe-point switch 與 rollback 是否可重播；
+9. host 缺少 IME、focus、hover 時是否 fail-closed。
 
 實驗通過後才決定 foundation/components 是否各自發佈；目前先維持
 [UnoneUI](../../UnoneUI/docs/platform-vision.md) 為可選 package，Core 不引入

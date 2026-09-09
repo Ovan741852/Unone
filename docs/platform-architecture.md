@@ -81,6 +81,23 @@ UnoneUI 0.2.0 元件狀態如下：
 `suggested_actions`。descriptor 能序列化不等於 runtime 能執行；生成結果
 必須帶 `runtime_status`、`engine_nodes`/projection 與 warnings。
 
+### MVVM observability package
+
+MVVM、UI Manager、reactive 與 binding 都是 optional foundation plugin。只交付
+分層而沒有觀測面，AI 會在錯誤時失去定位能力；因此 foundation package 的
+capability 應成組包含：
+
+- `ui.test`／`ui.replay_diff`：headless、deterministic、可保存 first divergent
+  step 與 descriptor/model digest；
+- `ui.debug_snapshot`／`ui.diagnose`：read-only 的 layer、VM、binding、watcher、
+  overlay 與 generation 圖，附安全 source map 與具體修復建議；
+- `ui.profile`：mount/update/unmount、reactive invalidation、computed 次數、
+  descriptor diff、listener/queue 與 host-reported cost 的測量值。
+
+所有結果都要綁定 project/package/artifact hash、screen/component/binding、
+generation、replay 與 correlation id。這些工具可以由 Editor facade 統一呈現，
+但不能改成隱形 global state，也不能把猜測的效能數字偽裝成跨平台 gate。
+
 ## Asset contract
 
 Asset 是可追蹤的 package input，不是不可理解的 blob。每個 asset 至少要
@@ -160,6 +177,7 @@ creator analytics、moderation、檢舉與支援。創作者提供 package、lic
 ### Next
 
 - Plugin/Luau fallback 與 host capability bridge（toggle/disabled、text-input、IME、focus），不修改 Core；
+- MVVM foundation 的 `ui.test`、`ui.debug_snapshot`、`ui.profile`、replay diff 與 source-map diagnostics，讓 AI 能追蹤 binding/reload 成本與錯誤來源；
 - host capability handshake（accessibility、camera、share 等）；
 - Editor preview 與 runtime 共用 descriptor，並加入 package lock/migrations；
 - Workshop requirement/evidence graph、asset provenance UI、衝突 diff；
