@@ -88,6 +88,23 @@ export async function createThreeRenderer(canvas, options = {}) {
   const records = new Map();
   const textureRecords = new Map();
   const specsOf = () => new Map((options.getAssetManifest?.()?.assets ?? []).map((asset) => [String(asset.id), asset]));
+  const presentationHooks = new Set();
+  const disposeHooks = [];
+  let lastDrawTime = null;
+
+  function attachPresentation(value) {
+    const hook = typeof value === "function" ? { beforeRender: value } : value;
+    if (typeof hook?.beforeRender !== "function") throw new Error("presentation hook requires beforeRender(context)");
+    presentationHooks.add(hook);
+    if (typeof hook.onDispose === "function") disposeHooks.push(hook.onDispose);
+    return () => presentationHooks.delete(hook);
+  }
+
+  if (typeof options.beforeRender === "function") attachPresentation({ beforeRender: options.beforeRender });
+
+  function presentationContext(snapshot, dt) {
+    return { snapshot, dt, THREE, scene, renderer, backend, root, camera, camera3d, attachPresentation };
+  }
 
   function resize(world) {
     const width = Math.max(1, canvas.clientWidth || canvas.width || 16);
@@ -164,7 +181,13 @@ export async function createThreeRenderer(canvas, options = {}) {
     return record;
   }
 
-  function draw(snapshot) {
+  function draw(snapshot, drawOptions = {}) {
+    const now = typeof performance !== "undefined" && typeof performance.now === "function" ? performance.now() : Date.now();
+    const inferredDt = lastDrawTime === null ? 0 : Math.max(0, (now - lastDrawTime) / 1000);
+    const dt = Number.isFinite(Number(drawOptions.dt)) ? Math.max(0, Number(drawOptions.dt)) : inferredDt;
+    lastDrawTime = now;
+    const context = presentationContext(snapshot, dt);
+    for (const hook of presentationHooks) hook.beforeRender(context);
     renderer.info.reset();
     const world = worldOf(snapshot);
     resize(world);
@@ -256,10 +279,30 @@ export async function createThreeRenderer(canvas, options = {}) {
     }
   }
 
+  function dispose() {
+    for (const hook of [...disposeHooks].reverse()) {
+      try { hook(); } catch { /* disposal must not break host teardown */ }
+    }
+    disposeHooks.length = 0;
+    presentationHooks.clear();
+    clearTextures();
+    window.removeEventListener("resize", resize);
+    renderer.dispose?.();
+  }
+
+  const readyContext = presentationContext(null, 0);
+  if (typeof options.onReady === "function") {
+    const cleanup = await options.onReady(readyContext);
+    if (typeof cleanup === "function") disposeHooks.push(cleanup);
+    else if (typeof cleanup?.dispose === "function") disposeHooks.push(() => cleanup.dispose());
+  }
+
   return {
     draw,
     async ready() { await Promise.all([...meshAssets.values(),...textureRecords.values()].map(r=>r.promise)); for(const r of [...meshAssets.values(),...textureRecords.values()]) if(r.error) throw r.error; },
     clearTextures,
+    attachPresentation,
+    dispose,
     usesGpuSprites: true,
     setBloom:enabled=>bloom?.setEnabled(enabled),
     resetMeasurements:()=>bloom?.resetMeasurements(),

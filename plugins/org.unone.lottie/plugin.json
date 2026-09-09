@@ -1,0 +1,17 @@
+{
+  "api": "unone.plugin.v1",
+  "id": "org.unone.lottie",
+  "name": "Unone Lottie",
+  "version": "0.1.0",
+  "description": "Shape-only Lottie v1 validation, preview and host Canvas2D playback.",
+  "entry": {"command": "node", "args": ["plugin.mjs"]},
+  "capabilities": ["ui.animation", "ui.animation.validate", "ui.animation.preview", "ui.animation.host"],
+  "permissions": ["project.read", "project.write_staging"],
+  "tools": [
+    {"name": "plugin.test", "title": "Test Lottie runtime", "description": "Run renderer-free lifecycle and validation checks.", "input_schema": {"type": "object"}},
+    {"name": "lottie.inspect", "title": "Inspect Lottie contract", "description": "Describe the supported shape-only subset, host API and explicit boundaries.", "input_schema": {"type": "object"}},
+    {"name": "lottie.validate", "title": "Validate Lottie JSON", "description": "Validate a Lottie document and report actionable JSON paths before playback.", "input_schema": {"type": "object", "properties": {"document": {"type": "object"}, "data": {"type": "object"}}}},
+    {"name": "lottie.preview", "title": "Preview Lottie plan", "description": "Return deterministic frame/marker information without requiring a renderer.", "input_schema": {"type": "object", "properties": {"document": {"type": "object"}, "data": {"type": "object"}}}},
+    {"name": "lottie.install", "title": "Stage Lottie asset", "description": "Stage a validated Lottie JSON and host runtime under .unone/staging/unone-lottie.", "input_schema": {"type": "object", "properties": {"document": {"type": "object"}, "data": {"type": "object"}, "filename": {"type": "string"}, "force": {"type": "boolean"}, "include_runtime": {"type": "boolean"}}}}
+  ]
+}
