@@ -417,7 +417,7 @@ fn parse_node(
     node_count: &mut usize,
     depth: usize,
 ) -> Result<UiNode, String> {
-    if depth > MAX_UI_DEPTH {
+    if raw_node.kind == "component" && depth > MAX_UI_DEPTH {
         return Err(format!(
             "ui.setRoot node '{}' exceeds the maximum component nesting depth of {MAX_UI_DEPTH}",
             raw_node.id
@@ -777,6 +777,12 @@ mod tests {
         )
         .unwrap_err();
         assert!(depth_error.contains("maximum component nesting depth"));
+
+        let mut within_limit = serde_json::json!({"kind": "text", "id": "leaf_ok", "text": "x", "rect": {"x": 0, "y": 0, "width": 1, "height": 1}});
+        for index in (0..16).rev() {
+            within_limit = serde_json::json!({"kind": "component", "id": format!("ok{index}"), "component": "ui.group", "rect": {"x": 0, "y": 0, "width": 100, "height": 100}, "children": [within_limit]});
+        }
+        assert!(UiTree::from_json(serde_json::json!({"kind":"screen","id":"screen_ok","node":"screen","children":[within_limit]})).is_ok());
     }
 
     #[test]
