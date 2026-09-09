@@ -72,7 +72,7 @@ UnoneUI 0.4.0 元件狀態如下：
 |---|---|
 | Text / Label | `ready`，使用 Core `text` |
 | Button | enabled 時 `ready`；disabled 會降為無 action 的 text |
-| Image | `ready`，使用 stable `asset://` ID 與 `fit`；SVG/raster 解碼由 host 決定 |
+| Image | `ready`，使用 stable `asset://` 或 `texture://` ID 與 `fit`；SVG/raster 解碼由 host 決定 |
 | Component | `ready`，Core 驗證可遞迴 reusable children；不提供 MVVM 或隱式 layout |
 | Toggle | `fallback`，以 `[x]`/`[ ]` button 呈現 |
 | IconButton / ProgressBar | `fallback`，文字化且不宣稱原生 icon/bar |

@@ -40,13 +40,24 @@ export function createUiTree(layer, { resolveAsset = null } = {}) {
       element.style.objectFit = node.fit ?? "contain";
       element.dataset.asset = node.asset;
       if (resolveAsset) {
-        Promise.resolve(resolveAsset(node.asset)).then((url) => {
-          if (generation === renderGeneration && url && element.isConnected) element.src = url;
-        }).catch((error) => {
-          if (generation === renderGeneration && element.isConnected) {
-            element.dataset.assetError = error?.message ?? String(error);
-          }
-        });
+        let resolved;
+        try {
+          resolved = resolveAsset(node.asset);
+        } catch (error) {
+          element.dataset.assetError = error?.message ?? String(error);
+          previous = null;
+          resolved = null;
+        }
+        if (resolved !== null) {
+          Promise.resolve(resolved).then((url) => {
+            if (generation === renderGeneration && url && element.isConnected) element.src = url;
+          }).catch((error) => {
+            if (generation === renderGeneration && element.isConnected) {
+              element.dataset.assetError = error?.message ?? String(error);
+              previous = null;
+            }
+          });
+        }
       }
     } else {
       element.textContent = node.text ?? "";

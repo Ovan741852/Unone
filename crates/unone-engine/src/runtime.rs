@@ -2033,6 +2033,41 @@ function Game.update(api, _dt) publish(api) end
 return Game
 "#;
 
+    const NESTED_COMPONENT_UI_SCRIPT: &str = r#"--!strict
+local Game = {}
+function Game.start(api)
+    api.ui.setRoot({
+        kind = "screen", id = "nested", node = "nested",
+        children = {{
+            kind = "component", id = "layer1", component = "ui.layer", rect = { x = 0, y = 0, width = 100, height = 100 },
+            children = {{
+                kind = "component", id = "layer2", component = "ui.layer", rect = { x = 0, y = 0, width = 100, height = 100 },
+                children = {{
+                    kind = "component", id = "layer3", component = "ui.layer", rect = { x = 0, y = 0, width = 100, height = 100 },
+                    children = {{
+                        kind = "component", id = "layer4", component = "ui.layer", rect = { x = 0, y = 0, width = 100, height = 100 },
+                        children = {{ kind = "text", id = "leaf", text = "Leaf", rect = { x = 1, y = 1, width = 10, height = 5 } }},
+                    }},
+                }},
+            }},
+        }},
+    })
+end
+function Game.update(_api, _dt) end
+return Game
+"#;
+
+    #[test]
+    fn nested_component_ui_survives_the_luau_json_boundary() {
+        let dir = tempdir().unwrap();
+        write_project_with_systems(dir.path(), NESTED_COMPONENT_UI_SCRIPT, "{}");
+        let ui = EngineRuntime::load(dir.path()).unwrap().observe().ui.unwrap();
+        let mut leaves = Vec::new();
+        ui.children[0].leaf_nodes(&mut leaves);
+        assert_eq!(leaves.len(), 1);
+        assert_eq!(leaves[0].id(), "leaf");
+    }
+
     #[test]
     fn the_host_viewport_shape_decides_where_an_anchored_node_lands() {
         let dir = tempdir().unwrap();

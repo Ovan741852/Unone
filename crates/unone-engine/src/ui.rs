@@ -493,7 +493,7 @@ fn parse_node(
             let asset = raw_node
                 .asset
                 .ok_or_else(|| format!("ui.setRoot image node '{id}' requires an asset id"))?;
-            ensure_non_empty("image asset", &asset)?;
+            ensure_asset_id(&asset)?;
             Ok(UiNode::Image {
                 id,
                 rect,
@@ -538,6 +538,23 @@ fn parse_node(
 fn ensure_non_empty(label: &str, value: &str) -> Result<(), String> {
     if value.trim().is_empty() {
         return Err(format!("ui.setRoot {label} must not be empty"));
+    }
+    Ok(())
+}
+
+fn ensure_asset_id(value: &str) -> Result<(), String> {
+    ensure_non_empty("image asset", value)?;
+    let Some((scheme, path)) = value.split_once("://") else {
+        return Err("ui.setRoot image asset must be a stable id such as asset://ui/logo, not a project path or URL".to_string());
+    };
+    if scheme.is_empty()
+        || !scheme
+            .chars()
+            .all(|character| character.is_ascii_alphanumeric() || matches!(character, '+' | '-' | '.'))
+        || path.trim().is_empty()
+        || matches!(scheme.to_ascii_lowercase().as_str(), "http" | "https" | "file" | "data")
+    {
+        return Err("ui.setRoot image asset must be a stable non-URL id such as asset://ui/logo".to_string());
     }
     Ok(())
 }
@@ -725,6 +742,15 @@ mod tests {
         }))
         .unwrap_err();
         assert!(outside_design_space.contains("normalized 0..100"));
+
+        let invalid_asset = UiTree::from_json(serde_json::json!({
+            "kind": "screen",
+            "id": "screen",
+            "node": "main",
+            "children": [{"kind": "image", "id": "logo", "asset": "assets/logo.svg", "rect": {"x": 0, "y": 0, "width": 1, "height": 1}}]
+        }))
+        .unwrap_err();
+        assert!(invalid_asset.contains("stable id"));
     }
 
     #[test]

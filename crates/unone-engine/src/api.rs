@@ -1150,7 +1150,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "The latest tree is immediately visible in observe, the run report, test assertions, and Web/native host snapshots; the engine validates only schema, coordinates, and count limits.",
             vec![
                 "root kind must be screen",
-                "child kind supports text, button, image (asset id + fit), or component (name + children)",
+                "child kind supports text, button, image (stable asset:// or texture:// id + fit + optional alt), or component (name + children)",
                 "node ids must be unique, and rects must contain finite values greater than 0 within the 0..100 design space",
             ],
             "api.ui.setRoot({ kind = \"screen\", id = \"dialogue\", node = \"intro\", children = { { kind = \"image\", id = \"logo\", asset = \"asset://ui/logo\", fit = \"contain\", rect = { x = 10, y = 80, width = 20, height = 10 } }, { kind = \"component\", id = \"toolbar\", component = \"ui.toolbar\", rect = { x = 0, y = 0, width = 100, height = 20 }, children = {} } } })",

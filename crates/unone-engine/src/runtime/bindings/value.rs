@@ -1,7 +1,11 @@
 use mlua::{Lua, Table, Value};
 use std::collections::BTreeMap;
 
-const MAX_OBSERVATION_DEPTH: usize = 8;
+// UI component trees are serialized through the same portable Lua-value
+// boundary as observations. Keep this guard above the Core UI component limit
+// (16 wrappers plus the tree/rect fields) so a valid reusable UI tree is not
+// rejected before UiTree validation can produce its specific diagnostic.
+const MAX_OBSERVATION_DEPTH: usize = 32;
 const PORTABLE_INTEGER_MIN: i64 = i32::MIN as i64;
 const PORTABLE_INTEGER_MAX: i64 = i32::MAX as i64;
 
