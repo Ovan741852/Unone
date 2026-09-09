@@ -360,8 +360,9 @@ components, but not IDs dynamically created or selected by Luau.
 external content may still use them.
 
 The engine is responsible only for declaration validation, archive integrity,
-native-local verified reads, and generation activation. It does not own
-image/model decoding, GPU resource lifetime, downloading, retries, cache quota,
+native-local verified reads, and generation activation. UI `image` nodes and
+world sprites both reference the same stable asset IDs; the UI node does not
+embed a path or SVG bytes. It does not own image/model decoding, GPU resource lifetime, downloading, retries, cache quota,
 CDN, runtime asset leases, or a game catalog. Web IndexedDB, native `.unone`, and
 other host storage are different active scopes; native CLI activation does not
 mean Web activation. Passing `asset read` does not prove native texture rendering or a

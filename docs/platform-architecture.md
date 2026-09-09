@@ -25,7 +25,7 @@ AI ── Workshop ──> Editor ── unone.plugin.v1 ──> Core / Host ada
 | 層 | 負責 | 不負責 |
 |---|---|---|
 | **Game/App Luau** | ViewModel、遊戲規則、狀態、語意 action、流程 | 像素、DPI、UIKit/Android 物件、Rust handle |
-| **Unone Core（凍結）** | 既有 deterministic tick、Luau VM、輸入邊界、UI/scene/save contract、驗證、diagnostics、replay | MVVM、UI Manager、新 UI primitive、商店帳戶、定價、遊戲商業規則、Widget theme |
+| **Unone Core（穩定邊界）** | deterministic tick、Luau VM、輸入邊界、UI/scene/save contract、image asset reference、reusable component tree、驗證、diagnostics、replay | MVVM、UI Manager registry、商店帳戶、定價、遊戲商業規則、Widget theme |
 | **Host adapters** | viewport、GPU、鍵盤/IME、clipboard、camera、share、accessibility、平台權限 | 決定 gameplay outcome、假裝缺少的能力存在 |
 | **Editor** | 專案/scene tree、inspector、asset browser、preview、logs、package lock | 成為唯一能執行 reusable package 的地方 |
 | **AI Workshop** | goal→requirement→capability→package→evidence、任務排程、diff、測試與 release checklist | 隱藏 mutation、取代 source control、默默啟用套件 |
@@ -66,12 +66,14 @@ stdout 一行 structured result，logs 一律走 stderr。建議把讀取與變�
 不會把查詢誤當成 mutation。
 
 `unone.ui.v1` 是 UI descriptor contract，與 package version 分開。現在的
-UnoneUI 0.2.0 元件狀態如下：
+UnoneUI 0.4.0 元件狀態如下：
 
 | 元件 | 現況 |
 |---|---|
 | Text / Label | `ready`，使用 Core `text` |
 | Button | enabled 時 `ready`；disabled 會降為無 action 的 text |
+| Image | `ready`，使用 stable `asset://` ID 與 `fit`；SVG/raster 解碼由 host 決定 |
+| Component | `ready`，Core 驗證可遞迴 reusable children；不提供 MVVM 或隱式 layout |
 | Toggle | `fallback`，以 `[x]`/`[ ]` button 呈現 |
 | IconButton / ProgressBar | `fallback`，文字化且不宣稱原生 icon/bar |
 | Panel / Tabs | `composition_only`，由 Editor/host 或 Luau 展開 |

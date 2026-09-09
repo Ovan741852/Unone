@@ -168,7 +168,7 @@ The entry script produced by `project init` **inlines the engine's Luau type con
 
 The complete fields and assertion structure of `.test.json` are defined by the package's `test.schema.json`. `game test` treats each test file as an independent deterministic case and returns an observation digest, save payload, and assertion failures; save/restore fields are for `GAME_PLAN` requirements only. Do not use a UI screenshot as a test assertion.
 
-For example, `project.unone.json` can set `"test_files": ["tests/opening.test.json"]`, and a test file consists of `name`, optional `frames` / `seed` / `input` / `input_sequence` / `load_save`, and `assertions`. `load_save` is only for a `GAME_PLAN` restore check. An assertion chooses exactly one of: `observation` for full JSON-value equality, `ui` for full flat UI-tree equality, or `entity` + `field` (currently `transform.x` / `transform.y`) for numeric comparison.
+For example, `project.unone.json` can set `"test_files": ["tests/opening.test.json"]`, and a test file consists of `name`, optional `frames` / `seed` / `input` / `input_sequence` / `load_save`, and `assertions`. `load_save` is only for a `GAME_PLAN` restore check. An assertion chooses exactly one of: `observation` for full JSON-value equality, `ui` for full typed UI-tree equality (including nested reusable components), or `entity` + `field` (currently `transform.x` / `transform.y`) for numeric comparison.
 
 If only the runtime contract is needed, omit `--types`. A local Windows binary from an official Luau release can be used, or set:
 

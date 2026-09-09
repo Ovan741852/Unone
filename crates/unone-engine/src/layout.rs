@@ -50,6 +50,7 @@ pub struct LayoutNode {
     pub rect: UiRect,
     pub text: String,
     pub action: Option<String>,
+    pub asset: Option<String>,
     /// Roughly how much of the declared width the label needs, if the host sizes
     /// text to the box height. Above 1.0 means the host must shrink, wrap or
     /// clip it. This rests on assumed font metrics, so it is a measurement for
@@ -70,15 +71,21 @@ pub struct LayoutReport {
     pub assumptions: Vec<String>,
 }
 
-fn node_parts(node: &UiNode) -> (&str, &String, &UiRect, &String, Option<&String>) {
+fn node_parts(node: &UiNode) -> (&str, &str, &UiRect, &str, Option<&str>, Option<&str>) {
     match node {
-        UiNode::Text { id, rect, text } => ("text", id, rect, text, None),
+        UiNode::Text { id, rect, text } => ("text", id, rect, text, None, None),
         UiNode::Button {
             id,
             rect,
             text,
             action,
-        } => ("button", id, rect, text, Some(action)),
+        } => ("button", id, rect, text, Some(action), None),
+        UiNode::Image {
+            id, rect, asset, ..
+        } => ("image", id, rect, "", None, Some(asset)),
+        UiNode::Component { .. } => {
+            unreachable!("component nodes are expanded before layout inspection")
+        }
     }
 }
 
@@ -99,10 +106,14 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
     let cols = cols.clamp(16, 400);
     let rows = rows.clamp(8, 200);
     let mut findings = Vec::new();
-    let mut nodes = Vec::with_capacity(tree.children.len());
-
+    let mut leaves = Vec::new();
     for node in &tree.children {
-        let (kind, id, rect, text, action) = node_parts(node);
+        node.leaf_nodes(&mut leaves);
+    }
+    let mut nodes = Vec::with_capacity(leaves.len());
+
+    for node in &leaves {
+        let (kind, id, rect, text, action, asset) = node_parts(node);
         // Out-of-bounds rects cannot reach here: UiTree::from_json already
         // rejects anything outside the 0..100 design space.
         let text_fit = if text.is_empty() || rect.width <= 0.0 {
@@ -111,19 +122,20 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
             (needed_width(text, rect) / rect.width * 100.0).round() / 100.0
         };
         nodes.push(LayoutNode {
-            id: id.clone(),
+            id: id.to_string(),
             kind: kind.to_string(),
             rect: *rect,
-            text: text.clone(),
-            action: action.cloned(),
+            text: text.to_string(),
+            action: action.map(str::to_string),
+            asset: asset.map(str::to_string),
             text_fit,
         });
     }
 
-    for (index, left) in tree.children.iter().enumerate() {
-        let (_, left_id, left_rect, _, _) = node_parts(left);
-        for right in tree.children.iter().skip(index + 1) {
-            let (_, right_id, right_rect, _, _) = node_parts(right);
+    for (index, left) in leaves.iter().enumerate() {
+        let (_, left_id, left_rect, _, _, _) = node_parts(left);
+        for right in leaves.iter().skip(index + 1) {
+            let (_, right_id, right_rect, _, _, _) = node_parts(right);
             if let Some((x, y)) = overlap(left_rect, right_rect) {
                 // Move along whichever axis needs the smaller change, and say
                 // which way: y grows upward in this design space.
@@ -156,7 +168,7 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
                     detail: format!(
                         "'{left_id}' and '{right_id}' overlap by {x:.1} x {y:.1} (design-space units)."
                     ),
-                    nodes: vec![left_id.clone(), right_id.clone()],
+                    nodes: vec![left_id.to_string(), right_id.to_string()],
                     resolution,
                 });
             }
@@ -190,8 +202,12 @@ pub fn draw(tree: &UiTree, cols: usize, rows: usize) -> String {
     let mut cells = vec![vec![' '; cols]; rows];
     let mut owners: Vec<Vec<usize>> = vec![vec![0; cols]; rows];
 
+    let mut leaves = Vec::new();
     for node in &tree.children {
-        let (kind, _, rect, text, _) = node_parts(node);
+        node.leaf_nodes(&mut leaves);
+    }
+    for node in &leaves {
+        let (kind, _, rect, text, _, _) = node_parts(node);
         let left = ((rect.x / 100.0) * cols as f64).round().max(0.0) as usize;
         let right = (((rect.x + rect.width) / 100.0) * cols as f64).round() as usize;
         // y is measured up from the bottom; rows are counted down from the top.
@@ -202,7 +218,11 @@ pub fn draw(tree: &UiTree, cols: usize, rows: usize) -> String {
         if top >= rows || left >= cols {
             continue;
         }
-        let fill = if kind == "button" { '=' } else { '-' };
+        let fill = match kind {
+            "button" => '=',
+            "image" => '@',
+            _ => '-',
+        };
         for row in top..bottom {
             for col in left..right {
                 owners[row][col] += 1;
@@ -251,17 +271,20 @@ pub fn to_markdown(report: &LayoutReport) -> String {
         report.rows,
         report.ascii
     ));
-    out.push_str("| id | kind | x | y | w | h | text |\n|---|---|---|---|---|---|---|\n");
+    out.push_str(
+        "| id | kind | x | y | w | h | text | asset |\n|---|---|---|---|---|---|---|---|\n",
+    );
     for node in &report.nodes {
         out.push_str(&format!(
-            "| {} | {} | {:.1} | {:.1} | {:.1} | {:.1} | {} |\n",
+            "| {} | {} | {:.1} | {:.1} | {:.1} | {:.1} | {} | {} |\n",
             node.id,
             node.kind,
             node.rect.x,
             node.rect.y,
             node.rect.width,
             node.rect.height,
-            node.text.replace('|', "\\|")
+            node.text.replace('|', "\\|"),
+            node.asset.as_deref().unwrap_or("")
         ));
     }
     if report.findings.is_empty() {
@@ -340,5 +363,28 @@ mod tests {
         let roomy = &report.nodes[1];
         assert!(cramped.text_fit > 2.0, "{}", cramped.text_fit);
         assert!(roomy.text_fit < 0.2, "{}", roomy.text_fit);
+    }
+
+    #[test]
+    fn nested_components_are_inspected_by_their_visible_leaves() {
+        let tree = tree(serde_json::json!([
+            {"kind": "component", "id": "toolbar", "component": "ui.toolbar", "rect": {"x": 0.0, "y": 80.0, "width": 100.0, "height": 20.0}, "children": [
+                {"kind": "image", "id": "logo", "asset": "asset://ui/logo", "rect": {"x": 5.0, "y": 85.0, "width": 10.0, "height": 10.0}},
+                {"kind": "button", "id": "save", "text": "Save", "action": "Save", "rect": {"x": 20.0, "y": 85.0, "width": 20.0, "height": 10.0}}
+            ]}
+        ]));
+        let report = inspect(&tree, DEFAULT_LAYOUT_COLS, DEFAULT_LAYOUT_ROWS);
+        assert!(report.readable, "{:?}", report.findings);
+        assert_eq!(
+            report
+                .nodes
+                .iter()
+                .map(|node| node.id.as_str())
+                .collect::<Vec<_>>(),
+            vec!["logo", "save"]
+        );
+        assert_eq!(report.nodes[0].kind, "image");
+        assert_eq!(report.nodes[0].asset.as_deref(), Some("asset://ui/logo"));
+        assert!(report.ascii.contains('@'));
     }
 }

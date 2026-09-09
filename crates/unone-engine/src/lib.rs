@@ -1,5 +1,5 @@
 mod mesh;
-pub use mesh::{MeshAsset,MeshLod,validate_mesh_geometry};
+pub use mesh::{MeshAsset, MeshLod, validate_mesh_geometry};
 #[cfg(feature = "dev-tools")]
 mod api;
 #[cfg(feature = "dev-tools")]
@@ -108,7 +108,7 @@ pub use systems::{
     SystemState, SystemStatus, compiled_systems, describe as describe_system,
     search as search_systems,
 };
-pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiNode, UiRect, UiTree};
+pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiImageFit, UiNode, UiRect, UiTree};
 #[cfg(feature = "dev-tools")]
 pub use verify::{DEFAULT_VERIFY_STEPS, StepStatus, VerifyReport, VerifyStep, verify};
 pub use world::{
@@ -129,4 +129,4 @@ mod particle;
 pub use particle::{ParticleDefinition, ParticleEmitter, ParticleSnapshot};
 
 mod canonical_hash;
-pub use canonical_hash::{CanonicalHasher, CanonicalHashWork};
+pub use canonical_hash::{CanonicalHashWork, CanonicalHasher};

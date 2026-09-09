@@ -10,7 +10,13 @@ import {worldFromPointer} from '../shared/webgpu-snapshot.js';
 /* PROFILE_IMPORT */
 /* DEVELOPER_IMPORT */
 const canvas=document.querySelector('#game'),status=document.querySelector('#status');
-const input=createHostInput(),renderUi=createUiTree(document.querySelector('#ui-layer'));
+let uiAssetManifest=null;
+const input=createHostInput(),renderUi=createUiTree(document.querySelector('#ui-layer'),{resolveAsset:assetId=>{
+ const asset=uiAssetManifest?.assets?.find(candidate=>candidate.id===assetId);
+ if(!asset)throw Error(`UI asset ${assetId} is not declared in the active asset manifest`);
+ requireAssetEncoding(asset,'image');
+ return new URL(`content/${asset.source}`,location.href).href;
+}});
 let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null;
 let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=null;
 let saved,key,projectPayload;
@@ -43,7 +49,7 @@ async function coreRequest(request){const value=await backend.request({kind:'dev
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
 async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.restored_save=JSON.parse(saved??'null');acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:'42'}),{reset:true});audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();await setPaused(wasPaused);}
 async function start(){
- const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);projectPayload=project;
+ const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);projectPayload=project;uiAssetManifest=assets;
  const runtimeURL=new URL(document.querySelector('meta[name="unone-runtime"]').content,location.href).href;
  const kind=new URLSearchParams(location.search).get('backend')??presentation.runtime_backend??'main';
  backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy});metrics.runtime_ready_ms=performance.now()-window.playerBoot;

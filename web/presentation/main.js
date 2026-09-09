@@ -1,5 +1,6 @@
 import { requireAssetEncoding, DECODER_ROUTES } from "../shared/asset-encoding.js";
 import {assembleProject,loadProject as loadHostProject} from '../shared/load-project.js';
+import { createUiTree } from "../shared/ui-tree.js";
 // Presentation host: the engine decides, this page draws.
 //
 // Rust/Luau owns the fixed-tick simulation and publishes semantic state:
@@ -40,7 +41,18 @@ let assets = null;
 let spineState = null;
 let effekseerState = null;
 let audioState = null;
-let renderedUi = null;
+const uiAssetUrls = new Map();
+const renderUi = createUiTree(uiLayer, {
+  resolveAsset: (assetId) => {
+    const asset = assets?.assets?.find((candidate) => candidate.id === assetId);
+    if (!asset) throw new Error(`UI asset ${assetId} is not declared in the active asset manifest`);
+    if (!uiAssetUrls.has(assetId)) {
+      requireAssetEncoding(asset, "image");
+      uiAssetUrls.set(assetId, new URL(asset.source, projectRoot).href);
+    }
+    return uiAssetUrls.get(assetId);
+  },
+});
 let pendingActions = new Map();
 let autoPlay = false;
 let autoCooldown = 0;
@@ -392,29 +404,6 @@ function audioStatus(world) {
 }
 
 // --- UI, input and the frame loop -----------------------------------------
-
-function renderUi(world) {
-  const ui = world?.ui ?? null;
-  const serialized = JSON.stringify(ui);
-  if (serialized === renderedUi) return;
-  renderedUi = serialized;
-  uiLayer.replaceChildren();
-  if (!ui) return;
-  for (const node of ui.children ?? []) {
-    // A button the game published has to be pressable, or the only way to play
-    // is the host's own debug controls.
-    const element = document.createElement(node.kind === "button" ? "button" : "div");
-    element.className = `unone-ui-node unone-ui-${node.kind}`;
-    element.textContent = node.text;
-    element.dataset.nodeId = node.id;
-    if (node.kind === "button" && node.action) element.dataset.action = node.action;
-    element.style.left = `${node.rect.x}%`;
-    element.style.bottom = `${node.rect.y}%`;
-    element.style.width = `${node.rect.width}%`;
-    element.style.height = `${node.rect.height}%`;
-    uiLayer.appendChild(element);
-  }
-}
 
 function pressAction(action) {
   // Hold the action for one frame, the same edge a test input sequence sends.

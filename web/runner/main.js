@@ -37,7 +37,13 @@ let audioState = null;
 let scheduler = null;
 let schedulerResult = null;
 const hostInput = createHostInput();
-const renderUi = createUiTree(uiLayer);
+const renderUi = createUiTree(uiLayer, {
+  resolveAsset: (assetId) => {
+    const asset = assetManifest?.assets?.find((candidate) => candidate.id === assetId);
+    if (!asset) throw new Error(`UI asset ${assetId} is not declared in the active asset manifest`);
+    return loadAssetUrl(asset);
+  },
+});
 let loadedSave = false;
 let lastStoredSaveText = null;
 let pendingSaveText = null;

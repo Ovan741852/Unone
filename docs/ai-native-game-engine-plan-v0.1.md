@@ -112,7 +112,7 @@ Luau 不應看見 raw pointer、Rust lifetime、wgpu handle、ECS archetype 或 
 - `game check` 同時回傳 parser、typecheck、lint 與 runtime contract 問題。
 - `api.observation.set` 提供有限制的 JSON-like semantic projection；typed game ViewModel 只在明確 serialization boundary 轉出，test 可直接 assertion observation。
 - `api.save.set/get` 提供同樣受限的 opaque JSON-like save payload transport；遊戲端負責 schema/version/migration，host 負責平台 storage，引擎不做 save slot、cloud sync 或遊戲專用 persistence。
-- `api.ui.setRoot` 只驗證／傳輸遊戲端組合的 flat `screen/text/button` tree；UI rect 固定使用 normalized 0..100 × 0..100 logical space，由 host 映射到 viewport，engine 不做 layout、binding、widget 或遊戲規則。
+- `api.ui.setRoot` 驗證／傳輸遊戲端組合的 `screen/text/button/image/component` tree；UI rect 固定使用 normalized 0..100 × 0..100 logical space，由 host 映射到 viewport，engine 不做 layout、binding、widget 或遊戲規則。Component 只提供可遞迴的 reusable 結構，不提供 MVVM registry 或隱式 local layout。
 - 不在第一版設計「未來可換任意語言」的 public abstraction；Rust 內部保留 `ScriptHost` 邊界即可。
 
 建議遊戲結構：
@@ -339,7 +339,7 @@ Model 是遊戲的真實狀態，ViewModel 是遊戲端定義的 typed presentat
 
 這對 AI 友善，因為 AI 可以分別 inspect model、ViewModel 與 UI tree；ViewModel 是小型、typed、可序列化的上下文；commands 有名稱、參數、前置條件、結果與 diagnostics；測試可先驗證 ViewModel，再驗證 View binding。
 
-第一版不做全域 magic binding、雙向自動同步、反射式 converter graph、全引擎 ViewModel registry、layout engine、widget library、UI event bus 或讓每個 Entity 都建立 ViewModel。`api.ui.setRoot` 只提供 flat `screen/text/button` transport；ViewModel、View 組合、hit-test 與 action 仍在遊戲端，高頻 gameplay simulation 維持 ECS。
+第一版不做全域 magic binding、雙向自動同步、反射式 converter graph、全引擎 ViewModel registry、layout engine、widget library、UI event bus 或讓每個 Entity 都建立 ViewModel。`api.ui.setRoot` 提供有限的 `screen/text/button/image/component` transport；ViewModel、View 組合、hit-test 與 action 仍在遊戲端，高頻 gameplay simulation 維持 ECS。
 
 3D 也遵守同一個最小原則：先只提供被 3D Racing 證明必要的 `Vec3`、`Transform3D`、`Mesh3D`、`Camera3D` 與 semantic snapshot；車輛、賽道、輪胎、material、animation、navigation、3D physics 與完整 asset editor 不預先放進 engine。後續只有在至少多個遊戲出現相同且低階的阻塞時，才依 evidence 提煉下一個 primitive。
 

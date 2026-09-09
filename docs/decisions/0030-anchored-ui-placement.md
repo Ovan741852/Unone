@@ -32,7 +32,7 @@ host 以 `EngineRuntime::set_viewport_aspect` 或 wasm 的 `unone_web_set_viewpo
 
 ## 邊界
 
-這不是 flexbox，也不是 RectTransform 的完整移植：沒有巢狀、沒有 stretch anchor（anchorMin ≠ anchorMax）、沒有 margin 塌陷、沒有自動排版。絕對 `rect` 保留給網格表達不了的版面。
+這不是 flexbox，也不是 RectTransform 的完整移植：沒有 stretch anchor（anchorMin ≠ anchorMax）、沒有 margin 塌陷、沒有自動排版。現在允許 `component` 包住可重用子節點，但子節點仍使用 screen design space，不建立 local transform 或隱式排版。絕對 `rect` 保留給網格表達不了的版面。
 
 ## 原因
 
