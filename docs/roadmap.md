@@ -5,6 +5,10 @@ gaps, not opportunities to put game-specific policy in core. The final authority
 remains `D:/Projects/Unone_Games/validation/acceptance-matrix.json`: overall
 `not_passed`, all seven final games `in_progress`.
 
+For the product-level direction across Editor, AI Workshop, plugins, assets,
+SDK packaging, and the optional marketplace, see
+[platform-architecture.md](platform-architecture.md).
+
 ## Delivery policy
 
 - Prioritize usable capabilities over additional verification machinery.

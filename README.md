@@ -9,6 +9,14 @@ Unone is an AI-native **3D game engine prototype with 2D workflows**: Rust owns 
 
 The current contract boundaries and host limitations are recorded in [Runtime contracts](docs/runtime-contracts.md). 3D transforms, cameras and presentation are an existing direction; mature 3D physics and a universal asset importer remain unfinished.
 
+### Product architecture and marketplace direction
+
+The product-level design for the Editor, AI Workshop, Core, Plugin SDK, asset
+pipeline, optional marketplace, creator payouts, and WASM/native packaging is
+documented in [Platform architecture](docs/platform-architecture.md). The
+marketplace is a replaceable distribution and revenue layer; it is not a Core
+runtime dependency.
+
 ## Native Windows / Android battle results
 
 | 平台（已測裝置） | 最高已測平均 60 FPS 等級 | 末幀 mesh 三角面 | 平均 FPS | p95 幀時間 |
