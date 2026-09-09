@@ -2033,25 +2033,14 @@ function Game.update(api, _dt) publish(api) end
 return Game
 "#;
 
-    const NESTED_COMPONENT_UI_SCRIPT: &str = r#"--!strict
+    const NESTED_COMPONENT_UI_SCRIPT: &str = r#"
 local Game = {}
 function Game.start(api)
-    api.ui.setRoot({
-        kind = "screen", id = "nested", node = "nested",
-        children = {{
-            kind = "component", id = "layer1", component = "ui.layer", rect = { x = 0, y = 0, width = 100, height = 100 },
-            children = {{
-                kind = "component", id = "layer2", component = "ui.layer", rect = { x = 0, y = 0, width = 100, height = 100 },
-                children = {{
-                    kind = "component", id = "layer3", component = "ui.layer", rect = { x = 0, y = 0, width = 100, height = 100 },
-                    children = {{
-                        kind = "component", id = "layer4", component = "ui.layer", rect = { x = 0, y = 0, width = 100, height = 100 },
-                        children = {{ kind = "text", id = "leaf", text = "Leaf", rect = { x = 1, y = 1, width = 10, height = 5 } }},
-                    }},
-                }},
-            }},
-        }},
-    })
+    local child = { kind = "text", id = "leaf", text = "Leaf", rect = { x = 1, y = 1, width = 10, height = 5 } }
+    for index = 16, 1, -1 do
+        child = { kind = "component", id = "layer" .. index, component = "ui.layer", rect = { x = 0, y = 0, width = 100, height = 100 }, children = { child } }
+    end
+    api.ui.setRoot({ kind = "screen", id = "nested", node = "nested", children = { child } })
 end
 function Game.update(_api, _dt) end
 return Game
@@ -2066,6 +2055,15 @@ return Game
         ui.children[0].leaf_nodes(&mut leaves);
         assert_eq!(leaves.len(), 1);
         assert_eq!(leaves[0].id(), "leaf");
+
+        let too_deep_dir = tempdir().unwrap();
+        let too_deep_script = NESTED_COMPONENT_UI_SCRIPT.replace("index = 16, 1", "index = 17, 1");
+        write_project_with_systems(too_deep_dir.path(), &too_deep_script, "{}");
+        let error = match EngineRuntime::load(too_deep_dir.path()) {
+            Ok(_) => panic!("17 component wrappers should be rejected by Core"),
+            Err(error) => error,
+        };
+        assert!(error.explanation.contains("maximum component nesting depth"), "{}", error.explanation);
     }
 
     #[test]
