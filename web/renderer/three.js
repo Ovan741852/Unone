@@ -72,6 +72,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   renderer.info.autoReset=false;
   const bloom=backend==='webgl'?createBloom(THREE,renderer):null;
   bloom?.setEnabled(options.bloom??false);
+  bloom?.setAO(options.ao??false);
   const effects=await createEffects(renderer.getContext?.(),options.getAssetManifest?.()?.assets??[],options.loadAssetUrl);
 
   const scene = new THREE.Scene();
@@ -262,6 +263,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     clearTextures,
     usesGpuSprites: true,
     setBloom:enabled=>bloom?.setEnabled(enabled),
+    setAO:enabled=>bloom?.setAO(enabled),
     resetMeasurements:()=>bloom?.resetMeasurements(),
     implementation: "three.js",
     backend,

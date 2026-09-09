@@ -1,0 +1,475 @@
+{
+  "checks": [
+    {
+      "inspect": {
+        "ok": true,
+        "value": {
+          "ok": true,
+          "manifest": {
+            "id": "shader://yessir/raw/color",
+            "language": "wgsl",
+            "stage": "fragment",
+            "entry_points": {
+              "vertex": "vs",
+              "fragment": "fs"
+            },
+            "preview": {
+              "mode": "external"
+            },
+            "protocol": "unone.shader.v1"
+          },
+          "source": {
+            "path": null,
+            "bytes": 378,
+            "lines": 7
+          },
+          "analysis": {
+            "metrics": {
+              "bytes": 378,
+              "lines": 7,
+              "functions": 2,
+              "texture_samples": 0,
+              "texture_loads": 0,
+              "loops": 0,
+              "branches": 0,
+              "discards": 0,
+              "derivatives": 0,
+              "atomics": 0,
+              "bindings": 0,
+              "groups": []
+            },
+            "heuristic_risk": {
+              "score": 0,
+              "band": "low",
+              "meaning": "source-level review priority only"
+            },
+            "findings": [],
+            "runtime_evidence_required": true
+          },
+          "errors": [],
+          "warnings": [],
+          "next_actions": [
+            {
+              "action": "shader.preview",
+              "description": "Use shader.preview to prepare a fullscreen preview when the shader follows the preview contract."
+            }
+          ]
+        },
+        "diagnostics": [],
+        "effects": []
+      },
+      "preview": {
+        "ok": true,
+        "value": {
+          "manifest": {
+            "id": "shader://yessir/raw/color",
+            "language": "wgsl",
+            "stage": "fragment",
+            "entry_points": {
+              "vertex": "vs",
+              "fragment": "fs"
+            },
+            "preview": {
+              "mode": "external"
+            },
+            "protocol": "unone.shader.v1"
+          },
+          "source_path": null,
+          "width": 960,
+          "height": 540,
+          "preview": {
+            "source": "\r\n    struct VertexOut { @builtin(position) position: vec4f, @location(0) color: vec4f }\r\n    @vertex fn vs(@location(0) position: vec2f, @location(1) color: vec4f) -> VertexOut {\r\n      var out: VertexOut; out.position = vec4f(position, 0.0, 1.0); out.color = color; return out;\r\n    }\r\n    @fragment fn fs(@location(0) color: vec4f) -> @location(0) vec4f { return color; }\r\n  ",
+            "harness_prepared": false,
+            "compilation": "not_checked",
+            "contract": "external",
+            "entry_points": null,
+            "errors": [],
+            "warnings": [
+              {
+                "code": "SHADER_PREVIEW_EXTERNAL",
+                "path": "mode",
+                "message": "external shaders are returned for host compilation; no fullscreen adapter is generated",
+                "severity": "WARN"
+              }
+            ]
+          },
+          "browser": {
+            "command": "npm run preview",
+            "requirement": "WebGPU-capable browser",
+            "note": "The browser is authoritative for WGSL compilation, resource bindings, and pixels; this response only prepared a harness."
+          },
+          "next_actions": [
+            {
+              "action": "shader.preview",
+              "description": "Resolve the preview warning or let the host compile the external shader.",
+              "command": null
+            }
+          ]
+        },
+        "diagnostics": [],
+        "effects": []
+      }
+    },
+    {
+      "inspect": {
+        "ok": true,
+        "value": {
+          "ok": true,
+          "manifest": {
+            "id": "shader://yessir/raw/texture",
+            "language": "wgsl",
+            "stage": "fragment",
+            "entry_points": {
+              "vertex": "vs",
+              "fragment": "fs"
+            },
+            "preview": {
+              "mode": "external"
+            },
+            "protocol": "unone.shader.v1"
+          },
+          "source": {
+            "path": null,
+            "bytes": 701,
+            "lines": 23
+          },
+          "analysis": {
+            "metrics": {
+              "bytes": 701,
+              "lines": 23,
+              "functions": 2,
+              "texture_samples": 1,
+              "texture_loads": 0,
+              "loops": 0,
+              "branches": 0,
+              "discards": 0,
+              "derivatives": 0,
+              "atomics": 0,
+              "bindings": 2,
+              "groups": [
+                0
+              ]
+            },
+            "heuristic_risk": {
+              "score": 5,
+              "band": "low",
+              "meaning": "source-level review priority only"
+            },
+            "findings": [],
+            "runtime_evidence_required": true
+          },
+          "errors": [],
+          "warnings": [],
+          "next_actions": [
+            {
+              "action": "shader.preview",
+              "description": "Use shader.preview to prepare a fullscreen preview when the shader follows the preview contract."
+            }
+          ]
+        },
+        "diagnostics": [],
+        "effects": []
+      },
+      "preview": {
+        "ok": true,
+        "value": {
+          "manifest": {
+            "id": "shader://yessir/raw/texture",
+            "language": "wgsl",
+            "stage": "fragment",
+            "entry_points": {
+              "vertex": "vs",
+              "fragment": "fs"
+            },
+            "preview": {
+              "mode": "external"
+            },
+            "protocol": "unone.shader.v1"
+          },
+          "source_path": null,
+          "width": 960,
+          "height": 540,
+          "preview": {
+            "source": "\r\n    struct VertexOut {\r\n      @builtin(position) position: vec4f,\r\n      @location(0) uv: vec2f,\r\n      @location(1) tint: vec4f,\r\n    }\r\n    @vertex fn vs(\r\n      @location(0) position: vec2f,\r\n      @location(1) uv: vec2f,\r\n      @location(2) tint: vec4f,\r\n    ) -> VertexOut {\r\n      var out: VertexOut;\r\n      out.position = vec4f(position, 0.0, 1.0);\r\n      out.uv = uv;\r\n      out.tint = tint;\r\n      return out;\r\n    }\r\n    @group(0) @binding(0) var spriteTexture: texture_2d<f32>;\r\n    @group(0) @binding(1) var spriteSampler: sampler;\r\n    @fragment fn fs(input: VertexOut) -> @location(0) vec4f {\r\n      return textureSample(spriteTexture, spriteSampler, input.uv) * input.tint;\r\n    }\r\n  ",
+            "harness_prepared": false,
+            "compilation": "not_checked",
+            "contract": "external",
+            "entry_points": null,
+            "errors": [],
+            "warnings": [
+              {
+                "code": "SHADER_PREVIEW_EXTERNAL",
+                "path": "mode",
+                "message": "external shaders are returned for host compilation; no fullscreen adapter is generated",
+                "severity": "WARN"
+              }
+            ]
+          },
+          "browser": {
+            "command": "npm run preview",
+            "requirement": "WebGPU-capable browser",
+            "note": "The browser is authoritative for WGSL compilation, resource bindings, and pixels; this response only prepared a harness."
+          },
+          "next_actions": [
+            {
+              "action": "shader.preview",
+              "description": "Resolve the preview warning or let the host compile the external shader.",
+              "command": null
+            }
+          ]
+        },
+        "diagnostics": [],
+        "effects": []
+      }
+    }
+  ],
+  "glslUnsupported": {
+    "ok": false,
+    "value": null,
+    "diagnostics": [
+      {
+        "code": "SHADER_INVALID",
+        "severity": "ERROR",
+        "summary": "Shader contract invalid",
+        "explanation": "The shader source or manifest failed validation.",
+        "facts": {
+          "errors": [
+            {
+              "code": "SHADER_LANGUAGE_UNSUPPORTED",
+              "path": "manifest.language",
+              "message": "v0.1 supports WGSL only; keep other language adapters in a plugin/host layer",
+              "severity": "ERROR"
+            }
+          ],
+          "warnings": [
+            {
+              "code": "SHADER_ENTRY_POINT_DEFAULTED",
+              "path": "manifest.entry_points.fragment",
+              "message": "external fragment shaders default to 'fs'; fullscreen previews supply their own generated entry point",
+              "severity": "WARN"
+            }
+          ],
+          "next_actions": [
+            {
+              "action": "shader.inspect",
+              "description": "Fix contract errors at the reported path and inspect again."
+            },
+            {
+              "action": "shader.preview",
+              "description": "Use shader.preview to prepare a fullscreen preview when the shader follows the preview contract."
+            }
+          ]
+        },
+        "likely_causes": [],
+        "suggested_actions": [
+          {
+            "command": null,
+            "action": "shader.inspect",
+            "description": "Fix contract errors at the reported path and inspect again."
+          },
+          {
+            "command": null,
+            "action": "shader.preview",
+            "description": "Use shader.preview to prepare a fullscreen preview when the shader follows the preview contract."
+          }
+        ],
+        "source": null
+      }
+    ],
+    "effects": []
+  },
+  "profiles": {
+    "before": {
+      "ok": true,
+      "value": {
+        "ok": true,
+        "frame_budget_ms": 16.67,
+        "sample_count": 191,
+        "timing_source": "gpu_preferred_cpu_fallback",
+        "hotspots": [
+          {
+            "pass": "bloom_on_ao_on",
+            "shader": "shader://yessir/postprocess",
+            "frames": 47,
+            "gpu_ms": 0.170272,
+            "gpu_samples": 47,
+            "gpu_percent_of_frame_budget": 1.02,
+            "gpu_status": "sampled_below_hotspot_threshold",
+            "cpu_ms": null,
+            "cpu_samples": 0,
+            "cpu_percent_of_frame_budget": null,
+            "cpu_status": "unmeasured",
+            "draws": 0,
+            "dispatches": 0,
+            "status": "sampled_below_hotspot_threshold",
+            "hotspot_domains": [],
+            "evidence": "measured_timing"
+          },
+          {
+            "pass": "bloom_off_ao_on",
+            "shader": "shader://yessir/postprocess",
+            "frames": 48,
+            "gpu_ms": 0.147808,
+            "gpu_samples": 48,
+            "gpu_percent_of_frame_budget": 0.89,
+            "gpu_status": "sampled_below_hotspot_threshold",
+            "cpu_ms": null,
+            "cpu_samples": 0,
+            "cpu_percent_of_frame_budget": null,
+            "cpu_status": "unmeasured",
+            "draws": 0,
+            "dispatches": 0,
+            "status": "sampled_below_hotspot_threshold",
+            "hotspot_domains": [],
+            "evidence": "measured_timing"
+          },
+          {
+            "pass": "bloom_on_ao_off",
+            "shader": "shader://yessir/postprocess",
+            "frames": 48,
+            "gpu_ms": 0.120896,
+            "gpu_samples": 48,
+            "gpu_percent_of_frame_budget": 0.73,
+            "gpu_status": "sampled_below_hotspot_threshold",
+            "cpu_ms": null,
+            "cpu_samples": 0,
+            "cpu_percent_of_frame_budget": null,
+            "cpu_status": "unmeasured",
+            "draws": 0,
+            "dispatches": 0,
+            "status": "sampled_below_hotspot_threshold",
+            "hotspot_domains": [],
+            "evidence": "measured_timing"
+          },
+          {
+            "pass": "bloom_off_ao_off",
+            "shader": "shader://yessir/postprocess",
+            "frames": 48,
+            "gpu_ms": 0.008736,
+            "gpu_samples": 48,
+            "gpu_percent_of_frame_budget": 0.05,
+            "gpu_status": "sampled_below_hotspot_threshold",
+            "cpu_ms": null,
+            "cpu_samples": 0,
+            "cpu_percent_of_frame_budget": null,
+            "cpu_status": "unmeasured",
+            "draws": 0,
+            "dispatches": 0,
+            "status": "sampled_below_hotspot_threshold",
+            "hotspot_domains": [],
+            "evidence": "measured_timing"
+          }
+        ],
+        "next_actions": [
+          {
+            "action": "shader.profile",
+            "description": "Keep a representative workload and compare p95 timings after each shader change."
+          }
+        ],
+        "limitations": [
+          "Static findings are low-confidence risk signals, not GPU bottleneck verdicts.",
+          "Browser WebGPU or a native renderer must validate compilation and pixels.",
+          "Runtime hotspot claims require measured CPU/GPU samples from a host."
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    },
+    "after": {
+      "ok": true,
+      "value": {
+        "ok": true,
+        "frame_budget_ms": 16.67,
+        "sample_count": 191,
+        "timing_source": "gpu_preferred_cpu_fallback",
+        "hotspots": [
+          {
+            "pass": "bloom_on_ao_off",
+            "shader": "shader://yessir/postprocess",
+            "frames": 48,
+            "gpu_ms": 0.19952,
+            "gpu_samples": 48,
+            "gpu_percent_of_frame_budget": 1.2,
+            "gpu_status": "sampled_below_hotspot_threshold",
+            "cpu_ms": null,
+            "cpu_samples": 0,
+            "cpu_percent_of_frame_budget": null,
+            "cpu_status": "unmeasured",
+            "draws": 0,
+            "dispatches": 0,
+            "status": "sampled_below_hotspot_threshold",
+            "hotspot_domains": [],
+            "evidence": "measured_timing"
+          },
+          {
+            "pass": "bloom_on_ao_on",
+            "shader": "shader://yessir/postprocess",
+            "frames": 47,
+            "gpu_ms": 0.101568,
+            "gpu_samples": 47,
+            "gpu_percent_of_frame_budget": 0.61,
+            "gpu_status": "sampled_below_hotspot_threshold",
+            "cpu_ms": null,
+            "cpu_samples": 0,
+            "cpu_percent_of_frame_budget": null,
+            "cpu_status": "unmeasured",
+            "draws": 0,
+            "dispatches": 0,
+            "status": "sampled_below_hotspot_threshold",
+            "hotspot_domains": [],
+            "evidence": "measured_timing"
+          },
+          {
+            "pass": "bloom_off_ao_on",
+            "shader": "shader://yessir/postprocess",
+            "frames": 48,
+            "gpu_ms": 0.021888,
+            "gpu_samples": 48,
+            "gpu_percent_of_frame_budget": 0.13,
+            "gpu_status": "sampled_below_hotspot_threshold",
+            "cpu_ms": null,
+            "cpu_samples": 0,
+            "cpu_percent_of_frame_budget": null,
+            "cpu_status": "unmeasured",
+            "draws": 0,
+            "dispatches": 0,
+            "status": "sampled_below_hotspot_threshold",
+            "hotspot_domains": [],
+            "evidence": "measured_timing"
+          },
+          {
+            "pass": "bloom_off_ao_off",
+            "shader": "shader://yessir/postprocess",
+            "frames": 48,
+            "gpu_ms": 0.009568,
+            "gpu_samples": 48,
+            "gpu_percent_of_frame_budget": 0.06,
+            "gpu_status": "sampled_below_hotspot_threshold",
+            "cpu_ms": null,
+            "cpu_samples": 0,
+            "cpu_percent_of_frame_budget": null,
+            "cpu_status": "unmeasured",
+            "draws": 0,
+            "dispatches": 0,
+            "status": "sampled_below_hotspot_threshold",
+            "hotspot_domains": [],
+            "evidence": "measured_timing"
+          }
+        ],
+        "next_actions": [
+          {
+            "action": "shader.profile",
+            "description": "Keep a representative workload and compare p95 timings after each shader change."
+          }
+        ],
+        "limitations": [
+          "Static findings are low-confidence risk signals, not GPU bottleneck verdicts.",
+          "Browser WebGPU or a native renderer must validate compilation and pixels.",
+          "Runtime hotspot claims require measured CPU/GPU samples from a host."
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  }
+}

@@ -1,0 +1,1255 @@
+{
+  "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "three": "179",
+  "timerAvailable": true,
+  "glError": 0,
+  "programs": [
+    {
+      "name": "",
+      "runnable": true
+    },
+    {
+      "name": "",
+      "runnable": true
+    },
+    {
+      "name": "",
+      "runnable": true
+    },
+    {
+      "name": "",
+      "runnable": true
+    },
+    {
+      "name": "",
+      "runnable": true
+    },
+    {
+      "name": "",
+      "runnable": true
+    },
+    {
+      "name": "",
+      "runnable": true
+    },
+    {
+      "name": "",
+      "runnable": true
+    },
+    {
+      "name": "",
+      "runnable": true
+    }
+  ],
+  "wgsl": [
+    {
+      "messages": []
+    },
+    {
+      "messages": []
+    }
+  ],
+  "probes": [
+    {
+      "on": false,
+      "ao": false,
+      "pixel": [
+        80,
+        80,
+        80,
+        255
+      ]
+    },
+    {
+      "on": true,
+      "ao": false,
+      "pixel": [
+        80,
+        80,
+        80,
+        255
+      ]
+    },
+    {
+      "on": false,
+      "ao": true,
+      "pixel": [
+        80,
+        80,
+        80,
+        255
+      ]
+    },
+    {
+      "on": true,
+      "ao": true,
+      "pixel": [
+        80,
+        80,
+        80,
+        255
+      ]
+    }
+  ],
+  "ldrFirstAO": {
+    "hdr": false,
+    "pixel": [
+      79,
+      79,
+      79,
+      255
+    ]
+  },
+  "runs": [
+    {
+      "mode": "bloom_off_ao_off",
+      "metrics": {
+        "bloom": false,
+        "ao": false,
+        "ao_method": "depth-ssao-12",
+        "bloom_resolution": [
+          1,
+          1
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": null,
+        "gpu_off": {
+          "samples": 46,
+          "median_ms": 0.004576,
+          "p95_ms": 0.009568
+        },
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": {
+            "samples": 46,
+            "median_ms": 0.004576,
+            "p95_ms": 0.009568
+          },
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_off_ao_off"
+        }
+      }
+    },
+    {
+      "mode": "bloom_on_ao_off",
+      "metrics": {
+        "bloom": true,
+        "ao": false,
+        "ao_method": "depth-ssao-12",
+        "bloom_resolution": [
+          160,
+          90
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": {
+          "samples": 46,
+          "median_ms": 0.027392,
+          "p95_ms": 0.19952
+        },
+        "gpu_off": {
+          "samples": 48,
+          "median_ms": 0.004544,
+          "p95_ms": 0.009568
+        },
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": {
+            "samples": 46,
+            "median_ms": 0.027392,
+            "p95_ms": 0.19952
+          },
+          "bloom_off_ao_off": {
+            "samples": 48,
+            "median_ms": 0.004544,
+            "p95_ms": 0.009568
+          },
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_on_ao_off"
+        }
+      }
+    },
+    {
+      "mode": "bloom_off_ao_on",
+      "metrics": {
+        "bloom": false,
+        "ao": true,
+        "ao_method": "depth-ssao-12",
+        "bloom_resolution": [
+          160,
+          90
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": {
+          "samples": 48,
+          "median_ms": 0.027392,
+          "p95_ms": 0.19952
+        },
+        "gpu_off": {
+          "samples": 48,
+          "median_ms": 0.004544,
+          "p95_ms": 0.009568
+        },
+        "gpu_ao_only": {
+          "samples": 46,
+          "median_ms": 0.017056,
+          "p95_ms": 0.021888
+        },
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": {
+            "samples": 48,
+            "median_ms": 0.027392,
+            "p95_ms": 0.19952
+          },
+          "bloom_off_ao_off": {
+            "samples": 48,
+            "median_ms": 0.004544,
+            "p95_ms": 0.009568
+          },
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": {
+            "samples": 46,
+            "median_ms": 0.017056,
+            "p95_ms": 0.021888
+          }
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_off_ao_on"
+        }
+      }
+    },
+    {
+      "mode": "bloom_on_ao_on",
+      "metrics": {
+        "bloom": true,
+        "ao": true,
+        "ao_method": "depth-ssao-12",
+        "bloom_resolution": [
+          160,
+          90
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": {
+          "samples": 48,
+          "median_ms": 0.027392,
+          "p95_ms": 0.19952
+        },
+        "gpu_off": {
+          "samples": 48,
+          "median_ms": 0.004544,
+          "p95_ms": 0.009568
+        },
+        "gpu_ao_only": {
+          "samples": 48,
+          "median_ms": 0.017056,
+          "p95_ms": 0.021888
+        },
+        "gpu_bloom_with_ao": {
+          "samples": 47,
+          "median_ms": 0.027904,
+          "p95_ms": 0.101568
+        },
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": {
+            "samples": 48,
+            "median_ms": 0.027392,
+            "p95_ms": 0.19952
+          },
+          "bloom_off_ao_off": {
+            "samples": 48,
+            "median_ms": 0.004544,
+            "p95_ms": 0.009568
+          },
+          "bloom_on_ao_on": {
+            "samples": 47,
+            "median_ms": 0.027904,
+            "p95_ms": 0.101568
+          },
+          "bloom_off_ao_on": {
+            "samples": 48,
+            "median_ms": 0.017056,
+            "p95_ms": 0.021888
+          }
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_on_ao_on"
+        }
+      }
+    }
+  ],
+  "samples": [
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.945632
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.000768
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.00512
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.007648
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.006048
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.006432
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004864
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004416
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.006432
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.00848
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.009568
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.006432
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.006912
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.006624
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.007424
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.003936
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.003584
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.00688
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.007008
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.002624
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004384
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.003424
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.006464
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004288
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004192
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004128
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004064
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004384
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.005056
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.003136
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.006688
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.00336
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004064
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004096
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004544
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004192
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.006048
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.003968
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.003904
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004608
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.003136
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.010464
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.006784
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004576
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004064
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004544
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.002944
+    },
+    {
+      "pass": "bloom_off_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.004224
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.19952
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.028256
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.208064
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.034464
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.041888
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.196576
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026144
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026816
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.030656
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.02656
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026336
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.03024
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026592
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.025824
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.149728
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.02544
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.025728
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.189504
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.02544
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026016
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.209344
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027808
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.025856
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026048
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.02592
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026016
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.025824
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.025536
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.028224
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027392
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.025856
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.025728
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026912
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027264
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.032544
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027136
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.035104
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027616
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027648
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.030304
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.030176
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.025728
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.101952
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.028384
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.024832
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.050624
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.035296
+    },
+    {
+      "pass": "bloom_on_ao_off",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026304
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.017792
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.01632
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.021696
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.01632
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.019776
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.017216
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.021856
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.0216
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016352
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.017952
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016064
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.02096
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.017056
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.017376
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.017536
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016896
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016256
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016928
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.01648
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.021184
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.01696
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016832
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.019712
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.0176
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.022048
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.01664
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016224
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.021888
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016928
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016544
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016512
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.02096
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.022272
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.017248
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.01648
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.01808
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.01696
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.017312
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016896
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.01856
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016384
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016384
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016704
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.01632
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.01744
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.0192
+    },
+    {
+      "pass": "bloom_off_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.016608
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.031456
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.024992
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027424
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027648
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026432
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.02688
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.03312
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027072
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.02768
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027904
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.199776
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026848
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.034528
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.029216
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.032928
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.094656
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.033184
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.025984
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027872
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026976
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027744
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.035488
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.039616
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026112
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.029408
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026336
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027296
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.02608
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.030368
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.13792
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027232
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.027488
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.032192
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026208
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.02864
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.032864
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.02608
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.031232
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.031296
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.02656
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.034144
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.028
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.02848
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.101568
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.026176
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.025408
+    },
+    {
+      "pass": "bloom_on_ao_on",
+      "shader": "shader://yessir/postprocess",
+      "gpu_ms": 0.033408
+    }
+  ],
+  "errors": []
+}
