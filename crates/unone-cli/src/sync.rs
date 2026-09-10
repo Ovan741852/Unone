@@ -126,6 +126,7 @@ mod tests {
     use std::fs;
 
     use tempfile::tempdir;
+    use unone_engine::BundleManager;
 
     use super::sync_project;
 
@@ -215,5 +216,53 @@ mod tests {
             .effects
             .iter()
             .any(|effect| effect.contains("reused active generation")));
+    }
+
+    #[test]
+    fn failed_assertion_does_not_replace_an_existing_active_generation() {
+        let dir = tempdir().unwrap();
+        write_project(dir.path(), true);
+
+        let first = sync_project(dir.path());
+        assert!(first.ok, "first sync should pass: {:?}", first.diagnostics);
+        assert_eq!(
+            BundleManager::from_project(dir.path())
+                .unwrap()
+                .inspect()
+                .value
+                .unwrap()
+                .active_generation,
+            Some(1)
+        );
+
+        fs::write(
+            dir.path().join("tests/smoke.test.json"),
+            r#"{"name":"sync observation","frames":1,"assertions":[{"observation":{"key":"sync_ok","equals":false}}]}"#,
+        )
+        .unwrap();
+        let failure = sync_project(dir.path());
+
+        assert!(!failure.ok, "failed assertions must block sync");
+        let report = failure.value.unwrap();
+        assert_eq!(report.status, "verify_failed");
+        assert!(report.activation.is_none());
+        assert!(report
+            .verify
+            .as_ref()
+            .unwrap()
+            .steps
+            .iter()
+            .flat_map(|step| step.diagnostics.iter())
+            .any(|diagnostic| diagnostic.code == "TEST_ASSERTIONS_FAILED"));
+        assert_eq!(
+            BundleManager::from_project(dir.path())
+                .unwrap()
+                .inspect()
+                .value
+                .unwrap()
+                .active_generation,
+            Some(1),
+            "a failed sync must retain the previous active generation"
+        );
     }
 }

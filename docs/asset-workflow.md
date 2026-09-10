@@ -120,8 +120,17 @@ game --project <game-root> --json project sync
 `project sync` is the AI-facing convenience operation for the complete local
 authoring-to-runtime path. It composes `bundle pack`, the configured aggregate
 `verify` gates, and `bundle install --all`, returning all stage reports in one
-result. Use the individual commands when diagnosing one stage; use `project
-sync` when preparing a preview or handing a project to another host.
+result. If the verified bundle mapping already matches the active generation,
+it reuses that generation and reports the reuse in `effects`; it does not create
+a needless new generation. Use the individual commands when diagnosing one
+stage; use `project sync` when preparing a preview or handing a project to
+another host.
+
+The verify `tests` gate checks both execution and the suite's business result:
+an executable test runner with `passed: false` is still a failed required gate.
+Read the step's `TEST_ASSERTIONS_FAILED` diagnostic and `failed_cases` facts to
+repair the assertion or the game behavior; do not infer success from the
+runner's outer `ok` envelope alone.
 
 The corresponding MCP tools are `unone_asset_inspect`, `unone_asset_describe`,
 `unone_asset_read`, `unone_asset_init`, `unone_project_sync`,

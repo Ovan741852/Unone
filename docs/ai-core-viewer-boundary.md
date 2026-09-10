@@ -42,8 +42,10 @@ pack → verify → bundle install --all
 
 The result keeps the pack report, every verify step, activation report, active
 generation, effects, and diagnostics together. A failed verify never activates
-a new generation. The command does not install plugins, contact a network, or
-execute arbitrary shell commands; those remain explicit Host/Plugin actions.
+a new generation. When the verified bundle mapping already matches the active
+generation, the command reports `synced` and reuses that generation instead of
+creating another one. The command does not install plugins, contact a network,
+or execute arbitrary shell commands; those remain explicit Host/Plugin actions.
 
 MCP exposes the same operation as `unone_project_sync`, so an AI does not need
 to memorize a multi-command recipe. The individual `asset describe` and
@@ -55,4 +57,3 @@ The Viewer may display source/export/active-generation state and issue
 structured requests through the Host. It stores connection, review, and task
 metadata, not copies of project source or assets. The same project can be used
 by a headless AI, a local native preview, a Web preview, and a remote Viewer.
-
