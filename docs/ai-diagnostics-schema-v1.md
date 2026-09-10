@@ -299,8 +299,8 @@ there is no ambiguity about what was tested. Each regression check echoes its
 resolved expected value and evaluation point. `status` is one of `reproduced`, `not_reproduced`, `incompatible`,
 `incomplete`, or `execution_failed`. A timeout or `maxTicks` reached before
 the end condition is `incomplete`, never `not_reproduced`. A runtime crash is
-`execution_failed`. `not_reproduced` means the end condition was reached and
-the original matcher did not occur. `regressionStatus=passed` is permitted
+`execution_failed`. `not_reproduced` means the end condition for the selected
+`statusMatcher` was reached and that matcher did not occur. `regressionStatus=passed` is permitted
 only when at least one requested check reached its evaluation point and every
 requested check passed; otherwise it is `not_evaluated`, `failed`, or
 `incomplete`.
@@ -429,6 +429,12 @@ The initial error-code set is:
 }
 ```
 
+This sample is schema-valid but replay-incomplete for its matcher: the known
+no-input timeline is complete only through tick 0, while the expected event is
+at tick 120. Unknown missing input must not be silently padded. A complete
+known-no-input capture for ticks 0..120 is checked in at
+[`docs/fixtures/diagnostics/reproduction-start-complete.json`](fixtures/diagnostics/reproduction-start-complete.json).
+
 ### Invalid fixtures and required outcomes
 
 | Fixture | Required result |
@@ -436,7 +442,7 @@ The initial error-code set is:
 | `expected: {"code":"X"}` without `kind`, `flag`, or end condition | `DIAGNOSTIC_SCHEMA_INVALID` with JSON Pointer `/expected` |
 | `expected.endCondition.kind=terminal` without a `flag` | `DIAGNOSTIC_SCHEMA_INVALID` with JSON Pointer `/expected/endCondition` |
 | valid JSON but unknown `schemaRef` or mismatched schema hash | `DIAGNOSTIC_SCHEMA_INCOMPATIBLE` |
-| `captureOrigin.kind=checkpoint` without tick and non-null RNG/save state | `DIAGNOSTIC_SCHEMA_INVALID` at `/captureOrigin` or `DIAGNOSTIC_REPLAY_INCOMPLETE` when the capture is incomplete |
+| `captureOrigin.kind=checkpoint` without tick and complete initial/save state (including required RNG) | `DIAGNOSTIC_SCHEMA_INVALID` at `/captureOrigin` or `DIAGNOSTIC_REPLAY_INCOMPLETE` when the capture is incomplete |
 | truncated inputs or timeout before end condition | `DIAGNOSTIC_REPLAY_INCOMPLETE` |
 | missing asset content hash | `DIAGNOSTIC_ASSET_MISSING` |
 | unexpected runtime crash | `DIAGNOSTIC_REPLAY_EXECUTION_FAILED` |
