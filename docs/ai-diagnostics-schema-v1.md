@@ -90,11 +90,23 @@ other modules. The publisher creates a canonical source manifest:
 ```
 
 Paths are project-relative, normalized, sorted, and encoded as UTF-8. The
-`scriptHash` is the SHA-256 of this canonical manifest; each source-map entry
-may additionally carry its individual `fileHash`. Imported assets are covered
-by the separate content-addressed `assets.manifestHash`; scenario schema bytes
-have their own `scenarioSchema.hash`. `activeGenerationEvidence` is retained
-only as local provenance and never participates in exact-version matching.
+manifest is serialized as RFC 8785 JSON Canonicalization Scheme (JCS), with no
+BOM, no trailing newline, and UTF-8 bytes; the SHA-256 of those exact bytes is
+`scriptHash`. Each source-map entry may additionally carry its individual
+`fileHash`. Imported assets are covered by the separate content-addressed
+`assets.manifestHash`; scenario schema bytes have their own `scenarioSchema.hash`.
+`activeGenerationEvidence` is retained only as local provenance and never
+participates in exact-version matching.
+
+For an exact byte-level test vector, using a fixture file hash of 64 `a`
+characters, the canonical bytes are:
+
+```text
+{"entrypoints":["scripts/main.luau"],"files":[{"path":"scripts/main.luau","sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}],"schemaVersion":1}
+```
+
+The expected digest is
+`sha256:36e88d88ca2f8a23bee1a9e696bb48a03043ff111ce43a38f8a06d2586a1a560`.
 
 ## 4. Reproduction envelope
 
@@ -119,6 +131,7 @@ The complete machine-readable contract is `unone.reproduction.v1`:
     "rngState": {},
     "scenario": {"type": "object"},
     "initialState": {},
+    "save": {},
     "inputs": {"$ref": "#/$defs/inputs"},
     "expected": {"oneOf": [{"$ref": "#/$defs/expectedDiagnostic"}, {"$ref": "#/$defs/expectedInvariant"}]},
     "adapter": {"$ref": "#/$defs/adapter"}
@@ -127,8 +140,8 @@ The complete machine-readable contract is `unone.reproduction.v1`:
     "if": {"properties": {"captureOrigin": {"properties": {"kind": {"const": "checkpoint"}}}}},
     "then": {
       "anyOf": [
-        {"required": ["rngState"], "properties": {"rngState": {"not": {"type": "null"}}}},
-        {"required": ["initialState"], "properties": {"initialState": {"not": {"type": "null"}}}}
+        {"required": ["initialState"], "properties": {"initialState": {"not": {"type": "null"}}}},
+        {"required": ["save"], "properties": {"save": {"not": {"type": "null"}}}}
       ]
     }
   }],
@@ -167,8 +180,15 @@ The complete machine-readable contract is `unone.reproduction.v1`:
     },
     "inputs": {
       "type": "object", "additionalProperties": false,
-      "required": ["frames", "complete", "truncated"],
-      "properties": {"frames": {"type": "array", "items": {"type": "object"}}, "complete": {"type": "boolean"}, "truncated": {"type": "boolean"}}
+      "required": ["schemaRef", "startTick", "frames", "completeThroughTick", "complete", "truncated"],
+      "properties": {
+        "schemaRef": {"const": "https://unone.dev/schema/input.schema.json"},
+        "startTick": {"type": "integer", "minimum": 0},
+        "frames": {"type": "array", "items": {"$ref": "https://unone.dev/schema/input.schema.json"}},
+        "completeThroughTick": {"type": "integer", "minimum": 0},
+        "complete": {"type": "boolean"},
+        "truncated": {"type": "boolean"}
+      }
     },
     "endCondition": {
       "oneOf": [
@@ -176,11 +196,6 @@ The complete machine-readable contract is `unone.reproduction.v1`:
           "type": "object", "additionalProperties": false,
           "required": ["kind", "tick"],
           "properties": {"kind": {"const": "after_tick"}, "tick": {"type": "integer", "minimum": 0}}
-        },
-        {
-          "type": "object", "additionalProperties": false,
-          "required": ["kind", "renderFrame"],
-          "properties": {"kind": {"const": "after_render_frame"}, "renderFrame": {"type": "integer", "minimum": 0}}
         },
         {
           "type": "object", "additionalProperties": false,
@@ -210,16 +225,27 @@ The complete machine-readable contract is `unone.reproduction.v1`:
 
 Semantic validation supplements the schema:
 
-- `checkpoint` requires a matching `rngState` or complete save payload; a
-  `start` capture may omit `initialState`.
-- `endCondition.kind` determines the evaluation point. Replay ordering uses
+- `checkpoint` requires adapter-validated complete world/game state in
+  `initialState` or `save`; an `rngState` by itself is never sufficient. A
+  `start` capture may omit `initialState`. A checkpoint that cannot restore
+  troops, economy, shared pools, and both Core/game RNG ownership is stored as
+  an attachment but replay is `incomplete`.
+- `inputs.schemaRef` references the existing `InputFrame` contract. Array index
+  `i` is the input for `startTick + i`; an empty `{}` is a valid explicit
+  no-input frame, and a missing frame clears actions/pointer state. The
+  `completeThroughTick` value says exactly how far the sequence covers; a
+  checkpoint restarts this mapping at its checkpoint tick. Replay ordering uses
   `(tick, sequence)` only; `renderFrame` and wall-clock time are explanatory.
+- `endCondition.kind` is either `after_tick` or a terminal diagnostic flag; no
+  presentation frame can decide a deterministic replay result.
 - `exact_version` compares engine/core revision, game canonical script hash,
   scenario-schema hash, asset manifest hash, and registered adapter version.
   It does not compare `activeGenerationEvidence`.
 - `compatible_version` is allowed only when the registered adapter and schema
   registry declare compatibility. The original envelope is immutable;
-  `expectedOverride` and `regressionChecks` are request-only values.
+  `expectedOverride` and `regressionChecks` are request-only values. Each
+  regression check supplies its `id`, `expectedValue`, and `endCondition`
+  explicitly (a registry may fill descriptions, but not the matcher).
 
 ## 5. Diagnostic event and replay result
 
@@ -255,16 +281,22 @@ controls deterministic replay.
 ```json
 {
   "status": "not_reproduced",
+  "statusMatcher": "original",
   "sourceFingerprint": {"gameScriptHash":"sha256:...", "assetManifestHash":"sha256:...", "engine":"0.1.0"},
   "targetFingerprint": {"gameScriptHash":"sha256:...", "assetManifestHash":"sha256:...", "engine":"0.1.0"},
   "originalMatcher": {"kind":"diagnostic", "matched":false, "evaluatedAtTick":120},
-  "regressionChecks": [{"id":"refund.balance_unchanged", "status":"passed"}],
+  "overrideMatcher": null,
+  "regressionChecks": [{"id":"refund.balance_unchanged", "expectedValue":true, "evaluatedAtTick":120, "status":"passed"}],
   "regressionStatus": "passed",
   "reason": "old diagnostic no longer occurred; new invariant passed"
 }
 ```
 
-`status` is one of `reproduced`, `not_reproduced`, `incompatible`,
+`status` is the result for `statusMatcher`: `original` unless an
+`expectedOverride` was supplied, in which case it is `override`. The response
+always retains both `originalMatcher` and (when present) `overrideMatcher`, so
+there is no ambiguity about what was tested. Each regression check echoes its
+resolved expected value and evaluation point. `status` is one of `reproduced`, `not_reproduced`, `incompatible`,
 `incomplete`, or `execution_failed`. A timeout or `maxTicks` reached before
 the end condition is `incomplete`, never `not_reproduced`. A runtime crash is
 `execution_failed`. `not_reproduced` means the end condition was reached and
@@ -281,10 +313,10 @@ reproduction:
 ```json
 {
   "reproductionId": "rep_0007",
-  "target": {"gameScriptHash":"sha256:...", "assetManifestHash":"sha256:...", "engine":"0.1.0", "adapter":{"id":"ashen-legion.scenario-adapter", "version":"1.2.0"}},
+  "target": {"gameRevision":"release-43", "gameScriptHash":"sha256:...", "assetManifestHash":"sha256:...", "scenarioSchemaHash":"sha256:...", "engine":"0.1.0", "coreRevision":"git:def", "adapter":{"id":"ashen-legion.scenario-adapter", "version":"1.2.0"}},
   "mode": "compatible_version",
   "expectedOverride": {"kind":"invariant", "id":"refund.balance_unchanged", "expectedValue":true, "endCondition":{"kind":"after_tick", "tick":120}},
-  "regressionChecks": [{"id":"refund.balance_unchanged"}],
+  "regressionChecks": [{"id":"refund.balance_unchanged", "expectedValue":true, "endCondition":{"kind":"after_tick", "tick":120}}],
   "maxTicks": 600,
   "timeoutMs": 5000
 }
@@ -317,11 +349,19 @@ type FlagSource = {
 }
 type DiagnosticInput = {
     flag: string, code: string, severity: string?, source: FlagSource?,
+    traceId: string?, parentEventId: string?,
     expected: any?, actual: any?, context: {[string]: any}?, payload: any?,
 }
 type EmitResult = {eventId: string, traceId: string, accepted: boolean}
 
-diagnostics.registerFlag(flagId: string, summary: string, source: FlagSource): boolean
+type FlagRegistration = {
+    id: string, summary: string, owner: string,
+    revision: string, scriptHash: string, source: FlagSource,
+}
+type TraceScope = {traceId: string, parentEventId: string?}
+
+diagnostics.registerFlag(flag: FlagRegistration): boolean
+diagnostics.beginTrace(parentEventId: string?): TraceScope
 diagnostics.emit(input: DiagnosticInput): EmitResult
 
 type ScenarioCapture = {
@@ -331,11 +371,23 @@ type ScenarioCapture = {
     rngState: any?, save: any?, inputsComplete: boolean,
 }
 diagnostics.captureScenario(input: ScenarioCapture): string
+
+type ScenarioAdapter = {
+    id: string, version: string, schemaRef: string,
+    capture: (origin: "start" | "checkpoint") -> (ScenarioCapture?, string?),
+    restore: (capture: ScenarioCapture) -> (boolean, string?),
+    compatible: (sourceVersion: string, targetVersion: string) -> boolean,
+}
+diagnostics.registerScenarioAdapter(adapter: ScenarioAdapter): boolean
+
+-- Tool-side operation; it dispatches to the registered adapter callback.
 diagnostics.restoreScenario(reproductionId: string): boolean
 ```
 
-The adapter itself is selected by registered ID/version in the envelope. JSON
-never contains executable capture/restore code. A game without an adapter may
+The adapter itself is selected by registered ID/version in the envelope. The
+`capture` callback must include complete game state (troops, economy, shared
+pools, and any game-owned RNG) for a checkpoint; JSON never contains executable
+capture/restore code. A game without an adapter may
 still emit and query diagnostics, but replay is `incomplete` with an explicit
 `not_replayable` reason.
 
@@ -371,7 +423,7 @@ The initial error-code set is:
   "assets": {"manifestHash":"sha256:1111111111111111111111111111111111111111111111111111111111111111"},
   "scenarioSchema": {"schemaRef":"schema://ashen-legion/scenario/v1", "id":"ashen-legion.scenario", "version":1, "hash":"sha256:2222222222222222222222222222222222222222222222222222222222222222"},
   "captureOrigin": {"kind":"start"}, "scenario": {"wave":1},
-  "inputs": {"frames":[], "complete":true, "truncated":false},
+  "inputs": {"schemaRef":"https://unone.dev/schema/input.schema.json", "startTick":0, "frames":[{}], "completeThroughTick":0, "complete":true, "truncated":false},
   "expected": {"kind":"diagnostic", "code":"ECONOMY_REFUND_DUPLICATE", "flag":"game.economy.refund.apply", "endCondition":{"kind":"after_tick", "tick":120}},
   "adapter": {"id":"ashen-legion.scenario-adapter", "version":"1.2.0"}
 }
@@ -389,6 +441,13 @@ The initial error-code set is:
 | missing asset content hash | `DIAGNOSTIC_ASSET_MISSING` |
 | unexpected runtime crash | `DIAGNOSTIC_REPLAY_EXECUTION_FAILED` |
 | end condition reached but expected diagnostic absent | `DIAGNOSTIC_REPLAY_NOT_REPRODUCED` |
+
+The tool normalizes validator output for `oneOf`/`anyOf`: it chooses the
+deepest failing branch that has a concrete property path, then reports that
+JSON Pointer plus the branch keyword. If all branches fail only at the root,
+it reports `/` and includes each branch error in `context.validatorBranches`.
+The contract therefore does not depend on a particular validator's raw error
+ordering or pointer wording.
 
 These fixtures provide the smallest path from Luau `emit` to AI query, trace,
 and replay without inventing a second simulation or treating startup success as
