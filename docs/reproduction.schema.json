@@ -1,0 +1,386 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unone.dev/schemas/unone.reproduction.v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "mode",
+    "game",
+    "engine",
+    "assets",
+    "scenarioSchema",
+    "captureOrigin",
+    "scenario",
+    "inputs",
+    "expected",
+    "adapter"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "mode": {
+      "enum": [
+        "exact_version",
+        "compatible_version"
+      ]
+    },
+    "game": {
+      "$ref": "#/$defs/game"
+    },
+    "engine": {
+      "$ref": "#/$defs/engine"
+    },
+    "assets": {
+      "$ref": "#/$defs/assets"
+    },
+    "scenarioSchema": {
+      "$ref": "#/$defs/scenarioSchema"
+    },
+    "captureOrigin": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/start"
+        },
+        {
+          "$ref": "#/$defs/checkpoint"
+        }
+      ]
+    },
+    "seed": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "rngState": {},
+    "scenario": {
+      "type": "object"
+    },
+    "initialState": {},
+    "save": {},
+    "inputs": {
+      "$ref": "#/$defs/inputs"
+    },
+    "expected": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/expectedDiagnostic"
+        },
+        {
+          "$ref": "#/$defs/expectedInvariant"
+        }
+      ]
+    },
+    "adapter": {
+      "$ref": "#/$defs/adapter"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "captureOrigin": {
+            "properties": {
+              "kind": {
+                "const": "checkpoint"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "anyOf": [
+          {
+            "required": [
+              "initialState"
+            ],
+            "properties": {
+              "initialState": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "required": [
+              "save"
+            ],
+            "properties": {
+              "save": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "nonEmpty": {
+      "type": "string",
+      "minLength": 1
+    },
+    "game": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "scriptHash"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "revision": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "scriptHash": {
+          "$ref": "#/$defs/hash"
+        }
+      }
+    },
+    "engine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "coreRevision"
+      ],
+      "properties": {
+        "version": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "coreRevision": {
+          "$ref": "#/$defs/nonEmpty"
+        }
+      }
+    },
+    "assets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifestHash"
+      ],
+      "properties": {
+        "manifestHash": {
+          "$ref": "#/$defs/hash"
+        },
+        "activeGenerationEvidence": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "scenarioSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaRef",
+        "id",
+        "version",
+        "hash"
+      ],
+      "properties": {
+        "schemaRef": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "hash": {
+          "$ref": "#/$defs/hash"
+        }
+      }
+    },
+    "start": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "start"
+        }
+      }
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "tick",
+        "rngOwnership"
+      ],
+      "properties": {
+        "kind": {
+          "const": "checkpoint"
+        },
+        "tick": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "frame": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rngOwnership": {
+          "enum": [
+            "core_rng",
+            "game_rng",
+            "core_and_game_rng"
+          ]
+        }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaRef",
+        "startTick",
+        "frames",
+        "completeThroughTick",
+        "complete",
+        "truncated"
+      ],
+      "properties": {
+        "schemaRef": {
+          "const": "https://unone.dev/schema/input.schema.json"
+        },
+        "startTick": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "frames": {
+          "type": "array",
+          "items": {
+            "$ref": "https://unone.dev/schema/input.schema.json"
+          }
+        },
+        "completeThroughTick": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "complete": {
+          "type": "boolean"
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "endCondition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "tick"
+          ],
+          "properties": {
+            "kind": {
+              "const": "after_tick"
+            },
+            "tick": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "flag"
+          ],
+          "properties": {
+            "kind": {
+              "const": "terminal"
+            },
+            "flag": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "expectedDiagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "code",
+        "flag",
+        "endCondition"
+      ],
+      "properties": {
+        "kind": {
+          "const": "diagnostic"
+        },
+        "code": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "flag": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "endCondition": {
+          "$ref": "#/$defs/endCondition"
+        }
+      }
+    },
+    "expectedInvariant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id",
+        "expectedValue",
+        "endCondition"
+      ],
+      "properties": {
+        "kind": {
+          "const": "invariant"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "expectedValue": {},
+        "endCondition": {
+          "$ref": "#/$defs/endCondition"
+        }
+      }
+    },
+    "adapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/nonEmpty"
+        },
+        "version": {
+          "$ref": "#/$defs/nonEmpty"
+        }
+      }
+    }
+  }
+}

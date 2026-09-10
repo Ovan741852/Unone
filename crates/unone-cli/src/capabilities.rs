@@ -107,7 +107,11 @@ pub fn snapshot(project_root: &Path) -> EngineResult<CapabilitySnapshotReport> {
         project_root: project_root.display().to_string(),
         platform: platform_record(&platform),
         core: platform.clone(),
-        capabilities: runtime_records(&platform),
+        capabilities: {
+            let mut records = runtime_records(&platform);
+            records.extend(diagnostic_records());
+            records
+        },
         project_systems: None,
         renderers: renderer_records(),
         plugins: Vec::new(),
@@ -312,6 +316,18 @@ fn runtime_examples(id: &str) -> Vec<String> {
         "web_runner" => vec!["Open web/runner/ with a selected project payload.".to_string()],
         _ => vec!["game --project <game-root> --json platform capabilities".to_string()],
     }
+}
+
+fn diagnostic_records() -> Vec<CapabilityRecord> {
+    [
+        ("diagnostics.scenario_replay", "Versioned isolated headless start replay with independent regression verdicts", "game --project <game-root> --json replay fingerprint", "Checkpoint, capture/trace store, schema migrations and renderer replay are not implemented."),
+        ("diagnostics.luau_memory", "Bounded Lua retained heap history and explicit full-GC wall time", "Developer API: memory.sample {label, collect:false, warmup:false}; memory.report", "Only main Luau VM. No retaining paths, JS GC, Rust allocator or GPU bytes; growth is not proof of a leak. Web hosts require rebuilding their development runtime."),
+        ("diagnostics.luau_profiler", "Luau sampling, allocation growth and incremental GC plus Core phase timing", "Developer API: profile.start {sampling:true}; profile; profile.stop", "Wall-clock samples are not exact CPU time or allocation callsites. Host/GPU measurements require separate host evidence."),
+    ].into_iter().map(|(id, summary, example, limitation)| CapabilityRecord {
+        id:id.into(),category:"sdk_diagnostics".into(),status:CapabilityStatus::Partial,
+        source_state:"implemented_scope_limited".into(),verification_scope:"compiled_sdk_not_live_project_probe".into(),checked_by:"CLI diagnostic inventory".into(),
+        summary:summary.into(),limitations:vec![limitation.into()],evidence:vec!["docs/diagnostics-replay.md".into()],examples:vec![example.into()],
+    }).collect()
 }
 
 fn compiled_system_records(platform: &PlatformCapabilities) -> Vec<CapabilityRecord> {

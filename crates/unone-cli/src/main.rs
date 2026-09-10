@@ -24,6 +24,7 @@ use winit::{
 
 mod assets;
 mod capabilities;
+mod diagnostics_replay;
 mod export;
 mod sdk;
 mod mcp;
@@ -250,6 +251,14 @@ enum AssetCommand {
 
 #[derive(Debug, Subcommand)]
 enum ReplayCommand {
+    /// Embedded usage, schemas and Luau adapter example (no source checkout needed).
+    Describe,
+    /// Content fingerprints for the current headless project and executable.
+    Fingerprint,
+    /// Isolated, version-checked scenario replay. Request never changes the source capture.
+    Scenario { #[arg(long)] request: PathBuf },
+    #[command(hide = true)]
+    ScenarioWorker { #[arg(long)] request: PathBuf, #[arg(long)] output: PathBuf, #[arg(long)] timeout_ms: u64 },
     /// Run the project and write every frame to a recording file.
     Record {
         #[arg(long)]
@@ -538,6 +547,14 @@ fn run() -> Result<ExitCode> {
         },
         Command::Verify => print_result(unone_engine::verify(&cli.project), cli.json),
         Command::Replay { command } => match command {
+            ReplayCommand::Describe => print_result(EngineResult::success(diagnostics_replay::describe()), cli.json),
+            ReplayCommand::Fingerprint => print_result(diagnostics_replay::fingerprint_result(&cli.project), cli.json),
+            ReplayCommand::Scenario { request } => print_result(diagnostics_replay::run(&cli.project, &request), cli.json),
+            ReplayCommand::ScenarioWorker { request, output, timeout_ms } => {
+                let report = diagnostics_replay::worker(&cli.project, &request, timeout_ms);
+                fs::write(output, serde_json::to_vec(&report)?)?;
+                Ok(ExitCode::SUCCESS)
+            },
             ReplayCommand::Record {
                 output,
                 frames,

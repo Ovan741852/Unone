@@ -9,6 +9,7 @@ pub(super) struct Profile {
     pub first_frame: u64,
     pub last_frame: u64,
     pub sampling: bool,
+    pub sampling_suspended: bool,
     pub samples: u64,
     pub dropped: u64,
     pub truncated: u64,
@@ -92,6 +93,7 @@ pub(super) fn start(lua: &Lua, frame: u64, sampling: bool) {
     }
     lua.set_interrupt(move |lua| {
         let mut p = shared.borrow_mut();
+        if p.sampling_suspended { return Ok(mlua::VmState::Continue); }
         p.hooks += 1;
         // Clock checks themselves have a cost, especially through WASM.
         if p.hooks % 64 != 0 {

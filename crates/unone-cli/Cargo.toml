@@ -19,9 +19,14 @@ resvg = { version = "0.48", default-features = false, features = ["raster-images
 serde = "1"
 serde_json = "1"
 sha2 = "0.10"
+jsonschema = { version = "0.47", default-features = false }
+tempfile = "3"
 unone-engine = { path = "../unone-engine" }
 wgpu = "30"
 winit = "0.30.12"
 
 [dev-dependencies]
 tempfile = "3"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61.2", features = ["Win32_Foundation", "Win32_System_JobObjects", "Win32_System_Threading", "Win32_Security"] }

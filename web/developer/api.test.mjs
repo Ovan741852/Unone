@@ -1,6 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createDeveloperAPI} from './api.js';
+test('memory collection is explicit, bounded labels and typed options reach Core',async()=>{
+ const commands=[];const api=createDeveloperAPI({coreRequest:async request=>{commands.push(request);return {samples:[]};},getSnapshot:()=>({world:{frame:0}})},{});
+ assert.equal((await api.request({method:'memory.sample',label:'idle',collect:'yes'})).ok,false);
+ assert.equal((await api.request({method:'memory.sample',label:'中'.repeat(54)})).ok,false);
+ assert.equal(commands.length,0);
+ assert.equal((await api.request({method:'memory.sample',label:'idle'})).ok,true);
+ assert.equal((await api.request({method:'memory.sample',label:'idle',collect:true,warmup:true})).ok,true);
+ await api.request({method:'memory.report'});await api.request({method:'memory.reset'});
+ assert.deepEqual(commands,[{method:'memory_sample',label:'idle',collect:false,warmup:false},{method:'memory_sample',label:'idle',collect:true,warmup:true},{method:'memory_report'},{method:'memory_reset'}]);
+});
 test('profile reads and controls use the lightweight ABI and validate sampling',async()=>{
  const commands=[];let bytes=new Uint8Array(8192),length=0;
  const module={HEAPU8:bytes,_unone_web_alloc:()=>0,_unone_web_observation_ptr:()=>4096,_unone_web_observation_len:()=>length,

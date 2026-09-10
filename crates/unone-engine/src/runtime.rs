@@ -27,6 +27,10 @@ mod preview;
 #[cfg(feature = "preview-tools")]
 mod profiling;
 #[cfg(feature = "preview-tools")]
+mod memory;
+#[cfg(feature = "dev-tools")]
+mod replay_adapter;
+#[cfg(feature = "preview-tools")]
 mod vm_metrics;
 use bindings::build_api;
 #[cfg(feature = "preview-tools")]
@@ -1286,6 +1290,11 @@ impl EngineRuntime {
         };
         if !is_reload {
             let table = evaluate_script(&self.lua, &self.paths, &source)?;
+            // Optional developer metadata must not invoke gameplay metatables or
+            // break existing games that already use a non-table `replay` field.
+            if let Ok(Value::Table(adapter)) = table.raw_get::<Value>("replay") {
+                self.lua.set_named_registry_value("unone.replay.adapter", adapter).map_err(|e| Box::new(script_diagnostic(&self.paths, e.to_string())))?;
+            }
             let update_fn = script_entrypoint(&table, "update", &self.paths)?;
             let start_fn = script_entrypoint(&table, "start", &self.paths)?;
             start_fn

@@ -9,7 +9,7 @@ const MAX_OBSERVATION_DEPTH: usize = 64;
 const PORTABLE_INTEGER_MIN: i64 = i32::MIN as i64;
 const PORTABLE_INTEGER_MAX: i64 = i32::MAX as i64;
 
-pub(super) fn lua_value_to_json(value: Value) -> Result<serde_json::Value, String> {
+pub(in crate::runtime) fn lua_value_to_json(value: Value) -> Result<serde_json::Value, String> {
     lua_value_to_json_at(value, 0)
 }
 
@@ -110,7 +110,7 @@ fn ensure_portable_integer(value: i64) -> Result<i64, String> {
     Ok(value)
 }
 
-pub(super) fn json_to_lua(lua: &Lua, value: serde_json::Value) -> mlua::Result<Value> {
+pub(in crate::runtime) fn json_to_lua(lua: &Lua, value: serde_json::Value) -> mlua::Result<Value> {
     match value {
         serde_json::Value::Null => Ok(Value::Nil),
         serde_json::Value::Bool(value) => Ok(Value::Boolean(value)),

@@ -1,8 +1,10 @@
 # AI diagnostics and replay contract v1 (design)
 
-Status: design baseline for schema review. The CLI, MCP tools, Core hooks, and
-Luau adapters described here are not implemented yet. This document is not a
-gameplay specification and does not move game rules into Rust.
+Status: broader design baseline. A first headless start-replay slice and explicit
+memory/GC investigation tools are implemented; see [the executable contract](diagnostics-replay.md)
+for commands, the Game.replay adapter and exact supported scope. Checkpoint,
+automatic capture, flags/trace store and bundles below are still roadmap, not
+implemented APIs. This document does not move game rules into Rust.
 
 ## 1. Version and ownership
 
@@ -232,7 +234,7 @@ Semantic validation supplements the schema:
   an attachment but replay is `incomplete`.
 - `inputs.schemaRef` references the existing `InputFrame` contract. Array index
   `i` is the input for `startTick + i`; an empty `{}` is a valid explicit
-  no-input frame, and a missing frame clears actions/pointer state. The
+  no-input frame. Missing frames are unknown input and must not be padded. The
   `completeThroughTick` value says exactly how far the sequence covers; a
   checkpoint restarts this mapping at its checkpoint tick. Replay ordering uses
   `(tick, sequence)` only; `renderFrame` and wall-clock time are explanatory.

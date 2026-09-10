@@ -238,6 +238,9 @@ fn tool_names() -> Vec<&'static str> {
         "unone_verify",
         "unone_perf",
         "unone_replay_diff",
+        "unone_replay_fingerprint",
+        "unone_replay_describe",
+        "unone_replay_scenario",
         "unone_ui_preview",
         "unone_systems_list",
         "unone_systems_search",
@@ -481,6 +484,13 @@ fn tool_definitions() -> Vec<Value> {
             true,
             true,
         ),
+        tool("unone_replay_fingerprint", "Fingerprint headless replay target",
+            "Hash a private snapshot of declared project assets and Luau sources plus the actual CLI binary. Use this explicit target for replay scenario; no game execution.", object_schema(json!({"properties":{}})), true, true),
+        tool("unone_replay_describe", "Learn the replay contract",
+            "Return embedded usage, reproduction/result schemas and a real Luau adapter example. No repository checkout or Viewer required.",object_schema(json!({"properties":{}})),true,true),
+        tool("unone_replay_scenario", "Replay a versioned scenario",
+            "Run a request JSON in an isolated worker. Checks fingerprints, offline scenario schema and complete inputs; returns reproduced/not_reproduced/incompatible/incomplete/execution_failed plus independent regression verdicts, profiler and optional memory samples. Headless start captures only; no checkpoint restoration. Does not change source capture or production save.",
+            object_schema(json!({"properties":{"request":{"type":"string","description":"Path to request JSON; see docs/diagnostics-replay.md"}},"required":["request"]})), true, true),
         tool(
             "unone_platform_snapshot",
             "Snapshot current AI capabilities",
@@ -747,6 +757,12 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 }
             }
         }
+        "unone_replay_fingerprint" => tool_result(crate::diagnostics_replay::fingerprint_result(project)),
+        "unone_replay_describe" => tool_result(EngineResult::success(crate::diagnostics_replay::describe())),
+        "unone_replay_scenario" => match required_string(arguments, "request") {
+            Ok(path) => tool_result(crate::diagnostics_replay::run(project, Path::new(&path))),
+            Err(diagnostic) => argument_error(*diagnostic),
+        },
         "unone_replay_diff" => match required_string(arguments, "baseline") {
             Ok(baseline) => match unone_engine::read_recording(Path::new(&baseline)) {
                 Ok(recording) => tool_result(unone_engine::diff_run(project, &recording)),
@@ -1198,7 +1214,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 29);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 32);
     }
 
     #[test]

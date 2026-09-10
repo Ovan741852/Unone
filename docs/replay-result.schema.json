@@ -1,0 +1,23 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://unone.dev/schema/replay-result.schema.json",
+  "title":"Replay result value (inside EngineResult envelope)",
+  "type":"object",
+  "required":["schemaVersion","status","reason","regressionStatus","mode","source","target","adapter","ticksExecuted","backend","statusMatcher","originalMatcher","overrideMatcher","regressionChecks","performance","memory","memoryOptions","adapterInspectWallMs","samplingScope","limitations"],
+  "properties":{
+    "schemaVersion":{"const":1},
+    "status":{"enum":["reproduced","not_reproduced","incompatible","incomplete","execution_failed"]},
+    "reason":{"type":"string"},
+    "regressionStatus":{"enum":["passed","failed","incomplete","not_evaluated"]},
+    "mode":{"enum":[null,"exact_version","compatible_version"]},
+    "source":{"type":["object","null"]},"target":{"type":["object","null"]},"adapter":{"type":["object","null"]},
+    "ticksExecuted":{"type":["integer","null"],"minimum":0},
+    "backend":{"const":"headless_native"},
+    "statusMatcher":{"enum":[null,"original","override"]},
+    "originalMatcher":{"type":["object","null"]},"overrideMatcher":{"type":["object","null"]},
+    "regressionChecks":{"type":"array"},
+    "performance":{"type":["object","null"]},"memory":{"type":["object","null"]},"memoryOptions":{"type":["object","null"]},
+    "adapterInspectWallMs":{"type":["number","null"],"minimum":0},"samplingScope":{"type":["string","null"]},
+    "limitations":{"type":"array","items":{"type":"string"}}
+  }
+}
