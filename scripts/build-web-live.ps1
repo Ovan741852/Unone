@@ -5,6 +5,7 @@ param(
     [switch]$Development,
     [string]$Project,
     [string]$OutputRoot,
+    [ValidateRange(1000,3600000)][int]$ParityTimeoutMs = 120000,
     [string]$BinaryenRoot = $env:UNONE_BINARYEN_ROOT,
     [string]$EmsdkRoot = $(if ($env:UNONE_EMSDK_ROOT) { $env:UNONE_EMSDK_ROOT } elseif ($env:EMSDK) { $env:EMSDK } else { '' })
 )
@@ -102,7 +103,7 @@ if ($Player) {
     # Run the actual export gate with Node selected before the SDK changed PATH.
     [string[]]$parityArgs = if ($Development) { @('--development') } else { @() }
     if ($Project) { $parityArgs += @('--fixture', $systemsProject) }
-    & $parityNode (Join-Path $repoRoot 'scripts/verify-player-parity.mjs') --runtime $outputRoot @parityArgs
+    & $parityNode (Join-Path $repoRoot 'scripts/verify-player-parity.mjs') --runtime $outputRoot --timeout-ms $ParityTimeoutMs @parityArgs
     if ($LASTEXITCODE -ne 0) { throw 'Player artifact parity failed. Build the current native CLI with cargo build -p unone-cli, fix any mismatch, then rerun this player build.' }
     Write-Output ($report | ConvertTo-Json -Depth 6)
 } else {

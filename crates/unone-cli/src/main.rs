@@ -293,6 +293,8 @@ enum UiCommand {
         rows: usize,
         #[arg(long, help = "Turn structural layout findings into a failing gate")]
         strict: bool,
+        #[arg(long, help = "Explicit per-screen background-image overlap intents (JSON)")]
+        overlap_policy: Option<PathBuf>,
     },
 }
 
@@ -723,6 +725,7 @@ fn run() -> Result<ExitCode> {
                 cols,
                 rows,
                 strict,
+                overlap_policy,
             } => {
                 let mut runtime = match EngineRuntime::load_with_seed(&cli.project, seed) {
                     Ok(runtime) => runtime,
@@ -776,7 +779,13 @@ fn run() -> Result<ExitCode> {
                         cli.json,
                     );
                 };
-                let report = unone_engine::inspect_layout(&tree, cols, rows);
+                let mut report = unone_engine::inspect_layout(&tree, cols, rows);
+                if let Some(path)=overlap_policy {
+                    let policy:serde_json::Value=serde_json::from_slice(&fs::read(path)?)?;
+                    if let Err(error)=unone_engine::apply_overlap_policy(&mut report,&policy) {
+                        return print_result(EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error("UI_OVERLAP_POLICY_INVALID","Unsafe or stale overlap policy",error)),cli.json);
+                    }
+                }
                 let findings = report.findings.clone();
                 let markdown = unone_engine::layout_markdown(&report);
                 let mut result = EngineResult::success(report);

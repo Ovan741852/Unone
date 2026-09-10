@@ -1,5 +1,5 @@
 import {createThreeRenderer} from '../renderer/three.js';
-import {createUiTree} from '../shared/ui-tree.js';
+import {createCanvasUi,loadCanvasFont} from '../shared/canvas-ui.mjs';
 import {createHostInput} from '../shared/host-input.js';
 import {createAsyncScheduler} from '../shared/async-scheduler.mjs';
 import {createRuntimeBackend} from '../shared/runtime-backend.mjs';
@@ -11,12 +11,14 @@ import {worldFromPointer} from '../shared/webgpu-snapshot.js';
 /* DEVELOPER_IMPORT */
 const canvas=document.querySelector('#game'),status=document.querySelector('#status');
 let uiAssetManifest=null;
-const input=createHostInput(),renderUi=createUiTree(document.querySelector('#ui-layer'),{resolveAsset:assetId=>{
+const uiCanvas=document.createElement('canvas');Object.assign(uiCanvas.style,{width:'100%',height:'100%',pointerEvents:'none'});document.querySelector('#ui-layer').replaceChildren(uiCanvas);
+const input=createHostInput(),uiRenderer=createCanvasUi(uiCanvas,{onAction:({action,phase})=>input.queueActionTransition(action,phase==='down'),resolveAsset:assetId=>{
  const asset=uiAssetManifest?.assets?.find(candidate=>candidate.id===assetId);
  if(!asset)throw Error(`UI asset ${assetId} is not declared in the active asset manifest`);
  requireAssetEncoding(asset,'image');
  return new URL(`content/${asset.source}`,location.href).href;
 }});
+const renderUi=snapshot=>uiRenderer.draw(snapshot);
 let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null;
 let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=null;
 let saved,key,projectPayload;
@@ -44,12 +46,13 @@ async function advance(){
  /* PROFILE_POST_TICK */
 }
 function tickOnce(){if(tickFlight)return tickFlight;tickFlight=advance().finally(()=>{tickFlight=null;});return tickFlight;}
-async function setPaused(value){frozen=value;manualInput=null;input.releaseAll();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
+async function setPaused(value){frozen=value;manualInput=null;uiRenderer.releaseAll();input.releaseAll();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
 async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.restored_save=JSON.parse(saved??'null');acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:'42'}),{reset:true});audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();await setPaused(wasPaused);}
 async function start(){
  const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);projectPayload=project;uiAssetManifest=assets;
+ if(presentation.ui?.font_source){await loadCanvasFont(presentation.ui.font_family,new URL('content/'+presentation.ui.font_source,location.href));uiRenderer.setFont(presentation.ui.font_family);}
  const runtimeURL=new URL(document.querySelector('meta[name="unone-runtime"]').content,location.href).href;
  const kind=new URLSearchParams(location.search).get('backend')??presentation.runtime_backend??'main';
  backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy});metrics.runtime_ready_ms=performance.now()-window.playerBoot;
@@ -62,17 +65,17 @@ async function start(){
  audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',location.href)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));
  draw();await renderer.ready();draw();await new Promise(requestAnimationFrame);
  metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';saved=JSON.stringify(snapshot.save_payload);
- scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,onVisibilityChange:({visible})=>{input.releaseAll();audio?.setVisibility(visible);}});
+ scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,onVisibilityChange:({visible})=>{uiRenderer.releaseAll();input.releaseAll();audio?.setVisibility(visible);}});
  /* DEVELOPER_CONNECT */
  scheduler.start();
  window.addEventListener('resize',()=>{backend.request({kind:'aspect',value:canvas.clientWidth/canvas.clientHeight}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);});
 }
 function pointer(event,down,kind){if(!snapshot)return;const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height;const normalized={position:worldFromPointer(canvas,event,snapshot),screen_position:{x:x*100,y:(1-y)*100},down};input.updatePointer(normalized,kind);}
-canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);audio?.unlock();pointer(e,true,'edge');});
-canvas.addEventListener('pointermove',e=>pointer(e,Boolean(e.buttons),'move'));canvas.addEventListener('pointerup',e=>pointer(e,false,'edge'));canvas.addEventListener('pointercancel',()=>input.releaseAll());
-document.querySelector('#ui-layer').addEventListener('click',e=>{const action=e.target.closest('[data-action]')?.dataset.action;if(action)input.queueAction(action);audio?.unlock();});
-window.addEventListener('keydown',e=>input.setHeld(e.code,true));window.addEventListener('keyup',e=>input.setHeld(e.code,false));window.addEventListener('blur',()=>input.releaseAll());
-window.addEventListener('unone-host-pause',()=>{input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
+function routeUi(e,kind){const r=canvas.getBoundingClientRect();return uiRenderer.pointer({kind,pointerId:e.pointerId,x:(e.clientX-r.left)/r.width*100,y:100-(e.clientY-r.top)/r.height*100});}
+canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);audio?.unlock();if(!routeUi(e,'down'))pointer(e,true,'edge');});
+canvas.addEventListener('pointermove',e=>{if(!routeUi(e,'move'))pointer(e,Boolean(e.buttons),'move');});canvas.addEventListener('pointerup',e=>{if(!routeUi(e,'up'))pointer(e,false,'edge');});canvas.addEventListener('pointercancel',e=>{routeUi(e,'cancel');uiRenderer.releaseAll();input.releaseAll();});
+window.addEventListener('keydown',e=>input.setHeld(e.code,true));window.addEventListener('keyup',e=>input.setHeld(e.code,false));window.addEventListener('blur',()=>{uiRenderer.releaseAll();input.releaseAll();});
+window.addEventListener('unone-host-pause',()=>{uiRenderer.releaseAll();input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
 window.addEventListener('pagehide',()=>{scheduler?.stop();backend?.close();});
 start().catch(fail);

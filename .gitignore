@@ -11,3 +11,4 @@ _Games/**/reference/
 _Games/**/dist/
 _Games/**/assets/reference/
 crates/unone-player/target/
+crates/unone-native-player/target/

@@ -436,6 +436,7 @@ fn tool_definitions() -> Vec<Value> {
                     "cols": {"type": "integer", "minimum": 16, "maximum": 400, "description": "Grid columns; defaults to 96."},
                     "rows": {"type": "integer", "minimum": 8, "maximum": 200, "description": "Grid rows; defaults to 48."},
                     "strict": {"type": "boolean", "default": false, "description": "Turn layout findings into ok=false."}
+                    ,"overlap_policy":{"type":"object","description":"version:1, screens:{screen:[{behind,front,reason}]}; only earlier background images may be exempted."}
                 }
             })),
             true,
@@ -795,7 +796,7 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 Ok(strict) => strict,
                 Err(diagnostic) => return argument_error(*diagnostic),
             };
-            tool_result(ui_preview(project, frames, seed, cols, rows, strict))
+            tool_result(ui_preview(project, frames, seed, cols, rows, strict, arguments.get("overlap_policy")))
         }
         "unone_systems_list" => tool_result(inspect_systems(project)),
         "unone_systems_search" => match required_string(arguments, "meaning") {
@@ -1026,6 +1027,7 @@ fn ui_preview(
     cols: usize,
     rows: usize,
     strict: bool,
+    overlap_policy: Option<&serde_json::Value>,
 ) -> EngineResult<unone_engine::LayoutReport> {
     let mut runtime = match EngineRuntime::load_with_seed(project, seed) {
         Ok(runtime) => runtime,
@@ -1048,7 +1050,12 @@ fn ui_preview(
             format!("跑了 {frames} frame 之後 observation 沒有 ui；遊戲要先呼叫 api.ui.setRoot。"),
         ));
     };
-    let report = unone_engine::inspect_layout(&tree, cols, rows);
+    let mut report = unone_engine::inspect_layout(&tree, cols, rows);
+    if let Some(policy)=overlap_policy {
+        if let Err(error)=unone_engine::apply_overlap_policy(&mut report,policy) {
+            return EngineResult::failure(Diagnostic::error("UI_OVERLAP_POLICY_INVALID","Unsafe or stale overlap policy",error));
+        }
+    }
     let findings = report.findings.clone();
     let mut result = EngineResult::success(report);
     for finding in &findings {

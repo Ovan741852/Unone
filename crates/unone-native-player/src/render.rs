@@ -29,6 +29,7 @@ struct LodCache {
     generation: u64,
 }
 pub struct Renderer {
+    ui:crate::ui::Surface,
     particles: crate::particles::Particles,
     surface: wgpu::Surface<'static>,
     device: wgpu::Device,
@@ -79,8 +80,9 @@ fn depth(device: &wgpu::Device, c: &wgpu::SurfaceConfiguration) -> wgpu::Texture
         .create_view(&Default::default())
 }
 impl Renderer {
-    pub fn cpu_phases(&self) -> [(&'static str, f64); 6] {
+    pub fn cpu_phases(&self) -> [(&'static str, f64); 7] {
         [
+            ("ui_raster",self.ui.raster_ms),
             ("prepare", self.prepare_ms),
             ("classify", self.classify_ms),
             ("instance_upload", self.upload_ms),
@@ -357,6 +359,7 @@ impl Renderer {
         let depth = depth(&device, &config);
         let particles = crate::particles::Particles::new(&device, format, &camera_layout);
         Ok(Self {
+            ui:crate::ui::Surface::new(&device,format,package)?,
             particles,
             presentation_batches: serde_json::json!([]),
             lod_enabled: true,
@@ -627,10 +630,14 @@ impl Renderer {
         }
         self.particles.draw(&mut pass);
         self.draws += self.particles.draw_calls();
+        drop(pass);
+        if self.ui.draw(encoder,view){self.draws+=1;}
     }
     pub fn render(&mut self, s: &WorldSnapshot) -> R<bool> {
         let started = std::time::Instant::now();
         self.prepare(s)?;
+        self.ui.prepare(&self.device,&self.queue,s.ui.as_ref(),self.config.width,self.config.height)?;
+        self.uploaded+=self.ui.upload_bytes;
         self.prepare_ms = started.elapsed().as_secs_f64() * 1000.;
         let started = std::time::Instant::now();
         let output = match self.surface.get_current_texture() {

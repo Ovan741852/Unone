@@ -7,6 +7,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/effekseer.js",
         "renderer/particles.js",
         "shared/ui-tree.js",
+        "shared/canvas-ui.mjs",
         "shared/host-input.js",
         "shared/webgpu-snapshot.js",
         "shared/audio-playback.js",
@@ -50,6 +51,7 @@ enum JobMode {Auto,Inline,Workers}
 #[derive(Default, serde::Deserialize, serde::Serialize)]
 #[serde(default, deny_unknown_fields)]
 struct PresentationSettings {
+    ui: PresentationUi,
     bloom: bool,
     show_performance: bool,
     runtime_backend: RuntimeBackend,
@@ -57,6 +59,9 @@ struct PresentationSettings {
     interpolation: bool,
     interpolate_instances: Vec<String>,
 }
+#[derive(Default,serde::Deserialize,serde::Serialize)]
+#[serde(default,deny_unknown_fields)]
+struct PresentationUi {font_source:Option<String>,font_family:Option<String>}
 #[derive(Default, serde::Deserialize, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 enum RuntimeBackend {
@@ -178,6 +183,11 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
         PresentationSettings::default()
     };
     ensure!(presentation.job_policy.max_workers<=4 && presentation.job_policy.memory_budget_mb<=1024,"JOB_POLICY_INVALID: max_workers must be 0..4 and memory_budget_mb 0..1024");
+    if let Some(path)=&presentation.ui.font_source {
+        ensure!(presentation.ui.font_family.as_ref().is_some_and(|f|!f.trim().is_empty()),"UI_FONT_FAMILY_REQUIRED: specify the packaged font's family name");
+        let name=format!("content/{path}");
+        if !files.iter().any(|(p,_)|p==&name){files.push((name,fs::read(inside(project,path)?)?));}
+    }
     files.push((
         "content/presentation.json".into(),
         serde_json::to_vec(&presentation)?,
@@ -190,13 +200,15 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
         if (path == "shared/profile-window.js" && !development)
             || (path == "shared/audio-playback.js" && !settings.is_enabled("audio"))
             || (path == "shared/ui-tree.js" && !settings.is_enabled("ui"))
+            || (path == "shared/canvas-ui.mjs" && !settings.is_enabled("ui"))
             || (path == "renderer/particles.js" && !settings.is_enabled("particle"))
             || (path == "renderer/effekseer.js" && !settings.is_enabled("effekseer"))
             || (path == "vendor/rapier/LICENSE" && !compiled.iter().any(|v| v == "physics3d"))
         {
             continue;
         }
-        let mut bytes = fs::read(repo.join("web").join(path))?;
+        let source=repo.join("web").join(path);
+        let mut bytes = fs::read(&source).with_context(||format!("PLAYER_TEMPLATE_MISSING: {}; CLI and host templates must come from the same SDK/source revision",source.display()))?;
         if path == "renderer/three.js" {
             let mut text = String::from_utf8(bytes)?;
             if !settings.is_enabled("particle") {
@@ -226,8 +238,8 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             if !settings.is_enabled("ui") {
                 text = replace_required(
                     text,
-                    "import {createUiTree} from '../shared/ui-tree.js';",
-                    "const createUiTree = () => () => {};",
+                    "import {createCanvasUi,loadCanvasFont} from '../shared/canvas-ui.mjs';",
+                    "const createCanvasUi = () => ({draw(){},pointer(){return false},releaseAll(){},setFont(){}}); const loadCanvasFont = async () => {};",
                 )?;
             }
             if !settings.is_enabled("audio") {
