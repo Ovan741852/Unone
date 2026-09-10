@@ -35,6 +35,12 @@ retains the selected runtime/content hashes.
 Hashes detect corruption, not publisher authenticity. Use a trusted distribution
 channel. Capability matching does not by itself prove renderer/decoder parity.
 
+Web launch uses `release_root` from export.json: index points to a content-addressed
+generation containing host modules, JS/WASM and project assets. Publish that full
+directory before index, revalidate index, and retain old generations for open
+clients. Unversioned aliases remain for older CLI consumers, not browser launch.
+See [warm-cache acceptance](reviews/2026-09-10-warm-cache.md).
+
 ## Publisher workflow
 
 Build the desired production/development release runtimes with

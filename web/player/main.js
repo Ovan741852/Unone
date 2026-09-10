@@ -16,7 +16,7 @@ const input=createHostInput(),uiRenderer=createCanvasUi(uiCanvas,{onAction:({act
  const asset=uiAssetManifest?.assets?.find(candidate=>candidate.id===assetId);
  if(!asset)throw Error(`UI asset ${assetId} is not declared in the active asset manifest`);
  requireAssetEncoding(asset,'image');
- return new URL(`content/${asset.source}`,location.href).href;
+ return new URL(`content/${asset.source}`,document.baseURI).href;
 }});
 const renderUi=snapshot=>uiRenderer.draw(snapshot);
 let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null;
@@ -25,7 +25,7 @@ let saved,key,projectPayload;
 /* PROFILE_INIT */
 const metrics={};
 function fail(error){scheduler?.stop();/* PROFILE_ERROR */status.textContent=String(error?.message??error);document.body.dataset.playerError=status.textContent;console.error(error);}
-async function json(path){const r=await fetch(path);if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${path} (${r.status})`);return r.json();}
+async function json(path){const r=await fetch(new URL(path,document.baseURI),{cache:'no-store'});if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${path} (${r.status})`);return r.json();}
 function acceptSnapshot(value,{reset=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
 function draw(){
  const began=performance.now(),display=interpolator?.sample({snap:frozen})??{snapshot};presentationMemory=display.memory;
@@ -52,8 +52,8 @@ async function setTransport(mode){const value=await backend.request({kind:'trans
 async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.restored_save=JSON.parse(saved??'null');acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:'42'}),{reset:true});audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();await setPaused(wasPaused);}
 async function start(){
  const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);projectPayload=project;uiAssetManifest=assets;
- if(presentation.ui?.font_source){await loadCanvasFont(presentation.ui.font_family,new URL('content/'+presentation.ui.font_source,location.href));uiRenderer.setFont(presentation.ui.font_family);}
- const runtimeURL=new URL(document.querySelector('meta[name="unone-runtime"]').content,location.href).href;
+ if(presentation.ui?.font_source){await loadCanvasFont(presentation.ui.font_family,new URL('content/'+presentation.ui.font_source,document.baseURI));uiRenderer.setFont(presentation.ui.font_family);}
+ const runtimeURL=new URL(document.querySelector('meta[name="unone-runtime"]').content,document.baseURI).href;
  const kind=new URLSearchParams(location.search).get('backend')??presentation.runtime_backend??'main';
  backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy});metrics.runtime_ready_ms=performance.now()-window.playerBoot;
  document.title=project.config.name;key=`unone-player:${location.pathname}:${project.config.name}`;
@@ -61,8 +61,8 @@ async function start(){
  project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
  interpolator=createPresentationInterpolator({enabled:presentation.interpolation??false,instanceBatches:presentation.interpolate_instances??[]});
  acceptSnapshot(await backend.request({kind:'load',payload:project,seed:'42'}),{reset:true});
- renderer=await createThreeRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,location.href).href;}});
- audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',location.href)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));
+ renderer=await createThreeRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}});
+ audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',document.baseURI)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));
  draw();await renderer.ready();draw();await new Promise(requestAnimationFrame);
  metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';saved=JSON.stringify(snapshot.save_payload);
  scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,onVisibilityChange:({visible})=>{uiRenderer.releaseAll();input.releaseAll();audio?.setVisibility(visible);}});

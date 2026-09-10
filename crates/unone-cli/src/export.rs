@@ -303,6 +303,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     }
     let index = fs::read_to_string(repo.join("web/player/index.html"))?
         .replace("__RUNTIME_JS__", manifest["javascript"].as_str().unwrap());
+    let (release_root,index)=seal_web_generation(&mut files,&index)?;
     files.push(("index.html".into(), index.into_bytes()));
     files.sort_by(|a, b| a.0.cmp(&b.0));
     files.dedup_by(|a, b| a.0 == b.0 && a.1 == b.1);
@@ -313,7 +314,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             "export destination collision: {path}"
         );
     }
-    let report = json!({"version":1,"project":config.name,"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer":"three-webgl","total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
+    let report = json!({"version":1,"project":config.name,"release_root":release_root,"cache_policy":{"index.html":"no-cache, must-revalidate","releases/":"public, max-age=31536000, immutable","deployment":"publish complete generation before index; retain old generations for open clients","legacy_aliases":"unversioned files retained for existing CLI inspection tools; browser entry uses only release_root"},"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer":"three-webgl","total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
     // All validation and reads finish first. Remove only our newly created tree on write failure.
     fs::create_dir_all(output)?;
     let write = (|| -> Result<()> {
@@ -338,6 +339,17 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn web_generation_pins_all_resources_and_changes_on_any_input() {
+        let input=vec![("runtime/core.js".into(),b"js".to_vec()),("runtime/core.wasm".into(),b"wasm".to_vec()),("web/player/main.js".into(),b"host".to_vec()),("content/project.json".into(),b"project".to_vec())];
+        let html="<html><head></head></html>";
+        let (root,index)=seal_web_generation(&mut input.clone(),html).unwrap();
+        assert!(index.contains(&format!("<base href=\"{root}\">")));
+        let mut reversed=input.clone();reversed.reverse();assert_eq!(seal_web_generation(&mut reversed,html).unwrap().0,root);
+        for i in 0..input.len(){let mut changed=input.clone();changed[i].1.push(1);let (next,_)=seal_web_generation(&mut changed,html).unwrap();assert_ne!(next,root);for (path,bytes) in &input{if path!=&input[i].0{assert!(changed.contains(&(format!("{next}{path}"),bytes.clone())));}}}
+        assert_ne!(seal_web_generation(&mut input.clone(),"<head>new</head>").unwrap().0,root);
+        assert!(seal_web_generation(&mut input.clone(),"<head><base href='x'></head>").is_err());
+    }
     #[test]
     fn both_hosts_package_default_presentation_and_explicit_font() {
         let dir=tempfile::tempdir().unwrap();let mut files=vec![];
@@ -401,6 +413,20 @@ pub(crate) fn append_presentation(project:&Path, files:&mut Vec<(String,Vec<u8>)
     }
     files.push(("content/presentation.json".into(),serde_json::to_vec(&presentation)?));
     Ok(())
+}
+
+/// The browser loads a closed immutable generation, including transitive imports
+/// and the JS/WASM pair. Legacy file aliases remain for CLI consumer compatibility.
+fn seal_web_generation(files:&mut Vec<(String,Vec<u8>)>,index:&str)->Result<(String,String)> {
+    ensure!(!index.contains("<base"),"PLAYER_BASE_CONFLICT: template must not supply a base element");
+    let mut inventory=files.iter().map(|(p,b)|(p.clone(),digest(b))).collect::<Vec<_>>();
+    inventory.sort();
+    let identity=serde_json::to_vec(&(index,inventory))?;
+    let root=format!("releases/{}/",digest(&identity));
+    let copies=files.iter().map(|(p,b)|(format!("{root}{p}"),b.clone())).collect::<Vec<_>>();
+    files.extend(copies);
+    let index=replace_required(index.to_owned(),"<head>",&format!("<head><base href=\"{root}\">"))?;
+    Ok((root,index))
 }
 pub(crate) fn content(project:&Path)->Result<(unone_engine::ProjectConfig,unone_engine::SystemSettings,Value,Vec<(String,Vec<u8>)>)>{
     let mut files=Vec::new();

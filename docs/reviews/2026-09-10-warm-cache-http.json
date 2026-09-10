@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "active": "B",
+  "exports": {
+    "A": {
+      "dir": "D:\\Projects\\UnoneAcceptance\\2026-09-10-warm-cache-01\\A",
+      "release_root": "releases/ebc914db018e33575d1a00fe428213d5b29b3625dc3952ce93465f1a2d546345/"
+    },
+    "B": {
+      "dir": "D:\\Projects\\UnoneAcceptance\\2026-09-10-warm-cache-01\\B",
+      "release_root": "releases/95ec50540a4aba648cd8c91db68eebdc1cc971ce33d6ee670f1f49cdad498b63/"
+    }
+  },
+  "runnerSha256": "4b75680ecaee981fe98a17441a87bd6b2b3171cd52eae5d6d981e741e4b4af14",
+  "runtimeRequests": [
+    {
+      "active": "A",
+      "owner": "A",
+      "url": "/releases/ebc914db018e33575d1a00fe428213d5b29b3625dc3952ce93465f1a2d546345/runtime/unone-player.js",
+      "sha256": "4f6ddb1170dcb426f060aad4b6773e738a56e990a1feb54dc8f1b38fc31d2d1e"
+    },
+    {
+      "active": "A",
+      "owner": "A",
+      "url": "/releases/ebc914db018e33575d1a00fe428213d5b29b3625dc3952ce93465f1a2d546345/runtime/unone_player.wasm",
+      "sha256": "fc7734055aed41f566d8a556ce3fffd3b9a37df3baf2e00dafbdfa39b4c9fd39"
+    },
+    {
+      "active": "B",
+      "owner": "B",
+      "url": "/releases/95ec50540a4aba648cd8c91db68eebdc1cc971ce33d6ee670f1f49cdad498b63/runtime/unone-player.js",
+      "sha256": "c0d501ce4737c0e4b40c263e9eadcb3d234c2553bca3f166a904eca51bbb6872"
+    },
+    {
+      "active": "B",
+      "owner": "B",
+      "url": "/releases/95ec50540a4aba648cd8c91db68eebdc1cc971ce33d6ee670f1f49cdad498b63/runtime/unone_player.wasm",
+      "sha256": "3599715e95f0f61cde14b39069ef2cc08079ca8b8173946c432ecbdc5b7bfb2f"
+    }
+  ],
+  "requestCount": 54
+}
