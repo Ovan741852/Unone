@@ -230,6 +230,7 @@ fn tool_names() -> Vec<&'static str> {
         "unone_plugin_call",
         "unone_project_inspect",
         "unone_project_init",
+        "unone_project_sync",
         "unone_asset_inspect",
         "unone_asset_describe",
         "unone_asset_read",
@@ -307,6 +308,14 @@ fn tool_definitions() -> Vec<Value> {
             object_schema(json!({})),
             true,
             true,
+        ),
+        tool(
+            "unone_project_sync",
+            "Synchronize project content",
+            "Run the engine-owned pack → verify → bundle activation workflow as one operation. The result preserves pack, verify, and activation reports; a failed verify never activates a new generation. This does not install plugins, contact a network, or execute arbitrary commands.",
+            object_schema(json!({})),
+            false,
+            false,
         ),
         tool(
             "unone_project_init",
@@ -662,6 +671,7 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
             tool_result(crate::plugins::call(project, &id, &tool, input))
         }
         "unone_project_inspect" => tool_result(inspect_project(project)),
+        "unone_project_sync" => tool_result(crate::sync::sync_project(project)),
         "unone_project_init" => match required_string(arguments, "name") {
             Ok(name) => tool_result(init_project(project, &name)),
             Err(diagnostic) => argument_error(*diagnostic),
@@ -1177,7 +1187,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 27);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 28);
     }
 
     #[test]
@@ -1190,6 +1200,7 @@ mod tests {
         assert_eq!(names.first(), Some(&"unone_session"));
         assert_eq!(names.last(), Some(&"unone_bundle_install"));
         assert!(names.contains(&"unone_asset_describe"));
+        assert!(names.contains(&"unone_project_sync"));
         let plugin_list = tools.iter().find(|tool| tool["name"] == "unone_plugin_list").unwrap();
         assert!(plugin_list["description"].as_str().unwrap().contains("optional"));
         let project_init = tools.iter().find(|tool| tool["name"] == "unone_project_init").unwrap();

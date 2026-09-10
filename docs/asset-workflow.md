@@ -114,11 +114,18 @@ game --project <game-root> --json asset read --id <asset-id> --file <declared-co
 game --project <game-root> --json bundle pack
 game --project <game-root> --json bundle install <bundle-id>
 game --project <game-root> --json bundle install --all
+game --project <game-root> --json project sync
 ```
 
+`project sync` is the AI-facing convenience operation for the complete local
+authoring-to-runtime path. It composes `bundle pack`, the configured aggregate
+`verify` gates, and `bundle install --all`, returning all stage reports in one
+result. Use the individual commands when diagnosing one stage; use `project
+sync` when preparing a preview or handing a project to another host.
+
 The corresponding MCP tools are `unone_asset_inspect`, `unone_asset_describe`,
-`unone_asset_read`, `unone_asset_init`, `unone_bundle_pack`,
-`unone_bundle_inspect`, and `unone_bundle_install`. Use `tools/list` as the
+`unone_asset_read`, `unone_asset_init`, `unone_project_sync`,
+`unone_bundle_pack`, `unone_bundle_inspect`, and `unone_bundle_install`. Use `tools/list` as the
 authority for available tools and parameters; do not infer capability from a
 fixed tool count. `unone_asset_describe` is read-only, while `unone_asset_read` has
 `readOnlyHint=false` because passing output may write a file.

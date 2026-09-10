@@ -112,6 +112,8 @@ public API index; there is no separate list to find and no method names to guess
 Optional AI tools use the same protocol instead of adding engine-specific
 dependencies. Discover and test them with `game plugin list`, `game plugin
 inspect`, and `game plugin test`; see [docs/plugin-protocol.md](docs/plugin-protocol.md).
+For the complete AI authoring-to-runtime handoff, use `game project sync --json`;
+it composes pack, verify, and full bundle activation without requiring a Viewer.
 The bundled Blender bridge is optional and can validate/stage scene data without
 Blender installed. A plugin is an external process, so the Rust runtime remains
 deterministic and the AI can inspect its capabilities before using it.

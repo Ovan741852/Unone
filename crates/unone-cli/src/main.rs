@@ -31,6 +31,7 @@ mod native_clock;
 mod native_tools;
 mod plugins;
 mod session;
+mod sync;
 
 #[derive(Debug, Subcommand)]
 enum ExportCommand {
@@ -193,6 +194,8 @@ enum Command {
 #[derive(Debug, Subcommand)]
 enum ProjectCommand {
     Inspect,
+    /// Pack, verify, and activate every project bundle in the required order.
+    Sync,
     /// Create a five-file headless starter with two tests and next actions in a new or truly empty directory.
     Init {
         #[arg(long, help = "Project name written to project.unone.json")]
@@ -460,6 +463,7 @@ fn run() -> Result<ExitCode> {
         }
         Command::Project { command } => match command {
             ProjectCommand::Inspect => print_result(inspect_project(&cli.project), cli.json),
+            ProjectCommand::Sync => print_result(sync::sync_project(&cli.project), cli.json),
             ProjectCommand::Init { name } => {
                 print_result(init_project(&cli.project, &name), cli.json)
             }
