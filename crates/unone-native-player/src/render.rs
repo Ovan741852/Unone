@@ -242,6 +242,9 @@ impl Renderer {
                 texture["source"].as_str().ok_or("TEXTURE_SOURCE_MISSING")?
             ))?;
             let mut decoder = png::Decoder::new(std::io::Cursor::new(bytes));
+            if !bytes.starts_with(b"\x89PNG\r\n\x1a\n") {
+                return Err(format!("NATIVE_MESH_TEXTURE_FORMAT_UNSUPPORTED: {}; mesh textures require PNG; SVG support is UI-only",texture["id"]));
+            }
             decoder
                 .set_transformations(png::Transformations::EXPAND | png::Transformations::STRIP_16);
             let mut reader = decoder.read_info().map_err(|e| e.to_string())?;

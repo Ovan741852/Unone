@@ -233,9 +233,18 @@ fn template_files() -> Vec<&'static str> {
 pub fn inspect(explicit: Option<&Path>) -> Result<Value> {
     let root = root(explicit)?;
     let m = load(&root)?;
-    Ok(
-        json!({"version":m.version,"engine_version":m.engine_version,"host":m.host,"verified":true,"runtimes":m.runtimes,"targets":[{"id":"web","status":"supported","packager":"web-directory","toolchain":"none"},{"id":"android-arm64","status":"supported","renderer":"wgpu-native-instanced","requires":["Android SDK","JDK","local test signing"]},{"id":"android-x86_64","status":"supported","renderer":"wgpu-native-instanced","requires":["Android SDK","JDK","local test signing"]},{"id":"ios","status":"not_implemented","requires":["iOS runtime","Xcode/macOS","signing"]},{"id":"windows","status":"supported","renderer":"wgpu-native-instanced","presentation":["mesh3d","instances3d"],"decoders":["unone-mesh-json","png-rgb-rgba"]}]}),
-    )
+    let sources=m.runtimes.iter().map(|runtime|->Result<Value>{
+        let path=safe(&root,&format!("{}/runtime.json",runtime.path))?;
+        let data=fs::read(&path)?;
+        let descriptor:Value=serde_json::from_slice(&data)?;
+        Ok(json!({"id":runtime.id,"path":path,"sha256":hash(&data),"descriptor":descriptor,"evidence":"hash-verified declaration; not renderer execution"}))
+    }).collect::<Result<Vec<_>>>()?;
+    let source_evidence=json!({"sdk_root":root,"cli":{"path":safe(&root,&m.cli)?,"sha256":hash(&fs::read(safe(&root,&m.cli)?)?)},"templates":{"path":safe(&root,&m.templates)?,"files":m.files.iter().filter(|f|f.path.starts_with(&format!("{}/",m.templates))).collect::<Vec<_>>()},"runtimes":sources,"plugins":"separately discovered; not pinned or compatibility-certified by sdk.json; run plugin list/inspect/test"});
+    let mut report =
+        json!({"version":m.version,"engine_version":m.engine_version,"host":m.host,"verified":true,"runtimes":m.runtimes,"targets":[{"id":"web","status":"supported","packager":"web-directory","toolchain":"none"},{"id":"android-arm64","status":"supported","renderer":"wgpu-native-instanced","requires":["Android SDK","JDK","local test signing"]},{"id":"android-x86_64","status":"supported","renderer":"wgpu-native-instanced","requires":["Android SDK","JDK","local test signing"]},{"id":"ios","status":"not_implemented","requires":["iOS runtime","Xcode/macOS","signing"]},{"id":"windows","status":"supported","renderer":"wgpu-native-instanced","capabilities":"see sources.runtimes for each installed runtime declaration"}]})
+    ;
+    report["sources"]=source_evidence;
+    Ok(report)
 }
 pub fn export(
     project: &Path,
@@ -451,6 +460,8 @@ fn native_export_staged(
     ensure!(!development, "NATIVE_DEVELOPMENT_VARIANT_UNAVAILABLE");
     ensure!(!output.exists(), "SDK_OUTPUT_EXISTS");
     let (config, _, assets, mut files) = crate::export::content(project)?;
+    crate::export::append_presentation(project, &mut files)?;
+    let metadata: Value = serde_json::from_slice(&fs::read(runtime.join("runtime.json"))?)?;
     for asset in assets["assets"].as_array().context("ASSETS_INVALID")? {
         ensure!(
             ["mesh3d", "texture2d"].contains(&asset["kind"].as_str().unwrap_or("")),
@@ -458,13 +469,13 @@ fn native_export_staged(
             asset["kind"]
         );
         if asset["kind"] == "texture2d" {
-            ensure!(
-                asset["source"].as_str().unwrap_or("").ends_with(".png"),
-                "NATIVE_TEXTURE_FORMAT_UNSUPPORTED: PNG required"
-            );
+            // This gate admits UI sources. Mesh references are validated by the
+            // player separately; SVG here does not imply a mesh texture decoder.
+            let source=asset["source"].as_str().unwrap_or("").to_ascii_lowercase();
+            ensure!(source.ends_with(".png") || (source.ends_with(".svg") && metadata["ui"]["images"].as_array().is_some_and(|v|v.iter().any(|x|x=="svg-static"))),
+                "NATIVE_TEXTURE_FORMAT_UNSUPPORTED: {}; SVG UI requires a runtime advertising ui.images=svg-static; use a matching runtime or PNG companion",asset["source"]);
         }
     }
-    let metadata: Value = serde_json::from_slice(&fs::read(runtime.join("runtime.json"))?)?;
     let runtime_files = runtime_files(&metadata)?;
     if target == "windows" {
         for (name, _) in &runtime_files {

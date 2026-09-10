@@ -174,24 +174,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             project.display()
         );
     }
-    let presentation = if project.join("player.presentation.json").exists() {
-        serde_json::from_slice::<PresentationSettings>(&fs::read(inside(
-            project,
-            "player.presentation.json",
-        )?)?)?
-    } else {
-        PresentationSettings::default()
-    };
-    ensure!(presentation.job_policy.max_workers<=4 && presentation.job_policy.memory_budget_mb<=1024,"JOB_POLICY_INVALID: max_workers must be 0..4 and memory_budget_mb 0..1024");
-    if let Some(path)=&presentation.ui.font_source {
-        ensure!(presentation.ui.font_family.as_ref().is_some_and(|f|!f.trim().is_empty()),"UI_FONT_FAMILY_REQUIRED: specify the packaged font's family name");
-        let name=format!("content/{path}");
-        if !files.iter().any(|(p,_)|p==&name){files.push((name,fs::read(inside(project,path)?)?));}
-    }
-    files.push((
-        "content/presentation.json".into(),
-        serde_json::to_vec(&presentation)?,
-    ));
+    append_presentation(project, &mut files)?;
     files.push((
         "runtime/runtime.json".into(),
         serde_json::to_vec(&manifest)?,
@@ -356,6 +339,18 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
 mod tests {
     use super::*;
     #[test]
+    fn both_hosts_package_default_presentation_and_explicit_font() {
+        let dir=tempfile::tempdir().unwrap();let mut files=vec![];
+        append_presentation(dir.path(),&mut files).unwrap();
+        assert_eq!(files[0].0,"content/presentation.json");
+        fs::write(dir.path().join("font.ttf"),b"fixture-font-bytes").unwrap();
+        fs::write(dir.path().join("player.presentation.json"),br#"{"ui":{"font_source":"font.ttf","font_family":"Fixture"}}"#).unwrap();
+        files.clear();append_presentation(dir.path(),&mut files).unwrap();
+        assert!(files.iter().any(|(p,b)|p=="content/font.ttf"&&b==b"fixture-font-bytes"));
+        fs::write(dir.path().join("player.presentation.json"),br#"{"ui":{"font_source":"font.ttf"}}"#).unwrap();
+        assert!(append_presentation(dir.path(),&mut vec![]).unwrap_err().to_string().contains("UI_FONT_FAMILY_REQUIRED"));
+    }
+    #[test]
     fn mesh_contract_rejects_bad_topology_uvs_and_unknown_fields() {
         let valid = json!({"version":1,"positions":[0,0,0,1,0,0,0,1,0],"uvs":[0,0,1,0,0,1],"indices":[0,1,2],"texture":"texture://test"});
         serde_json::from_value::<StaticMesh>(valid.clone())
@@ -394,6 +389,19 @@ mod tests {
 }
 
 /// Shared validated host payload and asset bytes for all player exporters.
+pub(crate) fn append_presentation(project:&Path, files:&mut Vec<(String,Vec<u8>)>)->Result<()> {
+    let presentation = if project.join("player.presentation.json").exists() {
+        serde_json::from_slice::<PresentationSettings>(&fs::read(inside(project,"player.presentation.json")?)?)?
+    } else {PresentationSettings::default()};
+    ensure!(presentation.job_policy.max_workers<=4 && presentation.job_policy.memory_budget_mb<=1024,"JOB_POLICY_INVALID: max_workers must be 0..4 and memory_budget_mb 0..1024");
+    if let Some(path)=&presentation.ui.font_source {
+        ensure!(presentation.ui.font_family.as_ref().is_some_and(|f|!f.trim().is_empty()),"UI_FONT_FAMILY_REQUIRED: specify the packaged font's family name");
+        let name=format!("content/{path}");
+        if !files.iter().any(|(p,_)|p==&name){files.push((name,fs::read(inside(project,path)?)?));}
+    }
+    files.push(("content/presentation.json".into(),serde_json::to_vec(&presentation)?));
+    Ok(())
+}
 pub(crate) fn content(project:&Path)->Result<(unone_engine::ProjectConfig,unone_engine::SystemSettings,Value,Vec<(String,Vec<u8>)>)>{
     let mut files=Vec::new();
     let (config, _) = unone_engine::ProjectPaths::discover(project)

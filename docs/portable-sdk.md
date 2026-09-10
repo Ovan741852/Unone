@@ -22,6 +22,10 @@ checkout path is used. Plugin discovery also uses executable-relative paths.
 `sdk inspect --json` verifies the manifest version, CLI version and host,
 confined paths, file hashes/sizes, runtime metadata and template inventory.
 It lists installed runtimes and supported/unavailable targets for AI or Editor use.
+`sources` additionally records the resolved SDK/CLI/template/runtime paths, file
+hashes and each runtime's complete descriptor. These are hash-verified declarations,
+not GPU execution evidence. Plugins are separate from the SDK manifest and not
+automatically version-pinned or certified by this report.
 Selection requires the requested target, development/production variant and all
 enabled project systems. Smallest matching runtime wins, then runtime ID; use
 `--runtime-id` to pin one. Incompatible systems or missing targets fail before
@@ -58,8 +62,11 @@ export. Validate supplied runtime builds against intended games before releasing
 
 The manifest separates SDK host from game target, variant, capabilities and files.
 New packagers reuse discovery, verification and project inspection. Web, Windows native and Android native targets are implemented in this SDK route.
-The native host currently supports meshes/instances, PNG palettes and native particles;
-UI, audio playback and Spine/Effekseer rendering remain unsupported and fail explicitly.
+The updated native host supports meshes/instances, PNG palettes, native particles
+and non-DOM UI. UI images support PNG and a self-contained static SVG subset when
+the installed runtime advertises `ui.images: svg-static`. Audio playback and
+Spine/Effekseer rendering remain unsupported. Older runtimes do not gain UI/SVG
+support merely by using a new CLI. See [UI contract](formal-ui-host.md).
 Android packaging requires a platform runtime plus SDK/Java/signing tools.
 See [native validation](native-battle.md).
 

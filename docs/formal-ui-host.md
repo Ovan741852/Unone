@@ -6,7 +6,7 @@ Ownership: Core supplies the reusable resolved UI tree, semantic input and layou
 
 `web/shared/canvas-ui.mjs` renders `text`, `image`, transparent `button`, and nested `component` leaves into one Canvas2D surface. It creates no DOM game controls. The native player draws the same leaves into a CPU-rasterized texture composited by wgpu after the world. Rectangles are resolved screen coordinates, 0–100, y-up; component wrappers do not transform them again.
 
-Portable artwork is PNG. Web image loading can use browser-supported formats; native UI currently requires PNG companions for SVG/JPEG/WebP. Unsupported native assets fail explicitly with `UI_IMAGE_UNAVAILABLE`, not an invisible placeholder. Image fit supports contain, cover and stretch. Buttons draw text only: use a preceding image leaf for artwork.
+Portable artwork includes PNG and the native static SVG subset. Native now accepts `.svg` shapes, paths, gradients, internal references, masks/clips and inline presentation attributes; it renders at the current surface resolution. Script, animation, foreignObject, nested images, stylesheet elements and external references fail with an asset/source-specific diagnostic. SVG is limited to 8 MiB and 10000 XML nodes. This is not complete browser SVG/CSS compatibility. JPEG/WebP still need PNG companions; 3D mesh textures remain PNG-only. Image fit supports contain, cover and stretch. Buttons draw text only: use a preceding image leaf for artwork. The SDK checks the selected runtime's `ui.images: ["png", "svg-static"]` declaration before allowing SVG native export.
 
 Both hosts hit-test rectangles in reverse leaf order. Image/text leaves shield the world too; transparent pixels still block within their rectangle. This is not alpha-aware hit testing. Keep ornamental rectangles tight. Captured pointer release/movement cannot fall through after a screen transition. Semantic down/up edges survive taps between frames, and multiple pointers holding one action release it only after the final pointer releases. Native world pointer mapping follows Web Camera2D; game-specific 3D ground-plane raycasts remain gameplay policy.
 
@@ -14,7 +14,7 @@ Native limits: camera3d is still required by the existing world renderer; audio/
 
 ## Fonts
 
-Hosts use installed fonts by default; glyph availability and exact text metrics differ. For a licensed project font, set `presentation.json`:
+Hosts use installed fonts by default; glyph availability and exact text metrics differ. For a licensed project font, set the project's `player.presentation.json` (exported as `content/presentation.json`):
 
 ```json
 {"ui":{"font_source":"fonts/game.ttf","font_family":"Game UI"}}
@@ -43,3 +43,5 @@ YesSir reports nine strict-layout screens, three browser sizes with real pointer
 Final Claude source review found no actionable blocker/high defects after the texture-limit, world-pointer and lifecycle fixes. Root `cargo test --workspace`, standalone native unit tests, explicit native GPU smoke, and six Node adapter/process tests passed. Windows release runtime was handed to YesSir at `target/formal-ui-native-runtime-v2`; executable SHA-256: `fe266f06d8e6a9618c41584804f83cda6187e67ee8a8ee32468699e3420456c3` (built from the working changes, not a clean released SDK).
 
 YesSir's reported improvement: one Luau semantic UI tree now connects the official renderer, held actions and auditable strict layout, replacing separate DOM controls/hit testing. Remaining largest friction: assembling a compatible CLI/runtime/templates/plugin set. Exact-path export errors and deterministic wrapper cwd help, but an integrated source/version/hash/capability resolver and published verified combinations remain future work.
+
+Follow-up SVG/SDK testing, including the native presentation-file packaging fix, is recorded in [the compatibility ledger](reviews/2026-09-10-svg-sdk.md). Prefer that ledger over rerunning the earlier PNG-only acceptance or treating its runtime as SVG-capable.

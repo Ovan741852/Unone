@@ -104,9 +104,69 @@ struct Rasterizer {
     options: resvg::usvg::Options<'static>,
     family: String,
 }
+// Deliberately static, self-contained SVG. Reject features that would otherwise
+// disappear silently or resolve outside the hash-verified content package.
+fn validate_svg(bytes: &[u8], options: &resvg::usvg::Options<'_>) -> R<()> {
+    if bytes.len() > 8 * 1024 * 1024 {
+        return Err("UI_SVG_LIMIT: maximum 8 MiB".into());
+    }
+    let source = std::str::from_utf8(bytes).map_err(|e| format!("UI_SVG_INVALID: {e}"))?;
+    let doc = roxmltree::Document::parse(source).map_err(|e| format!("UI_SVG_INVALID: {e}"))?;
+    if doc.root_element().tag_name().name() != "svg" {
+        return Err("UI_SVG_INVALID: expected svg root".into());
+    }
+    if doc.descendants().count() > 10000 {
+        return Err("UI_SVG_LIMIT: maximum 10000 XML nodes".into());
+    }
+    for node in doc.descendants().filter(|n| n.is_element()) {
+        let name = node.tag_name().name();
+        if matches!(
+            name,
+            "script"
+                | "foreignObject"
+                | "animate"
+                | "animateMotion"
+                | "animateTransform"
+                | "set"
+                | "image"
+                | "style"
+        ) {
+            return Err(format!(
+                "UI_SVG_UNSUPPORTED: <{name}>; use static shapes/inline presentation attributes or a PNG companion"
+            ));
+        }
+        for a in node.attributes() {
+            if a.name().starts_with("on") {
+                return Err(format!("UI_SVG_UNSUPPORTED: event attribute {}", a.name()));
+            }
+            if a.name() == "href" && !a.value().starts_with('#') {
+                return Err("UI_SVG_EXTERNAL_RESOURCE: href must be an internal #id".into());
+            }
+            let value = a.value();
+            if value.contains('\\') || value.to_ascii_lowercase().contains("@import") {
+                return Err("UI_SVG_UNSUPPORTED: CSS escapes/imports".into());
+            }
+            let mut rest = value;
+            while let Some(at) = rest.to_ascii_lowercase().find("url(") {
+                rest = &rest[at + 4..];
+                let end = rest.find(')').ok_or("UI_SVG_INVALID: unterminated url()")?;
+                let url = rest[..end].trim().trim_matches(['\'', '"']);
+                if !url.starts_with('#') {
+                    return Err(
+                        "UI_SVG_EXTERNAL_RESOURCE: url() must reference an internal #id".into(),
+                    );
+                }
+                rest = &rest[end + 1..];
+            }
+        }
+    }
+    resvg::usvg::Tree::from_data(bytes, options).map_err(|e| format!("UI_SVG_INVALID: {e}"))?;
+    Ok(())
+}
 impl Rasterizer {
     fn new(package: &Package) -> R<Self> {
         let mut options = resvg::usvg::Options::default();
+        options.image_href_resolver.resolve_string = Box::new(|_, _| None);
         options.fontdb_mut().load_system_fonts();
         let presentation: serde_json::Value =
             serde_json::from_slice(package.get("content/presentation.json")?)
@@ -138,6 +198,10 @@ impl Rasterizer {
             let bytes = package.get(&format!("content/{source}"))?;
             let mime = if bytes.starts_with(b"\x89PNG\r\n\x1a\n") {
                 "image/png"
+            } else if source.to_ascii_lowercase().ends_with(".svg") {
+                validate_svg(bytes, &options)
+                    .map_err(|e| format!("{e}; asset={id}; source={source}"))?;
+                "image/svg+xml"
             } else {
                 continue;
             };
@@ -170,7 +234,7 @@ impl Rasterizer {
             );
             match node {
                 UiNode::Image { asset, fit, .. } => {
-                    let uri=self.images.get(asset).ok_or_else(||format!("UI_IMAGE_UNAVAILABLE: {asset}; native UI requires a declared PNG companion"))?;
+                    let uri=self.images.get(asset).ok_or_else(||format!("UI_IMAGE_UNAVAILABLE: {asset}; native UI accepts PNG or self-contained static SVG"))?;
                     let aspect = match fit {
                         unone_engine::UiImageFit::Stretch => "none",
                         unone_engine::UiImageFit::Cover => "xMidYMid slice",
@@ -428,6 +492,50 @@ impl Surface {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn svg_static_validation_and_scaled_pixels() {
+        let svg=br##"<svg xmlns="http://www.w3.org/2000/svg" width="20" height="10"><defs><linearGradient id="g"><stop stop-color="red"/><stop offset="1" stop-color="blue"/></linearGradient></defs><rect width="20" height="10" fill="url(#g)" opacity="0.5"/></svg>"##;
+        let package = Package {
+            digest: String::new(),
+            files: BTreeMap::from([
+                (
+                    "content/assets.json".into(),
+                    br#"{"assets":[{"kind":"texture2d","id":"asset://svg","source":"art.svg"}]}"#
+                        .to_vec(),
+                ),
+                ("content/presentation.json".into(), b"{}".to_vec()),
+                ("content/art.svg".into(), svg.to_vec()),
+            ]),
+        };
+        let raster = Rasterizer::new(&package).unwrap();
+        let tree=UiTree::from_json(serde_json::json!({"kind":"screen","id":"t","node":"t","children":[{"kind":"image","id":"a","asset":"asset://svg","fit":"stretch","rect":{"x":0,"y":0,"width":100,"height":100}}]})).unwrap();
+        for (w, h) in [(80, 40), (320, 160)] {
+            let pixels = raster.draw(&tree, w, h).unwrap();
+            let left = &pixels[((h / 2 * w + w / 8) * 4) as usize..][..4];
+            let right = &pixels[((h / 2 * w + w * 7 / 8) * 4) as usize..][..4];
+            assert!(
+                left[0] > 180 && left[2] < 80 && (120..=135).contains(&left[3]),
+                "{left:?}"
+            );
+            assert!(right[2] > 180 && right[0] < 80, "{right:?}");
+        }
+        for source in [
+            "<svg>",
+            r#"<svg xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="file.svg#x"/></svg>"#,
+            r#"<!DOCTYPE svg [<!ENTITY a "expanded">]><svg><text>&a;</text></svg>"#,
+            "<svg><script/></svg>",
+            "<svg><animate/></svg>",
+            "<svg><use href='file.svg#x'/></svg>",
+            "<svg><rect fill='url(file:///secret)'/></svg>",
+            "<svg><style>@import 'x';</style></svg>",
+            "<svg><image href='data:image/svg+xml;base64,AAA'/></svg>",
+        ] {
+            assert!(
+                validate_svg(source.as_bytes(), &raster.options).is_err(),
+                "{source}"
+            );
+        }
+    }
     fn png_bytes(pixels: &[u8], w: u32, h: u32) -> Vec<u8> {
         let mut out = Vec::new();
         {

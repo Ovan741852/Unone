@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "startedAt": "2026-09-10T06:41:00.672Z",
+  "finishedAt": "2026-09-10T06:41:06.075Z",
+  "host": {
+    "platform": "win32",
+    "arch": "x64",
+    "node": "v24.14.1"
+  },
+  "sdkManifestSha256": "24cdd3e62b5a82977fbb020d077212a42b1f7b897cd1a0824ba7b5ff112fb379",
+  "runnerSha256": "83793bc2ea2eb4004b78339fb9f9daef3413d291f4af511c5a55a7512d3703b8",
+  "fixtureFiles": [
+    {
+      "path": "assets.json",
+      "sha256": "0c9cafebef40be4510a1c7cc9140b51ba2f3c2829c8928d1c275719d54c76fb2"
+    },
+    {
+      "path": "main.luau",
+      "sha256": "c1aa79bd2767aea066fa7f7455226905adc2b9457da3eb3960ee6965436d8e26"
+    },
+    {
+      "path": "plugins\\org.unone.compat-probe\\plugin.json",
+      "sha256": "e945310513d1c1a9dbf87904faf366239de046cdde7eb8df45ef9c3e368baaff"
+    },
+    {
+      "path": "plugins\\org.unone.compat-probe\\probe.mjs",
+      "sha256": "c98fe3a0b4d447c753a6f821924925665819f71758d9ac190559341f9a2cff21"
+    },
+    {
+      "path": "probe.svg",
+      "sha256": "ad790ff305f69fe3ba0af6e09634559ae2b3a69be4ab1ac187f873a888c669bd"
+    },
+    {
+      "path": "project.unone.json",
+      "sha256": "0c5ec39092709d4521d3c7d9c9485ebe4d74ad472fc8d8374a346c61cabf939e"
+    },
+    {
+      "path": "scene.json",
+      "sha256": "de94be689f920dc33942071c1095bc2589ae5c0e3296b3bd9ef84980ea43f06d"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "native-render.png",
+      "sha256": "5064f7335e0c34839c0330e51716d450c7ff72b0c27a4edd875337a79548eb97",
+      "bytes": 11297,
+      "interpretation": "artifact creation checked automatically; appearance requires visual inspection"
+    }
+  ],
+  "limits": [
+    "Fixture plugin tests transport, not commercial plugin compatibility",
+    "Same computer relocation; not a second-machine or mobile test",
+    "Hash verification is not schema/renderer compatibility proof",
+    "SDK-UI-015 demonstrates no plugin semver compatibility gate; protocol success is not version certification"
+  ],
+  "checks": [
+    {
+      "id": "SDK-UI-001",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    },
+    {
+      "id": "SDK-UI-002",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    },
+    {
+      "id": "SDK-UI-003",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    },
+    {
+      "id": "SDK-UI-004",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    },
+    {
+      "id": "SDK-UI-005",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "SDK_HASH_MISMATCH"
+    },
+    {
+      "id": "SDK-UI-006",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "SDK_FILE_MISSING"
+    },
+    {
+      "id": "SDK-UI-007",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "SDK_HASH_MISMATCH"
+    },
+    {
+      "id": "SDK-UI-008",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "SDK_MANIFEST_INVALID"
+    },
+    {
+      "id": "SDK-UI-009",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    },
+    {
+      "id": "SDK-UI-010",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "PLUGIN_API"
+    },
+    {
+      "id": "SDK-UI-011",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "NATIVE_TEXTURE_FORMAT_UNSUPPORTED"
+    },
+    {
+      "id": "SDK-UI-012",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    },
+    {
+      "id": "SDK-UI-013",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "SDK_CLI_MISMATCH"
+    },
+    {
+      "id": "SDK-UI-014",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "PLUGIN_PROCESS_START_FAILED"
+    },
+    {
+      "id": "SDK-UI-015",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    }
+  ]
+}
