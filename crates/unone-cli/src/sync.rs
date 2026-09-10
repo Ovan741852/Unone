@@ -171,6 +171,25 @@ mod tests {
     }
 
     #[test]
+    fn missing_project_is_reported_as_pack_failure() {
+        let dir = tempdir().unwrap();
+        let missing = dir.path().join("missing-project");
+
+        let result = sync_project(&missing);
+
+        assert!(!result.ok);
+        let report = result.value.unwrap();
+        assert_eq!(report.status, "pack_failed");
+        assert!(report.pack.is_none());
+        assert!(report.verify.is_none());
+        assert!(report.activation.is_none());
+        assert!(result
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "PROJECT_ROOT_NOT_FOUND"));
+    }
+
+    #[test]
     fn failed_verify_is_reported_without_activation() {
         let dir = tempdir().unwrap();
         write_project(dir.path(), false);
@@ -264,5 +283,28 @@ mod tests {
             Some(1),
             "a failed sync must retain the previous active generation"
         );
+    }
+
+    #[test]
+    fn a_verified_content_change_creates_a_new_active_generation() {
+        let dir = tempdir().unwrap();
+        write_project(dir.path(), true);
+
+        let first = sync_project(dir.path());
+        assert!(first.ok, "first sync should pass: {:?}", first.diagnostics);
+
+        let mut script = fs::read_to_string(dir.path().join("main.luau")).unwrap();
+        script.push_str("\n-- verified content change\n");
+        fs::write(dir.path().join("main.luau"), script).unwrap();
+        let changed = sync_project(dir.path());
+
+        assert!(changed.ok, "changed sync should pass: {:?}", changed.diagnostics);
+        let report = changed.value.unwrap();
+        assert_eq!(report.status, "synced");
+        assert_eq!(report.activation.unwrap().active_generation, Some(2));
+        assert!(changed
+            .effects
+            .iter()
+            .any(|effect| effect.contains("active bundle generation 2 created")));
     }
 }
