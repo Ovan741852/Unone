@@ -25,14 +25,25 @@ Optional authoring tools are discovered through the same protocol. Run
 and call only the tools it declares. Plugins run out of process and return the
 same structured result shape; they may write staging artifacts but must not
 silently replace active game data. See [plugin-protocol.md](plugin-protocol.md).
+For one current inventory, use the read-only `unone_platform_snapshot` MCP
+tool; it includes plugin manifest capabilities and keeps renderer readiness
+conservative until a host probe supplies evidence.
 
 ## -1. Check platform capabilities first
 
 ```powershell
-cargo run -p unone-cli -- --json platform capabilities
+cargo run -p unone-cli -- --project <game-root> --json platform snapshot
 ```
 
-Read `target_family`, `project_loaders`, `hot_reload_modes`, and `pending_host_work` first. `wasm` capabilities are still binary-level information; current Web live browser/WebGPU/bundle-storage evidence comes from the `web/live/` smoke. Do not infer a complete Web release package from a library compile or a single smoke fixture.
+Read `game platform snapshot --json` first. It includes `target_family`,
+`project_loaders`, `hot_reload_modes`, runtime/renderer/plugin readiness,
+limitations, `verification_scope`, `checked_by`, evidence and minimal examples.
+Platform `limitations` are for the current target; cross-target backlog is
+listed separately as `other_target_gaps`. `wasm` capabilities are still
+binary-level information; current Web live browser/WebGPU/bundle-storage
+evidence comes from the `web/live/` smoke. Do not infer a complete Web release
+package from a library compile or a single smoke fixture. Use the raw
+`platform capabilities` result when a narrower target-only query is needed.
 
 ## 0. Create or obtain the project and API semantics
 

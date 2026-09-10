@@ -243,6 +243,7 @@ fn tool_names() -> Vec<&'static str> {
         "unone_systems_search",
         "unone_systems_set",
         "unone_platform_capabilities",
+        "unone_platform_snapshot",
         "unone_api_search",
         "unone_api_describe",
         "unone_check",
@@ -476,6 +477,14 @@ fn tool_definitions() -> Vec<Value> {
             "unone_platform_capabilities",
             "Inspect platform capabilities",
             "Report verified native/Web capabilities and explicitly pending host work. Do not infer a pending platform from a compile-only result.",
+            object_schema(json!({})),
+            true,
+            true,
+        ),
+        tool(
+            "unone_platform_snapshot",
+            "Snapshot current AI capabilities",
+            "Aggregate the current platform, runtime, renderer, and plugin capability states with explicit verified/partial/pending status, limitations, evidence, and minimal examples. This is read-only and does not start plugins or probe a renderer.",
             object_schema(json!({})),
             true,
             true,
@@ -844,6 +853,7 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
             ))
         }
         "unone_platform_capabilities" => tool_result(platform_capabilities()),
+        "unone_platform_snapshot" => tool_result(crate::capabilities::snapshot(project)),
         "unone_api_search" => match required_string(arguments, "meaning") {
             Ok(meaning) => tool_result(api_search_result(project, &meaning)),
             Err(diagnostic) => argument_error(*diagnostic),
@@ -1187,7 +1197,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 28);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 29);
     }
 
     #[test]
@@ -1201,6 +1211,7 @@ mod tests {
         assert_eq!(names.last(), Some(&"unone_bundle_install"));
         assert!(names.contains(&"unone_asset_describe"));
         assert!(names.contains(&"unone_project_sync"));
+        assert!(names.contains(&"unone_platform_snapshot"));
         let plugin_list = tools.iter().find(|tool| tool["name"] == "unone_plugin_list").unwrap();
         assert!(plugin_list["description"].as_str().unwrap().contains("optional"));
         let project_init = tools.iter().find(|tool| tool["name"] == "unone_project_init").unwrap();

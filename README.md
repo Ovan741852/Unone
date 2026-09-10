@@ -154,12 +154,18 @@ cargo run -p unone-cli -- --project $game --json api describe entity.setPosition
 cargo run -p unone-cli -- --project $game --json run --frames 60
 cargo run -p unone-cli -- --project $game --json test
 cargo run -p unone-cli -- --json platform capabilities
+cargo run -p unone-cli -- --project $game --json platform snapshot
 ```
 
 Use verify as the aggregate author gate: it covers the typed check, strict asset
 inspection, UI layout, and tests. The standalone asset inspect --strict command
 above is for focused asset diagnosis or publication verification, not an
 additional gate when verify is the selected entry point.
+Use `platform snapshot` when an AI needs one current, machine-readable inventory
+of runtime, renderer, host, and plugin readiness. It preserves the raw platform
+report but adds explicit `verified`, `partial`, and `pending` mappings,
+limitations, evidence references, and executable examples; it never starts a
+plugin or claims a renderer was probed when `renderer_probe` is `not_probed`.
 An AI host can also use the same Developer Protocol through a thin MCP stdio adapter:
 
 ```powershell

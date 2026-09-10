@@ -23,6 +23,7 @@ use winit::{
 };
 
 mod assets;
+mod capabilities;
 mod export;
 mod sdk;
 mod mcp;
@@ -327,6 +328,8 @@ enum ApiCommand {
 #[derive(Debug, Subcommand)]
 enum PlatformCommand {
     Capabilities,
+    /// Aggregate platform, renderer, runtime and plugin readiness for AI use.
+    Snapshot,
 }
 
 #[derive(Debug, Subcommand)]
@@ -894,6 +897,9 @@ fn run() -> Result<ExitCode> {
         Command::Platform { command } => match command {
             PlatformCommand::Capabilities => {
                 print_result(unone_engine::platform_capabilities(), cli.json)
+            }
+            PlatformCommand::Snapshot => {
+                print_result(capabilities::snapshot(&cli.project), cli.json)
             }
         },
         Command::Check { types } => {

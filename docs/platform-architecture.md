@@ -38,8 +38,8 @@ package ID/version、artifact hash、license/entitlement、capabilities 與
 
 ## AI Workshop 的標準流程
 
-1. **Understand**：索引 project、runtime capabilities、asset formats、
-   現有 conventions 與 package lock。
+1. **Understand**：先執行 `game platform snapshot --json`，索引 project、runtime capabilities、asset formats、
+現有 conventions 與 package lock。
 2. **Plan**：把自然語言目標拆成 requirements 與 acceptance checks。
 3. **Find**：以 capability 搜尋 local plugin 或 marketplace package，不能
    只靠 screenshot 猜 class 名稱。
@@ -56,6 +56,22 @@ package ID/version、artifact hash、license/entitlement、capabilities 與
 Workshop 應保存 `Requirement`、`Capability`、`PackageRef`、
 `GeneratedArtifact`、`TestEvidence`、`Decision`、`Release` 等記錄，並包含
 輸入、輸出、時間、owner、hash 與 failure reason。
+
+`platform snapshot` 是能力現況的 machine-readable 入口，不取代較窄的
+`platform capabilities`、`plugin inspect` 或 host probe。它使用三態
+`verified`／`partial`／`pending`，同時保留 `source_state`、
+`verification_scope`（current target/project/host）與 `checked_by`。已編譯且
+專案啟用的 engine system 才會是 `verified`；已編譯但專案關閉、
+`host_declared_not_probed` 或只有 manifest 證據會是 `partial`，而
+`pending_host_work` 只會是 `pending`。跨平台 backlog 放在
+`platform.other_target_gaps`，不會把目前 Windows target 誤標成 partial。
+插件只讀 manifest，不會因為被發現就被當成可執行；有 `plugin.test` 的
+插件仍需明確執行 self-test。
+
+Web renderer 的 examples 是 host 操作模板，不是已完成的瀏覽器驗證：
+`<project-relative-path>` 必須是 Web server root 下的 URL 路徑；若專案在
+另一個絕對路徑，先把它放進同一個 server root 或依 `web/runner/README.md`
+建立 payload。不要把另一個 sample project 的 URL 直接套到目前專案。
 
 ## Plugin SDK 與 UI contract
 
