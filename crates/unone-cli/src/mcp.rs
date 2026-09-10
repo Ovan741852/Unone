@@ -1152,7 +1152,8 @@ mod tests {
         ProtocolState, bundle_install_arguments, call_tool, handle_message, tool_definitions,
     };
     use serde_json::json;
-    use std::path::Path;
+    use std::{fs, path::Path};
+    use tempfile::tempdir;
 
     #[test]
     fn advertised_argument_contract_rejects_typos_including_no_argument_tools() {
@@ -1198,6 +1199,26 @@ mod tests {
         )
         .unwrap();
         assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 29);
+    }
+
+    #[test]
+    fn platform_snapshot_tool_executes_and_returns_the_snapshot_shape() {
+        let dir = tempdir().unwrap();
+        fs::write(
+            dir.path().join("project.unone.json"),
+            r#"{"name":"McpSnapshot","entry_script":"main.luau"}"#,
+        )
+        .unwrap();
+        fs::write(dir.path().join("main.luau"), "return {}\n").unwrap();
+
+        let reply = call_tool(dir.path(), "unone_platform_snapshot", &json!({}));
+        assert_eq!(reply["isError"], false, "{reply}");
+        let result: serde_json::Value =
+            serde_json::from_str(reply["content"][0]["text"].as_str().unwrap()).unwrap();
+        assert_eq!(result["ok"], true, "{result}");
+        assert_eq!(result["value"]["schema_version"], 1);
+        assert!(result["value"]["renderers"].is_array());
+        assert!(result["value"]["project_systems"].is_object());
     }
 
     #[test]

@@ -47,6 +47,8 @@ pub struct PlatformRecord {
     pub arch: String,
     pub status: CapabilityStatus,
     pub source_state: String,
+    pub verification_scope: String,
+    pub checked_by: String,
     pub limitations: Vec<String>,
     pub other_target_gaps: Vec<String>,
     pub evidence: Vec<String>,
@@ -117,12 +119,16 @@ pub fn snapshot(project_root: &Path) -> EngineResult<CapabilitySnapshotReport> {
     result.diagnostics.extend(platform_result.diagnostics);
     result.effects.extend(platform_result.effects);
     result.diagnostics.extend(plugin_result.diagnostics);
-    if !plugin_result.ok {
+    // `plugins::list` currently returns discovery warnings as a successful
+    // result, but keep both signals so a future fatal discovery path cannot
+    // silently turn into an empty inventory.
+    if !plugin_result.ok || plugin_list.is_none() {
         result.ok = false;
     }
 
     let systems_result = inspect_systems(project_root);
     result.diagnostics.extend(systems_result.diagnostics);
+    let systems_ok = systems_result.ok;
     if let Some(systems) = systems_result.value {
         let report = result
             .value
@@ -131,6 +137,9 @@ pub fn snapshot(project_root: &Path) -> EngineResult<CapabilitySnapshotReport> {
         report.capabilities.extend(system_records(&systems));
         report.project_systems = Some(systems);
     } else {
+        if !systems_ok {
+            result.ok = false;
+        }
         result
             .value
             .as_mut()
@@ -232,6 +241,8 @@ fn platform_record(platform: &PlatformCapabilities) -> PlatformRecord {
         } else {
             "verified_core".to_string()
         },
+        verification_scope: "current_target_core".to_string(),
+        checked_by: "platform_capabilities".to_string(),
         limitations: current_target_gaps,
         other_target_gaps,
         evidence: vec!["unone_platform_capabilities".to_string()],
@@ -294,7 +305,7 @@ fn runtime_records(platform: &PlatformCapabilities) -> Vec<CapabilityRecord> {
 fn runtime_examples(id: &str) -> Vec<String> {
     match id {
         "luau_runtime" => vec![
-            "game --project <game-root> --json run --entry main.luau".to_string(),
+            "game --project <game-root> --json run --frames 60".to_string(),
             "game --project <game-root> --json verify".to_string(),
         ],
         "native_preview" => vec!["game --project <game-root> preview --watch".to_string()],
@@ -473,8 +484,11 @@ fn renderer(
 #[cfg(test)]
 mod tests {
     use super::{
-        platform_record, renderer_records, runtime_records, system_records, CapabilityStatus,
+        platform_record, renderer_records, runtime_records, snapshot, system_records,
+        CapabilityStatus,
     };
+    use std::fs;
+    use tempfile::tempdir;
     use unone_engine::{
         PlatformCapabilities, SystemDescriptor, SystemReport, SystemState, SystemStatus,
     };
@@ -573,5 +587,27 @@ mod tests {
             record.other_target_gaps,
             vec!["android_3d_renderer_and_audio"]
         );
+    }
+
+    #[test]
+    fn snapshot_fails_closed_when_project_systems_cannot_be_inspected() {
+        let dir = tempdir().unwrap();
+        fs::write(
+            dir.path().join("project.unone.json"),
+            r#"{"name":"Broken","entry_script":"main.luau","systems":{"not_a_system":true}}"#,
+        )
+        .unwrap();
+        fs::write(dir.path().join("main.luau"), "return {}\n").unwrap();
+
+        let result = snapshot(dir.path());
+        assert!(
+            !result.ok,
+            "a failed systems inspection must be visible to AI"
+        );
+        assert!(result.value.as_ref().unwrap().project_systems.is_none());
+        assert!(result
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "SYSTEM_UNKNOWN"));
     }
 }
