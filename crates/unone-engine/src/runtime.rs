@@ -34,15 +34,15 @@ pub use preview::{DebugControl, DebugTab, PreviewRequest};
 
 /// Compute the canonical digest for an already generated observation snapshot.
 ///
-/// This is deliberately read-only: it does not observe or advance a runtime,
-/// and it keeps the existing JSON serialization followed by lowercase SHA-256
-/// definition used by `EngineRuntime::run`.
+/// Packed instance pose bytes are presentation-only and are not hashed. The
+/// digest still includes batch identity (`asset`, `count`, `format`) plus the
+/// rest of `WorldSnapshot`. Encoding is read-only relative to runtime state.
 pub fn observation_digest(snapshot: &WorldSnapshot) -> Result<String, serde_json::Error> {
     let bytes = serde_json::to_vec(snapshot)?;
     Ok(format!("sha256:{}", hex_digest(&bytes)))
 }
 
-/// Serialize once for hosts that need both a JSON world and its canonical digest.
+/// Serialize the canonical world (no instance pose payloads) and its digest.
 pub fn encode_observation(
     snapshot: &WorldSnapshot,
 ) -> Result<(Box<serde_json::value::RawValue>, String), serde_json::Error> {

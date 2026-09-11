@@ -127,16 +127,25 @@ fn write_snapshot(
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
     let presentation_started = measuring.then(std::time::Instant::now);
     let mut retained = Vec::new();
-    let world = if INSTANCE_MEMORY.with(|m| m.get()) {
-        let mut value = serde_json::to_value(snapshot).map_err(|e| e.to_string())?;
-        for (id, batch) in &snapshot.instances3d {
-            value["instances3d"][id] = serde_json::json!({"asset":batch.asset,"count":batch.count,"format":batch.format,
-                "memory":{"offset":batch.packed.as_ptr() as usize,"byte_length":batch.packed.len(),"revision":batch.revision.to_string()}});
-            retained.push(batch.packed.clone());
+    let world = {
+        let mut value: serde_json::Value =
+            serde_json::from_str(world.get()).map_err(|e| e.to_string())?;
+        if INSTANCE_MEMORY.with(|m| m.get()) {
+            for (id, batch) in &snapshot.instances3d {
+                value["instances3d"][id] = serde_json::json!({"asset":batch.asset,"count":batch.count,"format":batch.format,
+                    "memory":{"offset":batch.packed.as_ptr() as usize,"byte_length":batch.packed.len(),"revision":batch.revision.to_string()}});
+                retained.push(batch.packed.clone());
+            }
+        } else {
+            for (id, batch) in &snapshot.instances3d {
+                if let Some(entry) = value.get_mut("instances3d").and_then(|v| v.get_mut(id)) {
+                    if let Some(object) = entry.as_object_mut() {
+                        object.insert("data".into(), serde_json::Value::String(batch.data().to_string()));
+                    }
+                }
+            }
         }
         serde_json::value::to_raw_value(&value).map_err(|e| e.to_string())?
-    } else {
-        world
     };
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
     let presentation_ms = presentation_started
@@ -466,6 +475,11 @@ return {start=publish,update=function(api)n+=1;publish(api)end}
             0
         );
         let json = output();
+        assert!(
+            json["world"]["instances3d"]["crowd"]
+                .get("data")
+                .is_some()
+        );
         assert_eq!(unone_web_set_instance_transport(1), 0);
         let binary = output();
         assert_eq!(binary["observation_digest"], json["observation_digest"]);

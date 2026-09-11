@@ -173,7 +173,18 @@ pub(super) fn instances3d(lua: &mlua::Lua, state: &super::ApiState) -> mlua::Res
                         "INSTANCE_LIMIT: at most 262144 instances".into(),
                     ));
                 }
-                let batch = crate::instances3d::InstanceBatch3D::new(asset, &buffer.to_vec())
+                let bytes = buffer.to_vec();
+                {
+                    let world = world.borrow();
+                    if world
+                        .instances3d
+                        .get(&id)
+                        .is_some_and(|batch| batch.same_payload(&asset, &bytes))
+                    {
+                        return Ok(());
+                    }
+                }
+                let batch = crate::instances3d::InstanceBatch3D::from_vec(asset, bytes)
                     .map_err(mlua::Error::RuntimeError)?;
                 let mut w = world.borrow_mut();
                 let total: usize = w
