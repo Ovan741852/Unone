@@ -1,0 +1,722 @@
+{
+  "assets": [
+    {
+      "id": "texture://palette",
+      "kind": "texture2d",
+      "source": "assets/palette.png"
+    },
+    {
+      "id": "mesh://sword",
+      "kind": "mesh3d",
+      "source": "assets/sword.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://spear",
+      "kind": "mesh3d",
+      "source": "assets/spear.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://cavalry",
+      "kind": "mesh3d",
+      "source": "assets/cavalry.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://hound",
+      "kind": "mesh3d",
+      "source": "assets/hound.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://wraith",
+      "kind": "mesh3d",
+      "source": "assets/wraith.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://minotaur",
+      "kind": "mesh3d",
+      "source": "assets/minotaur.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://lord",
+      "kind": "mesh3d",
+      "source": "assets/lord.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://impact",
+      "kind": "mesh3d",
+      "source": "assets/impact.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://target",
+      "kind": "mesh3d",
+      "source": "assets/target.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://trail",
+      "kind": "mesh3d",
+      "source": "assets/trail.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://coin",
+      "kind": "mesh3d",
+      "source": "assets/coin.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://spark_gold",
+      "kind": "mesh3d",
+      "source": "assets/spark_gold.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://spark_jade",
+      "kind": "mesh3d",
+      "source": "assets/spark_jade.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://spark_red",
+      "kind": "mesh3d",
+      "source": "assets/spark_red.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://arena",
+      "kind": "mesh3d",
+      "source": "assets/arena.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://cannon",
+      "kind": "mesh3d",
+      "source": "assets/cannon.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "texture://sky_forest",
+      "kind": "texture2d",
+      "source": "assets/sky_forest.png"
+    },
+    {
+      "id": "mesh://sky_forest",
+      "kind": "mesh3d",
+      "source": "assets/sky_forest.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "texture://sky_forest_dusk",
+      "kind": "texture2d",
+      "source": "assets/sky_forest_dusk.png"
+    },
+    {
+      "id": "mesh://sky_forest_dusk",
+      "kind": "mesh3d",
+      "source": "assets/sky_forest_dusk.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "texture://ui_panel",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/panel.png"
+    },
+    {
+      "id": "texture://ui_button",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/button.png"
+    },
+    {
+      "id": "texture://ui_muted",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/muted.png"
+    },
+    {
+      "id": "texture://ui_crest",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/crest.png"
+    },
+    {
+      "id": "texture://ui_target-card",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/target-card.png"
+    },
+    {
+      "id": "texture://ui_target-selected",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/target-selected.png"
+    },
+    {
+      "id": "texture://ui_target-check",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/target-check.png"
+    },
+    {
+      "id": "texture://ui_mote",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/mote.png"
+    },
+    {
+      "id": "texture://ui_defeat-back",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/defeat-back.png"
+    },
+    {
+      "id": "texture://ui_defeat-crest",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/defeat-crest.png"
+    },
+    {
+      "id": "texture://ui_hud-key",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/hud-key.png"
+    },
+    {
+      "id": "texture://ui_hud-active",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/hud-active.png"
+    },
+    {
+      "id": "texture://ui_hud-gold",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/hud-gold.png"
+    },
+    {
+      "id": "texture://ui_hud-crystal",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/hud-crystal.png"
+    },
+    {
+      "id": "texture://ui_route-map",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/route-map.png"
+    },
+    {
+      "id": "texture://ui_route-map-portrait",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/route-map-portrait.png"
+    },
+    {
+      "id": "texture://ui_route-cleared",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/route-cleared.png"
+    },
+    {
+      "id": "texture://ui_route-current",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/route-current.png"
+    },
+    {
+      "id": "texture://ui_route-future",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/route-future.png"
+    },
+    {
+      "id": "texture://ui_portrait-lord",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/portrait-lord.png"
+    },
+    {
+      "id": "texture://ui_keyart",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/keyart.png"
+    },
+    {
+      "id": "texture://ui_building-market",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/building-market.png"
+    },
+    {
+      "id": "texture://ui_building-alchemy",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/building-alchemy.png"
+    },
+    {
+      "id": "texture://ui_building-forge",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/building-forge.png"
+    },
+    {
+      "id": "texture://ui_building-barracks",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/building-barracks.png"
+    },
+    {
+      "id": "texture://ui_icon-curse-debt",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/icon-curse-debt.png"
+    },
+    {
+      "id": "texture://ui_gear-bounce_life",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-bounce_life.png"
+    },
+    {
+      "id": "texture://ui_gear-bounce_power",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-bounce_power.png"
+    },
+    {
+      "id": "texture://ui_gear-critical",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-critical.png"
+    },
+    {
+      "id": "texture://ui_gear-crit_power",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-crit_power.png"
+    },
+    {
+      "id": "texture://ui_gear-crowd_ring",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-crowd_ring.png"
+    },
+    {
+      "id": "texture://ui_gear-deadly",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-deadly.png"
+    },
+    {
+      "id": "texture://ui_gear-distance",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-distance.png"
+    },
+    {
+      "id": "texture://ui_gear-double_pierce",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-double_pierce.png"
+    },
+    {
+      "id": "texture://ui_gear-ember_burst",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-ember_burst.png"
+    },
+    {
+      "id": "texture://ui_gear-expire_burst",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-expire_burst.png"
+    },
+    {
+      "id": "texture://ui_gear-finisher",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-finisher.png"
+    },
+    {
+      "id": "texture://ui_gear-fracture",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-fracture.png"
+    },
+    {
+      "id": "texture://ui_gear-frenzy",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-frenzy.png"
+    },
+    {
+      "id": "texture://ui_gear-frost_touch",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-frost_touch.png"
+    },
+    {
+      "id": "texture://ui_gear-giant",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-giant.png"
+    },
+    {
+      "id": "texture://ui_gear-haste",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-haste.png"
+    },
+    {
+      "id": "texture://ui_gear-heat",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-heat.png"
+    },
+    {
+      "id": "texture://ui_gear-heavy",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-heavy.png"
+    },
+    {
+      "id": "texture://ui_gear-hit_echo",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-hit_echo.png"
+    },
+    {
+      "id": "texture://ui_gear-hunter_vigor",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-hunter_vigor.png"
+    },
+    {
+      "id": "texture://ui_gear-king_hunter",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-king_hunter.png"
+    },
+    {
+      "id": "texture://ui_gear-landing_spin",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-landing_spin.png"
+    },
+    {
+      "id": "texture://ui_gear-last_stand",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-last_stand.png"
+    },
+    {
+      "id": "texture://ui_gear-lightning",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-lightning.png"
+    },
+    {
+      "id": "texture://ui_gear-longlife",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-longlife.png"
+    },
+    {
+      "id": "texture://ui_gear-momentum",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-momentum.png"
+    },
+    {
+      "id": "texture://ui_gear-pierce",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-pierce.png"
+    },
+    {
+      "id": "texture://ui_gear-piercing_wave",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-piercing_wave.png"
+    },
+    {
+      "id": "texture://ui_gear-rally",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-rally.png"
+    },
+    {
+      "id": "texture://ui_gear-rapid",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-rapid.png"
+    },
+    {
+      "id": "texture://ui_gear-rebound_charge",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-rebound_charge.png"
+    },
+    {
+      "id": "texture://ui_gear-recruit",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-recruit.png"
+    },
+    {
+      "id": "texture://ui_gear-ricochet_precision",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-ricochet_precision.png"
+    },
+    {
+      "id": "texture://ui_gear-sharp",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-sharp.png"
+    },
+    {
+      "id": "texture://ui_gear-shatter",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-shatter.png"
+    },
+    {
+      "id": "texture://ui_gear-shock",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-shock.png"
+    },
+    {
+      "id": "texture://ui_gear-short_fuse",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-short_fuse.png"
+    },
+    {
+      "id": "texture://ui_gear-showdown",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-showdown.png"
+    },
+    {
+      "id": "texture://ui_gear-slow_force",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-slow_force.png"
+    },
+    {
+      "id": "texture://ui_gear-solitary",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-solitary.png"
+    },
+    {
+      "id": "texture://ui_gear-solo_hunt",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-solo_hunt.png"
+    },
+    {
+      "id": "texture://ui_gear-spin_master",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-spin_master.png"
+    },
+    {
+      "id": "texture://ui_gear-third_crit",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-third_crit.png"
+    },
+    {
+      "id": "texture://ui_gear-wall_quake",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-wall_quake.png"
+    },
+    {
+      "id": "texture://ui_gear-wide_blade",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-wide_blade.png"
+    },
+    {
+      "id": "texture://ui_symbol-sword",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/symbol-sword.png"
+    },
+    {
+      "id": "texture://ui_symbol-spear",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/symbol-spear.png"
+    },
+    {
+      "id": "texture://ui_symbol-cavalry",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/symbol-cavalry.png"
+    },
+    {
+      "id": "texture://ui_symbol-manual",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/symbol-manual.png"
+    },
+    {
+      "id": "texture://ui_symbol-lock",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/symbol-lock.png"
+    },
+    {
+      "id": "texture://ui_symbol-auto",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/symbol-auto.png"
+    },
+    {
+      "id": "texture://ui_symbol-pause",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/symbol-pause.png"
+    },
+    {
+      "id": "texture://ui_symbol-coin",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/symbol-coin.png"
+    },
+    {
+      "id": "texture://ui_symbol-crystal",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/symbol-crystal.png"
+    },
+    {
+      "id": "texture://ui_hud-heading",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/hud-heading.png"
+    },
+    {
+      "id": "texture://ui_hud-objective",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/hud-objective.png"
+    },
+    {
+      "id": "texture://ui_hud-target",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/hud-target.png"
+    },
+    {
+      "id": "texture://ui_card",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/card.png"
+    },
+    {
+      "id": "texture://ui_secondary",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/secondary.png"
+    },
+    {
+      "id": "texture://ui_selected",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/selected.png"
+    },
+    {
+      "id": "texture://ui_scene-shade",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/scene-shade.png"
+    },
+    {
+      "id": "texture://ui_expedition-keyart-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/expedition-keyart-v1.png"
+    },
+    {
+      "id": "texture://ui_quartermaster-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/quartermaster-v1.png"
+    },
+    {
+      "id": "texture://ui_expedition-keyart-v2",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/expedition-keyart-v2.png"
+    },
+    {
+      "id": "texture://ui_portrait-lord-v2",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/portrait-lord-v2.png"
+    },
+    {
+      "id": "texture://ui_target-acorn",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/target-acorn.png"
+    },
+    {
+      "id": "texture://ui_target-piglet",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/target-piglet.png"
+    },
+    {
+      "id": "texture://ui_target-moth",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/target-moth.png"
+    },
+    {
+      "id": "texture://ui_target-turtle",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/target-turtle.png"
+    },
+    {
+      "id": "texture://ui_target-boar",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/target-boar.png"
+    },
+    {
+      "id": "texture://ui_target-elder",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/target-elder.png"
+    },
+    {
+      "id": "texture://ui_target-treant",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/target-treant.png"
+    },
+    {
+      "id": "texture://ui_target-stag",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/target-stag.png"
+    },
+    {
+      "id": "texture://ui_target-beetle",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/target-beetle.png"
+    },
+    {
+      "id": "texture://ui_target-wheel",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/target-wheel.png"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "value": {
+    "compiled_systems": [
+      "jobs",
+      "world",
+      "input",
+      "observation",
+      "physics3d",
+      "physics2d",
+      "camera2d",
+      "camera3d",
+      "random",
+      "ui",
+      "save",
+      "audio",
+      "spine",
+      "particle",
+      "effekseer"
+    ],
+    "target_family": "native",
+    "target_os": "windows",
+    "target_arch": "x86_64",
+    "project_loaders": [
+      "memory_source",
+      "native_filesystem_project"
+    ],
+    "hot_reload_modes": [
+      "reload_source",
+      "filesystem_stamp"
+    ],
+    "verified_runtime": [
+      "luau_runtime",
+      "deterministic_fixed_step",
+      "semantic_observation"
+    ],
+    "pending_host_work": [
+      "ios_platform_wrapper",
+      "android_3d_renderer_and_audio"
+    ],
+    "renderer_probe": "not_probed"
+  },
+  "diagnostics": [],
+  "effects": []
+}

@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "scope": "Actual production Unone WASM, input-only, conservation and bounds asserted each frame",
+  "checks": [
+    "Opening AUTO pauses all combat without activating or spending",
+    "Empty selection cannot start, including direct semantic input",
+    "Multiselect and held toggles are stable; cancel discards draft",
+    "Absent selected species waits free, then automatically acquires arriving boss",
+    "Selecting one species restricts AUTO aim; changing selection discards old target",
+    "Presets separate small, bosses, and special creatures",
+    "Closing modal while holding fire requires release before manual dispatch",
+    "Hidden modal actions cannot alter gameplay; normal pause and LOCK still work"
+  ]
+}

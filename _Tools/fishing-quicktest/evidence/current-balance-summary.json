@@ -1,0 +1,344 @@
+{
+  "scriptHash": "e71fbcb649b494c2af98864519b5b3e98d5293e64420096c875e4630ccf0893d",
+  "totalRuns": 72,
+  "invariantFailures": 0,
+  "censored": 0,
+  "sets": {
+    "initial": [
+      "balance-c-a",
+      "balance-c-b",
+      "balance-c-c"
+    ],
+    "campaign": [
+      "balance-c-campaign-spin",
+      "balance-c-campaign-direct"
+    ],
+    "control": [
+      "balance-c-fresh-control"
+    ],
+    "economyFirst": [
+      "balance-c-policy4-a",
+      "balance-c-policy4-b",
+      "balance-c-policy4-c"
+    ]
+  },
+  "summaries": {
+    "initial": [
+      {
+        "policy": "survival",
+        "name": "省錢長征",
+        "completed": 3,
+        "victories": 0,
+        "bankruptcies": 2,
+        "timeouts": 1,
+        "censored": 0,
+        "meanRoundsCleared": 1,
+        "meanFinalCoins": 579.3333333333334,
+        "meanDrySeconds": 0.5,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "thunder",
+        "name": "鏡面雷暴",
+        "completed": 3,
+        "victories": 0,
+        "bankruptcies": 3,
+        "timeouts": 0,
+        "censored": 0,
+        "meanRoundsCleared": 0.3333333333333333,
+        "meanFinalCoins": 3.3333333333333335,
+        "meanDrySeconds": 0.811111111111111,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "rebound",
+        "name": "折返蓄力",
+        "completed": 3,
+        "victories": 0,
+        "bankruptcies": 3,
+        "timeouts": 0,
+        "censored": 0,
+        "meanRoundsCleared": 0.3333333333333333,
+        "meanFinalCoins": 6.333333333333333,
+        "meanDrySeconds": 5.7,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "momentum",
+        "name": "疾風破陣",
+        "completed": 3,
+        "victories": 0,
+        "bankruptcies": 0,
+        "timeouts": 3,
+        "censored": 0,
+        "meanRoundsCleared": 3.3333333333333335,
+        "meanFinalCoins": 609.3333333333334,
+        "meanDrySeconds": 5.411111111111111,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "cleave",
+        "name": "穿陣旋風",
+        "completed": 3,
+        "victories": 0,
+        "bankruptcies": 1,
+        "timeouts": 2,
+        "censored": 0,
+        "meanRoundsCleared": 3,
+        "meanFinalCoins": 1617.6666666666667,
+        "meanDrySeconds": 6.655555555555556,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "frost",
+        "name": "霜鋼重擊",
+        "completed": 3,
+        "victories": 0,
+        "bankruptcies": 3,
+        "timeouts": 0,
+        "censored": 0,
+        "meanRoundsCleared": 0.3333333333333333,
+        "meanFinalCoins": 7.333333333333333,
+        "meanDrySeconds": 0.7888888888888891,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "frenzy",
+        "name": "狂獵續航",
+        "completed": 3,
+        "victories": 0,
+        "bankruptcies": 2,
+        "timeouts": 1,
+        "censored": 0,
+        "meanRoundsCleared": 0,
+        "meanFinalCoins": 31,
+        "meanDrySeconds": 1.2333333333333334,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "embers",
+        "name": "背水餘燼",
+        "completed": 3,
+        "victories": 0,
+        "bankruptcies": 3,
+        "timeouts": 0,
+        "censored": 0,
+        "meanRoundsCleared": 0.3333333333333333,
+        "meanFinalCoins": 6.333333333333333,
+        "meanDrySeconds": 0.9777777777777779,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "cyclone",
+        "name": "落地風環",
+        "completed": 3,
+        "victories": 1,
+        "bankruptcies": 0,
+        "timeouts": 2,
+        "censored": 0,
+        "meanRoundsCleared": 3.6666666666666665,
+        "meanFinalCoins": 13541,
+        "meanDrySeconds": 0,
+        "invariantFailures": 0
+      }
+    ],
+    "campaign": [
+      {
+        "policy": "survival",
+        "name": "省錢長征",
+        "completed": 8,
+        "victories": 0,
+        "bankruptcies": 2,
+        "timeouts": 6,
+        "censored": 0,
+        "meanRoundsCleared": 0.625,
+        "meanFinalCoins": 996.875,
+        "meanDrySeconds": 0.13333333333333333,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "momentum",
+        "name": "疾風破陣",
+        "completed": 8,
+        "victories": 0,
+        "bankruptcies": 3,
+        "timeouts": 5,
+        "censored": 0,
+        "meanRoundsCleared": 0.75,
+        "meanFinalCoins": 182.125,
+        "meanDrySeconds": 14.5,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "cyclone",
+        "name": "落地風環",
+        "completed": 8,
+        "victories": 1,
+        "bankruptcies": 1,
+        "timeouts": 6,
+        "censored": 0,
+        "meanRoundsCleared": 1.75,
+        "meanFinalCoins": 9108.75,
+        "meanDrySeconds": 3.1333333333333333,
+        "invariantFailures": 0
+      }
+    ],
+    "control": [
+      {
+        "policy": "cyclone",
+        "name": "落地風環",
+        "completed": 3,
+        "victories": 1,
+        "bankruptcies": 0,
+        "timeouts": 2,
+        "censored": 0,
+        "meanRoundsCleared": 4.666666666666667,
+        "meanFinalCoins": 22547.333333333332,
+        "meanDrySeconds": 0,
+        "invariantFailures": 0
+      }
+    ],
+    "economyFirst": [
+      {
+        "policy": "survival",
+        "name": "省錢長征",
+        "completed": 2,
+        "victories": 0,
+        "bankruptcies": 0,
+        "timeouts": 2,
+        "censored": 0,
+        "meanRoundsCleared": 0,
+        "meanFinalCoins": 2028,
+        "meanDrySeconds": 0,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "thunder",
+        "name": "鏡面雷暴",
+        "completed": 2,
+        "victories": 0,
+        "bankruptcies": 0,
+        "timeouts": 2,
+        "censored": 0,
+        "meanRoundsCleared": 0.5,
+        "meanFinalCoins": 2406.5,
+        "meanDrySeconds": 0,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "rebound",
+        "name": "折返蓄力",
+        "completed": 2,
+        "victories": 0,
+        "bankruptcies": 0,
+        "timeouts": 2,
+        "censored": 0,
+        "meanRoundsCleared": 0.5,
+        "meanFinalCoins": 2406.5,
+        "meanDrySeconds": 0,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "momentum",
+        "name": "疾風破陣",
+        "completed": 2,
+        "victories": 0,
+        "bankruptcies": 0,
+        "timeouts": 2,
+        "censored": 0,
+        "meanRoundsCleared": 0.5,
+        "meanFinalCoins": 448,
+        "meanDrySeconds": 13.75,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "cleave",
+        "name": "穿陣旋風",
+        "completed": 2,
+        "victories": 0,
+        "bankruptcies": 0,
+        "timeouts": 2,
+        "censored": 0,
+        "meanRoundsCleared": 3,
+        "meanFinalCoins": 823,
+        "meanDrySeconds": 1.6333333333333333,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "frost",
+        "name": "霜鋼重擊",
+        "completed": 2,
+        "victories": 0,
+        "bankruptcies": 0,
+        "timeouts": 2,
+        "censored": 0,
+        "meanRoundsCleared": 0,
+        "meanFinalCoins": 2028,
+        "meanDrySeconds": 0,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "frenzy",
+        "name": "狂獵續航",
+        "completed": 2,
+        "victories": 0,
+        "bankruptcies": 0,
+        "timeouts": 2,
+        "censored": 0,
+        "meanRoundsCleared": 0,
+        "meanFinalCoins": 2028,
+        "meanDrySeconds": 0,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "embers",
+        "name": "背水餘燼",
+        "completed": 2,
+        "victories": 0,
+        "bankruptcies": 0,
+        "timeouts": 2,
+        "censored": 0,
+        "meanRoundsCleared": 0,
+        "meanFinalCoins": 2028,
+        "meanDrySeconds": 0,
+        "invariantFailures": 0
+      },
+      {
+        "policy": "cyclone",
+        "name": "落地風環",
+        "completed": 2,
+        "victories": 0,
+        "bankruptcies": 0,
+        "timeouts": 2,
+        "censored": 0,
+        "meanRoundsCleared": 0,
+        "meanFinalCoins": 2598,
+        "meanDrySeconds": 0,
+        "invariantFailures": 0
+      }
+    ]
+  },
+  "victories": [
+    {
+      "seed": 92,
+      "policy": "cyclone",
+      "battleSeconds": 1200.1333333333334,
+      "finalCoins": 21779,
+      "evidence": "balance-c-c.json"
+    },
+    {
+      "seed": 208,
+      "policy": "cyclone",
+      "battleSeconds": 1215.7,
+      "finalCoins": 26542,
+      "evidence": "balance-c-campaign-spin.json"
+    },
+    {
+      "seed": 206,
+      "policy": "cyclone",
+      "battleSeconds": 1184.9666666666667,
+      "finalCoins": 28264,
+      "evidence": "balance-c-fresh-control.json"
+    }
+  ]
+}

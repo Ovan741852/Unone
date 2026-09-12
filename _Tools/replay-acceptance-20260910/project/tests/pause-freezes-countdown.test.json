@@ -1,0 +1,51 @@
+{
+  "name": "pause-freezes-countdown",
+  "frames": 5503,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Start": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "LeaveShop": true
+      }
+    },
+    {},
+    {},
+    {
+      "actions": {
+        "Pause": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "phase",
+        "equals": "battle"
+      }
+    },
+    {
+      "observation": {
+        "key": "fired",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "economy_conserved",
+        "equals": true
+      }
+    }
+  ]
+}

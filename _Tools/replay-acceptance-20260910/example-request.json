@@ -1,0 +1,143 @@
+{
+  "reproduction": {
+    "schemaVersion": 1,
+    "mode": "exact_version",
+    "assets": {
+      "manifestHash": "sha256:1cf0f6ebd1e77170bbcc900c2e6831d4b6a81bf2e5409a06b3b707bef9584c34"
+    },
+    "engine": {
+      "coreRevision": "sha256:35e08051bf70998015738af16ea777a39fdfb284546722fba414cf396d920fc7",
+      "version": "0.1.0"
+    },
+    "game": {
+      "id": "replay-memory-fixture",
+      "revision": "sha256:ffb3c0170dd877688a8ac611e986cc21bc4a45f4b823f2c8913bbf6d9a39c3ff",
+      "scriptHash": "sha256:59f2420a42084e8b6e8e9fade2fe1da3446865ce60ee2a2084b8c7d25cac9745"
+    },
+    "scenarioSchema": {
+      "schemaRef": "https://unone.dev/examples/counter.scenario.v1",
+      "id": "https://unone.dev/examples/counter.scenario.v1",
+      "version": 1,
+      "hash": "sha256:60cc141c417ea793a467cefb35ea045d120453d6e134e90c8893402c55b78504"
+    },
+    "captureOrigin": {
+      "kind": "start"
+    },
+    "seed": "18446744073709551615",
+    "scenario": {
+      "initialCount": 0
+    },
+    "inputs": {
+      "schemaRef": "https://unone.dev/schema/input.schema.json",
+      "startTick": 0,
+      "frames": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {
+          "actions": {
+            "release": true
+          }
+        },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {
+          "actions": {
+            "release": true
+          }
+        },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {
+          "actions": {
+            "release": true
+          }
+        },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {
+          "actions": {
+            "release": true
+          }
+        }
+      ],
+      "completeThroughTick": 39,
+      "complete": true,
+      "truncated": false
+    },
+    "expected": {
+      "kind": "invariant",
+      "id": "counter",
+      "expectedValue": 40,
+      "endCondition": {
+        "kind": "after_tick",
+        "tick": 39
+      }
+    },
+    "adapter": {
+      "id": "example.counter",
+      "version": "1"
+    }
+  },
+  "target": {
+    "assets": {
+      "manifestHash": "sha256:1cf0f6ebd1e77170bbcc900c2e6831d4b6a81bf2e5409a06b3b707bef9584c34"
+    },
+    "engine": {
+      "coreRevision": "sha256:35e08051bf70998015738af16ea777a39fdfb284546722fba414cf396d920fc7",
+      "version": "0.1.0"
+    },
+    "game": {
+      "id": "replay-memory-fixture",
+      "revision": "sha256:ffb3c0170dd877688a8ac611e986cc21bc4a45f4b823f2c8913bbf6d9a39c3ff",
+      "scriptHash": "sha256:59f2420a42084e8b6e8e9fade2fe1da3446865ce60ee2a2084b8c7d25cac9745"
+    }
+  },
+  "scenarioSchema": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"$id\": \"https://unone.dev/examples/counter.scenario.v1\",\n  \"x-unone-version\": 1,\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\"initialCount\"],\n  \"properties\": {\"initialCount\": {\"type\": \"integer\", \"minimum\": 0, \"maximum\": 1000}}\n}\n",
+  "mode": "exact_version",
+  "maxTicks": 40,
+  "timeoutMs": 60000,
+  "regressionChecks": [
+    {
+      "id": "retained",
+      "expectedValue": 0,
+      "endCondition": {
+        "kind": "after_tick",
+        "tick": 39
+      }
+    }
+  ],
+  "memory": {
+    "sampleEveryTicks": 10,
+    "warmupTicks": 10,
+    "collect": true,
+    "label": "idle_after_cycle"
+  }
+}

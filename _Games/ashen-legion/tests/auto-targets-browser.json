@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "reports": [
+    {
+      "width": 1440,
+      "height": 900,
+      "ok": true,
+      "buttons": 37,
+      "species": 10
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "ok": true,
+      "buttons": 37,
+      "species": 10
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "ok": true,
+      "buttons": 37,
+      "species": 10
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "ok": true,
+      "buttons": 37,
+      "species": 10
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "ok": true,
+      "buttons": 37,
+      "species": 10
+    }
+  ],
+  "motionResizeAndHeldInput": true
+}

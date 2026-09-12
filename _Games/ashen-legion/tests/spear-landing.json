@@ -1,0 +1,5 @@
+{
+  "ok": true,
+  "checks": 37,
+  "scope": "In-memory deterministic fixtures using production WASM and Luau, not exported gameplay"
+}

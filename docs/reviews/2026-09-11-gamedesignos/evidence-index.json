@@ -1,0 +1,213 @@
+{
+  "sample_scope_gate": {
+    "sample_boundary": "目前原始碼、7 張新的正式 UI 截圖及約 7.5 秒隔離瀏覽器操作樣本、2 個 Luau 重現、3 點解析座標驗證、上一輪 seed 42 三策略首輪快測。非完整通關或真人樣本。",
+    "supported_judgment_scope": [
+      "已執行規則與裝備的淨效果",
+      "明確 fixture 的錯誤敗北",
+      "快測座標精度",
+      "靜態 UI 層級與主目標暴露"
+    ],
+    "unsupported_judgment_scope": [
+      "真人手感與主觀爽感",
+      "完整 20 分鐘旅程品質",
+      "D1/D7 和玩家勝率",
+      "多人搶池公平性與商業成果"
+    ],
+    "key_unknowns": [
+      "新人勝利條件理解率",
+      "新經濟多種子全程平衡",
+      "實際怪物潮中的追蹤成功率",
+      "網路四人尚未實作"
+    ]
+  },
+  "evidence_index": [
+    {
+      "evidence_id": "E001",
+      "source_id": "shop",
+      "source_type": "screenshot",
+      "timestamp": null,
+      "image_id": "shop",
+      "region": "upper-right and shop cards; images/shop.png",
+      "visible_text": "金幣 320／結晶 18；商品說明每支派兵加價",
+      "observed_fact": "分開顯示兩種資源與派兵加價。",
+      "event_type": "feature_exposure",
+      "supports_judgment": "資源分工和裝備代價已可見",
+      "confidence": 0.99,
+      "uncertainty_note": "只支援靜態或該次操作觀察，不能推成真人體驗。",
+      "extraction_method": "direct_observation"
+    },
+    {
+      "evidence_id": "E002",
+      "source_id": "gear",
+      "source_type": "screenshot",
+      "timestamp": null,
+      "image_id": "gear",
+      "region": "gear screen; images/gear.png",
+      "visible_text": "金幣 320／結晶 6／劍兵 10／已穿戴",
+      "observed_fact": "Canvas 真實買裝並穿上穿軍刃，金幣未扣，結晶減 12，劍兵費用變 10；頁面沒有模型／攻擊比較。",
+      "event_type": "first_use",
+      "supports_judgment": "經濟拆分可用；構築收益需要更直觀比較",
+      "confidence": 0.99,
+      "uncertainty_note": "只支援靜態或該次操作觀察，不能推成真人體驗。",
+      "extraction_method": "direct_observation"
+    },
+    {
+      "evidence_id": "E003",
+      "source_id": "battle-auto",
+      "source_type": "screenshot",
+      "timestamp": null,
+      "image_id": "battle-auto",
+      "region": "center reward and HUD; images/battle-auto.png",
+      "visible_text": "02:55／×1.6 +16",
+      "observed_fact": "小獎使用大片中央放射線；畫面缺少大王出場時機與勝利條件。",
+      "event_type": "reward_claim",
+      "supports_judgment": "I004、I005 目標和演出層級風險",
+      "confidence": 0.96,
+      "uncertainty_note": "只支援靜態或該次操作觀察，不能推成真人體驗。",
+      "extraction_method": "direct_observation"
+    },
+    {
+      "evidence_id": "E004",
+      "source_id": "runtime-probes",
+      "source_type": "user_context",
+      "timestamp": null,
+      "image_id": null,
+      "region": "duplicateSpin fixture output; runtime-probes.json#duplicateSpin",
+      "visible_text": "旋風長柄",
+      "observed_fact": "正常 InputFrame 購買／換裝後，槍兵花 15 結晶、派兵費 20→26，loadout 所有欄位不變。",
+      "event_type": "first_use",
+      "supports_judgment": "I002 無效技能購買",
+      "confidence": 0.99,
+      "uncertainty_note": "project context 為程式／測試觀察，不是玩家錄屏。",
+      "extraction_method": "direct_observation"
+    },
+    {
+      "evidence_id": "E005",
+      "source_id": "runtime-probes",
+      "source_type": "user_context",
+      "timestamp": null,
+      "image_id": null,
+      "region": "synthetic low-gold loadout fixture; runtime-probes.json#bankruptcy",
+      "visible_text": "金幣耗盡，軍團已無法再出征",
+      "observed_fact": "明確 fixture 中金幣 20、費用 46／20／40、無活兵；真實 updateCombat 仍轉 defeat。",
+      "event_type": "failure_signal",
+      "supports_judgment": "I001 未考慮其他可負擔兵種",
+      "confidence": 0.99,
+      "uncertainty_note": "人工設置可合法組合的裝備及金幣 fixture，非自然養成樣本。",
+      "extraction_method": "direct_observation"
+    },
+    {
+      "evidence_id": "E006",
+      "source_id": "runtime-probes",
+      "source_type": "user_context",
+      "timestamp": null,
+      "image_id": null,
+      "region": "analytic camera projection and exact point() code; runtime-probes.json#quickToolPointer",
+      "visible_text": "world (10,-3) → aim (5.856,-1.185)",
+      "observed_fact": "快測反算與當前 camera 不符，該取樣世界誤差 4.524；另兩點誤差 1.909 與 3.185。",
+      "event_type": "failure_signal",
+      "supports_judgment": "I003 手動快測瞄準偏差",
+      "confidence": 0.98,
+      "uncertainty_note": "project context 為程式／測試觀察，不是玩家錄屏。",
+      "extraction_method": "direct_observation"
+    },
+    {
+      "evidence_id": "E007",
+      "source_id": "currency-split",
+      "source_type": "user_context",
+      "timestamp": null,
+      "image_id": null,
+      "region": "stored seed-42 machine run results; ../../../_Games/ashen-legion/tests/currency-quicktest-split.json",
+      "visible_text": "survival timeout／cyclone bankrupt／momentum timeout",
+      "observed_fact": "三個首輪策略未通關，槍兵未買到偏好裝備；只作已記錄的開局樣本。",
+      "event_type": "failure_signal",
+      "supports_judgment": "需要拆開策略、配裝、經濟和 Boss 完成條件驗證",
+      "confidence": 0.9,
+      "uncertainty_note": "前一輪的機器樣本；不是這次真人測試或充分因果證據。",
+      "extraction_method": "direct_observation"
+    },
+    {
+      "evidence_id": "E008",
+      "source_id": "production-source",
+      "source_type": "user_context",
+      "timestamp": null,
+      "image_id": null,
+      "region": "Luau timing and award conditions; formal-ui and rewards presentation; ../../../_Games/ashen-legion/main.luau:596",
+      "visible_text": "大王最後 30 秒／大獎才過關",
+      "observed_fact": "程式在剩 30 秒生成 rank 5，tier>=3 殺死大王才 win；小獎也使用中央 coin-burst。",
+      "event_type": "decision_point",
+      "supports_judgment": "I004、I005 有具體實作依據",
+      "confidence": 0.99,
+      "uncertainty_note": "project context 為程式／測試觀察，不是玩家錄屏。",
+      "extraction_method": "direct_observation"
+    }
+  ],
+  "important_judgments": [
+    {
+      "judgment_id": "J001",
+      "claim": "仍可派槍兵卻被判破產",
+      "judgment_type": "finding",
+      "evidence_refs": [
+        "E005"
+      ],
+      "confidence": 0.99,
+      "unsupported_by_sample": false,
+      "unknowns": [],
+      "recommended_action": "判斷全部可用兵種的最低花費及活兵狀態。"
+    },
+    {
+      "judgment_id": "J002",
+      "claim": "重複非疊加旋轉技能增加費用但沒有增益",
+      "judgment_type": "finding",
+      "evidence_refs": [
+        "E004"
+      ],
+      "confidence": 0.99,
+      "unsupported_by_sample": false,
+      "unknowns": [],
+      "recommended_action": "預覽實際增益差值並避開無收益的兵種核心推薦，保留轉裝給別兵的用途。"
+    },
+    {
+      "judgment_id": "J003",
+      "claim": "獨立快測使用過時的點擊反算",
+      "judgment_type": "finding",
+      "evidence_refs": [
+        "E006"
+      ],
+      "confidence": 0.98,
+      "unsupported_by_sample": false,
+      "unknowns": [],
+      "recommended_action": "與正式 game presentation 共用相機和座標反算資料。"
+    },
+    {
+      "judgment_id": "J004",
+      "claim": "戰鬥沒有清楚呈現大王時機與通關條件",
+      "judgment_type": "risk",
+      "evidence_refs": [
+        "E003",
+        "E008"
+      ],
+      "confidence": 0.76,
+      "unsupported_by_sample": false,
+      "unknowns": [
+        "真人理解或注意力影響尚未量測"
+      ],
+      "recommended_action": "加階段目標提示，不偷偷改玩家篩選。"
+    },
+    {
+      "judgment_id": "J005",
+      "claim": "小獎中央演出面積偏大，可能削弱大獎級差",
+      "judgment_type": "risk",
+      "evidence_refs": [
+        "E003",
+        "E008"
+      ],
+      "confidence": 0.72,
+      "unsupported_by_sample": false,
+      "unknowns": [
+        "真人理解或注意力影響尚未量測"
+      ],
+      "recommended_action": "小獎跟隨怪物和炮台，保留噴幣；大型中央演出留給大獎。"
+    }
+  ]
+}

@@ -1,0 +1,276 @@
+{
+  "ok": true,
+  "results": [
+    {
+      "screen": "1440x900/auto-empty.json",
+      "nodes": 81,
+      "hitPoints": 240
+    },
+    {
+      "screen": "1440x900/auto.json",
+      "nodes": 93,
+      "hitPoints": 255
+    },
+    {
+      "screen": "1440x900/battle.json",
+      "nodes": 42,
+      "hitPoints": 60
+    },
+    {
+      "screen": "1440x900/builds.json",
+      "nodes": 53,
+      "hitPoints": 135
+    },
+    {
+      "screen": "1440x900/choice.json",
+      "nodes": 34,
+      "hitPoints": 60
+    },
+    {
+      "screen": "1440x900/defeat.json",
+      "nodes": 30,
+      "hitPoints": 30
+    },
+    {
+      "screen": "1440x900/enchant-offer.json",
+      "nodes": 23,
+      "hitPoints": 30
+    },
+    {
+      "screen": "1440x900/enchant.json",
+      "nodes": 34,
+      "hitPoints": 90
+    },
+    {
+      "screen": "1440x900/equipped.json",
+      "nodes": 54,
+      "hitPoints": 105
+    },
+    {
+      "screen": "1440x900/gear.json",
+      "nodes": 72,
+      "hitPoints": 210
+    },
+    {
+      "screen": "1440x900/guide.json",
+      "nodes": 17,
+      "hitPoints": 30
+    },
+    {
+      "screen": "1440x900/menu.json",
+      "nodes": 26,
+      "hitPoints": 30
+    },
+    {
+      "screen": "1440x900/pause.json",
+      "nodes": 18,
+      "hitPoints": 60
+    },
+    {
+      "screen": "1440x900/purchase.json",
+      "nodes": 56,
+      "hitPoints": 120
+    },
+    {
+      "screen": "1440x900/result.json",
+      "nodes": 27,
+      "hitPoints": 45
+    },
+    {
+      "screen": "1440x900/runes.json",
+      "nodes": 54,
+      "hitPoints": 135
+    },
+    {
+      "screen": "1440x900/shop.json",
+      "nodes": 58,
+      "hitPoints": 135
+    },
+    {
+      "screen": "1440x900/town.json",
+      "nodes": 31,
+      "hitPoints": 15
+    },
+    {
+      "screen": "390x844/auto-empty.json",
+      "nodes": 81,
+      "hitPoints": 240
+    },
+    {
+      "screen": "390x844/auto.json",
+      "nodes": 93,
+      "hitPoints": 255
+    },
+    {
+      "screen": "390x844/battle.json",
+      "nodes": 42,
+      "hitPoints": 60
+    },
+    {
+      "screen": "390x844/builds.json",
+      "nodes": 51,
+      "hitPoints": 135
+    },
+    {
+      "screen": "390x844/choice.json",
+      "nodes": 34,
+      "hitPoints": 60
+    },
+    {
+      "screen": "390x844/defeat.json",
+      "nodes": 28,
+      "hitPoints": 30
+    },
+    {
+      "screen": "390x844/enchant-offer.json",
+      "nodes": 23,
+      "hitPoints": 30
+    },
+    {
+      "screen": "390x844/enchant.json",
+      "nodes": 34,
+      "hitPoints": 90
+    },
+    {
+      "screen": "390x844/equipped.json",
+      "nodes": 54,
+      "hitPoints": 105
+    },
+    {
+      "screen": "390x844/gear.json",
+      "nodes": 70,
+      "hitPoints": 210
+    },
+    {
+      "screen": "390x844/guide.json",
+      "nodes": 17,
+      "hitPoints": 30
+    },
+    {
+      "screen": "390x844/menu.json",
+      "nodes": 26,
+      "hitPoints": 30
+    },
+    {
+      "screen": "390x844/pause.json",
+      "nodes": 18,
+      "hitPoints": 60
+    },
+    {
+      "screen": "390x844/purchase.json",
+      "nodes": 56,
+      "hitPoints": 120
+    },
+    {
+      "screen": "390x844/result.json",
+      "nodes": 25,
+      "hitPoints": 45
+    },
+    {
+      "screen": "390x844/runes.json",
+      "nodes": 52,
+      "hitPoints": 135
+    },
+    {
+      "screen": "390x844/shop.json",
+      "nodes": 58,
+      "hitPoints": 135
+    },
+    {
+      "screen": "390x844/town.json",
+      "nodes": 29,
+      "hitPoints": 15
+    },
+    {
+      "screen": "844x390/auto-empty.json",
+      "nodes": 81,
+      "hitPoints": 240
+    },
+    {
+      "screen": "844x390/auto.json",
+      "nodes": 93,
+      "hitPoints": 255
+    },
+    {
+      "screen": "844x390/battle.json",
+      "nodes": 42,
+      "hitPoints": 60
+    },
+    {
+      "screen": "844x390/builds.json",
+      "nodes": 53,
+      "hitPoints": 135
+    },
+    {
+      "screen": "844x390/choice.json",
+      "nodes": 34,
+      "hitPoints": 60
+    },
+    {
+      "screen": "844x390/defeat.json",
+      "nodes": 30,
+      "hitPoints": 30
+    },
+    {
+      "screen": "844x390/enchant-offer.json",
+      "nodes": 23,
+      "hitPoints": 30
+    },
+    {
+      "screen": "844x390/enchant.json",
+      "nodes": 34,
+      "hitPoints": 90
+    },
+    {
+      "screen": "844x390/equipped.json",
+      "nodes": 54,
+      "hitPoints": 105
+    },
+    {
+      "screen": "844x390/gear.json",
+      "nodes": 72,
+      "hitPoints": 210
+    },
+    {
+      "screen": "844x390/guide.json",
+      "nodes": 17,
+      "hitPoints": 30
+    },
+    {
+      "screen": "844x390/menu.json",
+      "nodes": 26,
+      "hitPoints": 30
+    },
+    {
+      "screen": "844x390/pause.json",
+      "nodes": 18,
+      "hitPoints": 60
+    },
+    {
+      "screen": "844x390/purchase.json",
+      "nodes": 56,
+      "hitPoints": 120
+    },
+    {
+      "screen": "844x390/result.json",
+      "nodes": 27,
+      "hitPoints": 45
+    },
+    {
+      "screen": "844x390/runes.json",
+      "nodes": 54,
+      "hitPoints": 135
+    },
+    {
+      "screen": "844x390/shop.json",
+      "nodes": 58,
+      "hitPoints": 135
+    },
+    {
+      "screen": "844x390/town.json",
+      "nodes": 31,
+      "hitPoints": 15
+    }
+  ],
+  "errors": []
+}

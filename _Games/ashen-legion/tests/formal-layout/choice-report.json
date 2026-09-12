@@ -1,0 +1,1352 @@
+{
+  "ok": true,
+  "value": {
+    "screen": "forest_lord",
+    "cols": 96,
+    "rows": 48,
+    "ascii": "+------------------------------------------------------------------------------------------------+\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@#######################@@@@#############################################################@@@|\n|@@@@@#######################@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n+------------------------------------------------------------------------------------------------+",
+    "nodes": [
+      {
+        "id": "interior_shade",
+        "kind": "image",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_scene-shade",
+        "text_fit": 0
+      },
+      {
+        "id": "screen_back",
+        "kind": "image",
+        "rect": {
+          "x": 33,
+          "y": 6,
+          "width": 64,
+          "height": 87
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_panel",
+        "text_fit": 0
+      },
+      {
+        "id": "screen_title",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 83,
+          "width": 56,
+          "height": 6
+        },
+        "text": "苔光林口 · 選擇景點",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.33
+      },
+      {
+        "id": "view_map_plate",
+        "kind": "image",
+        "rect": {
+          "x": 77,
+          "y": 9,
+          "width": 16,
+          "height": 7
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "view_map",
+        "kind": "button",
+        "rect": {
+          "x": 77,
+          "y": 11,
+          "width": 16,
+          "height": 3
+        },
+        "text": "查看地圖",
+        "action": "ViewMap",
+        "asset": null,
+        "text_fit": 0.21
+      },
+      {
+        "id": "view_map_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 77,
+          "y": 14,
+          "width": 16,
+          "height": 2
+        },
+        "text": "",
+        "action": "ViewMap",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "view_map_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 77,
+          "y": 9,
+          "width": 16,
+          "height": 2
+        },
+        "text": "",
+        "action": "ViewMap",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "story_portrait",
+        "kind": "image",
+        "rect": {
+          "x": 2,
+          "y": 31,
+          "width": 29,
+          "height": 45
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_quartermaster-v1",
+        "text_fit": 0
+      },
+      {
+        "id": "story_speaker",
+        "kind": "text",
+        "rect": {
+          "x": 5,
+          "y": 79,
+          "width": 24,
+          "height": 4
+        },
+        "text": "司務長 · 榛姨",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.38
+      },
+      {
+        "id": "story_quote",
+        "kind": "text",
+        "rect": {
+          "x": 5,
+          "y": 16,
+          "width": 25,
+          "height": 12
+        },
+        "text": "苔光照亮了舊路。領主，先讓每一枚金幣帶人回家。",
+        "action": null,
+        "asset": null,
+        "text_fit": 3.11
+      },
+      {
+        "id": "choice_plate_1",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 59,
+          "width": 56,
+          "height": 17
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_card",
+        "text_fit": 0
+      },
+      {
+        "id": "choice_icon_1",
+        "kind": "image",
+        "rect": {
+          "x": 39,
+          "y": 62,
+          "width": 9,
+          "height": 12
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_building-market",
+        "text_fit": 0
+      },
+      {
+        "id": "choice_name_1",
+        "kind": "text",
+        "rect": {
+          "x": 50,
+          "y": 70,
+          "width": 40,
+          "height": 4
+        },
+        "text": "商店",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.06
+      },
+      {
+        "id": "choice_desc_1",
+        "kind": "text",
+        "rect": {
+          "x": 50,
+          "y": 65,
+          "width": 39,
+          "height": 5
+        },
+        "text": "用結晶買賣裝備；配裝增加派兵金幣費",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.61
+      },
+      {
+        "id": "choice_1_plate",
+        "kind": "image",
+        "rect": {
+          "x": 76,
+          "y": 60,
+          "width": 14,
+          "height": 4.5
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "choice_1",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 60.75,
+          "width": 14,
+          "height": 3
+        },
+        "text": "拜訪",
+        "action": "Choice1",
+        "asset": null,
+        "text_fit": 0.12
+      },
+      {
+        "id": "choice_1_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 63.75,
+          "width": 14,
+          "height": 0.75
+        },
+        "text": "",
+        "action": "Choice1",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "choice_1_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 60,
+          "width": 14,
+          "height": 0.75
+        },
+        "text": "",
+        "action": "Choice1",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "choice_plate_2",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 40,
+          "width": 56,
+          "height": 17
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_card",
+        "text_fit": 0
+      },
+      {
+        "id": "choice_icon_2",
+        "kind": "image",
+        "rect": {
+          "x": 39,
+          "y": 43,
+          "width": 9,
+          "height": 12
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_building-forge",
+        "text_fit": 0
+      },
+      {
+        "id": "choice_name_2",
+        "kind": "text",
+        "rect": {
+          "x": 50,
+          "y": 51,
+          "width": 40,
+          "height": 4
+        },
+        "text": "附魔坊",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.08
+      },
+      {
+        "id": "choice_desc_2",
+        "kind": "text",
+        "rect": {
+          "x": 50,
+          "y": 46,
+          "width": 39,
+          "height": 5
+        },
+        "text": "8 結晶試附魔，可保留原詞綴",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.5
+      },
+      {
+        "id": "choice_2_plate",
+        "kind": "image",
+        "rect": {
+          "x": 76,
+          "y": 41,
+          "width": 14,
+          "height": 4.5
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "choice_2",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 41.75,
+          "width": 14,
+          "height": 3
+        },
+        "text": "拜訪",
+        "action": "Choice2",
+        "asset": null,
+        "text_fit": 0.12
+      },
+      {
+        "id": "choice_2_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 44.75,
+          "width": 14,
+          "height": 0.75
+        },
+        "text": "",
+        "action": "Choice2",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "choice_2_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 41,
+          "width": 14,
+          "height": 0.75
+        },
+        "text": "",
+        "action": "Choice2",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "choice_plate_3",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 21,
+          "width": 56,
+          "height": 17
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_card",
+        "text_fit": 0
+      },
+      {
+        "id": "choice_icon_3",
+        "kind": "image",
+        "rect": {
+          "x": 39,
+          "y": 24,
+          "width": 9,
+          "height": 12
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_building-alchemy",
+        "text_fit": 0
+      },
+      {
+        "id": "choice_name_3",
+        "kind": "text",
+        "rect": {
+          "x": 50,
+          "y": 32,
+          "width": 40,
+          "height": 4
+        },
+        "text": "藥水攤",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.08
+      },
+      {
+        "id": "choice_desc_3",
+        "kind": "text",
+        "rect": {
+          "x": 50,
+          "y": 27,
+          "width": 39,
+          "height": 5
+        },
+        "text": "花金幣購買，最多攜帶兩瓶",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.43
+      },
+      {
+        "id": "choice_3_plate",
+        "kind": "image",
+        "rect": {
+          "x": 76,
+          "y": 22,
+          "width": 14,
+          "height": 4.5
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "choice_3",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 22.75,
+          "width": 14,
+          "height": 3
+        },
+        "text": "拜訪",
+        "action": "Choice3",
+        "asset": null,
+        "text_fit": 0.12
+      },
+      {
+        "id": "choice_3_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 25.75,
+          "width": 14,
+          "height": 0.75
+        },
+        "text": "",
+        "action": "Choice3",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "choice_3_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 22,
+          "width": 14,
+          "height": 0.75
+        },
+        "text": "",
+        "action": "Choice3",
+        "asset": null,
+        "text_fit": 0
+      }
+    ],
+    "findings": [],
+    "allowed_overlaps": [
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'screen_back' overlap by 64.0 x 87.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "screen_back"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'screen_title' overlap by 56.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "screen_title"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'view_map_plate' overlap by 16.0 x 7.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "view_map_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'view_map' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "view_map"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'view_map_hit_top' overlap by 16.0 x 2.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "view_map_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'view_map_hit_bottom' overlap by 16.0 x 2.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "view_map_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'story_portrait' overlap by 29.0 x 45.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "story_portrait"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'story_speaker' overlap by 24.0 x 4.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "story_speaker"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'story_quote' overlap by 25.0 x 12.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "story_quote"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_plate_1' overlap by 56.0 x 17.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_plate_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_icon_1' overlap by 9.0 x 12.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_icon_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_name_1' overlap by 40.0 x 4.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_name_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_desc_1' overlap by 39.0 x 5.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_desc_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_1_plate' overlap by 14.0 x 4.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_1_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_1' overlap by 14.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_1_hit_top' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_1_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_1_hit_bottom' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_1_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_plate_2' overlap by 56.0 x 17.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_plate_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_icon_2' overlap by 9.0 x 12.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_icon_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_name_2' overlap by 40.0 x 4.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_name_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_desc_2' overlap by 39.0 x 5.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_desc_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_2_plate' overlap by 14.0 x 4.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_2_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_2' overlap by 14.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_2_hit_top' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_2_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_2_hit_bottom' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_2_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_plate_3' overlap by 56.0 x 17.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_plate_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_icon_3' overlap by 9.0 x 12.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_icon_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_name_3' overlap by 40.0 x 4.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_name_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_desc_3' overlap by 39.0 x 5.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_desc_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_3_plate' overlap by 14.0 x 4.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_3_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_3' overlap by 14.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_3_hit_top' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_3_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'choice_3_hit_bottom' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "choice_3_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'screen_title' overlap by 56.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "screen_title"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'view_map_plate' overlap by 16.0 x 7.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "view_map_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'view_map' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "view_map"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'view_map_hit_top' overlap by 16.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "view_map_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'view_map_hit_bottom' overlap by 16.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "view_map_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_plate_1' overlap by 56.0 x 17.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_plate_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_icon_1' overlap by 9.0 x 12.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_icon_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_name_1' overlap by 40.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_name_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_desc_1' overlap by 39.0 x 5.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_desc_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_1_plate' overlap by 14.0 x 4.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_1_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_1' overlap by 14.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_1_hit_top' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_1_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_1_hit_bottom' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_1_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_plate_2' overlap by 56.0 x 17.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_plate_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_icon_2' overlap by 9.0 x 12.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_icon_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_name_2' overlap by 40.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_name_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_desc_2' overlap by 39.0 x 5.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_desc_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_2_plate' overlap by 14.0 x 4.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_2_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_2' overlap by 14.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_2_hit_top' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_2_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_2_hit_bottom' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_2_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_plate_3' overlap by 56.0 x 17.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_plate_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_icon_3' overlap by 9.0 x 12.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_icon_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_name_3' overlap by 40.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_name_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_desc_3' overlap by 39.0 x 5.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_desc_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_3_plate' overlap by 14.0 x 4.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_3_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_3' overlap by 14.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_3_hit_top' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_3_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'choice_3_hit_bottom' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "choice_3_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'view_map_plate' and 'view_map' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "view_map_plate",
+          "view_map"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'view_map_plate' and 'view_map_hit_top' overlap by 16.0 x 2.0 (design-space units).",
+        "nodes": [
+          "view_map_plate",
+          "view_map_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'view_map_plate' and 'view_map_hit_bottom' overlap by 16.0 x 2.0 (design-space units).",
+        "nodes": [
+          "view_map_plate",
+          "view_map_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_1' and 'choice_icon_1' overlap by 9.0 x 12.0 (design-space units).",
+        "nodes": [
+          "choice_plate_1",
+          "choice_icon_1"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_1' and 'choice_name_1' overlap by 40.0 x 4.0 (design-space units).",
+        "nodes": [
+          "choice_plate_1",
+          "choice_name_1"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_1' and 'choice_desc_1' overlap by 39.0 x 5.0 (design-space units).",
+        "nodes": [
+          "choice_plate_1",
+          "choice_desc_1"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_1' and 'choice_1_plate' overlap by 14.0 x 4.5 (design-space units).",
+        "nodes": [
+          "choice_plate_1",
+          "choice_1_plate"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_1' and 'choice_1' overlap by 14.0 x 3.0 (design-space units).",
+        "nodes": [
+          "choice_plate_1",
+          "choice_1"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_1' and 'choice_1_hit_top' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "choice_plate_1",
+          "choice_1_hit_top"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_1' and 'choice_1_hit_bottom' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "choice_plate_1",
+          "choice_1_hit_bottom"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_1_plate' and 'choice_1' overlap by 14.0 x 3.0 (design-space units).",
+        "nodes": [
+          "choice_1_plate",
+          "choice_1"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_1_plate' and 'choice_1_hit_top' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "choice_1_plate",
+          "choice_1_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_1_plate' and 'choice_1_hit_bottom' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "choice_1_plate",
+          "choice_1_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_2' and 'choice_icon_2' overlap by 9.0 x 12.0 (design-space units).",
+        "nodes": [
+          "choice_plate_2",
+          "choice_icon_2"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_2' and 'choice_name_2' overlap by 40.0 x 4.0 (design-space units).",
+        "nodes": [
+          "choice_plate_2",
+          "choice_name_2"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_2' and 'choice_desc_2' overlap by 39.0 x 5.0 (design-space units).",
+        "nodes": [
+          "choice_plate_2",
+          "choice_desc_2"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_2' and 'choice_2_plate' overlap by 14.0 x 4.5 (design-space units).",
+        "nodes": [
+          "choice_plate_2",
+          "choice_2_plate"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_2' and 'choice_2' overlap by 14.0 x 3.0 (design-space units).",
+        "nodes": [
+          "choice_plate_2",
+          "choice_2"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_2' and 'choice_2_hit_top' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "choice_plate_2",
+          "choice_2_hit_top"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_2' and 'choice_2_hit_bottom' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "choice_plate_2",
+          "choice_2_hit_bottom"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_2_plate' and 'choice_2' overlap by 14.0 x 3.0 (design-space units).",
+        "nodes": [
+          "choice_2_plate",
+          "choice_2"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_2_plate' and 'choice_2_hit_top' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "choice_2_plate",
+          "choice_2_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_2_plate' and 'choice_2_hit_bottom' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "choice_2_plate",
+          "choice_2_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_3' and 'choice_icon_3' overlap by 9.0 x 12.0 (design-space units).",
+        "nodes": [
+          "choice_plate_3",
+          "choice_icon_3"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_3' and 'choice_name_3' overlap by 40.0 x 4.0 (design-space units).",
+        "nodes": [
+          "choice_plate_3",
+          "choice_name_3"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_3' and 'choice_desc_3' overlap by 39.0 x 5.0 (design-space units).",
+        "nodes": [
+          "choice_plate_3",
+          "choice_desc_3"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_3' and 'choice_3_plate' overlap by 14.0 x 4.5 (design-space units).",
+        "nodes": [
+          "choice_plate_3",
+          "choice_3_plate"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_3' and 'choice_3' overlap by 14.0 x 3.0 (design-space units).",
+        "nodes": [
+          "choice_plate_3",
+          "choice_3"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_3' and 'choice_3_hit_top' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "choice_plate_3",
+          "choice_3_hit_top"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_plate_3' and 'choice_3_hit_bottom' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "choice_plate_3",
+          "choice_3_hit_bottom"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_3_plate' and 'choice_3' overlap by 14.0 x 3.0 (design-space units).",
+        "nodes": [
+          "choice_3_plate",
+          "choice_3"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_3_plate' and 'choice_3_hit_top' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "choice_3_plate",
+          "choice_3_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'choice_3_plate' and 'choice_3_hit_bottom' overlap by 14.0 x 0.8 (design-space units).",
+        "nodes": [
+          "choice_3_plate",
+          "choice_3_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      }
+    ],
+    "readable": true,
+    "assumptions": [
+      "text_fit assumes a 16:9 viewport and a 0.5 character advance, so it is a              measurement to read, never a pass/fail",
+      "structure only: this says nothing about whether the screen looks good"
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

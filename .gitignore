@@ -11,3 +11,9 @@ _Games/**/reference/
 _Games/**/dist/
 _Games/**/assets/reference/
 crates/unone-player/target/
+
+# Local game authoring backups and caches.
+_Games/**/*.blend[0-9]*
+_Games/**/__pycache__/
+_Games/**/*.pyc
+_Games/**/blender/*.log

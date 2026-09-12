@@ -1,0 +1,62 @@
+{
+  "command": "D:/Projects/Unone/target/debug/game.exe",
+  "args": [
+    "plugin",
+    "list"
+  ],
+  "exit_code": 0,
+  "error": null,
+  "stderr": "",
+  "result": {
+    "ok": true,
+    "value": {
+      "plugins": [
+        {
+          "id": "org.unone.blender",
+          "name": "Unone Blender bridge",
+          "version": "0.1.0",
+          "root": "\\\\?\\D:\\Projects\\Unone\\plugins\\org.unone.blender",
+          "capabilities": [
+            "scene.inspect",
+            "scene.preview",
+            "asset.import",
+            "artifact.export"
+          ],
+          "tools": [
+            "plugin.test",
+            "blender.inspect",
+            "blender.export_scene",
+            "blender.preview"
+          ]
+        },
+        {
+          "id": "org.unone.lottie",
+          "name": "Unone Lottie",
+          "version": "0.1.0",
+          "root": "\\\\?\\D:\\Projects\\Unone\\plugins\\org.unone.lottie",
+          "capabilities": [
+            "ui.animation",
+            "ui.animation.validate",
+            "ui.animation.preview",
+            "ui.animation.host"
+          ],
+          "tools": [
+            "plugin.test",
+            "lottie.inspect",
+            "lottie.validate",
+            "lottie.preview",
+            "lottie.install"
+          ]
+        }
+      ],
+      "searched_roots": [
+        "D:/Projects/YesSir/_Games/ashen-legion\\.unone/plugins",
+        "D:/Projects/YesSir/_Games/ashen-legion\\plugins",
+        "\\\\?\\D:\\Projects\\Unone\\plugins",
+        "D:\\Projects\\Unone\\target\\debug\\../plugins"
+      ]
+    },
+    "diagnostics": [],
+    "effects": []
+  }
+}

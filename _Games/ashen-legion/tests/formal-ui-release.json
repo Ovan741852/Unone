@@ -1,0 +1,17 @@
+{
+  "date": "2026-09-10",
+  "script_sha256": "7de7edbda6c253db691c4a7a0318ee37aac8ea979fb4ceff3a4da2756b081ffe",
+  "wasm_sha256": "fc7734055aed41f566d8a556ce3fffd3b9a37df3baf2e00dafbdfa39b4c9fd39",
+  "platform": "web-player",
+  "ui_renderer": "Unone official canvas-ui.mjs",
+  "dom_game_controls": 0,
+  "typecheck": true,
+  "strict_layout_screens": 9,
+  "browser_sizes": [[1440,900],[1280,720],[900,600]],
+  "rpg_fixture_checks": 99,
+  "json_regressions": 19,
+  "native_wasm_parity_cases": 19,
+  "selected_project_export_verified": true,
+  "native_full_game_verified": false,
+  "balance_72_runs_repeated": false
+}

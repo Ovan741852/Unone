@@ -1,0 +1,482 @@
+{
+  "version": 1,
+  "screens": {
+    "forest_lord": [
+      {
+        "behind": "interior_shade",
+        "front": "screen_back",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "screen_title",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "view_map_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "view_map",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "view_map_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "view_map_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "story_portrait",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "story_speaker",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "story_quote",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_plate_1",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_icon_1",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_name_1",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_desc_1",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_1_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_1",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_1_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_1_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_plate_2",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_icon_2",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_name_2",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_desc_2",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_2_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_2",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_2_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_2_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_plate_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_icon_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_name_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_desc_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_3_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_3_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "choice_3_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "screen_title",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "view_map_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "view_map",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "view_map_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "view_map_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_plate_1",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_icon_1",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_name_1",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_desc_1",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_1_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_1",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_1_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_1_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_plate_2",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_icon_2",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_name_2",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_desc_2",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_2_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_2",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_2_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_2_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_plate_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_icon_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_name_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_desc_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_3_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_3_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "choice_3_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "view_map_plate",
+        "front": "view_map",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "view_map_plate",
+        "front": "view_map_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "view_map_plate",
+        "front": "view_map_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "choice_plate_1",
+        "front": "choice_icon_1",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_1",
+        "front": "choice_name_1",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_1",
+        "front": "choice_desc_1",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_1",
+        "front": "choice_1_plate",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_1",
+        "front": "choice_1",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_1",
+        "front": "choice_1_hit_top",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_1",
+        "front": "choice_1_hit_bottom",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_1_plate",
+        "front": "choice_1",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "choice_1_plate",
+        "front": "choice_1_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "choice_1_plate",
+        "front": "choice_1_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "choice_plate_2",
+        "front": "choice_icon_2",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_2",
+        "front": "choice_name_2",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_2",
+        "front": "choice_desc_2",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_2",
+        "front": "choice_2_plate",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_2",
+        "front": "choice_2",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_2",
+        "front": "choice_2_hit_top",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_2",
+        "front": "choice_2_hit_bottom",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_2_plate",
+        "front": "choice_2",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "choice_2_plate",
+        "front": "choice_2_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "choice_2_plate",
+        "front": "choice_2_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "choice_plate_3",
+        "front": "choice_icon_3",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_3",
+        "front": "choice_name_3",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_3",
+        "front": "choice_desc_3",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_3",
+        "front": "choice_3_plate",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_3",
+        "front": "choice_3",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_3",
+        "front": "choice_3_hit_top",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_plate_3",
+        "front": "choice_3_hit_bottom",
+        "reason": "Authored card frame beneath its contained content"
+      },
+      {
+        "behind": "choice_3_plate",
+        "front": "choice_3",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "choice_3_plate",
+        "front": "choice_3_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "choice_3_plate",
+        "front": "choice_3_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      }
+    ]
+  }
+}

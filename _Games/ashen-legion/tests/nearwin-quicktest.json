@@ -1,0 +1,1235 @@
+{
+  "scope": "24 first-round trials, fresh town, three bare troop policies, seeds 1 and 42. Real production WASM and input, variant source parameters only; no injected money, monsters or forced lotteries. Perfect observation / retarget every 0.2s. This is not player win rate or full 20-minute balance evidence.",
+  "runs": [
+    {
+      "version": "before",
+      "sourceHash": "9ac77faaefa452e9772f427315b7459459044be023d9de2e3527b2797ccd1fb4",
+      "seed": 1,
+      "unit": 1,
+      "status": "clear",
+      "battleSeconds": 156.33333333333334,
+      "firstAwardSeconds": 0.7666666666666667,
+      "maxAwardGapSeconds": 6.433333333333337,
+      "unfinishedAwardGapSeconds": 0,
+      "maxConsecutiveMisses": 6,
+      "nearBreakSeconds": 151.35,
+      "bossReached": true,
+      "maxMonsters": 109,
+      "coins": 996,
+      "spent": 5008,
+      "earned": 5628,
+      "crystals": 36,
+      "refunded": 56,
+      "shots": 626,
+      "breaks": 374,
+      "misses": 130,
+      "kills": 354,
+      "rankEconomy": [
+        {
+          "attempts": 262,
+          "damage": 6552,
+          "earned": 2752
+        },
+        {
+          "attempts": 89,
+          "damage": 4344,
+          "earned": 1624
+        },
+        {
+          "attempts": 12,
+          "damage": 1512,
+          "earned": 360
+        },
+        {
+          "attempts": 10,
+          "damage": 1824,
+          "earned": 392
+        },
+        {
+          "attempts": 1,
+          "damage": 492,
+          "earned": 500
+        }
+      ]
+    },
+    {
+      "version": "before",
+      "sourceHash": "9ac77faaefa452e9772f427315b7459459044be023d9de2e3527b2797ccd1fb4",
+      "seed": 1,
+      "unit": 2,
+      "status": "bankrupt",
+      "battleSeconds": 33.4,
+      "firstAwardSeconds": 0.4,
+      "maxAwardGapSeconds": 2.2333333333333343,
+      "unfinishedAwardGapSeconds": 5.233333333333331,
+      "maxConsecutiveMisses": 4,
+      "nearBreakSeconds": 7.766666666666667,
+      "bossReached": false,
+      "maxMonsters": 35,
+      "coins": 2,
+      "spent": 2200,
+      "earned": 1882,
+      "crystals": 30,
+      "refunded": 0,
+      "shots": 110,
+      "breaks": 86,
+      "misses": 26,
+      "kills": 74,
+      "rankEconomy": [
+        {
+          "attempts": 53,
+          "damage": 2544,
+          "earned": 656
+        },
+        {
+          "attempts": 16,
+          "damage": 768,
+          "earned": 280
+        },
+        {
+          "attempts": 10,
+          "damage": 1440,
+          "earned": 496
+        },
+        {
+          "attempts": 7,
+          "damage": 1344,
+          "earned": 450
+        },
+        {
+          "attempts": 0,
+          "damage": 0,
+          "earned": 0
+        }
+      ]
+    },
+    {
+      "version": "before",
+      "sourceHash": "9ac77faaefa452e9772f427315b7459459044be023d9de2e3527b2797ccd1fb4",
+      "seed": 1,
+      "unit": 3,
+      "status": "timeout",
+      "battleSeconds": 180,
+      "firstAwardSeconds": 0.43333333333333335,
+      "maxAwardGapSeconds": 3.299999999999997,
+      "unfinishedAwardGapSeconds": 121.36666666666667,
+      "maxConsecutiveMisses": 6,
+      "nearBreakSeconds": 28.966666666666665,
+      "bossReached": true,
+      "maxMonsters": 114,
+      "coins": 22,
+      "spent": 4320,
+      "earned": 4022,
+      "crystals": 30,
+      "refunded": 0,
+      "shots": 108,
+      "breaks": 233,
+      "misses": 89,
+      "kills": 196,
+      "rankEconomy": [
+        {
+          "attempts": 143,
+          "damage": 12870,
+          "earned": 1424
+        },
+        {
+          "attempts": 45,
+          "damage": 4050,
+          "earned": 840
+        },
+        {
+          "attempts": 29,
+          "damage": 5220,
+          "earned": 886
+        },
+        {
+          "attempts": 16,
+          "damage": 2880,
+          "earned": 872
+        },
+        {
+          "attempts": 0,
+          "damage": 0,
+          "earned": 0
+        }
+      ]
+    },
+    {
+      "version": "before",
+      "sourceHash": "9ac77faaefa452e9772f427315b7459459044be023d9de2e3527b2797ccd1fb4",
+      "seed": 42,
+      "unit": 1,
+      "status": "bankrupt",
+      "battleSeconds": 164.03333333333333,
+      "firstAwardSeconds": 1.7333333333333334,
+      "maxAwardGapSeconds": 4.76666666666668,
+      "unfinishedAwardGapSeconds": 7.666666666666657,
+      "maxConsecutiveMisses": 7,
+      "nearBreakSeconds": 142.66666666666666,
+      "bossReached": true,
+      "maxMonsters": 106,
+      "coins": 2,
+      "spent": 5184,
+      "earned": 4866,
+      "crystals": 30,
+      "refunded": 0,
+      "shots": 648,
+      "breaks": 390,
+      "misses": 148,
+      "kills": 369,
+      "rankEconomy": [
+        {
+          "attempts": 279,
+          "damage": 7032,
+          "earned": 2912
+        },
+        {
+          "attempts": 88,
+          "damage": 4248,
+          "earned": 1512
+        },
+        {
+          "attempts": 15,
+          "damage": 1848,
+          "earned": 194
+        },
+        {
+          "attempts": 6,
+          "damage": 1008,
+          "earned": 168
+        },
+        {
+          "attempts": 2,
+          "damage": 1248,
+          "earned": 80
+        }
+      ]
+    },
+    {
+      "version": "before",
+      "sourceHash": "9ac77faaefa452e9772f427315b7459459044be023d9de2e3527b2797ccd1fb4",
+      "seed": 42,
+      "unit": 2,
+      "status": "timeout",
+      "battleSeconds": 180,
+      "firstAwardSeconds": 1.0333333333333334,
+      "maxAwardGapSeconds": 4.6,
+      "unfinishedAwardGapSeconds": 158.7,
+      "maxConsecutiveMisses": 6,
+      "nearBreakSeconds": 10.9,
+      "bossReached": true,
+      "maxMonsters": 115,
+      "coins": 10,
+      "spent": 1260,
+      "earned": 950,
+      "crystals": 30,
+      "refunded": 0,
+      "shots": 63,
+      "breaks": 66,
+      "misses": 26,
+      "kills": 60,
+      "rankEconomy": [
+        {
+          "attempts": 40,
+          "damage": 1920,
+          "earned": 432
+        },
+        {
+          "attempts": 19,
+          "damage": 912,
+          "earned": 280
+        },
+        {
+          "attempts": 4,
+          "damage": 624,
+          "earned": 138
+        },
+        {
+          "attempts": 3,
+          "damage": 624,
+          "earned": 100
+        },
+        {
+          "attempts": 0,
+          "damage": 0,
+          "earned": 0
+        }
+      ]
+    },
+    {
+      "version": "before",
+      "sourceHash": "9ac77faaefa452e9772f427315b7459459044be023d9de2e3527b2797ccd1fb4",
+      "seed": 42,
+      "unit": 3,
+      "status": "timeout",
+      "battleSeconds": 180,
+      "firstAwardSeconds": 1,
+      "maxAwardGapSeconds": 5.999999999999986,
+      "unfinishedAwardGapSeconds": 29.23333333333332,
+      "maxConsecutiveMisses": 6,
+      "nearBreakSeconds": 88.48333333333333,
+      "bossReached": true,
+      "maxMonsters": 85,
+      "coins": 32,
+      "spent": 10320,
+      "earned": 10032,
+      "crystals": 30,
+      "refunded": 0,
+      "shots": 258,
+      "breaks": 567,
+      "misses": 216,
+      "kills": 476,
+      "rankEconomy": [
+        {
+          "attempts": 357,
+          "damage": 32130,
+          "earned": 3680
+        },
+        {
+          "attempts": 101,
+          "damage": 9090,
+          "earned": 1764
+        },
+        {
+          "attempts": 48,
+          "damage": 8640,
+          "earned": 1686
+        },
+        {
+          "attempts": 61,
+          "damage": 11070,
+          "earned": 2902
+        },
+        {
+          "attempts": 0,
+          "damage": 270,
+          "earned": 0
+        }
+      ]
+    },
+    {
+      "version": "survive-only",
+      "sourceHash": "0f46591300bc4d277202bab357b4107b5bde6fde9839113dfad715435c2d0094",
+      "seed": 1,
+      "unit": 1,
+      "status": "timeout",
+      "battleSeconds": 180,
+      "firstAwardSeconds": 0.7666666666666667,
+      "maxAwardGapSeconds": 9.433333333333337,
+      "unfinishedAwardGapSeconds": 0.5333333333333314,
+      "maxConsecutiveMisses": 6,
+      "nearBreakSeconds": 170.68333333333334,
+      "bossReached": true,
+      "maxMonsters": 114,
+      "coins": 1154,
+      "spent": 5760,
+      "earned": 6578,
+      "crystals": 30,
+      "refunded": 16,
+      "shots": 720,
+      "breaks": 450,
+      "misses": 150,
+      "kills": 290,
+      "rankEconomy": [
+        {
+          "attempts": 336,
+          "damage": 8448,
+          "earned": 3552
+        },
+        {
+          "attempts": 91,
+          "damage": 4476,
+          "earned": 1792
+        },
+        {
+          "attempts": 13,
+          "damage": 1512,
+          "earned": 470
+        },
+        {
+          "attempts": 4,
+          "damage": 588,
+          "earned": 244
+        },
+        {
+          "attempts": 6,
+          "damage": 2976,
+          "earned": 520
+        }
+      ]
+    },
+    {
+      "version": "survive-only",
+      "sourceHash": "0f46591300bc4d277202bab357b4107b5bde6fde9839113dfad715435c2d0094",
+      "seed": 1,
+      "unit": 2,
+      "status": "timeout",
+      "battleSeconds": 180,
+      "firstAwardSeconds": 0.4,
+      "maxAwardGapSeconds": 4.799999999999983,
+      "unfinishedAwardGapSeconds": 3.5999999999999943,
+      "maxConsecutiveMisses": 7,
+      "nearBreakSeconds": 100.38333333333334,
+      "bossReached": true,
+      "maxMonsters": 90,
+      "coins": 1006,
+      "spent": 13660,
+      "earned": 14246,
+      "crystals": 30,
+      "refunded": 100,
+      "shots": 683,
+      "breaks": 891,
+      "misses": 338,
+      "kills": 515,
+      "rankEconomy": [
+        {
+          "attempts": 585,
+          "damage": 28224,
+          "earned": 6016
+        },
+        {
+          "attempts": 209,
+          "damage": 10056,
+          "earned": 3528
+        },
+        {
+          "attempts": 44,
+          "damage": 6336,
+          "earned": 1326
+        },
+        {
+          "attempts": 30,
+          "damage": 5616,
+          "earned": 1796
+        },
+        {
+          "attempts": 23,
+          "damage": 11376,
+          "earned": 1580
+        }
+      ]
+    },
+    {
+      "version": "survive-only",
+      "sourceHash": "0f46591300bc4d277202bab357b4107b5bde6fde9839113dfad715435c2d0094",
+      "seed": 1,
+      "unit": 3,
+      "status": "clear",
+      "battleSeconds": 152.3,
+      "firstAwardSeconds": 0.43333333333333335,
+      "maxAwardGapSeconds": 3.8666666666666742,
+      "unfinishedAwardGapSeconds": 0,
+      "maxConsecutiveMisses": 6,
+      "nearBreakSeconds": 33.86666666666667,
+      "bossReached": true,
+      "maxMonsters": 85,
+      "coins": 1206,
+      "spent": 16400,
+      "earned": 16606,
+      "crystals": 36,
+      "refunded": 680,
+      "shots": 410,
+      "breaks": 959,
+      "misses": 348,
+      "kills": 565,
+      "rankEconomy": [
+        {
+          "attempts": 626,
+          "damage": 56565,
+          "earned": 6560
+        },
+        {
+          "attempts": 203,
+          "damage": 18270,
+          "earned": 3668
+        },
+        {
+          "attempts": 73,
+          "damage": 13050,
+          "earned": 2212
+        },
+        {
+          "attempts": 56,
+          "damage": 10080,
+          "earned": 3666
+        },
+        {
+          "attempts": 1,
+          "damage": 540,
+          "earned": 500
+        }
+      ]
+    },
+    {
+      "version": "survive-only",
+      "sourceHash": "0f46591300bc4d277202bab357b4107b5bde6fde9839113dfad715435c2d0094",
+      "seed": 42,
+      "unit": 1,
+      "status": "timeout",
+      "battleSeconds": 180,
+      "firstAwardSeconds": 0.7666666666666667,
+      "maxAwardGapSeconds": 13.833333333333343,
+      "unfinishedAwardGapSeconds": 0.5999999999999943,
+      "maxConsecutiveMisses": 5,
+      "nearBreakSeconds": 170.88333333333333,
+      "bossReached": true,
+      "maxMonsters": 114,
+      "coins": 254,
+      "spent": 5760,
+      "earned": 5662,
+      "crystals": 30,
+      "refunded": 32,
+      "shots": 720,
+      "breaks": 445,
+      "misses": 169,
+      "kills": 270,
+      "rankEconomy": [
+        {
+          "attempts": 326,
+          "damage": 8184,
+          "earned": 3312
+        },
+        {
+          "attempts": 100,
+          "damage": 4896,
+          "earned": 1708
+        },
+        {
+          "attempts": 7,
+          "damage": 852,
+          "earned": 138
+        },
+        {
+          "attempts": 6,
+          "damage": 1032,
+          "earned": 264
+        },
+        {
+          "attempts": 6,
+          "damage": 2976,
+          "earned": 240
+        }
+      ]
+    },
+    {
+      "version": "survive-only",
+      "sourceHash": "0f46591300bc4d277202bab357b4107b5bde6fde9839113dfad715435c2d0094",
+      "seed": 42,
+      "unit": 2,
+      "status": "clear",
+      "battleSeconds": 160.8,
+      "firstAwardSeconds": 0.6333333333333333,
+      "maxAwardGapSeconds": 3.8000000000000114,
+      "unfinishedAwardGapSeconds": 0,
+      "maxConsecutiveMisses": 6,
+      "nearBreakSeconds": 56.166666666666664,
+      "bossReached": true,
+      "maxMonsters": 84,
+      "coins": 2218,
+      "spent": 11940,
+      "earned": 13718,
+      "crystals": 36,
+      "refunded": 120,
+      "shots": 597,
+      "breaks": 861,
+      "misses": 315,
+      "kills": 524,
+      "rankEconomy": [
+        {
+          "attempts": 613,
+          "damage": 29424,
+          "earned": 6272
+        },
+        {
+          "attempts": 184,
+          "damage": 8832,
+          "earned": 3332
+        },
+        {
+          "attempts": 37,
+          "damage": 5376,
+          "earned": 1162
+        },
+        {
+          "attempts": 19,
+          "damage": 3600,
+          "earned": 1672
+        },
+        {
+          "attempts": 8,
+          "damage": 3840,
+          "earned": 1280
+        }
+      ]
+    },
+    {
+      "version": "survive-only",
+      "sourceHash": "0f46591300bc4d277202bab357b4107b5bde6fde9839113dfad715435c2d0094",
+      "seed": 42,
+      "unit": 3,
+      "status": "timeout",
+      "battleSeconds": 180,
+      "firstAwardSeconds": 0.7,
+      "maxAwardGapSeconds": 2.6666666666666714,
+      "unfinishedAwardGapSeconds": 25.433333333333337,
+      "maxConsecutiveMisses": 6,
+      "nearBreakSeconds": 44.666666666666664,
+      "bossReached": true,
+      "maxMonsters": 83,
+      "coins": 14,
+      "spent": 15880,
+      "earned": 15574,
+      "crystals": 30,
+      "refunded": 0,
+      "shots": 397,
+      "breaks": 977,
+      "misses": 367,
+      "kills": 570,
+      "rankEconomy": [
+        {
+          "attempts": 652,
+          "damage": 58770,
+          "earned": 6608
+        },
+        {
+          "attempts": 186,
+          "damage": 16785,
+          "earned": 3752
+        },
+        {
+          "attempts": 83,
+          "damage": 14940,
+          "earned": 2268
+        },
+        {
+          "attempts": 54,
+          "damage": 9720,
+          "earned": 2946
+        },
+        {
+          "attempts": 2,
+          "damage": 1260,
+          "earned": 0
+        }
+      ]
+    },
+    {
+      "version": "half-odds",
+      "sourceHash": "c7327b569803a5704bc6e3512ce5a4274c18cd62baea8b53242f0efc2ae206c8",
+      "seed": 1,
+      "unit": 1,
+      "status": "timeout",
+      "battleSeconds": 180,
+      "firstAwardSeconds": 1,
+      "maxAwardGapSeconds": 13,
+      "unfinishedAwardGapSeconds": 6.800000000000011,
+      "maxConsecutiveMisses": 12,
+      "nearBreakSeconds": 175.55,
+      "bossReached": true,
+      "maxMonsters": 114,
+      "coins": 960,
+      "spent": 2880,
+      "earned": 3508,
+      "crystals": 30,
+      "refunded": 12,
+      "shots": 720,
+      "breaks": 446,
+      "misses": 281,
+      "kills": 158,
+      "rankEconomy": [
+        {
+          "attempts": 327,
+          "damage": 8256,
+          "earned": 1952
+        },
+        {
+          "attempts": 100,
+          "damage": 4992,
+          "earned": 980
+        },
+        {
+          "attempts": 8,
+          "damage": 1044,
+          "earned": 112
+        },
+        {
+          "attempts": 5,
+          "damage": 840,
+          "earned": 124
+        },
+        {
+          "attempts": 6,
+          "damage": 3084,
+          "earned": 340
+        }
+      ]
+    },
+    {
+      "version": "half-odds",
+      "sourceHash": "c7327b569803a5704bc6e3512ce5a4274c18cd62baea8b53242f0efc2ae206c8",
+      "seed": 1,
+      "unit": 2,
+      "status": "timeout",
+      "battleSeconds": 180,
+      "firstAwardSeconds": 0.6333333333333333,
+      "maxAwardGapSeconds": 13.699999999999989,
+      "unfinishedAwardGapSeconds": 8.23333333333332,
+      "maxConsecutiveMisses": 19,
+      "nearBreakSeconds": 131.08333333333334,
+      "bossReached": true,
+      "maxMonsters": 90,
+      "coins": 2686,
+      "spent": 7200,
+      "earned": 9496,
+      "crystals": 30,
+      "refunded": 70,
+      "shots": 720,
+      "breaks": 1299,
+      "misses": 866,
+      "kills": 416,
+      "rankEconomy": [
+        {
+          "attempts": 946,
+          "damage": 45336,
+          "earned": 5024
+        },
+        {
+          "attempts": 262,
+          "damage": 12576,
+          "earned": 2660
+        },
+        {
+          "attempts": 40,
+          "damage": 5712,
+          "earned": 718
+        },
+        {
+          "attempts": 28,
+          "damage": 5040,
+          "earned": 694
+        },
+        {
+          "attempts": 23,
+          "damage": 11184,
+          "earned": 400
+        }
+      ]
+    },
+    {
+      "version": "half-odds",
+      "sourceHash": "c7327b569803a5704bc6e3512ce5a4274c18cd62baea8b53242f0efc2ae206c8",
+      "seed": 1,
+      "unit": 3,
+      "status": "clear",
+      "battleSeconds": 174.5,
+      "firstAwardSeconds": 0.6666666666666666,
+      "maxAwardGapSeconds": 15.799999999999983,
+      "unfinishedAwardGapSeconds": 0,
+      "maxConsecutiveMisses": 14,
+      "nearBreakSeconds": 47.333333333333336,
+      "bossReached": true,
+      "maxMonsters": 79,
+      "coins": 3204,
+      "spent": 13740,
+      "earned": 15984,
+      "crystals": 36,
+      "refunded": 640,
+      "shots": 687,
+      "breaks": 1661,
+      "misses": 1117,
+      "kills": 491,
+      "rankEconomy": [
+        {
+          "attempts": 1077,
+          "damage": 97425,
+          "earned": 5760
+        },
+        {
+          "attempts": 322,
+          "damage": 29115,
+          "earned": 3080
+        },
+        {
+          "attempts": 117,
+          "damage": 21015,
+          "earned": 2018
+        },
+        {
+          "attempts": 127,
+          "damage": 23130,
+          "earned": 3766
+        },
+        {
+          "attempts": 18,
+          "damage": 9720,
+          "earned": 1360
+        }
+      ]
+    },
+    {
+      "version": "half-odds",
+      "sourceHash": "c7327b569803a5704bc6e3512ce5a4274c18cd62baea8b53242f0efc2ae206c8",
+      "seed": 42,
+      "unit": 1,
+      "status": "clear",
+      "battleSeconds": 155.93333333333334,
+      "firstAwardSeconds": 1.8333333333333333,
+      "maxAwardGapSeconds": 5.800000000000011,
+      "unfinishedAwardGapSeconds": 0,
+      "maxConsecutiveMisses": 15,
+      "nearBreakSeconds": 149.41666666666666,
+      "bossReached": true,
+      "maxMonsters": 114,
+      "coins": 1284,
+      "spent": 2496,
+      "earned": 3444,
+      "crystals": 36,
+      "refunded": 16,
+      "shots": 624,
+      "breaks": 491,
+      "misses": 333,
+      "kills": 158,
+      "rankEconomy": [
+        {
+          "attempts": 394,
+          "damage": 9828,
+          "earned": 1936
+        },
+        {
+          "attempts": 94,
+          "damage": 4692,
+          "earned": 1008
+        },
+        {
+          "attempts": 1,
+          "damage": 252,
+          "earned": 0
+        },
+        {
+          "attempts": 1,
+          "damage": 288,
+          "earned": 0
+        },
+        {
+          "attempts": 1,
+          "damage": 492,
+          "earned": 500
+        }
+      ]
+    },
+    {
+      "version": "half-odds",
+      "sourceHash": "c7327b569803a5704bc6e3512ce5a4274c18cd62baea8b53242f0efc2ae206c8",
+      "seed": 42,
+      "unit": 2,
+      "status": "clear",
+      "battleSeconds": 151.86666666666667,
+      "firstAwardSeconds": 0.6333333333333333,
+      "maxAwardGapSeconds": 1.7666666666666657,
+      "unfinishedAwardGapSeconds": 0,
+      "maxConsecutiveMisses": 18,
+      "nearBreakSeconds": 53.666666666666664,
+      "bossReached": true,
+      "maxMonsters": 98,
+      "coins": 5062,
+      "spent": 6080,
+      "earned": 10762,
+      "crystals": 36,
+      "refunded": 60,
+      "shots": 608,
+      "breaks": 1369,
+      "misses": 918,
+      "kills": 443,
+      "rankEconomy": [
+        {
+          "attempts": 978,
+          "damage": 46944,
+          "earned": 5280
+        },
+        {
+          "attempts": 327,
+          "damage": 15696,
+          "earned": 2912
+        },
+        {
+          "attempts": 41,
+          "damage": 5664,
+          "earned": 800
+        },
+        {
+          "attempts": 22,
+          "damage": 3792,
+          "earned": 670
+        },
+        {
+          "attempts": 1,
+          "damage": 480,
+          "earned": 1100
+        }
+      ]
+    },
+    {
+      "version": "half-odds",
+      "sourceHash": "c7327b569803a5704bc6e3512ce5a4274c18cd62baea8b53242f0efc2ae206c8",
+      "seed": 42,
+      "unit": 3,
+      "status": "clear",
+      "battleSeconds": 161.7,
+      "firstAwardSeconds": 0.8666666666666667,
+      "maxAwardGapSeconds": 5.599999999999994,
+      "unfinishedAwardGapSeconds": 0,
+      "maxConsecutiveMisses": 15,
+      "nearBreakSeconds": 53.53333333333333,
+      "bossReached": true,
+      "maxMonsters": 78,
+      "coins": 4540,
+      "spent": 12740,
+      "earned": 16320,
+      "crystals": 36,
+      "refunded": 640,
+      "shots": 637,
+      "breaks": 1925,
+      "misses": 1319,
+      "kills": 566,
+      "rankEconomy": [
+        {
+          "attempts": 1306,
+          "damage": 117540,
+          "earned": 6720
+        },
+        {
+          "attempts": 344,
+          "damage": 30960,
+          "earned": 3444
+        },
+        {
+          "attempts": 116,
+          "damage": 20700,
+          "earned": 1932
+        },
+        {
+          "attempts": 149,
+          "damage": 26820,
+          "earned": 3464
+        },
+        {
+          "attempts": 10,
+          "damage": 5400,
+          "earned": 760
+        }
+      ]
+    },
+    {
+      "version": "gentler-odds",
+      "sourceHash": "a2992b9727470307c05206eb4c9bb40f406810cd0ae5f9ae639c309824afaabe",
+      "seed": 1,
+      "unit": 1,
+      "status": "timeout",
+      "battleSeconds": 180,
+      "firstAwardSeconds": 1,
+      "maxAwardGapSeconds": 20.26666666666668,
+      "unfinishedAwardGapSeconds": 9.533333333333331,
+      "maxConsecutiveMisses": 10,
+      "nearBreakSeconds": 177.45,
+      "bossReached": true,
+      "maxMonsters": 114,
+      "coins": 1066,
+      "spent": 2880,
+      "earned": 3610,
+      "crystals": 30,
+      "refunded": 16,
+      "shots": 720,
+      "breaks": 459,
+      "misses": 280,
+      "kills": 177,
+      "rankEconomy": [
+        {
+          "attempts": 323,
+          "damage": 8196,
+          "earned": 2048
+        },
+        {
+          "attempts": 124,
+          "damage": 6060,
+          "earned": 1344
+        },
+        {
+          "attempts": 7,
+          "damage": 816,
+          "earned": 138
+        },
+        {
+          "attempts": 0,
+          "damage": 48,
+          "earned": 0
+        },
+        {
+          "attempts": 5,
+          "damage": 2880,
+          "earned": 80
+        }
+      ]
+    },
+    {
+      "version": "gentler-odds",
+      "sourceHash": "a2992b9727470307c05206eb4c9bb40f406810cd0ae5f9ae639c309824afaabe",
+      "seed": 1,
+      "unit": 2,
+      "status": "clear",
+      "battleSeconds": 155.56666666666666,
+      "firstAwardSeconds": 0.6333333333333333,
+      "maxAwardGapSeconds": 2.6333333333333258,
+      "unfinishedAwardGapSeconds": 0,
+      "maxConsecutiveMisses": 10,
+      "nearBreakSeconds": 79.08333333333333,
+      "bossReached": true,
+      "maxMonsters": 81,
+      "coins": 5066,
+      "spent": 6230,
+      "earned": 10926,
+      "crystals": 36,
+      "refunded": 50,
+      "shots": 623,
+      "breaks": 1071,
+      "misses": 623,
+      "kills": 433,
+      "rankEconomy": [
+        {
+          "attempts": 763,
+          "damage": 36624,
+          "earned": 5232
+        },
+        {
+          "attempts": 240,
+          "damage": 11520,
+          "earned": 2772
+        },
+        {
+          "attempts": 31,
+          "damage": 4608,
+          "earned": 608
+        },
+        {
+          "attempts": 33,
+          "damage": 5952,
+          "earned": 1214
+        },
+        {
+          "attempts": 4,
+          "damage": 1920,
+          "earned": 1100
+        }
+      ]
+    },
+    {
+      "version": "gentler-odds",
+      "sourceHash": "a2992b9727470307c05206eb4c9bb40f406810cd0ae5f9ae639c309824afaabe",
+      "seed": 1,
+      "unit": 3,
+      "status": "clear",
+      "battleSeconds": 163.4,
+      "firstAwardSeconds": 0.6666666666666666,
+      "maxAwardGapSeconds": 5.533333333333331,
+      "unfinishedAwardGapSeconds": 0,
+      "maxConsecutiveMisses": 11,
+      "nearBreakSeconds": 48.35,
+      "bossReached": true,
+      "maxMonsters": 77,
+      "coins": 6872,
+      "spent": 12720,
+      "earned": 18632,
+      "crystals": 36,
+      "refunded": 640,
+      "shots": 636,
+      "breaks": 1541,
+      "misses": 903,
+      "kills": 576,
+      "rankEconomy": [
+        {
+          "attempts": 1006,
+          "damage": 90540,
+          "earned": 6880
+        },
+        {
+          "attempts": 295,
+          "damage": 26550,
+          "earned": 3444
+        },
+        {
+          "attempts": 91,
+          "damage": 16380,
+          "earned": 2046
+        },
+        {
+          "attempts": 137,
+          "damage": 24660,
+          "earned": 4902
+        },
+        {
+          "attempts": 12,
+          "damage": 6480,
+          "earned": 1360
+        }
+      ]
+    },
+    {
+      "version": "gentler-odds",
+      "sourceHash": "a2992b9727470307c05206eb4c9bb40f406810cd0ae5f9ae639c309824afaabe",
+      "seed": 42,
+      "unit": 1,
+      "status": "timeout",
+      "battleSeconds": 180,
+      "firstAwardSeconds": 1.8333333333333333,
+      "maxAwardGapSeconds": 3.933333333333337,
+      "unfinishedAwardGapSeconds": 29.03333333333333,
+      "maxConsecutiveMisses": 10,
+      "nearBreakSeconds": 171.28333333333333,
+      "bossReached": true,
+      "maxMonsters": 114,
+      "coins": 1196,
+      "spent": 2880,
+      "earned": 3744,
+      "crystals": 30,
+      "refunded": 12,
+      "shots": 720,
+      "breaks": 481,
+      "misses": 288,
+      "kills": 191,
+      "rankEconomy": [
+        {
+          "attempts": 369,
+          "damage": 9324,
+          "earned": 2336
+        },
+        {
+          "attempts": 102,
+          "damage": 4980,
+          "earned": 1260
+        },
+        {
+          "attempts": 2,
+          "damage": 300,
+          "earned": 0
+        },
+        {
+          "attempts": 3,
+          "damage": 528,
+          "earned": 148
+        },
+        {
+          "attempts": 5,
+          "damage": 2904,
+          "earned": 0
+        }
+      ]
+    },
+    {
+      "version": "gentler-odds",
+      "sourceHash": "a2992b9727470307c05206eb4c9bb40f406810cd0ae5f9ae639c309824afaabe",
+      "seed": 42,
+      "unit": 2,
+      "status": "clear",
+      "battleSeconds": 169.56666666666666,
+      "firstAwardSeconds": 0.6333333333333333,
+      "maxAwardGapSeconds": 5.166666666666657,
+      "unfinishedAwardGapSeconds": 0,
+      "maxConsecutiveMisses": 10,
+      "nearBreakSeconds": 108.85,
+      "bossReached": true,
+      "maxMonsters": 82,
+      "coins": 5302,
+      "spent": 6790,
+      "earned": 11712,
+      "crystals": 36,
+      "refunded": 60,
+      "shots": 679,
+      "breaks": 1051,
+      "misses": 582,
+      "kills": 441,
+      "rankEconomy": [
+        {
+          "attempts": 750,
+          "damage": 36000,
+          "earned": 5312
+        },
+        {
+          "attempts": 208,
+          "damage": 9984,
+          "earned": 2800
+        },
+        {
+          "attempts": 51,
+          "damage": 7296,
+          "earned": 1024
+        },
+        {
+          "attempts": 26,
+          "damage": 4944,
+          "earned": 1276
+        },
+        {
+          "attempts": 16,
+          "damage": 7680,
+          "earned": 1300
+        }
+      ]
+    },
+    {
+      "version": "gentler-odds",
+      "sourceHash": "a2992b9727470307c05206eb4c9bb40f406810cd0ae5f9ae639c309824afaabe",
+      "seed": 42,
+      "unit": 3,
+      "status": "timeout",
+      "battleSeconds": 180,
+      "firstAwardSeconds": 0.8666666666666667,
+      "maxAwardGapSeconds": 6.433333333333337,
+      "unfinishedAwardGapSeconds": 16.23333333333332,
+      "maxConsecutiveMisses": 11,
+      "nearBreakSeconds": 55.483333333333334,
+      "bossReached": true,
+      "maxMonsters": 82,
+      "coins": 2644,
+      "spent": 13780,
+      "earned": 15464,
+      "crystals": 30,
+      "refunded": 640,
+      "shots": 689,
+      "breaks": 1355,
+      "misses": 801,
+      "kills": 497,
+      "rankEconomy": [
+        {
+          "attempts": 874,
+          "damage": 78660,
+          "earned": 5840
+        },
+        {
+          "attempts": 239,
+          "damage": 21510,
+          "earned": 3024
+        },
+        {
+          "attempts": 127,
+          "damage": 22770,
+          "earned": 2632
+        },
+        {
+          "attempts": 93,
+          "damage": 16740,
+          "earned": 3708
+        },
+        {
+          "attempts": 22,
+          "damage": 12330,
+          "earned": 260
+        }
+      ]
+    }
+  ],
+  "delivery": {
+    "scriptHash": "e99defc09d6a9467cb5af8bd8ad55c83acc91961cf2e1b444925e0812821d3eb",
+    "sampledHalfOddsHash": "c7327b569803a5704bc6e3512ce5a4274c18cd62baea8b53242f0efc2ae206c8",
+    "gameplayUnchangedSinceSampling": true,
+    "differences": "Formal UI help/price descriptions only; equivalent .5/0.5 source literals."
+  }
+}

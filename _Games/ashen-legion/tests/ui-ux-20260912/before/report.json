@@ -1,0 +1,295 @@
+{
+  "ok": true,
+  "scope": "Pointer navigation through menu/town/build/shop/battle/auto/pause; explicitly prepared enchant/result/defeat screens",
+  "reports": [
+    {
+      "id": "menu",
+      "width": 1440,
+      "height": 900,
+      "fixture": false,
+      "phase": "menu",
+      "buttons": 2,
+      "copyCharacters": 39
+    },
+    {
+      "id": "town",
+      "width": 1440,
+      "height": 900,
+      "fixture": false,
+      "phase": "menu",
+      "buttons": 9,
+      "copyCharacters": 117
+    },
+    {
+      "id": "choice",
+      "width": 1440,
+      "height": 900,
+      "fixture": false,
+      "phase": "choice",
+      "buttons": 7,
+      "copyCharacters": 151
+    },
+    {
+      "id": "shop",
+      "width": 1440,
+      "height": 900,
+      "fixture": false,
+      "phase": "shop",
+      "buttons": 9,
+      "copyCharacters": 169
+    },
+    {
+      "id": "purchase",
+      "width": 1440,
+      "height": 900,
+      "fixture": false,
+      "phase": "shop",
+      "buttons": 7,
+      "copyCharacters": 164
+    },
+    {
+      "id": "gear",
+      "width": 1440,
+      "height": 900,
+      "fixture": false,
+      "phase": "shop",
+      "buttons": 16,
+      "copyCharacters": 121
+    },
+    {
+      "id": "runes",
+      "width": 1440,
+      "height": 900,
+      "fixture": false,
+      "phase": "shop",
+      "buttons": 10,
+      "copyCharacters": 120
+    },
+    {
+      "id": "builds",
+      "width": 1440,
+      "height": 900,
+      "fixture": false,
+      "phase": "shop",
+      "buttons": 9,
+      "copyCharacters": 154
+    },
+    {
+      "id": "battle",
+      "width": 1440,
+      "height": 900,
+      "fixture": false,
+      "phase": "battle",
+      "buttons": 12,
+      "copyCharacters": 110
+    },
+    {
+      "id": "auto",
+      "width": 1440,
+      "height": 900,
+      "fixture": false,
+      "phase": "battle",
+      "buttons": 37,
+      "copyCharacters": 284
+    },
+    {
+      "id": "auto-empty",
+      "width": 1440,
+      "height": 900,
+      "fixture": false,
+      "phase": "battle",
+      "buttons": 36,
+      "copyCharacters": 276
+    },
+    {
+      "id": "pause",
+      "width": 1440,
+      "height": 900,
+      "fixture": false,
+      "phase": "battle",
+      "buttons": 4,
+      "copyCharacters": 34
+    },
+    {
+      "id": "guide",
+      "width": 1440,
+      "height": 900,
+      "fixture": false,
+      "phase": "battle",
+      "buttons": 4,
+      "copyCharacters": 71
+    },
+    {
+      "id": "enchant",
+      "width": 1440,
+      "height": 900,
+      "fixture": true,
+      "phase": "shop",
+      "buttons": 6,
+      "copyCharacters": 97
+    },
+    {
+      "id": "result",
+      "width": 1440,
+      "height": 900,
+      "fixture": true,
+      "phase": "clear",
+      "buttons": 3,
+      "copyCharacters": 127
+    },
+    {
+      "id": "defeat",
+      "width": 1440,
+      "height": 900,
+      "fixture": true,
+      "phase": "defeat",
+      "buttons": 2,
+      "copyCharacters": 150
+    },
+    {
+      "id": "menu",
+      "width": 390,
+      "height": 844,
+      "fixture": false,
+      "phase": "menu",
+      "buttons": 2,
+      "copyCharacters": 39
+    },
+    {
+      "id": "town",
+      "width": 390,
+      "height": 844,
+      "fixture": false,
+      "phase": "menu",
+      "buttons": 9,
+      "copyCharacters": 118
+    },
+    {
+      "id": "choice",
+      "width": 390,
+      "height": 844,
+      "fixture": false,
+      "phase": "choice",
+      "buttons": 7,
+      "copyCharacters": 152
+    },
+    {
+      "id": "shop",
+      "width": 390,
+      "height": 844,
+      "fixture": false,
+      "phase": "shop",
+      "buttons": 9,
+      "copyCharacters": 172
+    },
+    {
+      "id": "purchase",
+      "width": 390,
+      "height": 844,
+      "fixture": false,
+      "phase": "shop",
+      "buttons": 7,
+      "copyCharacters": 167
+    },
+    {
+      "id": "gear",
+      "width": 390,
+      "height": 844,
+      "fixture": false,
+      "phase": "shop",
+      "buttons": 16,
+      "copyCharacters": 122
+    },
+    {
+      "id": "runes",
+      "width": 390,
+      "height": 844,
+      "fixture": false,
+      "phase": "shop",
+      "buttons": 10,
+      "copyCharacters": 120
+    },
+    {
+      "id": "builds",
+      "width": 390,
+      "height": 844,
+      "fixture": false,
+      "phase": "shop",
+      "buttons": 9,
+      "copyCharacters": 157
+    },
+    {
+      "id": "battle",
+      "width": 390,
+      "height": 844,
+      "fixture": false,
+      "phase": "battle",
+      "buttons": 12,
+      "copyCharacters": 110
+    },
+    {
+      "id": "auto",
+      "width": 390,
+      "height": 844,
+      "fixture": false,
+      "phase": "battle",
+      "buttons": 37,
+      "copyCharacters": 289
+    },
+    {
+      "id": "auto-empty",
+      "width": 390,
+      "height": 844,
+      "fixture": false,
+      "phase": "battle",
+      "buttons": 36,
+      "copyCharacters": 281
+    },
+    {
+      "id": "pause",
+      "width": 390,
+      "height": 844,
+      "fixture": false,
+      "phase": "battle",
+      "buttons": 4,
+      "copyCharacters": 34
+    },
+    {
+      "id": "guide",
+      "width": 390,
+      "height": 844,
+      "fixture": false,
+      "phase": "battle",
+      "buttons": 4,
+      "copyCharacters": 72
+    },
+    {
+      "id": "enchant",
+      "width": 390,
+      "height": 844,
+      "fixture": true,
+      "phase": "shop",
+      "buttons": 6,
+      "copyCharacters": 98
+    },
+    {
+      "id": "result",
+      "width": 390,
+      "height": 844,
+      "fixture": true,
+      "phase": "clear",
+      "buttons": 3,
+      "copyCharacters": 128
+    },
+    {
+      "id": "defeat",
+      "width": 390,
+      "height": 844,
+      "fixture": true,
+      "phase": "defeat",
+      "buttons": 2,
+      "copyCharacters": 151
+    }
+  ],
+  "errors": []
+}

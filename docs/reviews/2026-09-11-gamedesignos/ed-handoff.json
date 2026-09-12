@@ -1,0 +1,52 @@
+{
+  "schema_version": "local-analyzer-ed-handoff-v1",
+  "handoff_id": "EDH-YesSir-20260911",
+  "source_skill": "game-experience-analyzer",
+  "target_skill": "game-experience-density-optimizer",
+  "sample_boundary": "目前原始碼、7 張新的正式 UI 截圖及約 7.5 秒隔離瀏覽器操作樣本、2 個 Luau 重現、3 點解析座標驗證、上一輪 seed 42 三策略首輪快測。非完整通關或真人樣本。",
+  "evidence_status": "partial_evidence",
+  "issue_cards": [
+    {
+      "issue_id": "I004",
+      "priority": "P2",
+      "title": "戰鬥沒有清楚呈現大王時機與通關條件",
+      "evidence_refs": [
+        "E003",
+        "E008"
+      ],
+      "root_cause_hypothesis": "理解風險假設：時間與獎金比勝利條件更突出。",
+      "fix_action": "加階段目標提示，不偷偷改玩家篩選。",
+      "owner": "YesSir UI",
+      "validation": "5名新手至少4人說對條件；記錄大王出現到主動集火時間。",
+      "confidence": 0.76
+    }
+  ],
+  "unsupported_claims": [
+    "真人手感與主觀爽感",
+    "完整 20 分鐘旅程品質",
+    "D1/D7 和玩家勝率",
+    "多人搶池公平性與商業成果"
+  ],
+  "candidate_levers": [
+    {
+      "issue_id": "I004",
+      "evidence_refs": [
+        "E003",
+        "E008"
+      ],
+      "suggested_primary_lever": "CLP: 當前目標資訊優先級",
+      "secondary_noise": "小獎中央光芒",
+      "confounder_risk": "若同時調經濟、Boss時機或獎率，無法辨識HUD效果",
+      "confidence": 0.76,
+      "unknowns": [
+        "玩家是否知道最後30秒要轉向大王"
+      ]
+    }
+  ],
+  "validation_constraints": [
+    "先修I001-I003",
+    "20分鐘目標與七輪不變",
+    "不改開獎概率，不加必中，不改玩家篩選",
+    "本機候選計畫，尚未招募或執行真人測試"
+  ]
+}

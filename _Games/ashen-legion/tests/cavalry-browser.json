@@ -1,0 +1,3260 @@
+{
+  "ok": true,
+  "errors": [],
+  "state": {
+    "activeSkills": {
+      "pierce": 20
+    },
+    "aimX": 1.7222662792392325,
+    "aimZ": -0.3380523672475979,
+    "arenaHalfExtent": 12.5,
+    "audioMuted": false,
+    "balanceVersion": "2026-09-11-cavalry-v1",
+    "battleSeconds": 4.566666666666656,
+    "bossPresent": false,
+    "bossSpawned": false,
+    "bounces": 37,
+    "breaks": 22,
+    "buildGuide": [
+      {
+        "core": [
+          "longlife",
+          "hunter_vigor",
+          "heat"
+        ],
+        "desc": "先用低價劍兵，一兩件裝備即可起步；熱機吃存活時間，擊殺最多延命1秒。",
+        "name": "省錢長征",
+        "tradeoff": "接觸死亡照常，延命不會讓劍兵穿怪。"
+      },
+      {
+        "core": [
+          "ricochet_precision",
+          "crit_power",
+          "lightning"
+        ],
+        "desc": "瞄準空隙折返蓄爆擊，再用雷鏈清旁邊小怪；穿透讓同一兵多次出手。",
+        "name": "鏡面雷暴",
+        "tradeoff": "雷鏈每兵最多兩次，反彈爆擊率最多額外45%。"
+      },
+      {
+        "core": [
+          "bounce_power",
+          "rebound_charge",
+          "bounce_life"
+        ],
+        "desc": "利用牆面兩次折返累積增傷；回春增加找角度的時間。",
+        "name": "折返蓄力",
+        "tradeoff": "碰怪仍按原本穿透次數結算，角落只算一次反彈。"
+      },
+      {
+        "core": [
+          "haste",
+          "momentum",
+          "finisher"
+        ],
+        "desc": "騎兵先用速度強化穿透，耗盡後把已用穿透轉成最後一撞傷害。",
+        "name": "疾風破陣",
+        "tradeoff": "加速不延長壽命；不追蹤時要選好射線。"
+      },
+      {
+        "core": [
+          "pierce",
+          "piercing_wave",
+          "shock"
+        ],
+        "desc": "每兩次成功穿透追加旋斬，主要命中再震盪；適合怪物潮。",
+        "name": "穿陣旋風",
+        "tradeoff": "旋斬和震盪都是次級傷害，不再互相觸發或爆擊。"
+      },
+      {
+        "core": [
+          "frost_touch",
+          "shatter",
+          "slow_force"
+        ],
+        "desc": "先用凝霜兵標記目標，碎冰兵跟進；搭配沉重把慢速換成傷害。",
+        "name": "霜鋼重擊",
+        "tradeoff": "同一次首次上霜不能立即吃碎冰；重步需負向速度加成。"
+      },
+      {
+        "core": [
+          "frenzy",
+          "hunter_vigor",
+          "pierce"
+        ],
+        "desc": "追著怪物潮累積5／10／15連殺，穿透兵靠擊殺延長作戰。",
+        "name": "狂獵續航",
+        "tradeoff": "2.5秒沒有擊殺後開始掉層；王少的時段不容易維持。"
+      },
+      {
+        "core": [
+          "last_stand",
+          "ember_burst",
+          "expire_burst"
+        ],
+        "desc": "活到最後四分之一壽命拚強力撞擊；接觸終結或到期各有爆發。",
+        "name": "背水餘燼",
+        "tradeoff": "接觸爆炸與到期爆炸不會在同一次死亡疊觸發；召回不爆炸。"
+      },
+      {
+        "core": [
+          "landing_spin",
+          "spin_master",
+          "king_hunter"
+        ],
+        "desc": "任何兵種都能裝落地旋轉斬，擴圈壓住怪群，再往前撞王。",
+        "name": "落地風環",
+        "tradeoff": "擴張不會自行授予旋轉技能；空中也會消耗壽命。"
+      }
+    ],
+    "buildIndex": 0,
+    "cards": [
+      {
+        "desc": "用結晶買賣裝備；配裝增加派兵金幣費",
+        "id": "market",
+        "name": "商店",
+        "type": "地點"
+      },
+      {
+        "desc": "8 結晶試附魔，可保留原詞綴",
+        "id": "enchant",
+        "name": "附魔坊",
+        "type": "地點"
+      },
+      {
+        "desc": "花金幣購買，最多攜帶兩瓶",
+        "id": "potion",
+        "name": "藥水攤",
+        "type": "地點"
+      }
+    ],
+    "chapter": "苔光林口",
+    "chestCount": 0,
+    "chestHold": 0,
+    "chests": {},
+    "choiceSeconds": 0.18333333333333332,
+    "coinParticles": 94,
+    "coins": 46,
+    "contactDeaths": 0,
+    "contactHits": 30,
+    "costs": [
+      8,
+      20,
+      40
+    ],
+    "critUntil": 0,
+    "criticalHits": 0,
+    "crystalEarned": 8,
+    "crystalProgress": 0,
+    "crystalSold": 0,
+    "crystalSpent": 0,
+    "crystalStart": 18,
+    "crystals": 26,
+    "curseRewards": [
+      0,
+      0,
+      0
+    ],
+    "curses": {},
+    "damage": 1,
+    "discount": 0,
+    "earned": 366,
+    "enchantUses": 0,
+    "equipSlot": 5,
+    "equipment": [
+      1,
+      1,
+      1
+    ],
+    "event": 12,
+    "expired": 0,
+    "fireMode": "auto",
+    "fired": 16,
+    "freeFired": 0,
+    "hasteUntil": 0,
+    "hordeAdded": 0,
+    "hordeAt": 25.76928015673883,
+    "hordeCount": 0,
+    "hordeNotice": 0,
+    "inventory": [
+      {
+        "name": "商店",
+        "type": "地點"
+      }
+    ],
+    "itemSerial": 0,
+    "items": {},
+    "kills": 17,
+    "lastCrystalGain": 1,
+    "lastMonster": "菇背幼豬",
+    "lastSpawnX": 0,
+    "lastSpawnZ": 12.2,
+    "lifetime": 1,
+    "loadouts": [
+      {
+        "areaBonus": 0,
+        "areaPenalty": 0,
+        "bounceCrit": 0,
+        "bounceLife": 0,
+        "bouncePower": 0,
+        "critAdd": 0,
+        "critChance": 0.1,
+        "critMultiplier": 1.5,
+        "crowdRing": 0,
+        "damageBonus": 0,
+        "deathBurst": 0,
+        "distance": 0,
+        "expireBurst": 0,
+        "finisher": 0,
+        "flightSpeed": 0,
+        "fracture": 0,
+        "frenzy": 0,
+        "frost": 0,
+        "heat": 0,
+        "hitEcho": 0,
+        "killLife": 0,
+        "kingDamage": 0,
+        "landingSpin": false,
+        "lastStand": 0,
+        "lifeBonus": 0,
+        "lightning": 0,
+        "momentum": 0,
+        "pierce": 0,
+        "pierceWave": 0,
+        "rally": 0,
+        "rapid": 0,
+        "reboundCharge": 0,
+        "recruit": 0,
+        "shatter": 0,
+        "shock": 0,
+        "showdown": 0,
+        "slowForce": 0,
+        "solitary": 0,
+        "soloHunt": 0,
+        "speedBonus": 0,
+        "spinDamage": 0,
+        "spinDuration": 0,
+        "spinMaster": 0,
+        "spinRadius": 0,
+        "thirdCrit": 0,
+        "wallQuake": 0
+      },
+      {
+        "areaBonus": 0,
+        "areaPenalty": 0,
+        "bounceCrit": 0,
+        "bounceLife": 0,
+        "bouncePower": 0,
+        "critAdd": 0,
+        "critChance": 0,
+        "critMultiplier": 1.5,
+        "crowdRing": 0,
+        "damageBonus": 0,
+        "deathBurst": 0,
+        "distance": 0,
+        "expireBurst": 0,
+        "finisher": 0,
+        "flightSpeed": 16,
+        "fracture": 0,
+        "frenzy": 0,
+        "frost": 0,
+        "heat": 0,
+        "hitEcho": 0,
+        "killLife": 0,
+        "kingDamage": 0,
+        "landingSpin": true,
+        "lastStand": 0,
+        "lifeBonus": 0,
+        "lightning": 0,
+        "momentum": 0,
+        "pierce": 0,
+        "pierceWave": 0,
+        "rally": 0,
+        "rapid": 0,
+        "reboundCharge": 0,
+        "recruit": 0,
+        "shatter": 0,
+        "shock": 0,
+        "showdown": 0,
+        "slowForce": 0,
+        "solitary": 0,
+        "soloHunt": 0,
+        "speedBonus": 0,
+        "spinDamage": 1,
+        "spinDuration": 0.55,
+        "spinMaster": 0,
+        "spinRadius": 2.9,
+        "thirdCrit": 0,
+        "wallQuake": 0
+      },
+      {
+        "areaBonus": 0,
+        "areaPenalty": 0,
+        "bounceCrit": 0,
+        "bounceLife": 0,
+        "bouncePower": 0,
+        "critAdd": 0,
+        "critChance": 0,
+        "critMultiplier": 1.5,
+        "crowdRing": 0,
+        "damageBonus": 0,
+        "deathBurst": 0,
+        "distance": 0,
+        "expireBurst": 0,
+        "finisher": 0,
+        "flightSpeed": 0,
+        "fracture": 0,
+        "frenzy": 0,
+        "frost": 0,
+        "heat": 0,
+        "hitEcho": 0,
+        "killLife": 0,
+        "kingDamage": 0,
+        "landingSpin": false,
+        "lastStand": 0,
+        "lifeBonus": 0,
+        "lightning": 0,
+        "momentum": 0,
+        "pierce": 20,
+        "pierceWave": 0,
+        "rally": 0,
+        "rapid": 0,
+        "reboundCharge": 0,
+        "recruit": 0,
+        "shatter": 0,
+        "shock": 0,
+        "showdown": 0,
+        "slowForce": 0,
+        "solitary": 0,
+        "soloHunt": 0,
+        "speedBonus": 0,
+        "spinDamage": 0,
+        "spinDuration": 0,
+        "spinMaster": 0,
+        "spinRadius": 0,
+        "thirdCrit": 0,
+        "wallQuake": 0
+      }
+    ],
+    "location": "market",
+    "lockViolations": 0,
+    "lostPaid": 0,
+    "lotteryMisses": 10,
+    "lotteryResults": [
+      {
+        "amount": 0,
+        "monsterId": 14,
+        "playerId": 1,
+        "tier": 0,
+        "time": 2.166666666666664,
+        "won": false
+      },
+      {
+        "amount": 0,
+        "monsterId": 3,
+        "playerId": 1,
+        "tier": 0,
+        "time": 2.28333333333333,
+        "won": false
+      },
+      {
+        "amount": 16,
+        "monsterId": 2,
+        "playerId": 1,
+        "tier": 1,
+        "time": 2.583333333333329,
+        "won": true
+      },
+      {
+        "amount": 16,
+        "monsterId": 7,
+        "playerId": 1,
+        "tier": 1,
+        "time": 2.716666666666662,
+        "won": true
+      },
+      {
+        "amount": 0,
+        "monsterId": 18,
+        "playerId": 1,
+        "tier": 0,
+        "time": 2.716666666666662,
+        "won": false
+      },
+      {
+        "amount": 0,
+        "monsterId": 1,
+        "playerId": 1,
+        "tier": 0,
+        "time": 3.0333333333333274,
+        "won": false
+      },
+      {
+        "amount": 28,
+        "monsterId": 17,
+        "playerId": 1,
+        "tier": 1,
+        "time": 3.1499999999999937,
+        "won": true
+      },
+      {
+        "amount": 0,
+        "monsterId": 9,
+        "playerId": 1,
+        "tier": 0,
+        "time": 3.1999999999999935,
+        "won": false
+      },
+      {
+        "amount": 0,
+        "monsterId": 22,
+        "playerId": 1,
+        "tier": 0,
+        "time": 3.849999999999991,
+        "won": false
+      },
+      {
+        "amount": 0,
+        "monsterId": 6,
+        "playerId": 1,
+        "tier": 0,
+        "time": 3.849999999999991,
+        "won": false
+      },
+      {
+        "amount": 0,
+        "monsterId": 12,
+        "playerId": 1,
+        "tier": 0,
+        "time": 3.9999999999999907,
+        "won": false
+      },
+      {
+        "amount": 16,
+        "monsterId": 10,
+        "playerId": 1,
+        "tier": 1,
+        "time": 4.116666666666657,
+        "won": true
+      },
+      {
+        "amount": 16,
+        "monsterId": 5,
+        "playerId": 1,
+        "tier": 1,
+        "time": 4.3666666666666565,
+        "won": true
+      },
+      {
+        "amount": 16,
+        "monsterId": 15,
+        "playerId": 1,
+        "tier": 1,
+        "time": 4.466666666666656,
+        "won": true
+      },
+      {
+        "amount": 110,
+        "monsterId": 17,
+        "playerId": 1,
+        "tier": 3,
+        "time": 4.899999999999988,
+        "won": true
+      },
+      {
+        "amount": 16,
+        "monsterId": 32,
+        "playerId": 1,
+        "tier": 1,
+        "time": 4.983333333333321,
+        "won": true
+      },
+      {
+        "amount": 28,
+        "monsterId": 26,
+        "playerId": 1,
+        "tier": 1,
+        "time": 5.116666666666654,
+        "won": true
+      },
+      {
+        "amount": 48,
+        "monsterId": 18,
+        "playerId": 1,
+        "tier": 1,
+        "time": 5.249999999999987,
+        "won": true
+      },
+      {
+        "amount": 0,
+        "monsterId": 18,
+        "playerId": 1,
+        "tier": 0,
+        "time": 5.416666666666653,
+        "won": false
+      },
+      {
+        "amount": 28,
+        "monsterId": 8,
+        "playerId": 1,
+        "tier": 1,
+        "time": 5.533333333333319,
+        "won": true
+      },
+      {
+        "amount": 0,
+        "monsterId": 18,
+        "playerId": 1,
+        "tier": 0,
+        "time": 5.899999999999984,
+        "won": false
+      },
+      {
+        "amount": 28,
+        "monsterId": 4,
+        "playerId": 1,
+        "tier": 1,
+        "time": 5.949999999999984,
+        "won": true
+      }
+    ],
+    "luck": 0,
+    "mapDuration": 1.5,
+    "mapElapsed": 1.4999999999999996,
+    "mapFrom": 0,
+    "mapMoving": false,
+    "mapPosition": 1,
+    "message": "",
+    "monsters": [
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "id": 11,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.65,
+        "skin": "moth",
+        "x": 0.375454,
+        "yaw": 0.5195036037222185,
+        "z": -0.371049
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "id": 13,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.65,
+        "skin": "moth",
+        "x": -9.208261,
+        "yaw": 5.164526961422922,
+        "z": -2.886248
+      },
+      {
+        "animation": "hit",
+        "breaks": 0,
+        "damage": 90,
+        "guard": 100,
+        "id": 16,
+        "name": "獠牙搬木王",
+        "rank": 3,
+        "scale": 1.05,
+        "skin": "boar",
+        "x": -6.156368,
+        "yaw": 4.268118882902783,
+        "z": -3.008584
+      },
+      {
+        "animation": "hit",
+        "breaks": 4,
+        "damage": 90,
+        "guard": 160,
+        "id": 18,
+        "name": "古榕守衛",
+        "rank": 4,
+        "scale": 1.3,
+        "skin": "elder",
+        "x": 1.718753,
+        "yaw": 5.9529506180487815,
+        "z": -0.327804
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 32,
+        "id": 30,
+        "name": "菇背幼豬",
+        "rank": 2,
+        "scale": 0.8,
+        "skin": "piglet",
+        "x": -3.004828,
+        "yaw": 1.610887945496475,
+        "z": -1.086315
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 32,
+        "id": 36,
+        "name": "菇背幼豬",
+        "rank": 2,
+        "scale": 0.8,
+        "skin": "piglet",
+        "x": -1.077757,
+        "yaw": 5.443795424044112,
+        "z": 2.217361
+      }
+    ],
+    "offer": [
+      58,
+      61,
+      59
+    ],
+    "particles": 455,
+    "paused": false,
+    "pendingWheel": {},
+    "phase": "battle",
+    "piercesUsed": 30,
+    "playerBuffs": [
+      {
+        "critical": 0,
+        "haste": 0,
+        "pierce": 0
+      },
+      {
+        "critical": 0,
+        "haste": 0,
+        "pierce": 0
+      },
+      {
+        "critical": 0,
+        "haste": 0,
+        "pierce": 0
+      },
+      {
+        "critical": 0,
+        "haste": 0,
+        "pierce": 0
+      }
+    ],
+    "playerGold": [
+      46,
+      320,
+      320,
+      320
+    ],
+    "poolContributed": 0,
+    "poolPaidOut": 0,
+    "poolWinner": 0,
+    "potions": {},
+    "presentationDelay": 0,
+    "prize": 28,
+    "prizeTier": 1,
+    "procHits": 0,
+    "radius": 2.9,
+    "rallyUntil": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "rallyUsed": [
+      false,
+      false,
+      false,
+      false
+    ],
+    "rankEconomy": [
+      {
+        "attempts": 12,
+        "damage": 1080,
+        "earned": 96
+      },
+      {
+        "attempts": 4,
+        "damage": 360,
+        "earned": 84
+      },
+      {
+        "attempts": 2,
+        "damage": 450,
+        "earned": 138
+      },
+      {
+        "attempts": 4,
+        "damage": 810,
+        "earned": 48
+      },
+      {
+        "attempts": 0,
+        "damage": 0,
+        "earned": 0
+      }
+    ],
+    "recruitUses": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "refreshUsed": false,
+    "refunded": 0,
+    "researchUsed": false,
+    "resultElapsed": 0,
+    "returnedTotal": 0,
+    "returnedUnits": 0,
+    "rewardClock": 6.2333333333333165,
+    "rewards": [
+      {
+        "amount": 16,
+        "crystals": 0,
+        "id": 1,
+        "multiplier": 0.4,
+        "name": "橡果蹦蹦",
+        "playerId": 1,
+        "tier": 1,
+        "time": 2.583333333333329,
+        "title": "",
+        "x": 2.4725195138697593,
+        "z": -4.740936115274549
+      },
+      {
+        "amount": 16,
+        "crystals": 0,
+        "id": 2,
+        "multiplier": 0.4,
+        "name": "苔羽蛾",
+        "playerId": 1,
+        "tier": 1,
+        "time": 2.716666666666662,
+        "title": "",
+        "x": 2.7479006302419418,
+        "z": 4.196449636812169
+      },
+      {
+        "amount": 28,
+        "crystals": 1,
+        "id": 3,
+        "multiplier": 0.7,
+        "name": "花冠樹靈",
+        "playerId": 1,
+        "tier": 1,
+        "time": 3.1499999999999937,
+        "title": "",
+        "x": 4.909796499341802,
+        "z": 0.6494356980732987
+      },
+      {
+        "amount": 16,
+        "crystals": 0,
+        "id": 4,
+        "multiplier": 0.4,
+        "name": "橡果蹦蹦",
+        "playerId": 1,
+        "tier": 1,
+        "time": 4.116666666666657,
+        "title": "",
+        "x": -10.244988813906483,
+        "z": -2.161395283764811
+      },
+      {
+        "amount": 16,
+        "crystals": 1,
+        "id": 5,
+        "multiplier": 0.4,
+        "name": "苔羽蛾",
+        "playerId": 1,
+        "tier": 1,
+        "time": 4.3666666666666565,
+        "title": "",
+        "x": -11.5387481719758,
+        "z": -0.8716682657310113
+      },
+      {
+        "amount": 16,
+        "crystals": 0,
+        "id": 6,
+        "multiplier": 0.4,
+        "name": "苔羽蛾",
+        "playerId": 1,
+        "tier": 1,
+        "time": 4.466666666666656,
+        "title": "",
+        "x": 10.90421917954902,
+        "z": 4.7642062761816835
+      },
+      {
+        "amount": 110,
+        "crystals": 2,
+        "id": 7,
+        "multiplier": 2.75,
+        "name": "花冠樹靈",
+        "playerId": 1,
+        "tier": 3,
+        "time": 4.899999999999988,
+        "title": "BIG WIN",
+        "x": 5.971225748573904,
+        "z": 0.24044401249214348
+      },
+      {
+        "amount": 16,
+        "crystals": 0,
+        "id": 8,
+        "multiplier": 0.4,
+        "name": "橡果蹦蹦",
+        "playerId": 1,
+        "tier": 1,
+        "time": 4.983333333333321,
+        "title": "",
+        "x": 6.9417320952842285,
+        "z": -1.3942567816410405
+      },
+      {
+        "amount": 28,
+        "crystals": 1,
+        "id": 9,
+        "multiplier": 0.7,
+        "name": "菇背幼豬",
+        "playerId": 1,
+        "tier": 1,
+        "time": 5.116666666666654,
+        "title": "",
+        "x": 1.0888622619262207,
+        "z": -3.988476709189163
+      },
+      {
+        "amount": 48,
+        "crystals": 2,
+        "id": 10,
+        "multiplier": 1.2,
+        "name": "古榕守衛",
+        "playerId": 1,
+        "tier": 1,
+        "time": 5.249999999999987,
+        "title": "",
+        "x": 1.9297108010439745,
+        "z": -0.9191153250124557
+      },
+      {
+        "amount": 28,
+        "crystals": 0,
+        "id": 11,
+        "multiplier": 0.7,
+        "name": "菇背幼豬",
+        "playerId": 1,
+        "tier": 1,
+        "time": 5.533333333333319,
+        "title": "",
+        "x": 10.316183457304172,
+        "z": -0.6675992981302334
+      },
+      {
+        "amount": 28,
+        "crystals": 1,
+        "id": 12,
+        "multiplier": 0.7,
+        "name": "菇背幼豬",
+        "playerId": 1,
+        "tier": 1,
+        "time": 5.949999999999984,
+        "title": "",
+        "x": -5.5156128242567775,
+        "z": -6.705139559985513
+      }
+    ],
+    "round": 1,
+    "roundCrystalBonus": 0,
+    "roundCrystalEarned": 8,
+    "roundDuration": 180,
+    "roundRefund": 0,
+    "roundSettled": false,
+    "roundSpent": [
+      640,
+      0,
+      0,
+      0
+    ],
+    "runeOwned": [
+      [
+        false,
+        false,
+        false
+      ],
+      [
+        false,
+        false,
+        false
+      ],
+      [
+        false,
+        false,
+        false
+      ]
+    ],
+    "runes": [
+      0,
+      0,
+      0
+    ],
+    "seat": 1,
+    "selected": 3,
+    "shopSpent": 0,
+    "shopVisits": 1,
+    "skillBook": {
+      "bounce_life": {
+        "deployExtra": 1,
+        "desc": "反彈延命 0.2 秒，每兵上限 1 秒；每支派兵 +1",
+        "name": "回春折返"
+      },
+      "bounce_power": {
+        "deployExtra": 1,
+        "desc": "每反彈傷害 +12%，上限 +60%；每支派兵 +1",
+        "name": "越彈越猛"
+      },
+      "crit_power": {
+        "deployExtra": 1,
+        "desc": "爆擊倍率 +0.25；每支派兵 +1",
+        "name": "猛擊"
+      },
+      "critical": {
+        "deployExtra": 1,
+        "desc": "目前兵種爆擊率 +10%，爆擊傷害至少 1.5 倍；每次傷害獨立判定；每支派兵 +1",
+        "name": "精準戰技"
+      },
+      "crowd_ring": {
+        "deployExtra": 1,
+        "desc": "落地時附近至少三怪，旋轉半徑+20%，每兵一次；每支派兵 +1",
+        "name": "聚獵"
+      },
+      "deadly": {
+        "deployExtra": 2,
+        "desc": "爆擊倍率+0.5；每支派兵 +2",
+        "name": "致命"
+      },
+      "distance": {
+        "deployExtra": 1,
+        "desc": "地面移動12單位後下一撞 +30%；每支派兵 +1",
+        "name": "遠征"
+      },
+      "double_pierce": {
+        "deployExtra": 4,
+        "desc": "穿透+2；每支派兵 +4",
+        "name": "雙重貫穿"
+      },
+      "ember_burst": {
+        "deployExtra": 4,
+        "desc": "終結接觸後範圍爆炸；每支派兵 +4",
+        "name": "餘燼"
+      },
+      "expire_burst": {
+        "deployExtra": 2,
+        "desc": "到期產生25%範圍傷害；每支派兵 +2",
+        "name": "不屈"
+      },
+      "finisher": {
+        "deployExtra": 2,
+        "desc": "穿透累積最後一撞傷害；每支派兵 +2",
+        "name": "破陣"
+      },
+      "fracture": {
+        "deployExtra": 1,
+        "desc": "命中前破防進度達70%，主要接觸傷害+20%；每支派兵 +1",
+        "name": "裂甲"
+      },
+      "frenzy": {
+        "deployExtra": 1,
+        "desc": "連殺 5/10/15 層增傷；每支派兵 +1",
+        "name": "狂獵戰旗"
+      },
+      "frost_touch": {
+        "deployExtra": 1,
+        "desc": "主要命中緩速；每支派兵 +1",
+        "name": "凝霜之握"
+      },
+      "giant": {
+        "deployExtra": 2,
+        "desc": "基礎傷害+25%；每支派兵 +2",
+        "name": "巨力"
+      },
+      "haste": {
+        "deployExtra": 1,
+        "desc": "移速 +15%；每支派兵 +1",
+        "name": "疾行"
+      },
+      "heat": {
+        "deployExtra": 1,
+        "desc": "每秒主要傷害 +5%，上限25%；每支派兵 +1",
+        "name": "熱機"
+      },
+      "heavy": {
+        "deployExtra": 2,
+        "desc": "速度 -20%，傷害 +35%；每支派兵 +2",
+        "name": "沉重"
+      },
+      "hit_echo": {
+        "deployExtra": 2,
+        "desc": "同兵命中三個不同主要目標後，追加20%範圍傷害，每兵一次；每支派兵 +2",
+        "name": "三重回響"
+      },
+      "hunter_vigor": {
+        "deployExtra": 1,
+        "desc": "擊殺延命 0.25 秒，每兵上限 1 秒；不復活；每支派兵 +1",
+        "name": "狩獵續航"
+      },
+      "king_hunter": {
+        "deployExtra": 2,
+        "desc": "對王主要傷害 +20%；每支派兵 +2",
+        "name": "獵王"
+      },
+      "landing_spin": {
+        "deployExtra": 6,
+        "desc": "目前兵種獲得落地旋轉斬，之後繼續前進；不消耗穿透次數；每支派兵 +6",
+        "name": "旋風戰技"
+      },
+      "last_stand": {
+        "deployExtra": 1,
+        "desc": "剩餘壽命低於25%時下一撞 +40%；每支派兵 +1",
+        "name": "最後一搏"
+      },
+      "lightning": {
+        "deployExtra": 3,
+        "desc": "爆擊雷鏈其他兩怪，每兵最多兩次；每支派兵 +3",
+        "name": "雷枝"
+      },
+      "longlife": {
+        "deployExtra": 1,
+        "desc": "壽命 +15%；每支派兵 +1",
+        "name": "長征"
+      },
+      "momentum": {
+        "deployExtra": 2,
+        "desc": "正向速度加成轉穿透傷害；每支派兵 +2",
+        "name": "勢能穿刺"
+      },
+      "pierce": {
+        "deployExtra": 2,
+        "desc": "目前兵種穿透 +1，可累加；穿透用完後，下次撞擊造成傷害並消失；每支派兵 +2",
+        "name": "穿軍尖鋒"
+      },
+      "piercing_wave": {
+        "deployExtra": 3,
+        "desc": "每第二次成功穿透，對其他最多四怪造成20%範圍傷害；每支派兵 +3",
+        "name": "穿陣旋斬"
+      },
+      "rally": {
+        "deployExtra": 1,
+        "desc": "本輪實付派兵400金幣後，全軍主要增傷15%持續10秒，每輪一次；每支派兵 +1",
+        "name": "集結"
+      },
+      "rapid": {
+        "deployExtra": 2,
+        "desc": "裝備此技能派兵頻率+25%，照價付費；每支派兵 +2",
+        "name": "急募"
+      },
+      "rebound_charge": {
+        "deployExtra": 1,
+        "desc": "反彈最多兩層，下一主要命中每層+20%；每支派兵 +1",
+        "name": "折光"
+      },
+      "recruit": {
+        "deployExtra": 1,
+        "desc": "少於80金幣時派兵半價，每玩家每輪最多三次；每支派兵 +1",
+        "name": "徵募"
+      },
+      "ricochet_precision": {
+        "deployExtra": 1,
+        "desc": "每反彈爆擊率 +15%，上限 +45%；每支派兵 +1",
+        "name": "鏡面準星"
+      },
+      "sharp": {
+        "deployExtra": 1,
+        "desc": "基礎傷害+10%；每支派兵 +1",
+        "name": "鋒利"
+      },
+      "shatter": {
+        "deployExtra": 2,
+        "desc": "命中已緩速目標 +30% 傷害；每兵一次碎冰波；每支派兵 +2",
+        "name": "碎冰"
+      },
+      "shock": {
+        "deployExtra": 4,
+        "desc": "主要命中向其他怪擴散 20% 範圍傷害；每支派兵 +4",
+        "name": "震盪"
+      },
+      "short_fuse": {
+        "deployExtra": 2,
+        "desc": "壽命-20%，傷害+45%；每支派兵 +2",
+        "name": "燃命"
+      },
+      "showdown": {
+        "deployExtra": 2,
+        "desc": "最後30秒主要傷害+25%；每支派兵 +2",
+        "name": "決戰"
+      },
+      "slow_force": {
+        "deployExtra": 1,
+        "desc": "負向移速加成的75%轉為主要傷害，上限30%；每支派兵 +1",
+        "name": "重步碾壓"
+      },
+      "solitary": {
+        "deployExtra": 1,
+        "desc": "自己只有一支付費活兵時，該兵主要傷害+30%；每支派兵 +1",
+        "name": "孤軍"
+      },
+      "solo_hunt": {
+        "deployExtra": 1,
+        "desc": "目標2單位內無其他活怪，主要傷害+25%；每支派兵 +1",
+        "name": "孤獵"
+      },
+      "spin_master": {
+        "deployExtra": 2,
+        "desc": "旋轉半徑 +0.4、旋轉傷害 +20%；需要落地旋轉斬；每支派兵 +2",
+        "name": "旋風擴張"
+      },
+      "third_crit": {
+        "deployExtra": 2,
+        "desc": "每第三次主要命中必定爆擊；每支派兵 +2",
+        "name": "決勝"
+      },
+      "wall_quake": {
+        "deployExtra": 2,
+        "desc": "第一次反彈：30%範圍傷害，最多四怪；每支派兵 +2",
+        "name": "震地"
+      },
+      "wide_blade": {
+        "deployExtra": 1,
+        "desc": "範圍半徑+20%，範圍傷害-10%；每支派兵 +1",
+        "name": "寬刃"
+      }
+    },
+    "skillSources": [
+      {},
+      {},
+      {}
+    ],
+    "skillTriggers": {},
+    "sold": 0,
+    "specialSpawned": false,
+    "spent": 640,
+    "spinHits": 0,
+    "stock": [
+      {
+        "currency": "crystal",
+        "deployExtra": 2,
+        "kind": "gear",
+        "name": "穿軍刃",
+        "price": 12,
+        "skill": "pierce",
+        "slot": 5,
+        "value": 1
+      },
+      {
+        "currency": "crystal",
+        "deployExtra": 2,
+        "kind": "gear",
+        "name": "破陣護手",
+        "price": 14,
+        "skill": "finisher",
+        "slot": 4,
+        "value": 14
+      },
+      {
+        "currency": "crystal",
+        "deployExtra": 2,
+        "kind": "gear",
+        "name": "勢能戰槍",
+        "price": 12,
+        "skill": "momentum",
+        "slot": 5,
+        "value": 17
+      },
+      {
+        "currency": "crystal",
+        "deployExtra": 3,
+        "kind": "gear",
+        "name": "雷枝戰槍",
+        "price": 18,
+        "skill": "lightning",
+        "slot": 5,
+        "value": 3
+      }
+    ],
+    "streaks": [
+      {
+        "count": 0,
+        "time": 0
+      },
+      {
+        "count": 0,
+        "time": 0
+      },
+      {
+        "count": 0,
+        "time": 0
+      },
+      {
+        "count": 0,
+        "time": 0
+      }
+    ],
+    "targetFilter": "all",
+    "targetId": 18,
+    "targetName": "古榕守衛",
+    "tech": [
+      {},
+      {},
+      {}
+    ],
+    "time": 175.4333333333297,
+    "town": {
+      "gold": 0,
+      "levels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "version": 1
+    },
+    "townStartGold": 0,
+    "troops": 16,
+    "vfx": {},
+    "visualSerial": 0,
+    "visualTroops": [
+      {
+        "age": 4.333333333333323,
+        "bounces": 5,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 19,
+        "k": 3,
+        "life": 8,
+        "mainHits": 5,
+        "pierce": 15,
+        "playerId": 1,
+        "state": "run",
+        "x": 8.42509314548174,
+        "y": 0,
+        "yaw": -2.9815360323714817,
+        "z": 9.529300855774526
+      },
+      {
+        "age": 4.083333333333324,
+        "bounces": 4,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 20,
+        "k": 3,
+        "life": 8,
+        "mainHits": 1,
+        "pierce": 19,
+        "playerId": 1,
+        "state": "run",
+        "x": 7.784627858113648,
+        "y": 0,
+        "yaw": -0.17658332684906763,
+        "z": 9.276064192194085
+      },
+      {
+        "age": 3.8333333333333246,
+        "bounces": 4,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 21,
+        "k": 3,
+        "life": 8,
+        "mainHits": 7,
+        "pierce": 13,
+        "playerId": 1,
+        "state": "run",
+        "x": -7.62186911636481,
+        "y": 0,
+        "yaw": -0.3624707618939187,
+        "z": -1.1778304426425663
+      },
+      {
+        "age": 3.5833333333333255,
+        "bounces": 4,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 23,
+        "k": 3,
+        "life": 8,
+        "mainHits": 3,
+        "pierce": 17,
+        "playerId": 1,
+        "state": "run",
+        "x": -3.5914463007505715,
+        "y": 0,
+        "yaw": -0.3389093492485933,
+        "z": -6.091867248522467
+      },
+      {
+        "age": 3.3333333333333264,
+        "bounces": 3,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 24,
+        "k": 3,
+        "life": 8,
+        "mainHits": 1,
+        "pierce": 19,
+        "playerId": 1,
+        "state": "run",
+        "x": 10.788292137089103,
+        "y": 0,
+        "yaw": 2.677788450850744,
+        "z": -9.348571934807753
+      },
+      {
+        "age": 3.0833333333333273,
+        "bounces": 3,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 25,
+        "k": 3,
+        "life": 8,
+        "mainHits": 0,
+        "pierce": 20,
+        "playerId": 1,
+        "state": "run",
+        "x": 7.797583722218378,
+        "y": 0,
+        "yaw": 2.682415558380882,
+        "z": -4.134896562699757
+      },
+      {
+        "age": 2.833333333333328,
+        "bounces": 4,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 27,
+        "k": 3,
+        "life": 8,
+        "mainHits": 5,
+        "pierce": 15,
+        "playerId": 1,
+        "state": "run",
+        "x": 8.426247581444612,
+        "y": 0,
+        "yaw": -2.4837909788155015,
+        "z": 8.389005678758679
+      },
+      {
+        "age": 2.583333333333329,
+        "bounces": 3,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 28,
+        "k": 3,
+        "life": 8,
+        "mainHits": 1,
+        "pierce": 19,
+        "playerId": 1,
+        "state": "run",
+        "x": 10.779469220368524,
+        "y": 0,
+        "yaw": -0.6848917876703765,
+        "z": 10.818225345841157
+      },
+      {
+        "age": 2.33333333333333,
+        "bounces": 3,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 29,
+        "k": 3,
+        "life": 8,
+        "mainHits": 1,
+        "pierce": 19,
+        "playerId": 1,
+        "state": "run",
+        "x": 1.7319049651028093,
+        "y": 0,
+        "yaw": -2.7130983575638288,
+        "z": 11.26282542732677
+      },
+      {
+        "age": 1.8499999999999983,
+        "bounces": 2,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 31,
+        "k": 3,
+        "life": 8,
+        "mainHits": 2,
+        "pierce": 18,
+        "playerId": 1,
+        "state": "run",
+        "x": 5.877640606823403,
+        "y": 0,
+        "yaw": -0.4452502776760866,
+        "z": 2.8711288989740034
+      },
+      {
+        "age": 1.3166666666666669,
+        "bounces": 1,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 33,
+        "k": 3,
+        "life": 8,
+        "mainHits": 1,
+        "pierce": 19,
+        "playerId": 1,
+        "state": "run",
+        "x": 4.769078135315838,
+        "y": 0,
+        "yaw": 0.15149906300667762,
+        "z": -5.961947984241206
+      },
+      {
+        "age": 1.0666666666666678,
+        "bounces": 1,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 34,
+        "k": 3,
+        "life": 8,
+        "mainHits": 1,
+        "pierce": 19,
+        "playerId": 1,
+        "state": "run",
+        "x": 3.7653816209456448,
+        "y": 0,
+        "yaw": 0.14762079188959346,
+        "z": -11.878430118797029
+      },
+      {
+        "age": 0.8166666666666675,
+        "bounces": 0,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 35,
+        "k": 3,
+        "life": 8,
+        "mainHits": 1,
+        "pierce": 19,
+        "playerId": 1,
+        "state": "run",
+        "x": 2.8148327061023712,
+        "y": 0,
+        "yaw": 2.9974804293003907,
+        "z": -7.196822338637229
+      },
+      {
+        "age": 0.5666666666666668,
+        "bounces": 0,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 37,
+        "k": 3,
+        "life": 8,
+        "mainHits": 1,
+        "pierce": 19,
+        "playerId": 1,
+        "state": "run",
+        "x": 1.9220278892507605,
+        "y": 0,
+        "yaw": 2.999792346834123,
+        "z": -1.2634991288647708
+      },
+      {
+        "age": 0.31666666666666665,
+        "bounces": 0,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 38,
+        "k": 3,
+        "life": 8,
+        "mainHits": 0,
+        "pierce": 20,
+        "playerId": 1,
+        "state": "run",
+        "x": 1.0562449518167065,
+        "y": 0,
+        "yaw": 3.0021617144405703,
+        "z": 4.673756142552801
+      },
+      {
+        "age": 0.06666666666666667,
+        "bounces": 0,
+        "equipment": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "id": 39,
+        "k": 3,
+        "life": 8,
+        "mainHits": 0,
+        "pierce": 20,
+        "playerId": 1,
+        "state": "run",
+        "x": 0.21851808855913132,
+        "y": 0,
+        "yaw": 3.004590672848884,
+        "z": 10.61499216248863
+      }
+    ],
+    "wheelSpawned": false,
+    "won": false,
+    "worn": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "metrics": {
+    "instances": 591,
+    "instance_cells": 20,
+    "submitted_instance_cells": 20,
+    "submitted_instances": 591,
+    "culled_instances": 0,
+    "draw_calls": 217,
+    "triangles": 83254,
+    "textures": 104,
+    "particles": 0,
+    "effects": 0,
+    "bloom": true,
+    "ao": false,
+    "ao_method": "depth-ssao-12",
+    "bloom_resolution": [
+      360,
+      225
+    ],
+    "hdr": true,
+    "gpu_timer_available": true,
+    "gpu_on": {
+      "samples": 240,
+      "median_ms": 0.749024,
+      "p95_ms": 2.910848
+    },
+    "gpu_off": null,
+    "walls": {
+      "halfExtent": 12.5,
+      "innerFace": 12.5,
+      "height": 0.66,
+      "segments": 136
+    },
+    "actors": {
+      "actors": 23,
+      "animator": {
+        "lod": {
+          "budget_hz": 2400,
+          "assigned": [
+            {
+              "id": "m1",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m10",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m11",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m12",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m13",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m14",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m15",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m16",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m17",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m18",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m2",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m22",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m26",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m3",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m30",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m32",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m36",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m4",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m5",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m6",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m7",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m8",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m9",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "t19",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t19-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t20",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t20-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t21",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t21-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t23",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t23-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t24",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t24-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t25",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t25-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t27",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t27-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t28",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t28-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t29",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t29-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t31",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t31-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t33",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t33-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t34",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t34-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t35",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t35-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t37",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t37-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t38",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t38-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t39",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t39-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "tmenu1",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "tmenu2",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "tmenu3",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "tmenu3-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            }
+          ],
+          "counts": {
+            "full": 36,
+            "reduced": 23
+          }
+        },
+        "instances": [
+          {
+            "id": "m11",
+            "distance": 14,
+            "lod": {
+              "id": "m11",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.5831999523043633,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.47286482009868597,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m13",
+            "distance": 14,
+            "lod": {
+              "id": "m13",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.5831999523043633,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.47286482009868597,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m16",
+            "distance": 14,
+            "lod": {
+              "id": "m16",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "hit",
+              "clip": "hit",
+              "time": 0.07240000000596046,
+              "duration": 0.3333333432674408,
+              "normalizedTime": 0.21719999354481714,
+              "speed": 1,
+              "loop": false,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m18",
+            "distance": 14,
+            "lod": {
+              "id": "m18",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "hit",
+              "clip": "hit",
+              "time": 0,
+              "duration": 0.3333333432674408,
+              "normalizedTime": 0,
+              "speed": 1,
+              "loop": false,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m30",
+            "distance": 14,
+            "lod": {
+              "id": "m30",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.7224666507542137,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.585783763332512,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m36",
+            "distance": 14,
+            "lod": {
+              "id": "m36",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.49300000000000005,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.39972972457821665,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m4",
+            "distance": 14,
+            "lod": {
+              "id": "m4",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "death",
+              "clip": "death",
+              "time": 0.2795,
+              "duration": 0.8333333134651184,
+              "normalizedTime": 0.3354000079965594,
+              "speed": 1,
+              "loop": false,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t19",
+            "distance": 2,
+            "lod": {
+              "id": "t19",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "bounce",
+              "clip": "bounce",
+              "time": 0.11390000000596047,
+              "duration": 0.18,
+              "normalizedTime": 0.6327777778108915,
+              "speed": 1,
+              "loop": false,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t19-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t19-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.46403704711905236,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.6327777778108915,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t20",
+            "distance": 2,
+            "lod": {
+              "id": "t20",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.7414000000059604,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.8722352696591189,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t20-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t20-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.6396392116138268,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.8722352696591189,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t21",
+            "distance": 2,
+            "lod": {
+              "id": "t21",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "pierce",
+              "clip": "pierce",
+              "time": 0.18,
+              "duration": 0.18,
+              "normalizedTime": 1,
+              "speed": 1,
+              "loop": false,
+              "playing": false,
+              "finished": true,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t21-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t21-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.7333333492279053,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 1,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t23",
+            "distance": 2,
+            "lod": {
+              "id": "t23",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.11390000000596047,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.13399999624841363,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": {
+                "source": "bounce",
+                "target": "run",
+                "progress": 0.9491666667163373,
+                "duration": 0.12
+              },
+              "active_action_count": 2
+            }
+          },
+          {
+            "id": "t23-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t23-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.09826666604537591,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.13399999624841363,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t24",
+            "distance": 2,
+            "lod": {
+              "id": "t24",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.8204000000059604,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.9651764435227773,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t24-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t24-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.7077960739244364,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.9651764435227773,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t25",
+            "distance": 2,
+            "lod": {
+              "id": "t25",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.5979999999999999,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.7035293920312378,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t25-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t25-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.5159215653385396,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.7035293920312379,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t27",
+            "distance": 2,
+            "lod": {
+              "id": "t27",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.03440000000596047,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.04047058710713704,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": {
+                "source": "bounce",
+                "target": "run",
+                "progress": 0.2866666667163372,
+                "duration": 0.12
+              },
+              "active_action_count": 2
+            }
+          },
+          {
+            "id": "t27-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t27-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.029678431188496487,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.04047058710713704,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t28",
+            "distance": 2,
+            "lod": {
+              "id": "t28",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "bounce",
+              "clip": "bounce",
+              "time": 0.11390000000596047,
+              "duration": 0.18,
+              "normalizedTime": 0.6327777778108915,
+              "speed": 1,
+              "loop": false,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t28-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t28-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.46403704711905236,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.6327777778108915,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t29",
+            "distance": 2,
+            "lod": {
+              "id": "t29",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "bounce",
+              "clip": "bounce",
+              "time": 0.03440000000596047,
+              "duration": 0.18,
+              "normalizedTime": 0.19111111114422483,
+              "speed": 1,
+              "loop": false,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": {
+                "source": "run",
+                "target": "bounce",
+                "progress": 0.6880000001192094,
+                "duration": 0.05
+              },
+              "active_action_count": 2
+            }
+          },
+          {
+            "id": "t29-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t29-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.14014815121006086,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.19111111114422485,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t31",
+            "distance": 2,
+            "lod": {
+              "id": "t31",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.4860999999940395,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.5718823368932966,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t31-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t31-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.41938038947824247,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.5718823368932966,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t33",
+            "distance": 2,
+            "lod": {
+              "id": "t33",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.11390000000596047,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.13399999624841363,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": {
+                "source": "bounce",
+                "target": "run",
+                "progress": 0.9491666667163373,
+                "duration": 0.12
+              },
+              "active_action_count": 2
+            }
+          },
+          {
+            "id": "t33-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t33-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.09826666604537591,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.13399999624841363,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t34",
+            "distance": 2,
+            "lod": {
+              "id": "t34",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.3730999999940395,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.4389411641516078,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t34-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t34-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.32189019402129426,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.4389411641516078,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t35",
+            "distance": 2,
+            "lod": {
+              "id": "t35",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.10749999999999998,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.12647058468788974,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": {
+                "source": "pierce",
+                "target": "run",
+                "progress": 0.8958333333333333,
+                "duration": 0.12
+              },
+              "active_action_count": 2
+            }
+          },
+          {
+            "id": "t35-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t35-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.09274509744798162,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.12647058468788974,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t37",
+            "distance": 2,
+            "lod": {
+              "id": "t37",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "pierce",
+              "clip": "pierce",
+              "time": 0.07359999999403953,
+              "duration": 0.18,
+              "normalizedTime": 0.4088888888557752,
+              "speed": 1,
+              "loop": false,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t37-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t37-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.2998518583266823,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.4088888888557752,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t38",
+            "distance": 2,
+            "lod": {
+              "id": "t38",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.0365,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.04294117526612071,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": {
+                "source": "spawn",
+                "target": "run",
+                "progress": 0.30416666666666664,
+                "duration": 0.12
+              },
+              "active_action_count": 2
+            }
+          },
+          {
+            "id": "t38-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t38-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.03149019587768678,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.04294117526612071,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t39",
+            "distance": 2,
+            "lod": {
+              "id": "t39",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "spawn",
+              "clip": "spawn",
+              "time": 0.00969999998807907,
+              "duration": 1.7999999523162842,
+              "normalizedTime": 0.005388889025022958,
+              "speed": 1,
+              "loop": false,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t39-horse",
+            "distance": 2,
+            "lod": {
+              "id": "t39-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.003951852037337587,
+              "duration": 0.7333333492279053,
+              "normalizedTime": 0.005388889025022958,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          }
+        ],
+        "semantics": "presentation-only; instances3d/gameplay tick/collision/root motion are unchanged"
+      },
+      "creatures": 11,
+      "equipment": 45
+    },
+    "lottie": {
+      "ok": true,
+      "value": {
+        "componentBounds": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        "clipped": false,
+        "assetReady": true,
+        "currentFrame": 8.199000000357628,
+        "state": "playing",
+        "generation": 13,
+        "backend": "canvas-2d",
+        "error": null
+      }
+    },
+    "ui": {
+      "backend": "canvas2d",
+      "nodes": 31,
+      "assets": [
+        {
+          "id": "texture://ui_hud-crystal",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-gold",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-active",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-key",
+          "state": "ready"
+        }
+      ],
+      "diagnostics": [],
+      "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+      "limitations": [
+        "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+        "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+      ]
+    }
+  }
+}

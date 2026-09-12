@@ -1,0 +1,18 @@
+{
+  "entities": [
+    {
+      "id": "stationary",
+      "transform": {
+        "x": 0,
+        "y": 10
+      },
+      "rigidbody": {
+        "radius": 0.5,
+        "velocity": {
+          "x": 1,
+          "y": 0
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1100 @@
+{
+  "ok": true,
+  "value": {
+    "screen": "forest_lord",
+    "cols": 96,
+    "rows": 48,
+    "ascii": "+------------------------------------------------------------------------------------------------+\n|                                                                                                |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@################################################################@@################@@@@   |\n|   @@@@################################################################@@################@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@################@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@########################################################################@@@@@@@@@   |\n|   @@@@@@@@@########################################################################@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|                                                                                                |\n+------------------------------------------------------------------------------------------------+",
+    "nodes": [
+      {
+        "id": "screen_back",
+        "kind": "image",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 94,
+          "height": 94
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_panel",
+        "text_fit": 0
+      },
+      {
+        "id": "screen_title",
+        "kind": "text",
+        "rect": {
+          "x": 7,
+          "y": 89,
+          "width": 67,
+          "height": 5
+        },
+        "text": "遠征地圖 · 森林王冠之路",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.27
+      },
+      {
+        "id": "screen_gold",
+        "kind": "text",
+        "rect": {
+          "x": 76,
+          "y": 89.5,
+          "width": 17,
+          "height": 3.5
+        },
+        "text": "金幣 320",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.35
+      },
+      {
+        "id": "screen_crystals_plate",
+        "kind": "image",
+        "rect": {
+          "x": 76,
+          "y": 84.5,
+          "width": 17,
+          "height": 3.5
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-crystal",
+        "text_fit": 0
+      },
+      {
+        "id": "screen_crystals",
+        "kind": "text",
+        "rect": {
+          "x": 76,
+          "y": 84.5,
+          "width": 17,
+          "height": 3.5
+        },
+        "text": "◆ 結晶 18",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.41
+      },
+      {
+        "id": "map_back",
+        "kind": "image",
+        "rect": {
+          "x": 7,
+          "y": 17,
+          "width": 86,
+          "height": 64
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_route-map",
+        "text_fit": 0
+      },
+      {
+        "id": "map_journal",
+        "kind": "text",
+        "rect": {
+          "x": 12,
+          "y": 75,
+          "width": 68,
+          "height": 5
+        },
+        "text": "苔光照亮了舊路。領主，先讓每一枚金幣帶人回家。",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.48
+      },
+      {
+        "id": "map_node_1",
+        "kind": "image",
+        "rect": {
+          "x": 9.5,
+          "y": 28,
+          "width": 5,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_route-current",
+        "text_fit": 0
+      },
+      {
+        "id": "map_number_1",
+        "kind": "text",
+        "rect": {
+          "x": 10.3,
+          "y": 29,
+          "width": 3.4,
+          "height": 4
+        },
+        "text": "1",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.33
+      },
+      {
+        "id": "map_name_1",
+        "kind": "text",
+        "rect": {
+          "x": 8,
+          "y": 23,
+          "width": 12,
+          "height": 4
+        },
+        "text": "苔光林口",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.38
+      },
+      {
+        "id": "map_node_2",
+        "kind": "image",
+        "rect": {
+          "x": 22.5,
+          "y": 44,
+          "width": 5,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_route-future",
+        "text_fit": 0
+      },
+      {
+        "id": "map_number_2",
+        "kind": "text",
+        "rect": {
+          "x": 23.3,
+          "y": 45,
+          "width": 3.4,
+          "height": 4
+        },
+        "text": "2",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.33
+      },
+      {
+        "id": "map_name_2",
+        "kind": "text",
+        "rect": {
+          "x": 19,
+          "y": 39,
+          "width": 12,
+          "height": 4
+        },
+        "text": "菇冠小徑",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.38
+      },
+      {
+        "id": "map_node_3",
+        "kind": "image",
+        "rect": {
+          "x": 35.5,
+          "y": 31,
+          "width": 5,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_route-future",
+        "text_fit": 0
+      },
+      {
+        "id": "map_number_3",
+        "kind": "text",
+        "rect": {
+          "x": 36.3,
+          "y": 32,
+          "width": 3.4,
+          "height": 4
+        },
+        "text": "3",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.33
+      },
+      {
+        "id": "map_name_3",
+        "kind": "text",
+        "rect": {
+          "x": 32,
+          "y": 26,
+          "width": 12,
+          "height": 4
+        },
+        "text": "橡木渡溪",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.38
+      },
+      {
+        "id": "map_node_4",
+        "kind": "image",
+        "rect": {
+          "x": 48.5,
+          "y": 52,
+          "width": 5,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_route-future",
+        "text_fit": 0
+      },
+      {
+        "id": "map_number_4",
+        "kind": "text",
+        "rect": {
+          "x": 49.3,
+          "y": 53,
+          "width": 3.4,
+          "height": 4
+        },
+        "text": "4",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.33
+      },
+      {
+        "id": "map_name_4",
+        "kind": "text",
+        "rect": {
+          "x": 45,
+          "y": 47,
+          "width": 12,
+          "height": 4
+        },
+        "text": "古榕回廊",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.38
+      },
+      {
+        "id": "map_node_5",
+        "kind": "image",
+        "rect": {
+          "x": 62.5,
+          "y": 41,
+          "width": 5,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_route-future",
+        "text_fit": 0
+      },
+      {
+        "id": "map_number_5",
+        "kind": "text",
+        "rect": {
+          "x": 63.3,
+          "y": 42,
+          "width": 3.4,
+          "height": 4
+        },
+        "text": "5",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.33
+      },
+      {
+        "id": "map_name_5",
+        "kind": "text",
+        "rect": {
+          "x": 59,
+          "y": 36,
+          "width": 12,
+          "height": 4
+        },
+        "text": "琥珀石庭",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.38
+      },
+      {
+        "id": "map_node_6",
+        "kind": "image",
+        "rect": {
+          "x": 74.5,
+          "y": 58,
+          "width": 5,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_route-future",
+        "text_fit": 0
+      },
+      {
+        "id": "map_number_6",
+        "kind": "text",
+        "rect": {
+          "x": 75.3,
+          "y": 59,
+          "width": 3.4,
+          "height": 4
+        },
+        "text": "6",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.33
+      },
+      {
+        "id": "map_name_6",
+        "kind": "text",
+        "rect": {
+          "x": 71,
+          "y": 53,
+          "width": 12,
+          "height": 4
+        },
+        "text": "冠角聖林",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.38
+      },
+      {
+        "id": "map_node_7",
+        "kind": "image",
+        "rect": {
+          "x": 85.5,
+          "y": 68,
+          "width": 5,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_route-future",
+        "text_fit": 0
+      },
+      {
+        "id": "map_number_7",
+        "kind": "text",
+        "rect": {
+          "x": 86.3,
+          "y": 69,
+          "width": 3.4,
+          "height": 4
+        },
+        "text": "7",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.33
+      },
+      {
+        "id": "map_name_7",
+        "kind": "text",
+        "rect": {
+          "x": 81,
+          "y": 63,
+          "width": 12,
+          "height": 4
+        },
+        "text": "森林王座",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.38
+      },
+      {
+        "id": "map_lord",
+        "kind": "image",
+        "rect": {
+          "x": 8.5,
+          "y": 41,
+          "width": 7,
+          "height": 8
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_portrait-lord-v2",
+        "text_fit": 0
+      },
+      {
+        "id": "map_progress",
+        "kind": "text",
+        "rect": {
+          "x": 12,
+          "y": 10,
+          "width": 76,
+          "height": 5
+        },
+        "text": "第 1 / 7 站 · 紮營 苔光林口 · 挑一處景點整備",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.54
+      },
+      {
+        "id": "visit_location_plate",
+        "kind": "image",
+        "rect": {
+          "x": 32,
+          "y": 4,
+          "width": 36,
+          "height": 5
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "visit_location",
+        "kind": "button",
+        "rect": {
+          "x": 32,
+          "y": 5,
+          "width": 36,
+          "height": 3
+        },
+        "text": "查看景點建築",
+        "action": "VisitLocation",
+        "asset": null,
+        "text_fit": 0.14
+      },
+      {
+        "id": "visit_location_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 32,
+          "y": 8,
+          "width": 36,
+          "height": 1
+        },
+        "text": "",
+        "action": "VisitLocation",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "visit_location_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 32,
+          "y": 4,
+          "width": 36,
+          "height": 1
+        },
+        "text": "",
+        "action": "VisitLocation",
+        "asset": null,
+        "text_fit": 0
+      }
+    ],
+    "findings": [],
+    "allowed_overlaps": [
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'screen_title' overlap by 67.0 x 5.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "screen_title"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'screen_gold' overlap by 17.0 x 3.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "screen_gold"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'screen_crystals_plate' overlap by 17.0 x 3.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "screen_crystals_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'screen_crystals' overlap by 17.0 x 3.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "screen_crystals"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_back' overlap by 86.0 x 64.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_back"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_journal' overlap by 68.0 x 5.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_journal"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_node_1' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_node_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_number_1' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_number_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_name_1' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_name_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_node_2' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_node_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_number_2' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_number_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_name_2' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_name_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_node_3' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_node_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_number_3' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_number_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_name_3' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_name_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_node_4' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_node_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_number_4' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_number_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_name_4' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_name_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_node_5' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_node_5"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_number_5' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_number_5"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_name_5' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_name_5"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_node_6' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_node_6"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_number_6' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_number_6"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_name_6' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_name_6"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_node_7' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_node_7"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_number_7' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_number_7"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_name_7' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_name_7"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_lord' overlap by 7.0 x 8.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_lord"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'map_progress' overlap by 76.0 x 5.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "map_progress"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'visit_location_plate' overlap by 36.0 x 5.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "visit_location_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'visit_location' overlap by 36.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "visit_location"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'visit_location_hit_top' overlap by 36.0 x 1.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "visit_location_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'visit_location_hit_bottom' overlap by 36.0 x 1.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "visit_location_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_crystals_plate' and 'screen_crystals' overlap by 17.0 x 3.5 (design-space units).",
+        "nodes": [
+          "screen_crystals_plate",
+          "screen_crystals"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_journal' overlap by 68.0 x 5.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_journal"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_node_1' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_node_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_number_1' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_number_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_name_1' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_name_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_node_2' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_node_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_number_2' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_number_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_name_2' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_name_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_node_3' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_node_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_number_3' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_number_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_name_3' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_name_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_node_4' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_node_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_number_4' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_number_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_name_4' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_name_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_node_5' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_node_5"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_number_5' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_number_5"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_name_5' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_name_5"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_node_6' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_node_6"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_number_6' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_number_6"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_name_6' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_name_6"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_node_7' overlap by 5.0 x 6.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_node_7"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_number_7' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_number_7"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_name_7' overlap by 12.0 x 4.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_name_7"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_back' and 'map_lord' overlap by 7.0 x 8.0 (design-space units).",
+        "nodes": [
+          "map_back",
+          "map_lord"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_node_1' and 'map_number_1' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_node_1",
+          "map_number_1"
+        ],
+        "resolution": "Map number inside its authored marker"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_node_2' and 'map_number_2' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_node_2",
+          "map_number_2"
+        ],
+        "resolution": "Map number inside its authored marker"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_node_3' and 'map_number_3' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_node_3",
+          "map_number_3"
+        ],
+        "resolution": "Map number inside its authored marker"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_node_4' and 'map_number_4' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_node_4",
+          "map_number_4"
+        ],
+        "resolution": "Map number inside its authored marker"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_node_5' and 'map_number_5' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_node_5",
+          "map_number_5"
+        ],
+        "resolution": "Map number inside its authored marker"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_node_6' and 'map_number_6' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_node_6",
+          "map_number_6"
+        ],
+        "resolution": "Map number inside its authored marker"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'map_node_7' and 'map_number_7' overlap by 3.4 x 4.0 (design-space units).",
+        "nodes": [
+          "map_node_7",
+          "map_number_7"
+        ],
+        "resolution": "Map number inside its authored marker"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'visit_location_plate' and 'visit_location' overlap by 36.0 x 3.0 (design-space units).",
+        "nodes": [
+          "visit_location_plate",
+          "visit_location"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'visit_location_plate' and 'visit_location_hit_top' overlap by 36.0 x 1.0 (design-space units).",
+        "nodes": [
+          "visit_location_plate",
+          "visit_location_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'visit_location_plate' and 'visit_location_hit_bottom' overlap by 36.0 x 1.0 (design-space units).",
+        "nodes": [
+          "visit_location_plate",
+          "visit_location_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      }
+    ],
+    "readable": true,
+    "assumptions": [
+      "text_fit assumes a 16:9 viewport and a 0.5 character advance, so it is a              measurement to read, never a pass/fail",
+      "structure only: this says nothing about whether the screen looks good"
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

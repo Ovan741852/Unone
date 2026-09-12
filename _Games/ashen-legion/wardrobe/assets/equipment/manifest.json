@@ -1,0 +1,317 @@
+[
+  {
+    "id": "pierce",
+    "name": "穿軍刃",
+    "slot": 5,
+    "price": 96,
+    "image": "svg/gear-pierce.svg"
+  },
+  {
+    "id": "landing_spin",
+    "name": "旋風長柄",
+    "slot": 5,
+    "price": 120,
+    "image": "svg/gear-landing_spin.svg"
+  },
+  {
+    "id": "lightning",
+    "name": "雷枝戰槍",
+    "slot": 5,
+    "price": 144,
+    "image": "svg/gear-lightning.svg"
+  },
+  {
+    "id": "critical",
+    "name": "鷹眼盔",
+    "slot": 1,
+    "price": 72,
+    "image": "svg/gear-critical.svg"
+  },
+  {
+    "id": "third_crit",
+    "name": "決勝冠",
+    "slot": 1,
+    "price": 112,
+    "image": "svg/gear-third_crit.svg"
+  },
+  {
+    "id": "king_hunter",
+    "name": "獵王面甲",
+    "slot": 1,
+    "price": 96,
+    "image": "svg/gear-king_hunter.svg"
+  },
+  {
+    "id": "ember_burst",
+    "name": "餘燼鎧",
+    "slot": 2,
+    "price": 104,
+    "image": "svg/gear-ember_burst.svg"
+  },
+  {
+    "id": "longlife",
+    "name": "長征甲",
+    "slot": 2,
+    "price": 80,
+    "image": "svg/gear-longlife.svg"
+  },
+  {
+    "id": "expire_burst",
+    "name": "不屈戰衣",
+    "slot": 2,
+    "price": 120,
+    "image": "svg/gear-expire_burst.svg"
+  },
+  {
+    "id": "rebound_charge",
+    "name": "折光靴",
+    "slot": 3,
+    "price": 88,
+    "image": "svg/gear-rebound_charge.svg"
+  },
+  {
+    "id": "haste",
+    "name": "疾行靴",
+    "slot": 3,
+    "price": 64,
+    "image": "svg/gear-haste.svg"
+  },
+  {
+    "id": "bounce_life",
+    "name": "回春靴",
+    "slot": 3,
+    "price": 88,
+    "image": "svg/gear-bounce_life.svg"
+  },
+  {
+    "id": "crit_power",
+    "name": "猛擊護手",
+    "slot": 4,
+    "price": 80,
+    "image": "svg/gear-crit_power.svg"
+  },
+  {
+    "id": "finisher",
+    "name": "破陣護手",
+    "slot": 4,
+    "price": 112,
+    "image": "svg/gear-finisher.svg"
+  },
+  {
+    "id": "frost_touch",
+    "name": "凝霜護手",
+    "slot": 4,
+    "price": 88,
+    "image": "svg/gear-frost_touch.svg"
+  },
+  {
+    "id": "frenzy",
+    "name": "狂獵戰旗",
+    "slot": 2,
+    "price": 104,
+    "image": "svg/gear-frenzy.svg"
+  },
+  {
+    "id": "momentum",
+    "name": "勢能戰槍",
+    "slot": 5,
+    "price": 96,
+    "image": "svg/gear-momentum.svg"
+  },
+  {
+    "id": "shock",
+    "name": "震盪護手",
+    "slot": 4,
+    "price": 112,
+    "image": "svg/gear-shock.svg"
+  },
+  {
+    "id": "shatter",
+    "name": "碎冰刃",
+    "slot": 5,
+    "price": 104,
+    "image": "svg/gear-shatter.svg"
+  },
+  {
+    "id": "ricochet_precision",
+    "name": "鏡面盔",
+    "slot": 1,
+    "price": 96,
+    "image": "svg/gear-ricochet_precision.svg"
+  },
+  {
+    "id": "hunter_vigor",
+    "name": "獵命護手",
+    "slot": 4,
+    "price": 80,
+    "image": "svg/gear-hunter_vigor.svg"
+  },
+  {
+    "id": "piercing_wave",
+    "name": "穿陣護手",
+    "slot": 4,
+    "price": 120,
+    "image": "svg/gear-piercing_wave.svg"
+  },
+  {
+    "id": "slow_force",
+    "name": "磐石靴",
+    "slot": 3,
+    "price": 80,
+    "image": "svg/gear-slow_force.svg"
+  },
+  {
+    "id": "spin_master",
+    "name": "風環冠",
+    "slot": 1,
+    "price": 96,
+    "image": "svg/gear-spin_master.svg"
+  },
+  {
+    "id": "last_stand",
+    "name": "背水頭帶",
+    "slot": 1,
+    "price": 72,
+    "image": "svg/gear-last_stand.svg"
+  },
+  {
+    "id": "heat",
+    "name": "熱機護手",
+    "slot": 4,
+    "price": 72,
+    "image": "svg/gear-heat.svg"
+  },
+  {
+    "id": "distance",
+    "name": "遠征靴",
+    "slot": 3,
+    "price": 72,
+    "image": "svg/gear-distance.svg"
+  },
+  {
+    "id": "heavy",
+    "name": "重鋼甲",
+    "slot": 2,
+    "price": 80,
+    "image": "svg/gear-heavy.svg"
+  },
+  {
+    "id": "bounce_power",
+    "name": "折返頭冠",
+    "slot": 1,
+    "price": 96,
+    "image": "svg/gear-bounce_power.svg"
+  },
+  {
+    "id": "wall_quake",
+    "name": "震地靴",
+    "slot": 3,
+    "price": 96,
+    "image": "svg/gear-wall_quake.svg"
+  },
+  {
+    "id": "short_fuse",
+    "name": "燃命鎧",
+    "slot": 2,
+    "price": 80,
+    "image": "svg/gear-short_fuse.svg"
+  },
+  {
+    "id": "wide_blade",
+    "name": "寬刃戰斧",
+    "slot": 5,
+    "price": 88,
+    "image": "svg/gear-wide_blade.svg"
+  },
+  {
+    "id": "hit_echo",
+    "name": "回響護手",
+    "slot": 4,
+    "price": 104,
+    "image": "svg/gear-hit_echo.svg"
+  },
+  {
+    "id": "fracture",
+    "name": "裂甲面具",
+    "slot": 1,
+    "price": 80,
+    "image": "svg/gear-fracture.svg"
+  },
+  {
+    "id": "solo_hunt",
+    "name": "孤獵冠",
+    "slot": 1,
+    "price": 80,
+    "image": "svg/gear-solo_hunt.svg"
+  },
+  {
+    "id": "crowd_ring",
+    "name": "聚獵長柄",
+    "slot": 5,
+    "price": 88,
+    "image": "svg/gear-crowd_ring.svg"
+  },
+  {
+    "id": "recruit",
+    "name": "徵募印記",
+    "slot": 1,
+    "price": 48,
+    "image": "svg/gear-recruit.svg"
+  },
+  {
+    "id": "rally",
+    "name": "集結戰旗",
+    "slot": 2,
+    "price": 88,
+    "image": "svg/gear-rally.svg"
+  },
+  {
+    "id": "rapid",
+    "name": "急募護手",
+    "slot": 4,
+    "price": 80,
+    "image": "svg/gear-rapid.svg"
+  },
+  {
+    "id": "solitary",
+    "name": "孤軍甲",
+    "slot": 2,
+    "price": 80,
+    "image": "svg/gear-solitary.svg"
+  },
+  {
+    "id": "showdown",
+    "name": "決戰冠",
+    "slot": 1,
+    "price": 104,
+    "image": "svg/gear-showdown.svg"
+  },
+  {
+    "id": "sharp",
+    "name": "鋒利短劍",
+    "slot": 5,
+    "price": 64,
+    "image": "svg/gear-sharp.svg"
+  },
+  {
+    "id": "giant",
+    "name": "巨力護手",
+    "slot": 4,
+    "price": 88,
+    "image": "svg/gear-giant.svg"
+  },
+  {
+    "id": "double_pierce",
+    "name": "雙鋒戰槍",
+    "slot": 5,
+    "price": 144,
+    "image": "svg/gear-double_pierce.svg"
+  },
+  {
+    "id": "deadly",
+    "name": "致命冠",
+    "slot": 1,
+    "price": 120,
+    "image": "svg/gear-deadly.svg"
+  }
+]

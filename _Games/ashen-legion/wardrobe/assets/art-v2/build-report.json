@@ -1,0 +1,17 @@
+{
+  "bones": 55,
+  "skins": 6,
+  "triangles": 1703,
+  "actions": [
+    "attack",
+    "death",
+    "idle",
+    "run",
+    "spawn",
+    "stretch",
+    "tpose",
+    "walk"
+  ],
+  "source": "wardrobe/assets/art-v2/soldier.blend",
+  "texture": "wardrobe/assets/art-v2/soldier-painted.png"
+}

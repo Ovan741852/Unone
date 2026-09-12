@@ -1,0 +1,85 @@
+/* Original forest heraldry. Reference: Hades' ink framing and boon hierarchy. */
+:root{--gold:#ebc878;--jade:#b6e69c;--white:#fff1d1;--line:#c6a25b80;--ink:#101811;--red:#b9402d}
+body{font-family:'Microsoft JhengHei',sans-serif;background:#101811}
+body header{position:absolute;inset:0 0 auto;height:74px;border:0;background:none;padding:0 28px;pointer-events:none}
+header>*{pointer-events:auto}header .header-middle{display:none}header .brand{font-weight:900;letter-spacing:2px}
+header nav button,header select#scene-theme{background:#101811df;border:1px solid #a88d53;padding:9px 12px;border-radius:0;color:#e2d4af}
+body[data-phase="menu"] header .brand{visibility:hidden}
+body #menu-art{background-image:linear-gradient(90deg,#08130ef0 0%,#08130e88 32%,transparent 65%),linear-gradient(0deg,#08130ee0,transparent 32%),url('assets/key-art.png');background-position:center;background-size:cover}
+body #menu{top:19%;left:7%;width:46%;filter:drop-shadow(0 5px 2px #08130e)}
+body #menu:before{content:'♜';display:block;color:var(--gold);font:68px Georgia;margin-bottom:0;text-shadow:3px 3px #763f27}
+body #menu h1{font-family:'PMingLiU',serif;font-size:clamp(60px,7.8vw,122px);font-weight:900;line-height:1.12;letter-spacing:6px;margin:16px 0 22px;text-shadow:3px 4px #101811,5px 6px #8d6635}
+body #menu h1 span{display:block;color:var(--gold)}
+body .eyebrow{font-weight:800;letter-spacing:4px;color:#d2b575}
+body #menu .intro{font-size:14px;color:#eadab8;letter-spacing:2px}
+body .menu-pills,body .menu-note{display:none}
+body .seat-select{margin-top:30px}body #seats button{border:0;border-bottom:2px solid #6c7257;color:#b6b89b;background:#111d19aa}
+body #seats button.selected{color:#ffedb9;border-color:var(--gold);background:#97734444}
+body .primary{background:linear-gradient(110deg,#9a3023,#d65036);color:#fff1cf;border:2px solid #e4b967;box-shadow:inset 0 0 0 3px #541d16;font-weight:900;letter-spacing:4px}
+body .primary:hover{background:#e55b38;color:#fff8dd;box-shadow:inset 0 0 0 3px #72281c,0 0 24px #dc603a50}
+body .primary.start{height:65px;width:350px;max-width:100%;clip-path:polygon(0 0,94% 0,100% 50%,94% 100%,0 100%,3% 50%);padding-inline:32px}
+body #menu-footer{border:0;color:#c6ac74;font-size:10px}
+body .overlay{inset:0;background:radial-gradient(ellipse at 20% 50%,#2b4433c9,#080d0ef5);backdrop-filter:blur(5px);z-index:30}
+body .choice-shell{width:min(1040px,90vw);max-height:90vh;padding:30px 45px;overflow:auto;border-block:4px double #b79959;background:linear-gradient(110deg,#20372bee,#111c19f5);box-shadow:0 20px 90px #000b;position:relative}
+body .choice-shell:before{content:'✦';position:absolute;right:28px;top:18px;font:70px Georgia;color:#cfa65750}
+body .choice-shell>h2{font-size:40px;font-weight:900;color:#fff0c6;margin:14px 0;letter-spacing:5px}
+body #cards{display:flex;flex-direction:column;gap:12px;margin:20px 0}
+body .card{display:grid;grid-template-columns:92px 1fr 100px;grid-template-rows:auto auto auto;column-gap:20px;text-align:left;min-height:120px;padding:17px 24px;background:linear-gradient(110deg,#080e0b 35%,#24332a);border:2px solid #7c815d;border-left:6px solid #c7b275;box-shadow:inset 0 0 0 3px #0b110e;transition:transform .15s,border-color .15s}
+body .card:hover,body .card:focus-visible{transform:translateX(5px);border-color:#daf6a8;background:linear-gradient(110deg,#365640,#172d23);box-shadow:inset 0 0 0 3px #101811,0 0 20px #b9e89922}
+body .card .type{grid-column:2;grid-row:1;font-size:10px;color:#d0b574;letter-spacing:2px}
+body .card .card-icon{grid-column:1;grid-row:1/4;align-self:center;justify-self:center;display:grid;place-items:center;margin:0;width:76px;height:76px;font-size:42px;background:#334e36;border:3px double #e3c777;color:#f1db93;box-shadow:5px 5px #060b08;transform:rotate(-5deg)}
+body .card h3{grid-column:2;grid-row:2;font-size:24px;font-weight:900;letter-spacing:2px;margin:6px 0;color:#f2e5be}
+body .card p{grid-column:2;grid-row:3;margin:0;font-size:12px;color:#bbc7af;line-height:1.5}
+body .card .choose{grid-column:3;grid-row:1/4;position:static;align-self:center;margin:0;padding:0;border:0;color:#d8ebad}
+body .choice-note{color:#c9bb94;font-size:11px}
+body #rpg-panel{inset:7vh 9vw;background:linear-gradient(110deg,#1e3027f8,#101814fc);border:4px double #c2a25e;box-shadow:0 0 0 8px #080d0dcc,0 30px 100px #000c;padding:30px 40px;color:#f5e9cb}
+body #rpg-panel>h2{font-family:'PMingLiU',serif;font-weight:900;font-size:36px;padding-bottom:18px;border-bottom:3px double #c7ab69;letter-spacing:3px}
+body #rpg-panel>p{color:#c1c7ac;font-size:12px}
+body #rpg-panel .rpg-grid{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+body #rpg-panel article{background:linear-gradient(135deg,#283f31,#0e1913);border:1px solid #758460;border-top:4px solid #ccae67;padding:20px;box-shadow:4px 5px #080e0b}
+body #rpg-panel article>b{font-size:18px;display:block;margin:10px 0;color:#f6df9a}
+body #rpg-panel article img{filter:drop-shadow(0 4px 3px #0008)}
+body #rpg-panel button{background:#14291e;border:1px solid #9daf7f;color:#ece2bd;font-weight:700}
+body #rpg-panel button:hover{background:#365641;border-color:#eee0a4}
+body #rpg-panel [data-action="LeaveShop"]{background:#a73b29;border:2px solid #f0ce8a;color:#fff0cb;padding:13px 30px;margin-left:auto;font-size:16px}
+body #rpg-panel details{border-top:1px solid #b6a05b60;margin-top:14px}
+body #rpg-panel summary{padding:18px 0;cursor:pointer;font-size:18px;color:#dbc58c;font-weight:700}
+body #rpg-panel #rpg-close{margin-top:20px}
+body #rpg-bar{background:#101b15e6;border-left:3px solid #bca469;box-shadow:4px 4px #1118}
+body #rpg-bar button{background:#213b2b;border:1px solid #728a58;color:#e8d8ad}
+body[data-phase="menu"] #rpg-bar{top:auto;bottom:75px;right:30px;width:185px}
+body[data-phase="battle"] #stage{inset:0; height:auto}
+body[data-phase="battle"] header .brand{display:none}
+body[data-phase="battle"] header{justify-content:flex-end}
+body[data-phase="battle"] .topline{top:27px;left:26px;right:26px;text-shadow:0 2px 4px #06180e}
+body[data-phase="battle"] .topline h2{font-size:28px;font-weight:900;color:#fff0c5}
+body[data-phase="battle"] .timer{position:absolute;top:64px;right:0;background:#122119db;border-bottom:3px solid #cfaf66;padding:8px 18px}
+body[data-phase="battle"] .round-track{top:4px}
+body[data-phase="battle"] #rpg-bar{top:145px;width:180px;max-width:180px}
+body[data-phase="battle"] .field-note{top:auto;bottom:165px;left:22px;padding:10px;width:165px;background:#122119d9;border:0;border-left:3px solid #b99a54;border-radius:0}
+body[data-phase="battle"] .field-note>p,body[data-phase="battle"] .field-note>small,body[data-phase="battle"] .field-note>h3{display:none}
+body[data-phase="battle"] .boss-meter{margin-top:0}
+body #fire-controls{top:auto;bottom:158px;right:22px;width:171px;background:#101e17ec;border:2px solid #ac9257;box-shadow:4px 4px #06100980}
+body #fire-controls .selected{background:#8c3b24;color:#ffeab1;border-color:#e6c98b}
+body #command-bar{height:132px;background:linear-gradient(0deg,#09120dfc 75%,#17271bee);border-top:3px double #b69b59;box-shadow:0 -15px 35px #07140c70}
+body .unit{height:88px;background:#16291df0;border:2px solid #677653;box-shadow:3px 3px #050c08}
+body .unit.selected{border-color:#e4bf70;background:linear-gradient(120deg,#614927,#172d20)}
+body .unit .name{font-weight:900;font-size:16px;color:#f6e6b9}
+body .unit svg{width:42px;color:#e0cc94;filter:drop-shadow(3px 3px #06120c)}
+body .wallet strong{font-weight:900;text-shadow:2px 3px #50321a}
+body .aim-help{bottom:137px;border:0;background:#0d2019c0;color:#e0d8b8}
+@media(max-height:760px){body #menu{top:12%}body #menu:before{font-size:44px}body #menu h1{font-size:74px;margin:10px 0}body .seat-select{margin-top:15px}body .choice-shell{padding:20px 30px}body .choice-shell>h2{font-size:30px}body .card{min-height:95px;padding:10px 18px}body .card .card-icon{width:60px;height:60px;font-size:32px}body .card h3{font-size:21px}body #cards{margin:12px 0}body #rpg-panel{inset:5vh 7vw;padding:22px 30px}}
+@media(max-width:900px){body #menu h1{font-size:68px}body #rpg-panel{inset:5vh 4vw;padding:22px}body .choice-shell{width:92vw;padding:20px}body .card{grid-template-columns:65px 1fr 70px;gap:6px 14px}body .card h3{font-size:20px}body .card .choose{font-size:10px}body[data-phase="battle"] .round-track{display:none}body[data-phase="battle"] .topline{top:78px}body[data-phase="battle"] .timer{top:0}body[data-phase="battle"] #rpg-bar{top:153px;width:145px}body #fire-controls{width:145px;bottom:145px;right:12px;padding:8px}body #command-bar{gap:9px}body .unit .desc{display:none}body .unit svg{width:27px}body .unit .name{font-size:12px}}
+@media(max-width:600px){body #menu{width:86%;top:15%}body #menu h1 span{display:inline}body #menu h1{font-size:52px}body #menu:before{font-size:40px}body #menu .intro{font-size:11px}body[data-phase="menu"] #rpg-bar{bottom:28px;right:15px}body #menu-footer{display:none}body .card{grid-template-columns:50px 1fr;min-height:105px}body .card .card-icon{width:44px;height:54px;font-size:28px}body .card .choose{display:none}body .card h3{font-size:18px}body .choice-shell>h2{font-size:28px}body header nav{gap:5px}body header nav button,body header select#scene-theme{font-size:9px;padding:7px}body header{padding:0 12px}body #fire-controls{left:auto;display:block}body #fire-controls .mode-buttons{display:grid;grid-template-columns:1fr}body #rpg-panel .rpg-grid{grid-template-columns:1fr 1fr}body #rpg-panel article{padding:10px}body #rpg-panel>h2{font-size:25px}}
+
+body .card .card-icon img{width:88px;height:88px;transform:rotate(5deg);filter:drop-shadow(3px 5px #050b09)}
+body[data-phase="choice"] #rpg-bar{display:none}
+body[data-phase="menu"] #rpg-bar{background:none;border:0;box-shadow:none;width:210px}
+body[data-phase="menu"] #rpg-bar>p,body[data-phase="menu"] #rpg-bar>[data-action^="Player"]{display:none}
+body[data-phase="menu"] #rpg-inventory{width:100%;font-size:16px;padding:15px;border:2px solid #bda66b;background:#14291de6}
+body .choice-shell,body #rpg-panel{border-image:linear-gradient(90deg,#d9b562,#737b50,#d9b562) 1}
+body .choice-shell:after{content:'';position:absolute;pointer-events:none;inset:8px;border:1px solid #b9994c55;clip-path:polygon(0 0,25% 0,25% 1%,75% 1%,75% 0,100% 0,100% 100%,75% 100%,75% 99%,25% 99%,25% 100%,0 100%)}
+@media(max-height:760px){body .card .card-icon img{width:65px;height:65px}}
+@media(max-width:600px){body .card .card-icon img{width:54px;height:54px}}
+
+@media(max-height:650px){body .choice-shell{padding:14px 22px;max-height:96vh}body .choice-shell>h2{font-size:25px;margin:8px 0}body .choice-shell>p{margin:8px 0}body #choice-target{margin:8px 0}body #cards{gap:8px;margin:10px 0}body .card{min-height:82px;padding:8px 14px}body .card h3{font-size:18px;margin:3px 0}body .card .card-icon{height:48px;width:48px}body .card .card-icon img{height:54px;width:54px}body .choice-note{margin:8px 0;font-size:10px}}

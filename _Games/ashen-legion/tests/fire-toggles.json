@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "checks": [
+    "LOCK toggles on/off; held button only changes once and OFF stops dispatch",
+    "AUTO opens setup before enabling; second press disables directly",
+    "Both switches can be ON; AUTO selects species and LOCK binds dispatched troops",
+    "Disabling LOCK keeps AUTO running; disabling AUTO keeps LOCK",
+    "Settings cancel and stop preserve the independent LOCK toggle",
+    "Hidden paused actions are consumed without delayed toggles; new run resets both",
+    "Real spawned troops bind targets with LOCK+AUTO; new AUTO-only troops do not"
+  ]
+}

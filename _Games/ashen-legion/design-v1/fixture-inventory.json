@@ -1,0 +1,54 @@
+{
+  "status": "authoring-fixtures-only; Unone runtime unsupported",
+  "engineProposalCommit": "d3be213",
+  "assets": [
+    {
+      "id": "reward.big_win",
+      "source": "animations/big-win.json",
+      "sha256": "846eb85c6e5a682aae694dcd35ccd660b8ea656d56800c2c35bcb32a139aa3a1",
+      "bytes": 65738,
+      "frames": [
+        0,
+        120
+      ],
+      "fps": 30,
+      "shapeLayers": 38
+    },
+    {
+      "id": "reward.coin_burst",
+      "source": "animations/coin-burst.json",
+      "sha256": "8db89fe5b3b663bfd94b0697d1764a08229e4277ed755f58abd814aa5aedac85",
+      "bytes": 50043,
+      "frames": [
+        0,
+        120
+      ],
+      "fps": 30,
+      "shapeLayers": 40
+    },
+    {
+      "id": "reward.legendary_win",
+      "source": "animations/legendary-win.json",
+      "sha256": "d84f28179fd87805fba5cdf038c6e6d352c02783b12fd1ee2cd4c2d3711a1ceb",
+      "bytes": 152406,
+      "frames": [
+        0,
+        120
+      ],
+      "fps": 30,
+      "shapeLayers": 88
+    },
+    {
+      "id": "reward.mega_win",
+      "source": "animations/mega-win.json",
+      "sha256": "c6f956aa996b37b1543fcb5aef032a3d6e8254a6eb9bb81faea12d0d45b52f46",
+      "bytes": 96992,
+      "frames": [
+        0,
+        120
+      ],
+      "fps": 30,
+      "shapeLayers": 60
+    }
+  ]
+}

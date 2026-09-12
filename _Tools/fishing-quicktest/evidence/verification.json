@@ -1,0 +1,26 @@
+{
+  "tests": [
+    "PASS · horde-optional-quiet-round · seed 1 · 3007 幀",
+    "PASS · horde-paused-single-surge · seed 2 · 3127 幀",
+    "PASS · boss-appears-final30 · seed 42 · 9013 幀",
+    "PASS · boss-delayed-before-final30 · seed 42 · 8993 幀",
+    "PASS · timeout-does-not-refund-expired · seed 42 · 10933 幀",
+    "PASS · timeout-refunds-survivor-once · seed 42 · 10933 幀",
+    "PASS · bounce-does-not-reset-lifetime · seed 42 · 313 幀",
+    "PASS · corner-reflection-4 · seed 42 · 68 幀",
+    "PASS · corner-reflection-3 · seed 42 · 68 幀",
+    "PASS · corner-reflection-2 · seed 42 · 68 幀",
+    "PASS · corner-reflection-1 · seed 42 · 68 幀",
+    "PASS · reset-clears-run · seed 42 · 63 幀",
+    "PASS · one-click-one-soldier · seed 42 · 183 幀",
+    "PASS · missed-shots-bankruptcy · seed 42 · 1503 幀",
+    "PASS · timeout-loses · seed 42 · 10813 幀",
+    "PASS · pause-freezes-countdown · seed 42 · 5503 幀",
+    "PASS · held-choice-cannot-repeat · seed 42 · 123 幀",
+    "PASS · exactly-one-choice · seed 42 · 33 幀",
+    "PASS · menu-does-not-spend · seed 42 · 60 幀"
+  ],
+  "replayFrames": 2050,
+  "replayEqual": true,
+  "errors": []
+}

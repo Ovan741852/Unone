@@ -1,0 +1,1631 @@
+[
+  {
+    "width": 1440,
+    "height": 900,
+    "report": {
+      "ok": true,
+      "value": {
+        "ok": true,
+        "screen": "measured-dom",
+        "cols": 96,
+        "rows": 48,
+        "aspect": 1.6,
+        "ascii": "+------------------------------------------------------------------------------------------------+\n|                                                                                                |\n|                     1劍兵10%=爆擊=·=1.5=2槍兵落地旋轉=·=再撞擊消失◈3騎兵穿透=4=次=·=第=5=                           |\n|                     ================================================   檢視裝備與                   |\n|                     ================================================                           |\n|                     ================================================                           |\n|                     ================================================                           |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                    BlooAO=     |\n|                                                                                    =======     |\n|                                                                                                |\n|                                                                                                |\n|                                                                                    全部=小怪= 王==  |\n|                                                                                    ====== ===  |\n|                                                                                                |\n|                                                                                    ↻=AUTO====  |\n|                                                                                    ==========  |\n|                                                                                    ==========  |\n|                                                                                    ⌖=LOCK====  |\n|                                                                                    ==========  |\n|                                                                                    手動========  |\n|                                                                                    ==========  |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|  P1=P2P3P4                                                                                     |\n|  =========                                                                                     |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                       晨光森林暮色 遊玩指南=? 音效=開 Ⅱ=暫停  |\n|                                                                       ====== ====== ==== ====  |\n|                                                                                                |\n+------------------------------------------------------------------------------------------------+",
+        "nodes": [
+          {
+            "id": "control-0",
+            "source_id": "control-0",
+            "source_kind": "button",
+            "source_path": "tree.children[0]",
+            "placement": {
+              "rect": {
+                "x": 73.98763020833333,
+                "y": 2.055555555555556,
+                "width": 6.25,
+                "height": 4.111111111111112
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 73.98763020833333,
+              "y": 2.055555555555556,
+              "width": 6.25,
+              "height": 4.111111111111112
+            },
+            "text": "晨光森林暮色森林",
+            "action": "Control0",
+            "asset": null,
+            "text_fit": 1.48
+          },
+          {
+            "id": "control-1",
+            "source_id": "control-1",
+            "source_kind": "button",
+            "source_path": "tree.children[1]",
+            "placement": {
+              "rect": {
+                "x": 81.07096354166666,
+                "y": 2.166666666666667,
+                "width": 6.741536458333333,
+                "height": 3.888888888888889
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 81.07096354166666,
+              "y": 2.166666666666667,
+              "width": 6.741536458333333,
+              "height": 3.888888888888889
+            },
+            "text": "遊玩指南 ?",
+            "action": "Control1",
+            "asset": null,
+            "text_fit": 0.97
+          },
+          {
+            "id": "control-2",
+            "source_id": "control-2",
+            "source_kind": "button",
+            "source_path": "tree.children[2]",
+            "placement": {
+              "rect": {
+                "x": 88.64583333333333,
+                "y": 2.166666666666667,
+                "width": 4.288194444444445,
+                "height": 3.888888888888889
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 88.64583333333333,
+              "y": 2.166666666666667,
+              "width": 4.288194444444445,
+              "height": 3.888888888888889
+            },
+            "text": "音效 開",
+            "action": "Control2",
+            "asset": null,
+            "text_fit": 1.02
+          },
+          {
+            "id": "control-3",
+            "source_id": "control-3",
+            "source_kind": "button",
+            "source_path": "tree.children[3]",
+            "placement": {
+              "rect": {
+                "x": 93.76736111111111,
+                "y": 2.166666666666667,
+                "width": 4.288194444444445,
+                "height": 3.888888888888889
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 93.76736111111111,
+              "y": 2.166666666666667,
+              "width": 4.288194444444445,
+              "height": 3.888888888888889
+            },
+            "text": "Ⅱ 暫停",
+            "action": "Control3",
+            "asset": null,
+            "text_fit": 1.02
+          },
+          {
+            "id": "control-4",
+            "source_id": "control-4",
+            "source_kind": "button",
+            "source_path": "tree.children[4]",
+            "placement": {
+              "rect": {
+                "x": 22.04861111111111,
+                "y": 87.94444444444444,
+                "width": 16.01779513888889,
+                "height": 9.777777777777779
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 22.04861111111111,
+              "y": 87.94444444444444,
+              "width": 16.01779513888889,
+              "height": 9.777777777777779
+            },
+            "text": "1劍兵10% 爆擊 · 1.5 倍傷害◈ 81 階",
+            "action": "Control4",
+            "asset": null,
+            "text_fit": 4.29
+          },
+          {
+            "id": "control-5",
+            "source_id": "control-5",
+            "source_kind": "button",
+            "source_path": "tree.children[5]",
+            "placement": {
+              "rect": {
+                "x": 38.69140625,
+                "y": 87.94444444444444,
+                "width": 16.018880208333332,
+                "height": 9.777777777777779
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 38.69140625,
+              "y": 87.94444444444444,
+              "width": 16.018880208333332,
+              "height": 9.777777777777779
+            },
+            "text": "2槍兵落地旋轉 · 再撞擊消失◈ 201 階",
+            "action": "Control5",
+            "asset": null,
+            "text_fit": 3.78
+          },
+          {
+            "id": "control-6",
+            "source_id": "control-6",
+            "source_kind": "button",
+            "source_path": "tree.children[6]",
+            "placement": {
+              "rect": {
+                "x": 55.335286458333336,
+                "y": 87.94444444444444,
+                "width": 16.018880208333332,
+                "height": 9.777777777777779
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 55.335286458333336,
+              "y": 87.94444444444444,
+              "width": 16.018880208333332,
+              "height": 9.777777777777779
+            },
+            "text": "3騎兵穿透 4 次 · 第 5 撞消失◈ 401 階",
+            "action": "Control6",
+            "asset": null,
+            "text_fit": 4.46
+          },
+          {
+            "id": "control-7",
+            "source_id": "control-7",
+            "source_kind": "button",
+            "source_path": "tree.children[7]",
+            "placement": {
+              "rect": {
+                "x": 74.82638888888889,
+                "y": 94.77777777777779,
+                "width": 5.15625,
+                "height": 1.3333333333333335
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 74.82638888888889,
+              "y": 94.77777777777779,
+              "width": 5.15625,
+              "height": 1.3333333333333335
+            },
+            "text": "檢視裝備與符文 ↗",
+            "action": "Control7",
+            "asset": null,
+            "text_fit": 0.65
+          },
+          {
+            "id": "control-8",
+            "source_id": "control-8",
+            "source_kind": "button",
+            "source_path": "tree.children[8]",
+            "placement": {
+              "rect": {
+                "x": 2.013888888888889,
+                "y": 20.73263888888889,
+                "width": 2.7766927083333335,
+                "height": 4.666666666666667
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 2.013888888888889,
+              "y": 20.73263888888889,
+              "width": 2.7766927083333335,
+              "height": 4.666666666666667
+            },
+            "text": "P1 ✓",
+            "action": "Control8",
+            "asset": null,
+            "text_fit": 1.89
+          },
+          {
+            "id": "control-9",
+            "source_id": "control-9",
+            "source_kind": "button",
+            "source_path": "tree.children[9]",
+            "placement": {
+              "rect": {
+                "x": 5.068359375,
+                "y": 20.73263888888889,
+                "width": 2.013888888888889,
+                "height": 4.666666666666667
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 5.068359375,
+              "y": 20.73263888888889,
+              "width": 2.013888888888889,
+              "height": 4.666666666666667
+            },
+            "text": "P2",
+            "action": "Control9",
+            "asset": null,
+            "text_fit": 1.3
+          },
+          {
+            "id": "control-10",
+            "source_id": "control-10",
+            "source_kind": "button",
+            "source_path": "tree.children[10]",
+            "placement": {
+              "rect": {
+                "x": 7.360026041666666,
+                "y": 20.73263888888889,
+                "width": 2.013888888888889,
+                "height": 4.666666666666667
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 7.360026041666666,
+              "y": 20.73263888888889,
+              "width": 2.013888888888889,
+              "height": 4.666666666666667
+            },
+            "text": "P3",
+            "action": "Control10",
+            "asset": null,
+            "text_fit": 1.3
+          },
+          {
+            "id": "control-11",
+            "source_id": "control-11",
+            "source_kind": "button",
+            "source_path": "tree.children[11]",
+            "placement": {
+              "rect": {
+                "x": 9.651692708333332,
+                "y": 20.73263888888889,
+                "width": 2.013888888888889,
+                "height": 4.666666666666667
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 9.651692708333332,
+              "y": 20.73263888888889,
+              "width": 2.013888888888889,
+              "height": 4.666666666666667
+            },
+            "text": "P4",
+            "action": "Control11",
+            "asset": null,
+            "text_fit": 1.3
+          },
+          {
+            "id": "control-12",
+            "source_id": "control-12",
+            "source_kind": "button",
+            "source_path": "tree.children[12]",
+            "placement": {
+              "rect": {
+                "x": 87.56944444444444,
+                "y": 51.22222222222222,
+                "width": 9.930555555555555,
+                "height": 4.222222222222222
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 87.56944444444444,
+              "y": 51.22222222222222,
+              "width": 9.930555555555555,
+              "height": 4.222222222222222
+            },
+            "text": "手動",
+            "action": "Control12",
+            "asset": null,
+            "text_fit": 0.24
+          },
+          {
+            "id": "control-13",
+            "source_id": "control-13",
+            "source_kind": "button",
+            "source_path": "tree.children[13]",
+            "placement": {
+              "rect": {
+                "x": 87.56944444444444,
+                "y": 56.222222222222214,
+                "width": 9.930555555555555,
+                "height": 4.333333333333334
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 87.56944444444444,
+              "y": 56.222222222222214,
+              "width": 9.930555555555555,
+              "height": 4.333333333333334
+            },
+            "text": "⌖ LOCK",
+            "action": "Control13",
+            "asset": null,
+            "text_fit": 0.74
+          },
+          {
+            "id": "control-14",
+            "source_id": "control-14",
+            "source_kind": "button",
+            "source_path": "tree.children[14]",
+            "placement": {
+              "rect": {
+                "x": 87.56944444444444,
+                "y": 61.33333333333333,
+                "width": 9.930555555555555,
+                "height": 4.333333333333334
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 87.56944444444444,
+              "y": 61.33333333333333,
+              "width": 9.930555555555555,
+              "height": 4.333333333333334
+            },
+            "text": "↻ AUTO",
+            "action": "Control14",
+            "asset": null,
+            "text_fit": 0.74
+          },
+          {
+            "id": "control-15",
+            "source_id": "control-15",
+            "source_kind": "button",
+            "source_path": "tree.children[15]",
+            "placement": {
+              "rect": {
+                "x": 87.56944444444444,
+                "y": 68.88888888888889,
+                "width": 3.125,
+                "height": 3.3333333333333335
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 87.56944444444444,
+              "y": 68.88888888888889,
+              "width": 3.125,
+              "height": 3.3333333333333335
+            },
+            "text": "全部",
+            "action": "Control15",
+            "asset": null,
+            "text_fit": 0.6
+          },
+          {
+            "id": "control-16",
+            "source_id": "control-16",
+            "source_kind": "button",
+            "source_path": "tree.children[16]",
+            "placement": {
+              "rect": {
+                "x": 90.97222222222221,
+                "y": 68.88888888888889,
+                "width": 3.125,
+                "height": 3.3333333333333335
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 90.97222222222221,
+              "y": 68.88888888888889,
+              "width": 3.125,
+              "height": 3.3333333333333335
+            },
+            "text": "小怪",
+            "action": "Control16",
+            "asset": null,
+            "text_fit": 0.6
+          },
+          {
+            "id": "control-17",
+            "source_id": "control-17",
+            "source_kind": "button",
+            "source_path": "tree.children[17]",
+            "placement": {
+              "rect": {
+                "x": 94.375,
+                "y": 68.88888888888889,
+                "width": 3.125,
+                "height": 3.3333333333333335
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 94.375,
+              "y": 68.88888888888889,
+              "width": 3.125,
+              "height": 3.3333333333333335
+            },
+            "text": "王",
+            "action": "Control17",
+            "asset": null,
+            "text_fit": 0.3
+          },
+          {
+            "id": "control-18",
+            "source_id": "control-18",
+            "source_kind": "button",
+            "source_path": "tree.children[18]",
+            "placement": {
+              "rect": {
+                "x": 87.56944444444444,
+                "y": 77.55555555555556,
+                "width": 3.6675347222222223,
+                "height": 2.888888888888889
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 87.56944444444444,
+              "y": 77.55555555555556,
+              "width": 3.6675347222222223,
+              "height": 2.888888888888889
+            },
+            "text": "Bloom 開",
+            "action": "Control18",
+            "asset": null,
+            "text_fit": 1.55
+          },
+          {
+            "id": "control-19",
+            "source_id": "control-19",
+            "source_kind": "button",
+            "source_path": "tree.children[19]",
+            "placement": {
+              "rect": {
+                "x": 91.58420138888889,
+                "y": 77.55555555555556,
+                "width": 2.6866319444444446,
+                "height": 2.888888888888889
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 91.58420138888889,
+              "y": 77.55555555555556,
+              "width": 2.6866319444444446,
+              "height": 2.888888888888889
+            },
+            "text": "AO 開",
+            "action": "Control19",
+            "asset": null,
+            "text_fit": 1.21
+          }
+        ],
+        "findings": [],
+        "readable": true,
+        "core_readable": true,
+        "projected_layout_clear": true,
+        "projection_complete": true,
+        "skipped_nodes": [],
+        "core_gate_executed": false,
+        "legend": {
+          "=": "projected button",
+          "-": "projected text",
+          "#": "multiple nodes occupy this approximate grid cell",
+          "labels": "Rendered labels, not IDs; use nodes[].id/source_path to identify controls."
+        },
+        "warnings": [],
+        "assumptions": [
+          "AABB means axis-aligned rectangle overlap in the normalized 0..100 design space.",
+          "Anchors are resolved at aspect 1.600; use a host-specific aspect to preflight a phone or desktop viewport.",
+          "text_fit assumes a 16:9 viewport and a 0.5 character advance; it is a measurement, never a pass/fail.",
+          "This plugin report is authoring-time preflight; game ui preview --strict remains the authoritative Core gate.",
+          "core_readable is a deprecated alias for projected_layout_clear; it does not mean the Core gate ran."
+        ],
+        "source": "plugin_preflight",
+        "authoritative_core_gate": "game ui preview --strict",
+        "next_actions": []
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "width": 1280,
+    "height": 720,
+    "report": {
+      "ok": true,
+      "value": {
+        "ok": true,
+        "screen": "measured-dom",
+        "cols": 96,
+        "rows": 48,
+        "aspect": 1.7777777777777777,
+        "ascii": "+------------------------------------------------------------------------------------------------+\n|                                                                                                |\n|                  1劍兵10%=爆擊=·=1.5=倍 2槍兵落地旋轉=·=再撞擊消失◈= 3騎兵穿透=4=次=·=第=5=撞                         |\n|                  ================= ================= =================    檢視裝備與符               |\n|                  ================= ================= =================                         |\n|                  ================= ================= =================                         |\n|                  ================= ================= =================                         |\n|                  ================= ================= =================                         |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                   BlooAO=      |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                   全部=小怪==王==   |\n|                                                                                   ==========   |\n|                                                                                                |\n|                                                                                                |\n|                                                                                   ↻=AUTO====   |\n|                                                                                   ==========   |\n|                                                                                                |\n|                                                                                   ⌖=LOCK====   |\n|                                                                                   ==========   |\n|                                                                                                |\n|                                                                                   手動========   |\n|                                                                                   ==========   |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|  P1=P2=P3P4=                                                                                   |\n|  ===========                                                                                   |\n|  ===========                                                                                   |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                    晨光森林暮色森 遊玩指南=?= 音效=開 Ⅱ=暫停=  |\n|                                                                    ======= ======= ==== =====  |\n|                                                                    ======= ======= ==== =====  |\n|                                                                                                |\n+------------------------------------------------------------------------------------------------+",
+        "nodes": [
+          {
+            "id": "control-0",
+            "source_id": "control-0",
+            "source_kind": "button",
+            "source_path": "tree.children[0]",
+            "placement": {
+              "rect": {
+                "x": 70.736083984375,
+                "y": 2.569444444444444,
+                "width": 7.03125,
+                "height": 5.138888888888888
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 70.736083984375,
+              "y": 2.569444444444444,
+              "width": 7.03125,
+              "height": 5.138888888888888
+            },
+            "text": "晨光森林暮色森林",
+            "action": "Control0",
+            "asset": null,
+            "text_fit": 1.64
+          },
+          {
+            "id": "control-1",
+            "source_id": "control-1",
+            "source_kind": "button",
+            "source_path": "tree.children[1]",
+            "placement": {
+              "rect": {
+                "x": 78.704833984375,
+                "y": 2.7083333333333335,
+                "width": 7.584228515624999,
+                "height": 4.861111111111112
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 78.704833984375,
+              "y": 2.7083333333333335,
+              "width": 7.584228515624999,
+              "height": 4.861111111111112
+            },
+            "text": "遊玩指南 ?",
+            "action": "Control1",
+            "asset": null,
+            "text_fit": 1.08
+          },
+          {
+            "id": "control-2",
+            "source_id": "control-2",
+            "source_kind": "button",
+            "source_path": "tree.children[2]",
+            "placement": {
+              "rect": {
+                "x": 87.2265625,
+                "y": 2.7083333333333335,
+                "width": 4.82421875,
+                "height": 4.861111111111112
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 87.2265625,
+              "y": 2.7083333333333335,
+              "width": 4.82421875,
+              "height": 4.861111111111112
+            },
+            "text": "音效 開",
+            "action": "Control2",
+            "asset": null,
+            "text_fit": 1.13
+          },
+          {
+            "id": "control-3",
+            "source_id": "control-3",
+            "source_kind": "button",
+            "source_path": "tree.children[3]",
+            "placement": {
+              "rect": {
+                "x": 92.98828125,
+                "y": 2.7083333333333335,
+                "width": 4.82421875,
+                "height": 4.861111111111112
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 92.98828125,
+              "y": 2.7083333333333335,
+              "width": 4.82421875,
+              "height": 4.861111111111112
+            },
+            "text": "Ⅱ 暫停",
+            "action": "Control3",
+            "asset": null,
+            "text_fit": 1.13
+          },
+          {
+            "id": "control-4",
+            "source_id": "control-4",
+            "source_kind": "button",
+            "source_path": "tree.children[4]",
+            "placement": {
+              "rect": {
+                "x": 18.759765625,
+                "y": 84.93055555555556,
+                "width": 18.02001953125,
+                "height": 12.222222222222221
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 18.759765625,
+              "y": 84.93055555555556,
+              "width": 18.02001953125,
+              "height": 12.222222222222221
+            },
+            "text": "1劍兵10% 爆擊 · 1.5 倍傷害◈ 81 階",
+            "action": "Control4",
+            "asset": null,
+            "text_fit": 4.77
+          },
+          {
+            "id": "control-5",
+            "source_id": "control-5",
+            "source_kind": "button",
+            "source_path": "tree.children[5]",
+            "placement": {
+              "rect": {
+                "x": 37.48291015625,
+                "y": 84.93055555555556,
+                "width": 18.021240234375,
+                "height": 12.222222222222221
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 37.48291015625,
+              "y": 84.93055555555556,
+              "width": 18.021240234375,
+              "height": 12.222222222222221
+            },
+            "text": "2槍兵落地旋轉 · 再撞擊消失◈ 201 階",
+            "action": "Control5",
+            "asset": null,
+            "text_fit": 4.2
+          },
+          {
+            "id": "control-6",
+            "source_id": "control-6",
+            "source_kind": "button",
+            "source_path": "tree.children[6]",
+            "placement": {
+              "rect": {
+                "x": 56.207275390625,
+                "y": 84.93055555555556,
+                "width": 18.021240234375,
+                "height": 12.222222222222221
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 56.207275390625,
+              "y": 84.93055555555556,
+              "width": 18.021240234375,
+              "height": 12.222222222222221
+            },
+            "text": "3騎兵穿透 4 次 · 第 5 撞消失◈ 401 階",
+            "action": "Control6",
+            "asset": null,
+            "text_fit": 4.96
+          },
+          {
+            "id": "control-7",
+            "source_id": "control-7",
+            "source_kind": "button",
+            "source_path": "tree.children[7]",
+            "placement": {
+              "rect": {
+                "x": 78.134765625,
+                "y": 93.47222222222223,
+                "width": 5.80078125,
+                "height": 1.6666666666666667
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 78.134765625,
+              "y": 93.47222222222223,
+              "width": 5.80078125,
+              "height": 1.6666666666666667
+            },
+            "text": "檢視裝備與符文 ↗",
+            "action": "Control7",
+            "asset": null,
+            "text_fit": 0.73
+          },
+          {
+            "id": "control-8",
+            "source_id": "control-8",
+            "source_kind": "button",
+            "source_path": "tree.children[8]",
+            "placement": {
+              "rect": {
+                "x": 2.265625,
+                "y": 25.915798611111114,
+                "width": 3.123779296875,
+                "height": 5.833333333333333
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 2.265625,
+              "y": 25.915798611111114,
+              "width": 3.123779296875,
+              "height": 5.833333333333333
+            },
+            "text": "P1 ✓",
+            "action": "Control8",
+            "asset": null,
+            "text_fit": 2.1
+          },
+          {
+            "id": "control-9",
+            "source_id": "control-9",
+            "source_kind": "button",
+            "source_path": "tree.children[9]",
+            "placement": {
+              "rect": {
+                "x": 5.701904296875,
+                "y": 25.915798611111114,
+                "width": 2.265625,
+                "height": 5.833333333333333
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 5.701904296875,
+              "y": 25.915798611111114,
+              "width": 2.265625,
+              "height": 5.833333333333333
+            },
+            "text": "P2",
+            "action": "Control9",
+            "asset": null,
+            "text_fit": 1.45
+          },
+          {
+            "id": "control-10",
+            "source_id": "control-10",
+            "source_kind": "button",
+            "source_path": "tree.children[10]",
+            "placement": {
+              "rect": {
+                "x": 8.280029296875,
+                "y": 25.915798611111114,
+                "width": 2.265625,
+                "height": 5.833333333333333
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 8.280029296875,
+              "y": 25.915798611111114,
+              "width": 2.265625,
+              "height": 5.833333333333333
+            },
+            "text": "P3",
+            "action": "Control10",
+            "asset": null,
+            "text_fit": 1.45
+          },
+          {
+            "id": "control-11",
+            "source_id": "control-11",
+            "source_kind": "button",
+            "source_path": "tree.children[11]",
+            "placement": {
+              "rect": {
+                "x": 10.858154296875,
+                "y": 25.915798611111114,
+                "width": 2.265625,
+                "height": 5.833333333333333
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 10.858154296875,
+              "y": 25.915798611111114,
+              "width": 2.265625,
+              "height": 5.833333333333333
+            },
+            "text": "P4",
+            "action": "Control11",
+            "asset": null,
+            "text_fit": 1.45
+          },
+          {
+            "id": "control-12",
+            "source_id": "control-12",
+            "source_kind": "button",
+            "source_path": "tree.children[12]",
+            "placement": {
+              "rect": {
+                "x": 86.015625,
+                "y": 39.02777777777778,
+                "width": 11.171875,
+                "height": 5.277777777777778
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 86.015625,
+              "y": 39.02777777777778,
+              "width": 11.171875,
+              "height": 5.277777777777778
+            },
+            "text": "手動",
+            "action": "Control12",
+            "asset": null,
+            "text_fit": 0.27
+          },
+          {
+            "id": "control-13",
+            "source_id": "control-13",
+            "source_kind": "button",
+            "source_path": "tree.children[13]",
+            "placement": {
+              "rect": {
+                "x": 86.015625,
+                "y": 45.27777777777778,
+                "width": 11.171875,
+                "height": 5.416666666666667
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 86.015625,
+              "y": 45.27777777777778,
+              "width": 11.171875,
+              "height": 5.416666666666667
+            },
+            "text": "⌖ LOCK",
+            "action": "Control13",
+            "asset": null,
+            "text_fit": 0.82
+          },
+          {
+            "id": "control-14",
+            "source_id": "control-14",
+            "source_kind": "button",
+            "source_path": "tree.children[14]",
+            "placement": {
+              "rect": {
+                "x": 86.015625,
+                "y": 51.66666666666667,
+                "width": 11.171875,
+                "height": 5.416666666666667
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 86.015625,
+              "y": 51.66666666666667,
+              "width": 11.171875,
+              "height": 5.416666666666667
+            },
+            "text": "↻ AUTO",
+            "action": "Control14",
+            "asset": null,
+            "text_fit": 0.82
+          },
+          {
+            "id": "control-15",
+            "source_id": "control-15",
+            "source_kind": "button",
+            "source_path": "tree.children[15]",
+            "placement": {
+              "rect": {
+                "x": 86.015625,
+                "y": 61.111111111111114,
+                "width": 3.515625,
+                "height": 4.166666666666666
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 86.015625,
+              "y": 61.111111111111114,
+              "width": 3.515625,
+              "height": 4.166666666666666
+            },
+            "text": "全部",
+            "action": "Control15",
+            "asset": null,
+            "text_fit": 0.67
+          },
+          {
+            "id": "control-16",
+            "source_id": "control-16",
+            "source_kind": "button",
+            "source_path": "tree.children[16]",
+            "placement": {
+              "rect": {
+                "x": 89.84375,
+                "y": 61.111111111111114,
+                "width": 3.515625,
+                "height": 4.166666666666666
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 89.84375,
+              "y": 61.111111111111114,
+              "width": 3.515625,
+              "height": 4.166666666666666
+            },
+            "text": "小怪",
+            "action": "Control16",
+            "asset": null,
+            "text_fit": 0.67
+          },
+          {
+            "id": "control-17",
+            "source_id": "control-17",
+            "source_kind": "button",
+            "source_path": "tree.children[17]",
+            "placement": {
+              "rect": {
+                "x": 93.671875,
+                "y": 61.111111111111114,
+                "width": 3.515625,
+                "height": 4.166666666666666
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 93.671875,
+              "y": 61.111111111111114,
+              "width": 3.515625,
+              "height": 4.166666666666666
+            },
+            "text": "王",
+            "action": "Control17",
+            "asset": null,
+            "text_fit": 0.33
+          },
+          {
+            "id": "control-18",
+            "source_id": "control-18",
+            "source_kind": "button",
+            "source_path": "tree.children[18]",
+            "placement": {
+              "rect": {
+                "x": 86.015625,
+                "y": 71.94444444444444,
+                "width": 4.1259765625,
+                "height": 3.6111111111111107
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 86.015625,
+              "y": 71.94444444444444,
+              "width": 4.1259765625,
+              "height": 3.6111111111111107
+            },
+            "text": "Bloom 開",
+            "action": "Control18",
+            "asset": null,
+            "text_fit": 1.72
+          },
+          {
+            "id": "control-19",
+            "source_id": "control-19",
+            "source_kind": "button",
+            "source_path": "tree.children[19]",
+            "placement": {
+              "rect": {
+                "x": 90.5322265625,
+                "y": 71.94444444444444,
+                "width": 3.0224609375,
+                "height": 3.6111111111111107
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 90.5322265625,
+              "y": 71.94444444444444,
+              "width": 3.0224609375,
+              "height": 3.6111111111111107
+            },
+            "text": "AO 開",
+            "action": "Control19",
+            "asset": null,
+            "text_fit": 1.34
+          }
+        ],
+        "findings": [],
+        "readable": true,
+        "core_readable": true,
+        "projected_layout_clear": true,
+        "projection_complete": true,
+        "skipped_nodes": [],
+        "core_gate_executed": false,
+        "legend": {
+          "=": "projected button",
+          "-": "projected text",
+          "#": "multiple nodes occupy this approximate grid cell",
+          "labels": "Rendered labels, not IDs; use nodes[].id/source_path to identify controls."
+        },
+        "warnings": [],
+        "assumptions": [
+          "AABB means axis-aligned rectangle overlap in the normalized 0..100 design space.",
+          "Anchors are resolved at aspect 1.778; use a host-specific aspect to preflight a phone or desktop viewport.",
+          "text_fit assumes a 16:9 viewport and a 0.5 character advance; it is a measurement, never a pass/fail.",
+          "This plugin report is authoring-time preflight; game ui preview --strict remains the authoritative Core gate.",
+          "core_readable is a deprecated alias for projected_layout_clear; it does not mean the Core gate ran."
+        ],
+        "source": "plugin_preflight",
+        "authoritative_core_gate": "game ui preview --strict",
+        "next_actions": []
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "width": 900,
+    "height": 600,
+    "report": {
+      "ok": true,
+      "value": {
+        "ok": true,
+        "screen": "measured-dom",
+        "cols": 96,
+        "rows": 48,
+        "aspect": 1.5,
+        "ascii": "+------------------------------------------------------------------------------------------------+\n|                                                                                                |\n|                                                                                                |\n|              1劍兵10%=爆擊=·=1.5=倍傷害◈= 2槍兵落地旋轉=·=再撞擊消失◈=201= 3騎兵穿透=4=次=·=第=5=撞消失◈=                 |\n|              ===================== ===================== =====================   檢視裝備與符文=      |\n|              ===================== ===================== =====================                 |\n|              ===================== ===================== =====================                 |\n|              ===================== ===================== =====================                 |\n|              ===================== ===================== =====================                 |\n|              ===================== ===================== =====================                 |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                Bloom=AO=開=     |\n|                                                                                ===========     |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                全部== 小怪==王====  |\n|                                                                                ==== =========  |\n|                                                                                ==== =========  |\n|                                                                                                |\n|                                                                                                |\n|                                                                                ↻=AUTO========  |\n|                                                                                ==============  |\n|   P4=                                                                          ==============  |\n|   ===                                                                          ⌖=LOCK========  |\n|   ===                                                                          ==============  |\n|   ===                                                                          ==============  |\n|   P1=✓ P2=P3=                                                                  手動============  |\n|   ==== ======                                                                  ==============  |\n|   ==== ======                                                                  ==============  |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                        晨光森林暮色森林== 遊玩指南=?====  音效=開== Ⅱ=暫停===   |\n|                                                        ========== ==========  ====== =======   |\n|                                                        ==========                              |\n|                                                                                                |\n+------------------------------------------------------------------------------------------------+",
+        "nodes": [
+          {
+            "id": "control-0",
+            "source_id": "control-0",
+            "source_kind": "button",
+            "source_path": "tree.children[0]",
+            "placement": {
+              "rect": {
+                "x": 58.380208333333336,
+                "y": 3.0833333333333335,
+                "width": 10,
+                "height": 6.166666666666667
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 58.380208333333336,
+              "y": 3.0833333333333335,
+              "width": 10,
+              "height": 6.166666666666667
+            },
+            "text": "晨光森林暮色森林",
+            "action": "Control0",
+            "asset": null,
+            "text_fit": 1.39
+          },
+          {
+            "id": "control-1",
+            "source_id": "control-1",
+            "source_kind": "button",
+            "source_path": "tree.children[1]",
+            "placement": {
+              "rect": {
+                "x": 69.71354166666667,
+                "y": 3.25,
+                "width": 10.786458333333334,
+                "height": 5.833333333333333
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 69.71354166666667,
+              "y": 3.25,
+              "width": 10.786458333333334,
+              "height": 5.833333333333333
+            },
+            "text": "遊玩指南 ?",
+            "action": "Control1",
+            "asset": null,
+            "text_fit": 0.91
+          },
+          {
+            "id": "control-2",
+            "source_id": "control-2",
+            "source_kind": "button",
+            "source_path": "tree.children[2]",
+            "placement": {
+              "rect": {
+                "x": 81.83333333333334,
+                "y": 3.25,
+                "width": 6.861111111111111,
+                "height": 5.833333333333333
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 81.83333333333334,
+              "y": 3.25,
+              "width": 6.861111111111111,
+              "height": 5.833333333333333
+            },
+            "text": "音效 開",
+            "action": "Control2",
+            "asset": null,
+            "text_fit": 0.96
+          },
+          {
+            "id": "control-3",
+            "source_id": "control-3",
+            "source_kind": "button",
+            "source_path": "tree.children[3]",
+            "placement": {
+              "rect": {
+                "x": 90.02777777777777,
+                "y": 3.25,
+                "width": 6.861111111111111,
+                "height": 5.833333333333333
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 90.02777777777777,
+              "y": 3.25,
+              "width": 6.861111111111111,
+              "height": 5.833333333333333
+            },
+            "text": "Ⅱ 暫停",
+            "action": "Control3",
+            "asset": null,
+            "text_fit": 0.96
+          },
+          {
+            "id": "control-4",
+            "source_id": "control-4",
+            "source_kind": "button",
+            "source_path": "tree.children[4]",
+            "placement": {
+              "rect": {
+                "x": 14.555555555555555,
+                "y": 81.91666666666667,
+                "width": 21.911458333333332,
+                "height": 14.666666666666666
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 14.555555555555555,
+              "y": 81.91666666666667,
+              "width": 21.911458333333332,
+              "height": 14.666666666666666
+            },
+            "text": "1劍兵10% 爆擊 · 1.5 倍傷害◈ 81 階",
+            "action": "Control4",
+            "asset": null,
+            "text_fit": 4.71
+          },
+          {
+            "id": "control-5",
+            "source_id": "control-5",
+            "source_kind": "button",
+            "source_path": "tree.children[5]",
+            "placement": {
+              "rect": {
+                "x": 37.467013888888886,
+                "y": 81.91666666666667,
+                "width": 21.911458333333332,
+                "height": 14.666666666666666
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 37.467013888888886,
+              "y": 81.91666666666667,
+              "width": 21.911458333333332,
+              "height": 14.666666666666666
+            },
+            "text": "2槍兵落地旋轉 · 再撞擊消失◈ 201 階",
+            "action": "Control5",
+            "asset": null,
+            "text_fit": 4.14
+          },
+          {
+            "id": "control-6",
+            "source_id": "control-6",
+            "source_kind": "button",
+            "source_path": "tree.children[6]",
+            "placement": {
+              "rect": {
+                "x": 60.37847222222222,
+                "y": 81.91666666666667,
+                "width": 21.911458333333332,
+                "height": 14.666666666666666
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 60.37847222222222,
+              "y": 81.91666666666667,
+              "width": 21.911458333333332,
+              "height": 14.666666666666666
+            },
+            "text": "3騎兵穿透 4 次 · 第 5 撞消失◈ 401 階",
+            "action": "Control6",
+            "asset": null,
+            "text_fit": 4.89
+          },
+          {
+            "id": "control-7",
+            "source_id": "control-7",
+            "source_kind": "button",
+            "source_path": "tree.children[7]",
+            "placement": {
+              "rect": {
+                "x": 85.06770833333334,
+                "y": 92.16666666666666,
+                "width": 8.25,
+                "height": 2
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 85.06770833333334,
+              "y": 92.16666666666666,
+              "width": 8.25,
+              "height": 2
+            },
+            "text": "檢視裝備與符文 ↗",
+            "action": "Control7",
+            "asset": null,
+            "text_fit": 0.61
+          },
+          {
+            "id": "control-8",
+            "source_id": "control-8",
+            "source_kind": "button",
+            "source_path": "tree.children[8]",
+            "placement": {
+              "rect": {
+                "x": 3.2222222222222223,
+                "y": 32.43229166666667,
+                "width": 4.442708333333333,
+                "height": 7.000000000000001
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 3.2222222222222223,
+              "y": 32.43229166666667,
+              "width": 4.442708333333333,
+              "height": 7.000000000000001
+            },
+            "text": "P1 ✓",
+            "action": "Control8",
+            "asset": null,
+            "text_fit": 1.77
+          },
+          {
+            "id": "control-9",
+            "source_id": "control-9",
+            "source_kind": "button",
+            "source_path": "tree.children[9]",
+            "placement": {
+              "rect": {
+                "x": 8.109375,
+                "y": 32.43229166666667,
+                "width": 3.2222222222222223,
+                "height": 7.000000000000001
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 8.109375,
+              "y": 32.43229166666667,
+              "width": 3.2222222222222223,
+              "height": 7.000000000000001
+            },
+            "text": "P2",
+            "action": "Control9",
+            "asset": null,
+            "text_fit": 1.22
+          },
+          {
+            "id": "control-10",
+            "source_id": "control-10",
+            "source_kind": "button",
+            "source_path": "tree.children[10]",
+            "placement": {
+              "rect": {
+                "x": 11.776041666666668,
+                "y": 32.43229166666667,
+                "width": 3.2222222222222223,
+                "height": 7.000000000000001
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 11.776041666666668,
+              "y": 32.43229166666667,
+              "width": 3.2222222222222223,
+              "height": 7.000000000000001
+            },
+            "text": "P3",
+            "action": "Control10",
+            "asset": null,
+            "text_fit": 1.22
+          },
+          {
+            "id": "control-11",
+            "source_id": "control-11",
+            "source_kind": "button",
+            "source_path": "tree.children[11]",
+            "placement": {
+              "rect": {
+                "x": 3.2222222222222223,
+                "y": 40.098958333333336,
+                "width": 3.2222222222222223,
+                "height": 7.000000000000001
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 3.2222222222222223,
+              "y": 40.098958333333336,
+              "width": 3.2222222222222223,
+              "height": 7.000000000000001
+            },
+            "text": "P4",
+            "action": "Control11",
+            "asset": null,
+            "text_fit": 1.22
+          },
+          {
+            "id": "control-12",
+            "source_id": "control-12",
+            "source_kind": "button",
+            "source_path": "tree.children[12]",
+            "placement": {
+              "rect": {
+                "x": 83.66666666666667,
+                "y": 33.666666666666664,
+                "width": 13.88888888888889,
+                "height": 5.333333333333334
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 83.66666666666667,
+              "y": 33.666666666666664,
+              "width": 13.88888888888889,
+              "height": 5.333333333333334
+            },
+            "text": "手動",
+            "action": "Control12",
+            "asset": null,
+            "text_fit": 0.22
+          },
+          {
+            "id": "control-13",
+            "source_id": "control-13",
+            "source_kind": "button",
+            "source_path": "tree.children[13]",
+            "placement": {
+              "rect": {
+                "x": 83.66666666666667,
+                "y": 40.166666666666664,
+                "width": 13.88888888888889,
+                "height": 5.333333333333334
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 83.66666666666667,
+              "y": 40.166666666666664,
+              "width": 13.88888888888889,
+              "height": 5.333333333333334
+            },
+            "text": "⌖ LOCK",
+            "action": "Control13",
+            "asset": null,
+            "text_fit": 0.65
+          },
+          {
+            "id": "control-14",
+            "source_id": "control-14",
+            "source_kind": "button",
+            "source_path": "tree.children[14]",
+            "placement": {
+              "rect": {
+                "x": 83.66666666666667,
+                "y": 46.666666666666664,
+                "width": 13.88888888888889,
+                "height": 5.333333333333334
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 83.66666666666667,
+              "y": 46.666666666666664,
+              "width": 13.88888888888889,
+              "height": 5.333333333333334
+            },
+            "text": "↻ AUTO",
+            "action": "Control14",
+            "asset": null,
+            "text_fit": 0.65
+          },
+          {
+            "id": "control-15",
+            "source_id": "control-15",
+            "source_kind": "button",
+            "source_path": "tree.children[15]",
+            "placement": {
+              "rect": {
+                "x": 83.66666666666667,
+                "y": 56.833333333333336,
+                "width": 4.333333333333334,
+                "height": 5
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 83.66666666666667,
+              "y": 56.833333333333336,
+              "width": 4.333333333333334,
+              "height": 5
+            },
+            "text": "全部",
+            "action": "Control15",
+            "asset": null,
+            "text_fit": 0.65
+          },
+          {
+            "id": "control-16",
+            "source_id": "control-16",
+            "source_kind": "button",
+            "source_path": "tree.children[16]",
+            "placement": {
+              "rect": {
+                "x": 88.44444444444444,
+                "y": 56.833333333333336,
+                "width": 4.333333333333334,
+                "height": 5
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 88.44444444444444,
+              "y": 56.833333333333336,
+              "width": 4.333333333333334,
+              "height": 5
+            },
+            "text": "小怪",
+            "action": "Control16",
+            "asset": null,
+            "text_fit": 0.65
+          },
+          {
+            "id": "control-17",
+            "source_id": "control-17",
+            "source_kind": "button",
+            "source_path": "tree.children[17]",
+            "placement": {
+              "rect": {
+                "x": 93.22222222222221,
+                "y": 56.833333333333336,
+                "width": 4.333333333333334,
+                "height": 5
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 93.22222222222221,
+              "y": 56.833333333333336,
+              "width": 4.333333333333334,
+              "height": 5
+            },
+            "text": "王",
+            "action": "Control17",
+            "asset": null,
+            "text_fit": 0.32
+          },
+          {
+            "id": "control-18",
+            "source_id": "control-18",
+            "source_kind": "button",
+            "source_path": "tree.children[18]",
+            "placement": {
+              "rect": {
+                "x": 83.66666666666667,
+                "y": 69.83333333333334,
+                "width": 5.868055555555555,
+                "height": 4.333333333333334
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 83.66666666666667,
+              "y": 69.83333333333334,
+              "width": 5.868055555555555,
+              "height": 4.333333333333334
+            },
+            "text": "Bloom 開",
+            "action": "Control18",
+            "asset": null,
+            "text_fit": 1.45
+          },
+          {
+            "id": "control-19",
+            "source_id": "control-19",
+            "source_kind": "button",
+            "source_path": "tree.children[19]",
+            "placement": {
+              "rect": {
+                "x": 90.09027777777779,
+                "y": 69.83333333333334,
+                "width": 4.298611111111112,
+                "height": 4.333333333333334
+              }
+            },
+            "kind": "button",
+            "rect": {
+              "x": 90.09027777777779,
+              "y": 69.83333333333334,
+              "width": 4.298611111111112,
+              "height": 4.333333333333334
+            },
+            "text": "AO 開",
+            "action": "Control19",
+            "asset": null,
+            "text_fit": 1.13
+          }
+        ],
+        "findings": [],
+        "readable": true,
+        "core_readable": true,
+        "projected_layout_clear": true,
+        "projection_complete": true,
+        "skipped_nodes": [],
+        "core_gate_executed": false,
+        "legend": {
+          "=": "projected button",
+          "-": "projected text",
+          "#": "multiple nodes occupy this approximate grid cell",
+          "labels": "Rendered labels, not IDs; use nodes[].id/source_path to identify controls."
+        },
+        "warnings": [],
+        "assumptions": [
+          "AABB means axis-aligned rectangle overlap in the normalized 0..100 design space.",
+          "Anchors are resolved at aspect 1.500; use a host-specific aspect to preflight a phone or desktop viewport.",
+          "text_fit assumes a 16:9 viewport and a 0.5 character advance; it is a measurement, never a pass/fail.",
+          "This plugin report is authoring-time preflight; game ui preview --strict remains the authoritative Core gate.",
+          "core_readable is a deprecated alias for projected_layout_clear; it does not mean the Core gate ran."
+        ],
+        "source": "plugin_preflight",
+        "authoritative_core_gate": "game ui preview --strict",
+        "next_actions": []
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  }
+]

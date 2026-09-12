@@ -1,0 +1,39 @@
+{
+  "name": "boss-delayed-before-final30",
+  "frames": 8993,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Start": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "LeaveShop": true
+      }
+    },
+    {}
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "boss_present",
+        "equals": false
+      }
+    },
+    {
+      "observation": {
+        "key": "phase",
+        "equals": "battle"
+      }
+    }
+  ]
+}

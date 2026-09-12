@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "value": {
+    "plugin": "org.unone.blender",
+    "protocol": "unone.plugin.v1",
+    "self_test": "passed"
+  },
+  "diagnostics": [],
+  "effects": [
+    "plugin org.unone.blender:plugin.test completed"
+  ]
+}

@@ -1,0 +1,261 @@
+{
+  "capturedAt": "2026-09-11T14:46:31.464Z",
+  "scriptHash": "92a68f2889913eb7e64ebfa501fa55401e7d546e4ffdf1d51f260a532ce01da6",
+  "sourceMatchesExport": true,
+  "duplicateSpin": {
+    "scope": "Normal InputFrame actions on unchanged production WASM/Luau, seed 42; not a complete playthrough",
+    "actions": [
+      "Start",
+      "wait 94 frames",
+      "Unit2 + Build9 + Choice1",
+      "Buy1",
+      "Equip1"
+    ],
+    "item": {
+      "currency": "crystal",
+      "deployExtra": 6,
+      "kind": "gear",
+      "name": "旋風長柄",
+      "price": 15,
+      "skill": "landing_spin",
+      "slot": 5,
+      "value": 2
+    },
+    "before": {
+      "gold": 320,
+      "crystals": 18,
+      "cost": 20,
+      "loadout": {
+        "areaBonus": 0,
+        "areaPenalty": 0,
+        "bounceCrit": 0,
+        "bounceLife": 0,
+        "bouncePower": 0,
+        "critAdd": 0,
+        "critChance": 0,
+        "critMultiplier": 1.5,
+        "crowdRing": 0,
+        "damageBonus": 0,
+        "deathBurst": 0,
+        "distance": 0,
+        "expireBurst": 0,
+        "finisher": 0,
+        "flightSpeed": 16,
+        "fracture": 0,
+        "frenzy": 0,
+        "frost": 0,
+        "heat": 0,
+        "hitEcho": 0,
+        "killLife": 0,
+        "kingDamage": 0,
+        "landingSpin": true,
+        "lastStand": 0,
+        "lifeBonus": 0,
+        "lightning": 0,
+        "momentum": 0,
+        "pierce": 0,
+        "pierceWave": 0,
+        "rally": 0,
+        "rapid": 0,
+        "reboundCharge": 0,
+        "recruit": 0,
+        "shatter": 0,
+        "shock": 0,
+        "showdown": 0,
+        "slowForce": 0,
+        "solitary": 0,
+        "soloHunt": 0,
+        "speedBonus": 0,
+        "spinDamage": 1,
+        "spinDuration": 0.55,
+        "spinMaster": 0,
+        "spinRadius": 2.9,
+        "thirdCrit": 0,
+        "wallQuake": 0
+      }
+    },
+    "after": {
+      "gold": 320,
+      "crystals": 3,
+      "cost": 26,
+      "loadout": {
+        "areaBonus": 0,
+        "areaPenalty": 0,
+        "bounceCrit": 0,
+        "bounceLife": 0,
+        "bouncePower": 0,
+        "critAdd": 0,
+        "critChance": 0,
+        "critMultiplier": 1.5,
+        "crowdRing": 0,
+        "damageBonus": 0,
+        "deathBurst": 0,
+        "distance": 0,
+        "expireBurst": 0,
+        "finisher": 0,
+        "flightSpeed": 16,
+        "fracture": 0,
+        "frenzy": 0,
+        "frost": 0,
+        "heat": 0,
+        "hitEcho": 0,
+        "killLife": 0,
+        "kingDamage": 0,
+        "landingSpin": true,
+        "lastStand": 0,
+        "lifeBonus": 0,
+        "lightning": 0,
+        "momentum": 0,
+        "pierce": 0,
+        "pierceWave": 0,
+        "rally": 0,
+        "rapid": 0,
+        "reboundCharge": 0,
+        "recruit": 0,
+        "shatter": 0,
+        "shock": 0,
+        "showdown": 0,
+        "slowForce": 0,
+        "solitary": 0,
+        "soloHunt": 0,
+        "speedBonus": 0,
+        "spinDamage": 1,
+        "spinDuration": 0.55,
+        "spinMaster": 0,
+        "spinRadius": 2.9,
+        "thirdCrit": 0,
+        "wallQuake": 0
+      }
+    },
+    "unchangedLoadout": true
+  },
+  "bankruptcy": {
+    "scope": "Explicit synthetic loadout and low-gold fixture; real updateCombat and economy invariants, not a natural run",
+    "before": {
+      "phase": "battle",
+      "gold": 20,
+      "costs": [
+        46,
+        20,
+        40
+      ],
+      "items": [
+        {
+          "enchant": "shock",
+          "id": 1,
+          "name": "決勝冠",
+          "paid": 0,
+          "skill": "third_crit",
+          "slot": 1
+        },
+        {
+          "enchant": "shock",
+          "id": 2,
+          "name": "餘燼鎧",
+          "paid": 0,
+          "skill": "ember_burst",
+          "slot": 2
+        },
+        {
+          "enchant": "shock",
+          "id": 3,
+          "name": "震地靴",
+          "paid": 0,
+          "skill": "wall_quake",
+          "slot": 3
+        },
+        {
+          "enchant": "shock",
+          "id": 4,
+          "name": "震盪護手",
+          "paid": 0,
+          "skill": "shock",
+          "slot": 4
+        },
+        {
+          "enchant": "shock",
+          "id": 5,
+          "name": "旋風長柄",
+          "paid": 0,
+          "skill": "landing_spin",
+          "slot": 5
+        }
+      ],
+      "troops": 0
+    },
+    "after": {
+      "phase": "defeat",
+      "gold": 20,
+      "costs": [
+        46,
+        20,
+        40
+      ],
+      "message": "金幣耗盡，軍團已無法再出征。 帶回城鎮建設金。"
+    },
+    "otherAffordableUnit": true
+  },
+  "quickToolPointer": {
+    "scope": "Analytic current scene-camera projection compared with exact app.mjs point() function; not subjective handfeel",
+    "camera": {
+      "position": {
+        "x": 0,
+        "y": 10.97,
+        "z": 26.15
+      },
+      "target": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "fov_degrees": 66
+    },
+    "mapping": [
+      {
+        "world": {
+          "x": 5,
+          "z": 0
+        },
+        "projectedNdc": {
+          "x": 0.15272249739882268,
+          "y": 0
+        },
+        "quickToolAim": {
+          "x": 3.0908374681063697,
+          "y": -3.552713678800501e-15
+        },
+        "error": 1.9091625318936303
+      },
+      {
+        "world": {
+          "x": 10,
+          "z": -3
+        },
+        "projectedNdc": {
+          "x": 0.2782958943626471,
+          "y": 0.05741693470679001
+        },
+        "quickToolAim": {
+          "x": 5.856215936575016,
+          "y": -1.1851352262941255
+        },
+        "error": 4.523790502568985
+      },
+      {
+        "world": {
+          "x": 0,
+          "z": 6
+        },
+        "projectedNdc": {
+          "x": 0,
+          "y": -0.1565883563295497
+        },
+        "quickToolAim": {
+          "x": 0,
+          "y": 2.8148708537540053
+        },
+        "error": 3.1851291462459947
+      }
+    ]
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "scope": "Real aiming and spear flight; isolated shipped WebGL native particle renderer draw-call measurement",
+  "aims": [
+    {
+      "aimX": 1.9999998260405727,
+      "aimZ": 6.999999996695866
+    },
+    {
+      "aimX": 10.000000058368414,
+      "aimZ": -9.999999505161732
+    }
+  ],
+  "inFlight": [
+    {
+      "age": 0.15,
+      "bounces": 0,
+      "equipment": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "id": 36,
+      "k": 2,
+      "life": 5,
+      "mainHits": 0,
+      "pierce": 0,
+      "playerId": 1,
+      "state": "airborne",
+      "x": 0.86154974475963,
+      "y": 0.9427489009726284,
+      "yaw": 2.77441884012026,
+      "z": 9.959970527581255
+    }
+  ],
+  "native": [
+    {
+      "particles": 1,
+      "drawCalls": 1,
+      "triangles": 2
+    },
+    {
+      "particles": 32,
+      "drawCalls": 32,
+      "triangles": 64
+    },
+    {
+      "particles": 128,
+      "drawCalls": 128,
+      "triangles": 256
+    }
+  ],
+  "errors": []
+}

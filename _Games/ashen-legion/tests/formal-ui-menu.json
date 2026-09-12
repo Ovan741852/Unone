@@ -1,0 +1,1129 @@
+{
+  "ok": false,
+  "value": {
+    "screen": "forest_lord",
+    "cols": 96,
+    "rows": 48,
+    "ascii": "+------------------------------------------------------------------------------------------------+\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@######################################@@@@@@@@@@@########@#########@#########@########@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@########@#########@#########@########@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@########@#########@#########@########@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n+------------------------------------------------------------------------------------------------+",
+    "nodes": [
+      {
+        "id": "menu_art",
+        "kind": "image",
+        "rect": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 100.0,
+          "height": 100.0
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_keyart",
+        "text_fit": 0.0
+      },
+      {
+        "id": "menu_banner",
+        "kind": "image",
+        "rect": {
+          "x": 4.0,
+          "y": 13.0,
+          "width": 40.0,
+          "height": 78.0
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_panel",
+        "text_fit": 0.0
+      },
+      {
+        "id": "crest",
+        "kind": "image",
+        "rect": {
+          "x": 15.0,
+          "y": 67.0,
+          "width": 16.0,
+          "height": 20.0
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_crest",
+        "text_fit": 0.0
+      },
+      {
+        "id": "title",
+        "kind": "text",
+        "rect": {
+          "x": 8.0,
+          "y": 53.0,
+          "width": 32.0,
+          "height": 12.0
+        },
+        "text": "森林領主",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.42
+      },
+      {
+        "id": "subtitle",
+        "kind": "text",
+        "rect": {
+          "x": 8.0,
+          "y": 46.0,
+          "width": 32.0,
+          "height": 5.0
+        },
+        "text": "七輪遠征 · 奪回森林王冠",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.57
+      },
+      {
+        "id": "start_plate",
+        "kind": "image",
+        "rect": {
+          "x": 9.0,
+          "y": 32.0,
+          "width": 30.0,
+          "height": 9.0
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_button",
+        "text_fit": 0.0
+      },
+      {
+        "id": "start",
+        "kind": "button",
+        "rect": {
+          "x": 9.0,
+          "y": 32.0,
+          "width": 30.0,
+          "height": 9.0
+        },
+        "text": "出征",
+        "action": "Start",
+        "asset": null,
+        "text_fit": 0.17
+      },
+      {
+        "id": "town_plate",
+        "kind": "image",
+        "rect": {
+          "x": 9.0,
+          "y": 22.0,
+          "width": 30.0,
+          "height": 7.0
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_button",
+        "text_fit": 0.0
+      },
+      {
+        "id": "town",
+        "kind": "button",
+        "rect": {
+          "x": 9.0,
+          "y": 22.0,
+          "width": 30.0,
+          "height": 7.0
+        },
+        "text": "領地與城鎮",
+        "action": "UI_town",
+        "asset": null,
+        "text_fit": 0.33
+      },
+      {
+        "id": "seat_1_plate",
+        "kind": "image",
+        "rect": {
+          "x": 55.0,
+          "y": 8.0,
+          "width": 9.0,
+          "height": 7.0
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_button",
+        "text_fit": 0.0
+      },
+      {
+        "id": "seat_1",
+        "kind": "button",
+        "rect": {
+          "x": 55.0,
+          "y": 8.0,
+          "width": 9.0,
+          "height": 7.0
+        },
+        "text": "南",
+        "action": "Seat1",
+        "asset": null,
+        "text_fit": 0.22
+      },
+      {
+        "id": "seat_2_plate",
+        "kind": "image",
+        "rect": {
+          "x": 65.0,
+          "y": 8.0,
+          "width": 9.0,
+          "height": 7.0
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_button",
+        "text_fit": 0.0
+      },
+      {
+        "id": "seat_2",
+        "kind": "button",
+        "rect": {
+          "x": 65.0,
+          "y": 8.0,
+          "width": 9.0,
+          "height": 7.0
+        },
+        "text": "東",
+        "action": "Seat2",
+        "asset": null,
+        "text_fit": 0.22
+      },
+      {
+        "id": "seat_3_plate",
+        "kind": "image",
+        "rect": {
+          "x": 75.0,
+          "y": 8.0,
+          "width": 9.0,
+          "height": 7.0
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_button",
+        "text_fit": 0.0
+      },
+      {
+        "id": "seat_3",
+        "kind": "button",
+        "rect": {
+          "x": 75.0,
+          "y": 8.0,
+          "width": 9.0,
+          "height": 7.0
+        },
+        "text": "北",
+        "action": "Seat3",
+        "asset": null,
+        "text_fit": 0.22
+      },
+      {
+        "id": "seat_4_plate",
+        "kind": "image",
+        "rect": {
+          "x": 85.0,
+          "y": 8.0,
+          "width": 9.0,
+          "height": 7.0
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_button",
+        "text_fit": 0.0
+      },
+      {
+        "id": "seat_4",
+        "kind": "button",
+        "rect": {
+          "x": 85.0,
+          "y": 8.0,
+          "width": 9.0,
+          "height": 7.0
+        },
+        "text": "西",
+        "action": "Seat4",
+        "asset": null,
+        "text_fit": 0.22
+      }
+    ],
+    "findings": [
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'menu_banner' overlap by 40.0 x 78.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "menu_banner"
+        ],
+        "resolution": "Increase 'menu_banner' x by 40.0 (to the right), or reduce one of the widths."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'crest' overlap by 16.0 x 20.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "crest"
+        ],
+        "resolution": "Increase 'crest' x by 16.0 (to the right), or reduce one of the widths."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'title' overlap by 32.0 x 12.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "title"
+        ],
+        "resolution": "Increase 'title' y by 12.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'subtitle' overlap by 32.0 x 5.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "subtitle"
+        ],
+        "resolution": "Increase 'subtitle' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'start_plate' overlap by 30.0 x 9.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "start_plate"
+        ],
+        "resolution": "Increase 'start_plate' y by 9.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'start' overlap by 30.0 x 9.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "start"
+        ],
+        "resolution": "Increase 'start' y by 9.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'town_plate' overlap by 30.0 x 7.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "town_plate"
+        ],
+        "resolution": "Increase 'town_plate' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'town' overlap by 30.0 x 7.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "town"
+        ],
+        "resolution": "Increase 'town' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'seat_1_plate' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "seat_1_plate"
+        ],
+        "resolution": "Increase 'seat_1_plate' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'seat_1' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "seat_1"
+        ],
+        "resolution": "Increase 'seat_1' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'seat_2_plate' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "seat_2_plate"
+        ],
+        "resolution": "Increase 'seat_2_plate' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'seat_2' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "seat_2"
+        ],
+        "resolution": "Increase 'seat_2' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'seat_3_plate' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "seat_3_plate"
+        ],
+        "resolution": "Increase 'seat_3_plate' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'seat_3' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "seat_3"
+        ],
+        "resolution": "Increase 'seat_3' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'seat_4_plate' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "seat_4_plate"
+        ],
+        "resolution": "Increase 'seat_4_plate' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_art' and 'seat_4' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "seat_4"
+        ],
+        "resolution": "Increase 'seat_4' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_banner' and 'crest' overlap by 16.0 x 20.0 (design-space units).",
+        "nodes": [
+          "menu_banner",
+          "crest"
+        ],
+        "resolution": "Increase 'crest' x by 16.0 (to the right), or reduce one of the widths."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_banner' and 'title' overlap by 32.0 x 12.0 (design-space units).",
+        "nodes": [
+          "menu_banner",
+          "title"
+        ],
+        "resolution": "Increase 'title' y by 12.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_banner' and 'subtitle' overlap by 32.0 x 5.0 (design-space units).",
+        "nodes": [
+          "menu_banner",
+          "subtitle"
+        ],
+        "resolution": "Increase 'subtitle' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_banner' and 'start_plate' overlap by 30.0 x 9.0 (design-space units).",
+        "nodes": [
+          "menu_banner",
+          "start_plate"
+        ],
+        "resolution": "Increase 'start_plate' y by 9.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_banner' and 'start' overlap by 30.0 x 9.0 (design-space units).",
+        "nodes": [
+          "menu_banner",
+          "start"
+        ],
+        "resolution": "Increase 'start' y by 9.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_banner' and 'town_plate' overlap by 30.0 x 7.0 (design-space units).",
+        "nodes": [
+          "menu_banner",
+          "town_plate"
+        ],
+        "resolution": "Increase 'town_plate' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'menu_banner' and 'town' overlap by 30.0 x 7.0 (design-space units).",
+        "nodes": [
+          "menu_banner",
+          "town"
+        ],
+        "resolution": "Increase 'town' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'start_plate' and 'start' overlap by 30.0 x 9.0 (design-space units).",
+        "nodes": [
+          "start_plate",
+          "start"
+        ],
+        "resolution": "Increase 'start' y by 9.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'town_plate' and 'town' overlap by 30.0 x 7.0 (design-space units).",
+        "nodes": [
+          "town_plate",
+          "town"
+        ],
+        "resolution": "Increase 'town' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'seat_1_plate' and 'seat_1' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "seat_1_plate",
+          "seat_1"
+        ],
+        "resolution": "Increase 'seat_1' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'seat_2_plate' and 'seat_2' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "seat_2_plate",
+          "seat_2"
+        ],
+        "resolution": "Increase 'seat_2' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'seat_3_plate' and 'seat_3' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "seat_3_plate",
+          "seat_3"
+        ],
+        "resolution": "Increase 'seat_3' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'seat_4_plate' and 'seat_4' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "seat_4_plate",
+          "seat_4"
+        ],
+        "resolution": "Increase 'seat_4' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      }
+    ],
+    "readable": false,
+    "assumptions": [
+      "text_fit assumes a 16:9 viewport and a 0.5 character advance, so it is a              measurement to read, never a pass/fail",
+      "structure only: this says nothing about whether the screen looks good"
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'menu_banner' overlap by 40.0 x 78.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "menu_banner"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'menu_banner' x by 40.0 (to the right), or reduce one of the widths.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'crest' overlap by 16.0 x 20.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "crest"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'crest' x by 16.0 (to the right), or reduce one of the widths.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'title' overlap by 32.0 x 12.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "title"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'title' y by 12.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'subtitle' overlap by 32.0 x 5.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "subtitle"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'subtitle' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'start_plate' overlap by 30.0 x 9.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "start_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'start_plate' y by 9.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'start' overlap by 30.0 x 9.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "start"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'start' y by 9.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'town_plate' overlap by 30.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "town_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'town_plate' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'town' overlap by 30.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "town"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'town' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'seat_1_plate' overlap by 9.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "seat_1_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'seat_1_plate' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'seat_1' overlap by 9.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "seat_1"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'seat_1' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'seat_2_plate' overlap by 9.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "seat_2_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'seat_2_plate' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'seat_2' overlap by 9.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "seat_2"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'seat_2' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'seat_3_plate' overlap by 9.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "seat_3_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'seat_3_plate' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'seat_3' overlap by 9.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "seat_3"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'seat_3' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'seat_4_plate' overlap by 9.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "seat_4_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'seat_4_plate' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_art' and 'seat_4' overlap by 9.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_art",
+          "seat_4"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'seat_4' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_banner' and 'crest' overlap by 16.0 x 20.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_banner",
+          "crest"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'crest' x by 16.0 (to the right), or reduce one of the widths.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_banner' and 'title' overlap by 32.0 x 12.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_banner",
+          "title"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'title' y by 12.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_banner' and 'subtitle' overlap by 32.0 x 5.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_banner",
+          "subtitle"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'subtitle' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_banner' and 'start_plate' overlap by 30.0 x 9.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_banner",
+          "start_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'start_plate' y by 9.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_banner' and 'start' overlap by 30.0 x 9.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_banner",
+          "start"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'start' y by 9.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_banner' and 'town_plate' overlap by 30.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_banner",
+          "town_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'town_plate' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'menu_banner' and 'town' overlap by 30.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "menu_banner",
+          "town"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'town' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'start_plate' and 'start' overlap by 30.0 x 9.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "start_plate",
+          "start"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'start' y by 9.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'town_plate' and 'town' overlap by 30.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "town_plate",
+          "town"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'town' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'seat_1_plate' and 'seat_1' overlap by 9.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "seat_1_plate",
+          "seat_1"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'seat_1' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'seat_2_plate' and 'seat_2' overlap by 9.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "seat_2_plate",
+          "seat_2"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'seat_2' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'seat_3_plate' and 'seat_3' overlap by 9.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "seat_3_plate",
+          "seat_3"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'seat_3' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'seat_4_plate' and 'seat_4' overlap by 9.0 x 7.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "seat_4_plate",
+          "seat_4"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'seat_4' y by 7.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    }
+  ],
+  "effects": []
+}

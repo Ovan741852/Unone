@@ -1,0 +1,177 @@
+{
+  "ok": true,
+  "value": {
+    "project_root": "D:/Projects/YesSir/_Games/ashen-legion",
+    "status": "synced",
+    "pack": {
+      "project_root": "\\\\?\\D:\\Projects\\YesSir\\_Games\\ashen-legion",
+      "manifest_path": "\\\\?\\D:\\Projects\\YesSir\\_Games\\ashen-legion\\bundles\\manifest.json",
+      "manifest_version": 6,
+      "manifest_changed": true,
+      "project_config_changed": false,
+      "bundles": [
+        {
+          "id": "project",
+          "version": "1",
+          "source": "project.unone.json",
+          "sha256": "f846fffe3f1d6008d1ccd2204b75535e41c75dac3438afeaf00aab3b33f434c5",
+          "size_bytes": 1184,
+          "dependencies": []
+        },
+        {
+          "id": "script",
+          "version": "1",
+          "source": "main.luau",
+          "sha256": "8a135bd709cf916b5b987eeabb9e39874d202ca3734808681f7940bf8af866fc",
+          "size_bytes": 65551,
+          "dependencies": [
+            "project"
+          ]
+        },
+        {
+          "id": "scene",
+          "version": "1",
+          "source": "scene.json",
+          "sha256": "58a78b37c38ed6003566828f454575ee416c30cd96d4530a403f015cbacafdd7",
+          "size_bytes": 524,
+          "dependencies": [
+            "project"
+          ]
+        },
+        {
+          "id": "asset-manifest",
+          "version": "1",
+          "source": "assets.json",
+          "sha256": "29bdfae39d80373caf6c139d2a37d8e61e7f3570e8edb4e8b05f11c17823d041",
+          "size_bytes": 5340,
+          "dependencies": [
+            "project"
+          ]
+        },
+        {
+          "id": "content",
+          "version": "1",
+          "source": "bundles/content.bundle",
+          "sha256": "d9bbe2f919d97c34997fe29b6f261dc2029b6c032bf03c76b9b62c81baeba0ea",
+          "size_bytes": 2261634,
+          "dependencies": [
+            "project",
+            "asset-manifest"
+          ]
+        }
+      ]
+    },
+    "verify": {
+      "project": "冥潮軍團 · ASHEN LEGION",
+      "steps": [
+        {
+          "name": "types",
+          "status": "passed",
+          "summary": "entrypoints [\"start\", \"update\"], strict_mode true",
+          "command": "game check --types",
+          "diagnostics": []
+        },
+        {
+          "name": "assets",
+          "status": "passed",
+          "summary": "21 declared, 2 scene references, ready_for_packaging true",
+          "command": "game asset inspect --strict",
+          "diagnostics": []
+        },
+        {
+          "name": "layout",
+          "status": "not_applicable",
+          "summary": "the game publishes no UI tree",
+          "command": "game ui preview --strict --frames 1 --seed 42",
+          "diagnostics": []
+        },
+        {
+          "name": "tests",
+          "status": "passed",
+          "summary": "19/19 deterministic cases passed",
+          "command": "game test",
+          "diagnostics": []
+        }
+      ],
+      "passed": 3,
+      "failed": 0,
+      "not_applicable": 1,
+      "step_source": "default"
+    },
+    "activation": {
+      "manifest_version": 6,
+      "valid": true,
+      "entries": [
+        {
+          "id": "project",
+          "source": "project.unone.json",
+          "source_exists": true,
+          "size_valid": true,
+          "hash_valid": true,
+          "cached": true,
+          "cache_valid": true,
+          "available": true,
+          "error": null
+        },
+        {
+          "id": "script",
+          "source": "main.luau",
+          "source_exists": true,
+          "size_valid": true,
+          "hash_valid": true,
+          "cached": true,
+          "cache_valid": true,
+          "available": true,
+          "error": null
+        },
+        {
+          "id": "scene",
+          "source": "scene.json",
+          "source_exists": true,
+          "size_valid": true,
+          "hash_valid": true,
+          "cached": true,
+          "cache_valid": true,
+          "available": true,
+          "error": null
+        },
+        {
+          "id": "asset-manifest",
+          "source": "assets.json",
+          "source_exists": true,
+          "size_valid": true,
+          "hash_valid": true,
+          "cached": true,
+          "cache_valid": true,
+          "available": true,
+          "error": null
+        },
+        {
+          "id": "content",
+          "source": "bundles/content.bundle",
+          "source_exists": true,
+          "size_valid": true,
+          "hash_valid": true,
+          "cached": true,
+          "cache_valid": true,
+          "available": true,
+          "error": null
+        }
+      ],
+      "active_generation": 1,
+      "active_bundles": {
+        "asset-manifest": "29bdfae39d80373caf6c139d2a37d8e61e7f3570e8edb4e8b05f11c17823d041",
+        "content": "d9bbe2f919d97c34997fe29b6f261dc2029b6c032bf03c76b9b62c81baeba0ea",
+        "project": "f846fffe3f1d6008d1ccd2204b75535e41c75dac3438afeaf00aab3b33f434c5",
+        "scene": "58a78b37c38ed6003566828f454575ee416c30cd96d4530a403f015cbacafdd7",
+        "script": "8a135bd709cf916b5b987eeabb9e39874d202ca3734808681f7940bf8af866fc"
+      }
+    }
+  },
+  "diagnostics": [],
+  "effects": [
+    "verify ran 4 gates in the default order: 3 passed, 0 failed, 1 not applicable",
+    "active bundle generation 1 created",
+    "project sync completed"
+  ]
+}

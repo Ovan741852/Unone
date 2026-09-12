@@ -1,0 +1,19 @@
+<!doctype html><html lang="zh-Hant"><script type="importmap">{"imports":{"three":"/game/presentation/vendor/build/three.module.js","three/addons/":"/game/presentation/vendor/addons/"}}</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>漁機快測 · Unone</title><link rel="stylesheet" href="style.css">
+<header><div><small>UNONE / EXPERIENCE LAB</small><h1>漁機快測<span>01</span></h1></div><div class="badge">真實 WASM × Luau 規則</div><a href="/game/" target="_blank" rel="noopener">開啟正式介面 ↗</a></header>
+<main><aside><h2>選一個瞬間，開始測</h2><p>正常輸入快進，不修改金錢或抽獎。</p><label>固定種子<input id="seed" type="number" min="1" max="2147483647" value="42"></label>
+<div id="scenarios">
+<button data-scene="start"><b>01　進場與派兵</b><span>第一輪戰鬥 · 自己瞄準</span></button>
+<button data-scene="horde"><b>02　怪物潮</b><span>種子 2 · 自然觸發後暫停</span></button>
+<button data-scene="boss"><b>03　最後 30 秒</b><span>大王即將登場 · 剩餘 35 秒</span></button>
+<button data-scene="poor"><b>04　低金錢求生</b><span>向空處派兵 · 保留最後一筆資金</span></button>
+<button data-scene="refund"><b>05　倖存退款</b><span>重播既有超時結算案例</span></button>
+<button data-scene="bounce"><b>06　彈牆與壽命</b><span>重播四邊炮台的反彈案例</span></button></div>
+<h2>數值批次模擬</h2><p>九種流派以正常輸入選路、購物、換裝、研究及打王；可另選裸裝兵種基線。跑到勝敗或上限。</p><label>策略<select id="balancePolicy"><option value="builds">九種流派</option><option value="baseline">三兵種基線</option></select></label><label>連續種子數<select id="batchCount"><option value="1" selected>1 個種子</option><option value="3">3 個種子</option><option value="10">10 個種子</option></select></label><button id="balance">執行數值比較</button><button id="balanceExport" disabled>匯出數值報告</button><div id="balanceResults" class="muted"></div><h2>規則回歸</h2><select id="spec" aria-label="回歸案例"></select><div class="row"><button id="runSpec">跑選定案例</button><button id="suite">全部案例</button></div><button id="cancel">停止執行</button>
+</aside><section class="center"><div class="stagebar"><strong id="sceneTitle">正在載入 Unone</strong><span id="mode">未開始</span></div><div class="stage"><canvas id="game"></canvas><div class="hint">壓住場地連射　·　1 / 2 / 3 換兵　·　LOCK 點怪物位置</div></div>
+<div class="toolbar"><button id="play">▶ 接手試玩</button><button id="step">單步</button><button id="seek">快進 10 秒</button><label><input id="bloom" type="checkbox" checked>Bloom</label><label><input id="ao" type="checkbox" checked>AO</label></div>
+<div class="toolbar"><button data-action="Unit1">劍兵</button><button data-action="Unit2">槍兵</button><button data-action="Unit3">騎兵</button><button data-action="Mode_lock">LOCK</button><button data-action="Mode_auto">AUTO 開／關</button><button data-action="Auto_settings">選擇目標</button></div>
+<div class="toolbar" id="choices"></div><div class="toolbar"><button data-action="Next">下一輪</button><button data-action="Home">回主畫面</button></div>
+<div id="stats" class="stats"></div><progress id="progress" max="1" value="0"></progress><p id="status" role="status">載入執行器與美術資產…</p><p id="version" class="muted"></p>
+<h2>執行結果</h2><div id="results">選擇場景，或執行一個回歸案例。</div>
+</section><aside class="notes"><h2>體驗筆記</h2><p>正常速度試玩後填寫；通過規則測試不代表好玩。</p><label>看得懂場上發生什麼嗎？<select id="clarity"><option value="">尚未評分</option>清楚</option>偶爾混亂</option>看不懂</option></select></label><label>操作回饋<select id="response"><option value="">尚未評分</option>俐落</option>普通</option>遲鈍</option></select></label><label>還想再玩一輪？<select id="again"><option value="">尚未評分</option>想</option>不確定</option>不想</option></select></label><label>觀察到的問題<textarea id="note" placeholder="例如：怪物潮遮住鎖定圈、大獎遮住射擊方向…"></textarea></label><button id="download">匯出紀錄＋輸入重播</button><label class="import">載入重播<input id="replay" type="file" accept="application/json,.json"></label><p class="muted">包含種子、腳本指紋、逐幀輸入、斷言與筆記。加速段不計入正常遊玩節奏或 GPU 效能。</p><div id="events"></div></aside></main>
+<script type="module" src="app.mjs"></script></html>

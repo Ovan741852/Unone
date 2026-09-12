@@ -1,0 +1,38 @@
+{
+  "ok": false,
+  "value": {
+    "adapter": null,
+    "adapterInspectWallMs": null,
+    "backend": "headless_native",
+    "limitations": [],
+    "memory": null,
+    "memoryOptions": null,
+    "mode": null,
+    "originalMatcher": null,
+    "overrideMatcher": null,
+    "performance": null,
+    "reason": "Input coverage is missing/inconsistent/truncated; no implicit empty-frame padding",
+    "regressionChecks": [],
+    "regressionStatus": "not_evaluated",
+    "samplingScope": null,
+    "schemaVersion": 1,
+    "source": null,
+    "status": "incomplete",
+    "statusMatcher": null,
+    "target": null,
+    "ticksExecuted": null
+  },
+  "diagnostics": [
+    {
+      "code": "REPLAY_GATE_NOT_PASSED",
+      "severity": "ERROR",
+      "summary": "Replay or regression evaluation did not complete successfully",
+      "explanation": "Input coverage is missing/inconsistent/truncated; no implicit empty-frame padding",
+      "facts": {},
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": []
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "artifact": "analysis.json",
+    "ok": true,
+    "errors": []
+  },
+  {
+    "artifact": "evidence-index.json",
+    "ok": true,
+    "errors": []
+  },
+  {
+    "artifact": "ed-triage.json",
+    "ok": true,
+    "errors": []
+  }
+]

@@ -1,0 +1,4740 @@
+{
+  "ok": true,
+  "scope": "Production host/rendering and actual WASM award function; browser-only fixture selects known awards for recording. No production payout or RNG edits.",
+  "samples": {
+    "bigImpact": {
+      "impulses": 1,
+      "liveImpulses": 1,
+      "offset": {
+        "x": 0.029730197042934118,
+        "y": 0.0029803563758869687
+      },
+      "peak": 0.06204494895407767,
+      "reducedMotion": false,
+      "hudShakes": false,
+      "particleBudget": 160,
+      "diagnostics": []
+    },
+    "big": {
+      "ok": true,
+      "value": {
+        "componentBounds": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        "clipped": false,
+        "assetReady": true,
+        "currentFrame": 43.038000000715165,
+        "state": "ready",
+        "generation": 2,
+        "backend": "canvas-2d",
+        "error": null
+      },
+      "celebrationVisible": true,
+      "fullscreen": false,
+      "ultimate": null,
+      "activeTier": 3,
+      "activeAsset": "big-win",
+      "stage": "count",
+      "rolledAmount": 34,
+      "targetAmount": 110,
+      "eventIds": [
+        1
+      ],
+      "completedAmounts": [],
+      "dockRect": {
+        "x": 574.690909090909,
+        "y": 90,
+        "width": 333.8181818181818,
+        "height": 76.5
+      },
+      "visualRect": {
+        "x": 574.690909090909,
+        "y": 90,
+        "width": 333.8181818181818,
+        "height": 76.5
+      },
+      "usesMultiplier": false,
+      "pointerEvents": "none",
+      "diagnostics": [],
+      "impact": {
+        "impulses": 1,
+        "liveImpulses": 1,
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "peak": 0,
+        "reducedMotion": false,
+        "hudShakes": false,
+        "particleBudget": 160,
+        "diagnostics": []
+      },
+      "audio": {
+        "pendingCues": 0,
+        "muted": false
+      }
+    },
+    "megaImpact": {
+      "impulses": 2,
+      "liveImpulses": 1,
+      "offset": {
+        "x": -0.14466803760232572,
+        "y": -0.05063896358964013
+      },
+      "peak": 0.1491363966942148,
+      "reducedMotion": false,
+      "hudShakes": false,
+      "particleBudget": 160,
+      "diagnostics": []
+    },
+    "mega": {
+      "ok": true,
+      "value": {
+        "componentBounds": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        "clipped": false,
+        "assetReady": true,
+        "currentFrame": 100,
+        "state": "ready",
+        "generation": 3,
+        "backend": "canvas-2d",
+        "error": null
+      },
+      "celebrationVisible": true,
+      "fullscreen": false,
+      "ultimate": null,
+      "activeTier": 3,
+      "activeAsset": "mega-win",
+      "stage": "count",
+      "rolledAmount": 219,
+      "targetAmount": 360,
+      "eventIds": [
+        1,
+        2
+      ],
+      "completedAmounts": [],
+      "dockRect": {
+        "x": 574.690909090909,
+        "y": 90,
+        "width": 333.8181818181818,
+        "height": 76.5
+      },
+      "visualRect": {
+        "x": 574.690909090909,
+        "y": 90,
+        "width": 333.8181818181818,
+        "height": 76.5
+      },
+      "usesMultiplier": false,
+      "pointerEvents": "none",
+      "diagnostics": [],
+      "impact": {
+        "impulses": 2,
+        "liveImpulses": 1,
+        "offset": {
+          "x": 0.0009039044667623118,
+          "y": 0.01729034384073908
+        },
+        "peak": 0.061323768595041885,
+        "reducedMotion": false,
+        "hudShakes": false,
+        "particleBudget": 160,
+        "diagnostics": []
+      },
+      "audio": {
+        "pendingCues": 1,
+        "muted": false
+      }
+    },
+    "ultimate": {
+      "s": {
+        "activeSkills": {
+          "critical": 1
+        },
+        "aimX": 0,
+        "aimZ": 0,
+        "arenaHalfExtent": 12.5,
+        "audioMuted": false,
+        "autoConfigOpen": false,
+        "autoDraft": {},
+        "autoEnabled": false,
+        "autoTargets": {
+          "acorn": true,
+          "beetle": true,
+          "boar": true,
+          "elder": true,
+          "moth": true,
+          "piglet": true,
+          "stag": true,
+          "treant": true,
+          "turtle": true,
+          "wheel": true
+        },
+        "awardChances": [
+          0.325,
+          0.325,
+          0.275,
+          0.25,
+          0.225
+        ],
+        "balanceVersion": "2026-09-12-nearwin-v1",
+        "battleSeconds": 6.16666666666665,
+        "beetleAwardChance": 0.125,
+        "bossPresent": false,
+        "bossSpawned": false,
+        "bounces": 0,
+        "breaks": 3,
+        "buildGuide": [
+          {
+            "core": [
+              "longlife",
+              "hunter_vigor",
+              "heat"
+            ],
+            "desc": "先用低價劍兵，一兩件裝備即可起步；熱機吃存活時間，擊殺最多延命1秒。",
+            "name": "省錢長征",
+            "tradeoff": "接觸死亡照常，延命不會讓劍兵穿怪。"
+          },
+          {
+            "core": [
+              "ricochet_precision",
+              "crit_power",
+              "lightning"
+            ],
+            "desc": "瞄準空隙折返蓄爆擊，再用雷鏈清旁邊小怪；穿透讓同一兵多次出手。",
+            "name": "鏡面雷暴",
+            "tradeoff": "雷鏈每兵最多兩次，反彈爆擊率最多額外45%。"
+          },
+          {
+            "core": [
+              "bounce_power",
+              "rebound_charge",
+              "bounce_life"
+            ],
+            "desc": "利用牆面兩次折返累積增傷；回春增加找角度的時間。",
+            "name": "折返蓄力",
+            "tradeoff": "碰怪仍按原本穿透次數結算，角落只算一次反彈。"
+          },
+          {
+            "core": [
+              "haste",
+              "momentum",
+              "finisher"
+            ],
+            "desc": "騎兵先用速度強化穿透，耗盡後把已用穿透轉成最後一撞傷害。",
+            "name": "疾風破陣",
+            "tradeoff": "加速不延長壽命；不追蹤時要選好射線。"
+          },
+          {
+            "core": [
+              "pierce",
+              "piercing_wave",
+              "shock"
+            ],
+            "desc": "每兩次成功穿透追加旋斬，主要命中再震盪；適合怪物潮。",
+            "name": "穿陣旋風",
+            "tradeoff": "旋斬和震盪都是次級傷害，不再互相觸發或爆擊。"
+          },
+          {
+            "core": [
+              "frost_touch",
+              "shatter",
+              "slow_force"
+            ],
+            "desc": "先用凝霜兵標記目標，碎冰兵跟進；搭配沉重把慢速換成傷害。",
+            "name": "霜鋼重擊",
+            "tradeoff": "同一次首次上霜不能立即吃碎冰；重步需負向速度加成。"
+          },
+          {
+            "core": [
+              "frenzy",
+              "hunter_vigor",
+              "pierce"
+            ],
+            "desc": "追著怪物潮累積5／10／15連殺，穿透兵靠擊殺延長作戰。",
+            "name": "狂獵續航",
+            "tradeoff": "2.5秒沒有擊殺後開始掉層；王少的時段不容易維持。"
+          },
+          {
+            "core": [
+              "last_stand",
+              "ember_burst",
+              "expire_burst"
+            ],
+            "desc": "活到最後四分之一壽命拚強力撞擊；接觸終結或到期各有爆發。",
+            "name": "背水餘燼",
+            "tradeoff": "接觸爆炸與到期爆炸不會在同一次死亡疊觸發；召回不爆炸。"
+          },
+          {
+            "core": [
+              "landing_spin",
+              "spin_master",
+              "king_hunter"
+            ],
+            "desc": "任何兵種都能裝落地旋轉斬，擴圈壓住怪群，再往前撞王。",
+            "name": "落地風環",
+            "tradeoff": "擴張不會自行授予旋轉技能；空中也會消耗壽命。"
+          }
+        ],
+        "buildIndex": 0,
+        "cards": {},
+        "chapter": "苔光林口",
+        "chestCount": 1,
+        "chestHold": 0,
+        "chests": [
+          {
+            "playerId": 1,
+            "tier": 3
+          }
+        ],
+        "choiceSeconds": 0,
+        "coinParticles": 62,
+        "coins": 1768,
+        "contactDeaths": 3,
+        "contactHits": 3,
+        "costs": [
+          4,
+          10,
+          20
+        ],
+        "critUntil": 0,
+        "criticalHits": 0,
+        "crystalEarned": 18,
+        "crystalProgress": 6,
+        "crystalSold": 0,
+        "crystalSpent": 0,
+        "crystalStart": 18,
+        "crystals": 36,
+        "curseRewards": [
+          0,
+          0,
+          0
+        ],
+        "curses": {},
+        "damage": 1,
+        "damageEvent": 3,
+        "damageEvents": {},
+        "discount": 0,
+        "earned": 1460,
+        "economyTuning": {
+          "awardScale": 0.5,
+          "deployScale": 0.5,
+          "nearBreak": 0.7,
+          "version": "2026-09-12-nearwin-v1"
+        },
+        "equipSlot": 5,
+        "equipment": [
+          1,
+          1,
+          1
+        ],
+        "event": 3,
+        "expired": 0,
+        "fireMode": "manual",
+        "fireRearm": true,
+        "fired": 3,
+        "freeFired": 0,
+        "hasteUntil": 0,
+        "hordeAdded": 0,
+        "hordeAt": -1,
+        "hordeCount": 0,
+        "hordeNotice": 0,
+        "inventory": {},
+        "itemSerial": 0,
+        "items": {},
+        "kills": 3,
+        "lastCrystalGain": 6,
+        "lastMonster": "冠角白鹿",
+        "lastSpawnX": 0,
+        "lastSpawnZ": 12.2,
+        "lifetime": 1,
+        "loadouts": [
+          {
+            "areaBonus": 0,
+            "areaPenalty": 0,
+            "bounceCrit": 0,
+            "bounceLife": 0,
+            "bouncePower": 0,
+            "critAdd": 0,
+            "critChance": 0.1,
+            "critMultiplier": 1.5,
+            "crowdRing": 0,
+            "damageBonus": 0,
+            "deathBurst": 0,
+            "distance": 0,
+            "expireBurst": 0,
+            "finisher": 0,
+            "flightSpeed": 0,
+            "fracture": 0,
+            "frenzy": 0,
+            "frost": 0,
+            "heat": 0,
+            "hitEcho": 0,
+            "killLife": 0,
+            "kingDamage": 0,
+            "landingSpin": false,
+            "lastStand": 0,
+            "lifeBonus": 0,
+            "lightning": 0,
+            "momentum": 0,
+            "pierce": 0,
+            "pierceWave": 0,
+            "rally": 0,
+            "rapid": 0,
+            "reboundCharge": 0,
+            "recruit": 0,
+            "shatter": 0,
+            "shock": 0,
+            "showdown": 0,
+            "slowForce": 0,
+            "solitary": 0,
+            "soloHunt": 0,
+            "speedBonus": 0,
+            "spinDamage": 0,
+            "spinDuration": 0,
+            "spinMaster": 0,
+            "spinRadius": 0,
+            "thirdCrit": 0,
+            "wallQuake": 0
+          },
+          {
+            "areaBonus": 0,
+            "areaPenalty": 0,
+            "bounceCrit": 0,
+            "bounceLife": 0,
+            "bouncePower": 0,
+            "critAdd": 0,
+            "critChance": 0,
+            "critMultiplier": 1.5,
+            "crowdRing": 0,
+            "damageBonus": 0,
+            "deathBurst": 0,
+            "distance": 0,
+            "expireBurst": 0,
+            "finisher": 0,
+            "flightSpeed": 16,
+            "fracture": 0,
+            "frenzy": 0,
+            "frost": 0,
+            "heat": 0,
+            "hitEcho": 0,
+            "killLife": 0,
+            "kingDamage": 0,
+            "landingSpin": true,
+            "lastStand": 0,
+            "lifeBonus": 0,
+            "lightning": 0,
+            "momentum": 0,
+            "pierce": 0,
+            "pierceWave": 0,
+            "rally": 0,
+            "rapid": 0,
+            "reboundCharge": 0,
+            "recruit": 0,
+            "shatter": 0,
+            "shock": 0,
+            "showdown": 0,
+            "slowForce": 0,
+            "solitary": 0,
+            "soloHunt": 0,
+            "speedBonus": 0,
+            "spinDamage": 1,
+            "spinDuration": 0.55,
+            "spinMaster": 0,
+            "spinRadius": 2.9,
+            "thirdCrit": 0,
+            "wallQuake": 0
+          },
+          {
+            "areaBonus": 0,
+            "areaPenalty": 0,
+            "bounceCrit": 0,
+            "bounceLife": 0,
+            "bouncePower": 0,
+            "critAdd": 0,
+            "critChance": 0,
+            "critMultiplier": 1.5,
+            "crowdRing": 0,
+            "damageBonus": 0,
+            "deathBurst": 0,
+            "distance": 0,
+            "expireBurst": 0,
+            "finisher": 0,
+            "flightSpeed": 0,
+            "fracture": 0,
+            "frenzy": 0,
+            "frost": 0,
+            "heat": 0,
+            "hitEcho": 0,
+            "killLife": 0,
+            "kingDamage": 0,
+            "landingSpin": false,
+            "lastStand": 0,
+            "lifeBonus": 0,
+            "lightning": 0,
+            "momentum": 0,
+            "pierce": 20,
+            "pierceWave": 0,
+            "rally": 0,
+            "rapid": 0,
+            "reboundCharge": 0,
+            "recruit": 0,
+            "shatter": 0,
+            "shock": 0,
+            "showdown": 0,
+            "slowForce": 0,
+            "solitary": 0,
+            "soloHunt": 0,
+            "speedBonus": 0,
+            "spinDamage": 0,
+            "spinDuration": 0,
+            "spinMaster": 0,
+            "spinRadius": 0,
+            "thirdCrit": 0,
+            "wallQuake": 0
+          }
+        ],
+        "location": "",
+        "lockEnabled": false,
+        "lockViolations": 0,
+        "lostPaid": 12,
+        "lotteryMisses": 0,
+        "lotteryResults": [
+          {
+            "amount": 110,
+            "monsterId": 37,
+            "playerId": 1,
+            "tier": 3,
+            "time": 1.4999999999999996,
+            "won": true
+          },
+          {
+            "amount": 250,
+            "monsterId": 39,
+            "playerId": 1,
+            "tier": 3,
+            "time": 3.8333333333333246,
+            "won": true
+          },
+          {
+            "amount": 1100,
+            "monsterId": 41,
+            "playerId": 1,
+            "tier": 4,
+            "time": 6.16666666666665,
+            "won": true
+          }
+        ],
+        "luck": 0,
+        "mapDuration": 1.5,
+        "mapElapsed": 0,
+        "mapFrom": 0,
+        "mapMoving": false,
+        "mapPosition": 0,
+        "message": "大王已開出大獎，下一片森林在等你。",
+        "monsters": [
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 1,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -1.868386,
+            "yaw": 1.823409324285132,
+            "z": -10.075633
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 2,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": -0.011578,
+            "yaw": 2.9488314107395674,
+            "z": -10.314568
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 3,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 1.355659,
+            "yaw": 0.5443004360504501,
+            "z": -4.165486
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 4,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": -9.061009,
+            "yaw": -0.7553311233423567,
+            "z": -10.301665
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 5,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 2.780959,
+            "yaw": -0.29982268254831185,
+            "z": -1.955
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 6,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": 2.589555,
+            "yaw": 0.6356843554521832,
+            "z": -4.467063
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 7,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -1.140343,
+            "yaw": 5.825105878286836,
+            "z": -8.350229
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 8,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": 3.076763,
+            "yaw": 6.190920781784082,
+            "z": -5.776586
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 9,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -7.542727,
+            "yaw": -3.920348054984207,
+            "z": -10.420129
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 10,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": -6.634841,
+            "yaw": -4.790975142189105,
+            "z": -2.364667
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 11,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 3.740201,
+            "yaw": 1.9420144418172778,
+            "z": -6.517325
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 12,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": -4.109313,
+            "yaw": -1.1316356025303038,
+            "z": 1.832805
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 13,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 7.49757,
+            "yaw": 2.3884143117006733,
+            "z": -8.604339
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 14,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": 7.098298,
+            "yaw": 1.1746451487509513,
+            "z": 3.011656
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 15,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 2.267486,
+            "yaw": 5.75945645132554,
+            "z": 2.601098
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 16,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": 3.600553,
+            "yaw": 4.020885523652366,
+            "z": -9.152135
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 17,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -10.219941,
+            "yaw": 6.155670671263728,
+            "z": 9.733221
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 18,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": -10.222981,
+            "yaw": -5.657904188697538,
+            "z": 8.462764
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 19,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -10.3641,
+            "yaw": 6.120073438923979,
+            "z": 6.384853
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 20,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": 6.101804,
+            "yaw": 1.321223041976428,
+            "z": 1.487033
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 21,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 9.151582,
+            "yaw": 1.1103537160588481,
+            "z": 2.973808
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 22,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": -3.558547,
+            "yaw": 4.6472573549104155,
+            "z": 1.591802
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 23,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -0.769891,
+            "yaw": 5.0327453329425715,
+            "z": 1.671642
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 24,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": 2.067042,
+            "yaw": 5.4503216730137884,
+            "z": 3.249029
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 25,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -4.607447,
+            "yaw": -4.530762447414142,
+            "z": 3.078385
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 26,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": -6.778049,
+            "yaw": -4.730563510287547,
+            "z": 7.174456
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 27,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 1.984914,
+            "yaw": 0.24821049711422005,
+            "z": 10.695833
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 28,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": 5.554847,
+            "yaw": 1.8484942420758335,
+            "z": 8.817799
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 29,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 9.200367,
+            "yaw": 1.9373917496018511,
+            "z": 8.477327
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 30,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": 3.6636,
+            "yaw": 3.2955497793454724,
+            "z": -1.175796
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 31,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 7.443316,
+            "yaw": -1.56293840388933,
+            "z": 3.751383
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 32,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": 9.438598,
+            "yaw": 3.4631223923422287,
+            "z": 7.52353
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 100,
+            "guardProgress": 0,
+            "id": 33,
+            "name": "花冠樹靈",
+            "rank": 3,
+            "scale": 1.65,
+            "skin": "treant",
+            "x": -5.297565,
+            "yaw": -0.5595592589044569,
+            "z": -0.188736
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 100,
+            "guardProgress": 0,
+            "id": 34,
+            "name": "獠牙搬木王",
+            "rank": 3,
+            "scale": 1.65,
+            "skin": "boar",
+            "x": 2.510381,
+            "yaw": 4.568215561029439,
+            "z": -6.225979
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 160,
+            "guardProgress": 0,
+            "id": 35,
+            "name": "古榕守衛",
+            "rank": 4,
+            "scale": 2.1,
+            "skin": "elder",
+            "x": 1.263605,
+            "yaw": 7.222821568438309,
+            "z": -4.561182
+          }
+        ],
+        "offer": {},
+        "particles": 0,
+        "paused": false,
+        "pendingWheel": {},
+        "phase": "celebration",
+        "piercesUsed": 0,
+        "playerBuffs": [
+          {
+            "critical": 0,
+            "haste": 0,
+            "pierce": 0
+          },
+          {
+            "critical": 0,
+            "haste": 0,
+            "pierce": 0
+          },
+          {
+            "critical": 0,
+            "haste": 0,
+            "pierce": 0
+          },
+          {
+            "critical": 0,
+            "haste": 0,
+            "pierce": 0
+          }
+        ],
+        "playerGold": [
+          1768,
+          320,
+          320,
+          320
+        ],
+        "poolContributed": 0,
+        "poolPaidOut": 0,
+        "poolWinner": 0,
+        "potions": {},
+        "presentationDelay": 4.366666666666669,
+        "prize": 1100,
+        "prizeTier": 4,
+        "procHits": 0,
+        "radius": 2.9,
+        "rallyUntil": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "rallyUsed": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "rankEconomy": [
+          {
+            "attempts": 0,
+            "damage": 0,
+            "earned": 0
+          },
+          {
+            "attempts": 0,
+            "damage": 0,
+            "earned": 0
+          },
+          {
+            "attempts": 1,
+            "damage": 24,
+            "earned": 110
+          },
+          {
+            "attempts": 1,
+            "damage": 24,
+            "earned": 250
+          },
+          {
+            "attempts": 1,
+            "damage": 24,
+            "earned": 1100
+          }
+        ],
+        "recruitUses": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "refunded": 0,
+        "resultElapsed": 0,
+        "returnedTotal": 0,
+        "returnedUnits": 0,
+        "rewardClock": 8.199999999999987,
+        "rewards": [
+          {
+            "amount": 110,
+            "crystals": 2,
+            "id": 1,
+            "multiplier": 27.5,
+            "name": "花冠樹靈",
+            "playerId": 1,
+            "tier": 3,
+            "time": 1.4999999999999996,
+            "title": "BIG WIN",
+            "x": -1.5,
+            "z": -1.5
+          },
+          {
+            "amount": 250,
+            "crystals": 4,
+            "id": 2,
+            "multiplier": 62.5,
+            "name": "古榕守衛",
+            "playerId": 1,
+            "tier": 3,
+            "time": 3.8333333333333246,
+            "title": "MEGA WIN",
+            "x": -1.5,
+            "z": -1.5
+          },
+          {
+            "amount": 1100,
+            "crystals": 6,
+            "id": 3,
+            "multiplier": 275,
+            "name": "冠角白鹿",
+            "playerId": 1,
+            "tier": 4,
+            "time": 6.16666666666665,
+            "title": "LEGENDARY WIN",
+            "x": -1.5,
+            "z": -1.5
+          }
+        ],
+        "round": 1,
+        "roundCrystalBonus": 6,
+        "roundCrystalEarned": 12,
+        "roundDuration": 180,
+        "roundOutro": {
+          "amount": 1100,
+          "duration": 6.4,
+          "elapsed": 2.033333333333331,
+          "eventId": 3,
+          "result": "clear",
+          "tier": 4
+        },
+        "roundRefund": 0,
+        "roundSettled": true,
+        "roundSpent": [
+          12,
+          0,
+          0,
+          0
+        ],
+        "roundWinner": 1,
+        "runeOwned": [
+          [
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false
+          ]
+        ],
+        "runes": [
+          0,
+          0,
+          0
+        ],
+        "seat": 1,
+        "selected": 1,
+        "shopSpent": 0,
+        "shopVisits": 0,
+        "skillBook": {
+          "bounce_life": {
+            "deployExtra": 1,
+            "desc": "反彈延命 0.2 秒，每兵上限 1 秒；每支派兵 +1",
+            "name": "回春折返"
+          },
+          "bounce_power": {
+            "deployExtra": 1,
+            "desc": "每反彈傷害 +12%，上限 +60%；每支派兵 +1",
+            "name": "越彈越猛"
+          },
+          "crit_power": {
+            "deployExtra": 1,
+            "desc": "爆擊倍率 +0.25；每支派兵 +1",
+            "name": "猛擊"
+          },
+          "critical": {
+            "deployExtra": 1,
+            "desc": "目前兵種爆擊率 +10%，爆擊傷害至少 1.5 倍；每次傷害獨立判定；每支派兵 +1",
+            "name": "精準戰技"
+          },
+          "crowd_ring": {
+            "deployExtra": 1,
+            "desc": "落地時附近至少三怪，旋轉半徑+20%，每兵一次；每支派兵 +1",
+            "name": "聚獵"
+          },
+          "deadly": {
+            "deployExtra": 2,
+            "desc": "爆擊倍率+0.5；每支派兵 +2",
+            "name": "致命"
+          },
+          "distance": {
+            "deployExtra": 1,
+            "desc": "地面移動12單位後下一撞 +30%；每支派兵 +1",
+            "name": "遠征"
+          },
+          "double_pierce": {
+            "deployExtra": 4,
+            "desc": "穿透+2；每支派兵 +4",
+            "name": "雙重貫穿"
+          },
+          "ember_burst": {
+            "deployExtra": 4,
+            "desc": "終結接觸後範圍爆炸；每支派兵 +4",
+            "name": "餘燼"
+          },
+          "expire_burst": {
+            "deployExtra": 2,
+            "desc": "到期產生25%範圍傷害；每支派兵 +2",
+            "name": "不屈"
+          },
+          "finisher": {
+            "deployExtra": 2,
+            "desc": "穿透累積最後一撞傷害；每支派兵 +2",
+            "name": "破陣"
+          },
+          "fracture": {
+            "deployExtra": 1,
+            "desc": "命中前破防進度達70%，主要接觸傷害+20%；每支派兵 +1",
+            "name": "裂甲"
+          },
+          "frenzy": {
+            "deployExtra": 1,
+            "desc": "連殺 5/10/15 層增傷；每支派兵 +1",
+            "name": "狂獵戰旗"
+          },
+          "frost_touch": {
+            "deployExtra": 1,
+            "desc": "主要命中緩速；每支派兵 +1",
+            "name": "凝霜之握"
+          },
+          "giant": {
+            "deployExtra": 2,
+            "desc": "基礎傷害+25%；每支派兵 +2",
+            "name": "巨力"
+          },
+          "haste": {
+            "deployExtra": 1,
+            "desc": "移速 +15%；每支派兵 +1",
+            "name": "疾行"
+          },
+          "heat": {
+            "deployExtra": 1,
+            "desc": "每秒主要傷害 +5%，上限25%；每支派兵 +1",
+            "name": "熱機"
+          },
+          "heavy": {
+            "deployExtra": 2,
+            "desc": "速度 -20%，傷害 +35%；每支派兵 +2",
+            "name": "沉重"
+          },
+          "hit_echo": {
+            "deployExtra": 2,
+            "desc": "同兵命中三個不同主要目標後，追加20%範圍傷害，每兵一次；每支派兵 +2",
+            "name": "三重回響"
+          },
+          "hunter_vigor": {
+            "deployExtra": 1,
+            "desc": "擊殺延命 0.25 秒，每兵上限 1 秒；不復活；每支派兵 +1",
+            "name": "狩獵續航"
+          },
+          "king_hunter": {
+            "deployExtra": 2,
+            "desc": "對王主要傷害 +20%；每支派兵 +2",
+            "name": "獵王"
+          },
+          "landing_spin": {
+            "deployExtra": 6,
+            "desc": "目前兵種獲得落地旋轉斬，之後繼續前進；不消耗穿透次數；每支派兵 +6",
+            "name": "旋風戰技"
+          },
+          "last_stand": {
+            "deployExtra": 1,
+            "desc": "剩餘壽命低於25%時下一撞 +40%；每支派兵 +1",
+            "name": "最後一搏"
+          },
+          "lightning": {
+            "deployExtra": 3,
+            "desc": "爆擊雷鏈其他兩怪，每兵最多兩次；每支派兵 +3",
+            "name": "雷枝"
+          },
+          "longlife": {
+            "deployExtra": 1,
+            "desc": "壽命 +15%；每支派兵 +1",
+            "name": "長征"
+          },
+          "momentum": {
+            "deployExtra": 2,
+            "desc": "正向速度加成轉穿透傷害；每支派兵 +2",
+            "name": "勢能穿刺"
+          },
+          "pierce": {
+            "deployExtra": 2,
+            "desc": "目前兵種穿透 +1，可累加；穿透用完後，下次撞擊造成傷害並消失；每支派兵 +2",
+            "name": "穿軍尖鋒"
+          },
+          "piercing_wave": {
+            "deployExtra": 3,
+            "desc": "每第二次成功穿透，對其他最多四怪造成20%範圍傷害；每支派兵 +3",
+            "name": "穿陣旋斬"
+          },
+          "rally": {
+            "deployExtra": 1,
+            "desc": "本輪實付派兵400金幣後，全軍主要增傷15%持續10秒，每輪一次；每支派兵 +1",
+            "name": "集結"
+          },
+          "rapid": {
+            "deployExtra": 2,
+            "desc": "裝備此技能派兵頻率+25%，照價付費；每支派兵 +2",
+            "name": "急募"
+          },
+          "rebound_charge": {
+            "deployExtra": 1,
+            "desc": "反彈最多兩層，下一主要命中每層+20%；每支派兵 +1",
+            "name": "折光"
+          },
+          "recruit": {
+            "deployExtra": 1,
+            "desc": "少於80金幣時派兵半價，每玩家每輪最多三次；每支派兵 +1",
+            "name": "徵募"
+          },
+          "ricochet_precision": {
+            "deployExtra": 1,
+            "desc": "每反彈爆擊率 +15%，上限 +45%；每支派兵 +1",
+            "name": "鏡面準星"
+          },
+          "sharp": {
+            "deployExtra": 1,
+            "desc": "基礎傷害+10%；每支派兵 +1",
+            "name": "鋒利"
+          },
+          "shatter": {
+            "deployExtra": 2,
+            "desc": "命中已緩速目標 +30% 傷害；每兵一次碎冰波；每支派兵 +2",
+            "name": "碎冰"
+          },
+          "shock": {
+            "deployExtra": 4,
+            "desc": "主要命中向其他怪擴散 20% 範圍傷害；每支派兵 +4",
+            "name": "震盪"
+          },
+          "short_fuse": {
+            "deployExtra": 2,
+            "desc": "壽命-20%，傷害+45%；每支派兵 +2",
+            "name": "燃命"
+          },
+          "showdown": {
+            "deployExtra": 2,
+            "desc": "最後30秒主要傷害+25%；每支派兵 +2",
+            "name": "決戰"
+          },
+          "slow_force": {
+            "deployExtra": 1,
+            "desc": "負向移速加成的75%轉為主要傷害，上限30%；每支派兵 +1",
+            "name": "重步碾壓"
+          },
+          "solitary": {
+            "deployExtra": 1,
+            "desc": "自己只有一支付費活兵時，該兵主要傷害+30%；每支派兵 +1",
+            "name": "孤軍"
+          },
+          "solo_hunt": {
+            "deployExtra": 1,
+            "desc": "目標2單位內無其他活怪，主要傷害+25%；每支派兵 +1",
+            "name": "孤獵"
+          },
+          "spin_master": {
+            "deployExtra": 2,
+            "desc": "旋轉半徑 +0.4、旋轉傷害 +20%；需要落地旋轉斬；每支派兵 +2",
+            "name": "旋風擴張"
+          },
+          "third_crit": {
+            "deployExtra": 2,
+            "desc": "每第三次主要命中必定爆擊；每支派兵 +2",
+            "name": "決勝"
+          },
+          "wall_quake": {
+            "deployExtra": 2,
+            "desc": "第一次反彈：30%範圍傷害，最多四怪；每支派兵 +2",
+            "name": "震地"
+          },
+          "wide_blade": {
+            "deployExtra": 1,
+            "desc": "範圍半徑+20%，範圍傷害-10%；每支派兵 +1",
+            "name": "寬刃"
+          }
+        },
+        "skillSources": [
+          {},
+          {},
+          {}
+        ],
+        "skillTriggers": {},
+        "sold": 0,
+        "specialSpawned": false,
+        "spent": 12,
+        "spinHits": 0,
+        "stock": {},
+        "streaks": [
+          {
+            "count": 0,
+            "time": 0
+          },
+          {
+            "count": 0,
+            "time": 0
+          },
+          {
+            "count": 0,
+            "time": 0
+          },
+          {
+            "count": 0,
+            "time": 0
+          }
+        ],
+        "targetFilter": "all",
+        "targetId": 0,
+        "targetName": "",
+        "tech": [
+          {},
+          {},
+          {}
+        ],
+        "time": 173.83333333332843,
+        "town": {
+          "gold": 30,
+          "levels": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "version": 1
+        },
+        "townStartGold": 0,
+        "troops": 0,
+        "uiPage": 1,
+        "vfx": {},
+        "visualSerial": 0,
+        "visualTroops": {},
+        "wheelSpawned": false,
+        "won": true,
+        "worn": [
+          [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      "fx": {
+        "ok": true,
+        "value": {
+          "componentBounds": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "h": 100
+          },
+          "clipped": false,
+          "assetReady": true,
+          "currentFrame": 0,
+          "state": "ready",
+          "generation": 4,
+          "backend": "canvas-2d",
+          "error": null
+        },
+        "celebrationVisible": true,
+        "fullscreen": true,
+        "ultimate": {
+          "age": 2.0333333333333306,
+          "fullscreen": true,
+          "particleBudget": 104,
+          "reducedMotion": false,
+          "lottie": {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 121.99999999999983,
+              "state": "ready",
+              "generation": 1,
+              "backend": "canvas-2d",
+              "error": null
+            }
+          },
+          "safeRect": {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 900
+          }
+        },
+        "activeTier": 4,
+        "activeAsset": "legendary-win",
+        "stage": "count",
+        "rolledAmount": 781,
+        "targetAmount": 1100,
+        "eventIds": [
+          3
+        ],
+        "completedAmounts": [
+          360
+        ],
+        "dockRect": null,
+        "visualRect": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 900
+        },
+        "usesMultiplier": false,
+        "pointerEvents": "none",
+        "diagnostics": [],
+        "impact": {
+          "impulses": 3,
+          "liveImpulses": 0,
+          "offset": {
+            "x": 0,
+            "y": 0
+          },
+          "peak": 0,
+          "reducedMotion": false,
+          "hudShakes": false,
+          "particleBudget": 160,
+          "diagnostics": []
+        },
+        "audio": {
+          "pendingCues": 3,
+          "muted": false
+        }
+      },
+      "ui": {
+        "children": [
+          {
+            "id": "outro_wait",
+            "kind": "text",
+            "rect": {
+              "x": 20,
+              "y": 4,
+              "width": 60,
+              "height": 3
+            },
+            "text": "凱旋時刻 · 稍後清點戰利品"
+          }
+        ],
+        "id": "forest_lord",
+        "kind": "screen",
+        "node": "celebration:home"
+      }
+    },
+    "result": {
+      "s": {
+        "activeSkills": {
+          "critical": 1
+        },
+        "aimX": 0,
+        "aimZ": 0,
+        "arenaHalfExtent": 12.5,
+        "audioMuted": false,
+        "autoConfigOpen": false,
+        "autoDraft": {},
+        "autoEnabled": false,
+        "autoTargets": {
+          "acorn": true,
+          "beetle": true,
+          "boar": true,
+          "elder": true,
+          "moth": true,
+          "piglet": true,
+          "stag": true,
+          "treant": true,
+          "turtle": true,
+          "wheel": true
+        },
+        "awardChances": [
+          0.325,
+          0.325,
+          0.275,
+          0.25,
+          0.225
+        ],
+        "balanceVersion": "2026-09-12-nearwin-v1",
+        "battleSeconds": 6.16666666666665,
+        "beetleAwardChance": 0.125,
+        "bossPresent": false,
+        "bossSpawned": false,
+        "bounces": 0,
+        "breaks": 3,
+        "buildGuide": [
+          {
+            "core": [
+              "longlife",
+              "hunter_vigor",
+              "heat"
+            ],
+            "desc": "先用低價劍兵，一兩件裝備即可起步；熱機吃存活時間，擊殺最多延命1秒。",
+            "name": "省錢長征",
+            "tradeoff": "接觸死亡照常，延命不會讓劍兵穿怪。"
+          },
+          {
+            "core": [
+              "ricochet_precision",
+              "crit_power",
+              "lightning"
+            ],
+            "desc": "瞄準空隙折返蓄爆擊，再用雷鏈清旁邊小怪；穿透讓同一兵多次出手。",
+            "name": "鏡面雷暴",
+            "tradeoff": "雷鏈每兵最多兩次，反彈爆擊率最多額外45%。"
+          },
+          {
+            "core": [
+              "bounce_power",
+              "rebound_charge",
+              "bounce_life"
+            ],
+            "desc": "利用牆面兩次折返累積增傷；回春增加找角度的時間。",
+            "name": "折返蓄力",
+            "tradeoff": "碰怪仍按原本穿透次數結算，角落只算一次反彈。"
+          },
+          {
+            "core": [
+              "haste",
+              "momentum",
+              "finisher"
+            ],
+            "desc": "騎兵先用速度強化穿透，耗盡後把已用穿透轉成最後一撞傷害。",
+            "name": "疾風破陣",
+            "tradeoff": "加速不延長壽命；不追蹤時要選好射線。"
+          },
+          {
+            "core": [
+              "pierce",
+              "piercing_wave",
+              "shock"
+            ],
+            "desc": "每兩次成功穿透追加旋斬，主要命中再震盪；適合怪物潮。",
+            "name": "穿陣旋風",
+            "tradeoff": "旋斬和震盪都是次級傷害，不再互相觸發或爆擊。"
+          },
+          {
+            "core": [
+              "frost_touch",
+              "shatter",
+              "slow_force"
+            ],
+            "desc": "先用凝霜兵標記目標，碎冰兵跟進；搭配沉重把慢速換成傷害。",
+            "name": "霜鋼重擊",
+            "tradeoff": "同一次首次上霜不能立即吃碎冰；重步需負向速度加成。"
+          },
+          {
+            "core": [
+              "frenzy",
+              "hunter_vigor",
+              "pierce"
+            ],
+            "desc": "追著怪物潮累積5／10／15連殺，穿透兵靠擊殺延長作戰。",
+            "name": "狂獵續航",
+            "tradeoff": "2.5秒沒有擊殺後開始掉層；王少的時段不容易維持。"
+          },
+          {
+            "core": [
+              "last_stand",
+              "ember_burst",
+              "expire_burst"
+            ],
+            "desc": "活到最後四分之一壽命拚強力撞擊；接觸終結或到期各有爆發。",
+            "name": "背水餘燼",
+            "tradeoff": "接觸爆炸與到期爆炸不會在同一次死亡疊觸發；召回不爆炸。"
+          },
+          {
+            "core": [
+              "landing_spin",
+              "spin_master",
+              "king_hunter"
+            ],
+            "desc": "任何兵種都能裝落地旋轉斬，擴圈壓住怪群，再往前撞王。",
+            "name": "落地風環",
+            "tradeoff": "擴張不會自行授予旋轉技能；空中也會消耗壽命。"
+          }
+        ],
+        "buildIndex": 0,
+        "cards": {},
+        "chapter": "苔光林口",
+        "chestCount": 1,
+        "chestHold": 0,
+        "chests": [
+          {
+            "playerId": 1,
+            "tier": 3
+          }
+        ],
+        "choiceSeconds": 0.7000000000000005,
+        "coinParticles": 0,
+        "coins": 1768,
+        "contactDeaths": 3,
+        "contactHits": 3,
+        "costs": [
+          4,
+          10,
+          20
+        ],
+        "critUntil": 0,
+        "criticalHits": 0,
+        "crystalEarned": 18,
+        "crystalProgress": 6,
+        "crystalSold": 0,
+        "crystalSpent": 0,
+        "crystalStart": 18,
+        "crystals": 36,
+        "curseRewards": [
+          0,
+          0,
+          0
+        ],
+        "curses": {},
+        "damage": 1,
+        "damageEvent": 3,
+        "damageEvents": {},
+        "discount": 0,
+        "earned": 1460,
+        "economyTuning": {
+          "awardScale": 0.5,
+          "deployScale": 0.5,
+          "nearBreak": 0.7,
+          "version": "2026-09-12-nearwin-v1"
+        },
+        "equipSlot": 5,
+        "equipment": [
+          1,
+          1,
+          1
+        ],
+        "event": 3,
+        "expired": 0,
+        "fireMode": "manual",
+        "fireRearm": true,
+        "fired": 3,
+        "freeFired": 0,
+        "hasteUntil": 0,
+        "hordeAdded": 0,
+        "hordeAt": -1,
+        "hordeCount": 0,
+        "hordeNotice": 0,
+        "inventory": {},
+        "itemSerial": 0,
+        "items": {},
+        "kills": 3,
+        "lastCrystalGain": 6,
+        "lastMonster": "冠角白鹿",
+        "lastSpawnX": 0,
+        "lastSpawnZ": 12.2,
+        "lifetime": 1,
+        "loadouts": [
+          {
+            "areaBonus": 0,
+            "areaPenalty": 0,
+            "bounceCrit": 0,
+            "bounceLife": 0,
+            "bouncePower": 0,
+            "critAdd": 0,
+            "critChance": 0.1,
+            "critMultiplier": 1.5,
+            "crowdRing": 0,
+            "damageBonus": 0,
+            "deathBurst": 0,
+            "distance": 0,
+            "expireBurst": 0,
+            "finisher": 0,
+            "flightSpeed": 0,
+            "fracture": 0,
+            "frenzy": 0,
+            "frost": 0,
+            "heat": 0,
+            "hitEcho": 0,
+            "killLife": 0,
+            "kingDamage": 0,
+            "landingSpin": false,
+            "lastStand": 0,
+            "lifeBonus": 0,
+            "lightning": 0,
+            "momentum": 0,
+            "pierce": 0,
+            "pierceWave": 0,
+            "rally": 0,
+            "rapid": 0,
+            "reboundCharge": 0,
+            "recruit": 0,
+            "shatter": 0,
+            "shock": 0,
+            "showdown": 0,
+            "slowForce": 0,
+            "solitary": 0,
+            "soloHunt": 0,
+            "speedBonus": 0,
+            "spinDamage": 0,
+            "spinDuration": 0,
+            "spinMaster": 0,
+            "spinRadius": 0,
+            "thirdCrit": 0,
+            "wallQuake": 0
+          },
+          {
+            "areaBonus": 0,
+            "areaPenalty": 0,
+            "bounceCrit": 0,
+            "bounceLife": 0,
+            "bouncePower": 0,
+            "critAdd": 0,
+            "critChance": 0,
+            "critMultiplier": 1.5,
+            "crowdRing": 0,
+            "damageBonus": 0,
+            "deathBurst": 0,
+            "distance": 0,
+            "expireBurst": 0,
+            "finisher": 0,
+            "flightSpeed": 16,
+            "fracture": 0,
+            "frenzy": 0,
+            "frost": 0,
+            "heat": 0,
+            "hitEcho": 0,
+            "killLife": 0,
+            "kingDamage": 0,
+            "landingSpin": true,
+            "lastStand": 0,
+            "lifeBonus": 0,
+            "lightning": 0,
+            "momentum": 0,
+            "pierce": 0,
+            "pierceWave": 0,
+            "rally": 0,
+            "rapid": 0,
+            "reboundCharge": 0,
+            "recruit": 0,
+            "shatter": 0,
+            "shock": 0,
+            "showdown": 0,
+            "slowForce": 0,
+            "solitary": 0,
+            "soloHunt": 0,
+            "speedBonus": 0,
+            "spinDamage": 1,
+            "spinDuration": 0.55,
+            "spinMaster": 0,
+            "spinRadius": 2.9,
+            "thirdCrit": 0,
+            "wallQuake": 0
+          },
+          {
+            "areaBonus": 0,
+            "areaPenalty": 0,
+            "bounceCrit": 0,
+            "bounceLife": 0,
+            "bouncePower": 0,
+            "critAdd": 0,
+            "critChance": 0,
+            "critMultiplier": 1.5,
+            "crowdRing": 0,
+            "damageBonus": 0,
+            "deathBurst": 0,
+            "distance": 0,
+            "expireBurst": 0,
+            "finisher": 0,
+            "flightSpeed": 0,
+            "fracture": 0,
+            "frenzy": 0,
+            "frost": 0,
+            "heat": 0,
+            "hitEcho": 0,
+            "killLife": 0,
+            "kingDamage": 0,
+            "landingSpin": false,
+            "lastStand": 0,
+            "lifeBonus": 0,
+            "lightning": 0,
+            "momentum": 0,
+            "pierce": 20,
+            "pierceWave": 0,
+            "rally": 0,
+            "rapid": 0,
+            "reboundCharge": 0,
+            "recruit": 0,
+            "shatter": 0,
+            "shock": 0,
+            "showdown": 0,
+            "slowForce": 0,
+            "solitary": 0,
+            "soloHunt": 0,
+            "speedBonus": 0,
+            "spinDamage": 0,
+            "spinDuration": 0,
+            "spinMaster": 0,
+            "spinRadius": 0,
+            "thirdCrit": 0,
+            "wallQuake": 0
+          }
+        ],
+        "location": "",
+        "lockEnabled": false,
+        "lockViolations": 0,
+        "lostPaid": 12,
+        "lotteryMisses": 0,
+        "lotteryResults": [
+          {
+            "amount": 110,
+            "monsterId": 37,
+            "playerId": 1,
+            "tier": 3,
+            "time": 1.4999999999999996,
+            "won": true
+          },
+          {
+            "amount": 250,
+            "monsterId": 39,
+            "playerId": 1,
+            "tier": 3,
+            "time": 3.8333333333333246,
+            "won": true
+          },
+          {
+            "amount": 1100,
+            "monsterId": 41,
+            "playerId": 1,
+            "tier": 4,
+            "time": 6.16666666666665,
+            "won": true
+          }
+        ],
+        "luck": 0,
+        "mapDuration": 1.5,
+        "mapElapsed": 0,
+        "mapFrom": 0,
+        "mapMoving": false,
+        "mapPosition": 0,
+        "message": "大王已開出大獎，下一片森林在等你。",
+        "monsters": [
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 1,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -1.868386,
+            "yaw": 1.823409324285132,
+            "z": -10.075633
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 2,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": -0.011578,
+            "yaw": 2.9488314107395674,
+            "z": -10.314568
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 3,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 1.355659,
+            "yaw": 0.5443004360504501,
+            "z": -4.165486
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 4,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": -9.061009,
+            "yaw": -0.7553311233423567,
+            "z": -10.301665
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 5,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 2.780959,
+            "yaw": -0.29982268254831185,
+            "z": -1.955
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 6,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": 2.589555,
+            "yaw": 0.6356843554521832,
+            "z": -4.467063
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 7,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -1.140343,
+            "yaw": 5.825105878286836,
+            "z": -8.350229
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 8,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": 3.076763,
+            "yaw": 6.190920781784082,
+            "z": -5.776586
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 9,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -7.542727,
+            "yaw": -3.920348054984207,
+            "z": -10.420129
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 10,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": -6.634841,
+            "yaw": -4.790975142189105,
+            "z": -2.364667
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 11,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 3.740201,
+            "yaw": 1.9420144418172778,
+            "z": -6.517325
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 12,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": -4.109313,
+            "yaw": -1.1316356025303038,
+            "z": 1.832805
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 13,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 7.49757,
+            "yaw": 2.3884143117006733,
+            "z": -8.604339
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 14,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": 7.098298,
+            "yaw": 1.1746451487509513,
+            "z": 3.011656
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 15,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 2.267486,
+            "yaw": 5.75945645132554,
+            "z": 2.601098
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 16,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": 3.600553,
+            "yaw": 4.020885523652366,
+            "z": -9.152135
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 17,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -10.219941,
+            "yaw": 6.155670671263728,
+            "z": 9.733221
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 18,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": -10.222981,
+            "yaw": -5.657904188697538,
+            "z": 8.462764
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 19,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -10.3641,
+            "yaw": 6.120073438923979,
+            "z": 6.384853
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 20,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": 6.101804,
+            "yaw": 1.321223041976428,
+            "z": 1.487033
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 21,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 9.151582,
+            "yaw": 1.1103537160588481,
+            "z": 2.973808
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 22,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": -3.558547,
+            "yaw": 4.6472573549104155,
+            "z": 1.591802
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 23,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -0.769891,
+            "yaw": 5.0327453329425715,
+            "z": 1.671642
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 24,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": 2.067042,
+            "yaw": 5.4503216730137884,
+            "z": 3.249029
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 25,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": -4.607447,
+            "yaw": -4.530762447414142,
+            "z": 3.078385
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 26,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": -6.778049,
+            "yaw": -4.730563510287547,
+            "z": 7.174456
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 27,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 1.984914,
+            "yaw": 0.24821049711422005,
+            "z": 10.695833
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 28,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": 5.554847,
+            "yaw": 1.8484942420758335,
+            "z": 8.817799
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 29,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 9.200367,
+            "yaw": 1.9373917496018511,
+            "z": 8.477327
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 30,
+            "name": "橡果蹦蹦",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "acorn",
+            "x": 3.6636,
+            "yaw": 3.2955497793454724,
+            "z": -1.175796
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 22,
+            "guardProgress": 0,
+            "id": 31,
+            "name": "苔羽蛾",
+            "rank": 1,
+            "scale": 0.9,
+            "skin": "moth",
+            "x": 7.443316,
+            "yaw": -1.56293840388933,
+            "z": 3.751383
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 32,
+            "guardProgress": 0,
+            "id": 32,
+            "name": "菇背幼豬",
+            "rank": 2,
+            "scale": 1.15,
+            "skin": "piglet",
+            "x": 9.438598,
+            "yaw": 3.4631223923422287,
+            "z": 7.52353
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 100,
+            "guardProgress": 0,
+            "id": 33,
+            "name": "花冠樹靈",
+            "rank": 3,
+            "scale": 1.65,
+            "skin": "treant",
+            "x": -5.297565,
+            "yaw": -0.5595592589044569,
+            "z": -0.188736
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 100,
+            "guardProgress": 0,
+            "id": 34,
+            "name": "獠牙搬木王",
+            "rank": 3,
+            "scale": 1.65,
+            "skin": "boar",
+            "x": 2.510381,
+            "yaw": 4.568215561029439,
+            "z": -6.225979
+          },
+          {
+            "animation": "walk",
+            "breaks": 0,
+            "damage": 0,
+            "guard": 160,
+            "guardProgress": 0,
+            "id": 35,
+            "name": "古榕守衛",
+            "rank": 4,
+            "scale": 2.1,
+            "skin": "elder",
+            "x": 1.263605,
+            "yaw": 7.222821568438309,
+            "z": -4.561182
+          }
+        ],
+        "offer": {},
+        "particles": 0,
+        "paused": false,
+        "pendingWheel": {},
+        "phase": "clear",
+        "piercesUsed": 0,
+        "playerBuffs": [
+          {
+            "critical": 0,
+            "haste": 0,
+            "pierce": 0
+          },
+          {
+            "critical": 0,
+            "haste": 0,
+            "pierce": 0
+          },
+          {
+            "critical": 0,
+            "haste": 0,
+            "pierce": 0
+          },
+          {
+            "critical": 0,
+            "haste": 0,
+            "pierce": 0
+          }
+        ],
+        "playerGold": [
+          1768,
+          320,
+          320,
+          320
+        ],
+        "poolContributed": 0,
+        "poolPaidOut": 0,
+        "poolWinner": 0,
+        "potions": {},
+        "presentationDelay": 0,
+        "prize": 1100,
+        "prizeTier": 4,
+        "procHits": 0,
+        "radius": 2.9,
+        "rallyUntil": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "rallyUsed": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "rankEconomy": [
+          {
+            "attempts": 0,
+            "damage": 0,
+            "earned": 0
+          },
+          {
+            "attempts": 0,
+            "damage": 0,
+            "earned": 0
+          },
+          {
+            "attempts": 1,
+            "damage": 24,
+            "earned": 110
+          },
+          {
+            "attempts": 1,
+            "damage": 24,
+            "earned": 250
+          },
+          {
+            "attempts": 1,
+            "damage": 24,
+            "earned": 1100
+          }
+        ],
+        "recruitUses": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "refunded": 0,
+        "resultElapsed": 0,
+        "returnedTotal": 0,
+        "returnedUnits": 0,
+        "rewardClock": 13.266666666666906,
+        "rewards": [
+          {
+            "amount": 110,
+            "crystals": 2,
+            "id": 1,
+            "multiplier": 27.5,
+            "name": "花冠樹靈",
+            "playerId": 1,
+            "tier": 3,
+            "time": 1.4999999999999996,
+            "title": "BIG WIN",
+            "x": -1.5,
+            "z": -1.5
+          },
+          {
+            "amount": 250,
+            "crystals": 4,
+            "id": 2,
+            "multiplier": 62.5,
+            "name": "古榕守衛",
+            "playerId": 1,
+            "tier": 3,
+            "time": 3.8333333333333246,
+            "title": "MEGA WIN",
+            "x": -1.5,
+            "z": -1.5
+          },
+          {
+            "amount": 1100,
+            "crystals": 6,
+            "id": 3,
+            "multiplier": 275,
+            "name": "冠角白鹿",
+            "playerId": 1,
+            "tier": 4,
+            "time": 6.16666666666665,
+            "title": "LEGENDARY WIN",
+            "x": -1.5,
+            "z": -1.5
+          }
+        ],
+        "round": 1,
+        "roundCrystalBonus": 6,
+        "roundCrystalEarned": 12,
+        "roundDuration": 180,
+        "roundOutro": {
+          "amount": 1100,
+          "duration": 6.4,
+          "elapsed": 6.4,
+          "eventId": 3,
+          "result": "clear",
+          "tier": 4
+        },
+        "roundRefund": 0,
+        "roundSettled": true,
+        "roundSpent": [
+          12,
+          0,
+          0,
+          0
+        ],
+        "roundWinner": 1,
+        "runeOwned": [
+          [
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false
+          ],
+          [
+            false,
+            false,
+            false
+          ]
+        ],
+        "runes": [
+          0,
+          0,
+          0
+        ],
+        "seat": 1,
+        "selected": 1,
+        "shopSpent": 0,
+        "shopVisits": 0,
+        "skillBook": {
+          "bounce_life": {
+            "deployExtra": 1,
+            "desc": "反彈延命 0.2 秒，每兵上限 1 秒；每支派兵 +1",
+            "name": "回春折返"
+          },
+          "bounce_power": {
+            "deployExtra": 1,
+            "desc": "每反彈傷害 +12%，上限 +60%；每支派兵 +1",
+            "name": "越彈越猛"
+          },
+          "crit_power": {
+            "deployExtra": 1,
+            "desc": "爆擊倍率 +0.25；每支派兵 +1",
+            "name": "猛擊"
+          },
+          "critical": {
+            "deployExtra": 1,
+            "desc": "目前兵種爆擊率 +10%，爆擊傷害至少 1.5 倍；每次傷害獨立判定；每支派兵 +1",
+            "name": "精準戰技"
+          },
+          "crowd_ring": {
+            "deployExtra": 1,
+            "desc": "落地時附近至少三怪，旋轉半徑+20%，每兵一次；每支派兵 +1",
+            "name": "聚獵"
+          },
+          "deadly": {
+            "deployExtra": 2,
+            "desc": "爆擊倍率+0.5；每支派兵 +2",
+            "name": "致命"
+          },
+          "distance": {
+            "deployExtra": 1,
+            "desc": "地面移動12單位後下一撞 +30%；每支派兵 +1",
+            "name": "遠征"
+          },
+          "double_pierce": {
+            "deployExtra": 4,
+            "desc": "穿透+2；每支派兵 +4",
+            "name": "雙重貫穿"
+          },
+          "ember_burst": {
+            "deployExtra": 4,
+            "desc": "終結接觸後範圍爆炸；每支派兵 +4",
+            "name": "餘燼"
+          },
+          "expire_burst": {
+            "deployExtra": 2,
+            "desc": "到期產生25%範圍傷害；每支派兵 +2",
+            "name": "不屈"
+          },
+          "finisher": {
+            "deployExtra": 2,
+            "desc": "穿透累積最後一撞傷害；每支派兵 +2",
+            "name": "破陣"
+          },
+          "fracture": {
+            "deployExtra": 1,
+            "desc": "命中前破防進度達70%，主要接觸傷害+20%；每支派兵 +1",
+            "name": "裂甲"
+          },
+          "frenzy": {
+            "deployExtra": 1,
+            "desc": "連殺 5/10/15 層增傷；每支派兵 +1",
+            "name": "狂獵戰旗"
+          },
+          "frost_touch": {
+            "deployExtra": 1,
+            "desc": "主要命中緩速；每支派兵 +1",
+            "name": "凝霜之握"
+          },
+          "giant": {
+            "deployExtra": 2,
+            "desc": "基礎傷害+25%；每支派兵 +2",
+            "name": "巨力"
+          },
+          "haste": {
+            "deployExtra": 1,
+            "desc": "移速 +15%；每支派兵 +1",
+            "name": "疾行"
+          },
+          "heat": {
+            "deployExtra": 1,
+            "desc": "每秒主要傷害 +5%，上限25%；每支派兵 +1",
+            "name": "熱機"
+          },
+          "heavy": {
+            "deployExtra": 2,
+            "desc": "速度 -20%，傷害 +35%；每支派兵 +2",
+            "name": "沉重"
+          },
+          "hit_echo": {
+            "deployExtra": 2,
+            "desc": "同兵命中三個不同主要目標後，追加20%範圍傷害，每兵一次；每支派兵 +2",
+            "name": "三重回響"
+          },
+          "hunter_vigor": {
+            "deployExtra": 1,
+            "desc": "擊殺延命 0.25 秒，每兵上限 1 秒；不復活；每支派兵 +1",
+            "name": "狩獵續航"
+          },
+          "king_hunter": {
+            "deployExtra": 2,
+            "desc": "對王主要傷害 +20%；每支派兵 +2",
+            "name": "獵王"
+          },
+          "landing_spin": {
+            "deployExtra": 6,
+            "desc": "目前兵種獲得落地旋轉斬，之後繼續前進；不消耗穿透次數；每支派兵 +6",
+            "name": "旋風戰技"
+          },
+          "last_stand": {
+            "deployExtra": 1,
+            "desc": "剩餘壽命低於25%時下一撞 +40%；每支派兵 +1",
+            "name": "最後一搏"
+          },
+          "lightning": {
+            "deployExtra": 3,
+            "desc": "爆擊雷鏈其他兩怪，每兵最多兩次；每支派兵 +3",
+            "name": "雷枝"
+          },
+          "longlife": {
+            "deployExtra": 1,
+            "desc": "壽命 +15%；每支派兵 +1",
+            "name": "長征"
+          },
+          "momentum": {
+            "deployExtra": 2,
+            "desc": "正向速度加成轉穿透傷害；每支派兵 +2",
+            "name": "勢能穿刺"
+          },
+          "pierce": {
+            "deployExtra": 2,
+            "desc": "目前兵種穿透 +1，可累加；穿透用完後，下次撞擊造成傷害並消失；每支派兵 +2",
+            "name": "穿軍尖鋒"
+          },
+          "piercing_wave": {
+            "deployExtra": 3,
+            "desc": "每第二次成功穿透，對其他最多四怪造成20%範圍傷害；每支派兵 +3",
+            "name": "穿陣旋斬"
+          },
+          "rally": {
+            "deployExtra": 1,
+            "desc": "本輪實付派兵400金幣後，全軍主要增傷15%持續10秒，每輪一次；每支派兵 +1",
+            "name": "集結"
+          },
+          "rapid": {
+            "deployExtra": 2,
+            "desc": "裝備此技能派兵頻率+25%，照價付費；每支派兵 +2",
+            "name": "急募"
+          },
+          "rebound_charge": {
+            "deployExtra": 1,
+            "desc": "反彈最多兩層，下一主要命中每層+20%；每支派兵 +1",
+            "name": "折光"
+          },
+          "recruit": {
+            "deployExtra": 1,
+            "desc": "少於80金幣時派兵半價，每玩家每輪最多三次；每支派兵 +1",
+            "name": "徵募"
+          },
+          "ricochet_precision": {
+            "deployExtra": 1,
+            "desc": "每反彈爆擊率 +15%，上限 +45%；每支派兵 +1",
+            "name": "鏡面準星"
+          },
+          "sharp": {
+            "deployExtra": 1,
+            "desc": "基礎傷害+10%；每支派兵 +1",
+            "name": "鋒利"
+          },
+          "shatter": {
+            "deployExtra": 2,
+            "desc": "命中已緩速目標 +30% 傷害；每兵一次碎冰波；每支派兵 +2",
+            "name": "碎冰"
+          },
+          "shock": {
+            "deployExtra": 4,
+            "desc": "主要命中向其他怪擴散 20% 範圍傷害；每支派兵 +4",
+            "name": "震盪"
+          },
+          "short_fuse": {
+            "deployExtra": 2,
+            "desc": "壽命-20%，傷害+45%；每支派兵 +2",
+            "name": "燃命"
+          },
+          "showdown": {
+            "deployExtra": 2,
+            "desc": "最後30秒主要傷害+25%；每支派兵 +2",
+            "name": "決戰"
+          },
+          "slow_force": {
+            "deployExtra": 1,
+            "desc": "負向移速加成的75%轉為主要傷害，上限30%；每支派兵 +1",
+            "name": "重步碾壓"
+          },
+          "solitary": {
+            "deployExtra": 1,
+            "desc": "自己只有一支付費活兵時，該兵主要傷害+30%；每支派兵 +1",
+            "name": "孤軍"
+          },
+          "solo_hunt": {
+            "deployExtra": 1,
+            "desc": "目標2單位內無其他活怪，主要傷害+25%；每支派兵 +1",
+            "name": "孤獵"
+          },
+          "spin_master": {
+            "deployExtra": 2,
+            "desc": "旋轉半徑 +0.4、旋轉傷害 +20%；需要落地旋轉斬；每支派兵 +2",
+            "name": "旋風擴張"
+          },
+          "third_crit": {
+            "deployExtra": 2,
+            "desc": "每第三次主要命中必定爆擊；每支派兵 +2",
+            "name": "決勝"
+          },
+          "wall_quake": {
+            "deployExtra": 2,
+            "desc": "第一次反彈：30%範圍傷害，最多四怪；每支派兵 +2",
+            "name": "震地"
+          },
+          "wide_blade": {
+            "deployExtra": 1,
+            "desc": "範圍半徑+20%，範圍傷害-10%；每支派兵 +1",
+            "name": "寬刃"
+          }
+        },
+        "skillSources": [
+          {},
+          {},
+          {}
+        ],
+        "skillTriggers": {},
+        "sold": 0,
+        "specialSpawned": false,
+        "spent": 12,
+        "spinHits": 0,
+        "stock": {},
+        "streaks": [
+          {
+            "count": 0,
+            "time": 0
+          },
+          {
+            "count": 0,
+            "time": 0
+          },
+          {
+            "count": 0,
+            "time": 0
+          },
+          {
+            "count": 0,
+            "time": 0
+          }
+        ],
+        "targetFilter": "all",
+        "targetId": 0,
+        "targetName": "",
+        "tech": [
+          {},
+          {},
+          {}
+        ],
+        "time": 173.83333333332843,
+        "town": {
+          "gold": 30,
+          "levels": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "version": 1
+        },
+        "townStartGold": 0,
+        "troops": 0,
+        "uiPage": 1,
+        "vfx": {},
+        "visualSerial": 0,
+        "visualTroops": {},
+        "wheelSpawned": false,
+        "won": true,
+        "worn": [
+          [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      "fx": {
+        "ok": true,
+        "value": {
+          "componentBounds": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "h": 100
+          },
+          "clipped": false,
+          "assetReady": true,
+          "currentFrame": 0,
+          "state": "ready",
+          "generation": 4,
+          "backend": "canvas-2d",
+          "error": null
+        },
+        "celebrationVisible": false,
+        "fullscreen": false,
+        "ultimate": {
+          "age": 6.39426666666069,
+          "fullscreen": true,
+          "particleBudget": 104,
+          "reducedMotion": false,
+          "lottie": {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 383,
+              "state": "ready",
+              "generation": 1,
+              "backend": "canvas-2d",
+              "error": null
+            }
+          },
+          "safeRect": {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 900
+          }
+        },
+        "activeTier": 4,
+        "activeAsset": "legendary-win",
+        "stage": "idle",
+        "rolledAmount": 1100,
+        "targetAmount": 1100,
+        "eventIds": [
+          3
+        ],
+        "completedAmounts": [
+          360,
+          1100
+        ],
+        "dockRect": null,
+        "visualRect": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 900
+        },
+        "usesMultiplier": false,
+        "pointerEvents": "none",
+        "diagnostics": [],
+        "impact": {
+          "impulses": 3,
+          "liveImpulses": 0,
+          "offset": {
+            "x": 0,
+            "y": 0
+          },
+          "peak": 0,
+          "reducedMotion": false,
+          "hudShakes": false,
+          "particleBudget": 160,
+          "diagnostics": []
+        },
+        "audio": {
+          "pendingCues": 0,
+          "muted": false
+        }
+      },
+      "ui": {
+        "children": [
+          {
+            "asset": "texture://ui_panel",
+            "fit": "stretch",
+            "id": "screen_back",
+            "kind": "image",
+            "rect": {
+              "x": 3,
+              "y": 3,
+              "width": 94,
+              "height": 94
+            }
+          },
+          {
+            "id": "screen_title",
+            "kind": "text",
+            "rect": {
+              "x": 7,
+              "y": 87,
+              "width": 67,
+              "height": 7
+            },
+            "text": "關卡凱旋"
+          },
+          {
+            "id": "screen_gold",
+            "kind": "text",
+            "rect": {
+              "x": 76,
+              "y": 88,
+              "width": 17,
+              "height": 5
+            },
+            "text": "金幣 1768"
+          },
+          {
+            "asset": "texture://ui_hud-crystal",
+            "fit": "stretch",
+            "id": "screen_crystals_plate",
+            "kind": "image",
+            "rect": {
+              "x": 76,
+              "y": 84.5,
+              "width": 17,
+              "height": 3.5
+            }
+          },
+          {
+            "id": "screen_crystals",
+            "kind": "text",
+            "rect": {
+              "x": 76,
+              "y": 84.5,
+              "width": 17,
+              "height": 3.5
+            },
+            "text": "◆ 結晶 36"
+          },
+          {
+            "id": "result_message",
+            "kind": "text",
+            "rect": {
+              "x": 9,
+              "y": 70,
+              "width": 82,
+              "height": 8
+            },
+            "text": "大王已開出大獎，下一片森林在等你。"
+          },
+          {
+            "id": "result_earned",
+            "kind": "text",
+            "rect": {
+              "x": 9,
+              "y": 60,
+              "width": 82,
+              "height": 6
+            },
+            "text": "獲獎 1460 · 擊殺 3 · 破防 3"
+          },
+          {
+            "id": "result_refund",
+            "kind": "text",
+            "rect": {
+              "x": 9,
+              "y": 50,
+              "width": 82,
+              "height": 6
+            },
+            "text": "倖存返還 0 金幣"
+          },
+          {
+            "id": "result_crystals",
+            "kind": "text",
+            "rect": {
+              "x": 9,
+              "y": 45,
+              "width": 82,
+              "height": 4
+            },
+            "text": "◆ 本輪開獎結晶 12 + 通關 6 · 持有 36"
+          },
+          {
+            "id": "result_story",
+            "kind": "text",
+            "rect": {
+              "x": 9,
+              "y": 20.68827160493828,
+              "width": 82,
+              "height": 2.6234567901234565
+            },
+            "text": "榛姨：清點回來的士兵。下一處營火，等我們把勝利帶過去。"
+          },
+          {
+            "asset": "texture://ui_button",
+            "fit": "stretch",
+            "id": "chest_plate",
+            "kind": "image",
+            "rect": {
+              "x": 26,
+              "y": 35,
+              "width": 48,
+              "height": 9
+            }
+          },
+          {
+            "action": "OpenChest",
+            "id": "chest",
+            "kind": "button",
+            "rect": {
+              "x": 26,
+              "y": 35,
+              "width": 48,
+              "height": 9
+            },
+            "text": "按住開啟寶箱 ×1"
+          },
+          {
+            "asset": "texture://ui_button",
+            "fit": "stretch",
+            "id": "next_plate",
+            "kind": "image",
+            "rect": {
+              "x": 50,
+              "y": 8,
+              "width": 40,
+              "height": 9
+            }
+          },
+          {
+            "action": "Next",
+            "id": "next",
+            "kind": "button",
+            "rect": {
+              "x": 50,
+              "y": 8,
+              "width": 40,
+              "height": 9
+            },
+            "text": "返回地圖 · 前往下一站"
+          },
+          {
+            "asset": "texture://ui_button",
+            "fit": "stretch",
+            "id": "result_home_plate",
+            "kind": "image",
+            "rect": {
+              "x": 9,
+              "y": 8,
+              "width": 35,
+              "height": 9
+            }
+          },
+          {
+            "action": "Home",
+            "id": "result_home",
+            "kind": "button",
+            "rect": {
+              "x": 9,
+              "y": 8,
+              "width": 35,
+              "height": 9
+            },
+            "text": "返回領地"
+          }
+        ],
+        "id": "forest_lord",
+        "kind": "screen",
+        "node": "clear:home"
+      },
+      "metrics": {
+        "instances": 4,
+        "instance_cells": 3,
+        "submitted_instance_cells": 3,
+        "submitted_instances": 4,
+        "culled_instances": 0,
+        "draw_calls": 253,
+        "triangles": 144824,
+        "textures": 57,
+        "particles": 0,
+        "effects": 0,
+        "bloom": true,
+        "ao": true,
+        "ao_method": "depth-ssao-12",
+        "bloom_resolution": [
+          360,
+          225
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_on": {
+          "samples": 240,
+          "median_ms": 0.83056,
+          "p95_ms": 4.279136
+        },
+        "gpu_off": null,
+        "walls": {
+          "halfExtent": 12.5,
+          "innerFace": 12.5,
+          "height": 0.66,
+          "segments": 136
+        },
+        "lighting": {
+          "mode": "cycle",
+          "side": "both",
+          "nightMix": 0.11585823820324231,
+          "shadowMap": 2048,
+          "primaryLights": 2,
+          "left": {
+            "color": "#fbd199",
+            "intensity": 1.9609701141561093
+          },
+          "right": {
+            "color": "#a7a1df",
+            "intensity": 1.1268283523593514
+          },
+          "eventLights": 0,
+          "litArena": true
+        },
+        "camera": {
+          "projection": "perspective",
+          "fan": false
+        },
+        "actors": {
+          "actors": 35,
+          "animator": {
+            "lod": {
+              "budget_hz": 2400,
+              "assigned": [
+                {
+                  "id": "m1",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m10",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m11",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m12",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m13",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m14",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m15",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m16",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m17",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m18",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m19",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m2",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m20",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m21",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m22",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m23",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m24",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m25",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m26",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m27",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m28",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m29",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m3",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m30",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m31",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m32",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m33",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m34",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m35",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m4",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m5",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m6",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m7",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m8",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "m9",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                {
+                  "id": "t36",
+                  "level": "full",
+                  "distance": 2,
+                  "updateHz": 30,
+                  "culled": false
+                },
+                {
+                  "id": "t38",
+                  "level": "full",
+                  "distance": 2,
+                  "updateHz": 30,
+                  "culled": false
+                }
+              ],
+              "counts": {
+                "reduced": 35,
+                "full": 2
+              }
+            },
+            "instances": [
+              {
+                "id": "m1",
+                "distance": 14,
+                "lod": {
+                  "id": "m1",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m10",
+                "distance": 14,
+                "lod": {
+                  "id": "m10",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m11",
+                "distance": 14,
+                "lod": {
+                  "id": "m11",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m12",
+                "distance": 14,
+                "lod": {
+                  "id": "m12",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m13",
+                "distance": 14,
+                "lod": {
+                  "id": "m13",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m14",
+                "distance": 14,
+                "lod": {
+                  "id": "m14",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m15",
+                "distance": 14,
+                "lod": {
+                  "id": "m15",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m16",
+                "distance": 14,
+                "lod": {
+                  "id": "m16",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m17",
+                "distance": 14,
+                "lod": {
+                  "id": "m17",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m18",
+                "distance": 14,
+                "lod": {
+                  "id": "m18",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m19",
+                "distance": 14,
+                "lod": {
+                  "id": "m19",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m2",
+                "distance": 14,
+                "lod": {
+                  "id": "m2",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m20",
+                "distance": 14,
+                "lod": {
+                  "id": "m20",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m21",
+                "distance": 14,
+                "lod": {
+                  "id": "m21",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m22",
+                "distance": 14,
+                "lod": {
+                  "id": "m22",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m23",
+                "distance": 14,
+                "lod": {
+                  "id": "m23",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m24",
+                "distance": 14,
+                "lod": {
+                  "id": "m24",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m25",
+                "distance": 14,
+                "lod": {
+                  "id": "m25",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m26",
+                "distance": 14,
+                "lod": {
+                  "id": "m26",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m27",
+                "distance": 14,
+                "lod": {
+                  "id": "m27",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m28",
+                "distance": 14,
+                "lod": {
+                  "id": "m28",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m29",
+                "distance": 14,
+                "lod": {
+                  "id": "m29",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m3",
+                "distance": 14,
+                "lod": {
+                  "id": "m3",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m30",
+                "distance": 14,
+                "lod": {
+                  "id": "m30",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m31",
+                "distance": 14,
+                "lod": {
+                  "id": "m31",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m32",
+                "distance": 14,
+                "lod": {
+                  "id": "m32",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m33",
+                "distance": 14,
+                "lod": {
+                  "id": "m33",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m34",
+                "distance": 14,
+                "lod": {
+                  "id": "m34",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m35",
+                "distance": 14,
+                "lod": {
+                  "id": "m35",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m4",
+                "distance": 14,
+                "lod": {
+                  "id": "m4",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m5",
+                "distance": 14,
+                "lod": {
+                  "id": "m5",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m6",
+                "distance": 14,
+                "lod": {
+                  "id": "m6",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m7",
+                "distance": 14,
+                "lod": {
+                  "id": "m7",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m8",
+                "distance": 14,
+                "lod": {
+                  "id": "m8",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              },
+              {
+                "id": "m9",
+                "distance": 14,
+                "lod": {
+                  "id": "m9",
+                  "level": "reduced",
+                  "distance": 14,
+                  "updateHz": 15,
+                  "culled": false
+                },
+                "equipment": {},
+                "animation": {
+                  "state": "walk",
+                  "clip": "walk",
+                  "time": 0.865366507709028,
+                  "duration": 1.2333333492279053,
+                  "normalizedTime": 0.7016485107215881,
+                  "speed": 1,
+                  "loop": true,
+                  "playing": true,
+                  "finished": false,
+                  "paused": false,
+                  "transition": null,
+                  "active_action_count": 1
+                }
+              }
+            ],
+            "semantics": "presentation-only; instances3d/gameplay tick/collision/root motion are unchanged"
+          },
+          "creatures": 11,
+          "equipment": 45,
+          "livery": "sculpted-storybook-v2",
+          "art": {
+            "style": "olive-crimson-ink",
+            "materials": 10,
+            "outlinePixels": 1.3,
+            "lightingBands": 3
+          }
+        },
+        "lottie": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 0,
+            "state": "ready",
+            "generation": 4,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": false,
+          "fullscreen": false,
+          "ultimate": {
+            "age": 6.39426666666069,
+            "fullscreen": true,
+            "particleBudget": 104,
+            "reducedMotion": false,
+            "lottie": {
+              "ok": true,
+              "value": {
+                "componentBounds": {
+                  "x": 0,
+                  "y": 0,
+                  "w": 100,
+                  "h": 100
+                },
+                "clipped": false,
+                "assetReady": true,
+                "currentFrame": 383,
+                "state": "ready",
+                "generation": 1,
+                "backend": "canvas-2d",
+                "error": null
+              }
+            },
+            "safeRect": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 900
+            }
+          },
+          "activeTier": 4,
+          "activeAsset": "legendary-win",
+          "stage": "idle",
+          "rolledAmount": 1100,
+          "targetAmount": 1100,
+          "eventIds": [
+            3
+          ],
+          "completedAmounts": [
+            360,
+            1100
+          ],
+          "dockRect": null,
+          "visualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 900
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": [],
+          "impact": {
+            "impulses": 3,
+            "liveImpulses": 0,
+            "offset": {
+              "x": 0,
+              "y": 0
+            },
+            "peak": 0,
+            "reducedMotion": false,
+            "hudShakes": false,
+            "particleBudget": 160,
+            "diagnostics": []
+          },
+          "audio": {
+            "pendingCues": 0,
+            "muted": false
+          }
+        },
+        "labels": {
+          "labels": 0,
+          "payouts": 0,
+          "damage": 0,
+          "criticals": 0,
+          "items": [],
+          "guards": [],
+          "usesMultiplier": false,
+          "cacheSize": 43,
+          "diagnostics": []
+        },
+        "ui": {
+          "backend": "canvas2d",
+          "nodes": 16,
+          "assets": [
+            {
+              "id": "texture://ui_panel",
+              "state": "ready"
+            },
+            {
+              "id": "texture://ui_hud-crystal",
+              "state": "ready"
+            },
+            {
+              "id": "texture://ui_button",
+              "state": "ready"
+            }
+          ],
+          "diagnostics": [],
+          "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+          "limitations": [
+            "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+            "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+          ]
+        },
+        "motion": {
+          "reducedMotion": false,
+          "active": true,
+          "frameCount": 1937,
+          "key": "clear:home:false:1",
+          "backend": "official-canvas-ui",
+          "sharedHitTree": true
+        },
+        "viewport": {
+          "width": 1440,
+          "height": 900,
+          "portrait": false,
+          "safeInsets": {
+            "left": 0,
+            "right": 0,
+            "top": 0,
+            "bottom": 0
+          }
+        }
+      }
+    }
+  },
+  "errors": []
+}

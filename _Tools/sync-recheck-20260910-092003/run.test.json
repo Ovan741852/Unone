@@ -1,0 +1,23 @@
+{
+  "name": "optional core runs",
+  "frames": 60,
+  "seed": 42,
+  "assertions": [
+    {
+      "observation": {
+        "key": "ticks",
+        "equals": 60
+      }
+    },
+    {
+      "entity": "stationary",
+      "field": "transform.y",
+      "equals": 10
+    },
+    {
+      "entity": "stationary",
+      "field": "transform.x",
+      "equals": 0
+    }
+  ]
+}

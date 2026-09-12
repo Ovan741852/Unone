@@ -1,0 +1,53 @@
+{
+  "initial": "idle",
+  "states": {
+    "idle": {
+      "clip": "idle",
+      "loop": true,
+      "transition": 0.2,
+      "clamp": true
+    },
+    "walk": {
+      "clip": "walk",
+      "loop": true,
+      "transition": 0.2,
+      "clamp": true
+    },
+    "stretch": {
+      "clip": "stretch",
+      "loop": false,
+      "transition": 0.2,
+      "clamp": true
+    },
+    "attack": {
+      "clip": "attack",
+      "loop": false,
+      "transition": 0.2,
+      "clamp": true
+    },
+    "death": {
+      "clip": "death",
+      "loop": false,
+      "transition": 0.2,
+      "clamp": true
+    },
+    "spawn": {
+      "clip": "spawn",
+      "loop": false,
+      "transition": 0.2,
+      "clamp": true
+    },
+    "run": {
+      "clip": "run",
+      "loop": true,
+      "transition": 0.2,
+      "clamp": true
+    },
+    "tpose": {
+      "clip": "tpose",
+      "loop": true,
+      "transition": 0.2,
+      "clamp": true
+    }
+  }
+}

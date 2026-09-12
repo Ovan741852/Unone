@@ -1,0 +1,128 @@
+{
+  "command": "D:/Projects/Unone/target/debug/game.exe",
+  "args": [
+    "plugin",
+    "list"
+  ],
+  "exit_code": 0,
+  "error": null,
+  "stderr": "",
+  "result": {
+    "ok": true,
+    "value": {
+      "plugins": [
+        {
+          "id": "org.koncrate.unone-shader",
+          "name": "Unone Shader Workshop",
+          "version": "0.1.0",
+          "root": "\\\\?\\D:\\Projects\\Unone-shader",
+          "capabilities": [
+            "shader.inspect",
+            "shader.preview",
+            "shader.profile",
+            "shader.capabilities",
+            "shader.presets"
+          ],
+          "tools": [
+            "plugin.test",
+            "shader.list_presets",
+            "shader.inspect",
+            "shader.preview",
+            "shader.profile",
+            "shader.capabilities"
+          ]
+        },
+        {
+          "id": "org.koncrate.unone-ui",
+          "name": "Unone UI Components",
+          "version": "0.4.0",
+          "root": "\\\\?\\D:\\Projects\\UnoneUI",
+          "capabilities": [
+            "ui.components",
+            "ui.inspect",
+            "ui.generate",
+            "ui.validate",
+            "ui.layout",
+            "ui.install"
+          ],
+          "tools": [
+            "plugin.test",
+            "ui.list_components",
+            "ui.inspect_component",
+            "ui.generate",
+            "ui.validate",
+            "ui.inspect_layout",
+            "ui.install"
+          ]
+        },
+        {
+          "id": "org.unone.animator",
+          "name": "Unone Animator",
+          "version": "0.1.0",
+          "root": "\\\\?\\D:\\Projects\\Unone-animator",
+          "capabilities": [
+            "animation.controller",
+            "animation.validate",
+            "animation.preview",
+            "animation.lod",
+            "animation.host"
+          ],
+          "tools": [
+            "plugin.test",
+            "animator.inspect",
+            "animator.validate",
+            "animator.preview",
+            "animator.lod.plan",
+            "animator.install"
+          ]
+        },
+        {
+          "id": "org.unone.blender",
+          "name": "Unone Blender bridge",
+          "version": "0.1.0",
+          "root": "\\\\?\\D:\\Projects\\Unone\\plugins\\org.unone.blender",
+          "capabilities": [
+            "scene.inspect",
+            "scene.preview",
+            "asset.import",
+            "artifact.export"
+          ],
+          "tools": [
+            "plugin.test",
+            "blender.inspect",
+            "blender.export_scene",
+            "blender.preview"
+          ]
+        },
+        {
+          "id": "org.unone.lottie",
+          "name": "Unone Lottie",
+          "version": "0.1.0",
+          "root": "\\\\?\\D:\\Projects\\Unone\\plugins\\org.unone.lottie",
+          "capabilities": [
+            "ui.animation",
+            "ui.animation.validate",
+            "ui.animation.preview",
+            "ui.animation.host"
+          ],
+          "tools": [
+            "plugin.test",
+            "lottie.inspect",
+            "lottie.validate",
+            "lottie.preview",
+            "lottie.install"
+          ]
+        }
+      ],
+      "searched_roots": [
+        "D:/Projects/YesSir/_Games/ashen-legion\\.unone/plugins",
+        "D:/Projects/YesSir/_Games/ashen-legion\\plugins",
+        "\\\\?\\D:\\Projects",
+        "\\\\?\\D:\\Projects\\Unone\\plugins",
+        "D:\\Projects\\Unone\\target\\debug\\../plugins"
+      ]
+    },
+    "diagnostics": [],
+    "effects": []
+  }
+}

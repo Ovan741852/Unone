@@ -1,0 +1,6967 @@
+{
+  "ok": true,
+  "errors": [],
+  "metrics": {
+    "instances": 304,
+    "instance_cells": 20,
+    "submitted_instance_cells": 20,
+    "submitted_instances": 304,
+    "culled_instances": 0,
+    "draw_calls": 247,
+    "triangles": 57485,
+    "textures": 63,
+    "particles": 0,
+    "effects": 0,
+    "bloom": true,
+    "ao": true,
+    "ao_method": "depth-ssao-12",
+    "bloom_resolution": [
+      360,
+      225
+    ],
+    "hdr": true,
+    "gpu_timer_available": true,
+    "gpu_on": {
+      "samples": 240,
+      "median_ms": 0.766432,
+      "p95_ms": 4.02304
+    },
+    "gpu_off": null,
+    "walls": {
+      "halfExtent": 12.5,
+      "innerFace": 12.5,
+      "height": 0.66,
+      "segments": 136
+    },
+    "actors": {
+      "actors": 28,
+      "animator": {
+        "lod": {
+          "budget_hz": 2400,
+          "assigned": [
+            {
+              "id": "m1",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m10",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m11",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m12",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m13",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m14",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m15",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m16",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m17",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m18",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m2",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m3",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m4",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m5",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m6",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m7",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m8",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m9",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "t19",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t20",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t21",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t22",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t23",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t24",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t25",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t26",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t27",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t28",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "t29",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "tmenu1",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "tmenu2",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "tmenu3",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            {
+              "id": "tmenu3-horse",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            }
+          ],
+          "counts": {
+            "full": 15,
+            "reduced": 18
+          }
+        },
+        "instances": [
+          {
+            "id": "m1",
+            "distance": 14,
+            "lod": {
+              "id": "m1",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m10",
+            "distance": 14,
+            "lod": {
+              "id": "m10",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m11",
+            "distance": 14,
+            "lod": {
+              "id": "m11",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m12",
+            "distance": 14,
+            "lod": {
+              "id": "m12",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m13",
+            "distance": 14,
+            "lod": {
+              "id": "m13",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m15",
+            "distance": 14,
+            "lod": {
+              "id": "m15",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m16",
+            "distance": 14,
+            "lod": {
+              "id": "m16",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m17",
+            "distance": 14,
+            "lod": {
+              "id": "m17",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m18",
+            "distance": 14,
+            "lod": {
+              "id": "m18",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m2",
+            "distance": 14,
+            "lod": {
+              "id": "m2",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m3",
+            "distance": 14,
+            "lod": {
+              "id": "m3",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m4",
+            "distance": 14,
+            "lod": {
+              "id": "m4",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "death",
+              "clip": "death",
+              "time": 0.6836000000238418,
+              "duration": 0.8333333134651184,
+              "normalizedTime": 0.8203200195865635,
+              "speed": 1,
+              "loop": false,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m5",
+            "distance": 14,
+            "lod": {
+              "id": "m5",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m6",
+            "distance": 14,
+            "lod": {
+              "id": "m6",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m7",
+            "distance": 14,
+            "lod": {
+              "id": "m7",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m8",
+            "distance": 14,
+            "lod": {
+              "id": "m8",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 1.0634333015680306,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.862243206375441,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m9",
+            "distance": 14,
+            "lod": {
+              "id": "m9",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "death",
+              "clip": "death",
+              "time": 0.41130000001192096,
+              "duration": 0.8333333134651184,
+              "normalizedTime": 0.49356001178169284,
+              "speed": 1,
+              "loop": false,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t19",
+            "distance": 2,
+            "lod": {
+              "id": "t19",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 1
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.4723000000119208,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.555647043252074,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t20",
+            "distance": 2,
+            "lod": {
+              "id": "t20",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 1
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.7236999523341651,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.8514116847469749,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t21",
+            "distance": 2,
+            "lod": {
+              "id": "t21",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 1
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.49029995232820467,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.5768234571478373,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t22",
+            "distance": 2,
+            "lod": {
+              "id": "t22",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 1
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.17839997616410258,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.2098823190119037,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t23",
+            "distance": 2,
+            "lod": {
+              "id": "t23",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 1
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.4507999761700627,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.530352898265252,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t24",
+            "distance": 2,
+            "lod": {
+              "id": "t24",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 1
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.17839997616410258,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.2098823190119037,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t25",
+            "distance": 2,
+            "lod": {
+              "id": "t25",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 1
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.21659999999403956,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.2548235222571451,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t26",
+            "distance": 2,
+            "lod": {
+              "id": "t26",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 1
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.5169000000059604,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.6081176300085955,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t27",
+            "distance": 2,
+            "lod": {
+              "id": "t27",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 1
+            },
+            "animation": {
+              "state": "run",
+              "clip": "run",
+              "time": 0.2945,
+              "duration": 0.8500000238418579,
+              "normalizedTime": 0.3464705785170561,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t28",
+            "distance": 2,
+            "lod": {
+              "id": "t28",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 1
+            },
+            "animation": {
+              "state": "spawn",
+              "clip": "spawn",
+              "time": 0.22779999998211856,
+              "duration": 1.7999999523162842,
+              "normalizedTime": 0.1265555588981988,
+              "speed": 1,
+              "loop": false,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t29",
+            "distance": 2,
+            "lod": {
+              "id": "t29",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 1
+            },
+            "animation": {
+              "state": "spawn",
+              "clip": "spawn",
+              "time": 0.007100000023841858,
+              "duration": 1.7999999523162842,
+              "normalizedTime": 0.003944444562182017,
+              "speed": 1,
+              "loop": false,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          }
+        ],
+        "semantics": "presentation-only; instances3d/gameplay tick/collision/root motion are unchanged"
+      },
+      "creatures": 11,
+      "equipment": 45,
+      "livery": "storybook-v1"
+    },
+    "lottie": {
+      "ok": true,
+      "value": {
+        "componentBounds": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        "clipped": false,
+        "assetReady": true,
+        "currentFrame": 0,
+        "state": "ready",
+        "generation": 1,
+        "backend": "canvas-2d",
+        "error": null
+      },
+      "celebrationVisible": false,
+      "activeTier": 0,
+      "activeAsset": null
+    },
+    "labels": {
+      "labels": 3,
+      "payouts": 2
+    },
+    "ui": {
+      "backend": "canvas2d",
+      "nodes": 52,
+      "assets": [
+        {
+          "id": "texture://ui_hud-crystal",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-heading",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_crest",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-objective",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-target",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-gold",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-coin",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-crystal",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-active",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-sword",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-key",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-spear",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-cavalry",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-pause",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-manual",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-lock",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-auto",
+          "state": "ready"
+        }
+      ],
+      "diagnostics": [],
+      "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+      "limitations": [
+        "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+        "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+      ]
+    },
+    "motion": {
+      "reducedMotion": false,
+      "active": true,
+      "frameCount": 1580,
+      "key": "battle:home:false:",
+      "backend": "official-canvas-ui",
+      "sharedHitTree": true
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "portrait": false,
+      "safeInsets": {
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "bottom": 0
+      }
+    }
+  },
+  "trees": {
+    "menu": {
+      "children": [
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "menu_ground",
+          "kind": "image",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 100,
+            "height": 100
+          }
+        },
+        {
+          "asset": "texture://ui_expedition-keyart-v1",
+          "fit": "stretch",
+          "id": "menu_art",
+          "kind": "image",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 100,
+            "height": 100
+          }
+        },
+        {
+          "kind": "image",
+          "id": "ambient_mote_0",
+          "asset": "texture://ui_mote",
+          "fit": "stretch",
+          "rect": {
+            "x": 49.6219477786889,
+            "y": 9.634549999982118,
+            "width": 0.6560952647571344,
+            "height": 1.053925967399987
+          }
+        },
+        {
+          "kind": "image",
+          "id": "ambient_mote_1",
+          "asset": "texture://ui_mote",
+          "fit": "stretch",
+          "rect": {
+            "x": 63.90959609553553,
+            "y": 26.93454999998212,
+            "width": 0.6065221561152296,
+            "height": 0.976812242845913
+          }
+        },
+        {
+          "kind": "image",
+          "id": "ambient_mote_2",
+          "asset": "texture://ui_mote",
+          "fit": "stretch",
+          "rect": {
+            "x": 77.09434129436764,
+            "y": 44.23454999998212,
+            "width": 0.4406251606278002,
+            "height": 0.7187502498654671
+          }
+        },
+        {
+          "kind": "image",
+          "id": "ambient_mote_3",
+          "asset": "texture://ui_mote",
+          "fit": "stretch",
+          "rect": {
+            "x": 89.65910021704234,
+            "y": 61.534549999982126,
+            "width": 0.310929210872796,
+            "height": 0.517000994691016
+          }
+        },
+        {
+          "kind": "image",
+          "id": "ambient_mote_4",
+          "asset": "texture://ui_mote",
+          "fit": "stretch",
+          "rect": {
+            "x": 57.65680222850272,
+            "y": 78.83454999998212,
+            "width": 0.33667616493145114,
+            "height": 0.5570518121155906
+          }
+        },
+        {
+          "kind": "image",
+          "id": "ambient_mote_5",
+          "asset": "texture://ui_mote",
+          "fit": "stretch",
+          "rect": {
+            "x": 71.7423308144816,
+            "y": 16.134549999982113,
+            "width": 0.49419439198040016,
+            "height": 0.8020801653028446
+          }
+        },
+        {
+          "kind": "image",
+          "id": "ambient_mote_6",
+          "asset": "texture://ui_mote",
+          "fit": "stretch",
+          "rect": {
+            "x": 86.57042672486882,
+            "y": 33.434549999982124,
+            "width": 0.6386623605033617,
+            "height": 1.0268081163385627
+          }
+        },
+        {
+          "kind": "image",
+          "id": "ambient_mote_7",
+          "asset": "texture://ui_mote",
+          "fit": "stretch",
+          "rect": {
+            "x": 56.113117736017834,
+            "y": 50.73454999998212,
+            "width": 0.6372568864884967,
+            "height": 1.0246218234265503
+          }
+        },
+        {
+          "kind": "image",
+          "id": "ambient_mote_8",
+          "asset": "texture://ui_mote",
+          "fit": "stretch",
+          "rect": {
+            "x": 69.60483157242959,
+            "y": 68.03454999998212,
+            "width": 0.4912701562633963,
+            "height": 0.7975313541875055
+          }
+        },
+        {
+          "kind": "image",
+          "id": "ambient_mote_9",
+          "asset": "texture://ui_mote",
+          "fit": "stretch",
+          "rect": {
+            "x": 82.24625952622891,
+            "y": 85.33454999998213,
+            "width": 0.33492169634471797,
+            "height": 0.5543226387584501
+          }
+        },
+        {
+          "kind": "image",
+          "id": "ambient_mote_10",
+          "asset": "texture://ui_mote",
+          "fit": "stretch",
+          "rect": {
+            "x": 50.01984180872022,
+            "y": 22.634549999982113,
+            "width": 0.31195755974382955,
+            "height": 0.5186006484904016
+          }
+        },
+        {
+          "kind": "image",
+          "id": "ambient_mote_11",
+          "asset": "texture://ui_mote",
+          "fit": "stretch",
+          "rect": {
+            "x": 63.786516550869436,
+            "y": 39.934549999982124,
+            "width": 0.44349086774704605,
+            "height": 0.723208016495405
+          }
+        },
+        {
+          "asset": "texture://ui_crest",
+          "fit": "stretch",
+          "id": "crest",
+          "kind": "image",
+          "rect": {
+            "x": 15,
+            "y": 67.26763999218174,
+            "width": 16,
+            "height": 20
+          }
+        },
+        {
+          "id": "title",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 53,
+            "width": 32,
+            "height": 12
+          },
+          "text": "森林領主"
+        },
+        {
+          "id": "subtitle",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 46,
+            "width": 32,
+            "height": 5
+          },
+          "text": "七輪遠征 · 奪回森林王冠"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "start_plate",
+          "kind": "image",
+          "rect": {
+            "x": 9,
+            "y": 32,
+            "width": 30,
+            "height": 9
+          }
+        },
+        {
+          "action": "Start",
+          "id": "start",
+          "kind": "button",
+          "rect": {
+            "x": 9,
+            "y": 32,
+            "width": 30,
+            "height": 9
+          },
+          "text": "出征"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "town_plate",
+          "kind": "image",
+          "rect": {
+            "x": 9,
+            "y": 22,
+            "width": 30,
+            "height": 7
+          }
+        },
+        {
+          "action": "UI_town",
+          "id": "town",
+          "kind": "button",
+          "rect": {
+            "x": 9,
+            "y": 22,
+            "width": 30,
+            "height": 7
+          },
+          "text": "領地與城鎮"
+        },
+        {
+          "id": "menu_prologue",
+          "kind": "text",
+          "rect": {
+            "x": 7,
+            "y": 15,
+            "width": 34,
+            "height": 4
+          },
+          "text": "沿著七座營火，找回森林的王冠。"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "menu:home"
+    },
+    "town": {
+      "children": [
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "screen_back",
+          "kind": "image",
+          "rect": {
+            "x": 3,
+            "y": 3,
+            "width": 94,
+            "height": 94
+          }
+        },
+        {
+          "id": "screen_title",
+          "kind": "text",
+          "rect": {
+            "x": 7,
+            "y": 86.26787772189196,
+            "width": 67,
+            "height": 7
+          },
+          "text": "領地與軍備"
+        },
+        {
+          "id": "screen_gold",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 87.26787772189196,
+            "width": 17,
+            "height": 5
+          },
+          "text": "金幣 320"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "screen_crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 83.76787772189196,
+            "width": 17,
+            "height": 3.5
+          }
+        },
+        {
+          "id": "screen_crystals",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 83.76787772189196,
+            "width": 17,
+            "height": 3.5
+          },
+          "text": "◆ 結晶 18"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_home_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 77.26787772189196,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_home",
+          "id": "tab_home",
+          "kind": "button",
+          "rect": {
+            "x": 7,
+            "y": 77.26787772189196,
+            "width": 17,
+            "height": 6
+          },
+          "text": "補給"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_gear_plate",
+          "kind": "image",
+          "rect": {
+            "x": 25,
+            "y": 77.26787772189196,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_gear",
+          "id": "tab_gear",
+          "kind": "button",
+          "rect": {
+            "x": 25,
+            "y": 77.26787772189196,
+            "width": 17,
+            "height": 6
+          },
+          "text": "武庫"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_runes_plate",
+          "kind": "image",
+          "rect": {
+            "x": 43,
+            "y": 77.26787772189196,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_runes",
+          "id": "tab_runes",
+          "kind": "button",
+          "rect": {
+            "x": 43,
+            "y": 77.26787772189196,
+            "width": 17,
+            "height": 6
+          },
+          "text": "符文"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_builds_plate",
+          "kind": "image",
+          "rect": {
+            "x": 61,
+            "y": 77.26787772189196,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_builds",
+          "id": "tab_builds",
+          "kind": "button",
+          "rect": {
+            "x": 61,
+            "y": 77.26787772189196,
+            "width": 17,
+            "height": 6
+          },
+          "text": "流派"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "back_plate",
+          "kind": "image",
+          "rect": {
+            "x": 75,
+            "y": 4.26787772189197,
+            "width": 18,
+            "height": 7
+          }
+        },
+        {
+          "action": "UI_home",
+          "id": "back",
+          "kind": "button",
+          "rect": {
+            "x": 75,
+            "y": 4.26787772189197,
+            "width": 18,
+            "height": 7
+          },
+          "text": "返回"
+        },
+        {
+          "id": "town_gold",
+          "kind": "text",
+          "rect": {
+            "x": 7.26787772189197,
+            "y": 66,
+            "width": 80,
+            "height": 6
+          },
+          "text": "城鎮建設資源 0 · 跨局保留"
+        },
+        {
+          "asset": "texture://ui_building-barracks",
+          "fit": "stretch",
+          "id": "town_icon_1",
+          "kind": "image",
+          "rect": {
+            "x": 7.26787772189197,
+            "y": 36,
+            "width": 18,
+            "height": 25
+          }
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "town_1_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7.26787772189197,
+            "y": 26,
+            "width": 20,
+            "height": 7
+          }
+        },
+        {
+          "action": "Town1",
+          "id": "town_1",
+          "kind": "button",
+          "rect": {
+            "x": 7.26787772189197,
+            "y": 26,
+            "width": 20,
+            "height": 7
+          },
+          "text": "兵營 Lv.0"
+        },
+        {
+          "id": "town_cost_1",
+          "kind": "text",
+          "rect": {
+            "x": 7.26787772189197,
+            "y": 19,
+            "width": 20,
+            "height": 5
+          },
+          "text": "建設 60"
+        },
+        {
+          "asset": "texture://ui_building-forge",
+          "fit": "stretch",
+          "id": "town_icon_2",
+          "kind": "image",
+          "rect": {
+            "x": 29.26787772189197,
+            "y": 36,
+            "width": 18,
+            "height": 25
+          }
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "town_2_plate",
+          "kind": "image",
+          "rect": {
+            "x": 29.26787772189197,
+            "y": 26,
+            "width": 20,
+            "height": 7
+          }
+        },
+        {
+          "action": "Town2",
+          "id": "town_2",
+          "kind": "button",
+          "rect": {
+            "x": 29.26787772189197,
+            "y": 26,
+            "width": 20,
+            "height": 7
+          },
+          "text": "鐵匠舖 Lv.0"
+        },
+        {
+          "id": "town_cost_2",
+          "kind": "text",
+          "rect": {
+            "x": 29.26787772189197,
+            "y": 19,
+            "width": 20,
+            "height": 5
+          },
+          "text": "建設 60"
+        },
+        {
+          "asset": "texture://ui_building-alchemy",
+          "fit": "stretch",
+          "id": "town_icon_3",
+          "kind": "image",
+          "rect": {
+            "x": 51.26787772189197,
+            "y": 36,
+            "width": 18,
+            "height": 25
+          }
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "town_3_plate",
+          "kind": "image",
+          "rect": {
+            "x": 51.26787772189197,
+            "y": 26,
+            "width": 20,
+            "height": 7
+          }
+        },
+        {
+          "action": "Town3",
+          "id": "town_3",
+          "kind": "button",
+          "rect": {
+            "x": 51.26787772189197,
+            "y": 26,
+            "width": 20,
+            "height": 7
+          },
+          "text": "煉金房 Lv.0"
+        },
+        {
+          "id": "town_cost_3",
+          "kind": "text",
+          "rect": {
+            "x": 51.26787772189197,
+            "y": 19,
+            "width": 20,
+            "height": 5
+          },
+          "text": "建設 60"
+        },
+        {
+          "asset": "texture://ui_building-market",
+          "fit": "stretch",
+          "id": "town_icon_4",
+          "kind": "image",
+          "rect": {
+            "x": 73.26787772189196,
+            "y": 36,
+            "width": 18,
+            "height": 25
+          }
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "town_4_plate",
+          "kind": "image",
+          "rect": {
+            "x": 73.26787772189196,
+            "y": 26,
+            "width": 20,
+            "height": 7
+          }
+        },
+        {
+          "action": "Town4",
+          "id": "town_4",
+          "kind": "button",
+          "rect": {
+            "x": 73.26787772189196,
+            "y": 26,
+            "width": 20,
+            "height": 7
+          },
+          "text": "市集 Lv.0"
+        },
+        {
+          "id": "town_cost_4",
+          "kind": "text",
+          "rect": {
+            "x": 73.26787772189196,
+            "y": 19,
+            "width": 20,
+            "height": 5
+          },
+          "text": "建設 60"
+        },
+        {
+          "id": "town_story",
+          "kind": "text",
+          "rect": {
+            "x": 7.26787772189197,
+            "y": 14,
+            "width": 80,
+            "height": 4
+          },
+          "text": "榛姨：遠征帶回的建設金，會讓下一次出發走得更遠。"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "menu:town"
+    },
+    "map": {
+      "children": [
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "screen_back",
+          "kind": "image",
+          "rect": {
+            "x": 3,
+            "y": 3,
+            "width": 94,
+            "height": 94
+          }
+        },
+        {
+          "id": "screen_title",
+          "kind": "text",
+          "rect": {
+            "x": 7,
+            "y": 86.13328308033523,
+            "width": 67,
+            "height": 7
+          },
+          "text": "遠征地圖 · 森林王冠之路"
+        },
+        {
+          "id": "screen_gold",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 87.13328308033523,
+            "width": 17,
+            "height": 5
+          },
+          "text": "金幣 320"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "screen_crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 83.63328308033523,
+            "width": 17,
+            "height": 3.5
+          }
+        },
+        {
+          "id": "screen_crystals",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 83.63328308033523,
+            "width": 17,
+            "height": 3.5
+          },
+          "text": "◆ 結晶 18"
+        },
+        {
+          "asset": "texture://ui_route-map",
+          "fit": "stretch",
+          "id": "map_back",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 17,
+            "width": 86,
+            "height": 64
+          }
+        },
+        {
+          "id": "map_journal",
+          "kind": "text",
+          "rect": {
+            "x": 12,
+            "y": 74.13328308033523,
+            "width": 68,
+            "height": 5
+          },
+          "text": "苔光照亮了舊路。領主，先讓每一枚金幣帶人回家。"
+        },
+        {
+          "asset": "texture://ui_route-current",
+          "fit": "stretch",
+          "id": "map_node_1",
+          "kind": "image",
+          "rect": {
+            "x": 9.5,
+            "y": 27.133283080335232,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_1",
+          "kind": "text",
+          "rect": {
+            "x": 10.3,
+            "y": 28.133283080335232,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "1"
+        },
+        {
+          "id": "map_name_1",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 22.133283080335232,
+            "width": 12,
+            "height": 4
+          },
+          "text": "苔光林口"
+        },
+        {
+          "asset": "texture://ui_route-future",
+          "fit": "stretch",
+          "id": "map_node_2",
+          "kind": "image",
+          "rect": {
+            "x": 22.5,
+            "y": 43.13328308033523,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_2",
+          "kind": "text",
+          "rect": {
+            "x": 23.3,
+            "y": 44.13328308033523,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "2"
+        },
+        {
+          "id": "map_name_2",
+          "kind": "text",
+          "rect": {
+            "x": 19,
+            "y": 38.13328308033523,
+            "width": 12,
+            "height": 4
+          },
+          "text": "菇冠小徑"
+        },
+        {
+          "asset": "texture://ui_route-future",
+          "fit": "stretch",
+          "id": "map_node_3",
+          "kind": "image",
+          "rect": {
+            "x": 35.5,
+            "y": 30.133283080335232,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_3",
+          "kind": "text",
+          "rect": {
+            "x": 36.3,
+            "y": 31.133283080335232,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "3"
+        },
+        {
+          "id": "map_name_3",
+          "kind": "text",
+          "rect": {
+            "x": 32,
+            "y": 25.133283080335232,
+            "width": 12,
+            "height": 4
+          },
+          "text": "橡木渡溪"
+        },
+        {
+          "asset": "texture://ui_route-future",
+          "fit": "stretch",
+          "id": "map_node_4",
+          "kind": "image",
+          "rect": {
+            "x": 48.5,
+            "y": 51.13328308033523,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_4",
+          "kind": "text",
+          "rect": {
+            "x": 49.3,
+            "y": 52.13328308033523,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "4"
+        },
+        {
+          "id": "map_name_4",
+          "kind": "text",
+          "rect": {
+            "x": 45,
+            "y": 46.13328308033523,
+            "width": 12,
+            "height": 4
+          },
+          "text": "古榕回廊"
+        },
+        {
+          "asset": "texture://ui_route-future",
+          "fit": "stretch",
+          "id": "map_node_5",
+          "kind": "image",
+          "rect": {
+            "x": 62.5,
+            "y": 40.13328308033523,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_5",
+          "kind": "text",
+          "rect": {
+            "x": 63.3,
+            "y": 41.13328308033523,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "5"
+        },
+        {
+          "id": "map_name_5",
+          "kind": "text",
+          "rect": {
+            "x": 59,
+            "y": 35.13328308033523,
+            "width": 12,
+            "height": 4
+          },
+          "text": "琥珀石庭"
+        },
+        {
+          "asset": "texture://ui_route-future",
+          "fit": "stretch",
+          "id": "map_node_6",
+          "kind": "image",
+          "rect": {
+            "x": 74.5,
+            "y": 57.13328308033523,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_6",
+          "kind": "text",
+          "rect": {
+            "x": 75.3,
+            "y": 58.13328308033523,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "6"
+        },
+        {
+          "id": "map_name_6",
+          "kind": "text",
+          "rect": {
+            "x": 71,
+            "y": 52.13328308033523,
+            "width": 12,
+            "height": 4
+          },
+          "text": "冠角聖林"
+        },
+        {
+          "asset": "texture://ui_route-future",
+          "fit": "stretch",
+          "id": "map_node_7",
+          "kind": "image",
+          "rect": {
+            "x": 85.5,
+            "y": 67.13328308033523,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_7",
+          "kind": "text",
+          "rect": {
+            "x": 86.3,
+            "y": 68.13328308033523,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "7"
+        },
+        {
+          "id": "map_name_7",
+          "kind": "text",
+          "rect": {
+            "x": 81,
+            "y": 62.13328308033523,
+            "width": 12,
+            "height": 4
+          },
+          "text": "森林王座"
+        },
+        {
+          "asset": "texture://ui_portrait-lord",
+          "fit": "stretch",
+          "id": "map_lord",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 33.253733011748125,
+            "width": 7,
+            "height": 8
+          }
+        },
+        {
+          "id": "map_progress",
+          "kind": "text",
+          "rect": {
+            "x": 12,
+            "y": 9.133283080335232,
+            "width": 76,
+            "height": 5
+          },
+          "text": "第 1 / 7 站 · 軍旗向前 · 行軍中…"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "map:home"
+    },
+    "choice": {
+      "children": [
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "screen_back",
+          "kind": "image",
+          "rect": {
+            "x": 3,
+            "y": 3,
+            "width": 94,
+            "height": 94
+          }
+        },
+        {
+          "id": "screen_title",
+          "kind": "text",
+          "rect": {
+            "x": 7,
+            "y": 85.15753326104291,
+            "width": 67,
+            "height": 7
+          },
+          "text": "已抵達 · 苔光林口 · 第 1 站"
+        },
+        {
+          "id": "screen_gold",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 86.15753326104291,
+            "width": 17,
+            "height": 5
+          },
+          "text": "金幣 320"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "screen_crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 82.65753326104291,
+            "width": 17,
+            "height": 3.5
+          }
+        },
+        {
+          "id": "screen_crystals",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 82.65753326104291,
+            "width": 17,
+            "height": 3.5
+          },
+          "text": "◆ 結晶 18"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "unit_1_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 75.15753326104291,
+            "width": 22,
+            "height": 6
+          }
+        },
+        {
+          "action": "Unit1",
+          "id": "unit_1",
+          "kind": "button",
+          "rect": {
+            "x": 7,
+            "y": 75.15753326104291,
+            "width": 22,
+            "height": 6
+          },
+          "text": "◆ 劍兵 · 8 金"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "unit_2_plate",
+          "kind": "image",
+          "rect": {
+            "x": 30,
+            "y": 75.15753326104291,
+            "width": 22,
+            "height": 6
+          }
+        },
+        {
+          "action": "Unit2",
+          "id": "unit_2",
+          "kind": "button",
+          "rect": {
+            "x": 30,
+            "y": 75.15753326104291,
+            "width": 22,
+            "height": 6
+          },
+          "text": "槍兵 · 20 金"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "unit_3_plate",
+          "kind": "image",
+          "rect": {
+            "x": 53,
+            "y": 75.15753326104291,
+            "width": 22,
+            "height": 6
+          }
+        },
+        {
+          "action": "Unit3",
+          "id": "unit_3",
+          "kind": "button",
+          "rect": {
+            "x": 53,
+            "y": 75.15753326104291,
+            "width": 22,
+            "height": 6
+          },
+          "text": "騎兵 · 40 金"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "view_map_plate",
+          "kind": "image",
+          "rect": {
+            "x": 77,
+            "y": 75.15753326104291,
+            "width": 16,
+            "height": 6
+          }
+        },
+        {
+          "action": "ViewMap",
+          "id": "view_map",
+          "kind": "button",
+          "rect": {
+            "x": 77,
+            "y": 75.15753326104291,
+            "width": 16,
+            "height": 6
+          },
+          "text": "查看地圖"
+        },
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "story_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 60.15753326104292,
+            "width": 86,
+            "height": 13
+          }
+        },
+        {
+          "asset": "texture://ui_quartermaster-v1",
+          "fit": "stretch",
+          "id": "story_portrait",
+          "kind": "image",
+          "rect": {
+            "x": 8,
+            "y": 60.728060474763474,
+            "width": 10,
+            "height": 12
+          }
+        },
+        {
+          "id": "story_speaker",
+          "kind": "text",
+          "rect": {
+            "x": 20,
+            "y": 69.15753326104291,
+            "width": 69,
+            "height": 3.2
+          },
+          "text": "司務長 · 榛姨"
+        },
+        {
+          "id": "story_quote",
+          "kind": "text",
+          "rect": {
+            "x": 20,
+            "y": 62.15753326104292,
+            "width": 69,
+            "height": 6
+          },
+          "text": "苔光"
+        },
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "choice_plate_1",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 43,
+            "width": 86,
+            "height": 14
+          }
+        },
+        {
+          "asset": "texture://ui_building-market",
+          "fit": "stretch",
+          "id": "choice_icon_1",
+          "kind": "image",
+          "rect": {
+            "x": 9,
+            "y": 44,
+            "width": 9,
+            "height": 12
+          }
+        },
+        {
+          "id": "choice_name_1",
+          "kind": "text",
+          "rect": {
+            "x": 21,
+            "y": 52,
+            "width": 49,
+            "height": 4
+          },
+          "text": "商店"
+        },
+        {
+          "id": "choice_desc_1",
+          "kind": "text",
+          "rect": {
+            "x": 21,
+            "y": 45,
+            "width": 49,
+            "height": 6
+          },
+          "text": "用結晶買賣裝備；配裝增加派兵金幣費"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "choice_1_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 46,
+            "width": 14,
+            "height": 8
+          }
+        },
+        {
+          "action": "Choice1",
+          "id": "choice_1",
+          "kind": "button",
+          "rect": {
+            "x": 76,
+            "y": 46,
+            "width": 14,
+            "height": 8
+          },
+          "text": "拜訪"
+        },
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "choice_plate_2",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 27,
+            "width": 86,
+            "height": 14
+          }
+        },
+        {
+          "asset": "texture://ui_building-forge",
+          "fit": "stretch",
+          "id": "choice_icon_2",
+          "kind": "image",
+          "rect": {
+            "x": 9,
+            "y": 28,
+            "width": 9,
+            "height": 12
+          }
+        },
+        {
+          "id": "choice_name_2",
+          "kind": "text",
+          "rect": {
+            "x": 21,
+            "y": 36,
+            "width": 49,
+            "height": 4
+          },
+          "text": "附魔坊"
+        },
+        {
+          "id": "choice_desc_2",
+          "kind": "text",
+          "rect": {
+            "x": 21,
+            "y": 29,
+            "width": 49,
+            "height": 6
+          },
+          "text": "8 結晶試附魔，可保留原詞綴"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "choice_2_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 30,
+            "width": 14,
+            "height": 8
+          }
+        },
+        {
+          "action": "Choice2",
+          "id": "choice_2",
+          "kind": "button",
+          "rect": {
+            "x": 76,
+            "y": 30,
+            "width": 14,
+            "height": 8
+          },
+          "text": "拜訪"
+        },
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "choice_plate_3",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 11,
+            "width": 86,
+            "height": 14
+          }
+        },
+        {
+          "asset": "texture://ui_building-alchemy",
+          "fit": "stretch",
+          "id": "choice_icon_3",
+          "kind": "image",
+          "rect": {
+            "x": 9,
+            "y": 12,
+            "width": 9,
+            "height": 12
+          }
+        },
+        {
+          "id": "choice_name_3",
+          "kind": "text",
+          "rect": {
+            "x": 21,
+            "y": 20,
+            "width": 49,
+            "height": 4
+          },
+          "text": "藥水攤"
+        },
+        {
+          "id": "choice_desc_3",
+          "kind": "text",
+          "rect": {
+            "x": 21,
+            "y": 13,
+            "width": 49,
+            "height": 6
+          },
+          "text": "花金幣購買，最多攜帶兩瓶"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "choice_3_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 14,
+            "width": 14,
+            "height": 8
+          }
+        },
+        {
+          "action": "Choice3",
+          "id": "choice_3",
+          "kind": "button",
+          "rect": {
+            "x": 76,
+            "y": 14,
+            "width": 14,
+            "height": 8
+          },
+          "text": "拜訪"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "choice:home"
+    },
+    "map-arrived": {
+      "children": [
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "screen_back",
+          "kind": "image",
+          "rect": {
+            "x": 3,
+            "y": 3,
+            "width": 94,
+            "height": 94
+          }
+        },
+        {
+          "id": "screen_title",
+          "kind": "text",
+          "rect": {
+            "x": 7,
+            "y": 86.26644872639169,
+            "width": 67,
+            "height": 7
+          },
+          "text": "遠征地圖 · 森林王冠之路"
+        },
+        {
+          "id": "screen_gold",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 87.26644872639169,
+            "width": 17,
+            "height": 5
+          },
+          "text": "金幣 320"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "screen_crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 83.76644872639169,
+            "width": 17,
+            "height": 3.5
+          }
+        },
+        {
+          "id": "screen_crystals",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 83.76644872639169,
+            "width": 17,
+            "height": 3.5
+          },
+          "text": "◆ 結晶 18"
+        },
+        {
+          "asset": "texture://ui_route-map",
+          "fit": "stretch",
+          "id": "map_back",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 17,
+            "width": 86,
+            "height": 64
+          }
+        },
+        {
+          "id": "map_journal",
+          "kind": "text",
+          "rect": {
+            "x": 12,
+            "y": 74.26644872639169,
+            "width": 68,
+            "height": 5
+          },
+          "text": "苔光照亮了舊路。領主，先讓每一枚金幣帶人回家。"
+        },
+        {
+          "asset": "texture://ui_route-current",
+          "fit": "stretch",
+          "id": "map_node_1",
+          "kind": "image",
+          "rect": {
+            "x": 9.5,
+            "y": 27.266448726391683,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_1",
+          "kind": "text",
+          "rect": {
+            "x": 10.3,
+            "y": 28.266448726391683,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "1"
+        },
+        {
+          "id": "map_name_1",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 22.266448726391683,
+            "width": 12,
+            "height": 4
+          },
+          "text": "苔光林口"
+        },
+        {
+          "asset": "texture://ui_route-future",
+          "fit": "stretch",
+          "id": "map_node_2",
+          "kind": "image",
+          "rect": {
+            "x": 22.5,
+            "y": 43.26644872639169,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_2",
+          "kind": "text",
+          "rect": {
+            "x": 23.3,
+            "y": 44.26644872639169,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "2"
+        },
+        {
+          "id": "map_name_2",
+          "kind": "text",
+          "rect": {
+            "x": 19,
+            "y": 38.26644872639169,
+            "width": 12,
+            "height": 4
+          },
+          "text": "菇冠小徑"
+        },
+        {
+          "asset": "texture://ui_route-future",
+          "fit": "stretch",
+          "id": "map_node_3",
+          "kind": "image",
+          "rect": {
+            "x": 35.5,
+            "y": 30.266448726391683,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_3",
+          "kind": "text",
+          "rect": {
+            "x": 36.3,
+            "y": 31.266448726391683,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "3"
+        },
+        {
+          "id": "map_name_3",
+          "kind": "text",
+          "rect": {
+            "x": 32,
+            "y": 25.266448726391683,
+            "width": 12,
+            "height": 4
+          },
+          "text": "橡木渡溪"
+        },
+        {
+          "asset": "texture://ui_route-future",
+          "fit": "stretch",
+          "id": "map_node_4",
+          "kind": "image",
+          "rect": {
+            "x": 48.5,
+            "y": 51.26644872639169,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_4",
+          "kind": "text",
+          "rect": {
+            "x": 49.3,
+            "y": 52.26644872639169,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "4"
+        },
+        {
+          "id": "map_name_4",
+          "kind": "text",
+          "rect": {
+            "x": 45,
+            "y": 46.26644872639169,
+            "width": 12,
+            "height": 4
+          },
+          "text": "古榕回廊"
+        },
+        {
+          "asset": "texture://ui_route-future",
+          "fit": "stretch",
+          "id": "map_node_5",
+          "kind": "image",
+          "rect": {
+            "x": 62.5,
+            "y": 40.26644872639169,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_5",
+          "kind": "text",
+          "rect": {
+            "x": 63.3,
+            "y": 41.26644872639169,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "5"
+        },
+        {
+          "id": "map_name_5",
+          "kind": "text",
+          "rect": {
+            "x": 59,
+            "y": 35.26644872639169,
+            "width": 12,
+            "height": 4
+          },
+          "text": "琥珀石庭"
+        },
+        {
+          "asset": "texture://ui_route-future",
+          "fit": "stretch",
+          "id": "map_node_6",
+          "kind": "image",
+          "rect": {
+            "x": 74.5,
+            "y": 57.26644872639169,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_6",
+          "kind": "text",
+          "rect": {
+            "x": 75.3,
+            "y": 58.26644872639169,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "6"
+        },
+        {
+          "id": "map_name_6",
+          "kind": "text",
+          "rect": {
+            "x": 71,
+            "y": 52.26644872639169,
+            "width": 12,
+            "height": 4
+          },
+          "text": "冠角聖林"
+        },
+        {
+          "asset": "texture://ui_route-future",
+          "fit": "stretch",
+          "id": "map_node_7",
+          "kind": "image",
+          "rect": {
+            "x": 85.5,
+            "y": 67.26644872639169,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "id": "map_number_7",
+          "kind": "text",
+          "rect": {
+            "x": 86.3,
+            "y": 68.26644872639169,
+            "width": 3.4,
+            "height": 4
+          },
+          "text": "7"
+        },
+        {
+          "id": "map_name_7",
+          "kind": "text",
+          "rect": {
+            "x": 81,
+            "y": 62.26644872639169,
+            "width": 12,
+            "height": 4
+          },
+          "text": "森林王座"
+        },
+        {
+          "asset": "texture://ui_portrait-lord",
+          "fit": "stretch",
+          "id": "map_lord",
+          "kind": "image",
+          "rect": {
+            "x": 8.5,
+            "y": 40.26644872639169,
+            "width": 7,
+            "height": 8
+          }
+        },
+        {
+          "id": "map_progress",
+          "kind": "text",
+          "rect": {
+            "x": 12,
+            "y": 9.266448726391683,
+            "width": 76,
+            "height": 5
+          },
+          "text": "第 1 / 7 站 · 紮營 苔光林口 · 挑一處景點整備"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "visit_location_plate",
+          "kind": "image",
+          "rect": {
+            "x": 32,
+            "y": 3.2664487263916837,
+            "width": 36,
+            "height": 5
+          }
+        },
+        {
+          "action": "VisitLocation",
+          "id": "visit_location",
+          "kind": "button",
+          "rect": {
+            "x": 32,
+            "y": 3.2664487263916837,
+            "width": 36,
+            "height": 5
+          },
+          "text": "查看景點建築"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "map:home"
+    },
+    "shop": {
+      "children": [
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "screen_back",
+          "kind": "image",
+          "rect": {
+            "x": 3,
+            "y": 3,
+            "width": 94,
+            "height": 94
+          }
+        },
+        {
+          "id": "screen_title",
+          "kind": "text",
+          "rect": {
+            "x": 7,
+            "y": 86.14204309279029,
+            "width": 67,
+            "height": 7
+          },
+          "text": "林間集市"
+        },
+        {
+          "id": "screen_gold",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 87.14204309279029,
+            "width": 17,
+            "height": 5
+          },
+          "text": "金幣 320"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "screen_crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 83.64204309279029,
+            "width": 17,
+            "height": 3.5
+          }
+        },
+        {
+          "id": "screen_crystals",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 83.64204309279029,
+            "width": 17,
+            "height": 3.5
+          },
+          "text": "◆ 結晶 18"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_home_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 77.14204309279029,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_home",
+          "id": "tab_home",
+          "kind": "button",
+          "rect": {
+            "x": 7,
+            "y": 77.14204309279029,
+            "width": 17,
+            "height": 6
+          },
+          "text": "補給 ◆"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_gear_plate",
+          "kind": "image",
+          "rect": {
+            "x": 25,
+            "y": 77.14204309279029,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_gear",
+          "id": "tab_gear",
+          "kind": "button",
+          "rect": {
+            "x": 25,
+            "y": 77.14204309279029,
+            "width": 17,
+            "height": 6
+          },
+          "text": "武庫"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_runes_plate",
+          "kind": "image",
+          "rect": {
+            "x": 43,
+            "y": 77.14204309279029,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_runes",
+          "id": "tab_runes",
+          "kind": "button",
+          "rect": {
+            "x": 43,
+            "y": 77.14204309279029,
+            "width": 17,
+            "height": 6
+          },
+          "text": "符文"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_builds_plate",
+          "kind": "image",
+          "rect": {
+            "x": 61,
+            "y": 77.14204309279029,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_builds",
+          "id": "tab_builds",
+          "kind": "button",
+          "rect": {
+            "x": 61,
+            "y": 77.14204309279029,
+            "width": 17,
+            "height": 6
+          },
+          "text": "流派"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "ready_plate",
+          "kind": "image",
+          "rect": {
+            "x": 65,
+            "y": 4.14204309279029,
+            "width": 28,
+            "height": 7
+          }
+        },
+        {
+          "action": "LeaveShop",
+          "id": "ready",
+          "kind": "button",
+          "rect": {
+            "x": 65,
+            "y": 4.14204309279029,
+            "width": 28,
+            "height": 7
+          },
+          "text": "整備完成 · 出戰"
+        },
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "story_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 61.14204309279029,
+            "width": 86,
+            "height": 13
+          }
+        },
+        {
+          "asset": "texture://ui_quartermaster-v1",
+          "fit": "stretch",
+          "id": "story_portrait",
+          "kind": "image",
+          "rect": {
+            "x": 8,
+            "y": 61.677098633879474,
+            "width": 10,
+            "height": 12
+          }
+        },
+        {
+          "id": "story_speaker",
+          "kind": "text",
+          "rect": {
+            "x": 20,
+            "y": 70.14204309279029,
+            "width": 69,
+            "height": 3.2
+          },
+          "text": "司務長 · 榛姨"
+        },
+        {
+          "id": "story_quote",
+          "kind": "text",
+          "rect": {
+            "x": 20,
+            "y": 63.14204309279029,
+            "width": 69,
+            "height": 6
+          },
+          "text": "攤主留了好貨。裝備會提"
+        },
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "stock_panel_1",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 18.62730782793603,
+            "width": 20.5,
+            "height": 39
+          }
+        },
+        {
+          "asset": "texture://ui_gear-pierce",
+          "fit": "stretch",
+          "id": "stock_icon_1",
+          "kind": "image",
+          "rect": {
+            "x": 12.25,
+            "y": 44.62730782793603,
+            "width": 10,
+            "height": 12
+          }
+        },
+        {
+          "id": "stock_name_1",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 38.62730782793603,
+            "width": 18.5,
+            "height": 5
+          },
+          "text": "穿軍刃"
+        },
+        {
+          "id": "stock_desc_1",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 27.62730782793603,
+            "width": 18.5,
+            "height": 10
+          },
+          "text": "目前兵種穿透 +1，可累加；穿透\n用完後，下次撞擊造成傷害並消失\n每支派兵 +2"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "buy_1_plate",
+          "kind": "image",
+          "rect": {
+            "x": 8,
+            "y": 19.62730782793603,
+            "width": 18.5,
+            "height": 6
+          }
+        },
+        {
+          "action": "Buy1",
+          "id": "buy_1",
+          "kind": "button",
+          "rect": {
+            "x": 8,
+            "y": 19.62730782793603,
+            "width": 18.5,
+            "height": 6
+          },
+          "text": "◆ 12"
+        },
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "stock_panel_2",
+          "kind": "image",
+          "rect": {
+            "x": 28.5,
+            "y": 18,
+            "width": 20.5,
+            "height": 39
+          }
+        },
+        {
+          "asset": "texture://ui_gear-finisher",
+          "fit": "stretch",
+          "id": "stock_icon_2",
+          "kind": "image",
+          "rect": {
+            "x": 33.75,
+            "y": 44,
+            "width": 10,
+            "height": 12
+          }
+        },
+        {
+          "id": "stock_name_2",
+          "kind": "text",
+          "rect": {
+            "x": 29.5,
+            "y": 38,
+            "width": 18.5,
+            "height": 5
+          },
+          "text": "破陣護手"
+        },
+        {
+          "id": "stock_desc_2",
+          "kind": "text",
+          "rect": {
+            "x": 29.5,
+            "y": 27,
+            "width": 18.5,
+            "height": 10
+          },
+          "text": "穿透累積最後一撞傷害每支派兵 \n+2"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "buy_2_plate",
+          "kind": "image",
+          "rect": {
+            "x": 29.5,
+            "y": 19,
+            "width": 18.5,
+            "height": 6
+          }
+        },
+        {
+          "action": "Buy2",
+          "id": "buy_2",
+          "kind": "button",
+          "rect": {
+            "x": 29.5,
+            "y": 19,
+            "width": 18.5,
+            "height": 6
+          },
+          "text": "◆ 14"
+        },
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "stock_panel_3",
+          "kind": "image",
+          "rect": {
+            "x": 50,
+            "y": 18,
+            "width": 20.5,
+            "height": 39
+          }
+        },
+        {
+          "asset": "texture://ui_gear-momentum",
+          "fit": "stretch",
+          "id": "stock_icon_3",
+          "kind": "image",
+          "rect": {
+            "x": 55.25,
+            "y": 44,
+            "width": 10,
+            "height": 12
+          }
+        },
+        {
+          "id": "stock_name_3",
+          "kind": "text",
+          "rect": {
+            "x": 51,
+            "y": 38,
+            "width": 18.5,
+            "height": 5
+          },
+          "text": "勢能戰槍"
+        },
+        {
+          "id": "stock_desc_3",
+          "kind": "text",
+          "rect": {
+            "x": 51,
+            "y": 27,
+            "width": 18.5,
+            "height": 10
+          },
+          "text": "正向速度加成轉穿透傷害每支派兵\n +2"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "buy_3_plate",
+          "kind": "image",
+          "rect": {
+            "x": 51,
+            "y": 19,
+            "width": 18.5,
+            "height": 6
+          }
+        },
+        {
+          "action": "Buy3",
+          "id": "buy_3",
+          "kind": "button",
+          "rect": {
+            "x": 51,
+            "y": 19,
+            "width": 18.5,
+            "height": 6
+          },
+          "text": "◆ 12"
+        },
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "stock_panel_4",
+          "kind": "image",
+          "rect": {
+            "x": 71.5,
+            "y": 18,
+            "width": 20.5,
+            "height": 39
+          }
+        },
+        {
+          "asset": "texture://ui_gear-lightning",
+          "fit": "stretch",
+          "id": "stock_icon_4",
+          "kind": "image",
+          "rect": {
+            "x": 76.75,
+            "y": 44,
+            "width": 10,
+            "height": 12
+          }
+        },
+        {
+          "id": "stock_name_4",
+          "kind": "text",
+          "rect": {
+            "x": 72.5,
+            "y": 38,
+            "width": 18.5,
+            "height": 5
+          },
+          "text": "雷枝戰槍"
+        },
+        {
+          "id": "stock_desc_4",
+          "kind": "text",
+          "rect": {
+            "x": 72.5,
+            "y": 27,
+            "width": 18.5,
+            "height": 10
+          },
+          "text": "爆擊雷鏈其他兩怪，每兵最多兩次\n每支派兵 +3"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "buy_4_plate",
+          "kind": "image",
+          "rect": {
+            "x": 72.5,
+            "y": 19,
+            "width": 18.5,
+            "height": 6
+          }
+        },
+        {
+          "action": "Buy4",
+          "id": "buy_4",
+          "kind": "button",
+          "rect": {
+            "x": 72.5,
+            "y": 19,
+            "width": 18.5,
+            "height": 6
+          },
+          "text": "◆ 18"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "refresh_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 12.14204309279029,
+            "width": 21,
+            "height": 6
+          }
+        },
+        {
+          "action": "RefreshShop",
+          "id": "refresh",
+          "kind": "button",
+          "rect": {
+            "x": 7,
+            "y": 12.14204309279029,
+            "width": 21,
+            "height": 6
+          },
+          "text": "刷新 · ◆ 2"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "shop:home"
+    },
+    "gear": {
+      "children": [
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "screen_back",
+          "kind": "image",
+          "rect": {
+            "x": 3,
+            "y": 3,
+            "width": 94,
+            "height": 94
+          }
+        },
+        {
+          "id": "screen_title",
+          "kind": "text",
+          "rect": {
+            "x": 7,
+            "y": 86.82499824091836,
+            "width": 67,
+            "height": 7
+          },
+          "text": "林間集市"
+        },
+        {
+          "id": "screen_gold",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 87.82499824091836,
+            "width": 17,
+            "height": 5
+          },
+          "text": "金幣 320"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "screen_crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 84.32499824091836,
+            "width": 17,
+            "height": 3.5
+          }
+        },
+        {
+          "id": "screen_crystals",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 84.32499824091836,
+            "width": 17,
+            "height": 3.5
+          },
+          "text": "◆ 結晶 6"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_home_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 77.82499824091836,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_home",
+          "id": "tab_home",
+          "kind": "button",
+          "rect": {
+            "x": 7,
+            "y": 77.82499824091836,
+            "width": 17,
+            "height": 6
+          },
+          "text": "補給"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_gear_plate",
+          "kind": "image",
+          "rect": {
+            "x": 25,
+            "y": 77.82499824091836,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_gear",
+          "id": "tab_gear",
+          "kind": "button",
+          "rect": {
+            "x": 25,
+            "y": 77.82499824091836,
+            "width": 17,
+            "height": 6
+          },
+          "text": "武庫 ◆"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_runes_plate",
+          "kind": "image",
+          "rect": {
+            "x": 43,
+            "y": 77.82499824091836,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_runes",
+          "id": "tab_runes",
+          "kind": "button",
+          "rect": {
+            "x": 43,
+            "y": 77.82499824091836,
+            "width": 17,
+            "height": 6
+          },
+          "text": "符文"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_builds_plate",
+          "kind": "image",
+          "rect": {
+            "x": 61,
+            "y": 77.82499824091836,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_builds",
+          "id": "tab_builds",
+          "kind": "button",
+          "rect": {
+            "x": 61,
+            "y": 77.82499824091836,
+            "width": 17,
+            "height": 6
+          },
+          "text": "流派"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "ready_plate",
+          "kind": "image",
+          "rect": {
+            "x": 65,
+            "y": 4.824998240918369,
+            "width": 28,
+            "height": 7
+          }
+        },
+        {
+          "action": "LeaveShop",
+          "id": "ready",
+          "kind": "button",
+          "rect": {
+            "x": 65,
+            "y": 4.824998240918369,
+            "width": 28,
+            "height": 7
+          },
+          "text": "整備完成 · 出戰"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "unit_1_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 67.82499824091836,
+            "width": 22,
+            "height": 6
+          }
+        },
+        {
+          "action": "Unit1",
+          "id": "unit_1",
+          "kind": "button",
+          "rect": {
+            "x": 7,
+            "y": 67.82499824091836,
+            "width": 22,
+            "height": 6
+          },
+          "text": "◆ 劍兵 · 10 金"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "unit_2_plate",
+          "kind": "image",
+          "rect": {
+            "x": 30,
+            "y": 67.82499824091836,
+            "width": 22,
+            "height": 6
+          }
+        },
+        {
+          "action": "Unit2",
+          "id": "unit_2",
+          "kind": "button",
+          "rect": {
+            "x": 30,
+            "y": 67.82499824091836,
+            "width": 22,
+            "height": 6
+          },
+          "text": "槍兵 · 20 金"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "unit_3_plate",
+          "kind": "image",
+          "rect": {
+            "x": 53,
+            "y": 67.82499824091836,
+            "width": 22,
+            "height": 6
+          }
+        },
+        {
+          "action": "Unit3",
+          "id": "unit_3",
+          "kind": "button",
+          "rect": {
+            "x": 53,
+            "y": 67.82499824091836,
+            "width": 22,
+            "height": 6
+          },
+          "text": "騎兵 · 40 金"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "slot_1_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 59.82499824091837,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "action": "Slot1",
+          "id": "slot_1",
+          "kind": "button",
+          "rect": {
+            "x": 7,
+            "y": 59.82499824091837,
+            "width": 12,
+            "height": 5
+          },
+          "text": "頭"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "slot_2_plate",
+          "kind": "image",
+          "rect": {
+            "x": 20,
+            "y": 59.82499824091837,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "action": "Slot2",
+          "id": "slot_2",
+          "kind": "button",
+          "rect": {
+            "x": 20,
+            "y": 59.82499824091837,
+            "width": 12,
+            "height": 5
+          },
+          "text": "身"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "slot_3_plate",
+          "kind": "image",
+          "rect": {
+            "x": 33,
+            "y": 59.82499824091837,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "action": "Slot3",
+          "id": "slot_3",
+          "kind": "button",
+          "rect": {
+            "x": 33,
+            "y": 59.82499824091837,
+            "width": 12,
+            "height": 5
+          },
+          "text": "腳"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "slot_4_plate",
+          "kind": "image",
+          "rect": {
+            "x": 46,
+            "y": 59.82499824091837,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "action": "Slot4",
+          "id": "slot_4",
+          "kind": "button",
+          "rect": {
+            "x": 46,
+            "y": 59.82499824091837,
+            "width": 12,
+            "height": 5
+          },
+          "text": "手"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "slot_5_plate",
+          "kind": "image",
+          "rect": {
+            "x": 59,
+            "y": 59.82499824091837,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "action": "Slot5",
+          "id": "slot_5",
+          "kind": "button",
+          "rect": {
+            "x": 59,
+            "y": 59.82499824091837,
+            "width": 12,
+            "height": 5
+          },
+          "text": "武器 ✓"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "unequip_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 59.82499824091837,
+            "width": 17,
+            "height": 5
+          }
+        },
+        {
+          "action": "Unequip",
+          "id": "unequip",
+          "kind": "button",
+          "rect": {
+            "x": 76,
+            "y": 59.82499824091837,
+            "width": 17,
+            "height": 5
+          },
+          "text": "卸下"
+        },
+        {
+          "asset": "texture://ui_gear-pierce",
+          "fit": "stretch",
+          "id": "gear_icon_1",
+          "kind": "image",
+          "rect": {
+            "x": 10.940460299840334,
+            "y": 39.67177512799922,
+            "width": 12.109919446448615,
+            "height": 16.146559261931486
+          }
+        },
+        {
+          "id": "gear_name_1",
+          "kind": "text",
+          "rect": {
+            "x": 6.903820484357462,
+            "y": 33.616815404774904,
+            "width": 21.192359031285076,
+            "height": 5.045799769353589
+          },
+          "text": "穿軍刃"
+        },
+        {
+          "id": "gear_skill_1",
+          "kind": "text",
+          "rect": {
+            "x": 6.903820484357462,
+            "y": 20.49773600445557,
+            "width": 21.192359031285076,
+            "height": 12.109919446448615
+          },
+          "text": "目前兵種穿透 +1，可累加；穿透用完\n後，下次撞擊造成傷害並消失"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "equip_1_plate",
+          "kind": "image",
+          "rect": {
+            "x": 6.903820484357462,
+            "y": 13.433616327360546,
+            "width": 10.091599538707179,
+            "height": 5.045799769353589
+          }
+        },
+        {
+          "action": "Equip1",
+          "id": "equip_1",
+          "kind": "button",
+          "rect": {
+            "x": 6.903820484357462,
+            "y": 13.433616327360546,
+            "width": 10.091599538707179,
+            "height": 5.045799769353589
+          },
+          "text": "已穿戴"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "sell_1_plate",
+          "kind": "image",
+          "rect": {
+            "x": 18.00457997693536,
+            "y": 13.433616327360546,
+            "width": 10.091599538707179,
+            "height": 5.045799769353589
+          }
+        },
+        {
+          "action": "Sell1",
+          "id": "sell_1",
+          "kind": "button",
+          "rect": {
+            "x": 18.00457997693536,
+            "y": 13.433616327360546,
+            "width": 10.091599538707179,
+            "height": 5.045799769353589
+          },
+          "text": "售 ◆6"
+        },
+        {
+          "asset": "texture://ui_muted",
+          "fit": "stretch",
+          "id": "gear_prev_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 4.824998240918369,
+            "width": 14,
+            "height": 7
+          }
+        },
+        {
+          "id": "gear_prev",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 5.324998240918369,
+            "width": 12,
+            "height": 6
+          },
+          "text": "上一頁"
+        },
+        {
+          "asset": "texture://ui_muted",
+          "fit": "stretch",
+          "id": "gear_next_plate",
+          "kind": "image",
+          "rect": {
+            "x": 23,
+            "y": 4.824998240918369,
+            "width": 14,
+            "height": 7
+          }
+        },
+        {
+          "id": "gear_next",
+          "kind": "text",
+          "rect": {
+            "x": 24,
+            "y": 5.324998240918369,
+            "width": 12,
+            "height": 6
+          },
+          "text": "下一頁"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "shop:gear"
+    },
+    "runes": {
+      "children": [
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "screen_back",
+          "kind": "image",
+          "rect": {
+            "x": 3,
+            "y": 3,
+            "width": 94,
+            "height": 94
+          }
+        },
+        {
+          "id": "screen_title",
+          "kind": "text",
+          "rect": {
+            "x": 7,
+            "y": 86.14045477442238,
+            "width": 67,
+            "height": 7
+          },
+          "text": "林間集市"
+        },
+        {
+          "id": "screen_gold",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 87.14045477442238,
+            "width": 17,
+            "height": 5
+          },
+          "text": "金幣 320"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "screen_crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 83.64045477442238,
+            "width": 17,
+            "height": 3.5
+          }
+        },
+        {
+          "id": "screen_crystals",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 83.64045477442238,
+            "width": 17,
+            "height": 3.5
+          },
+          "text": "◆ 結晶 6"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_home_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 77.14045477442238,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_home",
+          "id": "tab_home",
+          "kind": "button",
+          "rect": {
+            "x": 7,
+            "y": 77.14045477442238,
+            "width": 17,
+            "height": 6
+          },
+          "text": "補給"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_gear_plate",
+          "kind": "image",
+          "rect": {
+            "x": 25,
+            "y": 77.14045477442238,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_gear",
+          "id": "tab_gear",
+          "kind": "button",
+          "rect": {
+            "x": 25,
+            "y": 77.14045477442238,
+            "width": 17,
+            "height": 6
+          },
+          "text": "武庫"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_runes_plate",
+          "kind": "image",
+          "rect": {
+            "x": 43,
+            "y": 77.14045477442238,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_runes",
+          "id": "tab_runes",
+          "kind": "button",
+          "rect": {
+            "x": 43,
+            "y": 77.14045477442238,
+            "width": 17,
+            "height": 6
+          },
+          "text": "符文 ◆"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_builds_plate",
+          "kind": "image",
+          "rect": {
+            "x": 61,
+            "y": 77.14045477442238,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_builds",
+          "id": "tab_builds",
+          "kind": "button",
+          "rect": {
+            "x": 61,
+            "y": 77.14045477442238,
+            "width": 17,
+            "height": 6
+          },
+          "text": "流派"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "ready_plate",
+          "kind": "image",
+          "rect": {
+            "x": 65,
+            "y": 4.140454774422378,
+            "width": 28,
+            "height": 7
+          }
+        },
+        {
+          "action": "LeaveShop",
+          "id": "ready",
+          "kind": "button",
+          "rect": {
+            "x": 65,
+            "y": 4.140454774422378,
+            "width": 28,
+            "height": 7
+          },
+          "text": "整備完成 · 出戰"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "unit_1_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 67.14045477442238,
+            "width": 22,
+            "height": 6
+          }
+        },
+        {
+          "action": "Unit1",
+          "id": "unit_1",
+          "kind": "button",
+          "rect": {
+            "x": 7,
+            "y": 67.14045477442238,
+            "width": 22,
+            "height": 6
+          },
+          "text": "◆ 劍兵 · 10 金"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "unit_2_plate",
+          "kind": "image",
+          "rect": {
+            "x": 30,
+            "y": 67.14045477442238,
+            "width": 22,
+            "height": 6
+          }
+        },
+        {
+          "action": "Unit2",
+          "id": "unit_2",
+          "kind": "button",
+          "rect": {
+            "x": 30,
+            "y": 67.14045477442238,
+            "width": 22,
+            "height": 6
+          },
+          "text": "槍兵 · 20 金"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "unit_3_plate",
+          "kind": "image",
+          "rect": {
+            "x": 53,
+            "y": 67.14045477442238,
+            "width": 22,
+            "height": 6
+          }
+        },
+        {
+          "action": "Unit3",
+          "id": "unit_3",
+          "kind": "button",
+          "rect": {
+            "x": 53,
+            "y": 67.14045477442238,
+            "width": 22,
+            "height": 6
+          },
+          "text": "騎兵 · 40 金"
+        },
+        {
+          "id": "rune_desc_1",
+          "kind": "text",
+          "rect": {
+            "x": 10,
+            "y": 54.14045477442238,
+            "width": 51,
+            "height": 6
+          },
+          "text": "燼火 · 傷害 +35%"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "rune_1_plate",
+          "kind": "image",
+          "rect": {
+            "x": 65,
+            "y": 53.14045477442238,
+            "width": 25,
+            "height": 7
+          }
+        },
+        {
+          "action": "Rune1",
+          "id": "rune_1",
+          "kind": "button",
+          "rect": {
+            "x": 65,
+            "y": 53.14045477442238,
+            "width": 25,
+            "height": 7
+          },
+          "text": "◆ 6 結晶"
+        },
+        {
+          "id": "rune_desc_2",
+          "kind": "text",
+          "rect": {
+            "x": 10,
+            "y": 41.14045477442238,
+            "width": 51,
+            "height": 6
+          },
+          "text": "迴響 · 一般獎金 +25%"
+        },
+        {
+          "asset": "texture://ui_muted",
+          "fit": "stretch",
+          "id": "rune_2_plate",
+          "kind": "image",
+          "rect": {
+            "x": 65,
+            "y": 40.14045477442238,
+            "width": 25,
+            "height": 7
+          }
+        },
+        {
+          "id": "rune_2",
+          "kind": "text",
+          "rect": {
+            "x": 66,
+            "y": 40.64045477442238,
+            "width": 23,
+            "height": 6
+          },
+          "text": "◆ 9 結晶"
+        },
+        {
+          "id": "rune_desc_3",
+          "kind": "text",
+          "rect": {
+            "x": 10,
+            "y": 28.140454774422377,
+            "width": 51,
+            "height": 6
+          },
+          "text": "凝霜 · 緩速兩秒"
+        },
+        {
+          "asset": "texture://ui_muted",
+          "fit": "stretch",
+          "id": "rune_3_plate",
+          "kind": "image",
+          "rect": {
+            "x": 65,
+            "y": 27.140454774422377,
+            "width": 25,
+            "height": 7
+          }
+        },
+        {
+          "id": "rune_3",
+          "kind": "text",
+          "rect": {
+            "x": 66,
+            "y": 27.640454774422377,
+            "width": 23,
+            "height": 6
+          },
+          "text": "◆ 7 結晶"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "rune_off_plate",
+          "kind": "image",
+          "rect": {
+            "x": 10,
+            "y": 13.140454774422377,
+            "width": 25,
+            "height": 6
+          }
+        },
+        {
+          "action": "RuneOff",
+          "id": "rune_off",
+          "kind": "button",
+          "rect": {
+            "x": 10,
+            "y": 13.140454774422377,
+            "width": 25,
+            "height": 6
+          },
+          "text": "卸下符文"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "shop:runes"
+    },
+    "builds": {
+      "children": [
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "screen_back",
+          "kind": "image",
+          "rect": {
+            "x": 3,
+            "y": 3,
+            "width": 94,
+            "height": 94
+          }
+        },
+        {
+          "id": "screen_title",
+          "kind": "text",
+          "rect": {
+            "x": 7,
+            "y": 86.04919712694515,
+            "width": 67,
+            "height": 7
+          },
+          "text": "林間集市"
+        },
+        {
+          "id": "screen_gold",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 87.04919712694515,
+            "width": 17,
+            "height": 5
+          },
+          "text": "金幣 320"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "screen_crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 83.54919712694515,
+            "width": 17,
+            "height": 3.5
+          }
+        },
+        {
+          "id": "screen_crystals",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 83.54919712694515,
+            "width": 17,
+            "height": 3.5
+          },
+          "text": "◆ 結晶 6"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_home_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 77.04919712694515,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_home",
+          "id": "tab_home",
+          "kind": "button",
+          "rect": {
+            "x": 7,
+            "y": 77.04919712694515,
+            "width": 17,
+            "height": 6
+          },
+          "text": "補給"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_gear_plate",
+          "kind": "image",
+          "rect": {
+            "x": 25,
+            "y": 77.04919712694515,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_gear",
+          "id": "tab_gear",
+          "kind": "button",
+          "rect": {
+            "x": 25,
+            "y": 77.04919712694515,
+            "width": 17,
+            "height": 6
+          },
+          "text": "武庫"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_runes_plate",
+          "kind": "image",
+          "rect": {
+            "x": 43,
+            "y": 77.04919712694515,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_runes",
+          "id": "tab_runes",
+          "kind": "button",
+          "rect": {
+            "x": 43,
+            "y": 77.04919712694515,
+            "width": 17,
+            "height": 6
+          },
+          "text": "符文"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "tab_builds_plate",
+          "kind": "image",
+          "rect": {
+            "x": 61,
+            "y": 77.04919712694515,
+            "width": 17,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_builds",
+          "id": "tab_builds",
+          "kind": "button",
+          "rect": {
+            "x": 61,
+            "y": 77.04919712694515,
+            "width": 17,
+            "height": 6
+          },
+          "text": "流派 ◆"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "ready_plate",
+          "kind": "image",
+          "rect": {
+            "x": 65,
+            "y": 4.049197126945148,
+            "width": 28,
+            "height": 7
+          }
+        },
+        {
+          "action": "LeaveShop",
+          "id": "ready",
+          "kind": "button",
+          "rect": {
+            "x": 65,
+            "y": 4.049197126945148,
+            "width": 28,
+            "height": 7
+          },
+          "text": "整備完成 · 出戰"
+        },
+        {
+          "id": "build_name_4",
+          "kind": "text",
+          "rect": {
+            "x": 9,
+            "y": 67.04919712694515,
+            "width": 58,
+            "height": 5
+          },
+          "text": "疾風破陣"
+        },
+        {
+          "id": "build_desc_4",
+          "kind": "text",
+          "rect": {
+            "x": 9,
+            "y": 56.049197126945145,
+            "width": 59,
+            "height": 10
+          },
+          "text": "騎兵先用速度強化穿透，耗盡後把已用穿透轉成最後一撞傷害。"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "build_4_plate",
+          "kind": "image",
+          "rect": {
+            "x": 74,
+            "y": 62.049197126945145,
+            "width": 17,
+            "height": 7
+          }
+        },
+        {
+          "action": "Build4",
+          "id": "build_4",
+          "kind": "button",
+          "rect": {
+            "x": 74,
+            "y": 62.049197126945145,
+            "width": 17,
+            "height": 7
+          },
+          "text": "指定採購"
+        },
+        {
+          "id": "build_name_5",
+          "kind": "text",
+          "rect": {
+            "x": 9,
+            "y": 49.049197126945145,
+            "width": 58,
+            "height": 5
+          },
+          "text": "穿陣旋風"
+        },
+        {
+          "id": "build_desc_5",
+          "kind": "text",
+          "rect": {
+            "x": 9,
+            "y": 38.049197126945145,
+            "width": 59,
+            "height": 10
+          },
+          "text": "每兩次成功穿透追加旋斬，主要命中再震盪；適合怪物潮。"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "build_5_plate",
+          "kind": "image",
+          "rect": {
+            "x": 74,
+            "y": 44.049197126945145,
+            "width": 17,
+            "height": 7
+          }
+        },
+        {
+          "action": "Build5",
+          "id": "build_5",
+          "kind": "button",
+          "rect": {
+            "x": 74,
+            "y": 44.049197126945145,
+            "width": 17,
+            "height": 7
+          },
+          "text": "指定採購"
+        },
+        {
+          "id": "build_name_6",
+          "kind": "text",
+          "rect": {
+            "x": 9,
+            "y": 31.04919712694515,
+            "width": 58,
+            "height": 5
+          },
+          "text": "霜鋼重擊"
+        },
+        {
+          "id": "build_desc_6",
+          "kind": "text",
+          "rect": {
+            "x": 9,
+            "y": 20.04919712694515,
+            "width": 59,
+            "height": 10
+          },
+          "text": "先用凝霜兵標記目標，碎冰兵跟進；搭配沉重把慢速換成傷害。"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "build_6_plate",
+          "kind": "image",
+          "rect": {
+            "x": 74,
+            "y": 26.04919712694515,
+            "width": 17,
+            "height": 7
+          }
+        },
+        {
+          "action": "Build6",
+          "id": "build_6",
+          "kind": "button",
+          "rect": {
+            "x": 74,
+            "y": 26.04919712694515,
+            "width": 17,
+            "height": 7
+          },
+          "text": "指定採購"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "build_prev_plate",
+          "kind": "image",
+          "rect": {
+            "x": 7,
+            "y": 4.049197126945148,
+            "width": 14,
+            "height": 7
+          }
+        },
+        {
+          "action": "UI_page_prev",
+          "id": "build_prev",
+          "kind": "button",
+          "rect": {
+            "x": 7,
+            "y": 4.049197126945148,
+            "width": 14,
+            "height": 7
+          },
+          "text": "上一頁"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "build_next_plate",
+          "kind": "image",
+          "rect": {
+            "x": 23,
+            "y": 4.049197126945148,
+            "width": 14,
+            "height": 7
+          }
+        },
+        {
+          "action": "UI_page_next",
+          "id": "build_next",
+          "kind": "button",
+          "rect": {
+            "x": 23,
+            "y": 4.049197126945148,
+            "width": 14,
+            "height": 7
+          },
+          "text": "下一頁"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "shop:builds"
+    },
+    "battle": {
+      "children": [
+        {
+          "asset": "texture://ui_hud-heading",
+          "fit": "stretch",
+          "id": "chapter_back",
+          "kind": "image",
+          "rect": {
+            "x": 0,
+            "y": 86,
+            "width": 34,
+            "height": 14
+          }
+        },
+        {
+          "asset": "texture://ui_crest",
+          "fit": "stretch",
+          "id": "chapter_crest",
+          "kind": "image",
+          "rect": {
+            "x": 2,
+            "y": 91,
+            "width": 5,
+            "height": 7
+          }
+        },
+        {
+          "id": "chapter",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 94,
+            "width": 21,
+            "height": 4
+          },
+          "text": "苔光林口"
+        },
+        {
+          "id": "round",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 90.80000000000001,
+            "width": 18,
+            "height": 2.6
+          },
+          "text": "遠征  1 / 7"
+        },
+        {
+          "asset": "texture://ui_hud-objective",
+          "fit": "stretch",
+          "id": "objective_back",
+          "kind": "image",
+          "rect": {
+            "x": 35,
+            "y": 91,
+            "width": 33,
+            "height": 9
+          }
+        },
+        {
+          "id": "objective",
+          "kind": "text",
+          "rect": {
+            "x": 38,
+            "y": 95.3,
+            "width": 27,
+            "height": 2.7
+          },
+          "text": "積蓄軍力 · 準備迎戰大王"
+        },
+        {
+          "id": "boss_timing",
+          "kind": "text",
+          "rect": {
+            "x": 39,
+            "y": 92.8,
+            "width": 25,
+            "height": 2.2
+          },
+          "text": "大王於最後 30 秒登場"
+        },
+        {
+          "asset": "texture://ui_hud-target",
+          "fit": "stretch",
+          "id": "timer_plate",
+          "kind": "image",
+          "rect": {
+            "x": 84,
+            "y": 91,
+            "width": 9,
+            "height": 7.5
+          }
+        },
+        {
+          "id": "time",
+          "kind": "text",
+          "rect": {
+            "x": 85,
+            "y": 93.3,
+            "width": 7,
+            "height": 4
+          },
+          "text": "02:56"
+        },
+        {
+          "asset": "texture://ui_hud-gold",
+          "fit": "stretch",
+          "id": "coins_plate",
+          "kind": "image",
+          "rect": {
+            "x": 34.995140726713714,
+            "y": 1.1987041937903244,
+            "width": 18.009718546572568,
+            "height": 4.802591612419351
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-coin",
+          "fit": "stretch",
+          "id": "coins_icon",
+          "kind": "image",
+          "rect": {
+            "x": 36.2,
+            "y": 2.200000000000003,
+            "width": 2.1,
+            "height": 3
+          }
+        },
+        {
+          "id": "coins",
+          "kind": "text",
+          "rect": {
+            "x": 38.497030444102826,
+            "y": 2.0991901211189496,
+            "width": 12.506748990675396,
+            "height": 3.2017277416129013
+          },
+          "text": "金幣 264"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 54,
+            "y": 1.2000000000000002,
+            "width": 15,
+            "height": 4.8
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-crystal",
+          "fit": "stretch",
+          "id": "crystals_icon",
+          "kind": "image",
+          "rect": {
+            "x": 55.2,
+            "y": 2.200000000000003,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "id": "crystals",
+          "kind": "text",
+          "rect": {
+            "x": 57.5,
+            "y": 2.099999999999997,
+            "width": 10,
+            "height": 3.2
+          },
+          "text": "結晶 6"
+        },
+        {
+          "asset": "texture://ui_hud-active",
+          "fit": "stretch",
+          "id": "hud_unit_plate_1",
+          "kind": "image",
+          "rect": {
+            "x": 2,
+            "y": 3,
+            "width": 8,
+            "height": 15
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-sword",
+          "fit": "stretch",
+          "id": "hud_unit_icon_1",
+          "kind": "image",
+          "rect": {
+            "x": 3.4,
+            "y": 10.2,
+            "width": 5.2,
+            "height": 6.8
+          }
+        },
+        {
+          "action": "Unit1",
+          "id": "hud_unit_1",
+          "kind": "button",
+          "rect": {
+            "x": 2,
+            "y": 10,
+            "width": 8,
+            "height": 8
+          },
+          "text": ""
+        },
+        {
+          "action": "Unit1",
+          "id": "hud_unit_caption_1",
+          "kind": "button",
+          "rect": {
+            "x": 2,
+            "y": 5,
+            "width": 8,
+            "height": 5
+          },
+          "text": "劍兵\n10"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "hud_unit_plate_2",
+          "kind": "image",
+          "rect": {
+            "x": 10.6,
+            "y": 3,
+            "width": 8,
+            "height": 15
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-spear",
+          "fit": "stretch",
+          "id": "hud_unit_icon_2",
+          "kind": "image",
+          "rect": {
+            "x": 12,
+            "y": 10.2,
+            "width": 5.2,
+            "height": 6.8
+          }
+        },
+        {
+          "action": "Unit2",
+          "id": "hud_unit_2",
+          "kind": "button",
+          "rect": {
+            "x": 10.6,
+            "y": 10,
+            "width": 8,
+            "height": 8
+          },
+          "text": ""
+        },
+        {
+          "action": "Unit2",
+          "id": "hud_unit_caption_2",
+          "kind": "button",
+          "rect": {
+            "x": 10.6,
+            "y": 5,
+            "width": 8,
+            "height": 5
+          },
+          "text": "槍兵\n20"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "hud_unit_plate_3",
+          "kind": "image",
+          "rect": {
+            "x": 19.2,
+            "y": 3,
+            "width": 8,
+            "height": 15
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-cavalry",
+          "fit": "stretch",
+          "id": "hud_unit_icon_3",
+          "kind": "image",
+          "rect": {
+            "x": 20.599999999999998,
+            "y": 10.2,
+            "width": 5.2,
+            "height": 6.8
+          }
+        },
+        {
+          "action": "Unit3",
+          "id": "hud_unit_3",
+          "kind": "button",
+          "rect": {
+            "x": 19.2,
+            "y": 10,
+            "width": 8,
+            "height": 8
+          },
+          "text": ""
+        },
+        {
+          "action": "Unit3",
+          "id": "hud_unit_caption_3",
+          "kind": "button",
+          "rect": {
+            "x": 19.2,
+            "y": 5,
+            "width": 8,
+            "height": 5
+          },
+          "text": "騎兵\n40"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "pause_plate",
+          "kind": "image",
+          "rect": {
+            "x": 94.5,
+            "y": 91,
+            "width": 4,
+            "height": 7.5
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-pause",
+          "fit": "stretch",
+          "id": "pause_icon",
+          "kind": "image",
+          "rect": {
+            "x": 95.2,
+            "y": 93.2,
+            "width": 2.6,
+            "height": 4.3
+          }
+        },
+        {
+          "action": "Pause",
+          "id": "pause",
+          "kind": "button",
+          "rect": {
+            "x": 94.5,
+            "y": 91,
+            "width": 4,
+            "height": 7.5
+          },
+          "text": ""
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "mode_plate_manual",
+          "kind": "image",
+          "rect": {
+            "x": 77,
+            "y": 3,
+            "width": 6.8,
+            "height": 10
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-manual",
+          "fit": "stretch",
+          "id": "mode_icon_manual",
+          "kind": "image",
+          "rect": {
+            "x": 78.7,
+            "y": 7.4,
+            "width": 3.4,
+            "height": 4.6
+          }
+        },
+        {
+          "action": "Mode_manual",
+          "id": "mode_manual",
+          "kind": "button",
+          "rect": {
+            "x": 77,
+            "y": 6.8,
+            "width": 6.8,
+            "height": 6.2
+          },
+          "text": ""
+        },
+        {
+          "action": "Mode_manual",
+          "id": "mode_label_manual",
+          "kind": "button",
+          "rect": {
+            "x": 77,
+            "y": 4.1999999999999975,
+            "width": 6.8,
+            "height": 2.6
+          },
+          "text": "手動"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "mode_plate_lock",
+          "kind": "image",
+          "rect": {
+            "x": 84.3,
+            "y": 3,
+            "width": 6.8,
+            "height": 10
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-lock",
+          "fit": "stretch",
+          "id": "mode_icon_lock",
+          "kind": "image",
+          "rect": {
+            "x": 86,
+            "y": 7.4,
+            "width": 3.4,
+            "height": 4.6
+          }
+        },
+        {
+          "action": "Mode_lock",
+          "id": "mode_lock",
+          "kind": "button",
+          "rect": {
+            "x": 84.3,
+            "y": 6.8,
+            "width": 6.8,
+            "height": 6.2
+          },
+          "text": ""
+        },
+        {
+          "action": "Mode_lock",
+          "id": "mode_label_lock",
+          "kind": "button",
+          "rect": {
+            "x": 84.3,
+            "y": 4.1999999999999975,
+            "width": 6.8,
+            "height": 2.6
+          },
+          "text": "LOCK"
+        },
+        {
+          "asset": "texture://ui_hud-active",
+          "fit": "stretch",
+          "id": "mode_plate_auto",
+          "kind": "image",
+          "rect": {
+            "x": 91.55919999999999,
+            "y": 2.9399999999999995,
+            "width": 6.8816,
+            "height": 10.120000000000001
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-auto",
+          "fit": "stretch",
+          "id": "mode_icon_auto",
+          "kind": "image",
+          "rect": {
+            "x": 93.2796,
+            "y": 7.3928,
+            "width": 3.4408,
+            "height": 4.6552
+          }
+        },
+        {
+          "action": "Mode_auto",
+          "id": "mode_auto",
+          "kind": "button",
+          "rect": {
+            "x": 91.55919999999999,
+            "y": 6.7856,
+            "width": 6.8816,
+            "height": 6.2744
+          },
+          "text": ""
+        },
+        {
+          "action": "Mode_auto",
+          "id": "mode_label_auto",
+          "kind": "button",
+          "rect": {
+            "x": 91.55919999999999,
+            "y": 4.154399999999997,
+            "width": 6.8816,
+            "height": 2.6312
+          },
+          "text": "AUTO"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "filter_all_plate",
+          "kind": "image",
+          "rect": {
+            "x": 77,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          }
+        },
+        {
+          "action": "Filter_all",
+          "id": "filter_all",
+          "kind": "button",
+          "rect": {
+            "x": 77,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          },
+          "text": "全部"
+        },
+        {
+          "asset": "texture://ui_hud-active",
+          "fit": "stretch",
+          "id": "filter_small_plate",
+          "kind": "image",
+          "rect": {
+            "x": 84.3,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          }
+        },
+        {
+          "action": "Filter_small",
+          "id": "filter_small",
+          "kind": "button",
+          "rect": {
+            "x": 84.3,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          },
+          "text": "小怪"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "filter_boss_plate",
+          "kind": "image",
+          "rect": {
+            "x": 91.6,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          }
+        },
+        {
+          "action": "Filter_boss",
+          "id": "filter_boss",
+          "kind": "button",
+          "rect": {
+            "x": 91.6,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          },
+          "text": "王"
+        },
+        {
+          "asset": "texture://ui_hud-target",
+          "fit": "stretch",
+          "id": "target_plate",
+          "kind": "image",
+          "rect": {
+            "x": 77,
+            "y": 19.5,
+            "width": 21.4,
+            "height": 7.5
+          }
+        },
+        {
+          "id": "target",
+          "kind": "text",
+          "rect": {
+            "x": 78,
+            "y": 23.9,
+            "width": 19.4,
+            "height": 2.6
+          },
+          "text": "苔羽蛾"
+        },
+        {
+          "id": "target_guard",
+          "kind": "text",
+          "rect": {
+            "x": 78,
+            "y": 20.9,
+            "width": 19.4,
+            "height": 2.4
+          },
+          "text": "破防 0 / 22"
+        },
+        {
+          "id": "streak",
+          "kind": "text",
+          "rect": {
+            "x": 2,
+            "y": 83.3,
+            "width": 12,
+            "height": 2.7
+          },
+          "text": "連殺  0"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "battle:home"
+    },
+    "pause": {
+      "children": [
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "screen_back",
+          "kind": "image",
+          "rect": {
+            "x": 3,
+            "y": 3,
+            "width": 94,
+            "height": 94
+          }
+        },
+        {
+          "id": "screen_title",
+          "kind": "text",
+          "rect": {
+            "x": 7,
+            "y": 86.17262546299929,
+            "width": 67,
+            "height": 7
+          },
+          "text": "征途暫歇"
+        },
+        {
+          "id": "screen_gold",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 87.17262546299929,
+            "width": 17,
+            "height": 5
+          },
+          "text": "金幣 264"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "screen_crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 83.67262546299929,
+            "width": 17,
+            "height": 3.5
+          }
+        },
+        {
+          "id": "screen_crystals",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 83.67262546299929,
+            "width": 17,
+            "height": 3.5
+          },
+          "text": "◆ 結晶 6"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "resume_plate",
+          "kind": "image",
+          "rect": {
+            "x": 32,
+            "y": 53.1726254629993,
+            "width": 36,
+            "height": 9
+          }
+        },
+        {
+          "action": "Pause",
+          "id": "resume",
+          "kind": "button",
+          "rect": {
+            "x": 32,
+            "y": 53.1726254629993,
+            "width": 36,
+            "height": 9
+          },
+          "text": "繼續征戰"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "guide_plate",
+          "kind": "image",
+          "rect": {
+            "x": 32,
+            "y": 41.1726254629993,
+            "width": 36,
+            "height": 8
+          }
+        },
+        {
+          "action": "UI_guide",
+          "id": "guide",
+          "kind": "button",
+          "rect": {
+            "x": 32,
+            "y": 41.1726254629993,
+            "width": 36,
+            "height": 8
+          },
+          "text": "作戰指南"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "quit_plate",
+          "kind": "image",
+          "rect": {
+            "x": 32,
+            "y": 28.172625462999296,
+            "width": 36,
+            "height": 8
+          }
+        },
+        {
+          "action": "UI_abandon",
+          "id": "quit",
+          "kind": "button",
+          "rect": {
+            "x": 32,
+            "y": 28.172625462999296,
+            "width": 36,
+            "height": 8
+          },
+          "text": "結束這趟遠征"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "mute_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 76.17262546299929,
+            "width": 16,
+            "height": 6
+          }
+        },
+        {
+          "action": "UI_mute",
+          "id": "mute",
+          "kind": "button",
+          "rect": {
+            "x": 76,
+            "y": 76.17262546299929,
+            "width": 16,
+            "height": 6
+          },
+          "text": "音效：開"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "battle:home"
+    },
+    "abandon": {
+      "children": [
+        {
+          "asset": "texture://ui_panel",
+          "fit": "stretch",
+          "id": "screen_back",
+          "kind": "image",
+          "rect": {
+            "x": 3,
+            "y": 3,
+            "width": 94,
+            "height": 94
+          }
+        },
+        {
+          "id": "screen_title",
+          "kind": "text",
+          "rect": {
+            "x": 7,
+            "y": 86.10092605214786,
+            "width": 67,
+            "height": 7
+          },
+          "text": "征途暫歇"
+        },
+        {
+          "id": "screen_gold",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 87.10092605214786,
+            "width": 17,
+            "height": 5
+          },
+          "text": "金幣 264"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "screen_crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 76,
+            "y": 83.60092605214786,
+            "width": 17,
+            "height": 3.5
+          }
+        },
+        {
+          "id": "screen_crystals",
+          "kind": "text",
+          "rect": {
+            "x": 76,
+            "y": 83.60092605214786,
+            "width": 17,
+            "height": 3.5
+          },
+          "text": "◆ 結晶 6"
+        },
+        {
+          "id": "abandon_warning",
+          "kind": "text",
+          "rect": {
+            "x": 15,
+            "y": 54.100926052147855,
+            "width": 70,
+            "height": 17
+          },
+          "text": "結束這趟遠征？本局金幣、結晶與配裝不保留，城鎮建設保留。"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "abandon_cancel_plate",
+          "kind": "image",
+          "rect": {
+            "x": 15,
+            "y": 31.100926052147855,
+            "width": 33,
+            "height": 9
+          }
+        },
+        {
+          "action": "UI_home",
+          "id": "abandon_cancel",
+          "kind": "button",
+          "rect": {
+            "x": 15,
+            "y": 31.100926052147855,
+            "width": 33,
+            "height": 9
+          },
+          "text": "繼續留在遠征"
+        },
+        {
+          "asset": "texture://ui_button",
+          "fit": "stretch",
+          "id": "abandon_confirm_plate",
+          "kind": "image",
+          "rect": {
+            "x": 53,
+            "y": 31.100926052147855,
+            "width": 33,
+            "height": 9
+          }
+        },
+        {
+          "action": "Home",
+          "id": "abandon_confirm",
+          "kind": "button",
+          "rect": {
+            "x": 53,
+            "y": 31.100926052147855,
+            "width": 33,
+            "height": 9
+          },
+          "text": "結束遠征"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "battle:abandon"
+    },
+    "battle-1280x720": {
+      "children": [
+        {
+          "asset": "texture://ui_hud-heading",
+          "fit": "stretch",
+          "id": "chapter_back",
+          "kind": "image",
+          "rect": {
+            "x": 0,
+            "y": 86,
+            "width": 34,
+            "height": 14
+          }
+        },
+        {
+          "asset": "texture://ui_crest",
+          "fit": "stretch",
+          "id": "chapter_crest",
+          "kind": "image",
+          "rect": {
+            "x": 2,
+            "y": 91,
+            "width": 5,
+            "height": 7
+          }
+        },
+        {
+          "id": "chapter",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 94,
+            "width": 21,
+            "height": 4
+          },
+          "text": "苔光林口"
+        },
+        {
+          "id": "round",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 90.80000000000001,
+            "width": 18,
+            "height": 2.6
+          },
+          "text": "遠征  1 / 7"
+        },
+        {
+          "asset": "texture://ui_hud-objective",
+          "fit": "stretch",
+          "id": "objective_back",
+          "kind": "image",
+          "rect": {
+            "x": 35,
+            "y": 91,
+            "width": 33,
+            "height": 9
+          }
+        },
+        {
+          "id": "objective",
+          "kind": "text",
+          "rect": {
+            "x": 38,
+            "y": 95.3,
+            "width": 27,
+            "height": 2.7
+          },
+          "text": "積蓄軍力 · 準備迎戰大王"
+        },
+        {
+          "id": "boss_timing",
+          "kind": "text",
+          "rect": {
+            "x": 39,
+            "y": 92.8,
+            "width": 25,
+            "height": 2.2
+          },
+          "text": "大王於最後 30 秒登場"
+        },
+        {
+          "asset": "texture://ui_hud-target",
+          "fit": "stretch",
+          "id": "timer_plate",
+          "kind": "image",
+          "rect": {
+            "x": 84,
+            "y": 91,
+            "width": 9,
+            "height": 7.5
+          }
+        },
+        {
+          "id": "time",
+          "kind": "text",
+          "rect": {
+            "x": 85,
+            "y": 93.3,
+            "width": 7,
+            "height": 4
+          },
+          "text": "02:56"
+        },
+        {
+          "asset": "texture://ui_hud-gold",
+          "fit": "stretch",
+          "id": "coins_plate",
+          "kind": "image",
+          "rect": {
+            "x": 34.94976872388898,
+            "y": 1.1866049930370615,
+            "width": 18.10046255222204,
+            "height": 4.826790013925877
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-coin",
+          "fit": "stretch",
+          "id": "coins_icon",
+          "kind": "image",
+          "rect": {
+            "x": 36.2,
+            "y": 2.200000000000003,
+            "width": 2.1,
+            "height": 3
+          }
+        },
+        {
+          "id": "coins",
+          "kind": "text",
+          "rect": {
+            "x": 38.46930310904327,
+            "y": 2.09162812064816,
+            "width": 12.569765661265306,
+            "height": 3.2178600092839185
+          },
+          "text": "金幣 254"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 54,
+            "y": 1.2000000000000002,
+            "width": 15,
+            "height": 4.8
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-crystal",
+          "fit": "stretch",
+          "id": "crystals_icon",
+          "kind": "image",
+          "rect": {
+            "x": 55.2,
+            "y": 2.200000000000003,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "id": "crystals",
+          "kind": "text",
+          "rect": {
+            "x": 57.5,
+            "y": 2.099999999999997,
+            "width": 10,
+            "height": 3.2
+          },
+          "text": "結晶 6"
+        },
+        {
+          "asset": "texture://ui_hud-active",
+          "fit": "stretch",
+          "id": "hud_unit_plate_1",
+          "kind": "image",
+          "rect": {
+            "x": 2,
+            "y": 3,
+            "width": 8,
+            "height": 15
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-sword",
+          "fit": "stretch",
+          "id": "hud_unit_icon_1",
+          "kind": "image",
+          "rect": {
+            "x": 3.4,
+            "y": 10.2,
+            "width": 5.2,
+            "height": 6.8
+          }
+        },
+        {
+          "action": "Unit1",
+          "id": "hud_unit_1",
+          "kind": "button",
+          "rect": {
+            "x": 2,
+            "y": 10,
+            "width": 8,
+            "height": 8
+          },
+          "text": ""
+        },
+        {
+          "action": "Unit1",
+          "id": "hud_unit_caption_1",
+          "kind": "button",
+          "rect": {
+            "x": 2,
+            "y": 5,
+            "width": 8,
+            "height": 5
+          },
+          "text": "劍兵\n10"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "hud_unit_plate_2",
+          "kind": "image",
+          "rect": {
+            "x": 10.6,
+            "y": 3,
+            "width": 8,
+            "height": 15
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-spear",
+          "fit": "stretch",
+          "id": "hud_unit_icon_2",
+          "kind": "image",
+          "rect": {
+            "x": 12,
+            "y": 10.2,
+            "width": 5.2,
+            "height": 6.8
+          }
+        },
+        {
+          "action": "Unit2",
+          "id": "hud_unit_2",
+          "kind": "button",
+          "rect": {
+            "x": 10.6,
+            "y": 10,
+            "width": 8,
+            "height": 8
+          },
+          "text": ""
+        },
+        {
+          "action": "Unit2",
+          "id": "hud_unit_caption_2",
+          "kind": "button",
+          "rect": {
+            "x": 10.6,
+            "y": 5,
+            "width": 8,
+            "height": 5
+          },
+          "text": "槍兵\n20"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "hud_unit_plate_3",
+          "kind": "image",
+          "rect": {
+            "x": 19.2,
+            "y": 3,
+            "width": 8,
+            "height": 15
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-cavalry",
+          "fit": "stretch",
+          "id": "hud_unit_icon_3",
+          "kind": "image",
+          "rect": {
+            "x": 20.599999999999998,
+            "y": 10.2,
+            "width": 5.2,
+            "height": 6.8
+          }
+        },
+        {
+          "action": "Unit3",
+          "id": "hud_unit_3",
+          "kind": "button",
+          "rect": {
+            "x": 19.2,
+            "y": 10,
+            "width": 8,
+            "height": 8
+          },
+          "text": ""
+        },
+        {
+          "action": "Unit3",
+          "id": "hud_unit_caption_3",
+          "kind": "button",
+          "rect": {
+            "x": 19.2,
+            "y": 5,
+            "width": 8,
+            "height": 5
+          },
+          "text": "騎兵\n40"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "pause_plate",
+          "kind": "image",
+          "rect": {
+            "x": 94.5,
+            "y": 91,
+            "width": 4,
+            "height": 7.5
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-pause",
+          "fit": "stretch",
+          "id": "pause_icon",
+          "kind": "image",
+          "rect": {
+            "x": 95.2,
+            "y": 93.2,
+            "width": 2.6,
+            "height": 4.3
+          }
+        },
+        {
+          "action": "Pause",
+          "id": "pause",
+          "kind": "button",
+          "rect": {
+            "x": 94.5,
+            "y": 91,
+            "width": 4,
+            "height": 7.5
+          },
+          "text": ""
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "mode_plate_manual",
+          "kind": "image",
+          "rect": {
+            "x": 77,
+            "y": 3,
+            "width": 6.8,
+            "height": 10
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-manual",
+          "fit": "stretch",
+          "id": "mode_icon_manual",
+          "kind": "image",
+          "rect": {
+            "x": 78.7,
+            "y": 7.4,
+            "width": 3.4,
+            "height": 4.6
+          }
+        },
+        {
+          "action": "Mode_manual",
+          "id": "mode_manual",
+          "kind": "button",
+          "rect": {
+            "x": 77,
+            "y": 6.8,
+            "width": 6.8,
+            "height": 6.2
+          },
+          "text": ""
+        },
+        {
+          "action": "Mode_manual",
+          "id": "mode_label_manual",
+          "kind": "button",
+          "rect": {
+            "x": 77,
+            "y": 4.1999999999999975,
+            "width": 6.8,
+            "height": 2.6
+          },
+          "text": "手動"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "mode_plate_lock",
+          "kind": "image",
+          "rect": {
+            "x": 84.3,
+            "y": 3,
+            "width": 6.8,
+            "height": 10
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-lock",
+          "fit": "stretch",
+          "id": "mode_icon_lock",
+          "kind": "image",
+          "rect": {
+            "x": 86,
+            "y": 7.4,
+            "width": 3.4,
+            "height": 4.6
+          }
+        },
+        {
+          "action": "Mode_lock",
+          "id": "mode_lock",
+          "kind": "button",
+          "rect": {
+            "x": 84.3,
+            "y": 6.8,
+            "width": 6.8,
+            "height": 6.2
+          },
+          "text": ""
+        },
+        {
+          "action": "Mode_lock",
+          "id": "mode_label_lock",
+          "kind": "button",
+          "rect": {
+            "x": 84.3,
+            "y": 4.1999999999999975,
+            "width": 6.8,
+            "height": 2.6
+          },
+          "text": "LOCK"
+        },
+        {
+          "asset": "texture://ui_hud-active",
+          "fit": "stretch",
+          "id": "mode_plate_auto",
+          "kind": "image",
+          "rect": {
+            "x": 91.6,
+            "y": 3,
+            "width": 6.8,
+            "height": 10
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-auto",
+          "fit": "stretch",
+          "id": "mode_icon_auto",
+          "kind": "image",
+          "rect": {
+            "x": 93.3,
+            "y": 7.4,
+            "width": 3.4,
+            "height": 4.6
+          }
+        },
+        {
+          "action": "Mode_auto",
+          "id": "mode_auto",
+          "kind": "button",
+          "rect": {
+            "x": 91.6,
+            "y": 6.8,
+            "width": 6.8,
+            "height": 6.2
+          },
+          "text": ""
+        },
+        {
+          "action": "Mode_auto",
+          "id": "mode_label_auto",
+          "kind": "button",
+          "rect": {
+            "x": 91.6,
+            "y": 4.1999999999999975,
+            "width": 6.8,
+            "height": 2.6
+          },
+          "text": "AUTO"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "filter_all_plate",
+          "kind": "image",
+          "rect": {
+            "x": 77,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          }
+        },
+        {
+          "action": "Filter_all",
+          "id": "filter_all",
+          "kind": "button",
+          "rect": {
+            "x": 77,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          },
+          "text": "全部"
+        },
+        {
+          "asset": "texture://ui_hud-active",
+          "fit": "stretch",
+          "id": "filter_small_plate",
+          "kind": "image",
+          "rect": {
+            "x": 84.3,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          }
+        },
+        {
+          "action": "Filter_small",
+          "id": "filter_small",
+          "kind": "button",
+          "rect": {
+            "x": 84.3,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          },
+          "text": "小怪"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "filter_boss_plate",
+          "kind": "image",
+          "rect": {
+            "x": 91.6,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          }
+        },
+        {
+          "action": "Filter_boss",
+          "id": "filter_boss",
+          "kind": "button",
+          "rect": {
+            "x": 91.6,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          },
+          "text": "王"
+        },
+        {
+          "asset": "texture://ui_hud-target",
+          "fit": "stretch",
+          "id": "target_plate",
+          "kind": "image",
+          "rect": {
+            "x": 77,
+            "y": 19.5,
+            "width": 21.4,
+            "height": 7.5
+          }
+        },
+        {
+          "id": "target",
+          "kind": "text",
+          "rect": {
+            "x": 78,
+            "y": 23.9,
+            "width": 19.4,
+            "height": 2.6
+          },
+          "text": "苔羽蛾"
+        },
+        {
+          "id": "target_guard",
+          "kind": "text",
+          "rect": {
+            "x": 78,
+            "y": 20.9,
+            "width": 19.4,
+            "height": 2.4
+          },
+          "text": "破防 0 / 22"
+        },
+        {
+          "id": "streak",
+          "kind": "text",
+          "rect": {
+            "x": 2,
+            "y": 83.3,
+            "width": 12,
+            "height": 2.7
+          },
+          "text": "連殺  0"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "battle:home"
+    },
+    "battle-900x600": {
+      "children": [
+        {
+          "asset": "texture://ui_hud-heading",
+          "fit": "stretch",
+          "id": "chapter_back",
+          "kind": "image",
+          "rect": {
+            "x": 0,
+            "y": 86,
+            "width": 34,
+            "height": 14
+          }
+        },
+        {
+          "asset": "texture://ui_crest",
+          "fit": "stretch",
+          "id": "chapter_crest",
+          "kind": "image",
+          "rect": {
+            "x": 2,
+            "y": 91,
+            "width": 5,
+            "height": 7
+          }
+        },
+        {
+          "id": "chapter",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 94,
+            "width": 21,
+            "height": 4
+          },
+          "text": "苔光林口"
+        },
+        {
+          "id": "round",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 90.80000000000001,
+            "width": 18,
+            "height": 2.6
+          },
+          "text": "遠征  1 / 7"
+        },
+        {
+          "asset": "texture://ui_hud-objective",
+          "fit": "stretch",
+          "id": "objective_back",
+          "kind": "image",
+          "rect": {
+            "x": 35,
+            "y": 91,
+            "width": 33,
+            "height": 9
+          }
+        },
+        {
+          "id": "objective",
+          "kind": "text",
+          "rect": {
+            "x": 38,
+            "y": 95.3,
+            "width": 27,
+            "height": 2.7
+          },
+          "text": "積蓄軍力 · 準備迎戰大王"
+        },
+        {
+          "id": "boss_timing",
+          "kind": "text",
+          "rect": {
+            "x": 39,
+            "y": 92.8,
+            "width": 25,
+            "height": 2.2
+          },
+          "text": "大王於最後 30 秒登場"
+        },
+        {
+          "asset": "texture://ui_hud-target",
+          "fit": "stretch",
+          "id": "timer_plate",
+          "kind": "image",
+          "rect": {
+            "x": 84,
+            "y": 91,
+            "width": 9,
+            "height": 7.5
+          }
+        },
+        {
+          "id": "time",
+          "kind": "text",
+          "rect": {
+            "x": 85,
+            "y": 93.3,
+            "width": 7,
+            "height": 4
+          },
+          "text": "02:56"
+        },
+        {
+          "asset": "texture://ui_hud-gold",
+          "fit": "stretch",
+          "id": "coins_plate",
+          "kind": "image",
+          "rect": {
+            "x": 34.824864470673546,
+            "y": 1.1532971921796116,
+            "width": 18.350271058652915,
+            "height": 4.893405615640777
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-coin",
+          "fit": "stretch",
+          "id": "coins_icon",
+          "kind": "image",
+          "rect": {
+            "x": 36.2,
+            "y": 2.200000000000003,
+            "width": 2.1,
+            "height": 3
+          }
+        },
+        {
+          "id": "coins",
+          "kind": "text",
+          "rect": {
+            "x": 38.39297273207828,
+            "y": 2.0708107451122544,
+            "width": 12.74324379073119,
+            "height": 3.2622704104271847
+          },
+          "text": "金幣 254"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 54,
+            "y": 1.2000000000000002,
+            "width": 15,
+            "height": 4.8
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-crystal",
+          "fit": "stretch",
+          "id": "crystals_icon",
+          "kind": "image",
+          "rect": {
+            "x": 55.2,
+            "y": 2.200000000000003,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "id": "crystals",
+          "kind": "text",
+          "rect": {
+            "x": 57.5,
+            "y": 2.099999999999997,
+            "width": 10,
+            "height": 3.2
+          },
+          "text": "結晶 6"
+        },
+        {
+          "asset": "texture://ui_hud-active",
+          "fit": "stretch",
+          "id": "hud_unit_plate_1",
+          "kind": "image",
+          "rect": {
+            "x": 2,
+            "y": 3,
+            "width": 8,
+            "height": 15
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-sword",
+          "fit": "stretch",
+          "id": "hud_unit_icon_1",
+          "kind": "image",
+          "rect": {
+            "x": 3.4,
+            "y": 10.2,
+            "width": 5.2,
+            "height": 6.8
+          }
+        },
+        {
+          "action": "Unit1",
+          "id": "hud_unit_1",
+          "kind": "button",
+          "rect": {
+            "x": 2,
+            "y": 10,
+            "width": 8,
+            "height": 8
+          },
+          "text": ""
+        },
+        {
+          "action": "Unit1",
+          "id": "hud_unit_caption_1",
+          "kind": "button",
+          "rect": {
+            "x": 2,
+            "y": 5,
+            "width": 8,
+            "height": 5
+          },
+          "text": "劍兵\n10"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "hud_unit_plate_2",
+          "kind": "image",
+          "rect": {
+            "x": 10.6,
+            "y": 3,
+            "width": 8,
+            "height": 15
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-spear",
+          "fit": "stretch",
+          "id": "hud_unit_icon_2",
+          "kind": "image",
+          "rect": {
+            "x": 12,
+            "y": 10.2,
+            "width": 5.2,
+            "height": 6.8
+          }
+        },
+        {
+          "action": "Unit2",
+          "id": "hud_unit_2",
+          "kind": "button",
+          "rect": {
+            "x": 10.6,
+            "y": 10,
+            "width": 8,
+            "height": 8
+          },
+          "text": ""
+        },
+        {
+          "action": "Unit2",
+          "id": "hud_unit_caption_2",
+          "kind": "button",
+          "rect": {
+            "x": 10.6,
+            "y": 5,
+            "width": 8,
+            "height": 5
+          },
+          "text": "槍兵\n20"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "hud_unit_plate_3",
+          "kind": "image",
+          "rect": {
+            "x": 19.2,
+            "y": 3,
+            "width": 8,
+            "height": 15
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-cavalry",
+          "fit": "stretch",
+          "id": "hud_unit_icon_3",
+          "kind": "image",
+          "rect": {
+            "x": 20.599999999999998,
+            "y": 10.2,
+            "width": 5.2,
+            "height": 6.8
+          }
+        },
+        {
+          "action": "Unit3",
+          "id": "hud_unit_3",
+          "kind": "button",
+          "rect": {
+            "x": 19.2,
+            "y": 10,
+            "width": 8,
+            "height": 8
+          },
+          "text": ""
+        },
+        {
+          "action": "Unit3",
+          "id": "hud_unit_caption_3",
+          "kind": "button",
+          "rect": {
+            "x": 19.2,
+            "y": 5,
+            "width": 8,
+            "height": 5
+          },
+          "text": "騎兵\n40"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "pause_plate",
+          "kind": "image",
+          "rect": {
+            "x": 94.5,
+            "y": 91,
+            "width": 4,
+            "height": 7.5
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-pause",
+          "fit": "stretch",
+          "id": "pause_icon",
+          "kind": "image",
+          "rect": {
+            "x": 95.2,
+            "y": 93.2,
+            "width": 2.6,
+            "height": 4.3
+          }
+        },
+        {
+          "action": "Pause",
+          "id": "pause",
+          "kind": "button",
+          "rect": {
+            "x": 94.5,
+            "y": 91,
+            "width": 4,
+            "height": 7.5
+          },
+          "text": ""
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "mode_plate_manual",
+          "kind": "image",
+          "rect": {
+            "x": 77,
+            "y": 3,
+            "width": 6.8,
+            "height": 10
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-manual",
+          "fit": "stretch",
+          "id": "mode_icon_manual",
+          "kind": "image",
+          "rect": {
+            "x": 78.7,
+            "y": 7.4,
+            "width": 3.4,
+            "height": 4.6
+          }
+        },
+        {
+          "action": "Mode_manual",
+          "id": "mode_manual",
+          "kind": "button",
+          "rect": {
+            "x": 77,
+            "y": 6.8,
+            "width": 6.8,
+            "height": 6.2
+          },
+          "text": ""
+        },
+        {
+          "action": "Mode_manual",
+          "id": "mode_label_manual",
+          "kind": "button",
+          "rect": {
+            "x": 77,
+            "y": 4.1999999999999975,
+            "width": 6.8,
+            "height": 2.6
+          },
+          "text": "手動"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "mode_plate_lock",
+          "kind": "image",
+          "rect": {
+            "x": 84.3,
+            "y": 3,
+            "width": 6.8,
+            "height": 10
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-lock",
+          "fit": "stretch",
+          "id": "mode_icon_lock",
+          "kind": "image",
+          "rect": {
+            "x": 86,
+            "y": 7.4,
+            "width": 3.4,
+            "height": 4.6
+          }
+        },
+        {
+          "action": "Mode_lock",
+          "id": "mode_lock",
+          "kind": "button",
+          "rect": {
+            "x": 84.3,
+            "y": 6.8,
+            "width": 6.8,
+            "height": 6.2
+          },
+          "text": ""
+        },
+        {
+          "action": "Mode_lock",
+          "id": "mode_label_lock",
+          "kind": "button",
+          "rect": {
+            "x": 84.3,
+            "y": 4.1999999999999975,
+            "width": 6.8,
+            "height": 2.6
+          },
+          "text": "LOCK"
+        },
+        {
+          "asset": "texture://ui_hud-active",
+          "fit": "stretch",
+          "id": "mode_plate_auto",
+          "kind": "image",
+          "rect": {
+            "x": 91.6,
+            "y": 3,
+            "width": 6.8,
+            "height": 10
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-auto",
+          "fit": "stretch",
+          "id": "mode_icon_auto",
+          "kind": "image",
+          "rect": {
+            "x": 93.3,
+            "y": 7.4,
+            "width": 3.4,
+            "height": 4.6
+          }
+        },
+        {
+          "action": "Mode_auto",
+          "id": "mode_auto",
+          "kind": "button",
+          "rect": {
+            "x": 91.6,
+            "y": 6.8,
+            "width": 6.8,
+            "height": 6.2
+          },
+          "text": ""
+        },
+        {
+          "action": "Mode_auto",
+          "id": "mode_label_auto",
+          "kind": "button",
+          "rect": {
+            "x": 91.6,
+            "y": 4.1999999999999975,
+            "width": 6.8,
+            "height": 2.6
+          },
+          "text": "AUTO"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "filter_all_plate",
+          "kind": "image",
+          "rect": {
+            "x": 77,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          }
+        },
+        {
+          "action": "Filter_all",
+          "id": "filter_all",
+          "kind": "button",
+          "rect": {
+            "x": 77,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          },
+          "text": "全部"
+        },
+        {
+          "asset": "texture://ui_hud-active",
+          "fit": "stretch",
+          "id": "filter_small_plate",
+          "kind": "image",
+          "rect": {
+            "x": 84.3,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          }
+        },
+        {
+          "action": "Filter_small",
+          "id": "filter_small",
+          "kind": "button",
+          "rect": {
+            "x": 84.3,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          },
+          "text": "小怪"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "filter_boss_plate",
+          "kind": "image",
+          "rect": {
+            "x": 91.6,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          }
+        },
+        {
+          "action": "Filter_boss",
+          "id": "filter_boss",
+          "kind": "button",
+          "rect": {
+            "x": 91.6,
+            "y": 14,
+            "width": 6.8,
+            "height": 4.5
+          },
+          "text": "王"
+        },
+        {
+          "asset": "texture://ui_hud-target",
+          "fit": "stretch",
+          "id": "target_plate",
+          "kind": "image",
+          "rect": {
+            "x": 77,
+            "y": 19.5,
+            "width": 21.4,
+            "height": 7.5
+          }
+        },
+        {
+          "id": "target",
+          "kind": "text",
+          "rect": {
+            "x": 78,
+            "y": 23.9,
+            "width": 19.4,
+            "height": 2.6
+          },
+          "text": "苔羽蛾"
+        },
+        {
+          "id": "target_guard",
+          "kind": "text",
+          "rect": {
+            "x": 78,
+            "y": 20.9,
+            "width": 19.4,
+            "height": 2.4
+          },
+          "text": "破防 0 / 22"
+        },
+        {
+          "id": "streak",
+          "kind": "text",
+          "rect": {
+            "x": 2,
+            "y": 83.3,
+            "width": 12,
+            "height": 2.7
+          },
+          "text": "連殺  0"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "battle:home"
+    }
+  }
+}

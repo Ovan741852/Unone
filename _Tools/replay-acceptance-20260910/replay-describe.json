@@ -1,0 +1,543 @@
+{
+  "ok": true,
+  "value": {
+    "adapterExample": "-- Scenario rules and restoration belong to the project, not Rust.\nlocal ticks = 0\nlocal held = {}\nlocal Game = {}\nfunction Game.start(api) end\nfunction Game.update(api)\n    ticks += 1\n    if api.input.isDown(\"release\") then\n        table.clear(held)\n    else\n        table.insert(held, table.create(4096, ticks))\n    end\n    api.observation.set(\"ticks\", ticks)\nend\nGame.replay = {\n    id = \"example.counter\",\n    version = \"1\",\n    restore = function(capture, api)\n        if capture.captureOrigin.kind ~= \"start\" then return false end\n        ticks = capture.scenario.initialCount\n        table.clear(held)\n        return true\n    end,\n    compatible = function(versions, api)\n        -- Accept only this project's own adapter and schema; games must define\n        -- their actual migration policy rather than returning true blindly.\n        return versions.source.game.id == versions.target.game.id\n            and versions.sourceAdapter.id == \"example.counter\"\n            and versions.sourceAdapter.version == \"1\"\n            and versions.scenarioSchema.version == 1\n    end,\n    inspect = function(context, api)\n        -- Must be read-only. Never consume RNG or change the gameplay state.\n        return {invariants = {counter = ticks, retained = #held}, diagnostics = {}}\n    end,\n}\nreturn Game\n",
+    "guide": "# Versioned headless replay and memory investigation\n\nImplemented slice: `game replay scenario`, `game replay fingerprint`, and MCP\n`unone_replay_scenario` / `unone_replay_fingerprint`. These are SDK tools, not\nViewer dependencies. Existing `replay record/diff` remains unchanged.\n`game --json replay describe` / `unone_replay_describe` embeds this guide, schemas\nand the adapter example in the SDK binary; AI does not need this source checkout.\n\nReplay uses a private project snapshot and a fresh worker process. A deadline\ncovers staging, schema validation, Lua module evaluation, start, adapter restore,\nupdate and inspection. Production saves are not read or written. This is not an\nOS sandbox for hostile native plugins. stdout from gameplay cannot corrupt reports.\nOn Windows the worker is attached to a kill-on-close Job owned by the parent.\nIt also has its own watchdog on all platforms, so losing the parent cannot leave\nan infinite Lua loop running indefinitely. Abrupt parent termination can leave\ntemporary snapshot files for OS/user cleanup; normal completion and timeout clean\nthe parent-owned temporary directory. On non-Windows, parent death is bounded by\nthe worker watchdog rather than immediate Job teardown.\n\n## Run the real example\n\n```powershell\ncargo build -p unone-cli\nnode docs/fixtures/diagnostics/create-request.mjs target/debug/game.exe replay-request.json\ntarget/debug/game.exe --project docs/fixtures/diagnostics/project --json replay scenario --request replay-request.json\n```\n\nExpected: `status: reproduced`, `regressionStatus: passed`, four explicit full-GC\nsamples, with the warmup sample excluded from retention trend comparison.\nThis is a test workload, not evidence about YesSir's memory behavior.\n\n## Request and identity\n\n`reproduction` follows [the schema](reproduction.schema.json). The request also\nrequires `target` (the exact object returned by `replay fingerprint`), `mode`,\n`scenarioSchema` (the **original schema text string**, hash its exact UTF-8 bytes),\n`maxTicks` (1..100000), and `timeoutMs` (1..60000). JSON requests are limited to\n8 MiB. Schemas are bundled, local `$defs` work, network/file resolution is disabled.\nThe schema's `$id` and `x-unone-version` must agree with capture metadata.\nThe request's `mode` is authoritative. `reproduction.mode` records the original\ncapture intent and remains archival: compatible retests deliberately do not edit\nan originally exact-version capture.\n\nFingerprints hash all project `.luau`/`.lua` files (excluding `.git`, `.unone`,\nnode_modules, target, dist and build), project configuration, main scene, declared\nasset sources/companions, and bundle files. Imports must be inside the project.\nWhen a bundle lists scripts, their bytes contribute only to `scriptHash`;\nbundle metadata contributes to the overall game content revision, not the asset\nhash. Thus a source-only edit (including its bundle metadata update) keeps the\nasset fingerprint unchanged.\nSnapshot limit: 2 GiB / 50000 scanned directory entries. Symlinks are rejected.\nScripts and assets are staged before hashing; this is a **headless** identity,\nnot a fingerprint of external renderer plugins or browser code.\n`game.revision` is a content revision, not Git HEAD; `engine.coreRevision` hashes\nthe actual executable, so rebuilding the CLI requires a new target/capture or an\nexplicit compatible-version request. Local active generation is not compared.\n\nOnly `captureOrigin: start` is implemented. A start capture requires an explicit\ndecimal u64 seed and input frames from tick 0. Index `i` is input for tick `i`;\nit is applied to the Core's next update (resulting Core frame `i+1`). An explicit\n`{}` means no input. Missing inputs are **never** synthesized. Incomplete/truncated\ncaptures and checkpoint requests return `incomplete`, not a successful verdict.\n\n## Project adapter (Luau)\n\nThe game return table exposes `Game.replay` with `id`, `version` and callbacks:\n\n- `restore(capture, api) -> boolean`: called after `Game.start` on a fresh runtime.\n  Apply and validate scenario/initial state completely, or return false. A `save`\n  is injected before `start`. Do not assume Rust knows game-specific state.\n- `inspect({tick}, api) -> {invariants, diagnostics}`: read-only inspection after\n  each update. Invariants are keyed by semantic ID; diagnostics is an array of\n  `{code, flag}` entries for that tick. Evidence has a 64 KiB/tick limit and is not\n  persisted in a global registry. Do not mutate state or consume RNG here.\n- `compatible(versions, api) -> boolean`: required only for compatible-version\n  retests. Receives source/target fingerprints, source/target adapter identities and\n  source schema metadata. Only explicitly accepted compatibility can proceed.\n  Schema migrations are not implemented: the original schema must still validate.\n\nThe complete counter/allocate/release adapter is in\n[the fixture](fixtures/diagnostics/project/main.luau). It is project behavior,\nnot a Core policy for retaining or collecting memory.\n\n`expectedOverride` changes the selected matcher without modifying the original\ncapture. `originalMatcher` and `overrideMatcher` are reported separately.\n`regressionChecks` is an optional array of `{id, expectedValue, endCondition}`.\nA missing invariant is unevaluated, not a null-valued pass. An empty regression\nset is `not_evaluated`. Matches wait until their declared end condition; a timeout,\ninsufficient inputs or tick budget cannot become `not_reproduced`.\nMissing/malformed evidence channels are `incomplete`, never proof that a diagnostic\nwas absent. Empty Luau diagnostic tables are accepted as empty arrays.\n\nStatuses: `reproduced`, `not_reproduced`, `incompatible`, `incomplete`,\n`execution_failed`. An unexpected Lua failure is not proof of the expected issue.\nRead both the selected matcher and independent regression verdicts.\nOuter `ok`/CLI exit success/MCP success is true only when the selected matcher\nwas evaluated (`reproduced` or `not_reproduced`) and regressions passed or were not\nrequested. Incomplete, incompatible, crashed or failed regression runs return\n`ok:false` while preserving `value` for diagnosis. Invalid request files may have\nno value and include a structured diagnostic.\nAll replay reports include status/reason and the keys in\n[the result schema](replay-result.schema.json). Early exits have null unavailable\nmetadata/metrics/matchers and `ticksExecuted:null`, not a fabricated zero.\n\n## Existing profiling and new retention tools\n\nExisting `profile.start` / `profile` / `profile.stop` provide bounded Luau function\nsampling, allocation growth, incremental GC steps/time, Core phase timings and\nhost-specific renderer data. Allocation growth is not live retained memory.\n\nNew developer requests, usable between ticks in native and rebuilt development\nWeb runtimes (Core ABI uses underscores instead of dots):\n\n```json\n{\"method\":\"memory.sample\",\"label\":\"idle_after_round\",\"collect\":true,\"warmup\":false}\n{\"method\":\"memory.report\"}\n{\"method\":\"memory.reset\"}\n```\n\nCollection defaults to **false**; `collect:true` is an explicit full-GC operation.\nReports include before/after Lua bytes, reclaimed bytes, full-GC wall time,\nmeasurement overhead, tick, phase label, bounded 128-sample history and dropped\ncount. Sampled peak is not a continuous peak. Hot reload replaces VM-local history.\nOnly same-label, post-GC, non-warmup samples contribute to trends. Three strictly\nrising retained samples produce `growing_retained_heap_investigate`, never\n`leak_proven:true`. Compare identical workloads and return-to-idle phases.\n\nReplay can sample with `memory:{sampleEveryTicks,warmupTicks,collect,label}` and\nattaches the actual fingerprints and profiling report. Collection changes weak\nreferences/GC scheduling, so measure it separately from ordinary gameplay timing.\nDo not assign one label across incomparable battle/loading/idle phases.\nReplay adapter callbacks are excluded from gameplay function samples;\n`adapterInspectWallMs` reports their wall-clock cost separately.\n\nRetaining paths, allocation callsites, JS GC, native/Rust allocator usage and GPU\nbytes remain unavailable (`null`). Existing Web `memory` can report WASM capacity,\noptional browser heap and renderer counters; capacity is not allocator-in-use.\nThis tool supplies evidence for investigation, not an automatic cross-layer leak\nor bottleneck verdict.\n\n## Explicitly not implemented\n\nCheckpoint/world/RNG restoration, automatic scene capture, flag registry + source\nmapping, bounded trace store/query, shareable capture bundle import/export, schema\nmigrations, renderer replay and automated recovery remain separate roadmap work.\nThe broader [design contract](ai-diagnostics-schema-v1.md) is not a claim that those\nfeatures already exist.\n",
+    "reproductionSchema": {
+      "$defs": {
+        "adapter": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/nonEmpty"
+            },
+            "version": {
+              "$ref": "#/$defs/nonEmpty"
+            }
+          },
+          "required": [
+            "id",
+            "version"
+          ],
+          "type": "object"
+        },
+        "assets": {
+          "additionalProperties": false,
+          "properties": {
+            "activeGenerationEvidence": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "manifestHash": {
+              "$ref": "#/$defs/hash"
+            }
+          },
+          "required": [
+            "manifestHash"
+          ],
+          "type": "object"
+        },
+        "checkpoint": {
+          "additionalProperties": false,
+          "properties": {
+            "frame": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "kind": {
+              "const": "checkpoint"
+            },
+            "rngOwnership": {
+              "enum": [
+                "core_rng",
+                "game_rng",
+                "core_and_game_rng"
+              ]
+            },
+            "tick": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "kind",
+            "tick",
+            "rngOwnership"
+          ],
+          "type": "object"
+        },
+        "endCondition": {
+          "oneOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "after_tick"
+                },
+                "tick": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "kind",
+                "tick"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "flag": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "kind": {
+                  "const": "terminal"
+                }
+              },
+              "required": [
+                "kind",
+                "flag"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "engine": {
+          "additionalProperties": false,
+          "properties": {
+            "coreRevision": {
+              "$ref": "#/$defs/nonEmpty"
+            },
+            "version": {
+              "$ref": "#/$defs/nonEmpty"
+            }
+          },
+          "required": [
+            "version",
+            "coreRevision"
+          ],
+          "type": "object"
+        },
+        "expectedDiagnostic": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "$ref": "#/$defs/nonEmpty"
+            },
+            "endCondition": {
+              "$ref": "#/$defs/endCondition"
+            },
+            "flag": {
+              "$ref": "#/$defs/nonEmpty"
+            },
+            "kind": {
+              "const": "diagnostic"
+            }
+          },
+          "required": [
+            "kind",
+            "code",
+            "flag",
+            "endCondition"
+          ],
+          "type": "object"
+        },
+        "expectedInvariant": {
+          "additionalProperties": false,
+          "properties": {
+            "endCondition": {
+              "$ref": "#/$defs/endCondition"
+            },
+            "expectedValue": {},
+            "id": {
+              "$ref": "#/$defs/nonEmpty"
+            },
+            "kind": {
+              "const": "invariant"
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "expectedValue",
+            "endCondition"
+          ],
+          "type": "object"
+        },
+        "game": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/nonEmpty"
+            },
+            "revision": {
+              "$ref": "#/$defs/nonEmpty"
+            },
+            "scriptHash": {
+              "$ref": "#/$defs/hash"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "scriptHash"
+          ],
+          "type": "object"
+        },
+        "hash": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "inputs": {
+          "additionalProperties": false,
+          "properties": {
+            "complete": {
+              "type": "boolean"
+            },
+            "completeThroughTick": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "frames": {
+              "items": {
+                "$ref": "https://unone.dev/schema/input.schema.json"
+              },
+              "type": "array"
+            },
+            "schemaRef": {
+              "const": "https://unone.dev/schema/input.schema.json"
+            },
+            "startTick": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schemaRef",
+            "startTick",
+            "frames",
+            "completeThroughTick",
+            "complete",
+            "truncated"
+          ],
+          "type": "object"
+        },
+        "nonEmpty": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "scenarioSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "hash": {
+              "$ref": "#/$defs/hash"
+            },
+            "id": {
+              "$ref": "#/$defs/nonEmpty"
+            },
+            "schemaRef": {
+              "$ref": "#/$defs/nonEmpty"
+            },
+            "version": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "schemaRef",
+            "id",
+            "version",
+            "hash"
+          ],
+          "type": "object"
+        },
+        "start": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "start"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        }
+      },
+      "$id": "https://unone.dev/schemas/unone.reproduction.v1.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "captureOrigin": {
+                "properties": {
+                  "kind": {
+                    "const": "checkpoint"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "initialState": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "required": [
+                  "initialState"
+                ]
+              },
+              {
+                "properties": {
+                  "save": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "required": [
+                  "save"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "adapter": {
+          "$ref": "#/$defs/adapter"
+        },
+        "assets": {
+          "$ref": "#/$defs/assets"
+        },
+        "captureOrigin": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/start"
+            },
+            {
+              "$ref": "#/$defs/checkpoint"
+            }
+          ]
+        },
+        "engine": {
+          "$ref": "#/$defs/engine"
+        },
+        "expected": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/expectedDiagnostic"
+            },
+            {
+              "$ref": "#/$defs/expectedInvariant"
+            }
+          ]
+        },
+        "game": {
+          "$ref": "#/$defs/game"
+        },
+        "initialState": {},
+        "inputs": {
+          "$ref": "#/$defs/inputs"
+        },
+        "mode": {
+          "enum": [
+            "exact_version",
+            "compatible_version"
+          ]
+        },
+        "rngState": {},
+        "save": {},
+        "scenario": {
+          "type": "object"
+        },
+        "scenarioSchema": {
+          "$ref": "#/$defs/scenarioSchema"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "seed": {
+          "pattern": "^[0-9]+$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "mode",
+        "game",
+        "engine",
+        "assets",
+        "scenarioSchema",
+        "captureOrigin",
+        "scenario",
+        "inputs",
+        "expected",
+        "adapter"
+      ],
+      "type": "object"
+    },
+    "resultSchema": {
+      "$id": "https://unone.dev/schema/replay-result.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "properties": {
+        "adapter": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "adapterInspectWallMs": {
+          "minimum": 0,
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "backend": {
+          "const": "headless_native"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "memory": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "memoryOptions": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "mode": {
+          "enum": [
+            null,
+            "exact_version",
+            "compatible_version"
+          ]
+        },
+        "originalMatcher": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "overrideMatcher": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "performance": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "regressionChecks": {
+          "type": "array"
+        },
+        "regressionStatus": {
+          "enum": [
+            "passed",
+            "failed",
+            "incomplete",
+            "not_evaluated"
+          ]
+        },
+        "samplingScope": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "source": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "status": {
+          "enum": [
+            "reproduced",
+            "not_reproduced",
+            "incompatible",
+            "incomplete",
+            "execution_failed"
+          ]
+        },
+        "statusMatcher": {
+          "enum": [
+            null,
+            "original",
+            "override"
+          ]
+        },
+        "target": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "ticksExecuted": {
+          "minimum": 0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "status",
+        "reason",
+        "regressionStatus",
+        "mode",
+        "source",
+        "target",
+        "adapter",
+        "ticksExecuted",
+        "backend",
+        "statusMatcher",
+        "originalMatcher",
+        "overrideMatcher",
+        "regressionChecks",
+        "performance",
+        "memory",
+        "memoryOptions",
+        "adapterInspectWallMs",
+        "samplingScope",
+        "limitations"
+      ],
+      "title": "Replay result value (inside EngineResult envelope)",
+      "type": "object"
+    },
+    "schemaVersion": 1
+  },
+  "diagnostics": [],
+  "effects": []
+}

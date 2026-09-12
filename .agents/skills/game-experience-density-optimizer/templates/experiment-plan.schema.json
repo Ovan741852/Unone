@@ -1,0 +1,480 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gamedesignos/game-experience-density-optimizer/experiment-plan.schema.json",
+  "title": "Game Experience Density Experiment Plan",
+  "type": "object",
+  "required": [
+    "output_mode",
+    "case_boundary",
+    "evidence_gate",
+    "metric_horizon",
+    "theory_status",
+    "diagnosis_summary",
+    "optimal_stimulation_fit",
+    "variant_matrix",
+    "metric_plan",
+    "decision_rules"
+  ],
+  "properties": {
+    "output_mode": {
+      "enum": [
+        "quick_ed_triage",
+        "weekly_ab_plan",
+        "instrumentation_plan",
+        "review_and_decide",
+        "full_client_delivery",
+        "schema_json"
+      ]
+    },
+    "case_boundary": {
+      "type": "object",
+      "required": ["case_visibility", "game_metric_model", "target_user_segment"],
+      "properties": {
+        "case_visibility": {
+          "enum": ["private_user_work", "public_repo_example", "client_confidential", "synthetic_case", "unknown"]
+        },
+        "data_sensitivity": {
+          "enum": ["none", "telemetry_summary", "raw_user_data", "revenue_sensitive", "unknown"]
+        },
+        "output_destination": {
+          "enum": ["private_notes", "client_delivery", "repo_example", "public_post", "unknown"]
+        },
+        "game_metric_model": {
+          "enum": ["premium_single_player", "mobile_liveops", "hybrid", "unknown"]
+        },
+        "target_user_segment": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "evidence_gate": {
+      "type": "object",
+      "required": ["evidence_level", "evidence_status", "confidence", "allowed_claims", "forbidden_claims"],
+      "properties": {
+        "evidence_level": {
+          "enum": [
+            "L0_text_only",
+            "L1_static_assets",
+            "L2_recording",
+            "L3_playtest_notes",
+            "L4_telemetry_snapshot",
+            "L5_ab_result",
+            "unknown"
+          ]
+        },
+        "evidence_status": {
+          "enum": ["assumption_only", "partial_evidence", "directional_evidence", "measured_evidence", "unknown"]
+        },
+        "confidence": {
+          "enum": ["low", "medium", "high", "unknown"]
+        },
+        "available_evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowed_claims": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "forbidden_claims": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "missing_evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confounder_risks": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "version_mismatch",
+              "channel_mix",
+              "player_segment_mix",
+              "economy_change",
+              "difficulty_change",
+              "novelty_decay",
+              "instrumentation_missing",
+              "post_hoc_success",
+              "dark_pattern_contamination",
+              "unknown"
+            ]
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "metric_horizon": {
+      "type": "object",
+      "required": ["game_metric_model", "primary_time_horizon", "p1_metric_family"],
+      "properties": {
+        "game_metric_model": {
+          "enum": ["premium_single_player", "mobile_liveops", "hybrid", "unknown"]
+        },
+        "primary_time_horizon": {
+          "enum": ["total_journey", "chapter_segment", "run_based", "daily_retention", "event_cycle", "hybrid_split", "unknown"]
+        },
+        "p1_metric_family": {
+          "enum": ["total_playtime", "completion_progress", "replay_intent", "daily_retention", "liveops_continuity", "hybrid_split", "unknown"]
+        },
+        "excluded_metrics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rationale": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "theory_status": {
+      "const": "design_hypothesis"
+    },
+    "diagnosis_summary": {
+      "type": "object",
+      "required": ["primary_issue_item", "diagnosis_order"],
+      "properties": {
+        "primary_issue_item": {
+          "enum": ["CLP", "SF", "EB", "AR", "MD/min", "unknown"]
+        },
+        "primary_lever": {
+          "enum": ["CLP", "SF", "EB", "AR", "MD/min", "anti_habituation", "unknown"]
+        },
+        "diagnosis_order": {
+          "type": "string"
+        },
+        "unsupported_claims": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "optimal_stimulation_fit": {
+      "type": "object",
+      "required": ["band", "boredom_type", "design_direction"],
+      "properties": {
+        "band": {
+          "enum": ["too_low", "optimal", "too_high", "uneven", "unknown"]
+        },
+        "boredom_type": {
+          "enum": ["under_stimulation", "over_stimulation", "habituation", "low_agency", "low_meaning", "mixed", "unknown"]
+        },
+        "player_resource_profile": {
+          "type": ["string", "object"]
+        },
+        "stimulus_profile": {
+          "type": ["string", "object"]
+        },
+        "context_stimulation": {
+          "type": ["string", "object"]
+        },
+        "evidence_for_window": {
+          "type": "string"
+        },
+        "risk_if_misdiagnosed": {
+          "type": "string"
+        },
+        "design_direction": {
+          "enum": ["add_semi_novelty", "add_familiar_anchor", "reduce_overload", "anti_habituation", "repair_agency", "add_meaning", "preserve_curve", "unknown"]
+        }
+      },
+      "additionalProperties": true
+    },
+    "ed_scorecard": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "type": "object"
+        },
+        "scores": {
+          "type": "object",
+          "properties": {
+            "MD_min": {"$ref": "#/$defs/score_item"},
+            "SF": {"$ref": "#/$defs/score_item"},
+            "EB": {"$ref": "#/$defs/score_item"},
+            "AR": {"$ref": "#/$defs/score_item"},
+            "CLP": {"$ref": "#/$defs/score_item"}
+          },
+          "additionalProperties": true
+        },
+        "normalized_ed_proxy": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "enum": ["relative_only", "not_applicable", "unknown"]
+            },
+            "confidence": {
+              "enum": ["low", "medium", "high", "unknown"]
+            }
+          },
+          "additionalProperties": true
+        },
+        "priority": {
+          "type": "object",
+          "properties": {
+            "primary_lever": {
+              "enum": ["CLP", "SF", "EB", "AR", "MD/min", "anti_habituation", "unknown"]
+            },
+            "next_lever": {
+              "enum": ["CLP", "SF", "EB", "AR", "MD/min", "not_yet", "unknown"]
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "free_energy_window": {
+      "type": "object",
+      "properties": {
+        "band": {
+          "enum": ["too_low", "optimal", "too_high", "unknown"]
+        },
+        "prediction_error_source": {
+          "type": "string"
+        },
+        "tolerance_reason": {
+          "type": "string"
+        },
+        "intervention_direction": {
+          "enum": ["reduce_noise", "improve_quality", "tune_frequency", "preserve_curve", "unknown"]
+        }
+      },
+      "additionalProperties": true
+    },
+    "markov_blanket_coupling": {
+      "type": "object",
+      "properties": {
+        "sensory_state_quality": {
+          "type": "string"
+        },
+        "action_state_quality": {
+          "type": "string"
+        },
+        "coupling_break": {
+          "enum": ["none", "latency", "noise", "unclear_mapping", "weak_agency", "overload", "unknown"]
+        },
+        "repair_action": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "growth_surprise_ladder": {
+      "type": "object",
+      "properties": {
+        "current_model_level": {
+          "enum": ["explicit", "system", "strategy", "meta", "not_applicable", "unknown"]
+        },
+        "next_learnable_surprise": {
+          "type": "string"
+        },
+        "evidence_that_player_can_recover": {
+          "type": "string"
+        },
+        "risk_if_too_steep": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "motivation_flow_gate": {
+      "type": "object",
+      "properties": {
+        "clear_goal_quality": {
+          "type": "string"
+        },
+        "feedback_timeliness": {
+          "type": "string"
+        },
+        "challenge_skill_fit": {
+          "enum": ["too_easy", "matched", "too_hard", "uneven", "unknown"]
+        },
+        "player_control_quality": {
+          "type": "string"
+        },
+        "autonomy_support": {
+          "type": "string"
+        },
+        "competence_support": {
+          "type": "string"
+        },
+        "relatedness_support": {
+          "enum": ["not_applicable", "weak", "adequate", "strong", "unknown"]
+        },
+        "novelty_support": {
+          "enum": ["weak", "adequate", "strong", "noisy", "unknown"]
+        },
+        "optimal_novelty_fit": {
+          "enum": ["too_low", "matched", "too_high", "unknown"]
+        },
+        "novelty_quality": {
+          "enum": ["learnable", "cosmetic", "random_noise", "overwhelming", "unknown"]
+        },
+        "risk_if_optimized_only_for_density": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "variant_matrix": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["variant_id", "primary_lever", "concrete_change", "owner", "rollback"],
+        "properties": {
+          "variant_id": {
+            "type": "string"
+          },
+          "primary_lever": {
+            "enum": ["none", "CLP", "SF", "EB", "AR", "MD/min", "anti_habituation", "system_depth", "unknown"]
+          },
+          "optimal_stimulation_target": {
+            "type": "string"
+          },
+          "concrete_change": {
+            "type": "string"
+          },
+          "config_keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "asset_changes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "engineering_scope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "owner": {
+            "type": ["string", "object"]
+          },
+          "qa_checks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "confounder_risk": {
+            "type": "string"
+          },
+          "rollback": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "instrumentation_dictionary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event_name", "trigger", "required_fields", "purpose"],
+        "properties": {
+          "event_name": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string"
+          },
+          "required_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "privacy_boundary": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "metric_plan": {
+      "type": "object"
+    },
+    "dashboard_spec": {
+      "type": "object"
+    },
+    "anti_habituation_plan": {
+      "type": "object",
+      "properties": {
+        "applicable": {
+          "enum": ["yes", "no", "unknown"]
+        },
+        "selected_lever": {
+          "enum": ["alternative_use", "attention_investment", "conscious_reframing", "context_shift", "combinatorial_depth", "not_applicable", "unknown"]
+        },
+        "familiar_anchor": {
+          "type": "string"
+        },
+        "novel_delta": {
+          "type": "string"
+        },
+        "attribution_plan": {
+          "type": "string"
+        },
+        "risk_if_only_add_rewards": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decision_rules": {
+      "type": "object",
+      "required": ["success", "observe", "rollback", "kill"],
+      "additionalProperties": true
+    },
+    "weekly_schedule": {
+      "type": ["array", "object"]
+    },
+    "handoff_checklist": {
+      "type": ["array", "object"]
+    }
+  },
+  "$defs": {
+    "score_item": {
+      "type": "object",
+      "required": ["score", "evidence"],
+      "properties": {
+        "score": {
+          "type": ["number", "string"],
+          "minimum": 0,
+          "maximum": 5
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "risk": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

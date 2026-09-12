@@ -1,0 +1,11 @@
+{
+  "fixture": "D:\\Projects\\Unone\\docs\\fixtures\\diagnostics\\reproduction-start-complete.json",
+  "schemaValid": true,
+  "errors": [],
+  "startTick": 0,
+  "frameCount": 121,
+  "completeThroughTick": 120,
+  "endTick": 120,
+  "coverageValid": true,
+  "scope": "design fixture only; no replay runtime executed"
+}

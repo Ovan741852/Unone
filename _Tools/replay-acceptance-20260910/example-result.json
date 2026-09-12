@@ -1,0 +1,655 @@
+{
+  "ok": true,
+  "value": {
+    "adapter": {
+      "id": "example.counter",
+      "version": "1"
+    },
+    "backend": "headless_native",
+    "limitations": [
+      "Headless Luau/Core replay only; does not replay browser/native rendering or external services.",
+      "Checkpoint, automatic capture, registry/trace storage and schema migrations are not implemented.",
+      "Full GC sampling changes collection scheduling; compare it separately from ordinary playback."
+    ],
+    "memory": {
+      "dropped_samples": 0,
+      "limitations": [
+        "Explicit full GC changes collection scheduling and weak references; run on a diagnostic session, not an unmodified timing baseline.",
+        "Sampled peak is not a continuous high-water mark. Full GC wall time includes instrumentation; it is not CPU time.",
+        "Use identical phase labels only for comparable seed/input/workloads; warmup samples are excluded. Cache growth is not proof of a leak.",
+        "History is VM-local and reset by hot reload; export reports with project/build/asset fingerprints before comparing runs."
+      ],
+      "sample_limit": 128,
+      "sampled_peak_bytes": 1112552,
+      "samples": [
+        {
+          "collected": true,
+          "full_gc_wall_ms": 0.043300000000000005,
+          "label": "idle_after_cycle",
+          "lua_used_after_bytes": 522728,
+          "lua_used_before_bytes": 1112552,
+          "measurement_wall_ms": 0.0606,
+          "reclaimed_bytes": 589824,
+          "sequence": 1,
+          "tick": 10,
+          "warmup": true
+        },
+        {
+          "collected": true,
+          "full_gc_wall_ms": 0.0379,
+          "label": "idle_after_cycle",
+          "lua_used_after_bytes": 522728,
+          "lua_used_before_bytes": 1112552,
+          "measurement_wall_ms": 0.043300000000000005,
+          "reclaimed_bytes": 589824,
+          "sequence": 2,
+          "tick": 20,
+          "warmup": false
+        },
+        {
+          "collected": true,
+          "full_gc_wall_ms": 0.0348,
+          "label": "idle_after_cycle",
+          "lua_used_after_bytes": 522728,
+          "lua_used_before_bytes": 1112552,
+          "measurement_wall_ms": 0.038,
+          "reclaimed_bytes": 589824,
+          "sequence": 3,
+          "tick": 30,
+          "warmup": false
+        },
+        {
+          "collected": true,
+          "full_gc_wall_ms": 0.0376,
+          "label": "idle_after_cycle",
+          "lua_used_after_bytes": 522728,
+          "lua_used_before_bytes": 1112552,
+          "measurement_wall_ms": 0.0406,
+          "reclaimed_bytes": 589824,
+          "sequence": 4,
+          "tick": 40,
+          "warmup": false
+        }
+      ],
+      "schema_version": 1,
+      "scope": "main Luau VM only; excludes worker VMs, Rust, JS, WASM allocator and GPU",
+      "trends": [
+        {
+          "assessment": "no_monotonic_growth_in_window",
+          "label": "idle_after_cycle",
+          "leak_proven": false,
+          "retained_delta_bytes": 0,
+          "samples": 3
+        }
+      ],
+      "unavailable": {
+        "allocation_callsites": null,
+        "gpu_bytes": null,
+        "js_heap_bytes": null,
+        "retaining_paths": null,
+        "rust_heap_bytes": null,
+        "wasm_allocator_bytes": null
+      }
+    },
+    "memoryOptions": {
+      "collect": true,
+      "label": "idle_after_cycle",
+      "sampleEveryTicks": 10,
+      "warmupTicks": 10
+    },
+    "mode": "exact_version",
+    "originalMatcher": {
+      "actual": 40,
+      "evaluated": true,
+      "expected": {
+        "endCondition": {
+          "kind": "after_tick",
+          "tick": 39
+        },
+        "expectedValue": 40,
+        "id": "counter",
+        "kind": "invariant"
+      },
+      "matched": true,
+      "status": "pass"
+    },
+    "overrideMatcher": null,
+    "performance": {
+      "build": {
+        "debug_assertions": true,
+        "luau_execution": "interpreter",
+        "native_codegen_disabled_for_profiling": false,
+        "preview_tools": true
+      },
+      "counts_frame": 40,
+      "jobs": null,
+      "performance": {
+        "counts": {
+          "effects": 0,
+          "entities": 0,
+          "instance_bytes": 0,
+          "instances": 0,
+          "observations": 1,
+          "particles": 0,
+          "rigidbodies": 0,
+          "ui_nodes": 0
+        },
+        "frame_budget_ms": 16.667,
+        "frames": 40,
+        "frames_over_budget": 0,
+        "luau_memory_bytes": 522728,
+        "luau_positive_heap_delta_bytes_per_frame": 58982,
+        "mean_frame_ms": 0.035,
+        "median_frame_ms": 0.03,
+        "notes": [
+          "wall clock timings, excluded from the observation digest",
+          "THIS IS A DEBUG BUILD. These are debug costs and are not a shipping measurement; rebuild with --release before drawing a conclusion.",
+          "serialize is an optional canonical-JSON probe, not actual Web publication or decode time; measure those separately",
+          "luau_positive_heap_delta_bytes_per_frame is positive net heap growth, not total allocated bytes or GC pause attribution",
+          "median, p95, and frames-over-budget use the most recent bounded sample window (up to 1024 frames)"
+        ],
+        "p95_frame_ms": 0.062,
+        "phases": [
+          {
+            "mean_ms": 0.029,
+            "name": "script",
+            "share": 0.919,
+            "total_ms": 1.14
+          },
+          {
+            "mean_ms": 0.001,
+            "name": "physics",
+            "share": 0.046,
+            "total_ms": 0.057
+          },
+          {
+            "mean_ms": 0.001,
+            "name": "observe",
+            "share": 0.034,
+            "total_ms": 0.043
+          }
+        ],
+        "profile": "debug",
+        "slowest_frame": {
+          "frame": 1,
+          "observe_ms": 0.009,
+          "physics_ms": 0.033,
+          "script_ms": 0.086,
+          "total_ms": 0.177
+        },
+        "sustained_fps": 28966.2,
+        "total_ms": 1.381
+      },
+      "window": {
+        "active": false,
+        "dropped_samples": 0,
+        "first_frame": 0,
+        "functions": {
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpQNuYWq\\.tmpTieH9c\\main.luau:6:update": {
+            "inclusive_samples": 2,
+            "line": 6,
+            "name": "update",
+            "self_samples": 2,
+            "source": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpQNuYWq\\.tmpTieH9c\\main.luau"
+          }
+        },
+        "id": 1,
+        "last_frame": 40,
+        "limits": {
+          "depth": 32,
+          "functions": 1024,
+          "minimum_interval_ms": 1,
+          "stacks": 4096
+        },
+        "samples": 2,
+        "sampling": true,
+        "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled.",
+        "stacks": [
+          {
+            "leaf_first": [
+              "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpQNuYWq\\.tmpTieH9c\\main.luau:6:update"
+            ],
+            "samples": 2
+          }
+        ],
+        "truncated_stacks": 0,
+        "vm": {
+          "allocation_growth_bytes": 2361376,
+          "allocation_growth_events": 78,
+          "allocation_method": "Luau onallocate: sum(max(new_size-old_size,0)) on successful requests; excludes frees, allocator overhead and Rust/JS allocations",
+          "capabilities": {
+            "allocation_growth": true,
+            "full_gc_wall_time": false,
+            "incremental_gc_wall_time": true,
+            "js_gc": false,
+            "rust_allocations": false
+          },
+          "frames": [
+            {
+              "allocation_growth_bytes": 65696,
+              "allocation_growth_events": 4,
+              "completed": true,
+              "frame": 1,
+              "incremental_gc_max_step_ms": 0.0015,
+              "incremental_gc_ms": 0.0015,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65600,
+              "allocation_growth_events": 3,
+              "completed": true,
+              "frame": 2,
+              "incremental_gc_max_step_ms": 0.0007,
+              "incremental_gc_ms": 0.0013,
+              "incremental_gc_steps": 2
+            },
+            {
+              "allocation_growth_bytes": 65616,
+              "allocation_growth_events": 3,
+              "completed": true,
+              "frame": 3,
+              "incremental_gc_max_step_ms": 0.0003,
+              "incremental_gc_ms": 0.0003,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 4,
+              "incremental_gc_max_step_ms": 0.0003,
+              "incremental_gc_ms": 0.0003,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65648,
+              "allocation_growth_events": 3,
+              "completed": true,
+              "frame": 5,
+              "incremental_gc_max_step_ms": 0.0040999999999999995,
+              "incremental_gc_ms": 0.0040999999999999995,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 6,
+              "incremental_gc_max_step_ms": 0.0006,
+              "incremental_gc_ms": 0.0006,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 7,
+              "incremental_gc_max_step_ms": 0.0034,
+              "incremental_gc_ms": 0.0034,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 8,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 65712,
+              "allocation_growth_events": 3,
+              "completed": true,
+              "frame": 9,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 10,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 11,
+              "incremental_gc_max_step_ms": 0.0002,
+              "incremental_gc_ms": 0.0002,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 12,
+              "incremental_gc_max_step_ms": 0.0003,
+              "incremental_gc_ms": 0.0003,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 13,
+              "incremental_gc_max_step_ms": 0.0006,
+              "incremental_gc_ms": 0.0012,
+              "incremental_gc_steps": 2
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 14,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 15,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 16,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 17,
+              "incremental_gc_max_step_ms": 0.0001,
+              "incremental_gc_ms": 0.0001,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 18,
+              "incremental_gc_max_step_ms": 0.0004,
+              "incremental_gc_ms": 0.0004,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 19,
+              "incremental_gc_max_step_ms": 0.0031,
+              "incremental_gc_ms": 0.0031,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 20,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 21,
+              "incremental_gc_max_step_ms": 0.0002,
+              "incremental_gc_ms": 0.0002,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 22,
+              "incremental_gc_max_step_ms": 0.0004,
+              "incremental_gc_ms": 0.0004,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 23,
+              "incremental_gc_max_step_ms": 0.0006,
+              "incremental_gc_ms": 0.0012,
+              "incremental_gc_steps": 2
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 24,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 25,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 26,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 27,
+              "incremental_gc_max_step_ms": 0.0001,
+              "incremental_gc_ms": 0.0001,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 28,
+              "incremental_gc_max_step_ms": 0.0003,
+              "incremental_gc_ms": 0.0003,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 29,
+              "incremental_gc_max_step_ms": 0.0040999999999999995,
+              "incremental_gc_ms": 0.0040999999999999995,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 30,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 31,
+              "incremental_gc_max_step_ms": 0.0001,
+              "incremental_gc_ms": 0.0001,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 32,
+              "incremental_gc_max_step_ms": 0.0004,
+              "incremental_gc_ms": 0.0004,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 33,
+              "incremental_gc_max_step_ms": 0.0005,
+              "incremental_gc_ms": 0.001,
+              "incremental_gc_steps": 2
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 34,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 35,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 36,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 37,
+              "incremental_gc_max_step_ms": 0.0001,
+              "incremental_gc_ms": 0.0001,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 38,
+              "incremental_gc_max_step_ms": 0.0004,
+              "incremental_gc_ms": 0.0004,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 65584,
+              "allocation_growth_events": 2,
+              "completed": true,
+              "frame": 39,
+              "incremental_gc_max_step_ms": 0.0039,
+              "incremental_gc_ms": 0.0039,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 40,
+              "incremental_gc_max_step_ms": 0.0,
+              "incremental_gc_ms": 0.0,
+              "incremental_gc_steps": 0
+            }
+          ],
+          "full_gc_ms": null,
+          "gc_method": "Luau paired incremental-step interrupts; includes automatic assists, excludes full collections; timing includes instrumentation overhead",
+          "incremental_gc_max_step_ms": 0.0040999999999999995,
+          "incremental_gc_ms": 0.029,
+          "incremental_gc_steps": 29,
+          "js_gc_ms": null,
+          "retained_limit": 1024,
+          "rust_allocation_bytes": null,
+          "scope": "Luau update call, including engine callbacks; manual tools and load/start are excluded",
+          "tick_count": 40
+        }
+      }
+    },
+    "reason": "Selected matcher evaluated",
+    "regressionChecks": [
+      {
+        "actual": 0,
+        "evaluated": true,
+        "expected": {
+          "endCondition": {
+            "kind": "after_tick",
+            "tick": 39
+          },
+          "expectedValue": 0,
+          "id": "retained",
+          "kind": "invariant"
+        },
+        "matched": true,
+        "status": "pass"
+      }
+    ],
+    "regressionStatus": "passed",
+    "schemaVersion": 1,
+    "source": {
+      "assets": {
+        "manifestHash": "sha256:1cf0f6ebd1e77170bbcc900c2e6831d4b6a81bf2e5409a06b3b707bef9584c34"
+      },
+      "engine": {
+        "coreRevision": "sha256:35e08051bf70998015738af16ea777a39fdfb284546722fba414cf396d920fc7",
+        "version": "0.1.0"
+      },
+      "game": {
+        "id": "replay-memory-fixture",
+        "revision": "sha256:ffb3c0170dd877688a8ac611e986cc21bc4a45f4b823f2c8913bbf6d9a39c3ff",
+        "scriptHash": "sha256:59f2420a42084e8b6e8e9fade2fe1da3446865ce60ee2a2084b8c7d25cac9745"
+      }
+    },
+    "status": "reproduced",
+    "target": {
+      "assets": {
+        "manifestHash": "sha256:1cf0f6ebd1e77170bbcc900c2e6831d4b6a81bf2e5409a06b3b707bef9584c34"
+      },
+      "engine": {
+        "coreRevision": "sha256:35e08051bf70998015738af16ea777a39fdfb284546722fba414cf396d920fc7",
+        "version": "0.1.0"
+      },
+      "game": {
+        "id": "replay-memory-fixture",
+        "revision": "sha256:ffb3c0170dd877688a8ac611e986cc21bc4a45f4b823f2c8913bbf6d9a39c3ff",
+        "scriptHash": "sha256:59f2420a42084e8b6e8e9fade2fe1da3446865ce60ee2a2084b8c7d25cac9745"
+      }
+    },
+    "ticksExecuted": 40
+  },
+  "diagnostics": [],
+  "effects": []
+}

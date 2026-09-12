@@ -1,0 +1,196 @@
+{
+  "command": "D:/Projects/Unone/target/debug/game.exe",
+  "args": [
+    "plugin",
+    "inspect",
+    "--id",
+    "org.koncrate.unone-shader"
+  ],
+  "exit_code": 0,
+  "error": null,
+  "stderr": "",
+  "result": {
+    "ok": true,
+    "value": {
+      "root": "\\\\?\\D:\\Projects\\Unone-shader",
+      "manifest_path": "\\\\?\\D:\\Projects\\Unone-shader\\plugin.json",
+      "manifest": {
+        "api": "unone.plugin.v1",
+        "id": "org.koncrate.unone-shader",
+        "name": "Unone Shader Workshop",
+        "version": "0.1.0",
+        "description": "AI-readable WGSL shader preview contracts, static performance-risk diagnostics, and measured runtime hotspot analysis.",
+        "entry": {
+          "command": "node",
+          "args": [
+            "plugin.mjs"
+          ]
+        },
+        "capabilities": [
+          "shader.inspect",
+          "shader.preview",
+          "shader.profile",
+          "shader.capabilities",
+          "shader.presets"
+        ],
+        "permissions": [
+          "project.read"
+        ],
+        "tools": [
+          {
+            "name": "plugin.test",
+            "title": "Test Unone Shader plugin",
+            "description": "Run dependency-free protocol, manifest, preview, and diagnostic self-tests.",
+            "input_schema": {
+              "additionalProperties": false,
+              "type": "object"
+            }
+          },
+          {
+            "name": "shader.list_presets",
+            "title": "List shader contracts",
+            "description": "List the supported shader languages, preview contracts, and diagnostic limits.",
+            "input_schema": {
+              "additionalProperties": false,
+              "type": "object"
+            }
+          },
+          {
+            "name": "shader.inspect",
+            "title": "Inspect shader",
+            "description": "Validate a WGSL shader manifest and return AI-readable static evidence. Heuristics are risk signals, not GPU bottleneck claims.",
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "manifest": {
+                  "type": "object"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "source_path": {
+                  "description": "Project-relative WGSL path; read-only and cannot escape the project root.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "shader.preview",
+            "title": "Prepare shader preview",
+            "description": "Prepare a fullscreen fragment preview contract and generated WGSL harness for the local WebGPU preview. The browser remains the rendering authority.",
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "height": {
+                  "default": 540,
+                  "maximum": 4096,
+                  "minimum": 16,
+                  "type": "integer"
+                },
+                "manifest": {
+                  "type": "object"
+                },
+                "mode": {
+                  "enum": [
+                    "fullscreen_fragment_v1",
+                    "external"
+                  ],
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "source_path": {
+                  "type": "string"
+                },
+                "width": {
+                  "default": 960,
+                  "maximum": 4096,
+                  "minimum": 16,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          },
+          {
+            "name": "shader.profile",
+            "title": "Analyze shader runtime profile",
+            "description": "Aggregate measured CPU/GPU samples into p95 timings and ranked hotspots; never infers a bottleneck without runtime timing evidence.",
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "frame_budget_ms": {
+                  "default": 16.67,
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                },
+                "samples": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "maxItems": 4096,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "samples"
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "name": "shader.capabilities",
+            "title": "Report shader host capabilities",
+            "description": "Normalize host backend, GPU, color-target, and GPU-timer capability facts. Distinguishes WebGPU preview from WebGL2 hosts, labels fallbacks, and keeps unavailable GPU timing null; it does not compile or render.",
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "backend": {
+                  "enum": [
+                    "webgpu",
+                    "webgl2",
+                    "none",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                "float_target": {
+                  "enum": [
+                    "supported",
+                    "rgba8",
+                    "unavailable",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                "gpu": {
+                  "enum": [
+                    "available",
+                    "unavailable",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                "gpu_timer": {
+                  "enum": [
+                    "available",
+                    "unavailable",
+                    "disjoint",
+                    "unknown"
+                  ],
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ]
+      }
+    },
+    "diagnostics": [],
+    "effects": []
+  }
+}

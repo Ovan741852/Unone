@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "luauChecks": 35,
+  "guardChecks": 5,
+  "scope": "Isolated actual WASM rules with disclosed controlled RNG; presentation reads actual progress. Not probability or balance evidence."
+}

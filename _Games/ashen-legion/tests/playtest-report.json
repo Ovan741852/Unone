@@ -1,0 +1,131 @@
+[
+  {
+    "seed": 42,
+    "unit": 1,
+    "phase": "victory",
+    "round": 7,
+    "coins": 28325,
+    "fired": 1731,
+    "breaks": 183,
+    "kills": 77,
+    "choices": 7,
+    "rounds": [
+      {
+        "round": 1,
+        "coins": 3703,
+        "seconds": 79
+      },
+      {
+        "round": 2,
+        "coins": 7237,
+        "seconds": 68
+      },
+      {
+        "round": 3,
+        "coins": 10511,
+        "seconds": 66
+      },
+      {
+        "round": 4,
+        "coins": 14756,
+        "seconds": 88
+      },
+      {
+        "round": 5,
+        "coins": 18775,
+        "seconds": 71
+      },
+      {
+        "round": 6,
+        "coins": 23795,
+        "seconds": 65
+      }
+    ]
+  },
+  {
+    "seed": 7,
+    "unit": 2,
+    "phase": "victory",
+    "round": 7,
+    "coins": 24816,
+    "fired": 1052,
+    "breaks": 188,
+    "kills": 79,
+    "choices": 7,
+    "rounds": [
+      {
+        "round": 1,
+        "coins": 2081,
+        "seconds": 64
+      },
+      {
+        "round": 2,
+        "coins": 5574,
+        "seconds": 66
+      },
+      {
+        "round": 3,
+        "coins": 8205,
+        "seconds": 63
+      },
+      {
+        "round": 4,
+        "coins": 11546,
+        "seconds": 66
+      },
+      {
+        "round": 5,
+        "coins": 15017,
+        "seconds": 66
+      },
+      {
+        "round": 6,
+        "coins": 19562,
+        "seconds": 71
+      }
+    ]
+  },
+  {
+    "seed": 99,
+    "unit": 3,
+    "phase": "victory",
+    "round": 7,
+    "coins": 28570,
+    "fired": 658,
+    "breaks": 226,
+    "kills": 81,
+    "choices": 7,
+    "rounds": [
+      {
+        "round": 1,
+        "coins": 2267,
+        "seconds": 62
+      },
+      {
+        "round": 2,
+        "coins": 5628,
+        "seconds": 63
+      },
+      {
+        "round": 3,
+        "coins": 8705,
+        "seconds": 62
+      },
+      {
+        "round": 4,
+        "coins": 12865,
+        "seconds": 65
+      },
+      {
+        "round": 5,
+        "coins": 17862,
+        "seconds": 64
+      },
+      {
+        "round": 6,
+        "coins": 23117,
+        "seconds": 64
+      }
+    ]
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "note": "Added 90 real input frames after Start; existing combat assertions unchanged.",
+  "files": [
+    "boss-appears-final30.test.json",
+    "boss-delayed-before-final30.test.json",
+    "bounce-does-not-reset-lifetime.test.json",
+    "corner-reflection-1.test.json",
+    "corner-reflection-2.test.json",
+    "corner-reflection-3.test.json",
+    "corner-reflection-4.test.json",
+    "exactly-one-choice.test.json",
+    "held-choice-cannot-repeat.test.json",
+    "horde-optional-quiet-round.test.json",
+    "horde-paused-single-surge.test.json",
+    "missed-shots-bankruptcy.test.json",
+    "one-click-one-soldier.test.json",
+    "pause-freezes-countdown.test.json",
+    "reset-clears-run.test.json",
+    "timeout-does-not-refund-expired.test.json",
+    "timeout-loses.test.json",
+    "timeout-refunds-survivor-once.test.json"
+  ]
+}

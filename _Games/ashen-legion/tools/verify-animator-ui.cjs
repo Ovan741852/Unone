@@ -1,0 +1,23 @@
+const {chromium}=require('C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const assert=require('node:assert/strict');
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
+ const page=await browser.newPage({viewport:{width:1400,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('http://127.0.0.1:8192/');await page.waitForFunction(()=>window.wardrobe?.animator);
+ await page.selectOption('#motion','walk');
+ await page.waitForFunction(()=>window.wardrobe.animator.getState().state==='walk'&&!window.wardrobe.animator.getState().transition);
+ await page.click('#play');const paused=await page.evaluate(()=>window.wardrobe.animator.getState());
+ assert.equal(paused.paused,true);await page.waitForTimeout(150);assert.equal(await page.evaluate(()=>window.wardrobe.animator.getState().time),paused.time);
+ await page.locator('#timeline').evaluate(el=>{el.value=.6;el.dispatchEvent(new Event('input',{bubbles:true}))});
+ assert.ok(Math.abs(await page.evaluate(()=>window.wardrobe.animator.getState().time)-.6)<.001);
+ await page.selectOption('#slot-head','none');await page.selectOption('#motion','death');
+ await page.waitForFunction(()=>window.wardrobe.animator.getState().finished);
+ assert.equal(await page.evaluate(()=>window.wardrobe.animator.getState().state),'death');
+ await page.selectOption('#motion','idle');await page.selectOption('#slot-head','storybook');
+ await page.waitForFunction(()=>!window.wardrobe.animator.getState().transition);
+ assert.equal(await page.evaluate(()=>window.wardrobe.gearDefinitions.length),45);
+ await page.selectOption('#slot-head','ricochet_precision');await page.selectOption('#slot-weapon','pierce');await page.selectOption('#motion','walk');
+ await page.waitForFunction(()=>!window.wardrobe.animator.getState().transition);
+ assert.equal(await page.evaluate(()=>Boolean(window.wardrobe.rig.root.getObjectByName('gear_pierce'))),true);
+ await page.screenshot({path:require('node:path').resolve(__dirname,'../wardrobe/animator-integrated.png')});
+ assert.deepEqual(errors,[]);console.log('PASS official Animator: blend, pause, seek, death completion, equipment changes, no browser errors');
+}finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

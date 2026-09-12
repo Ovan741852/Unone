@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "scope": "Current production rules with/without observational hit receipts; identical inputs; conservation each frame; receipt amounts equal actual applied damage, with lottery misses",
+  "reports": [
+    {
+      "seed": 1,
+      "hits": 148,
+      "criticals": 3,
+      "totalDamage": 9642,
+      "fired": 80,
+      "lotteryMisses": 86,
+      "parity": true
+    },
+    {
+      "seed": 42,
+      "hits": 160,
+      "criticals": 2,
+      "totalDamage": 10374,
+      "fired": 80,
+      "lotteryMisses": 96,
+      "parity": true
+    }
+  ]
+}

@@ -14,9 +14,24 @@ if not root.is_dir():
     parser.error('directory must be an exported player directory')
 
 class Handler(SimpleHTTPRequestHandler):
+    protocol_version = 'HTTP/1.1'
     extensions_map = {**SimpleHTTPRequestHandler.extensions_map,
                       '.js': 'text/javascript', '.mjs': 'text/javascript',
                       '.wasm': 'application/wasm'}
 
+    def do_GET(self):
+        # Mutable local exports must not combine cached engine bytes with new content.
+        for header in ('If-Modified-Since', 'If-None-Match'):
+            if header in self.headers:
+                del self.headers[header]
+        super().do_GET()
+
+    def end_headers(self):
+        self.send_header('Cache-Control', 'no-store')
+        super().end_headers()
+
+class PlayerServer(ThreadingHTTPServer):
+    request_queue_size = 128
+
 print(f'Serving {root} on http://{args.bind}:{args.port}/', flush=True)
-ThreadingHTTPServer((args.bind, args.port), partial(Handler, directory=str(root))).serve_forever()
+PlayerServer((args.bind, args.port), partial(Handler, directory=str(root))).serve_forever()

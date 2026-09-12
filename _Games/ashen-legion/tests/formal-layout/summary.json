@@ -1,0 +1,122 @@
+[
+  {
+    "name": "defeat",
+    "ok": true,
+    "nodes": 30,
+    "allowed": 60,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "menu",
+    "ok": true,
+    "nodes": 14,
+    "allowed": 31,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "town",
+    "ok": true,
+    "nodes": 31,
+    "allowed": 63,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "map",
+    "ok": true,
+    "nodes": 30,
+    "allowed": 60,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "map_arrived",
+    "ok": true,
+    "nodes": 34,
+    "allowed": 67,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "choice",
+    "ok": true,
+    "nodes": 34,
+    "allowed": 95,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "shop",
+    "ok": true,
+    "nodes": 58,
+    "allowed": 155,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "gear",
+    "ok": true,
+    "nodes": 72,
+    "allowed": 183,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "runes",
+    "ok": true,
+    "nodes": 58,
+    "allowed": 145,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "builds",
+    "ok": true,
+    "nodes": 55,
+    "allowed": 135,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "battle",
+    "ok": true,
+    "nodes": 42,
+    "allowed": 35,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "pause",
+    "ok": true,
+    "nodes": 18,
+    "allowed": 29,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "auto",
+    "ok": true,
+    "nodes": 93,
+    "allowed": 193,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "auto_empty",
+    "ok": true,
+    "nodes": 81,
+    "allowed": 149,
+    "findings": [],
+    "diagnostics": []
+  },
+  {
+    "name": "battle_beetle",
+    "ok": true,
+    "nodes": 43,
+    "allowed": 36,
+    "findings": [],
+    "diagnostics": []
+  }
+]

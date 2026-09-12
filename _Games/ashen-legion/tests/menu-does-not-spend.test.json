@@ -1,0 +1,32 @@
+{
+  "name": "menu-does-not-spend",
+  "frames": 60,
+  "seed": 42,
+  "input_sequence": [],
+  "assertions": [
+    {
+      "observation": {
+        "key": "phase",
+        "equals": "menu"
+      }
+    },
+    {
+      "observation": {
+        "key": "fired",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "choices",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "economy_conserved",
+        "equals": true
+      }
+    }
+  ]
+}

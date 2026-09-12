@@ -1,0 +1,1025 @@
+{
+  "ok": true,
+  "scope": "Production gameplay with real inputs, not synthetic prizes",
+  "reports": [
+    {
+      "width": 1440,
+      "height": 900,
+      "hits": [
+        {
+          "id": 6,
+          "kind": "critical",
+          "text": "36",
+          "amount": 36,
+          "rect": {
+            "x": 625.6889769157042,
+            "y": 560.848171844905,
+            "width": 61.7179772589001,
+            "height": 62.788231199805885
+          }
+        },
+        {
+          "id": 2,
+          "kind": "gold",
+          "text": "+16",
+          "amount": 16,
+          "rect": {
+            "x": 621.5662580069923,
+            "y": 505.7018547121539,
+            "width": 71.875,
+            "height": 34.5
+          }
+        },
+        {
+          "id": 1,
+          "kind": "gold",
+          "text": "+28",
+          "amount": 28,
+          "rect": {
+            "x": 664.5139565090468,
+            "y": 459.45070163425487,
+            "width": 76.05681818181819,
+            "height": 34.5
+          }
+        },
+        {
+          "id": 5,
+          "kind": "damage",
+          "text": "24",
+          "amount": 24,
+          "rect": {
+            "x": 616.5843985532805,
+            "y": 460.7487004671199,
+            "width": 43.708712121212116,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 4,
+          "kind": "damage",
+          "text": "24",
+          "amount": 24,
+          "rect": {
+            "x": 698.6880095393499,
+            "y": 538.2083249901551,
+            "width": 43.708712121212116,
+            "height": 33.349999999999994
+          }
+        }
+      ],
+      "bigWin": {
+        "ok": true,
+        "value": {
+          "componentBounds": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "h": 100
+          },
+          "clipped": false,
+          "assetReady": true,
+          "currentFrame": 34.24800000071517,
+          "state": "ready",
+          "generation": 2,
+          "backend": "canvas-2d",
+          "error": null
+        },
+        "celebrationVisible": true,
+        "fullscreen": false,
+        "ultimate": null,
+        "activeTier": 3,
+        "activeAsset": "big-win",
+        "stage": "count",
+        "rolledAmount": 2,
+        "targetAmount": 110,
+        "eventIds": [
+          20
+        ],
+        "completedAmounts": [],
+        "dockRect": {
+          "x": 574.690909090909,
+          "y": 90,
+          "width": 333.8181818181818,
+          "height": 76.5
+        },
+        "visualRect": {
+          "x": 574.690909090909,
+          "y": 90,
+          "width": 333.8181818181818,
+          "height": 76.5
+        },
+        "usesMultiplier": false,
+        "pointerEvents": "none",
+        "diagnostics": [],
+        "impact": {
+          "impulses": 1,
+          "liveImpulses": 1,
+          "offset": {
+            "x": 0,
+            "y": 0
+          },
+          "peak": 0,
+          "reducedMotion": false,
+          "hudShakes": false,
+          "particleBudget": 160,
+          "diagnostics": []
+        },
+        "audio": {
+          "pendingCues": 0,
+          "muted": false
+        }
+      },
+      "actualReward": [
+        {
+          "amount": 28,
+          "crystals": 0,
+          "id": 1,
+          "multiplier": 7,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 4.333333333333323,
+          "title": "",
+          "x": -0.3126000977848402,
+          "z": 7.808651788971055
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 2,
+          "multiplier": 4,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 5.099999999999987,
+          "title": "",
+          "x": -1.6868242600984944,
+          "z": 8.252364063537444
+        },
+        {
+          "amount": 28,
+          "crystals": 1,
+          "id": 3,
+          "multiplier": 1.4,
+          "name": "花冠樹靈",
+          "playerId": 1,
+          "tier": 1,
+          "time": 6.916666666666647,
+          "title": "",
+          "x": -5.432865546876375,
+          "z": -1.6704259230605416
+        },
+        {
+          "amount": 16,
+          "crystals": 1,
+          "id": 4,
+          "multiplier": 0.8,
+          "name": "橡果蹦蹦",
+          "playerId": 1,
+          "tier": 1,
+          "time": 6.9999999999999805,
+          "title": "",
+          "x": -5.149881619618226,
+          "z": -3.3881543828871465
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 5,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 7.133333333333313,
+          "title": "",
+          "x": -7.32298883036614,
+          "z": -6.293079163652452
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 6,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 7.266666666666646,
+          "title": "",
+          "x": -6.629091910764445,
+          "z": -3.2918836219976852
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 7,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 8.550000000000004,
+          "title": "",
+          "x": -2.0368706872632294,
+          "z": 0.3684270072012876
+        },
+        {
+          "amount": 28,
+          "crystals": 1,
+          "id": 8,
+          "multiplier": 1.4,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 8.700000000000012,
+          "title": "",
+          "x": -7.842544498493667,
+          "z": 4.896111787491888
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 9,
+          "multiplier": 0.8,
+          "name": "橡果蹦蹦",
+          "playerId": 1,
+          "tier": 1,
+          "time": 8.71666666666668,
+          "title": "",
+          "x": -4.13575864666629,
+          "z": 8.17854962045576
+        },
+        {
+          "amount": 28,
+          "crystals": 1,
+          "id": 10,
+          "multiplier": 1.4,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 8.750000000000014,
+          "title": "",
+          "x": -6.047551922475261,
+          "z": -3.30351391219752
+        },
+        {
+          "amount": 28,
+          "crystals": 1,
+          "id": 11,
+          "multiplier": 1.4,
+          "name": "花冠樹靈",
+          "playerId": 1,
+          "tier": 1,
+          "time": 8.866666666666687,
+          "title": "",
+          "x": -5.6950637101145745,
+          "z": -0.4313120064862272
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 12,
+          "multiplier": 0.8,
+          "name": "橡果蹦蹦",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.083333333333364,
+          "title": "",
+          "x": -6.494320480473798,
+          "z": -4.7842062247342625
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 13,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.200000000000037,
+          "title": "",
+          "x": -9.479351006694266,
+          "z": -1.28306088081609
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 14,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.416666666666714,
+          "title": "",
+          "x": -4.069254463065025,
+          "z": 4.915572400288617
+        },
+        {
+          "amount": 28,
+          "crystals": 1,
+          "id": 15,
+          "multiplier": 1.4,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.450000000000049,
+          "title": "",
+          "x": -6.90463715631934,
+          "z": -0.7895060742757987
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 16,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.516666666666719,
+          "title": "",
+          "x": 1.9834058733796436,
+          "z": -9.872420264771876
+        },
+        {
+          "amount": 28,
+          "crystals": 1,
+          "id": 17,
+          "multiplier": 1.4,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.716666666666729,
+          "title": "",
+          "x": 5.358015596302032,
+          "z": -4.816985524303463
+        },
+        {
+          "amount": 100,
+          "crystals": 3,
+          "id": 18,
+          "multiplier": 5,
+          "name": "古榕守衛",
+          "playerId": 1,
+          "tier": 2,
+          "time": 9.733333333333396,
+          "title": "",
+          "x": 0.30231682794098286,
+          "z": -3.7122723037114405
+        },
+        {
+          "amount": 28,
+          "crystals": 0,
+          "id": 19,
+          "multiplier": 1.4,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.733333333333396,
+          "title": "",
+          "x": 4.811115009283892,
+          "z": -4.624126799703632
+        },
+        {
+          "amount": 110,
+          "crystals": 2,
+          "id": 20,
+          "multiplier": 5.5,
+          "name": "花冠樹靈",
+          "playerId": 1,
+          "tier": 3,
+          "time": 9.850000000000069,
+          "title": "BIG WIN",
+          "x": -5.847140529208917,
+          "z": 0.1894992924379518
+        },
+        {
+          "amount": 28,
+          "crystals": 0,
+          "id": 21,
+          "multiplier": 1.4,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.966666666666741,
+          "title": "",
+          "x": 6.487077947679221,
+          "z": 0.4390391665780074
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 22,
+          "multiplier": 0.8,
+          "name": "橡果蹦蹦",
+          "playerId": 1,
+          "tier": 1,
+          "time": 10.133333333333416,
+          "title": "",
+          "x": -8.466966103809858,
+          "z": -5.633880787862681
+        },
+        {
+          "amount": 28,
+          "crystals": 0,
+          "id": 23,
+          "multiplier": 1.4,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 10.133333333333416,
+          "title": "",
+          "x": 8.570370218160964,
+          "z": 4.601252085051263
+        },
+        {
+          "amount": 100,
+          "crystals": 0,
+          "id": 24,
+          "multiplier": 5,
+          "name": "古榕守衛",
+          "playerId": 1,
+          "tier": 2,
+          "time": 10.233333333333421,
+          "title": "",
+          "x": 0.33025310051808104,
+          "z": -3.388475199532767
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 25,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 10.316666666666759,
+          "title": "",
+          "x": -8.259393489680011,
+          "z": -3.6082425833241816
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 26,
+          "multiplier": 0.8,
+          "name": "橡果蹦蹦",
+          "playerId": 1,
+          "tier": 1,
+          "time": 10.400000000000096,
+          "title": "",
+          "x": 8.280230629752998,
+          "z": -1.3240748215141434
+        }
+      ]
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "hits": [
+        {
+          "id": 7,
+          "kind": "critical",
+          "text": "36",
+          "amount": 36,
+          "rect": {
+            "x": 393.6981462670067,
+            "y": 120.31682351740885,
+            "width": 37.889159063101204,
+            "height": 38.546196503501804
+          }
+        },
+        {
+          "id": 2,
+          "kind": "gold",
+          "text": "+16",
+          "amount": 16,
+          "rect": {
+            "x": 367.8250479481908,
+            "y": 202.7233873076618,
+            "width": 46.875,
+            "height": 22.5
+          }
+        },
+        {
+          "id": 6,
+          "kind": "damage",
+          "text": "24",
+          "amount": 24,
+          "rect": {
+            "x": 343.75157376079704,
+            "y": 171.04966915985094,
+            "width": 28.505681818181817,
+            "height": 21.75
+          }
+        }
+      ],
+      "bigWin": {
+        "ok": true,
+        "value": {
+          "componentBounds": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "h": 100
+          },
+          "clipped": false,
+          "assetReady": true,
+          "currentFrame": 34.151999999284754,
+          "state": "ready",
+          "generation": 2,
+          "backend": "canvas-2d",
+          "error": null
+        },
+        "celebrationVisible": true,
+        "fullscreen": false,
+        "ultimate": null,
+        "activeTier": 3,
+        "activeAsset": "mega-win",
+        "stage": "count",
+        "rolledAmount": 5,
+        "targetAmount": 250,
+        "eventIds": [
+          11
+        ],
+        "completedAmounts": [],
+        "dockRect": {
+          "x": 326.1690909090909,
+          "y": 58.5,
+          "width": 216.98181818181817,
+          "height": 49.725
+        },
+        "visualRect": {
+          "x": 326.1690909090909,
+          "y": 58.5,
+          "width": 216.98181818181817,
+          "height": 49.725
+        },
+        "usesMultiplier": false,
+        "pointerEvents": "none",
+        "diagnostics": [],
+        "impact": {
+          "impulses": 1,
+          "liveImpulses": 1,
+          "offset": {
+            "x": 0,
+            "y": 0
+          },
+          "peak": 0,
+          "reducedMotion": false,
+          "hudShakes": false,
+          "particleBudget": 160,
+          "diagnostics": []
+        },
+        "audio": {
+          "pendingCues": 0,
+          "muted": false
+        }
+      },
+      "actualReward": [
+        {
+          "amount": 28,
+          "crystals": 0,
+          "id": 1,
+          "multiplier": 7,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 4.34999999999999,
+          "title": "",
+          "x": -0.29935718439401326,
+          "z": 7.826841765467001
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 2,
+          "multiplier": 4,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 4.883333333333321,
+          "title": "",
+          "x": -1.9226161986116042,
+          "z": 8.079279079404698
+        },
+        {
+          "amount": 16,
+          "crystals": 1,
+          "id": 3,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 7.116666666666647,
+          "title": "",
+          "x": -7.390045624099603,
+          "z": -6.411211304119636
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 4,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 7.283333333333313,
+          "title": "",
+          "x": -1.3322244165605164,
+          "z": 6.471583179489442
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 5,
+          "multiplier": 0.8,
+          "name": "橡果蹦蹦",
+          "playerId": 1,
+          "tier": 1,
+          "time": 7.516666666666645,
+          "title": "",
+          "x": -5.625588272824558,
+          "z": -4.512094713155925
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 6,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 7.599999999999978,
+          "title": "",
+          "x": -10.631782483167612,
+          "z": -7.088806681121622
+        },
+        {
+          "amount": 28,
+          "crystals": 1,
+          "id": 7,
+          "multiplier": 7,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 7.616666666666645,
+          "title": "",
+          "x": -6.419651857937535,
+          "z": 4.474981302004999
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 8,
+          "multiplier": 0.8,
+          "name": "橡果蹦蹦",
+          "playerId": 1,
+          "tier": 1,
+          "time": 8.033333333333312,
+          "title": "",
+          "x": -10.637301798807336,
+          "z": -8.948874281856778
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 9,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 8.566666666666672,
+          "title": "",
+          "x": -2.3054307413806256,
+          "z": 5.503443452599267
+        },
+        {
+          "amount": 28,
+          "crystals": 1,
+          "id": 10,
+          "multiplier": 1.4,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 8.700000000000012,
+          "title": "",
+          "x": -5.074220742889071,
+          "z": -3.0209666277361933
+        },
+        {
+          "amount": 250,
+          "crystals": 4,
+          "id": 11,
+          "multiplier": 12.5,
+          "name": "古榕守衛",
+          "playerId": 1,
+          "tier": 3,
+          "time": 9.483333333333384,
+          "title": "MEGA WIN",
+          "x": 0.42039853013052075,
+          "z": -3.896857873909677
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 12,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.666666666666726,
+          "title": "",
+          "x": 2.9252209566300955,
+          "z": -10.616089277712678
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 13,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.716666666666729,
+          "title": "",
+          "x": 1.532603769524031,
+          "z": -9.82317992863924
+        },
+        {
+          "amount": 16,
+          "crystals": 1,
+          "id": 14,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.883333333333404,
+          "title": "",
+          "x": 0.23591352572946736,
+          "z": -7.7673559947574535
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 15,
+          "multiplier": 0.8,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.950000000000074,
+          "title": "",
+          "x": -0.18475666171612903,
+          "z": -3.2135420803370396
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "hits": [
+        {
+          "id": 14,
+          "kind": "critical",
+          "text": "36",
+          "amount": 36,
+          "rect": {
+            "x": 185.29248410290114,
+            "y": 379.2627188427634,
+            "width": 40.25085473406553,
+            "height": 40.94884643465626
+          }
+        },
+        {
+          "id": 6,
+          "kind": "gold",
+          "text": "+28",
+          "amount": 28,
+          "rect": {
+            "x": 118.2477736775149,
+            "y": 411.9177483053985,
+            "width": 49.60227272727273,
+            "height": 22.5
+          }
+        },
+        {
+          "id": 5,
+          "kind": "gold",
+          "text": "+16",
+          "amount": 16,
+          "rect": {
+            "x": 146.26285742867563,
+            "y": 348.47990271137695,
+            "width": 46.875,
+            "height": 22.5
+          }
+        }
+      ],
+      "bigWin": {
+        "ok": true,
+        "value": {
+          "componentBounds": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "h": 100
+          },
+          "clipped": false,
+          "assetReady": true,
+          "currentFrame": 33.654000000358124,
+          "state": "ready",
+          "generation": 2,
+          "backend": "canvas-2d",
+          "error": null
+        },
+        "celebrationVisible": true,
+        "fullscreen": false,
+        "ultimate": null,
+        "activeTier": 3,
+        "activeAsset": "big-win",
+        "stage": "count",
+        "rolledAmount": 0,
+        "targetAmount": 110,
+        "eventIds": [
+          11
+        ],
+        "completedAmounts": [],
+        "dockRect": {
+          "x": 38.476363636363615,
+          "y": 219.44,
+          "width": 313.04727272727274,
+          "height": 71.74000000000001
+        },
+        "visualRect": {
+          "x": 38.476363636363615,
+          "y": 219.44,
+          "width": 313.04727272727274,
+          "height": 71.74000000000001
+        },
+        "usesMultiplier": false,
+        "pointerEvents": "none",
+        "diagnostics": [],
+        "impact": {
+          "impulses": 1,
+          "liveImpulses": 1,
+          "offset": {
+            "x": 0,
+            "y": 0
+          },
+          "peak": 0,
+          "reducedMotion": false,
+          "hudShakes": false,
+          "particleBudget": 160,
+          "diagnostics": []
+        },
+        "audio": {
+          "pendingCues": 0,
+          "muted": false
+        }
+      },
+      "actualReward": [
+        {
+          "amount": 28,
+          "crystals": 0,
+          "id": 1,
+          "multiplier": 7,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 4.333333333333323,
+          "title": "",
+          "x": -0.3126000977848402,
+          "z": 7.808651788971055
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 2,
+          "multiplier": 4,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 4.883333333333321,
+          "title": "",
+          "x": -1.9226161986116042,
+          "z": 8.079279079404698
+        },
+        {
+          "amount": 16,
+          "crystals": 1,
+          "id": 3,
+          "multiplier": 4,
+          "name": "橡果蹦蹦",
+          "playerId": 1,
+          "tier": 1,
+          "time": 6.1499999999999835,
+          "title": "",
+          "x": -5.978844250757163,
+          "z": 10.977880656483698
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 4,
+          "multiplier": 4,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 7.366666666666646,
+          "title": "",
+          "x": -6.4062890165905815,
+          "z": 3.5071001060462565
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 5,
+          "multiplier": 4,
+          "name": "橡果蹦蹦",
+          "playerId": 1,
+          "tier": 1,
+          "time": 7.966666666666644,
+          "title": "",
+          "x": -1.6997699145821799,
+          "z": -0.9368852324708559
+        },
+        {
+          "amount": 28,
+          "crystals": 1,
+          "id": 6,
+          "multiplier": 7,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 8.133333333333317,
+          "title": "",
+          "x": -5.210421554362079,
+          "z": 7.019320708671164
+        },
+        {
+          "amount": 28,
+          "crystals": 0,
+          "id": 7,
+          "multiplier": 7,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 8.78333333333335,
+          "title": "",
+          "x": 0.913117015270422,
+          "z": 2.3372612023735444
+        },
+        {
+          "amount": 28,
+          "crystals": 1,
+          "id": 8,
+          "multiplier": 1.4,
+          "name": "苔殼龜",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.716666666666729,
+          "title": "",
+          "x": -6.756584301828754,
+          "z": -6.2105475594355735
+        },
+        {
+          "amount": 16,
+          "crystals": 0,
+          "id": 9,
+          "multiplier": 4,
+          "name": "苔羽蛾",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.750000000000064,
+          "title": "",
+          "x": 2.7241545472167905,
+          "z": 1.2214069379599217
+        },
+        {
+          "amount": 28,
+          "crystals": 0,
+          "id": 10,
+          "multiplier": 1.4,
+          "name": "菇背幼豬",
+          "playerId": 1,
+          "tier": 1,
+          "time": 9.783333333333399,
+          "title": "",
+          "x": -5.875262568934618,
+          "z": -1.7818864088563928
+        },
+        {
+          "amount": 110,
+          "crystals": 2,
+          "id": 11,
+          "multiplier": 5.5,
+          "name": "花冠樹靈",
+          "playerId": 1,
+          "tier": 3,
+          "time": 11.150000000000134,
+          "title": "BIG WIN",
+          "x": -4.020582765121804,
+          "z": 0.7959005391028751
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

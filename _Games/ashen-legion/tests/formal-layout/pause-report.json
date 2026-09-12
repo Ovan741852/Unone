@@ -1,0 +1,534 @@
+{
+  "ok": true,
+  "value": {
+    "screen": "forest_lord",
+    "cols": 96,
+    "rows": 48,
+    "ascii": "+------------------------------------------------------------------------------------------------+\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|                               @@@@##########################@@@@                               |\n|                               @@@@##########################@@@@                               |\n|                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@########################@@@@@                               |\n|                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|                               @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n+------------------------------------------------------------------------------------------------+",
+    "nodes": [
+      {
+        "id": "screen_back",
+        "kind": "image",
+        "rect": {
+          "x": 32,
+          "y": 20,
+          "width": 36,
+          "height": 59
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_panel",
+        "text_fit": 0
+      },
+      {
+        "id": "screen_title",
+        "kind": "text",
+        "rect": {
+          "x": 36,
+          "y": 68,
+          "width": 28,
+          "height": 5
+        },
+        "text": "征途暫歇",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.2
+      },
+      {
+        "id": "resume_plate",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 55,
+          "width": 26,
+          "height": 7
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_button",
+        "text_fit": 0
+      },
+      {
+        "id": "resume",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 57,
+          "width": 26,
+          "height": 3
+        },
+        "text": "繼續征戰",
+        "action": "Pause",
+        "asset": null,
+        "text_fit": 0.13
+      },
+      {
+        "id": "resume_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 60,
+          "width": 26,
+          "height": 2
+        },
+        "text": "",
+        "action": "Pause",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "resume_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 55,
+          "width": 26,
+          "height": 2
+        },
+        "text": "",
+        "action": "Pause",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "guide_plate",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 46,
+          "width": 26,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "guide",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 47.5,
+          "width": 26,
+          "height": 3
+        },
+        "text": "作戰指南",
+        "action": "UI_guide",
+        "asset": null,
+        "text_fit": 0.13
+      },
+      {
+        "id": "guide_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 50.5,
+          "width": 26,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_guide",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "guide_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 46,
+          "width": 26,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_guide",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "quit_plate",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 27,
+          "width": 26,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "quit",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 28.5,
+          "width": 26,
+          "height": 3
+        },
+        "text": "結束這趟遠征",
+        "action": "UI_abandon",
+        "asset": null,
+        "text_fit": 0.19
+      },
+      {
+        "id": "quit_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 31.5,
+          "width": 26,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_abandon",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "quit_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 27,
+          "width": 26,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_abandon",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "mute_plate",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 37,
+          "width": 26,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "mute",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 38.5,
+          "width": 26,
+          "height": 3
+        },
+        "text": "音效：開",
+        "action": "UI_mute",
+        "asset": null,
+        "text_fit": 0.13
+      },
+      {
+        "id": "mute_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 41.5,
+          "width": 26,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_mute",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "mute_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 37,
+          "width": 26,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_mute",
+        "asset": null,
+        "text_fit": 0
+      }
+    ],
+    "findings": [],
+    "allowed_overlaps": [
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'screen_title' overlap by 28.0 x 5.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "screen_title"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'resume_plate' overlap by 26.0 x 7.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "resume_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'resume' overlap by 26.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "resume"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'resume_hit_top' overlap by 26.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "resume_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'resume_hit_bottom' overlap by 26.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "resume_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'guide_plate' overlap by 26.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "guide_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'guide' overlap by 26.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "guide"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'guide_hit_top' overlap by 26.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "guide_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'guide_hit_bottom' overlap by 26.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "guide_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'quit_plate' overlap by 26.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "quit_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'quit' overlap by 26.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "quit"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'quit_hit_top' overlap by 26.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "quit_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'quit_hit_bottom' overlap by 26.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "quit_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'mute_plate' overlap by 26.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "mute_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'mute' overlap by 26.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "mute"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'mute_hit_top' overlap by 26.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "mute_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'mute_hit_bottom' overlap by 26.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "mute_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'resume_plate' and 'resume' overlap by 26.0 x 3.0 (design-space units).",
+        "nodes": [
+          "resume_plate",
+          "resume"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'resume_plate' and 'resume_hit_top' overlap by 26.0 x 2.0 (design-space units).",
+        "nodes": [
+          "resume_plate",
+          "resume_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'resume_plate' and 'resume_hit_bottom' overlap by 26.0 x 2.0 (design-space units).",
+        "nodes": [
+          "resume_plate",
+          "resume_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'guide_plate' and 'guide' overlap by 26.0 x 3.0 (design-space units).",
+        "nodes": [
+          "guide_plate",
+          "guide"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'guide_plate' and 'guide_hit_top' overlap by 26.0 x 1.5 (design-space units).",
+        "nodes": [
+          "guide_plate",
+          "guide_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'guide_plate' and 'guide_hit_bottom' overlap by 26.0 x 1.5 (design-space units).",
+        "nodes": [
+          "guide_plate",
+          "guide_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'quit_plate' and 'quit' overlap by 26.0 x 3.0 (design-space units).",
+        "nodes": [
+          "quit_plate",
+          "quit"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'quit_plate' and 'quit_hit_top' overlap by 26.0 x 1.5 (design-space units).",
+        "nodes": [
+          "quit_plate",
+          "quit_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'quit_plate' and 'quit_hit_bottom' overlap by 26.0 x 1.5 (design-space units).",
+        "nodes": [
+          "quit_plate",
+          "quit_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'mute_plate' and 'mute' overlap by 26.0 x 3.0 (design-space units).",
+        "nodes": [
+          "mute_plate",
+          "mute"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'mute_plate' and 'mute_hit_top' overlap by 26.0 x 1.5 (design-space units).",
+        "nodes": [
+          "mute_plate",
+          "mute_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'mute_plate' and 'mute_hit_bottom' overlap by 26.0 x 1.5 (design-space units).",
+        "nodes": [
+          "mute_plate",
+          "mute_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      }
+    ],
+    "readable": true,
+    "assumptions": [
+      "text_fit assumes a 16:9 viewport and a 0.5 character advance, so it is a              measurement to read, never a pass/fail",
+      "structure only: this says nothing about whether the screen looks good"
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

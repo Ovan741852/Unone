@@ -1,0 +1,682 @@
+{
+  "version": 1,
+  "screens": {
+    "forest_lord": [
+      {
+        "behind": "interior_shade",
+        "front": "screen_back",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "screen_title",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "screen_gold",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "screen_crystals_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "screen_crystals",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_home_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_home",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_home_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_home_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_gear_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_gear",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_gear_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_gear_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_runes_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_runes",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_runes_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_runes_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_builds_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_builds",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_builds_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "tab_builds_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "ready_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "ready",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "ready_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "ready_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_name_4",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_desc_4",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_4_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_4",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_4_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_4_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_name_5",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_desc_5",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_5_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_5",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_5_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_5_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_name_6",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_desc_6",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_6_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_6",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_6_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_6_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_prev_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_prev",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_prev_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_prev_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_next_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_next",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_next_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "build_next_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "story_portrait",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "story_speaker",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "interior_shade",
+        "front": "story_quote",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "screen_title",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "screen_gold",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "screen_crystals_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "screen_crystals",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_home_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_home",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_home_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_home_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_gear_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_gear",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_gear_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_gear_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_runes_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_runes",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_runes_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_runes_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_builds_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_builds",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_builds_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "tab_builds_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "ready_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "ready",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "ready_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "ready_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_name_4",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_desc_4",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_4_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_4",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_4_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_4_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_name_5",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_desc_5",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_5_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_5",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_5_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_5_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_name_6",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_desc_6",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_6_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_6",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_6_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_6_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_prev_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_prev",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_prev_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_prev_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_next_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_next",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_next_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "build_next_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_crystals_plate",
+        "front": "screen_crystals",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "tab_home_plate",
+        "front": "tab_home",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "tab_home_plate",
+        "front": "tab_home_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "tab_home_plate",
+        "front": "tab_home_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "tab_gear_plate",
+        "front": "tab_gear",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "tab_gear_plate",
+        "front": "tab_gear_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "tab_gear_plate",
+        "front": "tab_gear_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "tab_runes_plate",
+        "front": "tab_runes",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "tab_runes_plate",
+        "front": "tab_runes_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "tab_runes_plate",
+        "front": "tab_runes_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "tab_builds_plate",
+        "front": "tab_builds",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "tab_builds_plate",
+        "front": "tab_builds_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "tab_builds_plate",
+        "front": "tab_builds_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "ready_plate",
+        "front": "ready",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "ready_plate",
+        "front": "ready_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "ready_plate",
+        "front": "ready_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_4_plate",
+        "front": "build_4",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_4_plate",
+        "front": "build_4_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_4_plate",
+        "front": "build_4_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_5_plate",
+        "front": "build_5",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_5_plate",
+        "front": "build_5_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_5_plate",
+        "front": "build_5_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_6_plate",
+        "front": "build_6",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_6_plate",
+        "front": "build_6_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_6_plate",
+        "front": "build_6_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_prev_plate",
+        "front": "build_prev",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_prev_plate",
+        "front": "build_prev_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_prev_plate",
+        "front": "build_prev_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_next_plate",
+        "front": "build_next",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_next_plate",
+        "front": "build_next_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "build_next_plate",
+        "front": "build_next_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      }
+    ]
+  }
+}

@@ -1,0 +1,981 @@
+{
+  "ok": true,
+  "value": {
+    "screen": "forest_lord",
+    "cols": 96,
+    "rows": 48,
+    "ascii": "+------------------------------------------------------------------------------------------------+\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@#######################@@@@#############################################################@@@|\n|@@@@@#######################@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n+------------------------------------------------------------------------------------------------+",
+    "nodes": [
+      {
+        "id": "interior_shade",
+        "kind": "image",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_scene-shade",
+        "text_fit": 0
+      },
+      {
+        "id": "screen_back",
+        "kind": "image",
+        "rect": {
+          "x": 33,
+          "y": 6,
+          "width": 64,
+          "height": 87
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_defeat-back",
+        "text_fit": 0
+      },
+      {
+        "id": "defeat_crest",
+        "kind": "image",
+        "rect": {
+          "x": 60,
+          "y": 75,
+          "width": 11,
+          "height": 13
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_defeat-crest",
+        "text_fit": 0
+      },
+      {
+        "id": "defeat_title",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 68,
+          "width": 56,
+          "height": 6
+        },
+        "text": "遠 征 失 敗",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.21
+      },
+      {
+        "id": "defeat_reason",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 62,
+          "width": 56,
+          "height": 4
+        },
+        "text": "時間耗盡，大王尚未開出大獎。 帶回城鎮建設金。",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.46
+      },
+      {
+        "id": "defeat_route",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 56,
+          "width": 56,
+          "height": 4
+        },
+        "text": "止步 苔光林口  ·  已通過 0 / 7 站",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.46
+      },
+      {
+        "id": "defeat_stat_label_1",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 49,
+          "width": 17,
+          "height": 3
+        },
+        "text": "累計戰鬥時間",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.3
+      },
+      {
+        "id": "defeat_stat_value_1",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 42,
+          "width": 17,
+          "height": 6
+        },
+        "text": "03:00",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.5
+      },
+      {
+        "id": "defeat_stat_label_2",
+        "kind": "text",
+        "rect": {
+          "x": 56,
+          "y": 49,
+          "width": 17,
+          "height": 3
+        },
+        "text": "全軍擊殺",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.2
+      },
+      {
+        "id": "defeat_stat_value_2",
+        "kind": "text",
+        "rect": {
+          "x": 56,
+          "y": 42,
+          "width": 17,
+          "height": 6
+        },
+        "text": "0",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.1
+      },
+      {
+        "id": "defeat_stat_label_3",
+        "kind": "text",
+        "rect": {
+          "x": 75,
+          "y": 49,
+          "width": 17,
+          "height": 3
+        },
+        "text": "破防次數",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.2
+      },
+      {
+        "id": "defeat_stat_value_3",
+        "kind": "text",
+        "rect": {
+          "x": 75,
+          "y": 42,
+          "width": 17,
+          "height": 6
+        },
+        "text": "0",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.1
+      },
+      {
+        "id": "defeat_stat_label_4",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 36,
+          "width": 17,
+          "height": 3
+        },
+        "text": "累計開獎金幣",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.3
+      },
+      {
+        "id": "defeat_stat_value_4",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 29,
+          "width": 17,
+          "height": 6
+        },
+        "text": "0",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.1
+      },
+      {
+        "id": "defeat_stat_label_5",
+        "kind": "text",
+        "rect": {
+          "x": 56,
+          "y": 36,
+          "width": 17,
+          "height": 3
+        },
+        "text": "派兵花費",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.2
+      },
+      {
+        "id": "defeat_stat_value_5",
+        "kind": "text",
+        "rect": {
+          "x": 56,
+          "y": 29,
+          "width": 17,
+          "height": 6
+        },
+        "text": "0",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.1
+      },
+      {
+        "id": "defeat_stat_label_6",
+        "kind": "text",
+        "rect": {
+          "x": 75,
+          "y": 36,
+          "width": 17,
+          "height": 3
+        },
+        "text": "累計倖存返還",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.3
+      },
+      {
+        "id": "defeat_stat_value_6",
+        "kind": "text",
+        "rect": {
+          "x": 75,
+          "y": 29,
+          "width": 17,
+          "height": 6
+        },
+        "text": "0",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.1
+      },
+      {
+        "id": "defeat_town_reward",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 21,
+          "width": 56,
+          "height": 4
+        },
+        "text": "城鎮建設金 +20 已入庫 · 金庫 20",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.42
+      },
+      {
+        "id": "defeat_town_plate",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 9,
+          "width": 24,
+          "height": 7
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "defeat_town",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 11,
+          "width": 24,
+          "height": 3
+        },
+        "text": "返回城鎮",
+        "action": "ReturnTown",
+        "asset": null,
+        "text_fit": 0.14
+      },
+      {
+        "id": "defeat_town_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 14,
+          "width": 24,
+          "height": 2
+        },
+        "text": "",
+        "action": "ReturnTown",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "defeat_town_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 9,
+          "width": 24,
+          "height": 2
+        },
+        "text": "",
+        "action": "ReturnTown",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "defeat_retry_plate",
+        "kind": "image",
+        "rect": {
+          "x": 66,
+          "y": 9,
+          "width": 27,
+          "height": 7
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_button",
+        "text_fit": 0
+      },
+      {
+        "id": "defeat_retry",
+        "kind": "button",
+        "rect": {
+          "x": 66,
+          "y": 11,
+          "width": 27,
+          "height": 3
+        },
+        "text": "重整旗鼓 · 再次出征",
+        "action": "Start",
+        "asset": null,
+        "text_fit": 0.34
+      },
+      {
+        "id": "defeat_retry_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 66,
+          "y": 14,
+          "width": 27,
+          "height": 2
+        },
+        "text": "",
+        "action": "Start",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "defeat_retry_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 66,
+          "y": 9,
+          "width": 27,
+          "height": 2
+        },
+        "text": "",
+        "action": "Start",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "story_portrait",
+        "kind": "image",
+        "rect": {
+          "x": 2,
+          "y": 31,
+          "width": 29,
+          "height": 45
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_quartermaster-v1",
+        "text_fit": 0
+      },
+      {
+        "id": "story_speaker",
+        "kind": "text",
+        "rect": {
+          "x": 5,
+          "y": 79,
+          "width": 24,
+          "height": 4
+        },
+        "text": "司務長 · 榛姨",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.38
+      },
+      {
+        "id": "story_quote",
+        "kind": "text",
+        "rect": {
+          "x": 5,
+          "y": 16,
+          "width": 25,
+          "height": 12
+        },
+        "text": "城鎮的燈還亮著。帶著這次經驗，再把軍旗舉起來。",
+        "action": null,
+        "asset": null,
+        "text_fit": 3.11
+      }
+    ],
+    "findings": [],
+    "allowed_overlaps": [
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'screen_back' overlap by 64.0 x 87.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "screen_back"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_crest' overlap by 11.0 x 13.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_crest"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_title' overlap by 56.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_title"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_reason' overlap by 56.0 x 4.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_reason"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_route' overlap by 56.0 x 4.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_route"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_stat_label_1' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_stat_label_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_stat_value_1' overlap by 17.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_stat_value_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_stat_label_2' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_stat_label_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_stat_value_2' overlap by 17.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_stat_value_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_stat_label_3' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_stat_label_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_stat_value_3' overlap by 17.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_stat_value_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_stat_label_4' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_stat_label_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_stat_value_4' overlap by 17.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_stat_value_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_stat_label_5' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_stat_label_5"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_stat_value_5' overlap by 17.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_stat_value_5"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_stat_label_6' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_stat_label_6"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_stat_value_6' overlap by 17.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_stat_value_6"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_town_reward' overlap by 56.0 x 4.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_town_reward"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_town_plate' overlap by 24.0 x 7.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_town_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_town' overlap by 24.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_town"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_town_hit_top' overlap by 24.0 x 2.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_town_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_town_hit_bottom' overlap by 24.0 x 2.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_town_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_retry_plate' overlap by 27.0 x 7.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_retry_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_retry' overlap by 27.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_retry"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_retry_hit_top' overlap by 27.0 x 2.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_retry_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'defeat_retry_hit_bottom' overlap by 27.0 x 2.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "defeat_retry_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'story_portrait' overlap by 29.0 x 45.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "story_portrait"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'story_speaker' overlap by 24.0 x 4.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "story_speaker"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'story_quote' overlap by 25.0 x 12.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "story_quote"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_crest' overlap by 11.0 x 13.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_crest"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_title' overlap by 56.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_title"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_reason' overlap by 56.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_reason"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_route' overlap by 56.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_route"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_stat_label_1' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_stat_label_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_stat_value_1' overlap by 17.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_stat_value_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_stat_label_2' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_stat_label_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_stat_value_2' overlap by 17.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_stat_value_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_stat_label_3' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_stat_label_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_stat_value_3' overlap by 17.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_stat_value_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_stat_label_4' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_stat_label_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_stat_value_4' overlap by 17.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_stat_value_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_stat_label_5' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_stat_label_5"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_stat_value_5' overlap by 17.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_stat_value_5"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_stat_label_6' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_stat_label_6"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_stat_value_6' overlap by 17.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_stat_value_6"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_town_reward' overlap by 56.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_town_reward"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_town_plate' overlap by 24.0 x 7.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_town_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_town' overlap by 24.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_town"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_town_hit_top' overlap by 24.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_town_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_town_hit_bottom' overlap by 24.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_town_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_retry_plate' overlap by 27.0 x 7.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_retry_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_retry' overlap by 27.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_retry"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_retry_hit_top' overlap by 27.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_retry_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'defeat_retry_hit_bottom' overlap by 27.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "defeat_retry_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'defeat_town_plate' and 'defeat_town' overlap by 24.0 x 3.0 (design-space units).",
+        "nodes": [
+          "defeat_town_plate",
+          "defeat_town"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'defeat_town_plate' and 'defeat_town_hit_top' overlap by 24.0 x 2.0 (design-space units).",
+        "nodes": [
+          "defeat_town_plate",
+          "defeat_town_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'defeat_town_plate' and 'defeat_town_hit_bottom' overlap by 24.0 x 2.0 (design-space units).",
+        "nodes": [
+          "defeat_town_plate",
+          "defeat_town_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'defeat_retry_plate' and 'defeat_retry' overlap by 27.0 x 3.0 (design-space units).",
+        "nodes": [
+          "defeat_retry_plate",
+          "defeat_retry"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'defeat_retry_plate' and 'defeat_retry_hit_top' overlap by 27.0 x 2.0 (design-space units).",
+        "nodes": [
+          "defeat_retry_plate",
+          "defeat_retry_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'defeat_retry_plate' and 'defeat_retry_hit_bottom' overlap by 27.0 x 2.0 (design-space units).",
+        "nodes": [
+          "defeat_retry_plate",
+          "defeat_retry_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      }
+    ],
+    "readable": true,
+    "assumptions": [
+      "text_fit assumes a 16:9 viewport and a 0.5 character advance, so it is a              measurement to read, never a pass/fail",
+      "structure only: this says nothing about whether the screen looks good"
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

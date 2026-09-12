@@ -1,0 +1,90 @@
+{
+  "name": "corner-reflection-4",
+  "frames": 68,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Seat4": true
+      }
+    },
+    {
+      "actions": {
+        "Start": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "LeaveShop": true
+      }
+    },
+    {},
+    {
+      "actions": {},
+      "pointer": {
+        "position": {
+          "x": -7.1,
+          "y": 7.3
+        },
+        "screen_position": {
+          "x": 50,
+          "y": 50
+        },
+        "down": true
+      }
+    },
+    {
+      "actions": {},
+      "pointer": {
+        "position": {
+          "x": -7.1,
+          "y": 7.3
+        },
+        "screen_position": {
+          "x": 50,
+          "y": 50
+        },
+        "down": false
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "bounces",
+        "equals": 1
+      }
+    },
+    {
+      "observation": {
+        "key": "troops",
+        "equals": 1
+      }
+    },
+    {
+      "observation": {
+        "key": "expired",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "troops_in_bounds",
+        "equals": true
+      }
+    },
+    {
+      "observation": {
+        "key": "economy_conserved",
+        "equals": true
+      }
+    }
+  ]
+}

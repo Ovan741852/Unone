@@ -1,0 +1,632 @@
+[
+  {
+    "file": "boss-appears-final30.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "boss_present",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      },
+      {
+        "key": "phase",
+        "expected": "battle",
+        "actual": "battle",
+        "pass": true
+      },
+      {
+        "key": "lock_exclusive",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "boss-delayed-before-final30.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "boss_present",
+        "expected": false,
+        "actual": false,
+        "pass": true
+      },
+      {
+        "key": "phase",
+        "expected": "battle",
+        "actual": "battle",
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "bounce-does-not-reset-lifetime.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "troops",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "expired",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "refunded",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "breaks",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "troops_in_bounds",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "corner-reflection-1.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "bounces",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "troops",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "expired",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "troops_in_bounds",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "corner-reflection-2.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "bounces",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "troops",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "expired",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "troops_in_bounds",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      },
+      {
+        "key": "deployment_origin_x",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "deployment_origin_z",
+        "expected": 12.2,
+        "actual": 12.2,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "corner-reflection-3.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "bounces",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "troops",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "expired",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "troops_in_bounds",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      },
+      {
+        "key": "deployment_origin_x",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "deployment_origin_z",
+        "expected": 12.2,
+        "actual": 12.2,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "corner-reflection-4.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "bounces",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "troops",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "expired",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "troops_in_bounds",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      },
+      {
+        "key": "deployment_origin_x",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "deployment_origin_z",
+        "expected": 12.2,
+        "actual": 12.2,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "exactly-one-choice.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "phase",
+        "expected": "battle",
+        "actual": "battle",
+        "pass": true
+      },
+      {
+        "key": "round",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "choices",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "held-choice-cannot-repeat.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "phase",
+        "expected": "battle",
+        "actual": "battle",
+        "pass": true
+      },
+      {
+        "key": "choices",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "fired",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "horde-optional-quiet-round.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "horde_count",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "small_count",
+        "expected": 32,
+        "actual": 32,
+        "pass": true
+      },
+      {
+        "key": "boss_present",
+        "expected": false,
+        "actual": false,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "horde-paused-single-surge.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "horde_count",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "small_count",
+        "expected": 110,
+        "actual": 110,
+        "pass": true
+      },
+      {
+        "key": "boss_present",
+        "expected": false,
+        "actual": false,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "menu-does-not-spend.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "phase",
+        "expected": "menu",
+        "actual": "menu",
+        "pass": true
+      },
+      {
+        "key": "fired",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "choices",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "missed-shots-bankruptcy.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "phase",
+        "expected": "defeat",
+        "actual": "defeat",
+        "pass": true
+      },
+      {
+        "key": "breaks",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "one-click-one-soldier.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "phase",
+        "expected": "battle",
+        "actual": "battle",
+        "pass": true
+      },
+      {
+        "key": "fired",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "pause-freezes-countdown.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "phase",
+        "expected": "battle",
+        "actual": "battle",
+        "pass": true
+      },
+      {
+        "key": "fired",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "reset-clears-run.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "phase",
+        "expected": "menu",
+        "actual": "menu",
+        "pass": true
+      },
+      {
+        "key": "fired",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "choices",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "round",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "timeout-does-not-refund-expired.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "phase",
+        "expected": "defeat",
+        "actual": "defeat",
+        "pass": true
+      },
+      {
+        "key": "troops",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "expired",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "refunded",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "deployment_cost_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      },
+      {
+        "key": "troop_count_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "timeout-loses.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "phase",
+        "expected": "defeat",
+        "actual": "defeat",
+        "pass": true
+      },
+      {
+        "key": "round",
+        "expected": 1,
+        "actual": 1,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  },
+  {
+    "file": "timeout-refunds-survivor-once.test.json",
+    "pass": true,
+    "assertions": [
+      {
+        "key": "phase",
+        "expected": "defeat",
+        "actual": "defeat",
+        "pass": true
+      },
+      {
+        "key": "troops",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "expired",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "refunded",
+        "expected": 4,
+        "actual": 4,
+        "pass": true
+      },
+      {
+        "key": "breaks",
+        "expected": 0,
+        "actual": 0,
+        "pass": true
+      },
+      {
+        "key": "economy_conserved",
+        "expected": true,
+        "actual": true,
+        "pass": true
+      }
+    ]
+  }
+]
