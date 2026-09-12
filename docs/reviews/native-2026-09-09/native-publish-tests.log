@@ -1,0 +1,24 @@
+   Compiling unone-native-player v0.1.0 (<checkout>\crates\unone-native-player)
+    Finished `release` profile [optimized] target(s) in 6.54s
+     Running unittests src\lib.rs (target/native-player\release\deps\unone_native_player-bab9254bcdff8345.exe)
+
+running 5 tests
+test lod::tests::distance_boundaries ... ok
+test lod::tests::malformed_geometry_fails ... ok
+test lod::view_tests::frustum_rejects_offscreen_and_behind_camera ... ok
+test lod::view_tests::vertical_camera_has_nonzero_basis ... ok
+test telemetry_tests::timing_window_is_bounded_and_retains_recent_samples ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\main.rs (target/native-player\release\deps\unone_native_player-c3f527f9538cf164.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests unone_native_player
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

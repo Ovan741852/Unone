@@ -345,7 +345,9 @@ fn search_roots(project: &Path) -> Vec<PathBuf> {
     if let Ok(current_dir) = env::current_dir() {
         roots.push(current_dir.join("plugins"));
     }
-    roots.push(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../plugins"));
+    if let Ok(exe) = env::current_exe() {
+        if let Some(bin) = exe.parent() { roots.push(bin.join("../plugins")); }
+    }
     let mut unique = Vec::new();
     for root in roots {
         let absolute = if root.is_absolute() {

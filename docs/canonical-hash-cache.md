@@ -1,6 +1,11 @@
 # Canonical SHA-256 prefix reuse
 
-The Web player still serializes the complete canonical world on every publication and returns the same `sha256:` digest. No field is omitted and no tick is exempt from verification. CLI canonical hashing remains the independent full-hash reference.
+The Web player serializes a **canonical** world on every publication and returns
+the same `sha256:` digest. Canonical JSON includes instance batch identity
+(`asset`, `count`, `format`) but not packed pose bytes; those stay in host
+presentation storage / memory transport. No tick is exempt from verification.
+CLI canonical hashing remains the independent full-hash of that same canonical
+JSON.
 
 `CanonicalHasher` retains exact input bytes and intermediate SHA-256 states at 16 KiB boundaries. On the next publication it compares blocks byte-for-byte, reuses only the contiguous identical prefix, and hashes everything after it. It does not trust instance revision numbers, pointers, object identity, schema order or a hash of a hash. Arbitrary edits, including growth, shrinkage and changes in the middle of a string, produce the same result as hashing the complete byte sequence.
 

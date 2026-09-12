@@ -1,0 +1,91 @@
+{
+  "adapter": null,
+  "battle": {
+    "attacks": 8758,
+    "blue": 25000,
+    "blue_kills": 0,
+    "capped_attacks": 0,
+    "projectiles": 661,
+    "red": 25000,
+    "red_kills": 0,
+    "running": true,
+    "seconds": 3.9,
+    "simulation_hz": 20,
+    "step": 80,
+    "stress": true,
+    "total": 50000
+  },
+  "boot_ms": 55.8048,
+  "camera3d": {
+    "fov_degrees": 48.0,
+    "position": {
+      "x": 370.0,
+      "y": 560.0,
+      "z": 540.0
+    },
+    "target": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    }
+  },
+  "draw_calls_last_frame": null,
+  "drawn": 0,
+  "dropped_ticks": 0,
+  "error": null,
+  "fps": 0.0,
+  "frame": 240,
+  "fx": {
+    "enabled": true,
+    "skipped": 88832,
+    "usage": {
+      "active_handles": 32,
+      "live_particles": 1480,
+      "max_handles": 64,
+      "max_particles": 4096,
+      "reserved_particles": 1780
+    }
+  },
+  "host": "windows",
+  "instance_prepare_ms_last_frame": null,
+  "interval": null,
+  "lod_instances_last_frame": null,
+  "measured_seconds": 0.0,
+  "measurement": {
+    "capture_enabled": false,
+    "digest_outside_timing": true,
+    "fixed_tick": false,
+    "freeze_simulation": false,
+    "gpu_time_available": false,
+    "lod_enabled": true,
+    "prewarm_ticks": 0,
+    "render_submit_includes_driver_wait": true,
+    "seed": 42,
+    "submitted_is_not_visible_count": true,
+    "timing_window_capacity": 16384,
+    "warmup_presentations": 0
+  },
+  "mesh_triangles_last_frame": null,
+  "native_codegen_compiled": true,
+  "observation_digest": "sha256:44dc28d0c4a2e1a3195584e812f4ce99bb400ebbc51eb73b96d61c4d5c89d2aa",
+  "package_sha256": "a269d3b0e3aa58fb98e64b177b816e35b85dda91ee075af48883390ebf5b531f",
+  "particle_count": 1480,
+  "presentation_batches": null,
+  "profile": "release",
+  "render_submit": null,
+  "renderer": "none",
+  "renderer_cpu_phases": {},
+  "resolution": null,
+  "simulation_hz_measured": null,
+  "submitted_instances_last_frame": null,
+  "tick": {
+    "count": 240,
+    "max_ms": 13.6258,
+    "mean_ms": 7.5499037499999995,
+    "p95_ms": 9.708
+  },
+  "upload_bytes_last_frame": null,
+  "artifact_evidence": {
+    "runtime_sha256": "7388243652498f201969391fe05a36fa119e96f5f388cafde75fb0e8df653570"
+  }
+}

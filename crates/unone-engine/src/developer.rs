@@ -10,11 +10,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
 use crate::{Diagnostic, EngineResult, EngineRuntime, InputFrame, Transform2DData, Vec2};
-use crate::{
-    systems::SystemSettings,
-    ui::{UiNode, UiTree},
-    world::World,
-};
+use crate::{systems::SystemSettings, ui::UiTree, world::World};
 
 const JOURNAL_CAPACITY: usize = 1024;
 const RECORDING_CAPACITY: usize = 4096;
@@ -232,21 +228,17 @@ pub(crate) fn apply_operations(
                     let node = tree
                         .children
                         .iter_mut()
-                        .find(|node| match node {
-                            UiNode::Text { id: node_id, .. }
-                            | UiNode::Button { id: node_id, .. } => node_id == id,
-                        })
+                        .find_map(|node| node.find_mut(id))
                         .ok_or_else(|| format!("UI node '{id}' does not exist"))?;
                     match (node, change) {
-                        (
-                            UiNode::Text { text, .. } | UiNode::Button { text, .. },
-                            Change::SetText { text: value },
-                        ) => *text = value.clone(),
-                        (
-                            UiNode::Text { rect, .. } | UiNode::Button { rect, .. },
-                            Change::SetRect { rect: value },
-                        ) => *rect = *value,
-                        _ => unreachable!(),
+                        (node, Change::SetText { text: value }) => {
+                            let text = node.text_mut().ok_or_else(|| {
+                                format!("UI node '{id}' does not expose editable text")
+                            })?;
+                            *text = value.clone();
+                        }
+                        (node, Change::SetRect { rect: value }) => *node.rect_mut() = *value,
+                        _ => unreachable!("UI change arm is guarded above"),
                     }
                     *tree = UiTree::from_json(
                         serde_json::to_value(&*tree).map_err(|e| e.to_string())?,
@@ -1062,16 +1054,12 @@ fn selector_prefix(
         None | Some(Selector::Scene) => String::new(),
         Some(Selector::Entity { id }) => format!("/entities/{}", escape(id)),
         Some(Selector::Ui { id }) => {
-            let index = snapshot["ui"]["children"]
-                .as_array()
-                .and_then(|nodes| nodes.iter().position(|node| node["id"] == *id))
-                .ok_or_else(|| {
-                    error(
-                        "SELECTOR_NOT_FOUND",
-                        format!("UI node '{id}' does not exist"),
-                    )
-                })?;
-            format!("/ui/children/{index}")
+            find_ui_pointer(&snapshot["ui"], id, "/ui").ok_or_else(|| {
+                error(
+                    "SELECTOR_NOT_FOUND",
+                    format!("UI node '{id}' does not exist"),
+                )
+            })?
         }
         Some(Selector::Effect { handle }) => {
             let index = snapshot["effects"]
@@ -1088,6 +1076,21 @@ fn selector_prefix(
     };
     Ok(prefix)
 }
+
+fn find_ui_pointer(value: &Value, id: &str, path: &str) -> Option<String> {
+    let children = value.get("children")?.as_array()?;
+    for (index, child) in children.iter().enumerate() {
+        let child_path = format!("{path}/children/{index}");
+        if child.get("id").and_then(Value::as_str) == Some(id) {
+            return Some(child_path);
+        }
+        if let Some(found) = find_ui_pointer(child, id, &child_path) {
+            return Some(found);
+        }
+    }
+    None
+}
+
 fn select(snapshot: &Value, selector: Option<&Selector>) -> Result<Value, Box<Diagnostic>> {
     let prefix = selector_prefix(snapshot, selector)?;
     snapshot.pointer(&prefix).cloned().ok_or_else(|| {

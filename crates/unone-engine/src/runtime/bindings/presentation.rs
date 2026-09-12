@@ -69,6 +69,53 @@ pub(super) fn particle(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             Ok(particle_world.borrow_mut().particles.stop(&handle))
         })?,
     )?;
+    let particle_world = Rc::clone(&world);
+    particle_api.set(
+        "play_batch",
+        lua.create_function(
+            move |_, (effect, positions, seed): (String, mlua::Buffer, Option<u64>)| {
+                if positions.len() == 0 || positions.len() % 12 != 0 || positions.len() > 4096 * 12
+                {
+                    return Err(mlua::Error::RuntimeError(
+                        "PARTICLE_BATCH_INVALID: packed f32le xyz positions required".into(),
+                    ));
+                }
+                let bytes = positions.to_vec();
+                let origins = bytes
+                    .chunks_exact(12)
+                    .map(|p| {
+                        let v: [f64; 3] = std::array::from_fn(|n| {
+                            f32::from_le_bytes(p[n * 4..n * 4 + 4].try_into().unwrap()) as f64
+                        });
+                        Vec3 {
+                            x: v[0],
+                            y: v[1],
+                            z: v[2],
+                        }
+                    })
+                    .collect();
+                let mut world = particle_world.borrow_mut();
+                let frame = world.frame;
+                world
+                    .particles
+                    .play_batch(&effect, origins, seed.unwrap_or(0), frame)
+                    .map_err(mlua::Error::external)
+            },
+        )?,
+    )?;
+    let particle_world = Rc::clone(&world);
+    particle_api.set(
+        "stats",
+        lua.create_function(move |lua, ()| {
+            let world = particle_world.borrow();
+            let stats = world.particles.stats(world.frame);
+            let table = lua.create_table()?;
+            for (key, value) in stats.as_object().unwrap() {
+                table.set(key.as_str(), value.as_u64().unwrap())?;
+            }
+            Ok(table)
+        })?,
+    )?;
     Ok(particle_api)
 }
 
@@ -121,12 +168,23 @@ pub(super) fn instances3d(lua: &mlua::Lua, state: &super::ApiState) -> mlua::Res
                         "INSTANCE_INVALID: batch ID required (1..128 bytes)".into(),
                     ));
                 }
-                if buffer.len() > 40 * 100_000 {
+                if buffer.len() > 40 * 262_144 {
                     return Err(mlua::Error::RuntimeError(
-                        "INSTANCE_LIMIT: at most 100000 instances".into(),
+                        "INSTANCE_LIMIT: at most 262144 instances".into(),
                     ));
                 }
-                let batch = crate::instances3d::InstanceBatch3D::new(asset, &buffer.to_vec())
+                let bytes = buffer.to_vec();
+                {
+                    let world = world.borrow();
+                    if world
+                        .instances3d
+                        .get(&id)
+                        .is_some_and(|batch| batch.same_payload(&asset, &bytes))
+                    {
+                        return Ok(());
+                    }
+                }
+                let batch = crate::instances3d::InstanceBatch3D::from_vec(asset, bytes)
                     .map_err(mlua::Error::RuntimeError)?;
                 let mut w = world.borrow_mut();
                 let total: usize = w
@@ -135,11 +193,11 @@ pub(super) fn instances3d(lua: &mlua::Lua, state: &super::ApiState) -> mlua::Res
                     .filter(|(key, _)| **key != id)
                     .map(|(_, b)| b.count)
                     .sum();
-                if total + batch.count > 100_000
+                if total + batch.count > 262_144
                     || (!w.instances3d.contains_key(&id) && w.instances3d.len() >= 256)
                 {
                     return Err(mlua::Error::RuntimeError(
-                        "INSTANCE_LIMIT: 100000 instances / 256 batches per world".into(),
+                        "INSTANCE_LIMIT: 262144 instances / 256 batches per world".into(),
                     ));
                 }
                 w.instances3d.insert(id, batch);

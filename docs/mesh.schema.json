@@ -1,0 +1,93 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$defs": {
+    "MeshLod": {
+      "additionalProperties": false,
+      "properties": {
+        "distance": {
+          "format": "float",
+          "type": "number"
+        },
+        "indices": {
+          "items": {
+            "format": "uint32",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "positions": {
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "uvs": {
+          "items": {
+            "format": "float",
+            "type": "number"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "distance",
+        "positions",
+        "uvs",
+        "indices"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://unone.dev/schema/mesh.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "indices": {
+      "items": {
+        "format": "uint32",
+        "minimum": 0,
+        "type": "integer"
+      },
+      "type": "array"
+    },
+    "lods": {
+      "items": {
+        "$ref": "#/$defs/MeshLod"
+      },
+      "type": "array"
+    },
+    "positions": {
+      "items": {
+        "format": "float",
+        "type": "number"
+      },
+      "type": "array"
+    },
+    "texture": {
+      "type": "string"
+    },
+    "uvs": {
+      "items": {
+        "format": "float",
+        "type": "number"
+      },
+      "type": "array"
+    },
+    "version": {
+      "format": "uint32",
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "version",
+    "positions",
+    "uvs",
+    "indices",
+    "texture"
+  ],
+  "title": "MeshAsset",
+  "type": "object"
+}

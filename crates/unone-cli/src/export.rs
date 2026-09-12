@@ -1,3 +1,32 @@
+pub(crate) const WEB_FILES: &[&str] = &[
+        "player/main.js",
+        "renderer/three.js",
+        "renderer/mesh.js",
+        "renderer/instances3d.js",
+        "renderer/bloom.js",
+        "renderer/effekseer.js",
+        "renderer/particles.js",
+        "shared/ui-tree.js",
+        "shared/host-input.js",
+        "shared/webgpu-snapshot.js",
+        "shared/audio-playback.js",
+        "shared/asset-encoding.js",
+        "shared/load-project.js",
+        "shared/fixed-step-scheduler.mjs",
+        "shared/async-scheduler.mjs",
+        "shared/runtime-core.mjs",
+        "shared/runtime-backend.mjs",
+        "shared/runtime-worker.js",
+        "shared/job-pool.mjs",
+        "shared/job-binary.mjs",
+        "shared/job-worker.js",
+        "shared/instance-transfer.mjs",
+        "shared/presentation-interpolation.mjs",
+        "shared/profile-window.js",
+        "vendor/three/three.player.min.js",
+        "vendor/three/LICENSE",
+        "vendor/rapier/LICENSE",
+    ];
 use anyhow::{Context, Result, bail, ensure};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
@@ -10,15 +39,7 @@ fn digest(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }
 
-#[derive(serde::Deserialize)]
-#[serde(deny_unknown_fields)]
-struct StaticMesh {
-    version: u32,
-    positions: Vec<f64>,
-    uvs: Vec<f64>,
-    indices: Vec<usize>,
-    texture: String,
-}
+use unone_engine::MeshAsset as StaticMesh;
 #[derive(serde::Deserialize,serde::Serialize)]
 #[serde(default,deny_unknown_fields)]
 struct JobPolicy { mode: JobMode, max_workers: u8, memory_budget_mb: u16 }
@@ -42,32 +63,6 @@ enum RuntimeBackend {
     #[default]
     Main,
     Worker,
-}
-impl StaticMesh {
-    fn validate(&self) -> Result<()> {
-        ensure!(self.version == 1, "MESH_INVALID: version must be 1");
-        ensure!(
-            self.positions.len() >= 9
-                && self.positions.len() <= 3_000_000
-                && self.positions.len() % 3 == 0
-                && self.positions.iter().all(|v| v.is_finite()),
-            "MESH_INVALID: positions"
-        );
-        ensure!(
-            self.uvs.len() == self.positions.len() / 3 * 2
-                && self.uvs.iter().all(|v| v.is_finite()),
-            "MESH_INVALID: uvs"
-        );
-        ensure!(
-            !self.indices.is_empty()
-                && self.indices.len() <= 6_000_000
-                && self.indices.len() % 3 == 0
-                && self.indices.iter().all(|i| *i < self.positions.len() / 3),
-            "MESH_INVALID: indices"
-        );
-        ensure!(!self.texture.is_empty(), "MESH_INVALID: texture asset id");
-        Ok(())
-    }
 }
 fn inside(root: &Path, relative: &str) -> Result<PathBuf> {
     ensure!(
@@ -99,12 +94,17 @@ pub fn web(
     runtime: Option<&Path>,
     development: bool,
 ) -> Result<Value> {
+    ensure!(!output.exists(), "output already exists: {}", output.display());
+    let root = crate::sdk::template_root(None)?;
+    web_with_templates(project, output, runtime, development, &root)
+}
+
+pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>, development: bool, repo: &Path) -> Result<Value> {
     ensure!(
         !output.exists(),
         "output already exists: {}",
         output.display()
     );
-    let repo = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
     let runtime = runtime.map(Path::to_path_buf).unwrap_or_else(|| {
         project.join(if development {
             "dist/player-development-runtime"
@@ -158,10 +158,8 @@ pub fn web(
         }
         files.push((format!("runtime/{name}"), bytes));
     }
-    let (config, _) = unone_engine::ProjectPaths::discover(project)
-        .map_err(|e| anyhow::anyhow!(e.explanation))?;
-    let settings = unone_engine::SystemSettings::from_config(&config)
-        .map_err(|e| anyhow::anyhow!(e.explanation))?;
+    let (config, settings, assets, content) = content(project)?;
+    files.extend(content);
     let compiled = manifest["compiled_systems"].as_array()
         .context("RUNTIME_CAPABILITIES_MISSING: rebuild the runtime with scripts/build-web-live.ps1 -Player -Project <project-directory>")?;
     for id in settings.enabled_ids() {
@@ -171,136 +169,6 @@ pub fn web(
             project.display()
         );
     }
-    let scene: Value = if let Some(path) = &config.main_scene {
-        serde_json::from_slice(&fs::read(inside(project, path)?)?)?
-    } else {
-        Value::Null
-    };
-    let job_sources: std::collections::BTreeMap<_,_>=config.job_scripts.iter().map(|(id,path)|Ok((id.clone(),fs::read_to_string(inside(project,path)?)?))).collect::<Result<_>>()?;
-    let payload = json!({"job_sources":job_sources,"config":config,"script":fs::read_to_string(inside(project,&config.entry_script)?)?,"scene":scene});
-    // Exercise the exact player ingestion contract before creating any output.
-    unone_engine::HostProject::parse(&serde_json::to_vec(&payload)?)
-        .map_err(|e| anyhow::anyhow!(e.explanation))?
-        .into_runtime(42)
-        .map_err(|e| anyhow::anyhow!(e.explanation))?;
-    let assets = if let Some(path) = &config.asset_manifest {
-        let assets: unone_engine::AssetManifest =
-            serde_json::from_slice(&fs::read(inside(project, path)?)?)?;
-        ensure!(assets.version == 1, "unsupported asset manifest version");
-        for asset in &assets.assets {
-            if !["texture2d", "audio", "mesh3d", "effekseer"].contains(&asset.kind.as_str()) {
-                bail!("PLAYER_DECODER_UNAVAILABLE: {} ({})", asset.id, asset.kind);
-            }
-            if asset.kind == "effekseer" {
-                ensure!(
-                    settings.is_enabled("effekseer"),
-                    "SYSTEM_DISABLED: effekseer assets require systems.effekseer=true"
-                );
-                let bytes = fs::read(inside(project, &asset.source)?)?;
-                ensure!(
-                    bytes.starts_with(b"SKFE")
-                        && bytes.get(4..8) == Some(1500_i32.to_le_bytes().as_slice()),
-                    "PLAYER_DECODER_UNAVAILABLE: {} requires legacy SKFE 1500 with declared companions",
-                    asset.id
-                );
-                let mut offset = 8usize;
-                for _ in 0..6 {
-                    let mut integer = || -> Result<usize> {
-                        let value = i32::from_le_bytes(
-                            bytes
-                                .get(offset..offset + 4)
-                                .context("EFFEKSEER_INVALID: truncated resource table")?
-                                .try_into()?,
-                        );
-                        offset += 4;
-                        ensure!(
-                            (0..=4096).contains(&value),
-                            "EFFEKSEER_INVALID: resource count/length"
-                        );
-                        Ok(value as usize)
-                    };
-                    let count = integer()?;
-                    for _ in 0..count {
-                        let length = i32::from_le_bytes(
-                            bytes
-                                .get(offset..offset + 4)
-                                .context("EFFEKSEER_INVALID: resource length")?
-                                .try_into()?,
-                        );
-                        offset += 4;
-                        ensure!(
-                            (1..=4096).contains(&length),
-                            "EFFEKSEER_INVALID: resource name"
-                        );
-                        let raw = bytes
-                            .get(offset..offset + length as usize * 2)
-                            .context("EFFEKSEER_INVALID: truncated resource name")?;
-                        offset += raw.len();
-                        let name = String::from_utf16(
-                            &raw.chunks_exact(2)
-                                .map(|b| u16::from_le_bytes([b[0], b[1]]))
-                                .collect::<Vec<_>>(),
-                        )?;
-                        let name = name.trim_end_matches('\0').replace('\\', "/");
-                        ensure!(
-                            !name.is_empty() && !name.split('/').any(|p| p == ".."),
-                            "EFFEKSEER_INVALID: resource path"
-                        );
-                        let companion = Path::new(&asset.source)
-                            .parent()
-                            .unwrap()
-                            .join(name)
-                            .to_string_lossy()
-                            .replace('\\', "/");
-                        ensure!(
-                            asset.files.contains(&companion),
-                            "EFFEKSEER_COMPANION_MISSING: {companion}; declare it in asset.files"
-                        );
-                        inside(project, &companion)?;
-                    }
-                }
-            }
-            if asset.kind == "mesh3d" {
-                ensure!(
-                    asset.source.ends_with(".mesh.json"),
-                    "PLAYER_DECODER_UNAVAILABLE: {} requires .mesh.json conversion",
-                    asset.id
-                );
-                let data: StaticMesh =
-                    serde_json::from_slice(&fs::read(inside(project, &asset.source)?)?)?;
-                data.validate()?;
-                ensure!(
-                    assets
-                        .assets
-                        .iter()
-                        .any(|a| a.id == data.texture && a.kind == "texture2d"),
-                    "MESH_TEXTURE_MISSING: {}",
-                    data.texture
-                );
-            }
-            for path in std::iter::once(&asset.source).chain(&asset.files) {
-                files.push((format!("content/{path}"), fs::read(inside(project, path)?)?));
-            }
-        }
-        serde_json::to_value(assets)?
-    } else {
-        json!({"version":1,"assets":[]})
-    };
-    for entity in scene["entities"].as_array().into_iter().flatten() {
-        if let Some(mesh) = entity["mesh3d"]["asset"].as_str() {
-            ensure!(
-                ["mesh://primitive/box", "mesh://primitive/sphere"].contains(&mesh)
-                    || assets["assets"]
-                        .as_array()
-                        .unwrap()
-                        .iter()
-                        .any(|a| a["id"] == mesh && a["kind"] == "mesh3d"),
-                "PLAYER_DECODER_UNAVAILABLE: mesh {mesh}; declare a supported mesh asset"
-            );
-        }
-    }
-    files.push(("content/project.json".into(), serde_json::to_vec(&payload)?));
-    files.push(("content/assets.json".into(), serde_json::to_vec(&assets)?));
     let presentation = if project.join("player.presentation.json").exists() {
         serde_json::from_slice::<PresentationSettings>(&fs::read(inside(
             project,
@@ -318,34 +186,7 @@ pub fn web(
         "runtime/runtime.json".into(),
         serde_json::to_vec(&manifest)?,
     ));
-    for path in [
-        "player/main.js",
-        "renderer/three.js",
-        "renderer/mesh.js",
-        "renderer/instances3d.js",
-        "renderer/bloom.js",
-        "renderer/effekseer.js",
-        "renderer/particles.js",
-        "shared/ui-tree.js",
-        "shared/host-input.js",
-        "shared/webgpu-snapshot.js",
-        "shared/audio-playback.js",
-        "shared/asset-encoding.js",
-        "shared/load-project.js",
-        "shared/fixed-step-scheduler.mjs",
-        "shared/async-scheduler.mjs",
-        "shared/runtime-core.mjs",
-        "shared/runtime-backend.mjs",
-        "shared/runtime-worker.js",
-        "shared/job-pool.mjs",
-        "shared/job-binary.mjs",
-        "shared/job-worker.js",
-        "shared/instance-transfer.mjs",
-        "shared/presentation-interpolation.mjs",
-        "shared/profile-window.js",
-        "vendor/three/three.player.min.js",
-        "vendor/rapier/LICENSE",
-    ] {
+    for &path in WEB_FILES {
         if (path == "shared/profile-window.js" && !development)
             || (path == "shared/audio-playback.js" && !settings.is_enabled("audio"))
             || (path == "shared/ui-tree.js" && !settings.is_enabled("ui"))
@@ -538,4 +379,144 @@ mod tests {
                 .contains("already exists")
         );
     }
+}
+
+/// Shared validated host payload and asset bytes for all player exporters.
+pub(crate) fn content(project:&Path)->Result<(unone_engine::ProjectConfig,unone_engine::SystemSettings,Value,Vec<(String,Vec<u8>)>)>{
+    let mut files=Vec::new();
+    let (config, _) = unone_engine::ProjectPaths::discover(project)
+        .map_err(|e| anyhow::anyhow!(e.explanation))?;
+    let settings = unone_engine::SystemSettings::from_config(&config)
+        .map_err(|e| anyhow::anyhow!(e.explanation))?;
+    let scene: Value = if let Some(path) = &config.main_scene {
+        serde_json::from_slice(&fs::read(inside(project, path)?)?)?
+    } else {
+        Value::Null
+    };
+    let job_sources: std::collections::BTreeMap<_,_>=config.job_scripts.iter().map(|(id,path)|Ok((id.clone(),fs::read_to_string(inside(project,path)?)?))).collect::<Result<_>>()?;
+    let payload = json!({"job_sources":job_sources,"config":config,"script":fs::read_to_string(inside(project,&config.entry_script)?)?,"scene":scene});
+    // Exercise the exact player ingestion contract before creating any output.
+    unone_engine::HostProject::parse(&serde_json::to_vec(&payload)?)
+        .map_err(|e| anyhow::anyhow!(e.explanation))?
+        .into_runtime(42)
+        .map_err(|e| anyhow::anyhow!(e.explanation))?;
+    let assets = if let Some(path) = &config.asset_manifest {
+        let assets: unone_engine::AssetManifest =
+            serde_json::from_slice(&fs::read(inside(project, path)?)?)?;
+        ensure!(assets.version == 1, "unsupported asset manifest version");
+        for asset in &assets.assets {
+            if !["texture2d", "audio", "mesh3d", "effekseer"].contains(&asset.kind.as_str()) {
+                bail!("PLAYER_DECODER_UNAVAILABLE: {} ({})", asset.id, asset.kind);
+            }
+            if asset.kind == "effekseer" {
+                ensure!(
+                    settings.is_enabled("effekseer"),
+                    "SYSTEM_DISABLED: effekseer assets require systems.effekseer=true"
+                );
+                let bytes = fs::read(inside(project, &asset.source)?)?;
+                ensure!(
+                    bytes.starts_with(b"SKFE")
+                        && bytes.get(4..8) == Some(1500_i32.to_le_bytes().as_slice()),
+                    "PLAYER_DECODER_UNAVAILABLE: {} requires legacy SKFE 1500 with declared companions",
+                    asset.id
+                );
+                let mut offset = 8usize;
+                for _ in 0..6 {
+                    let mut integer = || -> Result<usize> {
+                        let value = i32::from_le_bytes(
+                            bytes
+                                .get(offset..offset + 4)
+                                .context("EFFEKSEER_INVALID: truncated resource table")?
+                                .try_into()?,
+                        );
+                        offset += 4;
+                        ensure!(
+                            (0..=4096).contains(&value),
+                            "EFFEKSEER_INVALID: resource count/length"
+                        );
+                        Ok(value as usize)
+                    };
+                    let count = integer()?;
+                    for _ in 0..count {
+                        let length = i32::from_le_bytes(
+                            bytes
+                                .get(offset..offset + 4)
+                                .context("EFFEKSEER_INVALID: resource length")?
+                                .try_into()?,
+                        );
+                        offset += 4;
+                        ensure!(
+                            (1..=4096).contains(&length),
+                            "EFFEKSEER_INVALID: resource name"
+                        );
+                        let raw = bytes
+                            .get(offset..offset + length as usize * 2)
+                            .context("EFFEKSEER_INVALID: truncated resource name")?;
+                        offset += raw.len();
+                        let name = String::from_utf16(
+                            &raw.chunks_exact(2)
+                                .map(|b| u16::from_le_bytes([b[0], b[1]]))
+                                .collect::<Vec<_>>(),
+                        )?;
+                        let name = name.trim_end_matches('\0').replace('\\', "/");
+                        ensure!(
+                            !name.is_empty() && !name.split('/').any(|p| p == ".."),
+                            "EFFEKSEER_INVALID: resource path"
+                        );
+                        let companion = Path::new(&asset.source)
+                            .parent()
+                            .unwrap()
+                            .join(name)
+                            .to_string_lossy()
+                            .replace('\\', "/");
+                        ensure!(
+                            asset.files.contains(&companion),
+                            "EFFEKSEER_COMPANION_MISSING: {companion}; declare it in asset.files"
+                        );
+                        inside(project, &companion)?;
+                    }
+                }
+            }
+            if asset.kind == "mesh3d" {
+                ensure!(
+                    asset.source.ends_with(".mesh.json"),
+                    "PLAYER_DECODER_UNAVAILABLE: {} requires .mesh.json conversion",
+                    asset.id
+                );
+                let data: StaticMesh =
+                    serde_json::from_slice(&fs::read(inside(project, &asset.source)?)?)?;
+                data.validate()?;
+                ensure!(
+                    assets
+                        .assets
+                        .iter()
+                        .any(|a| a.id == data.texture && a.kind == "texture2d"),
+                    "MESH_TEXTURE_MISSING: {}",
+                    data.texture
+                );
+            }
+            for path in std::iter::once(&asset.source).chain(&asset.files) {
+                files.push((format!("content/{path}"), fs::read(inside(project, path)?)?));
+            }
+        }
+        serde_json::to_value(assets)?
+    } else {
+        json!({"version":1,"assets":[]})
+    };
+    for entity in scene["entities"].as_array().into_iter().flatten() {
+        if let Some(mesh) = entity["mesh3d"]["asset"].as_str() {
+            ensure!(
+                ["mesh://primitive/box", "mesh://primitive/sphere"].contains(&mesh)
+                    || assets["assets"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .any(|a| a["id"] == mesh && a["kind"] == "mesh3d"),
+                "PLAYER_DECODER_UNAVAILABLE: mesh {mesh}; declare a supported mesh asset"
+            );
+        }
+    }
+    files.push(("content/project.json".into(), serde_json::to_vec(&payload)?));
+    files.push(("content/assets.json".into(), serde_json::to_vec(&assets)?));
+    Ok((config,settings,assets,files))
 }

@@ -1,0 +1,379 @@
+{
+  "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.47\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+  "battle": {
+    "attacks": 148093,
+    "blue": 35000,
+    "blue_kills": 0,
+    "capped_attacks": 0,
+    "projectiles": 1266,
+    "red": 35000,
+    "red_kills": 0,
+    "running": true,
+    "seconds": 14.6,
+    "simulation_hz": 20,
+    "step": 293,
+    "stress": true,
+    "total": 70000
+  },
+  "boot_ms": 4315.142,
+  "camera3d": {
+    "fov_degrees": 48.0,
+    "position": {
+      "x": 370.0,
+      "y": 560.0,
+      "z": 540.0
+    },
+    "target": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    }
+  },
+  "draw_calls_last_frame": 21,
+  "drawn": 125,
+  "dropped_ticks": 39,
+  "error": null,
+  "fps": 11.858543750605488,
+  "frame": 880,
+  "fx": {
+    "enabled": true,
+    "skipped": 1461055,
+    "usage": {
+      "active_handles": 36,
+      "live_particles": 1768,
+      "max_handles": 64,
+      "max_particles": 4096,
+      "reserved_particles": 2164
+    }
+  },
+  "host": "windows",
+  "instance_prepare_ms_last_frame": 0.8978,
+  "interval": {
+    "count": 95,
+    "max_ms": 114.747,
+    "mean_ms": 84.32738631578947,
+    "p95_ms": 109.9228
+  },
+  "lod_instances_last_frame": [
+    1302,
+    0,
+    0,
+    70000
+  ],
+  "measured_seconds": 8.0111017,
+  "measurement": {
+    "capture_enabled": true,
+    "digest_outside_timing": true,
+    "fixed_tick": false,
+    "freeze_simulation": false,
+    "gpu_time_available": false,
+    "lod_enabled": true,
+    "prewarm_ticks": 300,
+    "render_submit_includes_driver_wait": true,
+    "seed": 42,
+    "submitted_is_not_visible_count": true,
+    "timing_window_capacity": 16384,
+    "warmup_presentations": 30
+  },
+  "mesh_triangles_last_frame": 592177,
+  "native_codegen_compiled": true,
+  "observation_digest": "sha256:8bfe27a161bd12d737ab5419af65e2128dc152d06da29d5fb9104a14d6067555",
+  "package_sha256": "2cd5e11e08c049809ccdcbf0e845129e37ea8fee29eb02ff114cdbcd715763c6",
+  "particle_count": 1768,
+  "presentation_batches": [
+    {
+      "asset": "mesh://blue-archer",
+      "frustum_candidates": 8050,
+      "id": "blue-archer",
+      "input_instances": 8050,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        8050
+      ],
+      "submitted_triangles": 64400
+    },
+    {
+      "asset": "mesh://blue-ballista",
+      "frustum_candidates": 700,
+      "id": "blue-ballista",
+      "input_instances": 700,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        700
+      ],
+      "submitted_triangles": 7700
+    },
+    {
+      "asset": "mesh://blue-catapult",
+      "frustum_candidates": 350,
+      "id": "blue-catapult",
+      "input_instances": 350,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        350
+      ],
+      "submitted_triangles": 1400
+    },
+    {
+      "asset": "mesh://blue-cavalry",
+      "frustum_candidates": 4550,
+      "id": "blue-cavalry",
+      "input_instances": 4550,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        4550
+      ],
+      "submitted_triangles": 59150
+    },
+    {
+      "asset": "mesh://blue-flyer",
+      "frustum_candidates": 2450,
+      "id": "blue-flyer",
+      "input_instances": 2450,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        2450
+      ],
+      "submitted_triangles": 9800
+    },
+    {
+      "asset": "mesh://blue-infantry",
+      "frustum_candidates": 15750,
+      "id": "blue-infantry",
+      "input_instances": 15750,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        15750
+      ],
+      "submitted_triangles": 78750
+    },
+    {
+      "asset": "mesh://blue-mage",
+      "frustum_candidates": 3150,
+      "id": "blue-mage",
+      "input_instances": 3150,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        3150
+      ],
+      "submitted_triangles": 37800
+    },
+    {
+      "asset": "mesh://impact",
+      "frustum_candidates": 35,
+      "id": "impacts",
+      "input_instances": 35,
+      "lod_counts": [
+        35
+      ],
+      "submitted_triangles": 1120
+    },
+    {
+      "asset": "mesh://arrow",
+      "frustum_candidates": 396,
+      "id": "projectile-arrow",
+      "input_instances": 396,
+      "lod_counts": [
+        396
+      ],
+      "submitted_triangles": 65736
+    },
+    {
+      "asset": "mesh://bolt",
+      "frustum_candidates": 5,
+      "id": "projectile-bolt",
+      "input_instances": 5,
+      "lod_counts": [
+        5
+      ],
+      "submitted_triangles": 60
+    },
+    {
+      "asset": "mesh://boulder",
+      "frustum_candidates": 0,
+      "id": "projectile-boulder",
+      "input_instances": 0,
+      "lod_counts": [
+        0
+      ],
+      "submitted_triangles": 0
+    },
+    {
+      "asset": "mesh://magic",
+      "frustum_candidates": 865,
+      "id": "projectile-magic",
+      "input_instances": 865,
+      "lod_counts": [
+        865
+      ],
+      "submitted_triangles": 6055
+    },
+    {
+      "asset": "mesh://red-archer",
+      "frustum_candidates": 8050,
+      "id": "red-archer",
+      "input_instances": 8050,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        8050
+      ],
+      "submitted_triangles": 64400
+    },
+    {
+      "asset": "mesh://red-ballista",
+      "frustum_candidates": 700,
+      "id": "red-ballista",
+      "input_instances": 700,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        700
+      ],
+      "submitted_triangles": 7700
+    },
+    {
+      "asset": "mesh://red-catapult",
+      "frustum_candidates": 350,
+      "id": "red-catapult",
+      "input_instances": 350,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        350
+      ],
+      "submitted_triangles": 1400
+    },
+    {
+      "asset": "mesh://red-cavalry",
+      "frustum_candidates": 4550,
+      "id": "red-cavalry",
+      "input_instances": 4550,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        4550
+      ],
+      "submitted_triangles": 59150
+    },
+    {
+      "asset": "mesh://red-flyer",
+      "frustum_candidates": 2450,
+      "id": "red-flyer",
+      "input_instances": 2450,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        2450
+      ],
+      "submitted_triangles": 9800
+    },
+    {
+      "asset": "mesh://red-infantry",
+      "frustum_candidates": 15750,
+      "id": "red-infantry",
+      "input_instances": 15750,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        15750
+      ],
+      "submitted_triangles": 78750
+    },
+    {
+      "asset": "mesh://red-mage",
+      "frustum_candidates": 3150,
+      "id": "red-mage",
+      "input_instances": 3150,
+      "lod_counts": [
+        0,
+        0,
+        0,
+        3150
+      ],
+      "submitted_triangles": 37800
+    }
+  ],
+  "profile": "release",
+  "render_submit": {
+    "count": 95,
+    "max_ms": 22.3228,
+    "mean_ms": 11.317733684210527,
+    "p95_ms": 21.0733
+  },
+  "renderer": "wgpu-native-instanced",
+  "renderer_cpu_phases": {
+    "acquire": {
+      "count": 95,
+      "max_ms": 0.0608,
+      "mean_ms": 0.04856526315789475,
+      "p95_ms": 0.0531
+    },
+    "classify": {
+      "count": 95,
+      "max_ms": 0.4931,
+      "mean_ms": 0.4200063157894737,
+      "p95_ms": 0.4823
+    },
+    "encode_submit": {
+      "count": 95,
+      "max_ms": 0.3321,
+      "mean_ms": 0.27153684210526324,
+      "p95_ms": 0.3164
+    },
+    "instance_upload": {
+      "count": 95,
+      "max_ms": 0.6309999999999999,
+      "mean_ms": 0.30796,
+      "p95_ms": 0.6172
+    },
+    "prepare": {
+      "count": 95,
+      "max_ms": 1.2375,
+      "mean_ms": 0.8704684210526319,
+      "p95_ms": 1.2027999999999999
+    },
+    "present": {
+      "count": 95,
+      "max_ms": 0.11,
+      "mean_ms": 0.08266736842105259,
+      "p95_ms": 0.104
+    }
+  },
+  "resolution": [
+    1280,
+    720
+  ],
+  "simulation_hz_measured": 56.42170289761769,
+  "submitted_instances_last_frame": 71302,
+  "tick": {
+    "count": 452,
+    "max_ms": 31.3386,
+    "mean_ms": 15.235834734513269,
+    "p95_ms": 20.6618
+  },
+  "upload_bytes_last_frame": 2908616,
+  "artifact_evidence": {
+    "runtime_sha256": "7388243652498f201969391fe05a36fa119e96f5f388cafde75fb0e8df653570"
+  }
+}

@@ -5,6 +5,7 @@ edition.workspace = true
 license.workspace = true
 
 [features]
+native-codegen = ["mlua/luau-jit"]
 default = ["dev-tools", "all-systems"]
 dev-tools = ["dep:schemars", "preview-tools"]
 preview-tools = []
@@ -38,3 +39,7 @@ tempfile = "3"
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.61.2", features = ["Win32_Foundation", "Win32_Storage_FileSystem"] }
+
+[[example]]
+name = "profile_native"
+required-features = ["dev-tools"]

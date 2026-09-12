@@ -1,0 +1,1187 @@
+{
+  "relocation": {
+    "passed": true,
+    "checks": [
+      {
+        "args": [
+          "sdk",
+          "inspect"
+        ],
+        "ok": true,
+        "expected_success": true,
+        "exit": 0
+      },
+      {
+        "args": [
+          "--project",
+          "<acceptance-root>\\game",
+          "export",
+          "platform",
+          "--target",
+          "web",
+          "--output",
+          "<acceptance-root>\\production"
+        ],
+        "ok": true,
+        "expected_success": true,
+        "exit": 0
+      },
+      {
+        "args": [
+          "--project",
+          "<acceptance-root>\\game",
+          "export",
+          "platform",
+          "--target",
+          "web",
+          "--output",
+          "<acceptance-root>\\development",
+          "--development"
+        ],
+        "ok": true,
+        "expected_success": true,
+        "exit": 0
+      },
+      {
+        "args": [
+          "--project",
+          "<acceptance-root>\\game",
+          "export",
+          "platform",
+          "--target",
+          "ios",
+          "--output",
+          "<acceptance-root>\\unsupported"
+        ],
+        "ok": false,
+        "expected_success": false,
+        "exit": 1
+      },
+      {
+        "args": [
+          "--project",
+          "<acceptance-root>\\game",
+          "export",
+          "platform",
+          "--target",
+          "android",
+          "--output",
+          "<acceptance-root>\\unsupported"
+        ],
+        "ok": false,
+        "expected_success": false,
+        "exit": 1
+      },
+      {
+        "args": [
+          "--project",
+          "<acceptance-root>\\game",
+          "export",
+          "platform",
+          "--target",
+          "windows",
+          "--output",
+          "<acceptance-root>\\unsupported"
+        ],
+        "ok": false,
+        "expected_success": false,
+        "exit": 1
+      },
+      {
+        "args": [
+          "--project",
+          "<acceptance-root>\\game",
+          "export",
+          "platform",
+          "--target",
+          "typo",
+          "--output",
+          "<acceptance-root>\\unsupported"
+        ],
+        "ok": false,
+        "expected_success": false,
+        "exit": 1
+      },
+      {
+        "args": [
+          "--project",
+          "<acceptance-root>\\game",
+          "export",
+          "platform",
+          "--target",
+          "web",
+          "--runtime-id",
+          "missing",
+          "--output",
+          "<acceptance-root>\\missing"
+        ],
+        "ok": false,
+        "expected_success": false,
+        "exit": 1
+      },
+      {
+        "args": [
+          "--project",
+          "<acceptance-root>\\game",
+          "export",
+          "platform",
+          "--target",
+          "web",
+          "--output",
+          "<acceptance-root>\\incompatible"
+        ],
+        "ok": false,
+        "expected_success": false,
+        "exit": 1
+      },
+      {
+        "args": [
+          "sdk",
+          "inspect"
+        ],
+        "ok": false,
+        "expected_success": false,
+        "exit": 1
+      },
+      {
+        "args": [
+          "sdk",
+          "inspect"
+        ],
+        "ok": false,
+        "expected_success": false,
+        "exit": 1
+      },
+      {
+        "args": [
+          "sdk",
+          "inspect"
+        ],
+        "ok": true,
+        "expected_success": true,
+        "exit": 0
+      },
+      {
+        "args": [
+          "--project",
+          "<acceptance-root>\\game",
+          "run",
+          "--frames",
+          "30"
+        ],
+        "ok": true,
+        "expected_success": true,
+        "exit": 0
+      }
+    ],
+    "cli_digest": "sha256:88a274cd7dd7cc303e2b9650a3e89440cd0f5de46f6ffbee988f4054b7aaf6d3",
+    "sdk_files": 42,
+    "note": "CLI and templates selected from the relocated SDK in an empty cwd; no Rust/Node/build toolchain invoked by export. Unsupported targets create no output."
+  },
+  "browser": [
+    {
+      "variant": "production",
+      "status": "passed",
+      "ticks": 30,
+      "parity": true,
+      "cli_parity": true,
+      "runtime": {
+        "cargo_features": [
+          "camera2d",
+          "camera3d",
+          "jobs",
+          "random",
+          "save",
+          "ui"
+        ],
+        "compiled_systems": [
+          "camera2d",
+          "camera3d",
+          "input",
+          "jobs",
+          "observation",
+          "random",
+          "save",
+          "ui",
+          "world"
+        ],
+        "dev_tools": false,
+        "exports": [
+          "init",
+          "alloc",
+          "load_project",
+          "set_save_payload",
+          "set_input_frame",
+          "set_viewport_aspect",
+          "set_instance_transport",
+          "tick",
+          "jobs_request",
+          "jobs_binary",
+          "observation_ptr",
+          "observation_len"
+        ],
+        "javascript": "unone-player.js",
+        "javascript_sha256": "1365a54841b987d6b49697b5b891139332f6c1a56e8f565bd99dd8c06377f418",
+        "preview_tools": false,
+        "profile": "release",
+        "source_commit": "7325d766415528f6493d9bc9cea0be490e4e6495",
+        "source_dirty": true,
+        "wasm": "unone_player.wasm",
+        "wasm_bytes": 1630429,
+        "wasm_sha256": "af86da67cf6a017ef3cc57fc7f01ad337ebf47876b503aad716c2f5e924956ca"
+      },
+      "runs": [
+        {
+          "kind": "worker",
+          "mode": "inline",
+          "digests": [
+            "sha256:e64bb9a73762f4bf241bbefb9f6906013918ce70ecd32a1379c9ef818fd00813",
+            "sha256:116ccfbc1a39e032ae683c8ecfa0a0939ae625a7c0a42517c463b3cb1c63252d",
+            "sha256:e27809db2cc857b5857d606ec8e1f4b23210d1ec586ee317598b1e9cba6a11ed",
+            "sha256:c9b3e51c163da7f6d5a79436529ccfe0775f7cdea2edae29d3706e9133c4471d",
+            "sha256:5abe291563128560444472edd1c9b5d85687a555653aa2cb7905f3b25da5162b",
+            "sha256:8ecce4d5b4b2b232f556a54e9a319d85cea5cd7f1bbb3b5e27d2329f8d0f53f8",
+            "sha256:14f597bf78b6068b4beb8063d04ca7bc4848dca7e7491b2b609c29e26f834a14",
+            "sha256:a6088ec0239ae68e80bd3f3c4edc6689f2024cafc698791f4f0c5b8c4f69aaf2",
+            "sha256:dba6974f97988f7b5b45d9085ae065d6381a1c36cdb70fabff9d3b067b7dfabd",
+            "sha256:aaa837b245d95bdc8bad5f0f640a4a059a4a57dff9e642142059c877ac02d470",
+            "sha256:7923f0887e17010cbf62d423cd0b1f67feea4fde8f1fab1c5d6a024e4bf8c02c",
+            "sha256:b85b8e33efdd822bbaa38c94e8a07072e2538e35613cc1daacecbe72b6141f73",
+            "sha256:3f3e8aeef81c639cc2add4020695bbbefafec07ccdd491cb3d6706baec3422cc",
+            "sha256:ffe9414bf9e5609be2f7f8eadad90aed298aebd55437885eb0c9923bf3dc95d8",
+            "sha256:fc38803da41ebcafb3828bac7f2dcf9faf4308a8507388dd6d008b6752a69d5c",
+            "sha256:d8f625e7122789e8e5b43a273d00dbe5a68f96b855eae6c319e7df164bb2703b",
+            "sha256:379d3d5f9b0f5153a70776f05eb4e3bc247b528988865072e8aa042c39feb7f6",
+            "sha256:bf339d54fdef9e6990232f618f04d182bacf10753e3ebc6faabcad0a1e730e3e",
+            "sha256:d46efc3e7e616a0f3f794398275996bdd97ecc14f5cd8175f72aa4c4c2470999",
+            "sha256:68c56f41ee069b90ac1545cd27e1afbbee77fd22273bf2e6d94e23731dce9386",
+            "sha256:ea1b09e83315ea3a3dae6d70c4846ca4c1af16b7b3648ee16a4a14cc918d0b3b",
+            "sha256:382e152f2e6887eb313fcd06344b6ee7b59a9579b02fb14ccc333282ba119451",
+            "sha256:4e0a53209e143d1765f20b87f7890aceeb8ea8ab314b8ef4cd18be3ed1fcbaa4",
+            "sha256:27b34c7b469cd0ebaced0f691b92dbff586b83b70ddefb20bcbceae12e0b470d",
+            "sha256:168cdb18523133750c10d958e555324d05a329925964b88ce23f6bea7f3966f9",
+            "sha256:b4c03fb44b9129a08cff34f71a4dd62338e1dc355cc7af24bfaed8b32b4b443e",
+            "sha256:9abaf5d89182ebb11628b69d30f071bb93df6999419fcb911b6e12228cd8c97e",
+            "sha256:3671b7320f898b2e0b77220dac0c7c5571274013d6b0f285bb6646ae9b658707",
+            "sha256:ace0d74b2d6612f4b1c9da75cc4253bca6fd5b739be3d93ace60a9bf3706f4e3",
+            "sha256:88a274cd7dd7cc303e2b9650a3e89440cd0f5de46f6ffbee988f4054b7aaf6d3"
+          ],
+          "report": {
+            "backend": "worker",
+            "jobs": {
+              "policy": {
+                "workers": 0,
+                "reason": "explicit_inline",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "inline"
+              },
+              "pool": null,
+              "binary_transport": {
+                "format": "UJB1",
+                "requests": 0,
+                "metadata_sent_bytes": 0,
+                "metadata_received_bytes": 0,
+                "payload_sent_bytes": 0,
+                "payload_received_bytes": 0,
+                "copied_payload_from_wasm_bytes": 0,
+                "encode_ms": 0,
+                "abi_ms": 0,
+                "decode_ms": 0,
+                "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+              },
+              "fault": null
+            },
+            "execute_ms": 19.200000017881393,
+            "pack_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "transfer": {
+              "copied_bytes": 0,
+              "allocated_bytes": 0,
+              "reused_bytes": 0,
+              "unchanged_batches": 0,
+              "pooled_bytes": 0,
+              "pooled_buffers": 0
+            },
+            "pending": 0,
+            "closed": false
+          }
+        },
+        {
+          "kind": "main",
+          "mode": "workers",
+          "digests": [
+            "sha256:e64bb9a73762f4bf241bbefb9f6906013918ce70ecd32a1379c9ef818fd00813",
+            "sha256:116ccfbc1a39e032ae683c8ecfa0a0939ae625a7c0a42517c463b3cb1c63252d",
+            "sha256:e27809db2cc857b5857d606ec8e1f4b23210d1ec586ee317598b1e9cba6a11ed",
+            "sha256:c9b3e51c163da7f6d5a79436529ccfe0775f7cdea2edae29d3706e9133c4471d",
+            "sha256:5abe291563128560444472edd1c9b5d85687a555653aa2cb7905f3b25da5162b",
+            "sha256:8ecce4d5b4b2b232f556a54e9a319d85cea5cd7f1bbb3b5e27d2329f8d0f53f8",
+            "sha256:14f597bf78b6068b4beb8063d04ca7bc4848dca7e7491b2b609c29e26f834a14",
+            "sha256:a6088ec0239ae68e80bd3f3c4edc6689f2024cafc698791f4f0c5b8c4f69aaf2",
+            "sha256:dba6974f97988f7b5b45d9085ae065d6381a1c36cdb70fabff9d3b067b7dfabd",
+            "sha256:aaa837b245d95bdc8bad5f0f640a4a059a4a57dff9e642142059c877ac02d470",
+            "sha256:7923f0887e17010cbf62d423cd0b1f67feea4fde8f1fab1c5d6a024e4bf8c02c",
+            "sha256:b85b8e33efdd822bbaa38c94e8a07072e2538e35613cc1daacecbe72b6141f73",
+            "sha256:3f3e8aeef81c639cc2add4020695bbbefafec07ccdd491cb3d6706baec3422cc",
+            "sha256:ffe9414bf9e5609be2f7f8eadad90aed298aebd55437885eb0c9923bf3dc95d8",
+            "sha256:fc38803da41ebcafb3828bac7f2dcf9faf4308a8507388dd6d008b6752a69d5c",
+            "sha256:d8f625e7122789e8e5b43a273d00dbe5a68f96b855eae6c319e7df164bb2703b",
+            "sha256:379d3d5f9b0f5153a70776f05eb4e3bc247b528988865072e8aa042c39feb7f6",
+            "sha256:bf339d54fdef9e6990232f618f04d182bacf10753e3ebc6faabcad0a1e730e3e",
+            "sha256:d46efc3e7e616a0f3f794398275996bdd97ecc14f5cd8175f72aa4c4c2470999",
+            "sha256:68c56f41ee069b90ac1545cd27e1afbbee77fd22273bf2e6d94e23731dce9386",
+            "sha256:ea1b09e83315ea3a3dae6d70c4846ca4c1af16b7b3648ee16a4a14cc918d0b3b",
+            "sha256:382e152f2e6887eb313fcd06344b6ee7b59a9579b02fb14ccc333282ba119451",
+            "sha256:4e0a53209e143d1765f20b87f7890aceeb8ea8ab314b8ef4cd18be3ed1fcbaa4",
+            "sha256:27b34c7b469cd0ebaced0f691b92dbff586b83b70ddefb20bcbceae12e0b470d",
+            "sha256:168cdb18523133750c10d958e555324d05a329925964b88ce23f6bea7f3966f9",
+            "sha256:b4c03fb44b9129a08cff34f71a4dd62338e1dc355cc7af24bfaed8b32b4b443e",
+            "sha256:9abaf5d89182ebb11628b69d30f071bb93df6999419fcb911b6e12228cd8c97e",
+            "sha256:3671b7320f898b2e0b77220dac0c7c5571274013d6b0f285bb6646ae9b658707",
+            "sha256:ace0d74b2d6612f4b1c9da75cc4253bca6fd5b739be3d93ace60a9bf3706f4e3",
+            "sha256:88a274cd7dd7cc303e2b9650a3e89440cd0f5de46f6ffbee988f4054b7aaf6d3"
+          ],
+          "report": {
+            "backend": "main",
+            "jobs": {
+              "policy": {
+                "workers": 2,
+                "reason": "bounded_device_budget",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "workers"
+              },
+              "pool": {
+                "submitted": 120,
+                "completed": 116,
+                "inline_jobs": 0,
+                "worker_jobs": 118,
+                "input_bytes": 960,
+                "output_bytes": 475136,
+                "queue_ms": 289.1000001132488,
+                "roundtrip_ms": 324.3000001013279,
+                "execution_ms": 296.89999199999994,
+                "kernel_errors": 0,
+                "failures": 0,
+                "worker_limit": 2,
+                "workers_started": 2,
+                "active": 2,
+                "queued": 2,
+                "closed": false,
+                "transport": "UJB1 binary payloads + transferable ArrayBuffer",
+                "worker_transport": [
+                  {
+                    "format": "UJB1",
+                    "requests": 58,
+                    "metadata_sent_bytes": 26042,
+                    "metadata_received_bytes": 11634,
+                    "payload_sent_bytes": 464,
+                    "payload_received_bytes": 237568,
+                    "copied_payload_from_wasm_bytes": 237568,
+                    "encode_ms": 1,
+                    "abi_ms": 149.0999999344349,
+                    "decode_ms": 2.699999988079071,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  },
+                  {
+                    "format": "UJB1",
+                    "requests": 58,
+                    "metadata_sent_bytes": 26042,
+                    "metadata_received_bytes": 11309,
+                    "payload_sent_bytes": 464,
+                    "payload_received_bytes": 237568,
+                    "copied_payload_from_wasm_bytes": 237568,
+                    "encode_ms": 1.2999999523162842,
+                    "abi_ms": 150.79999992251396,
+                    "decode_ms": 1.9999999105930328,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  }
+                ],
+                "timing_scope": "host-local, excluded from canonical state"
+              },
+              "binary_transport": {
+                "format": "UJB1",
+                "requests": 146,
+                "metadata_sent_bytes": 22939,
+                "metadata_received_bytes": 58244,
+                "payload_sent_bytes": 475136,
+                "payload_received_bytes": 960,
+                "copied_payload_from_wasm_bytes": 960,
+                "encode_ms": 1.7000000774860382,
+                "abi_ms": 2.8999999463558197,
+                "decode_ms": 1.4000000059604645,
+                "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+              },
+              "fault": null
+            },
+            "execute_ms": 10.5,
+            "wasm_linear_bytes": 16777216,
+            "pending": 0,
+            "closed": false
+          }
+        },
+        {
+          "kind": "worker",
+          "mode": "workers",
+          "digests": [
+            "sha256:e64bb9a73762f4bf241bbefb9f6906013918ce70ecd32a1379c9ef818fd00813",
+            "sha256:116ccfbc1a39e032ae683c8ecfa0a0939ae625a7c0a42517c463b3cb1c63252d",
+            "sha256:e27809db2cc857b5857d606ec8e1f4b23210d1ec586ee317598b1e9cba6a11ed",
+            "sha256:c9b3e51c163da7f6d5a79436529ccfe0775f7cdea2edae29d3706e9133c4471d",
+            "sha256:5abe291563128560444472edd1c9b5d85687a555653aa2cb7905f3b25da5162b",
+            "sha256:8ecce4d5b4b2b232f556a54e9a319d85cea5cd7f1bbb3b5e27d2329f8d0f53f8",
+            "sha256:14f597bf78b6068b4beb8063d04ca7bc4848dca7e7491b2b609c29e26f834a14",
+            "sha256:a6088ec0239ae68e80bd3f3c4edc6689f2024cafc698791f4f0c5b8c4f69aaf2",
+            "sha256:dba6974f97988f7b5b45d9085ae065d6381a1c36cdb70fabff9d3b067b7dfabd",
+            "sha256:aaa837b245d95bdc8bad5f0f640a4a059a4a57dff9e642142059c877ac02d470",
+            "sha256:7923f0887e17010cbf62d423cd0b1f67feea4fde8f1fab1c5d6a024e4bf8c02c",
+            "sha256:b85b8e33efdd822bbaa38c94e8a07072e2538e35613cc1daacecbe72b6141f73",
+            "sha256:3f3e8aeef81c639cc2add4020695bbbefafec07ccdd491cb3d6706baec3422cc",
+            "sha256:ffe9414bf9e5609be2f7f8eadad90aed298aebd55437885eb0c9923bf3dc95d8",
+            "sha256:fc38803da41ebcafb3828bac7f2dcf9faf4308a8507388dd6d008b6752a69d5c",
+            "sha256:d8f625e7122789e8e5b43a273d00dbe5a68f96b855eae6c319e7df164bb2703b",
+            "sha256:379d3d5f9b0f5153a70776f05eb4e3bc247b528988865072e8aa042c39feb7f6",
+            "sha256:bf339d54fdef9e6990232f618f04d182bacf10753e3ebc6faabcad0a1e730e3e",
+            "sha256:d46efc3e7e616a0f3f794398275996bdd97ecc14f5cd8175f72aa4c4c2470999",
+            "sha256:68c56f41ee069b90ac1545cd27e1afbbee77fd22273bf2e6d94e23731dce9386",
+            "sha256:ea1b09e83315ea3a3dae6d70c4846ca4c1af16b7b3648ee16a4a14cc918d0b3b",
+            "sha256:382e152f2e6887eb313fcd06344b6ee7b59a9579b02fb14ccc333282ba119451",
+            "sha256:4e0a53209e143d1765f20b87f7890aceeb8ea8ab314b8ef4cd18be3ed1fcbaa4",
+            "sha256:27b34c7b469cd0ebaced0f691b92dbff586b83b70ddefb20bcbceae12e0b470d",
+            "sha256:168cdb18523133750c10d958e555324d05a329925964b88ce23f6bea7f3966f9",
+            "sha256:b4c03fb44b9129a08cff34f71a4dd62338e1dc355cc7af24bfaed8b32b4b443e",
+            "sha256:9abaf5d89182ebb11628b69d30f071bb93df6999419fcb911b6e12228cd8c97e",
+            "sha256:3671b7320f898b2e0b77220dac0c7c5571274013d6b0f285bb6646ae9b658707",
+            "sha256:ace0d74b2d6612f4b1c9da75cc4253bca6fd5b739be3d93ace60a9bf3706f4e3",
+            "sha256:88a274cd7dd7cc303e2b9650a3e89440cd0f5de46f6ffbee988f4054b7aaf6d3"
+          ],
+          "report": {
+            "backend": "worker",
+            "jobs": {
+              "policy": {
+                "workers": 2,
+                "reason": "bounded_device_budget",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "workers"
+              },
+              "pool": {
+                "submitted": 120,
+                "completed": 116,
+                "inline_jobs": 0,
+                "worker_jobs": 118,
+                "input_bytes": 960,
+                "output_bytes": 475136,
+                "queue_ms": 200.99999970197678,
+                "roundtrip_ms": 252.8999999165535,
+                "execution_ms": 233.89999899999978,
+                "kernel_errors": 0,
+                "failures": 0,
+                "worker_limit": 2,
+                "workers_started": 2,
+                "active": 2,
+                "queued": 2,
+                "closed": false,
+                "transport": "UJB1 binary payloads + transferable ArrayBuffer",
+                "worker_transport": [
+                  {
+                    "format": "UJB1",
+                    "requests": 58,
+                    "metadata_sent_bytes": 26042,
+                    "metadata_received_bytes": 11351,
+                    "payload_sent_bytes": 464,
+                    "payload_received_bytes": 237568,
+                    "copied_payload_from_wasm_bytes": 237568,
+                    "encode_ms": 0.800000011920929,
+                    "abi_ms": 118.59999996423721,
+                    "decode_ms": 1.6000000536441803,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  },
+                  {
+                    "format": "UJB1",
+                    "requests": 58,
+                    "metadata_sent_bytes": 26042,
+                    "metadata_received_bytes": 11244,
+                    "payload_sent_bytes": 464,
+                    "payload_received_bytes": 237568,
+                    "copied_payload_from_wasm_bytes": 237568,
+                    "encode_ms": 0.699999988079071,
+                    "abi_ms": 118.40000006556511,
+                    "decode_ms": 0.9999999403953552,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  }
+                ],
+                "timing_scope": "host-local, excluded from canonical state"
+              },
+              "binary_transport": {
+                "format": "UJB1",
+                "requests": 146,
+                "metadata_sent_bytes": 22591,
+                "metadata_received_bytes": 58244,
+                "payload_sent_bytes": 475136,
+                "payload_received_bytes": 960,
+                "copied_payload_from_wasm_bytes": 960,
+                "encode_ms": 1.100000023841858,
+                "abi_ms": 1.2000000178813934,
+                "decode_ms": 0.8999999463558197,
+                "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+              },
+              "fault": null
+            },
+            "execute_ms": 8.099999994039536,
+            "pack_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "transfer": {
+              "copied_bytes": 0,
+              "allocated_bytes": 0,
+              "reused_bytes": 0,
+              "unchanged_batches": 0,
+              "pooled_bytes": 0,
+              "pooled_buffers": 0
+            },
+            "pending": 0,
+            "closed": false
+          }
+        }
+      ]
+    },
+    {
+      "variant": "development",
+      "status": "passed",
+      "ticks": 30,
+      "parity": true,
+      "cli_parity": true,
+      "runtime": {
+        "cargo_features": [
+          "camera2d",
+          "camera3d",
+          "jobs",
+          "random",
+          "save",
+          "ui",
+          "preview-tools"
+        ],
+        "compiled_systems": [
+          "camera2d",
+          "camera3d",
+          "input",
+          "jobs",
+          "observation",
+          "random",
+          "save",
+          "ui",
+          "world"
+        ],
+        "dev_tools": false,
+        "exports": [
+          "init",
+          "alloc",
+          "load_project",
+          "set_save_payload",
+          "set_input_frame",
+          "set_viewport_aspect",
+          "set_instance_transport",
+          "tick",
+          "jobs_request",
+          "jobs_binary",
+          "observation_ptr",
+          "observation_len",
+          "developer_request"
+        ],
+        "javascript": "unone-player.js",
+        "javascript_sha256": "3671223e0dc36b22a39e4baf28dd4831441bfb71e469cc8bcc808d1774d9c270",
+        "preview_tools": true,
+        "profile": "release",
+        "source_commit": "45c15ace2a6ee8d12fdb7f3127a9ad48be16026a",
+        "source_dirty": true,
+        "wasm": "unone_player.wasm",
+        "wasm_bytes": 1750071,
+        "wasm_sha256": "bd6ebc69bb087166b9349aade35bff792dee687872d8b86e4c1ecb265ce6e046"
+      },
+      "runs": [
+        {
+          "kind": "worker",
+          "mode": "inline",
+          "digests": [
+            "sha256:e64bb9a73762f4bf241bbefb9f6906013918ce70ecd32a1379c9ef818fd00813",
+            "sha256:116ccfbc1a39e032ae683c8ecfa0a0939ae625a7c0a42517c463b3cb1c63252d",
+            "sha256:e27809db2cc857b5857d606ec8e1f4b23210d1ec586ee317598b1e9cba6a11ed",
+            "sha256:c9b3e51c163da7f6d5a79436529ccfe0775f7cdea2edae29d3706e9133c4471d",
+            "sha256:5abe291563128560444472edd1c9b5d85687a555653aa2cb7905f3b25da5162b",
+            "sha256:8ecce4d5b4b2b232f556a54e9a319d85cea5cd7f1bbb3b5e27d2329f8d0f53f8",
+            "sha256:14f597bf78b6068b4beb8063d04ca7bc4848dca7e7491b2b609c29e26f834a14",
+            "sha256:a6088ec0239ae68e80bd3f3c4edc6689f2024cafc698791f4f0c5b8c4f69aaf2",
+            "sha256:dba6974f97988f7b5b45d9085ae065d6381a1c36cdb70fabff9d3b067b7dfabd",
+            "sha256:aaa837b245d95bdc8bad5f0f640a4a059a4a57dff9e642142059c877ac02d470",
+            "sha256:7923f0887e17010cbf62d423cd0b1f67feea4fde8f1fab1c5d6a024e4bf8c02c",
+            "sha256:b85b8e33efdd822bbaa38c94e8a07072e2538e35613cc1daacecbe72b6141f73",
+            "sha256:3f3e8aeef81c639cc2add4020695bbbefafec07ccdd491cb3d6706baec3422cc",
+            "sha256:ffe9414bf9e5609be2f7f8eadad90aed298aebd55437885eb0c9923bf3dc95d8",
+            "sha256:fc38803da41ebcafb3828bac7f2dcf9faf4308a8507388dd6d008b6752a69d5c",
+            "sha256:d8f625e7122789e8e5b43a273d00dbe5a68f96b855eae6c319e7df164bb2703b",
+            "sha256:379d3d5f9b0f5153a70776f05eb4e3bc247b528988865072e8aa042c39feb7f6",
+            "sha256:bf339d54fdef9e6990232f618f04d182bacf10753e3ebc6faabcad0a1e730e3e",
+            "sha256:d46efc3e7e616a0f3f794398275996bdd97ecc14f5cd8175f72aa4c4c2470999",
+            "sha256:68c56f41ee069b90ac1545cd27e1afbbee77fd22273bf2e6d94e23731dce9386",
+            "sha256:ea1b09e83315ea3a3dae6d70c4846ca4c1af16b7b3648ee16a4a14cc918d0b3b",
+            "sha256:382e152f2e6887eb313fcd06344b6ee7b59a9579b02fb14ccc333282ba119451",
+            "sha256:4e0a53209e143d1765f20b87f7890aceeb8ea8ab314b8ef4cd18be3ed1fcbaa4",
+            "sha256:27b34c7b469cd0ebaced0f691b92dbff586b83b70ddefb20bcbceae12e0b470d",
+            "sha256:168cdb18523133750c10d958e555324d05a329925964b88ce23f6bea7f3966f9",
+            "sha256:b4c03fb44b9129a08cff34f71a4dd62338e1dc355cc7af24bfaed8b32b4b443e",
+            "sha256:9abaf5d89182ebb11628b69d30f071bb93df6999419fcb911b6e12228cd8c97e",
+            "sha256:3671b7320f898b2e0b77220dac0c7c5571274013d6b0f285bb6646ae9b658707",
+            "sha256:ace0d74b2d6612f4b1c9da75cc4253bca6fd5b739be3d93ace60a9bf3706f4e3",
+            "sha256:88a274cd7dd7cc303e2b9650a3e89440cd0f5de46f6ffbee988f4054b7aaf6d3"
+          ],
+          "report": {
+            "backend": "worker",
+            "jobs": {
+              "policy": {
+                "workers": 0,
+                "reason": "explicit_inline",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "inline"
+              },
+              "pool": null,
+              "binary_transport": {
+                "format": "UJB1",
+                "requests": 0,
+                "metadata_sent_bytes": 0,
+                "metadata_received_bytes": 0,
+                "payload_sent_bytes": 0,
+                "payload_received_bytes": 0,
+                "copied_payload_from_wasm_bytes": 0,
+                "encode_ms": 0,
+                "abi_ms": 0,
+                "decode_ms": 0,
+                "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+              },
+              "fault": null
+            },
+            "execute_ms": 16,
+            "pack_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "transfer": {
+              "copied_bytes": 0,
+              "allocated_bytes": 0,
+              "reused_bytes": 0,
+              "unchanged_batches": 0,
+              "pooled_bytes": 0,
+              "pooled_buffers": 0
+            },
+            "pending": 0,
+            "closed": false
+          }
+        },
+        {
+          "kind": "main",
+          "mode": "workers",
+          "digests": [
+            "sha256:e64bb9a73762f4bf241bbefb9f6906013918ce70ecd32a1379c9ef818fd00813",
+            "sha256:116ccfbc1a39e032ae683c8ecfa0a0939ae625a7c0a42517c463b3cb1c63252d",
+            "sha256:e27809db2cc857b5857d606ec8e1f4b23210d1ec586ee317598b1e9cba6a11ed",
+            "sha256:c9b3e51c163da7f6d5a79436529ccfe0775f7cdea2edae29d3706e9133c4471d",
+            "sha256:5abe291563128560444472edd1c9b5d85687a555653aa2cb7905f3b25da5162b",
+            "sha256:8ecce4d5b4b2b232f556a54e9a319d85cea5cd7f1bbb3b5e27d2329f8d0f53f8",
+            "sha256:14f597bf78b6068b4beb8063d04ca7bc4848dca7e7491b2b609c29e26f834a14",
+            "sha256:a6088ec0239ae68e80bd3f3c4edc6689f2024cafc698791f4f0c5b8c4f69aaf2",
+            "sha256:dba6974f97988f7b5b45d9085ae065d6381a1c36cdb70fabff9d3b067b7dfabd",
+            "sha256:aaa837b245d95bdc8bad5f0f640a4a059a4a57dff9e642142059c877ac02d470",
+            "sha256:7923f0887e17010cbf62d423cd0b1f67feea4fde8f1fab1c5d6a024e4bf8c02c",
+            "sha256:b85b8e33efdd822bbaa38c94e8a07072e2538e35613cc1daacecbe72b6141f73",
+            "sha256:3f3e8aeef81c639cc2add4020695bbbefafec07ccdd491cb3d6706baec3422cc",
+            "sha256:ffe9414bf9e5609be2f7f8eadad90aed298aebd55437885eb0c9923bf3dc95d8",
+            "sha256:fc38803da41ebcafb3828bac7f2dcf9faf4308a8507388dd6d008b6752a69d5c",
+            "sha256:d8f625e7122789e8e5b43a273d00dbe5a68f96b855eae6c319e7df164bb2703b",
+            "sha256:379d3d5f9b0f5153a70776f05eb4e3bc247b528988865072e8aa042c39feb7f6",
+            "sha256:bf339d54fdef9e6990232f618f04d182bacf10753e3ebc6faabcad0a1e730e3e",
+            "sha256:d46efc3e7e616a0f3f794398275996bdd97ecc14f5cd8175f72aa4c4c2470999",
+            "sha256:68c56f41ee069b90ac1545cd27e1afbbee77fd22273bf2e6d94e23731dce9386",
+            "sha256:ea1b09e83315ea3a3dae6d70c4846ca4c1af16b7b3648ee16a4a14cc918d0b3b",
+            "sha256:382e152f2e6887eb313fcd06344b6ee7b59a9579b02fb14ccc333282ba119451",
+            "sha256:4e0a53209e143d1765f20b87f7890aceeb8ea8ab314b8ef4cd18be3ed1fcbaa4",
+            "sha256:27b34c7b469cd0ebaced0f691b92dbff586b83b70ddefb20bcbceae12e0b470d",
+            "sha256:168cdb18523133750c10d958e555324d05a329925964b88ce23f6bea7f3966f9",
+            "sha256:b4c03fb44b9129a08cff34f71a4dd62338e1dc355cc7af24bfaed8b32b4b443e",
+            "sha256:9abaf5d89182ebb11628b69d30f071bb93df6999419fcb911b6e12228cd8c97e",
+            "sha256:3671b7320f898b2e0b77220dac0c7c5571274013d6b0f285bb6646ae9b658707",
+            "sha256:ace0d74b2d6612f4b1c9da75cc4253bca6fd5b739be3d93ace60a9bf3706f4e3",
+            "sha256:88a274cd7dd7cc303e2b9650a3e89440cd0f5de46f6ffbee988f4054b7aaf6d3"
+          ],
+          "report": {
+            "backend": "main",
+            "jobs": {
+              "policy": {
+                "workers": 2,
+                "reason": "bounded_device_budget",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "workers"
+              },
+              "pool": {
+                "submitted": 120,
+                "completed": 116,
+                "inline_jobs": 0,
+                "worker_jobs": 118,
+                "input_bytes": 960,
+                "output_bytes": 475136,
+                "queue_ms": 257.80000004172325,
+                "roundtrip_ms": 316.10000002384186,
+                "execution_ms": 296.4000000000001,
+                "kernel_errors": 0,
+                "failures": 0,
+                "worker_limit": 2,
+                "workers_started": 2,
+                "active": 2,
+                "queued": 2,
+                "closed": false,
+                "transport": "UJB1 binary payloads + transferable ArrayBuffer",
+                "worker_transport": [
+                  {
+                    "format": "UJB1",
+                    "requests": 58,
+                    "metadata_sent_bytes": 26042,
+                    "metadata_received_bytes": 4395,
+                    "payload_sent_bytes": 464,
+                    "payload_received_bytes": 237568,
+                    "copied_payload_from_wasm_bytes": 237568,
+                    "encode_ms": 1.3000000417232513,
+                    "abi_ms": 149.2999999821186,
+                    "decode_ms": 1.0000000298023224,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  },
+                  {
+                    "format": "UJB1",
+                    "requests": 58,
+                    "metadata_sent_bytes": 26042,
+                    "metadata_received_bytes": 4395,
+                    "payload_sent_bytes": 464,
+                    "payload_received_bytes": 237568,
+                    "copied_payload_from_wasm_bytes": 237568,
+                    "encode_ms": 1.3000001013278961,
+                    "abi_ms": 149.19999986886978,
+                    "decode_ms": 0.9000000357627869,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  }
+                ],
+                "timing_scope": "host-local, excluded from canonical state"
+              },
+              "binary_transport": {
+                "format": "UJB1",
+                "requests": 146,
+                "metadata_sent_bytes": 9254,
+                "metadata_received_bytes": 58244,
+                "payload_sent_bytes": 475136,
+                "payload_received_bytes": 960,
+                "copied_payload_from_wasm_bytes": 960,
+                "encode_ms": 0.5,
+                "abi_ms": 2,
+                "decode_ms": 0.8999999761581421,
+                "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+              },
+              "fault": null
+            },
+            "execute_ms": 10.100000023841858,
+            "wasm_linear_bytes": 16777216,
+            "pending": 0,
+            "closed": false
+          }
+        },
+        {
+          "kind": "worker",
+          "mode": "workers",
+          "digests": [
+            "sha256:e64bb9a73762f4bf241bbefb9f6906013918ce70ecd32a1379c9ef818fd00813",
+            "sha256:116ccfbc1a39e032ae683c8ecfa0a0939ae625a7c0a42517c463b3cb1c63252d",
+            "sha256:e27809db2cc857b5857d606ec8e1f4b23210d1ec586ee317598b1e9cba6a11ed",
+            "sha256:c9b3e51c163da7f6d5a79436529ccfe0775f7cdea2edae29d3706e9133c4471d",
+            "sha256:5abe291563128560444472edd1c9b5d85687a555653aa2cb7905f3b25da5162b",
+            "sha256:8ecce4d5b4b2b232f556a54e9a319d85cea5cd7f1bbb3b5e27d2329f8d0f53f8",
+            "sha256:14f597bf78b6068b4beb8063d04ca7bc4848dca7e7491b2b609c29e26f834a14",
+            "sha256:a6088ec0239ae68e80bd3f3c4edc6689f2024cafc698791f4f0c5b8c4f69aaf2",
+            "sha256:dba6974f97988f7b5b45d9085ae065d6381a1c36cdb70fabff9d3b067b7dfabd",
+            "sha256:aaa837b245d95bdc8bad5f0f640a4a059a4a57dff9e642142059c877ac02d470",
+            "sha256:7923f0887e17010cbf62d423cd0b1f67feea4fde8f1fab1c5d6a024e4bf8c02c",
+            "sha256:b85b8e33efdd822bbaa38c94e8a07072e2538e35613cc1daacecbe72b6141f73",
+            "sha256:3f3e8aeef81c639cc2add4020695bbbefafec07ccdd491cb3d6706baec3422cc",
+            "sha256:ffe9414bf9e5609be2f7f8eadad90aed298aebd55437885eb0c9923bf3dc95d8",
+            "sha256:fc38803da41ebcafb3828bac7f2dcf9faf4308a8507388dd6d008b6752a69d5c",
+            "sha256:d8f625e7122789e8e5b43a273d00dbe5a68f96b855eae6c319e7df164bb2703b",
+            "sha256:379d3d5f9b0f5153a70776f05eb4e3bc247b528988865072e8aa042c39feb7f6",
+            "sha256:bf339d54fdef9e6990232f618f04d182bacf10753e3ebc6faabcad0a1e730e3e",
+            "sha256:d46efc3e7e616a0f3f794398275996bdd97ecc14f5cd8175f72aa4c4c2470999",
+            "sha256:68c56f41ee069b90ac1545cd27e1afbbee77fd22273bf2e6d94e23731dce9386",
+            "sha256:ea1b09e83315ea3a3dae6d70c4846ca4c1af16b7b3648ee16a4a14cc918d0b3b",
+            "sha256:382e152f2e6887eb313fcd06344b6ee7b59a9579b02fb14ccc333282ba119451",
+            "sha256:4e0a53209e143d1765f20b87f7890aceeb8ea8ab314b8ef4cd18be3ed1fcbaa4",
+            "sha256:27b34c7b469cd0ebaced0f691b92dbff586b83b70ddefb20bcbceae12e0b470d",
+            "sha256:168cdb18523133750c10d958e555324d05a329925964b88ce23f6bea7f3966f9",
+            "sha256:b4c03fb44b9129a08cff34f71a4dd62338e1dc355cc7af24bfaed8b32b4b443e",
+            "sha256:9abaf5d89182ebb11628b69d30f071bb93df6999419fcb911b6e12228cd8c97e",
+            "sha256:3671b7320f898b2e0b77220dac0c7c5571274013d6b0f285bb6646ae9b658707",
+            "sha256:ace0d74b2d6612f4b1c9da75cc4253bca6fd5b739be3d93ace60a9bf3706f4e3",
+            "sha256:88a274cd7dd7cc303e2b9650a3e89440cd0f5de46f6ffbee988f4054b7aaf6d3"
+          ],
+          "report": {
+            "backend": "worker",
+            "jobs": {
+              "policy": {
+                "workers": 2,
+                "reason": "bounded_device_budget",
+                "cores": 8,
+                "heap_bytes_per_worker": 33554432,
+                "memory_budget_bytes": 268435456,
+                "mode": "workers"
+              },
+              "pool": {
+                "submitted": 120,
+                "completed": 116,
+                "inline_jobs": 0,
+                "worker_jobs": 118,
+                "input_bytes": 960,
+                "output_bytes": 475136,
+                "queue_ms": 212.6000000834465,
+                "roundtrip_ms": 264.00000005960464,
+                "execution_ms": 245.9000019999999,
+                "kernel_errors": 0,
+                "failures": 0,
+                "worker_limit": 2,
+                "workers_started": 2,
+                "active": 2,
+                "queued": 2,
+                "closed": false,
+                "transport": "UJB1 binary payloads + transferable ArrayBuffer",
+                "worker_transport": [
+                  {
+                    "format": "UJB1",
+                    "requests": 58,
+                    "metadata_sent_bytes": 26042,
+                    "metadata_received_bytes": 4560,
+                    "payload_sent_bytes": 464,
+                    "payload_received_bytes": 237568,
+                    "copied_payload_from_wasm_bytes": 237568,
+                    "encode_ms": 0.8999999761581421,
+                    "abi_ms": 127.3999999165535,
+                    "decode_ms": 1.2000000476837158,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  },
+                  {
+                    "format": "UJB1",
+                    "requests": 58,
+                    "metadata_sent_bytes": 26042,
+                    "metadata_received_bytes": 4540,
+                    "payload_sent_bytes": 464,
+                    "payload_received_bytes": 237568,
+                    "copied_payload_from_wasm_bytes": 237568,
+                    "encode_ms": 0.9000000059604645,
+                    "abi_ms": 119.60000005364418,
+                    "decode_ms": 1,
+                    "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+                  }
+                ],
+                "timing_scope": "host-local, excluded from canonical state"
+              },
+              "binary_transport": {
+                "format": "UJB1",
+                "requests": 146,
+                "metadata_sent_bytes": 9574,
+                "metadata_received_bytes": 58244,
+                "payload_sent_bytes": 475136,
+                "payload_received_bytes": 960,
+                "copied_payload_from_wasm_bytes": 960,
+                "encode_ms": 1.4999999701976776,
+                "abi_ms": 0.6000000536441803,
+                "decode_ms": 0.7999999523162842,
+                "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+              },
+              "fault": null
+            },
+            "execute_ms": 10.100000023841858,
+            "pack_ms": 0,
+            "wasm_linear_bytes": 16777216,
+            "transfer": {
+              "copied_bytes": 0,
+              "allocated_bytes": 0,
+              "reused_bytes": 0,
+              "unchanged_batches": 0,
+              "pooled_bytes": 0,
+              "pooled_buffers": 0
+            },
+            "pending": 0,
+            "closed": false
+          }
+        }
+      ]
+    }
+  ],
+  "zip": {
+    "bytes": 10114941,
+    "sha256": "232cbd055561847f379a54daf5c0590a1fe8c226893f53259c8d595c2fc625b2",
+    "extracted_inspection_passed": true
+  },
+  "sdk_manifest": {
+    "version": 1,
+    "engine_version": "0.1.0",
+    "host": "windows-x86_64",
+    "cli": "bin/game.exe",
+    "templates": "templates",
+    "runtimes": [
+      {
+        "id": "web-production-0",
+        "target": "web",
+        "variant": "production",
+        "path": "runtimes/web-production-0",
+        "compiled_systems": [
+          "camera2d",
+          "camera3d",
+          "input",
+          "jobs",
+          "observation",
+          "random",
+          "save",
+          "ui",
+          "world"
+        ],
+        "bytes": 1731873
+      },
+      {
+        "id": "web-development-1",
+        "target": "web",
+        "variant": "development",
+        "path": "runtimes/web-development-1",
+        "compiled_systems": [
+          "camera2d",
+          "camera3d",
+          "input",
+          "jobs",
+          "observation",
+          "random",
+          "save",
+          "ui",
+          "world"
+        ],
+        "bytes": 1851638
+      }
+    ],
+    "files": [
+      {
+        "path": "bin/game.exe",
+        "bytes": 21806080,
+        "sha256": "8013b2aa5d38e8b5c91dc96ddb6877dea2dc00aebe4caee5d6be4fea25a0ff3b"
+      },
+      {
+        "path": "runtimes/web-development-1/runtime.json",
+        "bytes": 1043,
+        "sha256": "63daff05d795291f877a6073ab8fc1cee647ee226498a97c099c44e1f4b9430d"
+      },
+      {
+        "path": "runtimes/web-development-1/unone-player.js",
+        "bytes": 101567,
+        "sha256": "3671223e0dc36b22a39e4baf28dd4831441bfb71e469cc8bcc808d1774d9c270"
+      },
+      {
+        "path": "runtimes/web-development-1/unone_player.wasm",
+        "bytes": 1750071,
+        "sha256": "bd6ebc69bb087166b9349aade35bff792dee687872d8b86e4c1ecb265ce6e046"
+      },
+      {
+        "path": "runtimes/web-production-0/runtime.json",
+        "bytes": 996,
+        "sha256": "88901517fb134273b67e1a7b09ca32f2fe56c1f8a1548ae9a004a9f1e16ef44c"
+      },
+      {
+        "path": "runtimes/web-production-0/unone-player.js",
+        "bytes": 101444,
+        "sha256": "1365a54841b987d6b49697b5b891139332f6c1a56e8f565bd99dd8c06377f418"
+      },
+      {
+        "path": "runtimes/web-production-0/unone_player.wasm",
+        "bytes": 1630429,
+        "sha256": "af86da67cf6a017ef3cc57fc7f01ad337ebf47876b503aad716c2f5e924956ca"
+      },
+      {
+        "path": "templates/web/developer/api.js",
+        "bytes": 10191,
+        "sha256": "3658076d963ef1bfd956d1547d782fac6da0212986f899f5b95ade5a2c8b6e1c"
+      },
+      {
+        "path": "templates/web/developer/main.js",
+        "bytes": 3479,
+        "sha256": "af5fd4b1e7b43bd557ffb381ba9fa33725d5a0338deca9ad17425836aa347aa3"
+      },
+      {
+        "path": "templates/web/developer/panel.css",
+        "bytes": 4808,
+        "sha256": "8e89835bed868748f054a24d921a794b97e81a9634c11c7c43836466103d8725"
+      },
+      {
+        "path": "templates/web/developer/panel.js",
+        "bytes": 13407,
+        "sha256": "63ea77aac90ea58b0fd121bc08cb0ab5b17db8160f0c9b98ef8d40123ed87971"
+      },
+      {
+        "path": "templates/web/player/index.html",
+        "bytes": 1014,
+        "sha256": "ea4c9c87a459f3e1f59b624d114e3fb013b7fb19057af3aa738d25c14115b958"
+      },
+      {
+        "path": "templates/web/player/main.js",
+        "bytes": 8026,
+        "sha256": "0640ae8d9690af3859f869668c01319a9ea7e1e8b32a304a04fe20ff6af2f123"
+      },
+      {
+        "path": "templates/web/renderer/bloom.js",
+        "bytes": 4241,
+        "sha256": "659f73c9cf0ae8f0d275af2b105282620b86612eb5ac4143683cfb6e91b54e32"
+      },
+      {
+        "path": "templates/web/renderer/effekseer.js",
+        "bytes": 2496,
+        "sha256": "10b28ca3e4e12bf6f32c7da32bcf8909ebd260e450980b0b81143d0fa9100d61"
+      },
+      {
+        "path": "templates/web/renderer/instances3d.js",
+        "bytes": 5464,
+        "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+      },
+      {
+        "path": "templates/web/renderer/mesh.js",
+        "bytes": 1325,
+        "sha256": "d6ab0d724b58915428231be3eeccb18093eb5ed1a11021a5e3d1abfd3ea36170"
+      },
+      {
+        "path": "templates/web/renderer/particles.js",
+        "bytes": 1562,
+        "sha256": "e02dcfda4dabaf06e313906d815bac69f6b90049f700a09ed584316c45acc659"
+      },
+      {
+        "path": "templates/web/renderer/three.js",
+        "bytes": 12049,
+        "sha256": "7f62d6ea2dc4cdf36c6a78905ccb03c502c0344f1ebd4b144bdfdd16b1e9bea0"
+      },
+      {
+        "path": "templates/web/shared/asset-encoding.js",
+        "bytes": 1026,
+        "sha256": "993d69e0b62dc0a144fe7296e05779e33629c86405fbf291f39a3ca5d8fe2c4b"
+      },
+      {
+        "path": "templates/web/shared/async-scheduler.mjs",
+        "bytes": 1902,
+        "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+      },
+      {
+        "path": "templates/web/shared/audio-playback.js",
+        "bytes": 9726,
+        "sha256": "299e6ae5aac03e14883fd86bd07654e85447ed23b308ace68d6b0c0e32dce618"
+      },
+      {
+        "path": "templates/web/shared/fixed-step-scheduler.mjs",
+        "bytes": 11758,
+        "sha256": "eef3c381d2fcf03fa47ba03acb521091a8f2252425ae2d7232c457a0565b0132"
+      },
+      {
+        "path": "templates/web/shared/host-input.js",
+        "bytes": 3020,
+        "sha256": "8eb4f0eb09391a1b6d61a9dd5c8b164461461c63593495ac15dbe83c750d8dc4"
+      },
+      {
+        "path": "templates/web/shared/instance-transfer.mjs",
+        "bytes": 3147,
+        "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+      },
+      {
+        "path": "templates/web/shared/job-binary.mjs",
+        "bytes": 6407,
+        "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+      },
+      {
+        "path": "templates/web/shared/job-pool.mjs",
+        "bytes": 6787,
+        "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+      },
+      {
+        "path": "templates/web/shared/job-worker.js",
+        "bytes": 771,
+        "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+      },
+      {
+        "path": "templates/web/shared/load-project.js",
+        "bytes": 1220,
+        "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+      },
+      {
+        "path": "templates/web/shared/presentation-interpolation.mjs",
+        "bytes": 3700,
+        "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+      },
+      {
+        "path": "templates/web/shared/profile-window.js",
+        "bytes": 3162,
+        "sha256": "0c014e50f1450e63fe6a237e32eac0bcf95721d22b21c1415fa217100093c21e"
+      },
+      {
+        "path": "templates/web/shared/runtime-backend.mjs",
+        "bytes": 2506,
+        "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+      },
+      {
+        "path": "templates/web/shared/runtime-core.mjs",
+        "bytes": 4210,
+        "sha256": "e05a1a3f5a625824f3eab06ed07ae9da855cf441dff4d3751479d4e9827301d8"
+      },
+      {
+        "path": "templates/web/shared/runtime-worker.js",
+        "bytes": 1507,
+        "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+      },
+      {
+        "path": "templates/web/shared/ui-tree.js",
+        "bytes": 902,
+        "sha256": "1658723790fc2330bb102feb022a532ba3cc1cb27fd39a41c6b9231b86b79672"
+      },
+      {
+        "path": "templates/web/shared/webgpu-snapshot.js",
+        "bytes": 19886,
+        "sha256": "03a879b10a8e37b49f3d220bf36e8d554b1dfefa9b13c1b429d2d2c3d1bf25b7"
+      },
+      {
+        "path": "templates/web/vendor/effekseer/LICENSE",
+        "bytes": 1084,
+        "sha256": "9686573243a6e4732edef9e39ac1356371dc7f4a17d995bea32777e36463cb29"
+      },
+      {
+        "path": "templates/web/vendor/effekseer/effekseer.js",
+        "bytes": 198331,
+        "sha256": "225fe5e2ecc65af0970a16e23c74e554d8dbdfbd9ac4d7500f7c55f1a733fe61"
+      },
+      {
+        "path": "templates/web/vendor/effekseer/effekseer.wasm",
+        "bytes": 1089618,
+        "sha256": "f9689b3721fc815e2d4b0fbcd6daedf9e0b307038d40a6c5b17c0037508ad686"
+      },
+      {
+        "path": "templates/web/vendor/rapier/LICENSE",
+        "bytes": 11347,
+        "sha256": "ceacfa4d7fa67df64ab09a56fe248c50a3bfc9bc00374d69bd74ad763b14b89c"
+      },
+      {
+        "path": "templates/web/vendor/three/LICENSE",
+        "bytes": 1102,
+        "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+      },
+      {
+        "path": "templates/web/vendor/three/three.player.min.js",
+        "bytes": 495868,
+        "sha256": "3acbff194131b8740a21ad7fdc184c2a6fbeeab467b47aa33d3e300aeb95ea60"
+      }
+    ]
+  }
+}

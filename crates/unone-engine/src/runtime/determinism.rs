@@ -82,6 +82,12 @@ pub(super) fn new_job_vm() -> Result<Lua, Box<crate::Diagnostic>> {
 }
 fn create_vm(job:bool) -> Result<Lua, Box<crate::Diagnostic>> {
     let lua = Lua::new();
+    #[cfg(all(feature="native-codegen",not(feature="preview-tools")))]
+    lua.set_compiler(mlua::Compiler::new().set_optimization_level(2).set_type_info_level(1));
+    // Native compiled/inlined frames are not reliably attributed by the VM sampler.
+    // Diagnostic builds retain the interpreter; production native builds may use codegen.
+    #[cfg(all(feature="native-codegen",feature="preview-tools"))]
+    lua.enable_jit(false);
     install(&lua).map_err(|error| {
         Box::new(crate::Diagnostic::error(
             "ENGINE_INIT_FAILED",

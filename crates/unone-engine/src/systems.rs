@@ -391,11 +391,23 @@ fn descriptor(
 
 fn descriptors() -> Vec<SystemDescriptor> {
     vec![
-        descriptor("jobs", "Isolated game-owned Luau buffer jobs; native background threads, Web inline backend.",
-            SystemStatus::Available, false, true,
-            vec!["api.jobs.register","api.jobs.submit","api.jobs.take","api.jobs.cancel","api.jobs.reset"],vec!["world.jobs"],
+        descriptor(
+            "jobs",
+            "Isolated game-owned Luau buffer jobs; native background threads, Web inline backend.",
+            SystemStatus::Available,
+            false,
+            true,
+            vec![
+                "api.jobs.register",
+                "api.jobs.submit",
+                "api.jobs.take",
+                "api.jobs.cancel",
+                "api.jobs.reset",
+            ],
+            vec!["world.jobs"],
             "When disabled, api.jobs reports SYSTEM_DISABLED; no worker pool starts.",
-            "Enable for independent coarse batches; Web v1 is synchronous, not a Web Worker or arbitrary WASM module executor."),
+            "Enable for independent coarse batches; Web v1 is synchronous, not a Web Worker or arbitrary WASM module executor.",
+        ),
         descriptor(
             "world",
             "ECS world state for entities, transforms, and sprites.",
@@ -497,7 +509,7 @@ fn descriptors() -> Vec<SystemDescriptor> {
         ),
         descriptor(
             "ui",
-            "Minimal UI tree transport for engine verification (screen/text/button/rect/action).",
+            "Deterministic UI tree transport for engine verification (screen/text/button/image/component with rects, asset ids and actions).",
             SystemStatus::Available,
             true,
             true,
@@ -647,7 +659,7 @@ pub fn build_feature(id: &str) -> Option<&'static str> {
 }
 pub fn is_compiled(id: &str) -> bool {
     match id {
-        "jobs" => cfg!(feature="jobs"),
+        "jobs" => cfg!(feature = "jobs"),
         "physics2d" => cfg!(feature = "physics2d"),
         "physics3d" => cfg!(feature = "physics3d"),
         "camera2d" => cfg!(feature = "camera2d"),

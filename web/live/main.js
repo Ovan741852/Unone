@@ -1,7 +1,8 @@
 import {loadProject as loadHostProject} from '../shared/load-project.js';
 import { frameOf, semanticSummary, worldFromPointer } from "../shared/webgpu-snapshot.js?v=2";
 import { createRenderer } from "../renderer/index.js?v=1";
-import { installGeneration, readActiveText } from "./bundle-store.js?v=1";
+import { createUiTree } from "../shared/ui-tree.js";
+import { installGeneration, readActiveAsset, readActiveText } from "./bundle-store.js?v=1";
 
 const canvas = document.querySelector("#game");
 const uiLayer = document.querySelector("#ui-layer");
@@ -17,28 +18,18 @@ let started = false;
 let reloadNotice = null;
 let manifest = null;
 let generationState = null;
-let renderedUi = null;
-
-function renderUi(nextSnapshot) {
-  const ui = nextSnapshot?.world?.ui ?? null;
-  const serialized = JSON.stringify(ui);
-  if (serialized === renderedUi) return;
-  renderedUi = serialized;
-  uiLayer.replaceChildren();
-  if (!ui) return;
-  for (const node of ui.children ?? []) {
-    const element = document.createElement(node.kind === "button" ? "button" : "div");
-    element.className = `unone-ui-node unone-ui-${node.kind}`;
-    element.textContent = node.text;
-    element.dataset.nodeId = node.id;
-    if (node.kind === "button") element.dataset.action = node.action;
-    element.style.left = `${node.rect.x}%`;
-    element.style.bottom = `${node.rect.y}%`;
-    element.style.width = `${node.rect.width}%`;
-    element.style.height = `${node.rect.height}%`;
-    uiLayer.appendChild(element);
-  }
-}
+let assetManifest = null;
+const uiAssetUrls = new Map();
+const renderUi = createUiTree(uiLayer, {
+  resolveAsset: (assetId) => {
+    const asset = assetManifest?.assets?.find((candidate) => candidate.id === assetId);
+    if (!asset) throw new Error(`UI asset ${assetId} is not declared in the active asset manifest`);
+    if (!uiAssetUrls.has(assetId)) {
+      uiAssetUrls.set(assetId, readActiveAsset(generationState, asset, window.Module, manifest).then((bytes) => URL.createObjectURL(new Blob([bytes], { type: asset.source.toLowerCase().endsWith(".svg") ? "image/svg+xml" : "image/*" }))));
+    }
+    return uiAssetUrls.get(assetId);
+  },
+});
 
 function showState() {
   const state = semanticSummary(snapshot, pointer);
@@ -84,8 +75,11 @@ async function readManifest(path) {
 async function loadProject() {
   manifest = await readManifest("./bundle-manifest-v1.json");
   generationState = await installGeneration(manifest, { module: window.Module });
-  const payload = await readActiveText(generationState, "project", window.Module, manifest);
-  snapshot=loadHostProject(window.Module,JSON.parse(payload),42n);
+  const project = JSON.parse(await readActiveText(generationState, "project", window.Module, manifest));
+  assetManifest = project.asset_manifest
+    ? JSON.parse(await readActiveText(generationState, "asset-manifest", window.Module, manifest))
+    : null;
+  snapshot=loadHostProject(window.Module,project,42n);
 }
 
 async function reloadScriptFromActiveBundle() {
@@ -115,6 +109,12 @@ async function updateBundle() {
   });
   manifest = nextManifest;
   generationState = nextGeneration;
+  const nextProject = JSON.parse(await readActiveText(nextGeneration, "project", window.Module, manifest));
+  assetManifest = nextProject.asset_manifest
+    ? JSON.parse(await readActiveText(nextGeneration, "asset-manifest", window.Module, manifest))
+    : null;
+  for (const url of uiAssetUrls.values()) Promise.resolve(url).then((value) => { if (typeof value === "string") URL.revokeObjectURL(value); });
+  uiAssetUrls.clear();
   await reloadScriptFromActiveBundle();
   const mode = cacheOnly ? "cache-only reopen" : "bundle update";
   reloadNotice = `${mode}: generation ${generationState.generation} ${generationState.status}; ${reloadNotice}`;

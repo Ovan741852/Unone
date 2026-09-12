@@ -34,15 +34,15 @@ pub use preview::{DebugControl, DebugTab, PreviewRequest};
 
 /// Compute the canonical digest for an already generated observation snapshot.
 ///
-/// This is deliberately read-only: it does not observe or advance a runtime,
-/// and it keeps the existing JSON serialization followed by lowercase SHA-256
-/// definition used by `EngineRuntime::run`.
+/// Packed instance pose bytes are presentation-only and are not hashed. The
+/// digest still includes batch identity (`asset`, `count`, `format`) plus the
+/// rest of `WorldSnapshot`. Encoding is read-only relative to runtime state.
 pub fn observation_digest(snapshot: &WorldSnapshot) -> Result<String, serde_json::Error> {
     let bytes = serde_json::to_vec(snapshot)?;
     Ok(format!("sha256:{}", hex_digest(&bytes)))
 }
 
-/// Serialize once for hosts that need both a JSON world and its canonical digest.
+/// Serialize the canonical world (no instance pose payloads) and its digest.
 pub fn encode_observation(
     snapshot: &WorldSnapshot,
 ) -> Result<(Box<serde_json::value::RawValue>, String), serde_json::Error> {
@@ -59,7 +59,7 @@ pub fn encode_observation(
 pub struct SourceProject {
     pub config: ProjectConfig,
     pub source: String,
-    pub job_sources: BTreeMap<String,String>,
+    pub job_sources: BTreeMap<String, String>,
     pub scene: Option<SceneFile>,
     pub seed: u64,
     pub restored_save: Option<serde_json::Value>,
@@ -522,7 +522,7 @@ impl EngineRuntime {
         seed: u64,
         restored_save: Option<serde_json::Value>,
         initial_viewport_aspect: Option<f64>,
-        job_sources: Option<BTreeMap<String,String>>,
+        job_sources: Option<BTreeMap<String, String>>,
     ) -> Result<Self, Box<Diagnostic>> {
         let input = Rc::new(RefCell::new(InputState::default()));
         let random = Rc::new(RefCell::new(DeterministicRng::new(seed)));
@@ -624,22 +624,57 @@ impl EngineRuntime {
             runtime.set_viewport_aspect(aspect)?;
         }
         if !runtime.config.job_scripts.is_empty() && !runtime.systems.is_enabled("jobs") {
-            return Err(Box::new(script_diagnostic(&runtime.paths,"JOB_MODULES_REQUIRE_JOBS_SYSTEM".into())));
+            return Err(Box::new(script_diagnostic(
+                &runtime.paths,
+                "JOB_MODULES_REQUIRE_JOBS_SYSTEM".into(),
+            )));
         }
-        if let Some(sources)=&job_sources {
-            if sources.keys().ne(runtime.config.job_scripts.keys()) {return Err(Box::new(script_diagnostic(&runtime.paths,"JOB_MODULE_SOURCE_MISMATCH".into())));}
+        if let Some(sources) = &job_sources {
+            if sources.keys().ne(runtime.config.job_scripts.keys()) {
+                return Err(Box::new(script_diagnostic(
+                    &runtime.paths,
+                    "JOB_MODULE_SOURCE_MISMATCH".into(),
+                )));
+            }
         }
-        #[cfg(feature="jobs")]
-        for (id,path) in &runtime.config.job_scripts {
-            let invalid=||Box::new(script_diagnostic(&runtime.paths,format!("JOB_MODULE_PATH_INVALID: {path}")));
-            if path.is_empty() || !path.ends_with(".luau") || path.contains('\\') || path.contains(':') || path.split('/').any(|s|s.is_empty()||s==".."||s==".") {return Err(invalid());}
-            let source=if let Some(sources)=&job_sources {sources[id].clone()} else {
-                let root=runtime.paths.root.canonicalize().map_err(|_|invalid())?;
-                let file=root.join(path).canonicalize().map_err(|_|invalid())?;
-                if !file.starts_with(&root) {return Err(invalid());}
-                std::fs::read_to_string(file).map_err(|e|Box::new(script_diagnostic(&runtime.paths,format!("JOB_MODULE_READ_FAILED: {path}: {e}"))))?
+        #[cfg(feature = "jobs")]
+        for (id, path) in &runtime.config.job_scripts {
+            let invalid = || {
+                Box::new(script_diagnostic(
+                    &runtime.paths,
+                    format!("JOB_MODULE_PATH_INVALID: {path}"),
+                ))
             };
-            runtime.jobs.borrow_mut().register_file(id.clone(),source,path.clone()).map_err(|e|Box::new(script_diagnostic(&runtime.paths,e)))?;
+            if path.is_empty()
+                || !path.ends_with(".luau")
+                || path.contains('\\')
+                || path.contains(':')
+                || path
+                    .split('/')
+                    .any(|s| s.is_empty() || s == ".." || s == ".")
+            {
+                return Err(invalid());
+            }
+            let source = if let Some(sources) = &job_sources {
+                sources[id].clone()
+            } else {
+                let root = runtime.paths.root.canonicalize().map_err(|_| invalid())?;
+                let file = root.join(path).canonicalize().map_err(|_| invalid())?;
+                if !file.starts_with(&root) {
+                    return Err(invalid());
+                }
+                std::fs::read_to_string(file).map_err(|e| {
+                    Box::new(script_diagnostic(
+                        &runtime.paths,
+                        format!("JOB_MODULE_READ_FAILED: {path}: {e}"),
+                    ))
+                })?
+            };
+            runtime
+                .jobs
+                .borrow_mut()
+                .register_file(id.clone(), source, path.clone())
+                .map_err(|e| Box::new(script_diagnostic(&runtime.paths, e)))?;
         }
         runtime.load_script(false, None)?;
         #[cfg(feature = "jobs")]
@@ -824,8 +859,10 @@ impl EngineRuntime {
         let started = std::time::Instant::now();
         #[cfg(feature = "jobs")]
         if self.systems.is_enabled("jobs") {
-            self.jobs.borrow_mut().begin(self.world.borrow().frame)
-                .map_err(|e|Box::new(script_diagnostic(&self.paths,e)))?;
+            self.jobs
+                .borrow_mut()
+                .begin(self.world.borrow().frame)
+                .map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         }
         let allocated_before = self.lua.used_memory();
         {
@@ -848,8 +885,11 @@ impl EngineRuntime {
             None
         };
         let (script, script_time) = timed(|| {
-            #[cfg(feature="jobs")]
-            if self.systems.is_enabled("jobs") { jobs::pump_schedules(&self.lua,&self.jobs,&self.api).map_err(|e|Box::new(script_diagnostic(&self.paths,e.to_string())))?; }
+            #[cfg(feature = "jobs")]
+            if self.systems.is_enabled("jobs") {
+                jobs::pump_schedules(&self.lua, &self.jobs, &self.api)
+                    .map_err(|e| Box::new(script_diagnostic(&self.paths, e.to_string())))?;
+            }
             self.update_fn
                 .call::<()>((self.api.clone(), FIXED_DT))
                 .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))
@@ -865,7 +905,9 @@ impl EngineRuntime {
             profiling::state(&self.lua).borrow_mut().active = false;
         }
         #[cfg(feature = "jobs")]
-        if let Err(error)=&script { self.jobs.borrow_mut().fail(error.explanation.clone()); }
+        if let Err(error) = &script {
+            self.jobs.borrow_mut().fail(error.explanation.clone());
+        }
         script?;
         let (physics_result, physics_time) = timed(|| -> Result<(), Box<Diagnostic>> {
             #[cfg(feature = "physics2d")]
@@ -891,11 +933,16 @@ impl EngineRuntime {
             Ok(())
         });
         #[cfg(feature = "jobs")]
-        if let Err(error)=&physics_result { self.jobs.borrow_mut().fail(error.explanation.clone()); }
+        if let Err(error) = &physics_result {
+            self.jobs.borrow_mut().fail(error.explanation.clone());
+        }
         physics_result?;
         #[cfg(feature = "jobs")]
         if self.systems.is_enabled("jobs") {
-            self.jobs.borrow_mut().finish().map_err(|e|Box::new(script_diagnostic(&self.paths,e)))?;
+            self.jobs
+                .borrow_mut()
+                .finish()
+                .map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         }
         {
             let mut world = self.world.borrow_mut();
@@ -1087,43 +1134,65 @@ impl EngineRuntime {
     pub fn observe(&self) -> WorldSnapshot {
         let mut snapshot = self.world.borrow().snapshot();
         #[cfg(feature = "jobs")]
-        if self.systems.is_enabled("jobs") { snapshot.jobs=Some(self.jobs.borrow().snapshot()); }
+        if self.systems.is_enabled("jobs") {
+            snapshot.jobs = Some(self.jobs.borrow().snapshot());
+        }
         snapshot.observations = self.observations.borrow().clone();
         snapshot.ui = self.ui.borrow().clone();
         snapshot
     }
 
     /// UJB1 host transport; opaque payloads never pass through JSON values.
-    pub fn jobs_binary_request(&mut self, bytes: &[u8]) -> Result<Vec<u8>,String> {
-        #[cfg(feature="jobs")]
-        if self.systems.is_enabled("jobs") {return self.jobs.borrow_mut().binary(bytes);}
-        let _=bytes;Err("JOBS_SYSTEM_DISABLED".into())
+    pub fn jobs_binary_request(&mut self, bytes: &[u8]) -> Result<Vec<u8>, String> {
+        #[cfg(feature = "jobs")]
+        if self.systems.is_enabled("jobs") {
+            return self.jobs.borrow_mut().binary(bytes);
+        }
+        let _ = bytes;
+        Err("JOBS_SYSTEM_DISABLED".into())
     }
-    pub fn execute_job_binary(bytes: &[u8]) -> Result<Vec<u8>,String> {
-        #[cfg(feature="jobs")]
-        {jobs::execute_binary(bytes)}
-        #[cfg(not(feature="jobs"))]
-        {let _=bytes;Err("JOBS_SYSTEM_NOT_COMPILED".into())}
+    pub fn execute_job_binary(bytes: &[u8]) -> Result<Vec<u8>, String> {
+        #[cfg(feature = "jobs")]
+        {
+            jobs::execute_binary(bytes)
+        }
+        #[cfg(not(feature = "jobs"))]
+        {
+            let _ = bytes;
+            Err("JOBS_SYSTEM_NOT_COMPILED".into())
+        }
     }
 
     /// Host-only executor transport. Never exposed to game Lua.
-    pub fn jobs_host_request(&mut self, request: serde_json::Value) -> Result<serde_json::Value,String> {
-        #[cfg(feature="jobs")]
-        if self.systems.is_enabled("jobs") { return self.jobs.borrow_mut().host(request); }
-        let _=request;
+    pub fn jobs_host_request(
+        &mut self,
+        request: serde_json::Value,
+    ) -> Result<serde_json::Value, String> {
+        #[cfg(feature = "jobs")]
+        if self.systems.is_enabled("jobs") {
+            return self.jobs.borrow_mut().host(request);
+        }
+        let _ = request;
         Err("JOBS_SYSTEM_DISABLED".into())
     }
-    pub fn execute_job_host(request: serde_json::Value) -> Result<serde_json::Value,String> {
-        #[cfg(feature="jobs")]
-        { jobs::execute_host(request) }
-        #[cfg(not(feature="jobs"))]
-        { let _=request; Err("JOBS_SYSTEM_NOT_COMPILED".into()) }
+    pub fn execute_job_host(request: serde_json::Value) -> Result<serde_json::Value, String> {
+        #[cfg(feature = "jobs")]
+        {
+            jobs::execute_host(request)
+        }
+        #[cfg(not(feature = "jobs"))]
+        {
+            let _ = request;
+            Err("JOBS_SYSTEM_NOT_COMPILED".into())
+        }
     }
 
     /// Diagnostic-only executor capabilities and costs; never available to gameplay.
     pub fn jobs_report(&self) -> Option<serde_json::Value> {
         #[cfg(feature = "jobs")]
-        if self.systems.is_enabled("jobs") { return Some(self.jobs.borrow().report()); }
+        if self.systems.is_enabled("jobs") {
+            return Some(self.jobs.borrow().report());
+        }
         None
     }
 
@@ -1289,7 +1358,7 @@ impl EngineRuntime {
         #[cfg(feature = "jobs")]
         {
             candidate_api_state.jobs.borrow_mut().loaded();
-            self.jobs=Rc::clone(&candidate_api_state.jobs);
+            self.jobs = Rc::clone(&candidate_api_state.jobs);
         }
         self.generation += 1;
         self.trace.borrow_mut().push(TraceEvent {
@@ -1964,6 +2033,39 @@ function Game.update(api, _dt) publish(api) end
 return Game
 "#;
 
+    const NESTED_COMPONENT_UI_SCRIPT: &str = r#"
+local Game = {}
+function Game.start(api)
+    local child = { kind = "text", id = "leaf", text = "Leaf", rect = { x = 1, y = 1, width = 10, height = 5 } }
+    for index = 16, 1, -1 do
+        child = { kind = "component", id = "layer" .. index, component = "ui.layer", rect = { x = 0, y = 0, width = 100, height = 100 }, children = { child } }
+    end
+    api.ui.setRoot({ kind = "screen", id = "nested", node = "nested", children = { child } })
+end
+function Game.update(_api, _dt) end
+return Game
+"#;
+
+    #[test]
+    fn nested_component_ui_survives_the_luau_json_boundary() {
+        let dir = tempdir().unwrap();
+        write_project_with_systems(dir.path(), NESTED_COMPONENT_UI_SCRIPT, "{}");
+        let ui = EngineRuntime::load(dir.path()).unwrap().observe().ui.unwrap();
+        let mut leaves = Vec::new();
+        ui.children[0].leaf_nodes(&mut leaves);
+        assert_eq!(leaves.len(), 1);
+        assert_eq!(leaves[0].id(), "leaf");
+
+        let too_deep_dir = tempdir().unwrap();
+        let too_deep_script = NESTED_COMPONENT_UI_SCRIPT.replace("index = 16, 1", "index = 17, 1");
+        write_project_with_systems(too_deep_dir.path(), &too_deep_script, "{}");
+        let error = match EngineRuntime::load(too_deep_dir.path()) {
+            Ok(_) => panic!("17 component wrappers should be rejected by Core"),
+            Err(error) => error,
+        };
+        assert!(error.explanation.contains("maximum component nesting depth"), "{}", error.explanation);
+    }
+
     #[test]
     fn the_host_viewport_shape_decides_where_an_anchored_node_lands() {
         let dir = tempdir().unwrap();
@@ -1979,9 +2081,7 @@ return Game
         narrow_runtime.run(1, 42);
         let narrow = narrow_runtime.observe().ui.unwrap();
 
-        let rect_of = |tree: &crate::ui::UiTree| match &tree.children[0] {
-            crate::ui::UiNode::Text { rect, .. } | crate::ui::UiNode::Button { rect, .. } => *rect,
-        };
+        let rect_of = |tree: &crate::ui::UiTree| *tree.children[0].rect();
         let wide_rect = rect_of(&wide);
         let narrow_rect = rect_of(&narrow);
         assert!(

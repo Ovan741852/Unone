@@ -58,6 +58,7 @@ pub struct ParticleSnapshot {
 struct Instance {
     definition: ParticleDefinition,
     position: Vec3,
+    origins: Option<Vec<Vec3>>,
     seed: u64,
     started: u64,
 }
@@ -172,7 +173,7 @@ impl ParticleWorld {
             || self
                 .live
                 .values()
-                .map(|i| i.definition.capacity())
+                .map(|i| i.definition.capacity() * i.origins.as_ref().map_or(1, |v| v.len() as u64))
                 .sum::<u64>()
                 + definition.capacity()
                 > 4096
@@ -186,11 +187,56 @@ impl ParticleWorld {
             Instance {
                 definition,
                 position,
+                origins: None,
                 seed,
                 started: frame,
             },
         );
         Ok(handle)
+    }
+    pub fn play_batch(
+        &mut self,
+        effect: &str,
+        origins: Vec<Vec3>,
+        seed: u64,
+        frame: u64,
+    ) -> Result<String, String> {
+        if origins.is_empty() || origins.len() > 4096 {
+            return Err("PARTICLE_BATCH_INVALID: 1..4096 positions required".into());
+        }
+        for &position in &origins {
+            validate_particle_vector(position)?;
+        }
+        let definition = self
+            .definitions
+            .get(effect)
+            .ok_or_else(|| format!("PARTICLE_NOT_FOUND: {effect}"))?
+            .clone();
+        definition.validate()?;
+        let reserved = self
+            .live
+            .values()
+            .map(|i| i.definition.capacity() * i.origins.as_ref().map_or(1, |v| v.len() as u64))
+            .sum::<u64>();
+        if self.live.len() >= 64 || reserved + definition.capacity() * origins.len() as u64 > 4096 {
+            return Err("PARTICLE_CAPACITY: world budget exceeded; stop existing effects".into());
+        }
+        self.next += 1;
+        let handle = format!("particle-{}", self.next);
+        self.live.insert(
+            handle.clone(),
+            Instance {
+                definition,
+                position: Vec3::default(),
+                origins: Some(origins),
+                seed,
+                started: frame,
+            },
+        );
+        Ok(handle)
+    }
+    pub fn stats(&self, frame: u64) -> serde_json::Value {
+        serde_json::json!({"active_handles":self.live.len(),"max_handles":64,"reserved_particles":self.live.values().map(|i|i.definition.capacity()*i.origins.as_ref().map_or(1,|v|v.len() as u64)).sum::<u64>(),"max_particles":4096,"live_particles":self.snapshot(frame).len()})
     }
     pub fn stop(&mut self, handle: &str) -> bool {
         self.live.remove(handle).is_some()
@@ -203,13 +249,33 @@ impl ParticleWorld {
         self.live
             .iter()
             .flat_map(|(handle, i)| {
-                sample(
-                    &i.definition,
-                    i.seed,
-                    frame.saturating_sub(i.started),
-                    i.position,
-                    handle,
-                )
+                if let Some(origins) = &i.origins {
+                    origins
+                        .iter()
+                        .enumerate()
+                        .flat_map(|(index, &origin)| {
+                            let mut particles = sample(
+                                &i.definition,
+                                i.seed.wrapping_add(index as u64),
+                                frame.saturating_sub(i.started),
+                                origin,
+                                &format!("{handle}:{index}"),
+                            );
+                            for particle in &mut particles {
+                                particle.instance = handle.clone();
+                            }
+                            particles
+                        })
+                        .collect::<Vec<_>>()
+                } else {
+                    sample(
+                        &i.definition,
+                        i.seed,
+                        frame.saturating_sub(i.started),
+                        i.position,
+                        handle,
+                    )
+                }
             })
             .collect()
     }
@@ -299,6 +365,60 @@ mod tests {
     use super::*;
     fn definition() -> ParticleDefinition {
         serde_json::from_str(include_str!("../../../tests/fixtures/spark.particle.json")).unwrap()
+    }
+    #[test]
+    fn batch_origins_are_bounded_atomic_and_share_a_handle() {
+        let definition: ParticleDefinition =
+            serde_json::from_str(include_str!("../../../tests/fixtures/spark.particle.json"))
+                .unwrap();
+        let mut world = ParticleWorld::default();
+        world.definitions.insert("spark".into(), definition);
+        let h = world
+            .play_batch(
+                "spark",
+                vec![
+                    Vec3::default(),
+                    Vec3 {
+                        x: 10.,
+                        y: 0.,
+                        z: 0.,
+                    },
+                ],
+                42,
+                0,
+            )
+            .unwrap();
+        let a = world.snapshot(1);
+        let b = world.snapshot(1);
+        assert_eq!(
+            serde_json::to_value(&a).unwrap(),
+            serde_json::to_value(&b).unwrap()
+        );
+        assert!(a.iter().all(|p| p.instance == h));
+        let ids: std::collections::BTreeSet<_> = a.iter().map(|p| &p.id).collect();
+        assert_eq!(ids.len(), a.len());
+        assert!(
+            world
+                .play_batch(
+                    "spark",
+                    vec![Vec3 {
+                        x: f64::NAN,
+                        y: 0.,
+                        z: 0.
+                    }],
+                    0,
+                    0
+                )
+                .is_err()
+        );
+        assert!(
+            world
+                .play_batch("spark", vec![Vec3::default(); 4096], 0, 0)
+                .is_err()
+        );
+        assert_eq!(world.stats(1)["active_handles"], 1);
+        assert!(world.stop(&h));
+        assert_eq!(world.stats(1)["reserved_particles"], 0);
     }
     #[test]
     fn sampling_is_seeded_seekable_and_bounded() {

@@ -199,7 +199,7 @@ impl EngineRuntime {
         ) {
             return Ok(
                 serde_json::json!({"performance":self.performance_report(),"window":profiling::state(&self.lua).borrow().report(),
-                "build":{"debug_assertions":cfg!(debug_assertions),"preview_tools":true},"counts_frame":self.world.borrow().frame,"jobs":self.jobs_report()}),
+                "build":{"debug_assertions":cfg!(debug_assertions),"preview_tools":true,"luau_execution":"interpreter","native_codegen_disabled_for_profiling":cfg!(feature="native-codegen")},"counts_frame":self.world.borrow().frame,"jobs":self.jobs_report()}),
             );
         }
         if let PreviewRequest::Invoke {

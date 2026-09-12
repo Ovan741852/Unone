@@ -94,6 +94,115 @@ pub enum UiNode {
         text: String,
         action: String,
     },
+    /// A host-rendered texture. The asset field is a stable asset id, not a
+    /// project-relative path; the host resolves the id through the verified
+    /// asset bundle and decides whether SVG is decoded directly or via a
+    /// derived texture.
+    #[serde(rename = "image")]
+    Image {
+        id: String,
+        rect: UiRect,
+        asset: String,
+        fit: UiImageFit,
+        /// Optional accessibility/inspection text. Hosts may use it as the
+        /// image alt text; Core does not interpret or localize it.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        alt: Option<String>,
+    },
+    /// A reusable semantic component instance. Core owns the tree boundary and
+    /// validates its children, while the host decides how the component is
+    /// styled. Children retain the same screen design space as the existing
+    /// flat nodes, so adding nesting does not introduce a second layout system.
+    #[serde(rename = "component")]
+    Component {
+        id: String,
+        rect: UiRect,
+        component: String,
+        children: Vec<UiNode>,
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum UiImageFit {
+    Contain,
+    Cover,
+    Stretch,
+}
+
+impl Default for UiImageFit {
+    fn default() -> Self {
+        Self::Contain
+    }
+}
+
+impl UiNode {
+    pub fn id(&self) -> &str {
+        match self {
+            Self::Text { id, .. }
+            | Self::Button { id, .. }
+            | Self::Image { id, .. }
+            | Self::Component { id, .. } => id,
+        }
+    }
+
+    pub fn rect(&self) -> &UiRect {
+        match self {
+            Self::Text { rect, .. }
+            | Self::Button { rect, .. }
+            | Self::Image { rect, .. }
+            | Self::Component { rect, .. } => rect,
+        }
+    }
+
+    pub fn rect_mut(&mut self) -> &mut UiRect {
+        match self {
+            Self::Text { rect, .. }
+            | Self::Button { rect, .. }
+            | Self::Image { rect, .. }
+            | Self::Component { rect, .. } => rect,
+        }
+    }
+
+    pub fn text_mut(&mut self) -> Option<&mut String> {
+        match self {
+            Self::Text { text, .. } | Self::Button { text, .. } => Some(text),
+            Self::Image { .. } | Self::Component { .. } => None,
+        }
+    }
+
+    pub fn children(&self) -> &[UiNode] {
+        match self {
+            Self::Component { children, .. } => children,
+            _ => &[],
+        }
+    }
+
+    pub fn find_mut(&mut self, id: &str) -> Option<&mut Self> {
+        if self.id() == id {
+            return Some(self);
+        }
+        if let Self::Component { children, .. } = self {
+            for child in children {
+                if let Some(found) = child.find_mut(id) {
+                    return Some(found);
+                }
+            }
+        }
+        None
+    }
+
+    pub fn leaf_nodes<'a>(&'a self, output: &mut Vec<&'a Self>) {
+        match self {
+            Self::Component { children, .. } => {
+                for child in children {
+                    child.leaf_nodes(output);
+                }
+            }
+            _ => output.push(self),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
@@ -134,9 +243,20 @@ struct RawUiNode {
     offset: Option<RawOffset>,
     #[serde(default)]
     size: Option<RawSize>,
-    text: String,
+    #[serde(default)]
+    text: Option<String>,
     #[serde(default)]
     action: Option<String>,
+    #[serde(default)]
+    asset: Option<String>,
+    #[serde(default)]
+    fit: Option<UiImageFit>,
+    #[serde(default)]
+    alt: Option<String>,
+    #[serde(default)]
+    component: Option<String>,
+    #[serde(default)]
+    children: Option<Vec<RawUiNode>>,
 }
 
 /// Anchored offsets and sizes are in vertical units: percent of the viewport
@@ -161,6 +281,7 @@ struct RawSize {
 }
 
 const MAX_UI_NODES: usize = 256;
+const MAX_UI_DEPTH: usize = 16;
 
 /// Turn a node's declared placement into a design-space rect.
 ///
@@ -230,11 +351,13 @@ fn resolve_rect(node: &RawUiNode, aspect: f64) -> Result<UiRect, String> {
 }
 
 impl UiTree {
-    /// Validate the only UI representation the engine understands.
+    /// Validate the UI representation the engine understands.
     ///
-    /// This deliberately accepts one screen with a flat list of text and
-    /// button nodes. ViewModel composition, layout policy, styling, input
-    /// meaning, and all game-specific behavior remain in Luau/host code.
+    /// Text, button, image and reusable component nodes share one deterministic
+    /// design-space contract. Component children may nest, but they do not
+    /// introduce local coordinates or implicit layout; this keeps the Core
+    /// boundary inspectable while allowing reusable templates to be published
+    /// without flattening away their source identity.
     pub fn from_json(value: serde_json::Value) -> Result<Self, String> {
         Self::from_json_for_viewport(value, UI_REFERENCE_ASPECT)
     }
@@ -272,54 +395,10 @@ impl UiTree {
         }
 
         let mut ids = BTreeSet::new();
+        let mut node_count = 0;
         let mut children = Vec::with_capacity(raw.children.len());
         for raw_node in raw.children {
-            ensure_non_empty("node id", &raw_node.id)?;
-            if !ids.insert(raw_node.id.clone()) {
-                return Err(format!(
-                    "ui.setRoot node id '{}' is duplicated",
-                    raw_node.id
-                ));
-            }
-            let rect = resolve_rect(&raw_node, aspect)?;
-            validate_rect(rect)?;
-            let node = match raw_node.kind.as_str() {
-                "text" => {
-                    if raw_node.action.is_some() {
-                        return Err(format!(
-                            "ui.setRoot text node '{}' must not define action",
-                            raw_node.id
-                        ));
-                    }
-                    UiNode::Text {
-                        id: raw_node.id,
-                        rect,
-                        text: raw_node.text,
-                    }
-                }
-                "button" => {
-                    let action = raw_node.action.ok_or_else(|| {
-                        format!(
-                            "ui.setRoot button node '{}' requires a non-empty action",
-                            raw_node.id
-                        )
-                    })?;
-                    ensure_non_empty("button action", &action)?;
-                    UiNode::Button {
-                        id: raw_node.id,
-                        rect,
-                        text: raw_node.text,
-                        action,
-                    }
-                }
-                kind => {
-                    return Err(format!(
-                        "ui.setRoot node '{}' has unsupported kind '{}'; use text or button",
-                        raw_node.id, kind
-                    ));
-                }
-            };
-            children.push(node);
+            children.push(parse_node(raw_node, aspect, &mut ids, &mut node_count, 1)?);
         }
 
         Ok(Self {
@@ -331,9 +410,151 @@ impl UiTree {
     }
 }
 
+fn parse_node(
+    raw_node: RawUiNode,
+    aspect: f64,
+    ids: &mut BTreeSet<String>,
+    node_count: &mut usize,
+    depth: usize,
+) -> Result<UiNode, String> {
+    if raw_node.kind == "component" && depth > MAX_UI_DEPTH {
+        return Err(format!(
+            "ui.setRoot node '{}' exceeds the maximum component nesting depth of {MAX_UI_DEPTH}",
+            raw_node.id
+        ));
+    }
+    ensure_non_empty("node id", &raw_node.id)?;
+    if !ids.insert(raw_node.id.clone()) {
+        return Err(format!(
+            "ui.setRoot node id '{}' is duplicated",
+            raw_node.id
+        ));
+    }
+    *node_count += 1;
+    if *node_count > MAX_UI_NODES {
+        return Err(format!(
+            "ui.setRoot supports at most {MAX_UI_NODES} total UI nodes"
+        ));
+    }
+    let rect = resolve_rect(&raw_node, aspect)?;
+    validate_rect(rect)?;
+    let id = raw_node.id;
+    match raw_node.kind.as_str() {
+        "text" => {
+            if raw_node.action.is_some()
+                || raw_node.asset.is_some()
+                || raw_node.fit.is_some()
+                || raw_node.alt.is_some()
+                || raw_node.component.is_some()
+                || raw_node.children.is_some()
+            {
+                return Err(format!(
+                    "ui.setRoot text node '{id}' only accepts text and placement"
+                ));
+            }
+            Ok(UiNode::Text {
+                id,
+                rect,
+                text: raw_node.text.unwrap_or_default(),
+            })
+        }
+        "button" => {
+            if raw_node.asset.is_some()
+                || raw_node.fit.is_some()
+                || raw_node.alt.is_some()
+                || raw_node.component.is_some()
+                || raw_node.children.is_some()
+            {
+                return Err(format!(
+                    "ui.setRoot button node '{id}' only accepts text, action and placement"
+                ));
+            }
+            let action = raw_node.action.ok_or_else(|| {
+                format!("ui.setRoot button node '{id}' requires a non-empty action")
+            })?;
+            ensure_non_empty("button action", &action)?;
+            Ok(UiNode::Button {
+                id,
+                rect,
+                text: raw_node.text.unwrap_or_default(),
+                action,
+            })
+        }
+        "image" => {
+            if raw_node.text.is_some()
+                || raw_node.action.is_some()
+                || raw_node.component.is_some()
+                || raw_node.children.is_some()
+            {
+                return Err(format!(
+                    "ui.setRoot image node '{id}' only accepts asset, fit, alt and placement"
+                ));
+            }
+            let asset = raw_node
+                .asset
+                .ok_or_else(|| format!("ui.setRoot image node '{id}' requires an asset id"))?;
+            ensure_asset_id(&asset)?;
+            Ok(UiNode::Image {
+                id,
+                rect,
+                asset,
+                fit: raw_node.fit.unwrap_or_default(),
+                alt: raw_node.alt,
+            })
+        }
+        "component" => {
+            if raw_node.text.is_some()
+                || raw_node.action.is_some()
+                || raw_node.asset.is_some()
+                || raw_node.fit.is_some()
+                || raw_node.alt.is_some()
+            {
+                return Err(format!(
+                    "ui.setRoot component node '{id}' only accepts component, children and placement"
+                ));
+            }
+            let component = raw_node.component.ok_or_else(|| {
+                format!("ui.setRoot component node '{id}' requires a component name")
+            })?;
+            ensure_non_empty("component name", &component)?;
+            let children = raw_node.children.unwrap_or_default();
+            let mut parsed_children = Vec::with_capacity(children.len());
+            for child in children {
+                parsed_children.push(parse_node(child, aspect, ids, node_count, depth + 1)?);
+            }
+            Ok(UiNode::Component {
+                id,
+                rect,
+                component,
+                children: parsed_children,
+            })
+        }
+        kind => Err(format!(
+            "ui.setRoot node '{id}' has unsupported kind '{kind}'; use text, button, image or component"
+        )),
+    }
+}
+
 fn ensure_non_empty(label: &str, value: &str) -> Result<(), String> {
     if value.trim().is_empty() {
         return Err(format!("ui.setRoot {label} must not be empty"));
+    }
+    Ok(())
+}
+
+fn ensure_asset_id(value: &str) -> Result<(), String> {
+    ensure_non_empty("image asset", value)?;
+    let Some((scheme, path)) = value.split_once("://") else {
+        return Err("ui.setRoot image asset must be a stable id such as asset://ui/logo, not a project path or URL".to_string());
+    };
+    if scheme.is_empty()
+        || !scheme
+            .chars()
+            .all(|character| character.is_ascii_alphanumeric() || matches!(character, '+' | '-' | '.'))
+        || path.trim().is_empty()
+        || matches!(scheme.to_ascii_lowercase().as_str(), "http" | "https" | "file" | "data")
+    {
+        return Err("ui.setRoot image asset must be a stable non-URL id such as asset://ui/logo".to_string());
     }
     Ok(())
 }
@@ -421,9 +642,7 @@ mod tests {
             aspect,
         )
         .unwrap();
-        match &tree.children[0] {
-            UiNode::Text { rect, .. } | UiNode::Button { rect, .. } => *rect,
-        }
+        *tree.children[0].rect()
     }
 
     fn corner_button() -> serde_json::Value {
@@ -523,6 +742,73 @@ mod tests {
         }))
         .unwrap_err();
         assert!(outside_design_space.contains("normalized 0..100"));
+
+        let invalid_asset = UiTree::from_json(serde_json::json!({
+            "kind": "screen",
+            "id": "screen",
+            "node": "main",
+            "children": [{"kind": "image", "id": "logo", "asset": "assets/logo.svg", "rect": {"x": 0, "y": 0, "width": 1, "height": 1}}]
+        }))
+        .unwrap_err();
+        assert!(invalid_asset.contains("stable id"));
+    }
+
+    #[test]
+    fn validates_images_and_nested_reusable_components() {
+        let tree = UiTree::from_json(serde_json::json!({
+            "kind": "screen",
+            "id": "screen",
+            "node": "screen",
+            "children": [{
+                "kind": "component",
+                "id": "toolbar",
+                "component": "ui.toolbar",
+                "rect": {"x": 0, "y": 80, "width": 100, "height": 20},
+                "children": [
+                    {"kind": "image", "id": "logo", "asset": "asset://ui/logo", "fit": "contain", "alt": "Unone", "rect": {"x": 5, "y": 85, "width": 10, "height": 10}},
+                    {"kind": "button", "id": "save", "text": "Save", "action": "Save", "rect": {"x": 20, "y": 85, "width": 20, "height": 10}}
+                ]
+            }]
+        }))
+        .unwrap();
+        assert!(matches!(tree.children[0], UiNode::Component { .. }));
+        assert_eq!(tree.children[0].id(), "toolbar");
+        assert_eq!(tree.children[0].children().len(), 2);
+        assert_eq!(
+            serde_json::to_value(tree.children[0].children()[0].clone()).unwrap()["kind"],
+            "image"
+        );
+        assert_eq!(
+            serde_json::to_value(tree.children[0].children()[0].clone()).unwrap()["alt"],
+            "Unone"
+        );
+    }
+
+    #[test]
+    fn rejects_duplicate_ids_across_nested_components_and_limits_depth() {
+        let duplicate = UiTree::from_json(serde_json::json!({
+            "kind": "screen", "id": "screen", "node": "screen", "children": [{
+                "kind": "component", "id": "group", "component": "ui.group", "rect": {"x": 0, "y": 0, "width": 100, "height": 100},
+                "children": [{"kind": "text", "id": "same", "text": "a", "rect": {"x": 0, "y": 0, "width": 10, "height": 10}}]
+            }, {"kind": "text", "id": "same", "text": "b", "rect": {"x": 20, "y": 0, "width": 10, "height": 10}}]
+        })).unwrap_err();
+        assert!(duplicate.contains("duplicated"));
+
+        let mut node = serde_json::json!({"kind": "text", "id": "leaf", "text": "x", "rect": {"x": 0, "y": 0, "width": 1, "height": 1}});
+        for index in (0..17).rev() {
+            node = serde_json::json!({"kind": "component", "id": format!("group{index}"), "component": "ui.group", "rect": {"x": 0, "y": 0, "width": 100, "height": 100}, "children": [node]});
+        }
+        let depth_error = UiTree::from_json(
+            serde_json::json!({"kind":"screen","id":"screen","node":"screen","children":[node]}),
+        )
+        .unwrap_err();
+        assert!(depth_error.contains("maximum component nesting depth"));
+
+        let mut within_limit = serde_json::json!({"kind": "text", "id": "leaf_ok", "text": "x", "rect": {"x": 0, "y": 0, "width": 1, "height": 1}});
+        for index in (0..16).rev() {
+            within_limit = serde_json::json!({"kind": "component", "id": format!("ok{index}"), "component": "ui.group", "rect": {"x": 0, "y": 0, "width": 100, "height": 100}, "children": [within_limit]});
+        }
+        assert!(UiTree::from_json(serde_json::json!({"kind":"screen","id":"screen_ok","node":"screen","children":[within_limit]})).is_ok());
     }
 
     #[test]

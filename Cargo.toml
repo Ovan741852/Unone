@@ -8,7 +8,7 @@ members = [
     "crates/unone-mobile-android-smoke",
 ]
 resolver = "2"
-exclude = ["crates/unone-player"]
+exclude = ["crates/unone-player", "crates/unone-native-player"]
 
 [workspace.package]
 edition = "2024"

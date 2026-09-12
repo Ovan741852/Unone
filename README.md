@@ -1,8 +1,45 @@
 # Unone
 
+[Portable Core SDK and platform export](docs/portable-sdk.md): ship precompiled
+Core binaries and Web host templates without the Rust checkout. Web packaging is
+implemented; native Windows and Android packagers now support mesh/instance/particle
+players. iOS remains future work. See the native host limitations below.
+
 Unone is an AI-native **3D game engine prototype with 2D workflows**: Rust owns engine mechanisms, while Luau owns game rules and content. The engine is still in early development; its long-term goal is complete only after seven game validations pass.
 
 The current contract boundaries and host limitations are recorded in [Runtime contracts](docs/runtime-contracts.md). 3D transforms, cameras and presentation are an existing direction; mature 3D physics and a universal asset importer remain unfinished.
+
+### Product architecture and marketplace direction
+
+The product-level design for the Editor, AI Workshop, Core, Plugin SDK, asset
+pipeline, optional marketplace, creator payouts, and WASM/native packaging is
+documented in [Platform architecture](docs/platform-architecture.md). The
+marketplace is a replaceable distribution and revenue layer; it is not a Core
+runtime dependency.
+
+Lottie is not part of Core `ui.setRoot`; the optional `org.unone.lottie` plugin
+now supports the reviewed shape-only Canvas2D subset used by the Ashen Legion
+reward fixtures. Its host API, validation and boundaries are documented in
+[`plugins/org.unone.lottie/README.md`](plugins/org.unone.lottie/README.md).
+The Core/UI-tree extension and broader Lottie feature set remain proposal-level
+work in [Lottie UI capability](docs/proposals/lottie-ui-v1.md).
+
+## Native Windows / Android battle results
+
+| 平台（已測裝置） | 最高已測平均 60 FPS 等級 | 末幀 mesh 三角面 | 平均 FPS | p95 幀時間 |
+|---|---:|---:|---:|---:|
+| Windows / RTX 5080 Vulkan，1280×720 | 70,000 人 | 820,102 | 113.12–114.79 | 18.15–20.36 ms |
+| Android / BlueStacks GL，1600×900 | 50,000 人 | 639,380 | 59.47–60.00 | 21.33–21.67 ms |
+
+**平均達標不等於每幀穩定 60 FPS。** 若要求 p95 <=16.67 ms，Windows 本輪最高已測符合為 **60,000 人／741,350 面**（164.91 FPS，p95 14.94 ms）；Android 本輪未符合。BlueStacks 不是手機實測。表中人數為末幀視錐內士兵，面數使用遠距 LOD；不代表近景全精度角色。
+
+| Windows native：70,000 | Android native：50,000 |
+|---|---|
+| ![Windows native battle](docs/media/native-windows-70000.gif) | ![Android native battle](docs/media/native-android-50000.gif) |
+
+[完整報告、限制與重現方式](docs/native-battle.md) · [AI 可讀 JSON 證據](docs/reviews/native-2026-09-09/summary.json) · [Windows MP4](docs/media/native-windows-70000.mp4) · [Android MP4](docs/media/native-android-50000.mp4)
+
+30 秒即時戰鬥壓測、60 Hz runtime、零丟 tick；七種兵種，Luau 控制戰鬥，無逐人剛體／骨骼動畫。影片原速、GIF 10 fps，錄影回讀有額外成本，與正式測速分開。8 萬 Windows／6 萬 Android 的未達標數據也保留在報告。這是 prototype 的限定場景驗證，不是通用容量保證。
 
 ## 10,000-unit battle demonstration
 

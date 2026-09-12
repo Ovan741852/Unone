@@ -40,7 +40,7 @@ export type EntityApi = {
 
 export type Instances3DApi = {
     -- Packed little-endian f32 records: position.xyz, quaternion.xyzw, scale.xyz (40 bytes).
-    -- Replaces a complete batch atomically; max 100000 instances / 256 batches per world.
+    -- Replaces a complete batch atomically; max 262144 instances / 256 batches per world.
     set: (id: string, asset: string, transforms: buffer) -> (),
     remove: (id: string) -> (),
 }
@@ -193,6 +193,9 @@ export type AudioApi = {
 }
 
 export type ParticleApi = {
+    -- Packed f32le xyz positions, copied at submission. One stoppable batch handle.
+    play_batch: (effect: string, positions: buffer, seed: number?) -> string,
+    stats: () -> {active_handles: number, max_handles: number, reserved_particles: number, max_particles: number, live_particles: number},
     play: (effect: string, position: Vec3, seed: number?) -> string,
     stop: (handle: string) -> boolean,
 }
@@ -208,7 +211,16 @@ export type DebugApi = {
     register: (control: DebugControl, callback: ((value: boolean?) -> ())?) -> (),
     set: (id: string, value: string | boolean) -> (),
 }
+export type JobsApi = {
+    schedule: (operation: string, options: {every_ticks: number, times: number?}, prepare: (api: any, occurrence: number) -> buffer, apply: (api: any, output: buffer, occurrence: number) -> ()) -> string,
+    register: (id: string, source: string) -> (),
+    submit: (operation: string, input: buffer) -> string,
+    take: (handle: string) -> buffer,
+    cancel: (handle: string) -> (),
+    reset: () -> (),
+}
 export type EngineApi = {
+    jobs: JobsApi,
     instances3d: Instances3DApi,
     debug: DebugApi,
     particle: ParticleApi,

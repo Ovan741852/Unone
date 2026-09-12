@@ -1,5 +1,9 @@
 # Player build and single-game export
 
+For consumers without the Rust checkout, use the [portable Core SDK](portable-sdk.md)
+and `game export platform --target web`. The commands below are publisher/source
+development workflows.
+
 The default export is production. Use `-Player -Development` when building and
 `export web --development` when exporting to include the shared AI/human tools.
 See [development player and native tools](development-player.md) for the variant
