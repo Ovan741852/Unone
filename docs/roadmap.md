@@ -94,7 +94,7 @@ Stable IDs are retained for existing references, not a competing priority order.
 
 | ID | Gap | Current limitation |
 |---|---|---|
-| 16 | Native UI | Native preview and Android do not render UI trees; Web does. |
+| 16 | Native UI | Native wgpu fails closed on `WorldSnapshot.ui`; Web draws the same tree as DOM. Feasibility for a later mesh host (not scheduled): [native-ui-host-v1](proposals/native-ui-host-v1.md). |
 | 17 | Native textures | Preview verifies/decodes sprite bytes but draws procedural shapes. |
 | 18 | Native/mobile Spine and Effekseer | Actual presentation is Web-only; semantic state is not playback. |
 | 19 | iOS host | ABI exists; implementation and device evidence are absent. |
