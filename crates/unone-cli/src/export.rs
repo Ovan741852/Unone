@@ -40,30 +40,6 @@ fn digest(bytes: &[u8]) -> String {
 }
 
 use unone_engine::MeshAsset as StaticMesh;
-#[derive(serde::Deserialize,serde::Serialize)]
-#[serde(default,deny_unknown_fields)]
-struct JobPolicy { mode: JobMode, max_workers: u8, memory_budget_mb: u16 }
-impl Default for JobPolicy {fn default()->Self{Self{mode:JobMode::Auto,max_workers:2,memory_budget_mb:128}}}
-#[derive(serde::Deserialize,serde::Serialize)]
-#[serde(rename_all="snake_case")]
-enum JobMode {Auto,Inline,Workers}
-#[derive(Default, serde::Deserialize, serde::Serialize)]
-#[serde(default, deny_unknown_fields)]
-struct PresentationSettings {
-    bloom: bool,
-    show_performance: bool,
-    runtime_backend: RuntimeBackend,
-    job_policy: JobPolicy,
-    interpolation: bool,
-    interpolate_instances: Vec<String>,
-}
-#[derive(Default, serde::Deserialize, serde::Serialize)]
-#[serde(rename_all = "snake_case")]
-enum RuntimeBackend {
-    #[default]
-    Main,
-    Worker,
-}
 fn inside(root: &Path, relative: &str) -> Result<PathBuf> {
     ensure!(
         !Path::new(relative).is_absolute() && !relative.split(['/', '\\']).any(|p| p == ".."),
@@ -169,14 +145,8 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             project.display()
         );
     }
-    let presentation = if project.join("player.presentation.json").exists() {
-        serde_json::from_slice::<PresentationSettings>(&fs::read(inside(
-            project,
-            "player.presentation.json",
-        )?)?)?
-    } else {
-        PresentationSettings::default()
-    };
+    let presentation = crate::hosts::load_presentation(project)?
+        .unwrap_or_default();
     ensure!(presentation.job_policy.max_workers<=4 && presentation.job_policy.memory_budget_mb<=1024,"JOB_POLICY_INVALID: max_workers must be 0..4 and memory_budget_mb 0..1024");
     files.push((
         "content/presentation.json".into(),

@@ -24,6 +24,7 @@ use winit::{
 
 mod assets;
 mod export;
+mod hosts;
 mod sdk;
 mod mcp;
 mod native_capture;

@@ -2,7 +2,8 @@
 
 This APK host embeds a verified single-game Web export and runs its release WASM,
 Three.js WebGL, UI, audio and native particle implementation in Android System
-WebView. Android's installed WebView supplies the CPU/GPU backend, so the APK has
+WebView. It is **not** `export platform --target android-x86_64` / `android-arm64`
+(those are wgpu NativeActivity). Android's installed WebView supplies the CPU/GPU backend, so the APK has
 no architecture-specific native library. Android 14 with WebView 137 was tested;
 physical devices and older WebViews still need compatibility validation.
 
