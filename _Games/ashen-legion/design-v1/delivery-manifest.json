@@ -1,0 +1,699 @@
+{
+  "version": "2026-09-12-nearwin-v1",
+  "sourceHash": "6cfc128157331e3d430158e1d533428190ca2ce6d8c0eebe253d2bd6ea4ca814",
+  "skills": 45,
+  "gear": [
+    {
+      "id": "pierce",
+      "name": "穿軍刃",
+      "slot": 5,
+      "price": 96,
+      "image": "svg/gear-pierce.svg",
+      "svg": "design-v1/svg/gear-pierce.svg",
+      "model": "assets/equipment/pierce.glb",
+      "texture": "assets/equipment/pierce.png"
+    },
+    {
+      "id": "landing_spin",
+      "name": "旋風長柄",
+      "slot": 5,
+      "price": 120,
+      "image": "svg/gear-landing_spin.svg",
+      "svg": "design-v1/svg/gear-landing_spin.svg",
+      "model": "assets/equipment/landing_spin.glb",
+      "texture": "assets/equipment/landing_spin.png"
+    },
+    {
+      "id": "lightning",
+      "name": "雷枝戰槍",
+      "slot": 5,
+      "price": 144,
+      "image": "svg/gear-lightning.svg",
+      "svg": "design-v1/svg/gear-lightning.svg",
+      "model": "assets/equipment/lightning.glb",
+      "texture": "assets/equipment/lightning.png"
+    },
+    {
+      "id": "critical",
+      "name": "鷹眼盔",
+      "slot": 1,
+      "price": 72,
+      "image": "svg/gear-critical.svg",
+      "svg": "design-v1/svg/gear-critical.svg",
+      "model": "assets/equipment/critical.glb",
+      "texture": "assets/equipment/critical.png"
+    },
+    {
+      "id": "third_crit",
+      "name": "決勝冠",
+      "slot": 1,
+      "price": 112,
+      "image": "svg/gear-third_crit.svg",
+      "svg": "design-v1/svg/gear-third_crit.svg",
+      "model": "assets/equipment/third_crit.glb",
+      "texture": "assets/equipment/third_crit.png"
+    },
+    {
+      "id": "king_hunter",
+      "name": "獵王面甲",
+      "slot": 1,
+      "price": 96,
+      "image": "svg/gear-king_hunter.svg",
+      "svg": "design-v1/svg/gear-king_hunter.svg",
+      "model": "assets/equipment/king_hunter.glb",
+      "texture": "assets/equipment/king_hunter.png"
+    },
+    {
+      "id": "ember_burst",
+      "name": "餘燼鎧",
+      "slot": 2,
+      "price": 104,
+      "image": "svg/gear-ember_burst.svg",
+      "svg": "design-v1/svg/gear-ember_burst.svg",
+      "model": "assets/equipment/ember_burst.glb",
+      "texture": "assets/equipment/ember_burst.png"
+    },
+    {
+      "id": "longlife",
+      "name": "長征甲",
+      "slot": 2,
+      "price": 80,
+      "image": "svg/gear-longlife.svg",
+      "svg": "design-v1/svg/gear-longlife.svg",
+      "model": "assets/equipment/longlife.glb",
+      "texture": "assets/equipment/longlife.png"
+    },
+    {
+      "id": "expire_burst",
+      "name": "不屈戰衣",
+      "slot": 2,
+      "price": 120,
+      "image": "svg/gear-expire_burst.svg",
+      "svg": "design-v1/svg/gear-expire_burst.svg",
+      "model": "assets/equipment/expire_burst.glb",
+      "texture": "assets/equipment/expire_burst.png"
+    },
+    {
+      "id": "rebound_charge",
+      "name": "折光靴",
+      "slot": 3,
+      "price": 88,
+      "image": "svg/gear-rebound_charge.svg",
+      "svg": "design-v1/svg/gear-rebound_charge.svg",
+      "model": "assets/equipment/rebound_charge.glb",
+      "texture": "assets/equipment/rebound_charge.png"
+    },
+    {
+      "id": "haste",
+      "name": "疾行靴",
+      "slot": 3,
+      "price": 64,
+      "image": "svg/gear-haste.svg",
+      "svg": "design-v1/svg/gear-haste.svg",
+      "model": "assets/equipment/haste.glb",
+      "texture": "assets/equipment/haste.png"
+    },
+    {
+      "id": "bounce_life",
+      "name": "回春靴",
+      "slot": 3,
+      "price": 88,
+      "image": "svg/gear-bounce_life.svg",
+      "svg": "design-v1/svg/gear-bounce_life.svg",
+      "model": "assets/equipment/bounce_life.glb",
+      "texture": "assets/equipment/bounce_life.png"
+    },
+    {
+      "id": "crit_power",
+      "name": "猛擊護手",
+      "slot": 4,
+      "price": 80,
+      "image": "svg/gear-crit_power.svg",
+      "svg": "design-v1/svg/gear-crit_power.svg",
+      "model": "assets/equipment/crit_power.glb",
+      "texture": "assets/equipment/crit_power.png"
+    },
+    {
+      "id": "finisher",
+      "name": "破陣護手",
+      "slot": 4,
+      "price": 112,
+      "image": "svg/gear-finisher.svg",
+      "svg": "design-v1/svg/gear-finisher.svg",
+      "model": "assets/equipment/finisher.glb",
+      "texture": "assets/equipment/finisher.png"
+    },
+    {
+      "id": "frost_touch",
+      "name": "凝霜護手",
+      "slot": 4,
+      "price": 88,
+      "image": "svg/gear-frost_touch.svg",
+      "svg": "design-v1/svg/gear-frost_touch.svg",
+      "model": "assets/equipment/frost_touch.glb",
+      "texture": "assets/equipment/frost_touch.png"
+    },
+    {
+      "id": "frenzy",
+      "name": "狂獵戰旗",
+      "slot": 2,
+      "price": 104,
+      "image": "svg/gear-frenzy.svg",
+      "svg": "design-v1/svg/gear-frenzy.svg",
+      "model": "assets/equipment/frenzy.glb",
+      "texture": "assets/equipment/frenzy.png"
+    },
+    {
+      "id": "momentum",
+      "name": "勢能戰槍",
+      "slot": 5,
+      "price": 96,
+      "image": "svg/gear-momentum.svg",
+      "svg": "design-v1/svg/gear-momentum.svg",
+      "model": "assets/equipment/momentum.glb",
+      "texture": "assets/equipment/momentum.png"
+    },
+    {
+      "id": "shock",
+      "name": "震盪護手",
+      "slot": 4,
+      "price": 112,
+      "image": "svg/gear-shock.svg",
+      "svg": "design-v1/svg/gear-shock.svg",
+      "model": "assets/equipment/shock.glb",
+      "texture": "assets/equipment/shock.png"
+    },
+    {
+      "id": "shatter",
+      "name": "碎冰刃",
+      "slot": 5,
+      "price": 104,
+      "image": "svg/gear-shatter.svg",
+      "svg": "design-v1/svg/gear-shatter.svg",
+      "model": "assets/equipment/shatter.glb",
+      "texture": "assets/equipment/shatter.png"
+    },
+    {
+      "id": "ricochet_precision",
+      "name": "鏡面盔",
+      "slot": 1,
+      "price": 96,
+      "image": "svg/gear-ricochet_precision.svg",
+      "svg": "design-v1/svg/gear-ricochet_precision.svg",
+      "model": "assets/equipment/ricochet_precision.glb",
+      "texture": "assets/equipment/ricochet_precision.png"
+    },
+    {
+      "id": "hunter_vigor",
+      "name": "獵命護手",
+      "slot": 4,
+      "price": 80,
+      "image": "svg/gear-hunter_vigor.svg",
+      "svg": "design-v1/svg/gear-hunter_vigor.svg",
+      "model": "assets/equipment/hunter_vigor.glb",
+      "texture": "assets/equipment/hunter_vigor.png"
+    },
+    {
+      "id": "piercing_wave",
+      "name": "穿陣護手",
+      "slot": 4,
+      "price": 120,
+      "image": "svg/gear-piercing_wave.svg",
+      "svg": "design-v1/svg/gear-piercing_wave.svg",
+      "model": "assets/equipment/piercing_wave.glb",
+      "texture": "assets/equipment/piercing_wave.png"
+    },
+    {
+      "id": "slow_force",
+      "name": "磐石靴",
+      "slot": 3,
+      "price": 80,
+      "image": "svg/gear-slow_force.svg",
+      "svg": "design-v1/svg/gear-slow_force.svg",
+      "model": "assets/equipment/slow_force.glb",
+      "texture": "assets/equipment/slow_force.png"
+    },
+    {
+      "id": "spin_master",
+      "name": "風環冠",
+      "slot": 1,
+      "price": 96,
+      "image": "svg/gear-spin_master.svg",
+      "svg": "design-v1/svg/gear-spin_master.svg",
+      "model": "assets/equipment/spin_master.glb",
+      "texture": "assets/equipment/spin_master.png"
+    },
+    {
+      "id": "last_stand",
+      "name": "背水頭帶",
+      "slot": 1,
+      "price": 72,
+      "image": "svg/gear-last_stand.svg",
+      "svg": "design-v1/svg/gear-last_stand.svg",
+      "model": "assets/equipment/last_stand.glb",
+      "texture": "assets/equipment/last_stand.png"
+    },
+    {
+      "id": "heat",
+      "name": "熱機護手",
+      "slot": 4,
+      "price": 72,
+      "image": "svg/gear-heat.svg",
+      "svg": "design-v1/svg/gear-heat.svg",
+      "model": "assets/equipment/heat.glb",
+      "texture": "assets/equipment/heat.png"
+    },
+    {
+      "id": "distance",
+      "name": "遠征靴",
+      "slot": 3,
+      "price": 72,
+      "image": "svg/gear-distance.svg",
+      "svg": "design-v1/svg/gear-distance.svg",
+      "model": "assets/equipment/distance.glb",
+      "texture": "assets/equipment/distance.png"
+    },
+    {
+      "id": "heavy",
+      "name": "重鋼甲",
+      "slot": 2,
+      "price": 80,
+      "image": "svg/gear-heavy.svg",
+      "svg": "design-v1/svg/gear-heavy.svg",
+      "model": "assets/equipment/heavy.glb",
+      "texture": "assets/equipment/heavy.png"
+    },
+    {
+      "id": "bounce_power",
+      "name": "折返頭冠",
+      "slot": 1,
+      "price": 96,
+      "image": "svg/gear-bounce_power.svg",
+      "svg": "design-v1/svg/gear-bounce_power.svg",
+      "model": "assets/equipment/bounce_power.glb",
+      "texture": "assets/equipment/bounce_power.png"
+    },
+    {
+      "id": "wall_quake",
+      "name": "震地靴",
+      "slot": 3,
+      "price": 96,
+      "image": "svg/gear-wall_quake.svg",
+      "svg": "design-v1/svg/gear-wall_quake.svg",
+      "model": "assets/equipment/wall_quake.glb",
+      "texture": "assets/equipment/wall_quake.png"
+    },
+    {
+      "id": "short_fuse",
+      "name": "燃命鎧",
+      "slot": 2,
+      "price": 80,
+      "image": "svg/gear-short_fuse.svg",
+      "svg": "design-v1/svg/gear-short_fuse.svg",
+      "model": "assets/equipment/short_fuse.glb",
+      "texture": "assets/equipment/short_fuse.png"
+    },
+    {
+      "id": "wide_blade",
+      "name": "寬刃戰斧",
+      "slot": 5,
+      "price": 88,
+      "image": "svg/gear-wide_blade.svg",
+      "svg": "design-v1/svg/gear-wide_blade.svg",
+      "model": "assets/equipment/wide_blade.glb",
+      "texture": "assets/equipment/wide_blade.png"
+    },
+    {
+      "id": "hit_echo",
+      "name": "回響護手",
+      "slot": 4,
+      "price": 104,
+      "image": "svg/gear-hit_echo.svg",
+      "svg": "design-v1/svg/gear-hit_echo.svg",
+      "model": "assets/equipment/hit_echo.glb",
+      "texture": "assets/equipment/hit_echo.png"
+    },
+    {
+      "id": "fracture",
+      "name": "裂甲面具",
+      "slot": 1,
+      "price": 80,
+      "image": "svg/gear-fracture.svg",
+      "svg": "design-v1/svg/gear-fracture.svg",
+      "model": "assets/equipment/fracture.glb",
+      "texture": "assets/equipment/fracture.png"
+    },
+    {
+      "id": "solo_hunt",
+      "name": "孤獵冠",
+      "slot": 1,
+      "price": 80,
+      "image": "svg/gear-solo_hunt.svg",
+      "svg": "design-v1/svg/gear-solo_hunt.svg",
+      "model": "assets/equipment/solo_hunt.glb",
+      "texture": "assets/equipment/solo_hunt.png"
+    },
+    {
+      "id": "crowd_ring",
+      "name": "聚獵長柄",
+      "slot": 5,
+      "price": 88,
+      "image": "svg/gear-crowd_ring.svg",
+      "svg": "design-v1/svg/gear-crowd_ring.svg",
+      "model": "assets/equipment/crowd_ring.glb",
+      "texture": "assets/equipment/crowd_ring.png"
+    },
+    {
+      "id": "recruit",
+      "name": "徵募印記",
+      "slot": 1,
+      "price": 48,
+      "image": "svg/gear-recruit.svg",
+      "svg": "design-v1/svg/gear-recruit.svg",
+      "model": "assets/equipment/recruit.glb",
+      "texture": "assets/equipment/recruit.png"
+    },
+    {
+      "id": "rally",
+      "name": "集結戰旗",
+      "slot": 2,
+      "price": 88,
+      "image": "svg/gear-rally.svg",
+      "svg": "design-v1/svg/gear-rally.svg",
+      "model": "assets/equipment/rally.glb",
+      "texture": "assets/equipment/rally.png"
+    },
+    {
+      "id": "rapid",
+      "name": "急募護手",
+      "slot": 4,
+      "price": 80,
+      "image": "svg/gear-rapid.svg",
+      "svg": "design-v1/svg/gear-rapid.svg",
+      "model": "assets/equipment/rapid.glb",
+      "texture": "assets/equipment/rapid.png"
+    },
+    {
+      "id": "solitary",
+      "name": "孤軍甲",
+      "slot": 2,
+      "price": 80,
+      "image": "svg/gear-solitary.svg",
+      "svg": "design-v1/svg/gear-solitary.svg",
+      "model": "assets/equipment/solitary.glb",
+      "texture": "assets/equipment/solitary.png"
+    },
+    {
+      "id": "showdown",
+      "name": "決戰冠",
+      "slot": 1,
+      "price": 104,
+      "image": "svg/gear-showdown.svg",
+      "svg": "design-v1/svg/gear-showdown.svg",
+      "model": "assets/equipment/showdown.glb",
+      "texture": "assets/equipment/showdown.png"
+    },
+    {
+      "id": "sharp",
+      "name": "鋒利短劍",
+      "slot": 5,
+      "price": 64,
+      "image": "svg/gear-sharp.svg",
+      "svg": "design-v1/svg/gear-sharp.svg",
+      "model": "assets/equipment/sharp.glb",
+      "texture": "assets/equipment/sharp.png"
+    },
+    {
+      "id": "giant",
+      "name": "巨力護手",
+      "slot": 4,
+      "price": 88,
+      "image": "svg/gear-giant.svg",
+      "svg": "design-v1/svg/gear-giant.svg",
+      "model": "assets/equipment/giant.glb",
+      "texture": "assets/equipment/giant.png"
+    },
+    {
+      "id": "double_pierce",
+      "name": "雙鋒戰槍",
+      "slot": 5,
+      "price": 144,
+      "image": "svg/gear-double_pierce.svg",
+      "svg": "design-v1/svg/gear-double_pierce.svg",
+      "model": "assets/equipment/double_pierce.glb",
+      "texture": "assets/equipment/double_pierce.png"
+    },
+    {
+      "id": "deadly",
+      "name": "致命冠",
+      "slot": 1,
+      "price": 120,
+      "image": "svg/gear-deadly.svg",
+      "svg": "design-v1/svg/gear-deadly.svg",
+      "model": "assets/equipment/deadly.glb",
+      "texture": "assets/equipment/deadly.png"
+    }
+  ],
+  "creatures": [
+    {
+      "id": "acorn",
+      "name": "橡果蹦蹦",
+      "rank": 1,
+      "model": "art-v2/acorn.glb",
+      "source": "art-v2/acorn.blend",
+      "texture": "art-v2/painted-atlas.png",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "bones": 9,
+      "triangles": 734,
+      "artVersion": "sculpted-storybook-v2"
+    },
+    {
+      "id": "piglet",
+      "name": "菇背幼豬",
+      "rank": 2,
+      "model": "art-v2/piglet.glb",
+      "source": "art-v2/piglet.blend",
+      "texture": "art-v2/painted-atlas.png",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "bones": 9,
+      "triangles": 1148,
+      "artVersion": "sculpted-storybook-v2"
+    },
+    {
+      "id": "moth",
+      "name": "苔羽蛾",
+      "rank": 1,
+      "model": "art-v2/moth.glb",
+      "source": "art-v2/moth.blend",
+      "texture": "art-v2/painted-atlas.png",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "bones": 9,
+      "triangles": 1258,
+      "artVersion": "sculpted-storybook-v2"
+    },
+    {
+      "id": "turtle",
+      "name": "苔殼龜",
+      "rank": 2,
+      "model": "art-v2/turtle.glb",
+      "source": "art-v2/turtle.blend",
+      "texture": "art-v2/painted-atlas.png",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "bones": 9,
+      "triangles": 966,
+      "artVersion": "sculpted-storybook-v2"
+    },
+    {
+      "id": "boar",
+      "name": "獠牙搬木王",
+      "rank": 3,
+      "model": "art-v2/boar.glb",
+      "source": "art-v2/boar.blend",
+      "texture": "art-v2/painted-atlas.png",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "bones": 9,
+      "triangles": 886,
+      "artVersion": "sculpted-storybook-v2"
+    },
+    {
+      "id": "elder",
+      "name": "古榕守衛",
+      "rank": 4,
+      "model": "art-v2/elder.glb",
+      "source": "art-v2/elder.blend",
+      "texture": "art-v2/painted-atlas.png",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "bones": 9,
+      "triangles": 1098,
+      "artVersion": "sculpted-storybook-v2"
+    },
+    {
+      "id": "treant",
+      "name": "花冠樹靈",
+      "rank": 3,
+      "model": "art-v2/treant.glb",
+      "source": "art-v2/treant.blend",
+      "texture": "art-v2/painted-atlas.png",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "bones": 9,
+      "triangles": 1614,
+      "artVersion": "sculpted-storybook-v2"
+    },
+    {
+      "id": "stag",
+      "name": "冠角白鹿",
+      "rank": 5,
+      "model": "art-v2/stag.glb",
+      "source": "art-v2/stag.blend",
+      "texture": "art-v2/painted-atlas.png",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "bones": 9,
+      "triangles": 915,
+      "artVersion": "sculpted-storybook-v2"
+    },
+    {
+      "id": "beetle",
+      "name": "聚寶甲蟲",
+      "rank": 4,
+      "model": "art-v2/beetle.glb",
+      "source": "art-v2/beetle.blend",
+      "texture": "art-v2/painted-atlas.png",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "bones": 9,
+      "triangles": 956,
+      "artVersion": "sculpted-storybook-v2"
+    },
+    {
+      "id": "wheel",
+      "name": "金鈴狸",
+      "rank": 3,
+      "model": "art-v2/wheel.glb",
+      "source": "art-v2/wheel.blend",
+      "texture": "art-v2/painted-atlas.png",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "bones": 9,
+      "triangles": 1404,
+      "artVersion": "sculpted-storybook-v2"
+    },
+    {
+      "id": "horse",
+      "name": "林地戰馬",
+      "rank": 0,
+      "model": "art-v2/horse.glb",
+      "source": "art-v2/horse.blend",
+      "texture": "art-v2/painted-atlas.png",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "bones": 9,
+      "triangles": 836,
+      "artVersion": "sculpted-storybook-v2"
+    }
+  ],
+  "lottie": [
+    "presentation/lottie/big-win-dock.json",
+    "presentation/lottie/mega-win-dock.json",
+    "presentation/lottie/legendary-win-dock.json",
+    "presentation/lottie/ultimate-crown.json",
+    "presentation/lottie/coin-burst.json"
+  ],
+  "baseArtManifest": "design-v1/manifest.json",
+  "soldier": "presentation/soldier.glb"
+}

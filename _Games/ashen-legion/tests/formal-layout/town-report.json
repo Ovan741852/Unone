@@ -1,0 +1,1022 @@
+{
+  "ok": true,
+  "value": {
+    "screen": "forest_lord",
+    "cols": 96,
+    "rows": 48,
+    "ascii": "+------------------------------------------------------------------------------------------------+\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@#######################@@@@#############################################################@@@|\n|@@@@@#######################@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n+------------------------------------------------------------------------------------------------+",
+    "nodes": [
+      {
+        "id": "interior_shade",
+        "kind": "image",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_scene-shade",
+        "text_fit": 0
+      },
+      {
+        "id": "screen_back",
+        "kind": "image",
+        "rect": {
+          "x": 33,
+          "y": 6,
+          "width": 64,
+          "height": 87
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_panel",
+        "text_fit": 0
+      },
+      {
+        "id": "screen_title",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 84,
+          "width": 35,
+          "height": 5
+        },
+        "text": "領地建設",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.16
+      },
+      {
+        "id": "back_plate",
+        "kind": "image",
+        "rect": {
+          "x": 76,
+          "y": 9,
+          "width": 17,
+          "height": 7
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "back",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 11,
+          "width": 17,
+          "height": 3
+        },
+        "text": "返回",
+        "action": "UI_home",
+        "asset": null,
+        "text_fit": 0.1
+      },
+      {
+        "id": "back_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 14,
+          "width": 17,
+          "height": 2
+        },
+        "text": "",
+        "action": "UI_home",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "back_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 9,
+          "width": 17,
+          "height": 2
+        },
+        "text": "",
+        "action": "UI_home",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "town_gold",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 77,
+          "width": 56,
+          "height": 4
+        },
+        "text": "城鎮建設資源 0 · 跨局保留",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.3
+      },
+      {
+        "id": "town_icon_1",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 60,
+          "width": 9,
+          "height": 13
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_building-barracks",
+        "text_fit": 0
+      },
+      {
+        "id": "town_1_plate",
+        "kind": "image",
+        "rect": {
+          "x": 46,
+          "y": 66,
+          "width": 18,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_muted",
+        "text_fit": 0
+      },
+      {
+        "id": "town_1",
+        "kind": "text",
+        "rect": {
+          "x": 47,
+          "y": 67.5,
+          "width": 16,
+          "height": 3
+        },
+        "text": "兵營 Lv.0",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.37
+      },
+      {
+        "id": "town_cost_1",
+        "kind": "text",
+        "rect": {
+          "x": 46,
+          "y": 62,
+          "width": 18,
+          "height": 3
+        },
+        "text": "還差 60 建設金",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.42
+      },
+      {
+        "id": "town_effect_1",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 51,
+          "width": 27,
+          "height": 7
+        },
+        "text": "每級傷害 +10%／壽命 +2%",
+        "action": null,
+        "asset": null,
+        "text_fit": 1.17
+      },
+      {
+        "id": "town_icon_2",
+        "kind": "image",
+        "rect": {
+          "x": 66,
+          "y": 60,
+          "width": 9,
+          "height": 13
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_building-forge",
+        "text_fit": 0
+      },
+      {
+        "id": "town_2_plate",
+        "kind": "image",
+        "rect": {
+          "x": 75,
+          "y": 66,
+          "width": 18,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_muted",
+        "text_fit": 0
+      },
+      {
+        "id": "town_2",
+        "kind": "text",
+        "rect": {
+          "x": 76,
+          "y": 67.5,
+          "width": 16,
+          "height": 3
+        },
+        "text": "鐵匠舖 Lv.0",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.42
+      },
+      {
+        "id": "town_cost_2",
+        "kind": "text",
+        "rect": {
+          "x": 75,
+          "y": 62,
+          "width": 18,
+          "height": 3
+        },
+        "text": "還差 60 建設金",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.42
+      },
+      {
+        "id": "town_effect_2",
+        "kind": "text",
+        "rect": {
+          "x": 66,
+          "y": 51,
+          "width": 27,
+          "height": 7
+        },
+        "text": "每級稀有附魔機率 +1%",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.88
+      },
+      {
+        "id": "town_icon_3",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 33,
+          "width": 9,
+          "height": 13
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_building-alchemy",
+        "text_fit": 0
+      },
+      {
+        "id": "town_3_plate",
+        "kind": "image",
+        "rect": {
+          "x": 46,
+          "y": 39,
+          "width": 18,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_muted",
+        "text_fit": 0
+      },
+      {
+        "id": "town_3",
+        "kind": "text",
+        "rect": {
+          "x": 47,
+          "y": 40.5,
+          "width": 16,
+          "height": 3
+        },
+        "text": "煉金房 Lv.0",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.42
+      },
+      {
+        "id": "town_cost_3",
+        "kind": "text",
+        "rect": {
+          "x": 46,
+          "y": 35,
+          "width": 18,
+          "height": 3
+        },
+        "text": "還差 60 建設金",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.42
+      },
+      {
+        "id": "town_effect_3",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 24,
+          "width": 27,
+          "height": 7
+        },
+        "text": "每級疾風藥水時長 +2%",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.88
+      },
+      {
+        "id": "town_icon_4",
+        "kind": "image",
+        "rect": {
+          "x": 66,
+          "y": 33,
+          "width": 9,
+          "height": 13
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_building-market",
+        "text_fit": 0
+      },
+      {
+        "id": "town_4_plate",
+        "kind": "image",
+        "rect": {
+          "x": 75,
+          "y": 39,
+          "width": 18,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_muted",
+        "text_fit": 0
+      },
+      {
+        "id": "town_4",
+        "kind": "text",
+        "rect": {
+          "x": 76,
+          "y": 40.5,
+          "width": 16,
+          "height": 3
+        },
+        "text": "市集 Lv.0",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.37
+      },
+      {
+        "id": "town_cost_4",
+        "kind": "text",
+        "rect": {
+          "x": 75,
+          "y": 35,
+          "width": 18,
+          "height": 3
+        },
+        "text": "還差 60 建設金",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.42
+      },
+      {
+        "id": "town_effect_4",
+        "kind": "text",
+        "rect": {
+          "x": 66,
+          "y": 24,
+          "width": 27,
+          "height": 7
+        },
+        "text": "每級裝備售價 -2%\nLv.3 多一件商品",
+        "action": null,
+        "asset": null,
+        "text_fit": 1.53
+      },
+      {
+        "id": "story_portrait",
+        "kind": "image",
+        "rect": {
+          "x": 2,
+          "y": 31,
+          "width": 29,
+          "height": 45
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_quartermaster-v1",
+        "text_fit": 0
+      },
+      {
+        "id": "story_speaker",
+        "kind": "text",
+        "rect": {
+          "x": 5,
+          "y": 79,
+          "width": 24,
+          "height": 4
+        },
+        "text": "司務長 · 榛姨",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.38
+      },
+      {
+        "id": "story_quote",
+        "kind": "text",
+        "rect": {
+          "x": 5,
+          "y": 16,
+          "width": 25,
+          "height": 12
+        },
+        "text": "城鎮建設跨遠征保留。為下一次出征，留下一點力量。",
+        "action": null,
+        "asset": null,
+        "text_fit": 3.24
+      }
+    ],
+    "findings": [],
+    "allowed_overlaps": [
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'screen_back' overlap by 64.0 x 87.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "screen_back"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'screen_title' overlap by 35.0 x 5.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "screen_title"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'back_plate' overlap by 17.0 x 7.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "back_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'back' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "back"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'back_hit_top' overlap by 17.0 x 2.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "back_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'back_hit_bottom' overlap by 17.0 x 2.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "back_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_gold' overlap by 56.0 x 4.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_gold"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_icon_1' overlap by 9.0 x 13.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_icon_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_1_plate' overlap by 18.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_1_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_1' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_cost_1' overlap by 18.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_cost_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_effect_1' overlap by 27.0 x 7.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_effect_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_icon_2' overlap by 9.0 x 13.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_icon_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_2_plate' overlap by 18.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_2_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_2' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_cost_2' overlap by 18.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_cost_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_effect_2' overlap by 27.0 x 7.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_effect_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_icon_3' overlap by 9.0 x 13.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_icon_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_3_plate' overlap by 18.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_3_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_3' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_cost_3' overlap by 18.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_cost_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_effect_3' overlap by 27.0 x 7.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_effect_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_icon_4' overlap by 9.0 x 13.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_icon_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_4_plate' overlap by 18.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_4_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_4' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_cost_4' overlap by 18.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_cost_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'town_effect_4' overlap by 27.0 x 7.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "town_effect_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'story_portrait' overlap by 29.0 x 45.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "story_portrait"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'story_speaker' overlap by 24.0 x 4.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "story_speaker"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'story_quote' overlap by 25.0 x 12.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "story_quote"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'screen_title' overlap by 35.0 x 5.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "screen_title"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'back_plate' overlap by 17.0 x 7.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "back_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'back' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "back"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'back_hit_top' overlap by 17.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "back_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'back_hit_bottom' overlap by 17.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "back_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_gold' overlap by 56.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_gold"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_icon_1' overlap by 9.0 x 13.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_icon_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_1_plate' overlap by 18.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_1_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_1' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_cost_1' overlap by 18.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_cost_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_effect_1' overlap by 27.0 x 7.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_effect_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_icon_2' overlap by 9.0 x 13.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_icon_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_2_plate' overlap by 18.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_2_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_2' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_cost_2' overlap by 18.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_cost_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_effect_2' overlap by 27.0 x 7.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_effect_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_icon_3' overlap by 9.0 x 13.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_icon_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_3_plate' overlap by 18.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_3_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_3' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_cost_3' overlap by 18.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_cost_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_effect_3' overlap by 27.0 x 7.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_effect_3"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_icon_4' overlap by 9.0 x 13.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_icon_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_4_plate' overlap by 18.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_4_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_4' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_cost_4' overlap by 18.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_cost_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'town_effect_4' overlap by 27.0 x 7.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "town_effect_4"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'back_plate' and 'back' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "back_plate",
+          "back"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'back_plate' and 'back_hit_top' overlap by 17.0 x 2.0 (design-space units).",
+        "nodes": [
+          "back_plate",
+          "back_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'back_plate' and 'back_hit_bottom' overlap by 17.0 x 2.0 (design-space units).",
+        "nodes": [
+          "back_plate",
+          "back_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'town_1_plate' and 'town_1' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "town_1_plate",
+          "town_1"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'town_2_plate' and 'town_2' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "town_2_plate",
+          "town_2"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'town_3_plate' and 'town_3' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "town_3_plate",
+          "town_3"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'town_4_plate' and 'town_4' overlap by 16.0 x 3.0 (design-space units).",
+        "nodes": [
+          "town_4_plate",
+          "town_4"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      }
+    ],
+    "readable": true,
+    "assumptions": [
+      "text_fit assumes a 16:9 viewport and a 0.5 character advance, so it is a              measurement to read, never a pass/fail",
+      "structure only: this says nothing about whether the screen looks good"
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

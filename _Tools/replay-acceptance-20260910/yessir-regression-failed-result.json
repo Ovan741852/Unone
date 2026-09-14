@@ -1,0 +1,2458 @@
+{
+  "ok": false,
+  "value": {
+    "adapter": {
+      "id": "yessir.menu-cycle",
+      "version": "1"
+    },
+    "adapterInspectWallMs": 2.6985000000000015,
+    "backend": "headless_native",
+    "limitations": [
+      "Headless Luau/Core replay only; does not replay browser/native rendering or external services.",
+      "Checkpoint, automatic capture, registry/trace storage and schema migrations are not implemented.",
+      "Full GC sampling changes collection scheduling; compare it separately from ordinary playback."
+    ],
+    "memory": {
+      "dropped_samples": 0,
+      "limitations": [
+        "Explicit full GC changes collection scheduling and weak references; run on a diagnostic session, not an unmodified timing baseline.",
+        "Sampled peak is not a continuous high-water mark. Full GC wall time includes instrumentation; it is not CPU time.",
+        "Use identical phase labels only for comparable seed/input/workloads; warmup samples are excluded. Cache growth is not proof of a leak.",
+        "History is VM-local and reset by hot reload; export reports with project/build/asset fingerprints before comparing runs."
+      ],
+      "sample_limit": 128,
+      "sampled_peak_bytes": null,
+      "samples": [],
+      "schema_version": 1,
+      "scope": "main Luau VM only; excludes worker VMs, Rust, JS, WASM allocator and GPU",
+      "trends": [],
+      "unavailable": {
+        "allocation_callsites": null,
+        "gpu_bytes": null,
+        "js_heap_bytes": null,
+        "retaining_paths": null,
+        "rust_heap_bytes": null,
+        "wasm_allocator_bytes": null
+      }
+    },
+    "memoryOptions": null,
+    "mode": "exact_version",
+    "originalMatcher": {
+      "actual": true,
+      "evaluated": true,
+      "expected": {
+        "code": "BATTLE_OBSERVED",
+        "endCondition": {
+          "kind": "after_tick",
+          "tick": 239
+        },
+        "flag": "game.replay.battle.observed",
+        "kind": "diagnostic"
+      },
+      "matched": true,
+      "status": "pass"
+    },
+    "overrideMatcher": null,
+    "performance": {
+      "build": {
+        "debug_assertions": true,
+        "luau_execution": "interpreter",
+        "native_codegen_disabled_for_profiling": false,
+        "preview_tools": true
+      },
+      "counts_frame": 240,
+      "jobs": null,
+      "performance": {
+        "counts": {
+          "effects": 0,
+          "entities": 2,
+          "instance_bytes": 280,
+          "instances": 7,
+          "observations": 28,
+          "particles": 0,
+          "rigidbodies": 0,
+          "ui_nodes": 0
+        },
+        "frame_budget_ms": 16.667,
+        "frames": 240,
+        "frames_over_budget": 0,
+        "luau_memory_bytes": 1548644,
+        "luau_positive_heap_delta_bytes_per_frame": 10033,
+        "mean_frame_ms": 0.698,
+        "median_frame_ms": 0.831,
+        "notes": [
+          "wall clock timings, excluded from the observation digest",
+          "THIS IS A DEBUG BUILD. These are debug costs and are not a shipping measurement; rebuild with --release before drawing a conclusion.",
+          "serialize is an optional canonical-JSON probe, not actual Web publication or decode time; measure those separately",
+          "luau_positive_heap_delta_bytes_per_frame is positive net heap growth, not total allocated bytes or GC pause attribution",
+          "median, p95, and frames-over-budget use the most recent bounded sample window (up to 1024 frames)"
+        ],
+        "p95_frame_ms": 1.448,
+        "phases": [
+          {
+            "mean_ms": 0.645,
+            "name": "script",
+            "share": 0.928,
+            "total_ms": 154.748
+          },
+          {
+            "mean_ms": 0,
+            "name": "physics",
+            "share": 0,
+            "total_ms": 0.057
+          },
+          {
+            "mean_ms": 0.05,
+            "name": "observe",
+            "share": 0.072,
+            "total_ms": 11.94
+          }
+        ],
+        "profile": "debug",
+        "slowest_frame": {
+          "frame": 216,
+          "observe_ms": 0.072,
+          "physics_ms": 0.001,
+          "script_ms": 1.476,
+          "total_ms": 1.557
+        },
+        "sustained_fps": 1432.1,
+        "total_ms": 167.582
+      },
+      "window": {
+        "active": false,
+        "dropped_samples": 0,
+        "first_frame": 0,
+        "functions": {
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:26:wornSources": {
+            "inclusive_samples": 1,
+            "line": 26,
+            "name": "wornSources",
+            "self_samples": 1,
+            "source": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau"
+          },
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:649:publish": {
+            "inclusive_samples": 67,
+            "line": 649,
+            "name": "publish",
+            "self_samples": 66,
+            "source": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau"
+          },
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:69:composeSkills": {
+            "inclusive_samples": 1,
+            "line": 69,
+            "name": "composeSkills",
+            "self_samples": 0,
+            "source": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau"
+          },
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:722:pressed": {
+            "inclusive_samples": 30,
+            "line": 722,
+            "name": "pressed",
+            "self_samples": 30,
+            "source": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau"
+          },
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:760:update": {
+            "inclusive_samples": 122,
+            "line": 760,
+            "name": "update",
+            "self_samples": 25,
+            "source": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau"
+          }
+        },
+        "id": 1,
+        "last_frame": 240,
+        "limits": {
+          "depth": 32,
+          "functions": 1024,
+          "minimum_interval_ms": 1,
+          "stacks": 4096
+        },
+        "samples": 122,
+        "sampling": true,
+        "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled.",
+        "stacks": [
+          {
+            "leaf_first": [
+              "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:26:wornSources",
+              "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:69:composeSkills",
+              "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:649:publish",
+              "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:760:update"
+            ],
+            "samples": 1
+          },
+          {
+            "leaf_first": [
+              "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:649:publish",
+              "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:760:update"
+            ],
+            "samples": 66
+          },
+          {
+            "leaf_first": [
+              "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:722:pressed",
+              "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:760:update"
+            ],
+            "samples": 30
+          },
+          {
+            "leaf_first": [
+              "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\.tmpwx5xOd\\.tmpAJDfRz\\main.luau:760:update"
+            ],
+            "samples": 25
+          }
+        ],
+        "truncated_stacks": 0,
+        "vm": {
+          "allocation_growth_bytes": 5633912,
+          "allocation_growth_events": 44483,
+          "allocation_method": "Luau onallocate: sum(max(new_size-old_size,0)) on successful requests; excludes frees, allocator overhead and Rust/JS allocations",
+          "capabilities": {
+            "allocation_growth": true,
+            "full_gc_wall_time": false,
+            "incremental_gc_wall_time": true,
+            "js_gc": false,
+            "rust_allocations": false
+          },
+          "frames": [
+            {
+              "allocation_growth_bytes": 18048,
+              "allocation_growth_events": 146,
+              "completed": true,
+              "frame": 1,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 27816,
+              "allocation_growth_events": 186,
+              "completed": true,
+              "frame": 2,
+              "incremental_gc_max_step_ms": 0.0017,
+              "incremental_gc_ms": 0.0115,
+              "incremental_gc_steps": 16
+            },
+            {
+              "allocation_growth_bytes": 9028,
+              "allocation_growth_events": 104,
+              "completed": true,
+              "frame": 3,
+              "incremental_gc_max_step_ms": 0.0011,
+              "incremental_gc_ms": 0.0034999999999999996,
+              "incremental_gc_steps": 6
+            },
+            {
+              "allocation_growth_bytes": 15784,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 4,
+              "incremental_gc_max_step_ms": 0.0019,
+              "incremental_gc_ms": 0.0071,
+              "incremental_gc_steps": 9
+            },
+            {
+              "allocation_growth_bytes": 33140,
+              "allocation_growth_events": 428,
+              "completed": true,
+              "frame": 5,
+              "incremental_gc_max_step_ms": 0.0013,
+              "incremental_gc_ms": 0.0098,
+              "incremental_gc_steps": 15
+            },
+            {
+              "allocation_growth_bytes": 41632,
+              "allocation_growth_events": 312,
+              "completed": true,
+              "frame": 6,
+              "incremental_gc_max_step_ms": 0.0011,
+              "incremental_gc_ms": 0.0116,
+              "incremental_gc_steps": 24
+            },
+            {
+              "allocation_growth_bytes": 14336,
+              "allocation_growth_events": 62,
+              "completed": true,
+              "frame": 7,
+              "incremental_gc_max_step_ms": 0.0009,
+              "incremental_gc_ms": 0.005699999999999999,
+              "incremental_gc_steps": 12
+            },
+            {
+              "allocation_growth_bytes": 45766,
+              "allocation_growth_events": 356,
+              "completed": true,
+              "frame": 8,
+              "incremental_gc_max_step_ms": 0.0046,
+              "incremental_gc_ms": 0.024800000000000003,
+              "incremental_gc_steps": 22
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 9,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 45928,
+              "allocation_growth_events": 358,
+              "completed": true,
+              "frame": 10,
+              "incremental_gc_max_step_ms": 0.0025,
+              "incremental_gc_ms": 0.0096,
+              "incremental_gc_steps": 7
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 11,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46800,
+              "allocation_growth_events": 365,
+              "completed": true,
+              "frame": 12,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 13,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46144,
+              "allocation_growth_events": 361,
+              "completed": true,
+              "frame": 14,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 1392,
+              "allocation_growth_events": 15,
+              "completed": true,
+              "frame": 15,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46376,
+              "allocation_growth_events": 364,
+              "completed": true,
+              "frame": 16,
+              "incremental_gc_max_step_ms": 0.0015,
+              "incremental_gc_ms": 0.0042,
+              "incremental_gc_steps": 5
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 17,
+              "incremental_gc_max_step_ms": 0.0005,
+              "incremental_gc_ms": 0.0005,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 47232,
+              "allocation_growth_events": 370,
+              "completed": true,
+              "frame": 18,
+              "incremental_gc_max_step_ms": 0.0017,
+              "incremental_gc_ms": 0.019900000000000004,
+              "incremental_gc_steps": 34
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 19,
+              "incremental_gc_max_step_ms": 0.0003,
+              "incremental_gc_ms": 0.0003,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 46576,
+              "allocation_growth_events": 366,
+              "completed": true,
+              "frame": 20,
+              "incremental_gc_max_step_ms": 0.0015,
+              "incremental_gc_ms": 0.012299999999999998,
+              "incremental_gc_steps": 22
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 21,
+              "incremental_gc_max_step_ms": 0.0009,
+              "incremental_gc_ms": 0.0009,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 46840,
+              "allocation_growth_events": 369,
+              "completed": true,
+              "frame": 22,
+              "incremental_gc_max_step_ms": 0.0013,
+              "incremental_gc_ms": 0.015399999999999995,
+              "incremental_gc_steps": 30
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 23,
+              "incremental_gc_max_step_ms": 0.0003,
+              "incremental_gc_ms": 0.0003,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 47696,
+              "allocation_growth_events": 375,
+              "completed": true,
+              "frame": 24,
+              "incremental_gc_max_step_ms": 0.0062,
+              "incremental_gc_ms": 0.0213,
+              "incremental_gc_steps": 33
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 25,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 47616,
+              "allocation_growth_events": 386,
+              "completed": true,
+              "frame": 26,
+              "incremental_gc_max_step_ms": 0.0051,
+              "incremental_gc_ms": 0.0204,
+              "incremental_gc_steps": 10
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 27,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 47240,
+              "allocation_growth_events": 373,
+              "completed": true,
+              "frame": 28,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 29,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 48096,
+              "allocation_growth_events": 379,
+              "completed": true,
+              "frame": 30,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 31,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46840,
+              "allocation_growth_events": 369,
+              "completed": true,
+              "frame": 32,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 33,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46632,
+              "allocation_growth_events": 366,
+              "completed": true,
+              "frame": 34,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 35,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 47488,
+              "allocation_growth_events": 372,
+              "completed": true,
+              "frame": 36,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 37,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46232,
+              "allocation_growth_events": 362,
+              "completed": true,
+              "frame": 38,
+              "incremental_gc_max_step_ms": 0.0017,
+              "incremental_gc_ms": 0.0195,
+              "incremental_gc_steps": 30
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 39,
+              "incremental_gc_max_step_ms": 0.0014,
+              "incremental_gc_ms": 0.0014,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 46232,
+              "allocation_growth_events": 362,
+              "completed": true,
+              "frame": 40,
+              "incremental_gc_max_step_ms": 0.0014,
+              "incremental_gc_ms": 0.012599999999999997,
+              "incremental_gc_steps": 26
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 41,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 47088,
+              "allocation_growth_events": 368,
+              "completed": true,
+              "frame": 42,
+              "incremental_gc_max_step_ms": 0.0011,
+              "incremental_gc_ms": 0.0131,
+              "incremental_gc_steps": 27
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 43,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 45704,
+              "allocation_growth_events": 357,
+              "completed": true,
+              "frame": 44,
+              "incremental_gc_max_step_ms": 0.0012,
+              "incremental_gc_ms": 0.0145,
+              "incremental_gc_steps": 31
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 45,
+              "incremental_gc_max_step_ms": 0.0026,
+              "incremental_gc_ms": 0.0026,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 46328,
+              "allocation_growth_events": 373,
+              "completed": true,
+              "frame": 46,
+              "incremental_gc_max_step_ms": 0.0051,
+              "incremental_gc_ms": 0.029099999999999997,
+              "incremental_gc_steps": 12
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 47,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46560,
+              "allocation_growth_events": 363,
+              "completed": true,
+              "frame": 48,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 49,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 45304,
+              "allocation_growth_events": 353,
+              "completed": true,
+              "frame": 50,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 13262,
+              "allocation_growth_events": 118,
+              "completed": true,
+              "frame": 51,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 27848,
+              "allocation_growth_events": 186,
+              "completed": true,
+              "frame": 52,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 53,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 54,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 55,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 56,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 57,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 58,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 59,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 60,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 12944,
+              "allocation_growth_events": 105,
+              "completed": true,
+              "frame": 61,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 27816,
+              "allocation_growth_events": 186,
+              "completed": true,
+              "frame": 62,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 2528,
+              "allocation_growth_events": 23,
+              "completed": true,
+              "frame": 63,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15784,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 64,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 32928,
+              "allocation_growth_events": 422,
+              "completed": true,
+              "frame": 65,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 41632,
+              "allocation_growth_events": 312,
+              "completed": true,
+              "frame": 66,
+              "incremental_gc_max_step_ms": 0.0016,
+              "incremental_gc_ms": 0.013299999999999996,
+              "incremental_gc_steps": 21
+            },
+            {
+              "allocation_growth_bytes": 14336,
+              "allocation_growth_events": 62,
+              "completed": true,
+              "frame": 67,
+              "incremental_gc_max_step_ms": 0.0011,
+              "incremental_gc_ms": 0.0058000000000000005,
+              "incremental_gc_steps": 10
+            },
+            {
+              "allocation_growth_bytes": 45720,
+              "allocation_growth_events": 355,
+              "completed": true,
+              "frame": 68,
+              "incremental_gc_max_step_ms": 0.0017,
+              "incremental_gc_ms": 0.012900000000000002,
+              "incremental_gc_steps": 23
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 69,
+              "incremental_gc_max_step_ms": 0.0005,
+              "incremental_gc_ms": 0.0005,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 45928,
+              "allocation_growth_events": 358,
+              "completed": true,
+              "frame": 70,
+              "incremental_gc_max_step_ms": 0.001,
+              "incremental_gc_ms": 0.013,
+              "incremental_gc_steps": 27
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 71,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46800,
+              "allocation_growth_events": 365,
+              "completed": true,
+              "frame": 72,
+              "incremental_gc_max_step_ms": 0.005,
+              "incremental_gc_ms": 0.029,
+              "incremental_gc_steps": 25
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 73,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46144,
+              "allocation_growth_events": 361,
+              "completed": true,
+              "frame": 74,
+              "incremental_gc_max_step_ms": 0.0056,
+              "incremental_gc_ms": 0.016800000000000002,
+              "incremental_gc_steps": 10
+            },
+            {
+              "allocation_growth_bytes": 1392,
+              "allocation_growth_events": 15,
+              "completed": true,
+              "frame": 75,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46376,
+              "allocation_growth_events": 364,
+              "completed": true,
+              "frame": 76,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 77,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 47232,
+              "allocation_growth_events": 370,
+              "completed": true,
+              "frame": 78,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 79,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46576,
+              "allocation_growth_events": 366,
+              "completed": true,
+              "frame": 80,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 81,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46840,
+              "allocation_growth_events": 369,
+              "completed": true,
+              "frame": 82,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 19072,
+              "allocation_growth_events": 83,
+              "completed": true,
+              "frame": 83,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 51936,
+              "allocation_growth_events": 420,
+              "completed": true,
+              "frame": 84,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 85,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 51936,
+              "allocation_growth_events": 420,
+              "completed": true,
+              "frame": 86,
+              "incremental_gc_max_step_ms": 0.0016,
+              "incremental_gc_ms": 0.020700000000000003,
+              "incremental_gc_steps": 34
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 87,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 51936,
+              "allocation_growth_events": 420,
+              "completed": true,
+              "frame": 88,
+              "incremental_gc_max_step_ms": 0.0015,
+              "incremental_gc_ms": 0.013199999999999996,
+              "incremental_gc_steps": 31
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 89,
+              "incremental_gc_max_step_ms": 0.0012,
+              "incremental_gc_ms": 0.0012,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 51936,
+              "allocation_growth_events": 420,
+              "completed": true,
+              "frame": 90,
+              "incremental_gc_max_step_ms": 0.001,
+              "incremental_gc_ms": 0.0134,
+              "incremental_gc_steps": 29
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 91,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 51318,
+              "allocation_growth_events": 414,
+              "completed": true,
+              "frame": 92,
+              "incremental_gc_max_step_ms": 0.0079,
+              "incremental_gc_ms": 0.0417,
+              "incremental_gc_steps": 28
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 93,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 50840,
+              "allocation_growth_events": 408,
+              "completed": true,
+              "frame": 94,
+              "incremental_gc_max_step_ms": 0.0023,
+              "incremental_gc_ms": 0.007,
+              "incremental_gc_steps": 8
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 95,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 50840,
+              "allocation_growth_events": 408,
+              "completed": true,
+              "frame": 96,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 97,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 50208,
+              "allocation_growth_events": 401,
+              "completed": true,
+              "frame": 98,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 99,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 49992,
+              "allocation_growth_events": 398,
+              "completed": true,
+              "frame": 100,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 101,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 49992,
+              "allocation_growth_events": 398,
+              "completed": true,
+              "frame": 102,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 103,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 49384,
+              "allocation_growth_events": 391,
+              "completed": true,
+              "frame": 104,
+              "incremental_gc_max_step_ms": 0.0016,
+              "incremental_gc_ms": 0.0095,
+              "incremental_gc_steps": 14
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 105,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 49384,
+              "allocation_growth_events": 391,
+              "completed": true,
+              "frame": 106,
+              "incremental_gc_max_step_ms": 0.0017,
+              "incremental_gc_ms": 0.0177,
+              "incremental_gc_steps": 35
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 107,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 48072,
+              "allocation_growth_events": 382,
+              "completed": true,
+              "frame": 108,
+              "incremental_gc_max_step_ms": 0.0012,
+              "incremental_gc_ms": 0.013999999999999997,
+              "incremental_gc_steps": 26
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 109,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 47248,
+              "allocation_growth_events": 372,
+              "completed": true,
+              "frame": 110,
+              "incremental_gc_max_step_ms": 0.0011,
+              "incremental_gc_ms": 0.012600000000000004,
+              "incremental_gc_steps": 30
+            },
+            {
+              "allocation_growth_bytes": 13142,
+              "allocation_growth_events": 114,
+              "completed": true,
+              "frame": 111,
+              "incremental_gc_max_step_ms": 0.0011,
+              "incremental_gc_ms": 0.0036000000000000008,
+              "incremental_gc_steps": 7
+            },
+            {
+              "allocation_growth_bytes": 27848,
+              "allocation_growth_events": 186,
+              "completed": true,
+              "frame": 112,
+              "incremental_gc_max_step_ms": 0.0055,
+              "incremental_gc_ms": 0.0248,
+              "incremental_gc_steps": 8
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 113,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 114,
+              "incremental_gc_max_step_ms": 0.0049,
+              "incremental_gc_ms": 0.0124,
+              "incremental_gc_steps": 5
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 115,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 116,
+              "incremental_gc_max_step_ms": 0.001,
+              "incremental_gc_ms": 0.0029,
+              "incremental_gc_steps": 4
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 117,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 118,
+              "incremental_gc_max_step_ms": 0.001,
+              "incremental_gc_ms": 0.001,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 119,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 120,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 12944,
+              "allocation_growth_events": 105,
+              "completed": true,
+              "frame": 121,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 27816,
+              "allocation_growth_events": 186,
+              "completed": true,
+              "frame": 122,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 2528,
+              "allocation_growth_events": 23,
+              "completed": true,
+              "frame": 123,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15784,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 124,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 32928,
+              "allocation_growth_events": 422,
+              "completed": true,
+              "frame": 125,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 41632,
+              "allocation_growth_events": 312,
+              "completed": true,
+              "frame": 126,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 14336,
+              "allocation_growth_events": 62,
+              "completed": true,
+              "frame": 127,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 45720,
+              "allocation_growth_events": 355,
+              "completed": true,
+              "frame": 128,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 129,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 45928,
+              "allocation_growth_events": 358,
+              "completed": true,
+              "frame": 130,
+              "incremental_gc_max_step_ms": 0.0015,
+              "incremental_gc_ms": 0.0043,
+              "incremental_gc_steps": 5
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 131,
+              "incremental_gc_max_step_ms": 0.0005,
+              "incremental_gc_ms": 0.0005,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 46800,
+              "allocation_growth_events": 365,
+              "completed": true,
+              "frame": 132,
+              "incremental_gc_max_step_ms": 0.0018,
+              "incremental_gc_ms": 0.0193,
+              "incremental_gc_steps": 33
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 133,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46144,
+              "allocation_growth_events": 361,
+              "completed": true,
+              "frame": 134,
+              "incremental_gc_max_step_ms": 0.0015,
+              "incremental_gc_ms": 0.011799999999999998,
+              "incremental_gc_steps": 21
+            },
+            {
+              "allocation_growth_bytes": 1392,
+              "allocation_growth_events": 15,
+              "completed": true,
+              "frame": 135,
+              "incremental_gc_max_step_ms": 0.0009,
+              "incremental_gc_ms": 0.0009,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 46376,
+              "allocation_growth_events": 364,
+              "completed": true,
+              "frame": 136,
+              "incremental_gc_max_step_ms": 0.001,
+              "incremental_gc_ms": 0.0139,
+              "incremental_gc_steps": 29
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 137,
+              "incremental_gc_max_step_ms": 0.0005,
+              "incremental_gc_ms": 0.0005,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 47232,
+              "allocation_growth_events": 370,
+              "completed": true,
+              "frame": 138,
+              "incremental_gc_max_step_ms": 0.0028,
+              "incremental_gc_ms": 0.016599999999999997,
+              "incremental_gc_steps": 34
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 139,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 47152,
+              "allocation_growth_events": 381,
+              "completed": true,
+              "frame": 140,
+              "incremental_gc_max_step_ms": 0.0052,
+              "incremental_gc_ms": 0.030200000000000005,
+              "incremental_gc_steps": 13
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 141,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46840,
+              "allocation_growth_events": 369,
+              "completed": true,
+              "frame": 142,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 143,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 47696,
+              "allocation_growth_events": 375,
+              "completed": true,
+              "frame": 144,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 145,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 47040,
+              "allocation_growth_events": 371,
+              "completed": true,
+              "frame": 146,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 147,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 47240,
+              "allocation_growth_events": 373,
+              "completed": true,
+              "frame": 148,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 149,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 48096,
+              "allocation_growth_events": 379,
+              "completed": true,
+              "frame": 150,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 151,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46840,
+              "allocation_growth_events": 369,
+              "completed": true,
+              "frame": 152,
+              "incremental_gc_max_step_ms": 0.0016,
+              "incremental_gc_ms": 0.0131,
+              "incremental_gc_steps": 21
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 153,
+              "incremental_gc_max_step_ms": 0.0007999999999999999,
+              "incremental_gc_ms": 0.0007999999999999999,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 46632,
+              "allocation_growth_events": 366,
+              "completed": true,
+              "frame": 154,
+              "incremental_gc_max_step_ms": 0.0014,
+              "incremental_gc_ms": 0.015200000000000002,
+              "incremental_gc_steps": 30
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 155,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 47488,
+              "allocation_growth_events": 372,
+              "completed": true,
+              "frame": 156,
+              "incremental_gc_max_step_ms": 0.0012,
+              "incremental_gc_ms": 0.0127,
+              "incremental_gc_steps": 27
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 157,
+              "incremental_gc_max_step_ms": 0.001,
+              "incremental_gc_ms": 0.001,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 46232,
+              "allocation_growth_events": 362,
+              "completed": true,
+              "frame": 158,
+              "incremental_gc_max_step_ms": 0.0011,
+              "incremental_gc_ms": 0.014999999999999998,
+              "incremental_gc_steps": 29
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 159,
+              "incremental_gc_max_step_ms": 0.0004,
+              "incremental_gc_ms": 0.0004,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 46750,
+              "allocation_growth_events": 375,
+              "completed": true,
+              "frame": 160,
+              "incremental_gc_max_step_ms": 0.0078,
+              "incremental_gc_ms": 0.043300000000000005,
+              "incremental_gc_steps": 16
+            },
+            {
+              "allocation_growth_bytes": 688,
+              "allocation_growth_events": 18,
+              "completed": true,
+              "frame": 161,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 47088,
+              "allocation_growth_events": 368,
+              "completed": true,
+              "frame": 162,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 163,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 45704,
+              "allocation_growth_events": 357,
+              "completed": true,
+              "frame": 164,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 165,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 45704,
+              "allocation_growth_events": 357,
+              "completed": true,
+              "frame": 166,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 18704,
+              "allocation_growth_events": 77,
+              "completed": true,
+              "frame": 167,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 51792,
+              "allocation_growth_events": 415,
+              "completed": true,
+              "frame": 168,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 169,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 51192,
+              "allocation_growth_events": 409,
+              "completed": true,
+              "frame": 170,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 13142,
+              "allocation_growth_events": 114,
+              "completed": true,
+              "frame": 171,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 27848,
+              "allocation_growth_events": 186,
+              "completed": true,
+              "frame": 172,
+              "incremental_gc_max_step_ms": 0.0015,
+              "incremental_gc_ms": 0.0119,
+              "incremental_gc_steps": 17
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 173,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 174,
+              "incremental_gc_max_step_ms": 0.0012,
+              "incremental_gc_ms": 0.0050999999999999995,
+              "incremental_gc_steps": 8
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 175,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 176,
+              "incremental_gc_max_step_ms": 0.0019,
+              "incremental_gc_ms": 0.0031999999999999997,
+              "incremental_gc_steps": 4
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 177,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 178,
+              "incremental_gc_max_step_ms": 0.0043,
+              "incremental_gc_ms": 0.0078,
+              "incremental_gc_steps": 5
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 179,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 180,
+              "incremental_gc_max_step_ms": 0.0011,
+              "incremental_gc_ms": 0.0031,
+              "incremental_gc_steps": 5
+            },
+            {
+              "allocation_growth_bytes": 12944,
+              "allocation_growth_events": 105,
+              "completed": true,
+              "frame": 181,
+              "incremental_gc_max_step_ms": 0.0007999999999999999,
+              "incremental_gc_ms": 0.0035999999999999995,
+              "incremental_gc_steps": 7
+            },
+            {
+              "allocation_growth_bytes": 27816,
+              "allocation_growth_events": 186,
+              "completed": true,
+              "frame": 182,
+              "incremental_gc_max_step_ms": 0.0007999999999999999,
+              "incremental_gc_ms": 0.006699999999999999,
+              "incremental_gc_steps": 17
+            },
+            {
+              "allocation_growth_bytes": 2528,
+              "allocation_growth_events": 23,
+              "completed": true,
+              "frame": 183,
+              "incremental_gc_max_step_ms": 0.001,
+              "incremental_gc_ms": 0.001,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 15784,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 184,
+              "incremental_gc_max_step_ms": 0.0012,
+              "incremental_gc_ms": 0.0039,
+              "incremental_gc_steps": 5
+            },
+            {
+              "allocation_growth_bytes": 32928,
+              "allocation_growth_events": 422,
+              "completed": true,
+              "frame": 185,
+              "incremental_gc_max_step_ms": 0.0014,
+              "incremental_gc_ms": 0.0131,
+              "incremental_gc_steps": 26
+            },
+            {
+              "allocation_growth_bytes": 42191,
+              "allocation_growth_events": 326,
+              "completed": true,
+              "frame": 186,
+              "incremental_gc_max_step_ms": 0.0052,
+              "incremental_gc_ms": 0.04080000000000001,
+              "incremental_gc_steps": 15
+            },
+            {
+              "allocation_growth_bytes": 14336,
+              "allocation_growth_events": 62,
+              "completed": true,
+              "frame": 187,
+              "incremental_gc_max_step_ms": 0.001,
+              "incremental_gc_ms": 0.001,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 45720,
+              "allocation_growth_events": 355,
+              "completed": true,
+              "frame": 188,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 189,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 45928,
+              "allocation_growth_events": 358,
+              "completed": true,
+              "frame": 190,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 191,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46800,
+              "allocation_growth_events": 365,
+              "completed": true,
+              "frame": 192,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 193,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46144,
+              "allocation_growth_events": 361,
+              "completed": true,
+              "frame": 194,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 1392,
+              "allocation_growth_events": 15,
+              "completed": true,
+              "frame": 195,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46376,
+              "allocation_growth_events": 364,
+              "completed": true,
+              "frame": 196,
+              "incremental_gc_max_step_ms": 0.0017,
+              "incremental_gc_ms": 0.0153,
+              "incremental_gc_steps": 25
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 197,
+              "incremental_gc_max_step_ms": 0.0009,
+              "incremental_gc_ms": 0.0009,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 47232,
+              "allocation_growth_events": 370,
+              "completed": true,
+              "frame": 198,
+              "incremental_gc_max_step_ms": 0.0013,
+              "incremental_gc_ms": 0.0144,
+              "incremental_gc_steps": 29
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 199,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46576,
+              "allocation_growth_events": 366,
+              "completed": true,
+              "frame": 200,
+              "incremental_gc_max_step_ms": 0.0012,
+              "incremental_gc_ms": 0.012299999999999998,
+              "incremental_gc_steps": 28
+            },
+            {
+              "allocation_growth_bytes": 1136,
+              "allocation_growth_events": 14,
+              "completed": true,
+              "frame": 201,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 46840,
+              "allocation_growth_events": 369,
+              "completed": true,
+              "frame": 202,
+              "incremental_gc_max_step_ms": 0.0013,
+              "incremental_gc_ms": 0.013800000000000003,
+              "incremental_gc_steps": 31
+            },
+            {
+              "allocation_growth_bytes": 480,
+              "allocation_growth_events": 10,
+              "completed": true,
+              "frame": 203,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 48213,
+              "allocation_growth_events": 388,
+              "completed": true,
+              "frame": 204,
+              "incremental_gc_max_step_ms": 0.0066,
+              "incremental_gc_ms": 0.035399999999999994,
+              "incremental_gc_steps": 18
+            },
+            {
+              "allocation_growth_bytes": 66448,
+              "allocation_growth_events": 282,
+              "completed": true,
+              "frame": 205,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 69792,
+              "allocation_growth_events": 588,
+              "completed": true,
+              "frame": 206,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 207,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 70656,
+              "allocation_growth_events": 597,
+              "completed": true,
+              "frame": 208,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 209,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 70656,
+              "allocation_growth_events": 597,
+              "completed": true,
+              "frame": 210,
+              "incremental_gc_max_step_ms": 0.0015,
+              "incremental_gc_ms": 0.0033,
+              "incremental_gc_steps": 4
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 211,
+              "incremental_gc_max_step_ms": 0.0007999999999999999,
+              "incremental_gc_ms": 0.0007999999999999999,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 70056,
+              "allocation_growth_events": 591,
+              "completed": true,
+              "frame": 212,
+              "incremental_gc_max_step_ms": 0.0017,
+              "incremental_gc_ms": 0.024800000000000003,
+              "incremental_gc_steps": 51
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 213,
+              "incremental_gc_max_step_ms": 0.0003,
+              "incremental_gc_ms": 0.0003,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 69528,
+              "allocation_growth_events": 585,
+              "completed": true,
+              "frame": 214,
+              "incremental_gc_max_step_ms": 0.0012,
+              "incremental_gc_ms": 0.0182,
+              "incremental_gc_steps": 46
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 215,
+              "incremental_gc_max_step_ms": 0.0004,
+              "incremental_gc_ms": 0.0004,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 69528,
+              "allocation_growth_events": 585,
+              "completed": true,
+              "frame": 216,
+              "incremental_gc_max_step_ms": 0.0011,
+              "incremental_gc_ms": 0.018500000000000003,
+              "incremental_gc_steps": 48
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 217,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 69650,
+              "allocation_growth_events": 597,
+              "completed": true,
+              "frame": 218,
+              "incremental_gc_max_step_ms": 0.0070999999999999995,
+              "incremental_gc_ms": 0.041100000000000005,
+              "incremental_gc_steps": 20
+            },
+            {
+              "allocation_growth_bytes": 640,
+              "allocation_growth_events": 17,
+              "completed": true,
+              "frame": 219,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 68696,
+              "allocation_growth_events": 576,
+              "completed": true,
+              "frame": 220,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 221,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 68696,
+              "allocation_growth_events": 576,
+              "completed": true,
+              "frame": 222,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 223,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 68080,
+              "allocation_growth_events": 569,
+              "completed": true,
+              "frame": 224,
+              "incremental_gc_max_step_ms": 0.0017,
+              "incremental_gc_ms": 0.0102,
+              "incremental_gc_steps": 13
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 225,
+              "incremental_gc_max_step_ms": 0.001,
+              "incremental_gc_ms": 0.001,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 67872,
+              "allocation_growth_events": 566,
+              "completed": true,
+              "frame": 226,
+              "incremental_gc_max_step_ms": 0.0014,
+              "incremental_gc_ms": 0.020599999999999983,
+              "incremental_gc_steps": 51
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 227,
+              "incremental_gc_max_step_ms": 0.0003,
+              "incremental_gc_ms": 0.0003,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 67872,
+              "allocation_growth_events": 566,
+              "completed": true,
+              "frame": 228,
+              "incremental_gc_max_step_ms": 0.0012,
+              "incremental_gc_ms": 0.018800000000000004,
+              "incremental_gc_steps": 43
+            },
+            {
+              "allocation_growth_bytes": 432,
+              "allocation_growth_events": 9,
+              "completed": true,
+              "frame": 229,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 64160,
+              "allocation_growth_events": 533,
+              "completed": true,
+              "frame": 230,
+              "incremental_gc_max_step_ms": 0.0074,
+              "incremental_gc_ms": 0.024800000000000003,
+              "incremental_gc_steps": 42
+            },
+            {
+              "allocation_growth_bytes": 13142,
+              "allocation_growth_events": 114,
+              "completed": true,
+              "frame": 231,
+              "incremental_gc_max_step_ms": 0.0048,
+              "incremental_gc_ms": 0.016399999999999998,
+              "incremental_gc_steps": 4
+            },
+            {
+              "allocation_growth_bytes": 27848,
+              "allocation_growth_events": 186,
+              "completed": true,
+              "frame": 232,
+              "incremental_gc_max_step_ms": 0.0048,
+              "incremental_gc_ms": 0.0128,
+              "incremental_gc_steps": 9
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 233,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 234,
+              "incremental_gc_max_step_ms": 0.0009,
+              "incremental_gc_ms": 0.0009,
+              "incremental_gc_steps": 1
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 235,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 236,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 237,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 238,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 0,
+              "allocation_growth_events": 0,
+              "completed": true,
+              "frame": 239,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            },
+            {
+              "allocation_growth_bytes": 15816,
+              "allocation_growth_events": 88,
+              "completed": true,
+              "frame": 240,
+              "incremental_gc_max_step_ms": 0,
+              "incremental_gc_ms": 0,
+              "incremental_gc_steps": 0
+            }
+          ],
+          "full_gc_ms": null,
+          "gc_method": "Luau paired incremental-step interrupts; includes automatic assists, excludes full collections; timing includes instrumentation overhead",
+          "incremental_gc_max_step_ms": 0.0079,
+          "incremental_gc_ms": 1.1648999999999996,
+          "incremental_gc_steps": 1599,
+          "js_gc_ms": null,
+          "retained_limit": 1024,
+          "rust_allocation_bytes": null,
+          "scope": "Luau update call, including engine callbacks; manual tools and load/start are excluded",
+          "tick_count": 240
+        }
+      }
+    },
+    "reason": "Selected matcher evaluated",
+    "regressionChecks": [
+      {
+        "actual": true,
+        "evaluated": true,
+        "expected": {
+          "endCondition": {
+            "kind": "after_tick",
+            "tick": 239
+          },
+          "expectedValue": false,
+          "id": "menu_clean",
+          "kind": "invariant"
+        },
+        "matched": false,
+        "status": "fail"
+      }
+    ],
+    "regressionStatus": "failed",
+    "samplingScope": "Luau gameplay; replay adapter callbacks are excluded from function sampling. VM allocation/GC metrics cover update only.",
+    "schemaVersion": 1,
+    "source": {
+      "assets": {
+        "manifestHash": "sha256:f65ac21c9bc8c9ebe36bd2a0cb87119bd8d25fba583fb6813aebd6045fab0857"
+      },
+      "engine": {
+        "coreRevision": "sha256:934e73cce0b75a9ab6a1cff1908fba50180cc79cae31edb3f358faf42ee97865",
+        "version": "0.1.0"
+      },
+      "game": {
+        "id": "冥潮軍團 · ASHEN LEGION",
+        "revision": "sha256:049e7692655d6e58a4a8646829ceb24d6361c38833d3826d9edbc741ce56d0cd",
+        "scriptHash": "sha256:5c2c4b671c8217339dafc7989fc076e4a7b0ef19a2001afa5ba94eeb947415b0"
+      }
+    },
+    "status": "reproduced",
+    "statusMatcher": "original",
+    "target": {
+      "assets": {
+        "manifestHash": "sha256:f65ac21c9bc8c9ebe36bd2a0cb87119bd8d25fba583fb6813aebd6045fab0857"
+      },
+      "engine": {
+        "coreRevision": "sha256:934e73cce0b75a9ab6a1cff1908fba50180cc79cae31edb3f358faf42ee97865",
+        "version": "0.1.0"
+      },
+      "game": {
+        "id": "冥潮軍團 · ASHEN LEGION",
+        "revision": "sha256:049e7692655d6e58a4a8646829ceb24d6361c38833d3826d9edbc741ce56d0cd",
+        "scriptHash": "sha256:5c2c4b671c8217339dafc7989fc076e4a7b0ef19a2001afa5ba94eeb947415b0"
+      }
+    },
+    "ticksExecuted": 240
+  },
+  "diagnostics": [
+    {
+      "code": "REPLAY_GATE_NOT_PASSED",
+      "severity": "ERROR",
+      "summary": "Replay or regression evaluation did not complete successfully",
+      "explanation": "Selected matcher evaluated",
+      "facts": {},
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": []
+}

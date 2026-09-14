@@ -1,0 +1,132 @@
+{
+  "ok": true,
+  "value": {
+    "project_root": "D:/Projects/YesSir/_Tools/sync-recheck-20260910-092003",
+    "status": "synced",
+    "pack": {
+      "project_root": "\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-recheck-20260910-092003",
+      "manifest_path": "\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-recheck-20260910-092003\\bundles\\manifest.json",
+      "manifest_version": 1,
+      "manifest_changed": true,
+      "project_config_changed": true,
+      "bundles": [
+        {
+          "id": "project",
+          "version": "1",
+          "source": "project.unone.json",
+          "sha256": "5aa1e1134932e951c9ad1b62236a07933a799cde751bf71f7b7075ad3221a0e9",
+          "size_bytes": 438,
+          "dependencies": []
+        },
+        {
+          "id": "script",
+          "version": "1",
+          "source": "main.luau",
+          "sha256": "afc5a138e89d19e0c929d7f7f7838e1d44777356ab2e611016fb2c4a3b617ef8",
+          "size_bytes": 508,
+          "dependencies": [
+            "project"
+          ]
+        },
+        {
+          "id": "scene",
+          "version": "1",
+          "source": "scene.json",
+          "sha256": "91361055b7c264c0126e9e39e16356cb9767d44c54d0c49e41e6a46d1b68f982",
+          "size_bytes": 261,
+          "dependencies": [
+            "project"
+          ]
+        }
+      ]
+    },
+    "verify": {
+      "project": "OptionalSystems",
+      "steps": [
+        {
+          "name": "types",
+          "status": "passed",
+          "summary": "entrypoints [\"start\", \"update\"], strict_mode true",
+          "command": "game check --types",
+          "diagnostics": []
+        },
+        {
+          "name": "assets",
+          "status": "passed",
+          "summary": "0 declared, 0 scene references, ready_for_packaging true",
+          "command": "game asset inspect --strict",
+          "diagnostics": []
+        },
+        {
+          "name": "layout",
+          "status": "not_applicable",
+          "summary": "the game publishes no UI tree",
+          "command": "game ui preview --strict --frames 1 --seed 42",
+          "diagnostics": []
+        },
+        {
+          "name": "tests",
+          "status": "passed",
+          "summary": "1/1 deterministic cases passed",
+          "command": "game test",
+          "diagnostics": []
+        }
+      ],
+      "passed": 3,
+      "failed": 0,
+      "not_applicable": 1,
+      "step_source": "default"
+    },
+    "activation": {
+      "manifest_version": 1,
+      "valid": true,
+      "entries": [
+        {
+          "id": "project",
+          "source": "project.unone.json",
+          "source_exists": true,
+          "size_valid": true,
+          "hash_valid": true,
+          "cached": true,
+          "cache_valid": true,
+          "available": true,
+          "error": null
+        },
+        {
+          "id": "script",
+          "source": "main.luau",
+          "source_exists": true,
+          "size_valid": true,
+          "hash_valid": true,
+          "cached": true,
+          "cache_valid": true,
+          "available": true,
+          "error": null
+        },
+        {
+          "id": "scene",
+          "source": "scene.json",
+          "source_exists": true,
+          "size_valid": true,
+          "hash_valid": true,
+          "cached": true,
+          "cache_valid": true,
+          "available": true,
+          "error": null
+        }
+      ],
+      "active_generation": 1,
+      "active_bundles": {
+        "project": "5aa1e1134932e951c9ad1b62236a07933a799cde751bf71f7b7075ad3221a0e9",
+        "scene": "91361055b7c264c0126e9e39e16356cb9767d44c54d0c49e41e6a46d1b68f982",
+        "script": "afc5a138e89d19e0c929d7f7f7838e1d44777356ab2e611016fb2c4a3b617ef8"
+      }
+    }
+  },
+  "diagnostics": [],
+  "effects": [
+    "verify ran 4 gates in the default order: 3 passed, 0 failed, 1 not applicable",
+    "active bundle generation 1 created",
+    "project sync completed"
+  ]
+}

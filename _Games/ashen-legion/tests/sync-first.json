@@ -1,0 +1,158 @@
+{
+  "ok": false,
+  "value": {
+    "project_root": "D:/Projects/YesSir/_Games/ashen-legion",
+    "status": "verify_failed",
+    "pack": {
+      "project_root": "\\\\?\\D:\\Projects\\YesSir\\_Games\\ashen-legion",
+      "manifest_path": "\\\\?\\D:\\Projects\\YesSir\\_Games\\ashen-legion\\bundles\\manifest.json",
+      "manifest_version": 5,
+      "manifest_changed": true,
+      "project_config_changed": false,
+      "bundles": [
+        {
+          "id": "project",
+          "version": "1",
+          "source": "project.unone.json",
+          "sha256": "f846fffe3f1d6008d1ccd2204b75535e41c75dac3438afeaf00aab3b33f434c5",
+          "size_bytes": 1184,
+          "dependencies": []
+        },
+        {
+          "id": "script",
+          "version": "1",
+          "source": "main.luau",
+          "sha256": "e71fbcb649b494c2af98864519b5b3e98d5293e64420096c875e4630ccf0893d",
+          "size_bytes": 64706,
+          "dependencies": [
+            "project"
+          ]
+        },
+        {
+          "id": "scene",
+          "version": "1",
+          "source": "scene.json",
+          "sha256": "58a78b37c38ed6003566828f454575ee416c30cd96d4530a403f015cbacafdd7",
+          "size_bytes": 524,
+          "dependencies": [
+            "project"
+          ]
+        },
+        {
+          "id": "asset-manifest",
+          "version": "1",
+          "source": "assets.json",
+          "sha256": "29bdfae39d80373caf6c139d2a37d8e61e7f3570e8edb4e8b05f11c17823d041",
+          "size_bytes": 5340,
+          "dependencies": [
+            "project"
+          ]
+        },
+        {
+          "id": "content",
+          "version": "1",
+          "source": "bundles/content.bundle",
+          "sha256": "d9bbe2f919d97c34997fe29b6f261dc2029b6c032bf03c76b9b62c81baeba0ea",
+          "size_bytes": 2261634,
+          "dependencies": [
+            "project",
+            "asset-manifest"
+          ]
+        }
+      ]
+    },
+    "verify": {
+      "project": "冥潮軍團 · ASHEN LEGION",
+      "steps": [
+        {
+          "name": "types",
+          "status": "failed",
+          "summary": "the entry script did not pass the Luau contract or type check",
+          "command": "game check --types",
+          "diagnostics": [
+            {
+              "code": "LUAU_TYPECHECK_FAILED",
+              "severity": "ERROR",
+              "summary": "Luau static analyzer found type or lint issues",
+              "explanation": "The entry script passes the runtime contract but not official luau-analyze; fix the typecheck output before hot reload or running tests.",
+              "facts": {
+                "exit_code": 1,
+                "files": [
+                  "D:\\Projects\\YesSir\\_Games\\ashen-legion\\main.luau"
+                ],
+                "output": "D:/Projects/YesSir/_Games/ashen-legion/main.luau:19.43-19.49: TypeError: Type 'unknown' does not have key 'id'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:20.9-20.11: TypeError: Expected this to be '{ read id: unknown }', but got 'nil'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:25.23-25.24: TypeError: Expected this to be 'number', but got 'unknown'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:26.38-26.47: TypeError: Key 'skill' not found in table '{ read id: unknown }'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:26.54-26.65: TypeError: Key 'enchant' not found in table '{ read id: unknown }'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:33.63-33.75: TypeError: Type '{ id: any } | { id: ~(false?) }' does not have key 'stacks'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:39.92-39.100: TypeError: Type 'unknown' does not have key 'id'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:39.110-39.122: TypeError: Type 'unknown' does not have key 'stacks'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:41.61-41.70: TypeError: Type 'unknown' does not have key 'kind'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:84.25-84.39: TypeError: Expected this to be\r\n\t'{{ id: string } & { id: string } & { id: string, stacks: number }}'\r\nbut got\r\n\t'{{ id: string }} | {{ id: string }} | {{ id: string, stacks: number }}'; \r\nExpected the indexer result to be exactly `{ id: string, stacks: number }`, but got `{ id: string }`\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:89.45-89.54: TypeError: Type 'unknown' does not have key 'kind'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:178.23-178.172: TypeError: Expected this to be\r\n\t'{ apply: (...any) -> (), desc: string, id: string, name: string, type: string } | { apply: (...any) -> (), desc: string, id: string, name: string, type: string } | { apply: (...any) -> (), desc: string, id: string, name: string, type: string } | { apply: (...any) -> (), desc: string, id: string, name: string, type: string } | { apply: (...any) -> (), desc: string, id: string, name: string, type: string } | { apply: (...any) -> (), desc: string, id: string, name: string, type: string } | { apply: (...any) -> (), desc: string, id: string, name: string, type: string }... *TRUNCATED*'\r\nbut got\r\n\t'{ apply: (...any) -> (), desc: string, id: number | string, name: number | string, type: string }'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:183.51-183.52: TypeError: Expected this to be 'number | string', but got '~nil'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:183.55-183.59: TypeError: Expected this to be '(number | string)?', but got 'unknown'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:184.76-184.163: TypeError: Operator '..' could not be applied to operands of types unknown and string; there is no corresponding overload for __concat\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:206.31-206.89: TypeError: Expected this to be\r\n\t'{ name: string, price: number, skill: string, slot: number } | { name: string, price: number, skill: string, slot: number } | { name: string, price: number, skill: string, slot: number } | { name: string, price: number, skill: string, slot: number } | { name: string, price: number, skill: string, slot: number } | { name: string, price: number, skill: string, slot: number } | { name: string, price: number, skill: string, slot: number } | { name: string, price: number, skill: string, slot: number }... *TRUNCATED*'\r\nbut got\r\n\t'{ name: number | string, price: number | string, skill: number | string, slot: number | string }'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:242.148-242.152: TypeError: Expected this to be 'number', but got 'number?'; \r\n`nil` is not a subtype of `number`\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:478.25-478.27: TypeError: Expected this to be 'number', but got 'nil'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:480.32-480.34: TypeError: Expected this to be 'number', but got 'nil'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:482.44-482.46: TypeError: Expected this to be 'number', but got 'nil'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:512.44-512.58: TypeError: Types 'unknown' and 'unknown' cannot be compared with relational operator <\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:512.85-512.97: TypeError: Types 'unknown' and 'unknown' cannot be compared with relational operator <\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:514.37-514.49: TypeError: Type 'unknown' does not have key 'entry'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:515.18-515.26: TypeError: Type 'unknown' does not have key 'm'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:516.41-516.53: TypeError: Type 'unknown' does not have key 'entry'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:516.71-516.83: TypeError: Type 'unknown' does not have key 'entry'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:598.124-598.132: TypeError: Types 'unknown' and 'unknown' cannot be compared with relational operator <\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:599.44-599.47: TypeError: Type 'unknown' does not have key 'id'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:618.45-618.51: TypeError: Types 'unknown' and 'unknown' cannot be compared with relational operator <\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:618.70-618.82: TypeError: Types 'unknown' and 'unknown' cannot be compared with relational operator <\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:618.14-618.23: TypeError: Expected this to be\r\n\t'{{ read d: unknown, read m: { read id: unknown } } & { read d: unknown, read m: { read id: unknown } }}'\r\nbut got\r\n\t'{{ read d: unknown, read m: { read id: unknown } } & { read m: any } & { read m: { read x: number } } & { read m: { read z: number } }}'; \r\nthis is because \r\n\t * Expected property `m` in the indexer result to be exactly `{ read id: unknown }`, but got `{ read x: number }`\r\n\t * Expected property `m` in the indexer result to be exactly `{ read id: unknown }`, but got `{ read z: number }`\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:797.76-797.79: TypeError: Expected this to be '{V}', but got 'unknown'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:811.61-811.66: TypeError: Type 'unknown' does not have key 'kind'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:812.114-812.123: TypeError: Cannot add property 'sold' to table 'unknown'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:828.119-828.130: TypeError: Cannot add property 'enchant' to table '{ read id: unknown }'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:837.58-837.63: TypeError: Cannot add property 'life' to table 'unknown'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:837.58-837.63: TypeError: Type 'unknown' does not have key 'life'\r\nD:/Projects/YesSir/_Games/ashen-legion/main.luau:259.41-259.45: LocalUnused: Variable 'names' is never used; prefix with '_' to silence",
+                "tool": "D:\\Projects\\YesSir\\.toolcache/luau-0.734\\luau-analyze.exe"
+              },
+              "likely_causes": [],
+              "suggested_actions": [
+                {
+                  "action": "fix_typecheck",
+                  "description": "Fix Luau type or lint issues using the files, line numbers, and messages in the output.",
+                  "command": "game check --types --json"
+                }
+              ],
+              "source": null
+            }
+          ]
+        },
+        {
+          "name": "assets",
+          "status": "passed",
+          "summary": "21 declared, 2 scene references, ready_for_packaging true",
+          "command": "game asset inspect --strict",
+          "diagnostics": []
+        },
+        {
+          "name": "layout",
+          "status": "not_applicable",
+          "summary": "the game publishes no UI tree",
+          "command": "game ui preview --strict --frames 1 --seed 42",
+          "diagnostics": []
+        },
+        {
+          "name": "tests",
+          "status": "failed",
+          "summary": "the test suite could not run",
+          "command": "game test",
+          "diagnostics": [
+            {
+              "code": "TEST_INVALID",
+              "severity": "ERROR",
+              "summary": "Test file is not valid JSON",
+              "explanation": "\\\\?\\D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\menu-does-not-spend.test.json: unknown field `rulesVersion`, expected one of `name`, `frames`, `seed`, `input`, `input_sequence`, `load_save`, `assertions` at line 1 column 295",
+              "facts": {},
+              "likely_causes": [],
+              "suggested_actions": [],
+              "source": null
+            }
+          ]
+        }
+      ],
+      "passed": 1,
+      "failed": 2,
+      "not_applicable": 1,
+      "step_source": "default"
+    },
+    "activation": null
+  },
+  "diagnostics": [
+    {
+      "code": "VERIFY_FAILED",
+      "severity": "ERROR",
+      "summary": "A verify gate failed",
+      "explanation": "2 steps failed; each step's command field can be rerun independently.",
+      "facts": {
+        "failed_steps": [
+          "types",
+          "tests"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": [
+    "verify ran 4 gates in the default order: 1 passed, 2 failed, 1 not applicable"
+  ]
+}

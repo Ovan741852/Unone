@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "results": [
+    {
+      "name": "horde-paused-single-surge",
+      "seed": 1,
+      "scheduled": 37.00354890258724,
+      "small": 110,
+      "frames": 2496
+    },
+    {
+      "name": "horde-optional-quiet-round",
+      "seed": 2,
+      "scheduled": -1,
+      "small": 32,
+      "frames": 3094
+    }
+  ]
+}

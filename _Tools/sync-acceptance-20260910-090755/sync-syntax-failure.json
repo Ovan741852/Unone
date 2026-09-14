@@ -1,0 +1,202 @@
+{
+  "ok": false,
+  "value": {
+    "project_root": "D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755",
+    "status": "verify_failed",
+    "pack": {
+      "project_root": "\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755",
+      "manifest_path": "\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755\\bundles\\manifest.json",
+      "manifest_version": 3,
+      "manifest_changed": true,
+      "project_config_changed": false,
+      "bundles": [
+        {
+          "id": "project",
+          "version": "1",
+          "source": "project.unone.json",
+          "sha256": "5aa1e1134932e951c9ad1b62236a07933a799cde751bf71f7b7075ad3221a0e9",
+          "size_bytes": 438,
+          "dependencies": []
+        },
+        {
+          "id": "script",
+          "version": "1",
+          "source": "main.luau",
+          "sha256": "1f570dd6ef044a7d9b820986b6ab488384f701f0f3d642cf373bbb29a00da1a0",
+          "size_bytes": 534,
+          "dependencies": [
+            "project"
+          ]
+        },
+        {
+          "id": "scene",
+          "version": "1",
+          "source": "scene.json",
+          "sha256": "91361055b7c264c0126e9e39e16356cb9767d44c54d0c49e41e6a46d1b68f982",
+          "size_bytes": 261,
+          "dependencies": [
+            "project"
+          ]
+        }
+      ]
+    },
+    "verify": {
+      "project": "OptionalSystems",
+      "steps": [
+        {
+          "name": "types",
+          "status": "failed",
+          "summary": "the entry script did not pass the Luau contract or type check",
+          "command": "game check --types",
+          "diagnostics": [
+            {
+              "code": "LUAU_RUNTIME_ERROR",
+              "severity": "ERROR",
+              "summary": "Luau script could not be loaded or executed",
+              "explanation": "syntax error: [string \"\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755\\main.luau\"]:20: Expected <eof>, got 'this'",
+              "facts": {
+                "message": "syntax error: [string \"\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755\\main.luau\"]:20: Expected <eof>, got 'this'",
+                "runtime": "Luau",
+                "script": "\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755\\main.luau"
+              },
+              "likely_causes": [
+                "The entry script syntax or Engine API calls do not satisfy the current contract",
+                "The script uses a missing Entity or field at runtime"
+              ],
+              "suggested_actions": [
+                {
+                  "action": "check_script",
+                  "description": "Check the entry script contract first.",
+                  "command": "game check --json"
+                },
+                {
+                  "action": "inspect_project",
+                  "description": "Confirm the scene and Entity ids.",
+                  "command": "game project inspect --json"
+                }
+              ],
+              "source": {
+                "file": "\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755\\main.luau",
+                "line": null,
+                "column": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "assets",
+          "status": "passed",
+          "summary": "0 declared, 0 scene references, ready_for_packaging true",
+          "command": "game asset inspect --strict",
+          "diagnostics": []
+        },
+        {
+          "name": "layout",
+          "status": "failed",
+          "summary": "the project could not be loaded to draw its screen",
+          "command": "game ui preview --strict --frames 1 --seed 42",
+          "diagnostics": [
+            {
+              "code": "LUAU_RUNTIME_ERROR",
+              "severity": "ERROR",
+              "summary": "Luau script could not be loaded or executed",
+              "explanation": "syntax error: [string \"\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755\\main.luau\"]:20: Expected <eof>, got 'this'",
+              "facts": {
+                "message": "syntax error: [string \"\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755\\main.luau\"]:20: Expected <eof>, got 'this'",
+                "runtime": "Luau",
+                "script": "\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755\\main.luau"
+              },
+              "likely_causes": [
+                "The entry script syntax or Engine API calls do not satisfy the current contract",
+                "The script uses a missing Entity or field at runtime"
+              ],
+              "suggested_actions": [
+                {
+                  "action": "check_script",
+                  "description": "Check the entry script contract first.",
+                  "command": "game check --json"
+                },
+                {
+                  "action": "inspect_project",
+                  "description": "Confirm the scene and Entity ids.",
+                  "command": "game project inspect --json"
+                }
+              ],
+              "source": {
+                "file": "\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755\\main.luau",
+                "line": null,
+                "column": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "tests",
+          "status": "failed",
+          "summary": "the test suite could not run",
+          "command": "game test",
+          "diagnostics": [
+            {
+              "code": "LUAU_RUNTIME_ERROR",
+              "severity": "ERROR",
+              "summary": "Luau script could not be loaded or executed",
+              "explanation": "syntax error: [string \"\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755\\main.luau\"]:20: Expected <eof>, got 'this'",
+              "facts": {
+                "message": "syntax error: [string \"\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755\\main.luau\"]:20: Expected <eof>, got 'this'",
+                "runtime": "Luau",
+                "script": "\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755\\main.luau"
+              },
+              "likely_causes": [
+                "The entry script syntax or Engine API calls do not satisfy the current contract",
+                "The script uses a missing Entity or field at runtime"
+              ],
+              "suggested_actions": [
+                {
+                  "action": "check_script",
+                  "description": "Check the entry script contract first.",
+                  "command": "game check --json"
+                },
+                {
+                  "action": "inspect_project",
+                  "description": "Confirm the scene and Entity ids.",
+                  "command": "game project inspect --json"
+                }
+              ],
+              "source": {
+                "file": "\\\\?\\D:\\Projects\\YesSir\\_Tools\\sync-acceptance-20260910-090755\\main.luau",
+                "line": null,
+                "column": null
+              }
+            }
+          ]
+        }
+      ],
+      "passed": 1,
+      "failed": 3,
+      "not_applicable": 0,
+      "step_source": "default"
+    },
+    "activation": null
+  },
+  "diagnostics": [
+    {
+      "code": "VERIFY_FAILED",
+      "severity": "ERROR",
+      "summary": "A verify gate failed",
+      "explanation": "3 steps failed; each step's command field can be rerun independently.",
+      "facts": {
+        "failed_steps": [
+          "types",
+          "layout",
+          "tests"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": [
+    "verify ran 4 gates in the default order: 1 passed, 3 failed, 0 not applicable"
+  ]
+}

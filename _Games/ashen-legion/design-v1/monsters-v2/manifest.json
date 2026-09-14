@@ -1,0 +1,66 @@
+[
+  {
+    "id": "acorn",
+    "name": "橡果蹦蹦",
+    "tier": "小怪",
+    "motion": "小跳步 · 果帽彈開",
+    "file": "acorn.svg",
+    "status": "vector concept only; 3D and animation pending"
+  },
+  {
+    "id": "piglet",
+    "name": "菇背幼豬",
+    "tier": "小怪",
+    "motion": "碎步嗅地 · 菇孢散開",
+    "file": "piglet.svg",
+    "status": "vector concept only; 3D and animation pending"
+  },
+  {
+    "id": "moth",
+    "name": "葉燈蛾",
+    "tier": "小怪",
+    "motion": "低空展翅 · 葉翼散落",
+    "file": "moth.svg",
+    "status": "vector concept only; 3D and animation pending"
+  },
+  {
+    "id": "turtle",
+    "name": "苔石龜",
+    "tier": "小怪",
+    "motion": "慢步縮頭 · 石殼裂開",
+    "file": "turtle.svg",
+    "status": "vector concept only; 3D and animation pending"
+  },
+  {
+    "id": "boar-king",
+    "name": "獠牙搬木王",
+    "tier": "小王",
+    "motion": "重步抖木 · 跪伏噴金",
+    "file": "boar-king.svg",
+    "status": "vector concept only; 3D and animation pending"
+  },
+  {
+    "id": "elder",
+    "name": "鈴菇長老",
+    "tier": "小王",
+    "motion": "搖帽拄杖 · 收杖化葉",
+    "file": "elder.svg",
+    "status": "vector concept only; 3D and animation pending"
+  },
+  {
+    "id": "treant",
+    "name": "古榕守衛",
+    "tier": "次王",
+    "motion": "拔根落步 · 年輪開獎",
+    "file": "treant.svg",
+    "status": "vector concept only; 3D and animation pending"
+  },
+  {
+    "id": "stag",
+    "name": "冠角白鹿",
+    "tier": "大王",
+    "motion": "轉頸重步 · 冠角綻光",
+    "file": "stag.svg",
+    "status": "vector concept only; 3D and animation pending"
+  }
+]

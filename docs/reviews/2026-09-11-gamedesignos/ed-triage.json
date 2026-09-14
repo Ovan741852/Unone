@@ -1,0 +1,162 @@
+{
+  "output_mode": "quick_ed_triage",
+  "case_boundary": {
+    "case_visibility": "private_user_work",
+    "data_sensitivity": "telemetry_summary",
+    "output_destination": "private_notes",
+    "game_metric_model": "unknown",
+    "target_user_segment": "首次試玩的玩家；目前只有代理操作樣本",
+    "scope": "只評估首輪目標理解；販售與營運模式尚未確認"
+  },
+  "evidence_gate": {
+    "evidence_level": "L1_static_assets",
+    "evidence_status": "partial_evidence",
+    "confidence": "medium",
+    "available_evidence": [
+      "E003",
+      "E008"
+    ],
+    "allowed_claims": [
+      "HUD 缺少關卡目標文案",
+      "提出理解度假設"
+    ],
+    "forbidden_claims": [
+      "保證D1/D7或完成率提升",
+      "斷言所有玩家誤解",
+      "將機器模擬當真人樣本"
+    ],
+    "missing_evidence": [
+      "5名新手操作與復述紀錄"
+    ],
+    "confounder_risks": [
+      "economy_change",
+      "difficulty_change",
+      "instrumentation_missing"
+    ]
+  },
+  "metric_horizon": {
+    "game_metric_model": "unknown",
+    "primary_time_horizon": "run_based",
+    "p1_metric_family": "completion_progress",
+    "excluded_metrics": [
+      "D1",
+      "D7",
+      "revenue"
+    ],
+    "rationale": "已確認一局七輪約20分鐘，未確認商業模式；先測目標理解和Boss接戰。"
+  },
+  "theory_status": "design_hypothesis",
+  "diagnosis_summary": {
+    "primary_issue_item": "CLP",
+    "primary_lever": "CLP",
+    "diagnosis_order": "先判窗口，再降噪，再提質，後調頻",
+    "unsupported_claims": [
+      "真人手感與主觀爽感",
+      "完整 20 分鐘旅程品質",
+      "D1/D7 和玩家勝率",
+      "多人搶池公平性與商業成果"
+    ]
+  },
+  "optimal_stimulation_fit": {
+    "band": "unknown",
+    "boredom_type": "unknown",
+    "design_direction": "add_familiar_anchor",
+    "evidence_for_window": "能看到獎金和倒數，但沒有當前勝利條件；不知道真人是否過載。",
+    "risk_if_misdiagnosed": "不能據此增加怪潮或強制切AUTO。"
+  },
+  "primary_formula_item": "CLP",
+  "primary_lever": "當前目標資訊優先級",
+  "two_minimal_changes": [
+    "用同一行HUD依階段呈現：累積軍費／大王X秒後出現／讓大王開出大獎即通關。",
+    "大王登場時在同一區域指向大王，若仍選小怪篩選則顯示現況，保留玩家決定。"
+  ],
+  "variant_matrix": [
+    {
+      "variant_id": "A",
+      "primary_lever": "none",
+      "concrete_change": "現行HUD",
+      "owner": "YesSir UI",
+      "rollback": "既有版本"
+    },
+    {
+      "variant_id": "B",
+      "primary_lever": "CLP",
+      "concrete_change": "只增加當前關卡目標提示及其登場狀態",
+      "owner": "YesSir UI",
+      "rollback": "關閉 proposed ui.goalCue flag，恢復A；此flag尚未實作"
+    }
+  ],
+  "verification_metrics": [
+    "5名新手至少4名能復述大王時機與勝利條件；方向性門檻，非統計顯著性",
+    "大王登場到玩家第一次主動瞄準它的時間；目標中位數<=5秒",
+    "HUD遮擋或點擊誤發兵為0，與A相同種子輸入時經濟不變"
+  ],
+  "metric_plan": {
+    "sample": "5名新手先形成方向性結果，不對留存做推論",
+    "baseline": "同版本A，對照或交錯展示需記錄學習效應；不混城鎮等級",
+    "fields": [
+      "buildHash",
+      "seed",
+      "townLevel",
+      "hudVariant",
+      "battleTime",
+      "targetFilter",
+      "bossPresent"
+    ],
+    "events": [
+      {
+        "name": "goal_cue_exposed",
+        "trigger": "目標狀態首次顯示",
+        "fields": [
+          "phase",
+          "battleTime"
+        ]
+      },
+      {
+        "name": "boss_spawned",
+        "trigger": "rank5首次出現",
+        "fields": [
+          "battleTime"
+        ]
+      },
+      {
+        "name": "player_target_changed",
+        "trigger": "玩家改目標或篩選",
+        "fields": [
+          "source",
+          "targetRank",
+          "targetFilter",
+          "battleTime"
+        ]
+      },
+      {
+        "name": "goal_recall_recorded",
+        "trigger": "測試員記錄玩家復述",
+        "fields": [
+          "correct",
+          "questionVersion"
+        ]
+      }
+    ],
+    "privacy": "本機匿名測試編號，不收帳號／聯絡資訊。埋點為提案，尚未接入。"
+  },
+  "decision_rules": {
+    "success": "正確復述>=4/5且主動接戰中位數<=5秒，無負向門；只支持繼續此方向。",
+    "observe": "樣本不足或學習效應明顯，保留unknown。",
+    "rollback": "HUD遮擋、點擊誤發兵、經濟變動，或目標提示比A更難理解時回A。",
+    "kill": "兩次單變因提示迭代仍不理解，停止加HUD，改測短操作示範。"
+  },
+  "rollback_condition": "任何遮擋、輸入或經濟回歸，或理解結果不如A，移除新目標提示。",
+  "unsupported_claims": [
+    "真人手感與主觀爽感",
+    "完整 20 分鐘旅程品質",
+    "D1/D7 和玩家勝率",
+    "多人搶池公平性與商業成果"
+  ],
+  "anti_habituation_plan": {
+    "status": "not_tested",
+    "scope": "本次不調長線事件頻率。",
+    "candidate": "目標學會後縮成短提示，避免每輪重播完整教學；是否依熟悉度收斂仍待驗證。"
+  },
+  "status": "proposal_only_not_executed"
+}

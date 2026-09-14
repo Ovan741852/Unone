@@ -1,0 +1,591 @@
+{
+  "repository": "https://github.com/DY-2026/GameDesignOS",
+  "commit": "ada4bf9e60c2c90a4c84866e4bfd191e3767d164",
+  "reviewedAt": "2026-09-11T14:40:41.2800024Z",
+  "installationScope": "project_only",
+  "upstreamVersion": "1.3.0-candidate",
+  "selectedSkills": [
+    "game-experience-analyzer",
+    "game-experience-density-optimizer"
+  ],
+  "files": [
+    {
+      "path": "game-experience-analyzer/README.en.md",
+      "bytes": 11264,
+      "sha256": "375b083133c6b452589638611ef7238b3e2f66c3fc68fd8a2c88eded8ced3ccf",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/README.md",
+      "bytes": 12788,
+      "sha256": "3002253921fec2e30ca1e12a78bf883a54f08374e4d6b08f74cf7c6ea1b8bf60",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/SKILL.md",
+      "bytes": 19134,
+      "sha256": "759f802ad5a87d99f442b99113d1a450e12a5759f4e8d5bf33e3c987f03fe8b8",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/agents/openai.yaml",
+      "bytes": 425,
+      "sha256": "d55591f4d89b2ccc50e6d024bb4864fe5581cf865d69f97fb908e6248e1990fb",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/assets/game-experience-analyzer-hero.png",
+      "bytes": 1606531,
+      "sha256": "ea7ef3dedb25d5ea9149ddf377ebbe8982cde4d18b172cb66d642302bbb79960",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/evals/behavior_evals.json",
+      "bytes": 406,
+      "sha256": "8b9b6cfa245faba7a9f6a7cb50e46fc0d892163127c0e9bc881f673889cec7f7",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/evals/evals.json",
+      "bytes": 10419,
+      "sha256": "da63ea09457d08d1d84f4a7c7b0b0ed9e8a58ae7c02d5b1ff2616c48910386ce",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/evals/negative_cases.md",
+      "bytes": 10470,
+      "sha256": "266d91127b07412ee2dbff125b17c82dddf24d34d57a5172968ce7d912793659",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/evals/rubric.yaml",
+      "bytes": 6455,
+      "sha256": "9b2fb562eea4b9d6e4eaed856aba0ae0bc075968923a47f7a3c83438744e8da3",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/evals/synthetic_outputs.json",
+      "bytes": 463,
+      "sha256": "f883efdd856278513904d63cfb9ffc1f5712f8897affea3d01b96d396a6988be",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/examples/README.md",
+      "bytes": 1412,
+      "sha256": "b545371d6192693dbfcb0384dfd03afc2b2bffcac6c1d4e05e4a7fbde87bf2af",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/examples/survival-33-days-assets/survival33-00-00-welfare-popup.jpg",
+      "bytes": 41170,
+      "sha256": "94d8abec58a14036a09e581b27468421cda6b46d57949fd5869a3d65bc7f3d1b",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/examples/survival-33-days-assets/survival33-00-15-zombie-hook.jpg",
+      "bytes": 38800,
+      "sha256": "cbcbc2fd1dafac59758b42f1bc49da19edd08707777d605997ada288c09593e9",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/examples/survival-33-days-assets/survival33-00-45-move-tutorial.jpg",
+      "bytes": 30690,
+      "sha256": "38cdff817ced25929eb0fb395d9eeb67712f64f7c00a1b710c04084915469cde",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/examples/survival-33-days-assets/survival33-03-00-first-combat-loop.jpg",
+      "bytes": 40127,
+      "sha256": "6aba9e58e33a85b3b229e8283195b91b60a0c6b2f914ae3b86a17fd819c5c452",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/examples/survival-33-days-assets/survival33-06-00-radio-link.jpg",
+      "bytes": 21189,
+      "sha256": "de648a5e90b1235efce9353cd83f5935589697c3251413cfe9af0e4e6c3d0b89",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/examples/survival-33-days-assets/survival33-18-00-boss-fight.jpg",
+      "bytes": 31074,
+      "sha256": "d193db081712536f5b6666cae670f4aa7889bf2a566b2fe857a3d704d1124f6c",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/examples/survival-33-days-assets/survival33-27-00-ui-density.jpg",
+      "bytes": 44411,
+      "sha256": "680fca7ebe85c23279408cfadc9cc684f58bfcf06e1a89e4a5aa104c2dc33a86",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/examples/survival-33-days-assets/survival33-39-00-title-progression.jpg",
+      "bytes": 39160,
+      "sha256": "25455deeba8076cfb543c00a4fa501d702bb37adc461a313d83520467b2cd5b2",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/examples/survival-33-days-assets/survival33-keyframe-sheet.jpg",
+      "bytes": 399777,
+      "sha256": "d1cbda6412ae88b478f71c06323f0b645d5acdb7bc67c08f3e67a210e2a61e93",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/examples/survival-33-days-gameplay-experience-report.md",
+      "bytes": 29979,
+      "sha256": "bf544e04df118ba5773f1a9e0872886a4704d5ce2f09be4cd9fdc61a268553be",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/references/analysis-mode-router.yaml",
+      "bytes": 15439,
+      "sha256": "2fe206022d6b407c37e00ab725c3fcfaa02f15fa7fc64f6e375f67d356262271",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/references/diagnosis-pack-router.yaml",
+      "bytes": 10479,
+      "sha256": "6bc091e3a7000cd1fa4f091f3518f21ffb1de7c2401c46fafaf26a54f388bb45",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/references/evidence-taxonomy.zh-CN.md",
+      "bytes": 5115,
+      "sha256": "b77aa21f279212a829d1853f128974425001f092d4ebe622b3c39300fb5c79af",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/references/foresight-opportunity-lens.zh-CN.md",
+      "bytes": 6826,
+      "sha256": "0e8d17ae750384f76c0bfa1778e7c1cc4fc9745a517e97c69a9a8771b75d2670",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/references/four-step-experience-method.zh-CN.md",
+      "bytes": 4919,
+      "sha256": "2205c1b12ebd4d724e8eeef3d4b4c4a64a3a9e8ba3acdbd99b35fc44edeee397",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/references/game-dissection-diagnosis.zh-CN.md",
+      "bytes": 8712,
+      "sha256": "4d6be941cc22b643e825ecaa082775d430c4903001b45772218d5bfe49f241f7",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/references/genre-strategy-router.yaml",
+      "bytes": 12099,
+      "sha256": "9ff68ed5d2999e3481ecc5a571054cb4937ef466ed65cf9e6e1db0f4d2fa8167",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/references/sample-scope-gate.zh-CN.md",
+      "bytes": 5556,
+      "sha256": "1a5810a63d26c796c38d8eedb91a6930c02137b9bf532889daa46bf568237a45",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/references/single-player-analysis.zh-CN.md",
+      "bytes": 8041,
+      "sha256": "f10b0c82f7d1fa959f011e5bba78e7c7b6b5252808517f9615e7ab0ae0ba2667",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/references/system-design-review-lens.zh-CN.md",
+      "bytes": 5434,
+      "sha256": "31e664a172925a4f2ef6a5aeba73d79b01569afbcca97f9de484c37b52c08db6",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/references/tooling-setup.zh-CN.md",
+      "bytes": 3752,
+      "sha256": "0f8c1dda88396bbc8981026ff23b567c83087b6db065f3f012476017db048e25",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/references/trailer-heat-prediction.zh-CN.md",
+      "bytes": 8062,
+      "sha256": "ab3ef7a92a66b1866e2d4c220f864ee8f0400a786d2abc2f2b5b7f2cc4f2ac99",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/references/video-analysis-workflow.zh-CN.md",
+      "bytes": 3984,
+      "sha256": "db0ee7c5663b045585d7ba46eec572b5ec60ab106188f63dfa660f5a8c473fb7",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/analysis-input.json",
+      "bytes": 1800,
+      "sha256": "1043b8096f6a991dbc79e5040dee1ed903d0567888e4b77e9a6266d7b105c3a4",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/consulting-diagnosis-report.md",
+      "bytes": 2564,
+      "sha256": "d3d8a0d30143615debd3a176e7a71cd268c16e50fe9f1d5410cc28ccfc47d7f1",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/ed-handoff.md",
+      "bytes": 1300,
+      "sha256": "8e7cb5fa99b1a200446dc47916e5ecca3e52a0c757f9cc56d47e7155443e1f29",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/evidence-index.schema.json",
+      "bytes": 7239,
+      "sha256": "74b905e4681ce08d18201284645c34df77aa2a4e3f5a846d607efc23b687b655",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/experience-report.md",
+      "bytes": 10284,
+      "sha256": "dd41c4012069be9635a29d36112266af0c795fae783583d20688607700946be1",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/game-dissection-report.md",
+      "bytes": 3172,
+      "sha256": "e4ec8e85e0ad3d5a9790f5a5620210199be50bc929e1f1ab5819febbfb35b3d8",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/issue-card.md",
+      "bytes": 2062,
+      "sha256": "6f1e7d3338eb7491006b64a71fbd62128b2c9eacaeb431c3922c81b1a9d9c1f3",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/mode-output-map.yaml",
+      "bytes": 6477,
+      "sha256": "9ce7060cde55a47c0d1479175ed46f64df34a9b18bded51c7fb2a3e84789d0d5",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/quick-triage-report.md",
+      "bytes": 2512,
+      "sha256": "f2b97e37f83cda9f23ebd97d504188f14f2e9a0bc1c02f39818d0f908a2e0c29",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/structured-output.example.json",
+      "bytes": 8470,
+      "sha256": "87969ce088bf11b4be453af5dcb678d091c73d414e787455fc568c41f29c336a",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/structured-output.schema.json",
+      "bytes": 14676,
+      "sha256": "0ce1477b582278ad0a282de68b53f6f806e017527cacc9f2d1ede5625316354e",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/trailer-heat-report.md",
+      "bytes": 2582,
+      "sha256": "61ca5fb55405550e6da3fce4c09faaa6c40f9099fb0a2166fddafb33c30c481e",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/validation-plan.md",
+      "bytes": 1955,
+      "sha256": "bc17d355610be678503e74584b0f2756c5a7542bf42620087072f5b21c0a4abc",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-analyzer/templates/visual-evidence-card.md",
+      "bytes": 2137,
+      "sha256": "466a7431c619e569da2732526cd5f9cbe16e5043525d186fc783b83b5e679c07",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/README.md",
+      "bytes": 11109,
+      "sha256": "ca373caef1a4bda0a3244925995c73e217bbda950d66b125dd7af11831d7e758",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/SKILL.md",
+      "bytes": 13807,
+      "sha256": "dc672f33e479840e9af6fe635906cd58c8910b35b7193c2f9e76ed564562d350",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/agents/openai.yaml",
+      "bytes": 1099,
+      "sha256": "db3689bd5b50e2c016b9a6d7c58a1868637b326c71c22ac549472029f7580f0f",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/evals/behavior_evals.json",
+      "bytes": 410,
+      "sha256": "a823d3bf71e047cd7182de055816e857f6773d68c6554056b0645e3e2147298b",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/evals/evals.json",
+      "bytes": 6811,
+      "sha256": "9309fb5d7dfc97cb74781d88887fc11333f8ccbeab247b0804fa4a22ff633f7c",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/evals/negative_cases.md",
+      "bytes": 5191,
+      "sha256": "45fd15e1fbd1f11fd02a3e3dd8d54d7402df56ffd110808e579d60f8fd568d30",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/evals/rubric.yaml",
+      "bytes": 4001,
+      "sha256": "43f74dde2672fa236e4693caa3278230bb449341a0353777973927f8597fc5ba",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/evals/synthetic_outputs.json",
+      "bytes": 3256,
+      "sha256": "5aa072abc180c3be7328fe5cac26bb9b76031e8809fb32ab185d7073e7525479",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/examples/synthetic-hybrid-conflict-review.md",
+      "bytes": 2768,
+      "sha256": "371c819f54dc7c25f16b636f94a0211eb557b6a6717e591d3480bca2f69bdd54",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/examples/synthetic-premium-demo-completion-ed-plan.md",
+      "bytes": 3925,
+      "sha256": "b8944a897e422301a14694697e42517be15889e8185005402e0c927ce71392b3",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/examples/synthetic-survivors-first-session-ed-plan.md",
+      "bytes": 3697,
+      "sha256": "2ca21148579c6115b58798af6a27cfbf6302a20172de4c5014083a306ad80335",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/density-diagnosis-workflow.zh-CN.md",
+      "bytes": 8207,
+      "sha256": "fd95b2fc2e49363d051f330311da27cd702099df0043c18abda2056064acca89",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/density-formula.zh-CN.md",
+      "bytes": 9461,
+      "sha256": "4531a5c988e0e2141c6410e0f8c7c60307431f0f38b42291430918985335b49e",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/ed-framework.zh-CN.md",
+      "bytes": 7382,
+      "sha256": "85bb29183a8916d83c520af4d87a3f752ede57f7c5ec5e83b8d40df8a4f90fbf",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/ed-handoff-contract.md",
+      "bytes": 386,
+      "sha256": "e1af2dac5ca922c041c3df88a7df79f73fbab83ad75a9b92c53afbdd3106ab83",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/evidence-gate.zh-CN.md",
+      "bytes": 4895,
+      "sha256": "49743b26640604bb2a1a58769864310fc1835fe45d9bdac98d041f99517f7df7",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/flow-sdt-experience-gates.zh-CN.md",
+      "bytes": 4649,
+      "sha256": "0437c42c98ea6ecb961090e0ba58eb8b211f8fd015bbf1911f5d755eec010315",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/free-energy-markov-blanket-lens.zh-CN.md",
+      "bytes": 9828,
+      "sha256": "2afd286d70f262c0d7824a66a2fe239dadffc1ceccb88cdcd2b4b53f3b9afea0",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/interaction-prediction-lens.zh-CN.md",
+      "bytes": 4589,
+      "sha256": "23f359b06aaff0624224ce79e8e3eadd67a3dcaaa97726f93e14f38813d2253c",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/lever-playbook.zh-CN.md",
+      "bytes": 8940,
+      "sha256": "4612af95b7c4c2e636d753898650e8dc5ee26d34e4f0bce723bc010255b5932e",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/metric-horizon-by-game-model.zh-CN.md",
+      "bytes": 5050,
+      "sha256": "79ad24a2d6caa8b75ac0d1967b9858f8dcb0b3b5dbe14b1a8af503f8e5616735",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/optimal-stimulation-window.zh-CN.md",
+      "bytes": 9376,
+      "sha256": "6693bda78020cc1cc545017abe86f431eb73d88d723fd3cf107b4f0603815bdc",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/retention-risk-gates.zh-CN.md",
+      "bytes": 5203,
+      "sha256": "23b4b31828fcee2caaee5da3597116fb80d86f280eb30fccba86a95a559b8cb7",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/telemetry-metric-dictionary.zh-CN.md",
+      "bytes": 10337,
+      "sha256": "ea0cca79e88af03a110ec3e258954f93ab4740e9a61e183376bff5ecddfaeae4",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/theory-source-map.zh-CN.md",
+      "bytes": 4184,
+      "sha256": "96c5f73a7f3b86f5df9d047301aecabdc01063ac0b9a2720e8b038a90b0c4210",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/references/weekly-experiment-sop.zh-CN.md",
+      "bytes": 4198,
+      "sha256": "53620e49dd6859aec341da5e911a4f420c07ad24f955cae1b1a83f20ec53ccb9",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/templates/dashboard-spec.md",
+      "bytes": 3393,
+      "sha256": "8457c88b117fc2f2ad5ca97ae9639a53aad5485ab7bd8ad2fa20408834bf8b17",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/templates/ed-scorecard.md",
+      "bytes": 1641,
+      "sha256": "be0750de92181573ec81fdb9693ff14b1a57405b0d963ff416331441e087ea35",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/templates/experiment-intake.md",
+      "bytes": 4582,
+      "sha256": "5419fdd36fc5813d538a5f686b29d8f64517e7e74d0cadaa5f62464beebc91cc",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/templates/experiment-plan.schema.json",
+      "bytes": 13472,
+      "sha256": "a10b373c68f58a461951a993bf78da33a10c603cc47d4e0bd1aff4c4fb4dee20",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/templates/instrumentation-dictionary.md",
+      "bytes": 4491,
+      "sha256": "88137a70d1f2c6fceafef16b41925aa28dd6e04060da39e020a6177dd29709fa",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/templates/variant-matrix.md",
+      "bytes": 2695,
+      "sha256": "644c1e66743b3f29f0f73cc3b93b7e08505a57c9ac22960b820ffe09f695673e",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/templates/weekly-ed-experiment-plan.md",
+      "bytes": 9568,
+      "sha256": "1227f85fbf04a4fbc0d3cc6e5751dd242631bdf14b52dfd375c8d8c79d399b35",
+      "gitBlobMatches": true,
+      "selected": true
+    },
+    {
+      "path": "game-experience-density-optimizer/templates/weekly-review.md",
+      "bytes": 1760,
+      "sha256": "dcf843a0159476550cca951b7773ab09cdc6a181adc9622726a32161a9bed76c",
+      "gitBlobMatches": true,
+      "selected": true
+    }
+  ],
+  "excludedRuntime": true,
+  "excludedExternalModelHosts": true,
+  "excludedGlobalSync": true,
+  "securityReport": "docs/reviews/2026-09-11-gamedesignos/SECURITY.zh-TW.md"
+}

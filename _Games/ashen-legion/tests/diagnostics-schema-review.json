@@ -1,0 +1,57 @@
+{
+  "reviewType": "schema-only; APIs not implemented",
+  "document": "D:/Projects/Unone/docs/ai-diagnostics-schema-v1.md",
+  "schemaMetaValidation": "passed",
+  "cases": [
+    {
+      "name": "document_valid_start",
+      "schemaValid": true,
+      "errors": []
+    },
+    {
+      "name": "missing_expected_kind_flag_end",
+      "schemaValid": false,
+      "errors": [
+        {
+          "pointer": "/expected",
+          "message": "{'code': 'X'} is not valid under any of the given schemas"
+        }
+      ]
+    },
+    {
+      "name": "terminal_missing_flag",
+      "schemaValid": false,
+      "errors": [
+        {
+          "pointer": "/expected",
+          "message": "{'kind': 'diagnostic', 'code': 'ECONOMY_REFUND_DUPLICATE', 'flag': 'game.economy.refund.apply', 'endCondition': {'kind': 'terminal'}} is not valid under any of the given schemas"
+        }
+      ]
+    },
+    {
+      "name": "checkpoint_missing_state",
+      "schemaValid": false,
+      "errors": [
+        {
+          "pointer": "/",
+          "message": "{'schemaVersion': 1, 'mode': 'exact_version', 'game': {'id': 'ashen-legion', 'revision': 'release-42', 'scriptHash': 'sha256:0000000000000000000000000000000000000000000000000000000000000000'}, 'engine': {'version': '0.1.0', 'coreRevision': 'git:abc'}, 'assets': {'manifestHash': 'sha256:1111111111111111111111111111111111111111111111111111111111111111'}, 'scenarioSchema': {'schemaRef': 'schema://ashen-legion/scenario/v1', 'id': 'ashen-legion.scenario', 'version': 1, 'hash': 'sha256:2222222222222222222222222222222222222222222222222222222222222222'}, 'captureOrigin': {'kind': 'checkpoint', 'tick': 60, 'rngOwnership': 'core_rng'}, 'scenario': {'wave': 1}, 'inputs': {'frames': [], 'complete': True, 'truncated': False}, 'expected': {'kind': 'diagnostic', 'code': 'ECONOMY_REFUND_DUPLICATE', 'flag': 'game.economy.refund.apply', 'endCondition': {'kind': 'after_tick', 'tick': 120}}, 'adapter': {'id': 'ashen-legion.scenario-adapter', 'version': '1.2.0'}} is not valid under any of the given schemas"
+        }
+      ]
+    },
+    {
+      "name": "checkpoint_rng_only_no_world_state",
+      "schemaValid": true,
+      "errors": []
+    },
+    {
+      "name": "host_render_frame_end_condition",
+      "schemaValid": true,
+      "errors": []
+    },
+    {
+      "name": "input_frame_without_tick_or_input",
+      "schemaValid": true,
+      "errors": []
+    }
+  ]
+}

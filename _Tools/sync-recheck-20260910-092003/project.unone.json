@@ -1,0 +1,22 @@
+{
+  "bundle_manifest": "bundles/manifest.json",
+  "entry_script": "main.luau",
+  "main_scene": "scene.json",
+  "name": "OptionalSystems",
+  "systems": {
+    "audio": false,
+    "camera2d": false,
+    "camera3d": false,
+    "effekseer": false,
+    "particle": false,
+    "physics2d": false,
+    "physics3d": false,
+    "random": false,
+    "save": false,
+    "spine": false,
+    "ui": false
+  },
+  "test_files": [
+    "run.test.json"
+  ]
+}

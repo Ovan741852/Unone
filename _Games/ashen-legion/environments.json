@@ -1,0 +1,7 @@
+{
+  "default": "forest",
+  "themes": {
+    "forest": {"name":"晨光森林", "arena":"mesh://arena", "sky":"mesh://sky_forest"},
+    "forest_dusk": {"name":"暮色森林", "arena":"mesh://arena", "sky":"mesh://sky_forest_dusk"}
+  }
+}

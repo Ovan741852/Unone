@@ -1,0 +1,13 @@
+{
+  "bones": 55,
+  "skinnedMeshes": 49,
+  "weightValidation": "passed",
+  "animationDeformation": "8 clips finite and bounded",
+  "liveEquipmentSwap": "all 5 slots / 3 variants passed",
+  "mixamoFixture": "three.js r179 Samba Dancing.fbx (test only)",
+  "mixamoMapped": 55,
+  "mixamoDuration": 18.200000762939453,
+  "glbRoundtrip": "55 bones per skin / 8 animation clips",
+  "objExport": "T-pose body",
+  "coreModified": false
+}

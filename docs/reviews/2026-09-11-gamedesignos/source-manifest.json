@@ -1,0 +1,45 @@
+{
+  "gameScriptHash": "92a68f2889913eb7e64ebfa501fa55401e7d546e4ffdf1d51f260a532ce01da6",
+  "reviewedAt": "2026-09-11T14:55:23.432Z",
+  "gameplayChanged": false,
+  "thirdPartyRuntimeExecuted": false,
+  "supplementalEvidenceTypes": [
+    "source_code",
+    "actual_inputframe_trace",
+    "synthetic_state_fixture",
+    "analytic_projection",
+    "historical_machine_simulation"
+  ],
+  "schemaAdaptation": "Upstream evidence enums do not include source_code/runtime_trace; these are explicitly labeled user_context and retain exact locators and scope.",
+  "files": [
+    {
+      "path": "_Games/ashen-legion/main.luau",
+      "sha256": "92a68f2889913eb7e64ebfa501fa55401e7d546e4ffdf1d51f260a532ce01da6"
+    },
+    {
+      "path": "_Games/ashen-legion/ui/formal-ui.luau",
+      "sha256": "2d90abf7fa9d5c139013d872ba0a42240f393a4627cee2ec2a289bb78f7f9c5c"
+    },
+    {
+      "path": "_Games/ashen-legion/scene.json",
+      "sha256": "3b62e8081b5a0224a30a48c79910e2f03c7c20990ebbe0c9d226a8ece832ebf4"
+    },
+    {
+      "path": "_Tools/fishing-quicktest/app.mjs",
+      "sha256": "e759ca5a3cc35b65e3b230e511449b12d20bb0767941fe760bbb01a93778f17d"
+    },
+    {
+      "path": "_Tools/fishing-quicktest/balance.mjs",
+      "sha256": "796ac3c1ae4320b663e6e40aa1cf892779280b9f2521655eb4f796dc9f5f5e0d"
+    },
+    {
+      "path": "_Tools/fishing-quicktest/build-policy.mjs",
+      "sha256": "d1a574405ea74118bb24a2b36e56ba359a22f2bec964c2a5a1bf7251b6d4f026"
+    },
+    {
+      "path": "_Games/ashen-legion/tests/currency-quicktest-split.json",
+      "sha256": "40158daed0ce7c604e66b44f3a25130fd795d19251f8dc42b85ec730c91449d9"
+    }
+  ],
+  "browserSampleSeconds": 7.528
+}

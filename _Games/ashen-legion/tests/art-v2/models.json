@@ -1,0 +1,287 @@
+{
+  "ok": true,
+  "scope": "Actual GLTFLoader and official Unone Animator, 14 model views, eight clips each, finite skinned vertices and embedded UV textures",
+  "samples": [
+    {
+      "kind": "beetle",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "skins": 1,
+      "triangles": 956,
+      "vertices": 1996,
+      "bones": 9,
+      "finite": true,
+      "maxRadius": 1.602115805014889,
+      "uv": true
+    },
+    {
+      "kind": "boar",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "skins": 1,
+      "triangles": 886,
+      "vertices": 1932,
+      "bones": 9,
+      "finite": true,
+      "maxRadius": 1.5751423104685705,
+      "uv": true
+    },
+    {
+      "kind": "elder",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "skins": 1,
+      "triangles": 1098,
+      "vertices": 2356,
+      "bones": 9,
+      "finite": true,
+      "maxRadius": 2.520617561956649,
+      "uv": true
+    },
+    {
+      "kind": "stag",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "skins": 1,
+      "triangles": 915,
+      "vertices": 1897,
+      "bones": 9,
+      "finite": true,
+      "maxRadius": 2.642071877617776,
+      "uv": true
+    },
+    {
+      "kind": "soldier",
+      "clips": [
+        "tpose",
+        "run",
+        "spawn",
+        "death",
+        "attack",
+        "stretch",
+        "walk",
+        "idle"
+      ],
+      "skins": 6,
+      "triangles": 1703,
+      "vertices": 3641,
+      "bones": 55,
+      "finite": true,
+      "maxRadius": 1.7109394589650924,
+      "uv": true
+    },
+    {
+      "kind": "spear",
+      "clips": [
+        "tpose",
+        "run",
+        "spawn",
+        "death",
+        "attack",
+        "stretch",
+        "walk",
+        "idle"
+      ],
+      "skins": 6,
+      "triangles": 1703,
+      "vertices": 3641,
+      "bones": 55,
+      "finite": true,
+      "maxRadius": 1.7109394589650924,
+      "uv": true
+    },
+    {
+      "kind": "cavalry",
+      "clips": [
+        "tpose",
+        "run",
+        "spawn",
+        "death",
+        "attack",
+        "stretch",
+        "walk",
+        "idle"
+      ],
+      "skins": 6,
+      "triangles": 1703,
+      "vertices": 3641,
+      "bones": 55,
+      "finite": true,
+      "maxRadius": 1.7109394589650924,
+      "uv": true
+    },
+    {
+      "kind": "acorn",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "skins": 1,
+      "triangles": 734,
+      "vertices": 1560,
+      "bones": 9,
+      "finite": true,
+      "maxRadius": 1.3975013015219868,
+      "uv": true
+    },
+    {
+      "kind": "piglet",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "skins": 1,
+      "triangles": 1148,
+      "vertices": 2516,
+      "bones": 9,
+      "finite": true,
+      "maxRadius": 1.5843633182851269,
+      "uv": true
+    },
+    {
+      "kind": "moth",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "skins": 1,
+      "triangles": 1258,
+      "vertices": 2750,
+      "bones": 9,
+      "finite": true,
+      "maxRadius": 1.8071767208182317,
+      "uv": true
+    },
+    {
+      "kind": "turtle",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "skins": 1,
+      "triangles": 966,
+      "vertices": 2140,
+      "bones": 9,
+      "finite": true,
+      "maxRadius": 1.2030378736977596,
+      "uv": true
+    },
+    {
+      "kind": "treant",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "skins": 1,
+      "triangles": 1614,
+      "vertices": 3564,
+      "bones": 9,
+      "finite": true,
+      "maxRadius": 2.638283398318762,
+      "uv": true
+    },
+    {
+      "kind": "wheel",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "skins": 1,
+      "triangles": 1404,
+      "vertices": 3060,
+      "bones": 9,
+      "finite": true,
+      "maxRadius": 1.7812945918551202,
+      "uv": true
+    },
+    {
+      "kind": "horse",
+      "clips": [
+        "idle",
+        "walk",
+        "attack",
+        "hit",
+        "death",
+        "spawn",
+        "stretch",
+        "run"
+      ],
+      "skins": 1,
+      "triangles": 836,
+      "vertices": 1808,
+      "bones": 9,
+      "finite": true,
+      "maxRadius": 2.1174812436681236,
+      "uv": true
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,46 @@
+{
+  "command": "D:/Projects/Unone/target/debug/game.exe",
+  "args": [
+    "plugin",
+    "test",
+    "--id",
+    "org.koncrate.unone-ui"
+  ],
+  "exit_code": 0,
+  "error": null,
+  "stderr": "",
+  "result": {
+    "ok": true,
+    "value": {
+      "components": [
+        "text",
+        "label",
+        "button",
+        "image",
+        "component",
+        "toggle",
+        "input",
+        "panel",
+        "icon_button",
+        "progress_bar",
+        "tabs",
+        "dialog",
+        "modal",
+        "tooltip"
+      ],
+      "plugin": "org.koncrate.unone-ui",
+      "protocol": "unone.plugin.v1",
+      "self_test": {
+        "failures": [],
+        "ok": true,
+        "passed": 22,
+        "total": 22
+      },
+      "ui_protocol": "unone.ui.v1"
+    },
+    "diagnostics": [],
+    "effects": [
+      "plugin org.koncrate.unone-ui:plugin.test completed"
+    ]
+  }
+}

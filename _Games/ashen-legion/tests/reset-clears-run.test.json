@@ -1,0 +1,180 @@
+{
+  "name": "reset-clears-run",
+  "frames": 153,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Start": true
+      }
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "LeaveShop": true
+      }
+    },
+    {},
+    {
+      "actions": {},
+      "pointer": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "screen_position": {
+          "x": 50,
+          "y": 50
+        },
+        "down": true
+      }
+    },
+    {
+      "actions": {},
+      "pointer": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "screen_position": {
+          "x": 50,
+          "y": 50
+        },
+        "down": false
+      }
+    },
+    {
+      "actions": {
+        "Home": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "phase",
+        "equals": "menu"
+      }
+    },
+    {
+      "observation": {
+        "key": "fired",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "choices",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "round",
+        "equals": 1
+      }
+    },
+    {
+      "observation": {
+        "key": "economy_conserved",
+        "equals": true
+      }
+    }
+  ]
+}

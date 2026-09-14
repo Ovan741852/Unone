@@ -1,0 +1,8301 @@
+{
+  "format": "unone.fishing.balance.v1",
+  "scriptHash": "06297ec0ce630ee76890e2e7999cb9edcc91e61573f7e7c94928fca0b69e3d35",
+  "sourceMatchesExport": true,
+  "policyVersion": 2,
+  "scope": "Real native-input shopping, build equipment and research, no injected state; initial town levels",
+  "policy": "Manual hold; retarget nearest small every 12 frames, rank-5 boss when present; build-aware shop/gear/tech; affordable sword fallback; no state edits",
+  "runs": [
+    {
+      "seed": 1,
+      "policy": "survival",
+      "status": "timeout",
+      "frames": 10808,
+      "battleSeconds": 179.96666666666667,
+      "roundsCleared": 0,
+      "bossReached": true,
+      "finalCoins": 1042,
+      "minCoins": 140,
+      "maxCoins": 1398,
+      "spent": 5292,
+      "earned": 5882,
+      "refunded": 228,
+      "fired": 441,
+      "breaks": 267,
+      "criticalHits": 68,
+      "piercesUsed": 395,
+      "spinHits": 0,
+      "firstAwardSeconds": 1.3833333333333333,
+      "loadouts": [
+        {
+          "bounceCrit": 0,
+          "bounceLife": 0,
+          "bouncePower": 0,
+          "critAdd": 0,
+          "critChance": 0.1,
+          "critMultiplier": 1.5,
+          "damageBonus": 0,
+          "deathBurst": 0,
+          "distance": 0,
+          "expireBurst": 0,
+          "finisher": 0,
+          "flightSpeed": 0,
+          "frenzy": 0,
+          "frost": 0,
+          "heat": 0,
+          "killLife": 0,
+          "kingDamage": 0,
+          "landingSpin": false,
+          "lastStand": 0,
+          "lifeBonus": 0,
+          "lightning": 0,
+          "momentum": 0,
+          "pierce": 1,
+          "pierceWave": 0,
+          "reboundCharge": 0,
+          "shatter": 0,
+          "shock": 0,
+          "slowForce": 0,
+          "speedBonus": 0,
+          "spinDamage": 0,
+          "spinDuration": 0,
+          "spinMaster": 0,
+          "spinRadius": 0,
+          "thirdCrit": 0
+        },
+        {
+          "bounceCrit": 0,
+          "bounceLife": 0,
+          "bouncePower": 0,
+          "critAdd": 0,
+          "critChance": 0,
+          "critMultiplier": 1.5,
+          "damageBonus": 0,
+          "deathBurst": 0,
+          "distance": 0,
+          "expireBurst": 0,
+          "finisher": 0,
+          "flightSpeed": 16,
+          "frenzy": 0,
+          "frost": 0,
+          "heat": 0,
+          "killLife": 0,
+          "kingDamage": 0,
+          "landingSpin": true,
+          "lastStand": 0,
+          "lifeBonus": 0,
+          "lightning": 0,
+          "momentum": 0,
+          "pierce": 0,
+          "pierceWave": 0,
+          "reboundCharge": 0,
+          "shatter": 0,
+          "shock": 0,
+          "slowForce": 0,
+          "speedBonus": 0,
+          "spinDamage": 1.8,
+          "spinDuration": 0.55,
+          "spinMaster": 0,
+          "spinRadius": 2.9,
+          "thirdCrit": 0
+        },
+        {
+          "bounceCrit": 0,
+          "bounceLife": 0,
+          "bouncePower": 0,
+          "critAdd": 0,
+          "critChance": 0,
+          "critMultiplier": 1.5,
+          "damageBonus": 0,
+          "deathBurst": 0,
+          "distance": 0,
+          "expireBurst": 0,
+          "finisher": 0,
+          "flightSpeed": 0,
+          "frenzy": 0,
+          "frost": 0,
+          "heat": 0,
+          "killLife": 0,
+          "kingDamage": 0,
+          "landingSpin": false,
+          "lastStand": 0,
+          "lifeBonus": 0,
+          "lightning": 0,
+          "momentum": 0,
+          "pierce": 4,
+          "pierceWave": 0,
+          "reboundCharge": 0,
+          "shatter": 0,
+          "shock": 0,
+          "slowForce": 0,
+          "speedBonus": 0,
+          "spinDamage": 0,
+          "spinDuration": 0,
+          "spinMaster": 0,
+          "spinRadius": 0,
+          "thirdCrit": 0
+        }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "name": "穿軍刃",
+          "paid": 96,
+          "skill": "pierce",
+          "slot": 5
+        }
+      ],
+      "tech": [
+        {},
+        {},
+        {}
+      ],
+      "shopSpent": 96,
+      "lotteryMisses": 94,
+      "town": {
+        "gold": 0,
+        "levels": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "version": 1
+      },
+      "unableToAffordSeconds": 0,
+      "invariantFailures": [],
+      "choices": [
+        {
+          "round": 1,
+          "action": {
+            "Unit1": true,
+            "Choice1": true
+          },
+          "coins": 320
+        },
+        {
+          "round": 1,
+          "action": {
+            "Unit1": true,
+            "Buy1": true
+          },
+          "coins": 320
+        },
+        {
+          "round": 1,
+          "action": {
+            "Unit1": true,
+            "Equip1": true
+          },
+          "coins": 224
+        }
+      ],
+      "timeline": [
+        {
+          "frame": 4,
+          "round": 1,
+          "phase": "shop",
+          "coins": 320,
+          "time": 180,
+          "breaks": 0
+        },
+        {
+          "frame": 10,
+          "round": 1,
+          "phase": "battle",
+          "coins": 224,
+          "time": 179.96666666666664,
+          "breaks": 0
+        },
+        {
+          "frame": 120,
+          "round": 1,
+          "phase": "battle",
+          "coins": 204,
+          "time": 178.13333333333185,
+          "breaks": 2
+        },
+        {
+          "frame": 240,
+          "round": 1,
+          "phase": "battle",
+          "coins": 172,
+          "time": 176.13333333333026,
+          "breaks": 4
+        },
+        {
+          "frame": 360,
+          "round": 1,
+          "phase": "battle",
+          "coins": 200,
+          "time": 174.13333333332866,
+          "breaks": 9
+        },
+        {
+          "frame": 480,
+          "round": 1,
+          "phase": "battle",
+          "coins": 272,
+          "time": 172.13333333332707,
+          "breaks": 15
+        },
+        {
+          "frame": 600,
+          "round": 1,
+          "phase": "battle",
+          "coins": 284,
+          "time": 170.13333333332548,
+          "breaks": 19
+        },
+        {
+          "frame": 720,
+          "round": 1,
+          "phase": "battle",
+          "coins": 280,
+          "time": 168.1333333333239,
+          "breaks": 22
+        },
+        {
+          "frame": 840,
+          "round": 1,
+          "phase": "battle",
+          "coins": 280,
+          "time": 166.1333333333223,
+          "breaks": 29
+        },
+        {
+          "frame": 960,
+          "round": 1,
+          "phase": "battle",
+          "coins": 236,
+          "time": 164.1333333333207,
+          "breaks": 31
+        },
+        {
+          "frame": 1080,
+          "round": 1,
+          "phase": "battle",
+          "coins": 236,
+          "time": 162.13333333331911,
+          "breaks": 35
+        },
+        {
+          "frame": 1200,
+          "round": 1,
+          "phase": "battle",
+          "coins": 188,
+          "time": 160.13333333331752,
+          "breaks": 37
+        },
+        {
+          "frame": 1320,
+          "round": 1,
+          "phase": "battle",
+          "coins": 160,
+          "time": 158.13333333331593,
+          "breaks": 40
+        },
+        {
+          "frame": 1440,
+          "round": 1,
+          "phase": "battle",
+          "coins": 140,
+          "time": 156.13333333331434,
+          "breaks": 41
+        },
+        {
+          "frame": 1560,
+          "round": 1,
+          "phase": "battle",
+          "coins": 178,
+          "time": 154.13333333331275,
+          "breaks": 46
+        },
+        {
+          "frame": 1680,
+          "round": 1,
+          "phase": "battle",
+          "coins": 190,
+          "time": 152.13333333331116,
+          "breaks": 49
+        },
+        {
+          "frame": 1800,
+          "round": 1,
+          "phase": "battle",
+          "coins": 174,
+          "time": 150.13333333330957,
+          "breaks": 52
+        },
+        {
+          "frame": 1920,
+          "round": 1,
+          "phase": "battle",
+          "coins": 320,
+          "time": 148.13333333330797,
+          "breaks": 56
+        },
+        {
+          "frame": 2040,
+          "round": 1,
+          "phase": "battle",
+          "coins": 304,
+          "time": 146.13333333330638,
+          "breaks": 61
+        },
+        {
+          "frame": 2160,
+          "round": 1,
+          "phase": "battle",
+          "coins": 404,
+          "time": 144.1333333333048,
+          "breaks": 63
+        },
+        {
+          "frame": 2280,
+          "round": 1,
+          "phase": "battle",
+          "coins": 384,
+          "time": 142.1333333333032,
+          "breaks": 67
+        },
+        {
+          "frame": 2400,
+          "round": 1,
+          "phase": "battle",
+          "coins": 380,
+          "time": 140.1333333333016,
+          "breaks": 71
+        },
+        {
+          "frame": 2520,
+          "round": 1,
+          "phase": "battle",
+          "coins": 332,
+          "time": 138.13333333330002,
+          "breaks": 74
+        },
+        {
+          "frame": 2640,
+          "round": 1,
+          "phase": "battle",
+          "coins": 670,
+          "time": 136.13333333329842,
+          "breaks": 78
+        },
+        {
+          "frame": 2760,
+          "round": 1,
+          "phase": "battle",
+          "coins": 654,
+          "time": 134.13333333329683,
+          "breaks": 82
+        },
+        {
+          "frame": 2880,
+          "round": 1,
+          "phase": "battle",
+          "coins": 634,
+          "time": 132.13333333329524,
+          "breaks": 83
+        },
+        {
+          "frame": 3000,
+          "round": 1,
+          "phase": "battle",
+          "coins": 750,
+          "time": 130.13333333329365,
+          "breaks": 87
+        },
+        {
+          "frame": 3120,
+          "round": 1,
+          "phase": "battle",
+          "coins": 882,
+          "time": 128.13333333329206,
+          "breaks": 89
+        },
+        {
+          "frame": 3240,
+          "round": 1,
+          "phase": "battle",
+          "coins": 850,
+          "time": 126.13333333329207,
+          "breaks": 93
+        },
+        {
+          "frame": 3360,
+          "round": 1,
+          "phase": "battle",
+          "coins": 862,
+          "time": 124.13333333329219,
+          "breaks": 96
+        },
+        {
+          "frame": 3480,
+          "round": 1,
+          "phase": "battle",
+          "coins": 846,
+          "time": 122.1333333332923,
+          "breaks": 99
+        },
+        {
+          "frame": 3600,
+          "round": 1,
+          "phase": "battle",
+          "coins": 858,
+          "time": 120.13333333329241,
+          "breaks": 102
+        },
+        {
+          "frame": 3720,
+          "round": 1,
+          "phase": "battle",
+          "coins": 842,
+          "time": 118.13333333329253,
+          "breaks": 106
+        },
+        {
+          "frame": 3840,
+          "round": 1,
+          "phase": "battle",
+          "coins": 798,
+          "time": 116.13333333329264,
+          "breaks": 108
+        },
+        {
+          "frame": 3960,
+          "round": 1,
+          "phase": "battle",
+          "coins": 766,
+          "time": 114.13333333329275,
+          "breaks": 111
+        },
+        {
+          "frame": 4080,
+          "round": 1,
+          "phase": "battle",
+          "coins": 788,
+          "time": 112.13333333329287,
+          "breaks": 117
+        },
+        {
+          "frame": 4200,
+          "round": 1,
+          "phase": "battle",
+          "coins": 756,
+          "time": 110.13333333329298,
+          "breaks": 120
+        },
+        {
+          "frame": 4320,
+          "round": 1,
+          "phase": "battle",
+          "coins": 696,
+          "time": 108.1333333332931,
+          "breaks": 120
+        },
+        {
+          "frame": 4440,
+          "round": 1,
+          "phase": "battle",
+          "coins": 718,
+          "time": 106.13333333329321,
+          "breaks": 124
+        },
+        {
+          "frame": 4560,
+          "round": 1,
+          "phase": "battle",
+          "coins": 746,
+          "time": 104.13333333329332,
+          "breaks": 128
+        },
+        {
+          "frame": 4680,
+          "round": 1,
+          "phase": "battle",
+          "coins": 730,
+          "time": 102.13333333329344,
+          "breaks": 132
+        },
+        {
+          "frame": 4800,
+          "round": 1,
+          "phase": "battle",
+          "coins": 714,
+          "time": 100.13333333329355,
+          "breaks": 134
+        },
+        {
+          "frame": 4920,
+          "round": 1,
+          "phase": "battle",
+          "coins": 738,
+          "time": 98.13333333329366,
+          "breaks": 139
+        },
+        {
+          "frame": 5040,
+          "round": 1,
+          "phase": "battle",
+          "coins": 706,
+          "time": 96.13333333329378,
+          "breaks": 140
+        },
+        {
+          "frame": 5160,
+          "round": 1,
+          "phase": "battle",
+          "coins": 646,
+          "time": 94.13333333329389,
+          "breaks": 143
+        },
+        {
+          "frame": 5280,
+          "round": 1,
+          "phase": "battle",
+          "coins": 674,
+          "time": 92.133333333294,
+          "breaks": 148
+        },
+        {
+          "frame": 5400,
+          "round": 1,
+          "phase": "battle",
+          "coins": 854,
+          "time": 90.13333333329412,
+          "breaks": 154
+        },
+        {
+          "frame": 5520,
+          "round": 1,
+          "phase": "battle",
+          "coins": 864,
+          "time": 88.13333333329423,
+          "breaks": 157
+        },
+        {
+          "frame": 5640,
+          "round": 1,
+          "phase": "battle",
+          "coins": 816,
+          "time": 86.13333333329435,
+          "breaks": 158
+        },
+        {
+          "frame": 5760,
+          "round": 1,
+          "phase": "battle",
+          "coins": 816,
+          "time": 84.13333333329446,
+          "breaks": 163
+        },
+        {
+          "frame": 5880,
+          "round": 1,
+          "phase": "battle",
+          "coins": 784,
+          "time": 82.13333333329457,
+          "breaks": 165
+        },
+        {
+          "frame": 6000,
+          "round": 1,
+          "phase": "battle",
+          "coins": 796,
+          "time": 80.13333333329469,
+          "breaks": 169
+        },
+        {
+          "frame": 6120,
+          "round": 1,
+          "phase": "battle",
+          "coins": 786,
+          "time": 78.1333333332948,
+          "breaks": 171
+        },
+        {
+          "frame": 6240,
+          "round": 1,
+          "phase": "battle",
+          "coins": 942,
+          "time": 76.13333333329491,
+          "breaks": 177
+        },
+        {
+          "frame": 6360,
+          "round": 1,
+          "phase": "battle",
+          "coins": 958,
+          "time": 74.13333333329503,
+          "breaks": 181
+        },
+        {
+          "frame": 6480,
+          "round": 1,
+          "phase": "battle",
+          "coins": 942,
+          "time": 72.13333333329514,
+          "breaks": 183
+        },
+        {
+          "frame": 6600,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1070,
+          "time": 70.13333333329525,
+          "breaks": 187
+        },
+        {
+          "frame": 6720,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1054,
+          "time": 68.13333333329537,
+          "breaks": 189
+        },
+        {
+          "frame": 6840,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1178,
+          "time": 66.13333333329548,
+          "breaks": 192
+        },
+        {
+          "frame": 6960,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1212,
+          "time": 64.1333333332956,
+          "breaks": 195
+        },
+        {
+          "frame": 7080,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1208,
+          "time": 62.13333333329571,
+          "breaks": 198
+        },
+        {
+          "frame": 7200,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1252,
+          "time": 60.13333333329582,
+          "breaks": 203
+        },
+        {
+          "frame": 7320,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1204,
+          "time": 58.13333333329594,
+          "breaks": 205
+        },
+        {
+          "frame": 7440,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1172,
+          "time": 56.13333333329605,
+          "breaks": 208
+        },
+        {
+          "frame": 7560,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1140,
+          "time": 54.133333333296164,
+          "breaks": 209
+        },
+        {
+          "frame": 7680,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1096,
+          "time": 52.13333333329628,
+          "breaks": 212
+        },
+        {
+          "frame": 7800,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1064,
+          "time": 50.13333333329639,
+          "breaks": 217
+        },
+        {
+          "frame": 7920,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1220,
+          "time": 48.133333333296505,
+          "breaks": 220
+        },
+        {
+          "frame": 8040,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1176,
+          "time": 46.13333333329662,
+          "breaks": 222
+        },
+        {
+          "frame": 8160,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1230,
+          "time": 44.13333333329673,
+          "breaks": 227
+        },
+        {
+          "frame": 8280,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1226,
+          "time": 42.13333333329685,
+          "breaks": 231
+        },
+        {
+          "frame": 8400,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1210,
+          "time": 40.13333333329696,
+          "breaks": 235
+        },
+        {
+          "frame": 8520,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1220,
+          "time": 38.133333333297074,
+          "breaks": 238
+        },
+        {
+          "frame": 8640,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1216,
+          "time": 36.13333333329719,
+          "breaks": 240
+        },
+        {
+          "frame": 8760,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1352,
+          "time": 34.1333333332973,
+          "breaks": 244
+        },
+        {
+          "frame": 8880,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1324,
+          "time": 32.133333333297415,
+          "breaks": 249
+        },
+        {
+          "frame": 9000,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1292,
+          "time": 30.13333333329753,
+          "breaks": 252
+        },
+        {
+          "frame": 9120,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1250,
+          "time": 28.133333333297642,
+          "breaks": 254
+        },
+        {
+          "frame": 9240,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1342,
+          "time": 26.133333333297756,
+          "breaks": 256
+        },
+        {
+          "frame": 9360,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1246,
+          "time": 24.13333333329787,
+          "breaks": 257
+        },
+        {
+          "frame": 9480,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1150,
+          "time": 22.133333333297983,
+          "breaks": 258
+        },
+        {
+          "frame": 9600,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1154,
+          "time": 20.133333333298097,
+          "breaks": 259
+        },
+        {
+          "frame": 9720,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1058,
+          "time": 18.13333333329821,
+          "breaks": 259
+        },
+        {
+          "frame": 9840,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1062,
+          "time": 16.133333333298324,
+          "breaks": 260
+        },
+        {
+          "frame": 9960,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1066,
+          "time": 14.133333333298237,
+          "breaks": 261
+        },
+        {
+          "frame": 10080,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1070,
+          "time": 12.133333333298138,
+          "breaks": 262
+        },
+        {
+          "frame": 10200,
+          "round": 1,
+          "phase": "battle",
+          "coins": 974,
+          "time": 10.133333333298038,
+          "breaks": 263
+        },
+        {
+          "frame": 10320,
+          "round": 1,
+          "phase": "battle",
+          "coins": 878,
+          "time": 8.133333333297939,
+          "breaks": 263
+        },
+        {
+          "frame": 10440,
+          "round": 1,
+          "phase": "battle",
+          "coins": 782,
+          "time": 6.13333333329794,
+          "breaks": 264
+        },
+        {
+          "frame": 10560,
+          "round": 1,
+          "phase": "battle",
+          "coins": 786,
+          "time": 4.133333333297947,
+          "breaks": 265
+        },
+        {
+          "frame": 10680,
+          "round": 1,
+          "phase": "battle",
+          "coins": 910,
+          "time": 2.133333333297954,
+          "breaks": 266
+        },
+        {
+          "frame": 10800,
+          "round": 1,
+          "phase": "battle",
+          "coins": 814,
+          "time": 0.13333333329795655,
+          "breaks": 267
+        },
+        {
+          "frame": 10808,
+          "round": 1,
+          "phase": "defeat",
+          "coins": 1042,
+          "time": 0,
+          "breaks": 267
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "policy": "momentum",
+      "status": "bankrupt",
+      "frames": 8696,
+      "battleSeconds": 144.76666666666668,
+      "roundsCleared": 0,
+      "bossReached": false,
+      "finalCoins": 7,
+      "minCoins": 7,
+      "maxCoins": 657,
+      "spent": 5056,
+      "earned": 4855,
+      "refunded": 0,
+      "fired": 263,
+      "breaks": 243,
+      "criticalHits": 17,
+      "piercesUsed": 178,
+      "spinHits": 0,
+      "firstAwardSeconds": 3.55,
+      "loadouts": [
+        {
+          "bounceCrit": 0,
+          "bounceLife": 0,
+          "bouncePower": 0,
+          "critAdd": 0,
+          "critChance": 0.1,
+          "critMultiplier": 1.5,
+          "damageBonus": 0,
+          "deathBurst": 0,
+          "distance": 0,
+          "expireBurst": 0,
+          "finisher": 0,
+          "flightSpeed": 0,
+          "frenzy": 0,
+          "frost": 0,
+          "heat": 0,
+          "killLife": 0,
+          "kingDamage": 0,
+          "landingSpin": false,
+          "lastStand": 0,
+          "lifeBonus": 0,
+          "lightning": 0,
+          "momentum": 0,
+          "pierce": 0,
+          "pierceWave": 0,
+          "reboundCharge": 0,
+          "shatter": 0,
+          "shock": 0,
+          "slowForce": 0,
+          "speedBonus": 0,
+          "spinDamage": 0,
+          "spinDuration": 0,
+          "spinMaster": 0,
+          "spinRadius": 0,
+          "thirdCrit": 0
+        },
+        {
+          "bounceCrit": 0,
+          "bounceLife": 0,
+          "bouncePower": 0,
+          "critAdd": 0,
+          "critChance": 0,
+          "critMultiplier": 1.5,
+          "damageBonus": 0,
+          "deathBurst": 0,
+          "distance": 0,
+          "expireBurst": 0,
+          "finisher": 0,
+          "flightSpeed": 16,
+          "frenzy": 0,
+          "frost": 0,
+          "heat": 0,
+          "killLife": 0,
+          "kingDamage": 0,
+          "landingSpin": true,
+          "lastStand": 0,
+          "lifeBonus": 0,
+          "lightning": 0,
+          "momentum": 0,
+          "pierce": 0,
+          "pierceWave": 0,
+          "reboundCharge": 0,
+          "shatter": 0,
+          "shock": 0,
+          "slowForce": 0,
+          "speedBonus": 0,
+          "spinDamage": 1.8,
+          "spinDuration": 0.55,
+          "spinMaster": 0,
+          "spinRadius": 2.9,
+          "thirdCrit": 0
+        },
+        {
+          "bounceCrit": 0,
+          "bounceLife": 0,
+          "bouncePower": 0,
+          "critAdd": 0,
+          "critChance": 0,
+          "critMultiplier": 1.5,
+          "damageBonus": 0,
+          "deathBurst": 0,
+          "distance": 0,
+          "expireBurst": 0,
+          "finisher": 0.1,
+          "flightSpeed": 0,
+          "frenzy": 0,
+          "frost": 0,
+          "heat": 0,
+          "killLife": 0,
+          "kingDamage": 0,
+          "landingSpin": false,
+          "lastStand": 0,
+          "lifeBonus": 0,
+          "lightning": 0,
+          "momentum": 0,
+          "pierce": 4,
+          "pierceWave": 0,
+          "reboundCharge": 0,
+          "shatter": 0,
+          "shock": 0,
+          "slowForce": 0,
+          "speedBonus": 0,
+          "spinDamage": 0,
+          "spinDuration": 0,
+          "spinMaster": 0,
+          "spinRadius": 0,
+          "thirdCrit": 0
+        }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "name": "破陣護手",
+          "paid": 112,
+          "skill": "finisher",
+          "slot": 4
+        }
+      ],
+      "tech": [
+        {},
+        {},
+        {}
+      ],
+      "shopSpent": 112,
+      "lotteryMisses": 86,
+      "town": {
+        "gold": 0,
+        "levels": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "version": 1
+      },
+      "unableToAffordSeconds": 5.833333333333333,
+      "invariantFailures": [],
+      "choices": [
+        {
+          "round": 1,
+          "action": {
+            "Unit3": true,
+            "Choice1": true
+          },
+          "coins": 320
+        },
+        {
+          "round": 1,
+          "action": {
+            "Unit3": true,
+            "Buy4": true
+          },
+          "coins": 320
+        },
+        {
+          "round": 1,
+          "action": {
+            "Unit3": true,
+            "Equip1": true
+          },
+          "coins": 208
+        }
+      ],
+      "timeline": [
+        {
+          "frame": 4,
+          "round": 1,
+          "phase": "shop",
+          "coins": 320,
+          "time": 180,
+          "breaks": 0
+        },
+        {
+          "frame": 10,
+          "round": 1,
+          "phase": "battle",
+          "coins": 208,
+          "time": 179.96666666666664,
+          "breaks": 0
+        },
+        {
+          "frame": 120,
+          "round": 1,
+          "phase": "battle",
+          "coins": 148,
+          "time": 178.13333333333185,
+          "breaks": 2
+        },
+        {
+          "frame": 240,
+          "round": 1,
+          "phase": "battle",
+          "coins": 148,
+          "time": 176.13333333333026,
+          "breaks": 7
+        },
+        {
+          "frame": 360,
+          "round": 1,
+          "phase": "battle",
+          "coins": 160,
+          "time": 174.13333333332866,
+          "breaks": 9
+        },
+        {
+          "frame": 480,
+          "round": 1,
+          "phase": "battle",
+          "coins": 130,
+          "time": 172.13333333332707,
+          "breaks": 14
+        },
+        {
+          "frame": 600,
+          "round": 1,
+          "phase": "battle",
+          "coins": 150,
+          "time": 170.13333333332548,
+          "breaks": 20
+        },
+        {
+          "frame": 720,
+          "round": 1,
+          "phase": "battle",
+          "coins": 210,
+          "time": 168.1333333333239,
+          "breaks": 26
+        },
+        {
+          "frame": 840,
+          "round": 1,
+          "phase": "battle",
+          "coins": 219,
+          "time": 166.1333333333223,
+          "breaks": 32
+        },
+        {
+          "frame": 960,
+          "round": 1,
+          "phase": "battle",
+          "coins": 147,
+          "time": 164.1333333333207,
+          "breaks": 36
+        },
+        {
+          "frame": 1080,
+          "round": 1,
+          "phase": "battle",
+          "coins": 131,
+          "time": 162.13333333331911,
+          "breaks": 41
+        },
+        {
+          "frame": 1200,
+          "round": 1,
+          "phase": "battle",
+          "coins": 133,
+          "time": 160.13333333331752,
+          "breaks": 45
+        },
+        {
+          "frame": 1320,
+          "round": 1,
+          "phase": "battle",
+          "coins": 109,
+          "time": 158.13333333331593,
+          "breaks": 47
+        },
+        {
+          "frame": 1440,
+          "round": 1,
+          "phase": "battle",
+          "coins": 137,
+          "time": 156.13333333331434,
+          "breaks": 50
+        },
+        {
+          "frame": 1560,
+          "round": 1,
+          "phase": "battle",
+          "coins": 151,
+          "time": 154.13333333331275,
+          "breaks": 53
+        },
+        {
+          "frame": 1680,
+          "round": 1,
+          "phase": "battle",
+          "coins": 119,
+          "time": 152.13333333331116,
+          "breaks": 55
+        },
+        {
+          "frame": 1800,
+          "round": 1,
+          "phase": "battle",
+          "coins": 123,
+          "time": 150.13333333330957,
+          "breaks": 57
+        },
+        {
+          "frame": 1920,
+          "round": 1,
+          "phase": "battle",
+          "coins": 155,
+          "time": 148.13333333330797,
+          "breaks": 61
+        },
+        {
+          "frame": 2040,
+          "round": 1,
+          "phase": "battle",
+          "coins": 168,
+          "time": 146.13333333330638,
+          "breaks": 65
+        },
+        {
+          "frame": 2160,
+          "round": 1,
+          "phase": "battle",
+          "coins": 162,
+          "time": 144.1333333333048,
+          "breaks": 68
+        },
+        {
+          "frame": 2280,
+          "round": 1,
+          "phase": "battle",
+          "coins": 146,
+          "time": 142.1333333333032,
+          "breaks": 71
+        },
+        {
+          "frame": 2400,
+          "round": 1,
+          "phase": "battle",
+          "coins": 168,
+          "time": 140.1333333333016,
+          "breaks": 73
+        },
+        {
+          "frame": 2520,
+          "round": 1,
+          "phase": "battle",
+          "coins": 152,
+          "time": 138.13333333330002,
+          "breaks": 77
+        },
+        {
+          "frame": 2640,
+          "round": 1,
+          "phase": "battle",
+          "coins": 200,
+          "time": 136.13333333329842,
+          "breaks": 82
+        },
+        {
+          "frame": 2760,
+          "round": 1,
+          "phase": "battle",
+          "coins": 165,
+          "time": 134.13333333329683,
+          "breaks": 88
+        },
+        {
+          "frame": 2880,
+          "round": 1,
+          "phase": "battle",
+          "coins": 149,
+          "time": 132.13333333329524,
+          "breaks": 89
+        },
+        {
+          "frame": 3000,
+          "round": 1,
+          "phase": "battle",
+          "coins": 141,
+          "time": 130.13333333329365,
+          "breaks": 93
+        },
+        {
+          "frame": 3120,
+          "round": 1,
+          "phase": "battle",
+          "coins": 265,
+          "time": 128.13333333329206,
+          "breaks": 97
+        },
+        {
+          "frame": 3240,
+          "round": 1,
+          "phase": "battle",
+          "coins": 265,
+          "time": 126.13333333329207,
+          "breaks": 102
+        },
+        {
+          "frame": 3360,
+          "round": 1,
+          "phase": "battle",
+          "coins": 317,
+          "time": 124.13333333329219,
+          "breaks": 106
+        },
+        {
+          "frame": 3480,
+          "round": 1,
+          "phase": "battle",
+          "coins": 249,
+          "time": 122.1333333332923,
+          "breaks": 112
+        },
+        {
+          "frame": 3600,
+          "round": 1,
+          "phase": "battle",
+          "coins": 226,
+          "time": 120.13333333329241,
+          "breaks": 113
+        },
+        {
+          "frame": 3720,
+          "round": 1,
+          "phase": "battle",
+          "coins": 150,
+          "time": 118.13333333329253,
+          "breaks": 116
+        },
+        {
+          "frame": 3840,
+          "round": 1,
+          "phase": "battle",
+          "coins": 250,
+          "time": 116.13333333329264,
+          "breaks": 120
+        },
+        {
+          "frame": 3960,
+          "round": 1,
+          "phase": "battle",
+          "coins": 309,
+          "time": 114.13333333329275,
+          "breaks": 124
+        },
+        {
+          "frame": 4080,
+          "round": 1,
+          "phase": "battle",
+          "coins": 221,
+          "time": 112.13333333329287,
+          "breaks": 129
+        },
+        {
+          "frame": 4200,
+          "round": 1,
+          "phase": "battle",
+          "coins": 157,
+          "time": 110.13333333329298,
+          "breaks": 133
+        },
+        {
+          "frame": 4320,
+          "round": 1,
+          "phase": "battle",
+          "coins": 133,
+          "time": 108.1333333332931,
+          "breaks": 136
+        },
+        {
+          "frame": 4440,
+          "round": 1,
+          "phase": "battle",
+          "coins": 117,
+          "time": 106.13333333329321,
+          "breaks": 138
+        },
+        {
+          "frame": 4560,
+          "round": 1,
+          "phase": "battle",
+          "coins": 173,
+          "time": 104.13333333329332,
+          "breaks": 142
+        },
+        {
+          "frame": 4680,
+          "round": 1,
+          "phase": "battle",
+          "coins": 313,
+          "time": 102.13333333329344,
+          "breaks": 146
+        },
+        {
+          "frame": 4800,
+          "round": 1,
+          "phase": "battle",
+          "coins": 373,
+          "time": 100.13333333329355,
+          "breaks": 150
+        },
+        {
+          "frame": 4920,
+          "round": 1,
+          "phase": "battle",
+          "coins": 241,
+          "time": 98.13333333329366,
+          "breaks": 152
+        },
+        {
+          "frame": 5040,
+          "round": 1,
+          "phase": "battle",
+          "coins": 161,
+          "time": 96.13333333329378,
+          "breaks": 154
+        },
+        {
+          "frame": 5160,
+          "round": 1,
+          "phase": "battle",
+          "coins": 525,
+          "time": 94.13333333329389,
+          "breaks": 159
+        },
+        {
+          "frame": 5280,
+          "round": 1,
+          "phase": "battle",
+          "coins": 585,
+          "time": 92.133333333294,
+          "breaks": 162
+        },
+        {
+          "frame": 5400,
+          "round": 1,
+          "phase": "battle",
+          "coins": 513,
+          "time": 90.13333333329412,
+          "breaks": 165
+        },
+        {
+          "frame": 5520,
+          "round": 1,
+          "phase": "battle",
+          "coins": 413,
+          "time": 88.13333333329423,
+          "breaks": 169
+        },
+        {
+          "frame": 5640,
+          "round": 1,
+          "phase": "battle",
+          "coins": 313,
+          "time": 86.13333333329435,
+          "breaks": 172
+        },
+        {
+          "frame": 5760,
+          "round": 1,
+          "phase": "battle",
+          "coins": 225,
+          "time": 84.13333333329446,
+          "breaks": 172
+        },
+        {
+          "frame": 5880,
+          "round": 1,
+          "phase": "battle",
+          "coins": 191,
+          "time": 82.13333333329457,
+          "breaks": 179
+        },
+        {
+          "frame": 6000,
+          "round": 1,
+          "phase": "battle",
+          "coins": 135,
+          "time": 80.13333333329469,
+          "breaks": 183
+        },
+        {
+          "frame": 6120,
+          "round": 1,
+          "phase": "battle",
+          "coins": 103,
+          "time": 78.1333333332948,
+          "breaks": 185
+        },
+        {
+          "frame": 6240,
+          "round": 1,
+          "phase": "battle",
+          "coins": 103,
+          "time": 76.13333333329491,
+          "breaks": 187
+        },
+        {
+          "frame": 6360,
+          "round": 1,
+          "phase": "battle",
+          "coins": 79,
+          "time": 74.13333333329503,
+          "breaks": 188
+        },
+        {
+          "frame": 6480,
+          "round": 1,
+          "phase": "battle",
+          "coins": 63,
+          "time": 72.13333333329514,
+          "breaks": 191
+        },
+        {
+          "frame": 6600,
+          "round": 1,
+          "phase": "battle",
+          "coins": 103,
+          "time": 70.13333333329525,
+          "breaks": 194
+        },
+        {
+          "frame": 6720,
+          "round": 1,
+          "phase": "battle",
+          "coins": 115,
+          "time": 68.13333333329537,
+          "breaks": 197
+        },
+        {
+          "frame": 6840,
+          "round": 1,
+          "phase": "battle",
+          "coins": 75,
+          "time": 66.13333333329548,
+          "breaks": 197
+        },
+        {
+          "frame": 6960,
+          "round": 1,
+          "phase": "battle",
+          "coins": 103,
+          "time": 64.1333333332956,
+          "breaks": 201
+        },
+        {
+          "frame": 7080,
+          "round": 1,
+          "phase": "battle",
+          "coins": 227,
+          "time": 62.13333333329571,
+          "breaks": 203
+        },
+        {
+          "frame": 7200,
+          "round": 1,
+          "phase": "battle",
+          "coins": 183,
+          "time": 60.13333333329582,
+          "breaks": 205
+        },
+        {
+          "frame": 7320,
+          "round": 1,
+          "phase": "battle",
+          "coins": 203,
+          "time": 58.13333333329594,
+          "breaks": 214
+        },
+        {
+          "frame": 7440,
+          "round": 1,
+          "phase": "battle",
+          "coins": 155,
+          "time": 56.13333333329605,
+          "breaks": 219
+        },
+        {
+          "frame": 7560,
+          "round": 1,
+          "phase": "battle",
+          "coins": 177,
+          "time": 54.133333333296164,
+          "breaks": 222
+        },
+        {
+          "frame": 7680,
+          "round": 1,
+          "phase": "battle",
+          "coins": 117,
+          "time": 52.13333333329628,
+          "breaks": 224
+        },
+        {
+          "frame": 7800,
+          "round": 1,
+          "phase": "battle",
+          "coins": 101,
+          "time": 50.13333333329639,
+          "breaks": 227
+        },
+        {
+          "frame": 7920,
+          "round": 1,
+          "phase": "battle",
+          "coins": 85,
+          "time": 48.133333333296505,
+          "breaks": 229
+        },
+        {
+          "frame": 8040,
+          "round": 1,
+          "phase": "battle",
+          "coins": 73,
+          "time": 46.13333333329662,
+          "breaks": 232
+        },
+        {
+          "frame": 8160,
+          "round": 1,
+          "phase": "battle",
+          "coins": 79,
+          "time": 44.13333333329673,
+          "breaks": 235
+        },
+        {
+          "frame": 8280,
+          "round": 1,
+          "phase": "battle",
+          "coins": 63,
+          "time": 42.13333333329685,
+          "breaks": 236
+        },
+        {
+          "frame": 8400,
+          "round": 1,
+          "phase": "battle",
+          "coins": 31,
+          "time": 40.13333333329696,
+          "breaks": 238
+        },
+        {
+          "frame": 8520,
+          "round": 1,
+          "phase": "battle",
+          "coins": 7,
+          "time": 38.133333333297074,
+          "breaks": 239
+        },
+        {
+          "frame": 8640,
+          "round": 1,
+          "phase": "battle",
+          "coins": 15,
+          "time": 36.13333333329719,
+          "breaks": 242
+        },
+        {
+          "frame": 8696,
+          "round": 1,
+          "phase": "defeat",
+          "coins": 7,
+          "time": 35.21666666663057,
+          "breaks": 243
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "policy": "cyclone",
+      "status": "censored",
+      "frames": 90000,
+      "battleSeconds": 806.4666666666667,
+      "roundsCleared": 5,
+      "bossReached": true,
+      "finalCoins": 34494,
+      "minCoins": 200,
+      "maxCoins": 33004,
+      "spent": 33576,
+      "earned": 65350,
+      "refunded": 2496,
+      "fired": 1231,
+      "breaks": 2059,
+      "criticalHits": 0,
+      "piercesUsed": 959,
+      "spinHits": 1833,
+      "firstAwardSeconds": 0.9833333333333333,
+      "loadouts": [
+        {
+          "bounceCrit": 0,
+          "bounceLife": 0,
+          "bouncePower": 0,
+          "critAdd": 0,
+          "critChance": 0.1,
+          "critMultiplier": 1.5,
+          "damageBonus": 0,
+          "deathBurst": 0,
+          "distance": 0,
+          "expireBurst": 0,
+          "finisher": 0,
+          "flightSpeed": 0,
+          "frenzy": 0,
+          "frost": 0,
+          "heat": 0,
+          "killLife": 0,
+          "kingDamage": 0,
+          "landingSpin": false,
+          "lastStand": 0,
+          "lifeBonus": 0,
+          "lightning": 0,
+          "momentum": 0,
+          "pierce": 0,
+          "pierceWave": 0,
+          "reboundCharge": 0,
+          "shatter": 0,
+          "shock": 0,
+          "slowForce": 0,
+          "speedBonus": 0,
+          "spinDamage": 0,
+          "spinDuration": 0,
+          "spinMaster": 0,
+          "spinRadius": 0,
+          "thirdCrit": 0
+        },
+        {
+          "bounceCrit": 0,
+          "bounceLife": 0,
+          "bouncePower": 0,
+          "critAdd": 0,
+          "critChance": 0,
+          "critMultiplier": 1.5,
+          "damageBonus": 0,
+          "deathBurst": 0,
+          "distance": 0,
+          "expireBurst": 0,
+          "finisher": 0,
+          "flightSpeed": 16,
+          "frenzy": 0,
+          "frost": 0,
+          "heat": 0,
+          "killLife": 0,
+          "kingDamage": 0,
+          "landingSpin": true,
+          "lastStand": 0,
+          "lifeBonus": 0,
+          "lightning": 0,
+          "momentum": 0,
+          "pierce": 1,
+          "pierceWave": 0,
+          "reboundCharge": 0,
+          "shatter": 0,
+          "shock": 0,
+          "slowForce": 0,
+          "speedBonus": 0,
+          "spinDamage": 2.16,
+          "spinDuration": 0.55,
+          "spinMaster": 0.2,
+          "spinRadius": 3.3,
+          "thirdCrit": 0
+        },
+        {
+          "bounceCrit": 0,
+          "bounceLife": 0,
+          "bouncePower": 0,
+          "critAdd": 0,
+          "critChance": 0,
+          "critMultiplier": 1.5,
+          "damageBonus": 0,
+          "deathBurst": 0,
+          "distance": 0,
+          "expireBurst": 0,
+          "finisher": 0,
+          "flightSpeed": 0,
+          "frenzy": 0,
+          "frost": 0,
+          "heat": 0,
+          "killLife": 0,
+          "kingDamage": 0,
+          "landingSpin": false,
+          "lastStand": 0,
+          "lifeBonus": 0,
+          "lightning": 0,
+          "momentum": 0,
+          "pierce": 4,
+          "pierceWave": 0,
+          "reboundCharge": 0,
+          "shatter": 0,
+          "shock": 0,
+          "slowForce": 0,
+          "speedBonus": 0,
+          "spinDamage": 0,
+          "spinDuration": 0,
+          "spinMaster": 0,
+          "spinRadius": 0,
+          "thirdCrit": 0
+        }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "name": "穿軍刃",
+          "paid": 96,
+          "skill": "pierce",
+          "slot": 5
+        },
+        {
+          "id": 2,
+          "name": "風環冠",
+          "paid": 0,
+          "skill": "spin_master",
+          "slot": 1
+        },
+        {
+          "id": 3,
+          "name": "破陣護手",
+          "paid": 0,
+          "skill": "finisher",
+          "slot": 4
+        },
+        {
+          "id": 4,
+          "name": "磐石靴",
+          "paid": 0,
+          "skill": "slow_force",
+          "slot": 3
+        },
+        {
+          "id": 5,
+          "name": "遠征靴",
+          "paid": 0,
+          "skill": "distance",
+          "slot": 3
+        },
+        {
+          "enchant": "critical",
+          "id": 6,
+          "name": "穿陣護手",
+          "paid": 0,
+          "skill": "piercing_wave",
+          "slot": 4
+        }
+      ],
+      "tech": [
+        {},
+        {},
+        {}
+      ],
+      "shopSpent": 96,
+      "lotteryMisses": 813,
+      "town": {
+        "gold": 150,
+        "levels": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "version": 1
+      },
+      "unableToAffordSeconds": 0,
+      "invariantFailures": [],
+      "choices": [
+        {
+          "round": 1,
+          "action": {
+            "Unit2": true,
+            "Choice1": true
+          },
+          "coins": 320
+        },
+        {
+          "round": 1,
+          "action": {
+            "Unit2": true,
+            "Buy1": true
+          },
+          "coins": 320
+        },
+        {
+          "round": 1,
+          "action": {
+            "Unit2": true,
+            "Equip1": true
+          },
+          "coins": 224
+        },
+        {
+          "round": 1,
+          "action": {
+            "Unit2": true,
+            "Equip2": true
+          },
+          "coins": 4386
+        },
+        {
+          "round": 2,
+          "action": {
+            "Unit2": true,
+            "Choice2": true
+          },
+          "coins": 4386
+        },
+        {
+          "round": 3,
+          "action": {
+            "Unit2": true,
+            "Choice2": true
+          },
+          "coins": 10086
+        },
+        {
+          "round": 4,
+          "action": {
+            "Unit2": true,
+            "Choice2": true
+          },
+          "coins": 18350
+        },
+        {
+          "round": 5,
+          "action": {
+            "Unit2": true,
+            "Choice2": true
+          },
+          "coins": 23950
+        }
+      ],
+      "timeline": [
+        {
+          "frame": 4,
+          "round": 1,
+          "phase": "shop",
+          "coins": 320,
+          "time": 180,
+          "breaks": 0
+        },
+        {
+          "frame": 10,
+          "round": 1,
+          "phase": "battle",
+          "coins": 224,
+          "time": 179.96666666666664,
+          "breaks": 0
+        },
+        {
+          "frame": 120,
+          "round": 1,
+          "phase": "battle",
+          "coins": 252,
+          "time": 178.13333333333185,
+          "breaks": 7
+        },
+        {
+          "frame": 240,
+          "round": 1,
+          "phase": "battle",
+          "coins": 240,
+          "time": 176.13333333333026,
+          "breaks": 12
+        },
+        {
+          "frame": 360,
+          "round": 1,
+          "phase": "battle",
+          "coins": 428,
+          "time": 174.13333333332866,
+          "breaks": 19
+        },
+        {
+          "frame": 480,
+          "round": 1,
+          "phase": "battle",
+          "coins": 420,
+          "time": 172.13333333332707,
+          "breaks": 23
+        },
+        {
+          "frame": 600,
+          "round": 1,
+          "phase": "battle",
+          "coins": 408,
+          "time": 170.13333333332548,
+          "breaks": 28
+        },
+        {
+          "frame": 720,
+          "round": 1,
+          "phase": "battle",
+          "coins": 532,
+          "time": 168.1333333333239,
+          "breaks": 31
+        },
+        {
+          "frame": 840,
+          "round": 1,
+          "phase": "battle",
+          "coins": 504,
+          "time": 166.1333333333223,
+          "breaks": 36
+        },
+        {
+          "frame": 960,
+          "round": 1,
+          "phase": "battle",
+          "coins": 448,
+          "time": 164.1333333333207,
+          "breaks": 37
+        },
+        {
+          "frame": 1080,
+          "round": 1,
+          "phase": "battle",
+          "coins": 482,
+          "time": 162.13333333331911,
+          "breaks": 44
+        },
+        {
+          "frame": 1200,
+          "round": 1,
+          "phase": "battle",
+          "coins": 410,
+          "time": 160.13333333331752,
+          "breaks": 47
+        },
+        {
+          "frame": 1320,
+          "round": 1,
+          "phase": "battle",
+          "coins": 560,
+          "time": 158.13333333331593,
+          "breaks": 54
+        },
+        {
+          "frame": 1440,
+          "round": 1,
+          "phase": "battle",
+          "coins": 672,
+          "time": 156.13333333331434,
+          "breaks": 59
+        },
+        {
+          "frame": 1560,
+          "round": 1,
+          "phase": "battle",
+          "coins": 648,
+          "time": 154.13333333331275,
+          "breaks": 62
+        },
+        {
+          "frame": 1680,
+          "round": 1,
+          "phase": "battle",
+          "coins": 630,
+          "time": 152.13333333331116,
+          "breaks": 65
+        },
+        {
+          "frame": 1800,
+          "round": 1,
+          "phase": "battle",
+          "coins": 674,
+          "time": 150.13333333330957,
+          "breaks": 69
+        },
+        {
+          "frame": 1920,
+          "round": 1,
+          "phase": "battle",
+          "coins": 716,
+          "time": 148.13333333330797,
+          "breaks": 75
+        },
+        {
+          "frame": 2040,
+          "round": 1,
+          "phase": "battle",
+          "coins": 732,
+          "time": 146.13333333330638,
+          "breaks": 82
+        },
+        {
+          "frame": 2160,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1000,
+          "time": 144.1333333333048,
+          "breaks": 87
+        },
+        {
+          "frame": 2280,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1148,
+          "time": 142.1333333333032,
+          "breaks": 91
+        },
+        {
+          "frame": 2400,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1120,
+          "time": 140.1333333333016,
+          "breaks": 93
+        },
+        {
+          "frame": 2520,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1088,
+          "time": 138.13333333330002,
+          "breaks": 94
+        },
+        {
+          "frame": 2640,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1436,
+          "time": 136.13333333329842,
+          "breaks": 99
+        },
+        {
+          "frame": 2760,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1380,
+          "time": 134.13333333329683,
+          "breaks": 102
+        },
+        {
+          "frame": 2880,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1348,
+          "time": 132.13333333329524,
+          "breaks": 105
+        },
+        {
+          "frame": 3000,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1308,
+          "time": 130.13333333329365,
+          "breaks": 111
+        },
+        {
+          "frame": 3120,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1368,
+          "time": 128.13333333329206,
+          "breaks": 115
+        },
+        {
+          "frame": 3240,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1434,
+          "time": 126.13333333329207,
+          "breaks": 121
+        },
+        {
+          "frame": 3360,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1422,
+          "time": 124.13333333329219,
+          "breaks": 126
+        },
+        {
+          "frame": 3480,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1602,
+          "time": 122.1333333332923,
+          "breaks": 131
+        },
+        {
+          "frame": 3600,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1652,
+          "time": 120.13333333329241,
+          "breaks": 135
+        },
+        {
+          "frame": 3720,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1702,
+          "time": 118.13333333329253,
+          "breaks": 141
+        },
+        {
+          "frame": 3840,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1860,
+          "time": 116.13333333329264,
+          "breaks": 145
+        },
+        {
+          "frame": 3960,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1868,
+          "time": 114.13333333329275,
+          "breaks": 147
+        },
+        {
+          "frame": 4080,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1812,
+          "time": 112.13333333329287,
+          "breaks": 151
+        },
+        {
+          "frame": 4200,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1964,
+          "time": 110.13333333329298,
+          "breaks": 156
+        },
+        {
+          "frame": 4320,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1932,
+          "time": 108.1333333332931,
+          "breaks": 157
+        },
+        {
+          "frame": 4440,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1924,
+          "time": 106.13333333329321,
+          "breaks": 161
+        },
+        {
+          "frame": 4560,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1987,
+          "time": 104.13333333329332,
+          "breaks": 165
+        },
+        {
+          "frame": 4680,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1993,
+          "time": 102.13333333329344,
+          "breaks": 169
+        },
+        {
+          "frame": 4800,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1953,
+          "time": 100.13333333329355,
+          "breaks": 173
+        },
+        {
+          "frame": 4920,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1951,
+          "time": 98.13333333329366,
+          "breaks": 177
+        },
+        {
+          "frame": 5040,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1935,
+          "time": 96.13333333329378,
+          "breaks": 181
+        },
+        {
+          "frame": 5160,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1911,
+          "time": 94.13333333329389,
+          "breaks": 188
+        },
+        {
+          "frame": 5280,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1867,
+          "time": 92.133333333294,
+          "breaks": 190
+        },
+        {
+          "frame": 5400,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1863,
+          "time": 90.13333333329412,
+          "breaks": 194
+        },
+        {
+          "frame": 5520,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1823,
+          "time": 88.13333333329423,
+          "breaks": 200
+        },
+        {
+          "frame": 5640,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1927,
+          "time": 86.13333333329435,
+          "breaks": 202
+        },
+        {
+          "frame": 5760,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1923,
+          "time": 84.13333333329446,
+          "breaks": 207
+        },
+        {
+          "frame": 5880,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1933,
+          "time": 82.13333333329457,
+          "breaks": 212
+        },
+        {
+          "frame": 6000,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1893,
+          "time": 80.13333333329469,
+          "breaks": 215
+        },
+        {
+          "frame": 6120,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1905,
+          "time": 78.1333333332948,
+          "breaks": 220
+        },
+        {
+          "frame": 6240,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1965,
+          "time": 76.13333333329491,
+          "breaks": 225
+        },
+        {
+          "frame": 6360,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1996,
+          "time": 74.13333333329503,
+          "breaks": 229
+        },
+        {
+          "frame": 6480,
+          "round": 1,
+          "phase": "battle",
+          "coins": 1986,
+          "time": 72.13333333329514,
+          "breaks": 233
+        },
+        {
+          "frame": 6600,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2106,
+          "time": 70.13333333329525,
+          "breaks": 239
+        },
+        {
+          "frame": 6720,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2094,
+          "time": 68.13333333329537,
+          "breaks": 244
+        },
+        {
+          "frame": 6840,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2234,
+          "time": 66.13333333329548,
+          "breaks": 246
+        },
+        {
+          "frame": 6960,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2178,
+          "time": 64.1333333332956,
+          "breaks": 249
+        },
+        {
+          "frame": 7080,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2138,
+          "time": 62.13333333329571,
+          "breaks": 253
+        },
+        {
+          "frame": 7200,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2246,
+          "time": 60.13333333329582,
+          "breaks": 256
+        },
+        {
+          "frame": 7320,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2550,
+          "time": 58.13333333329594,
+          "breaks": 260
+        },
+        {
+          "frame": 7440,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2638,
+          "time": 56.13333333329605,
+          "breaks": 262
+        },
+        {
+          "frame": 7560,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2638,
+          "time": 54.133333333296164,
+          "breaks": 265
+        },
+        {
+          "frame": 7680,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2598,
+          "time": 52.13333333329628,
+          "breaks": 267
+        },
+        {
+          "frame": 7800,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2586,
+          "time": 50.13333333329639,
+          "breaks": 271
+        },
+        {
+          "frame": 7920,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2582,
+          "time": 48.133333333296505,
+          "breaks": 273
+        },
+        {
+          "frame": 8040,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2526,
+          "time": 46.13333333329662,
+          "breaks": 275
+        },
+        {
+          "frame": 8160,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2526,
+          "time": 44.13333333329673,
+          "breaks": 279
+        },
+        {
+          "frame": 8280,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2510,
+          "time": 42.13333333329685,
+          "breaks": 282
+        },
+        {
+          "frame": 8400,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2482,
+          "time": 40.13333333329696,
+          "breaks": 285
+        },
+        {
+          "frame": 8520,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2426,
+          "time": 38.133333333297074,
+          "breaks": 286
+        },
+        {
+          "frame": 8640,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2410,
+          "time": 36.13333333329719,
+          "breaks": 289
+        },
+        {
+          "frame": 8760,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2338,
+          "time": 34.1333333332973,
+          "breaks": 290
+        },
+        {
+          "frame": 8880,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2310,
+          "time": 32.133333333297415,
+          "breaks": 294
+        },
+        {
+          "frame": 9000,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2278,
+          "time": 30.13333333329753,
+          "breaks": 299
+        },
+        {
+          "frame": 9120,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2614,
+          "time": 28.133333333297642,
+          "breaks": 306
+        },
+        {
+          "frame": 9240,
+          "round": 1,
+          "phase": "battle",
+          "coins": 2598,
+          "time": 26.133333333297756,
+          "breaks": 313
+        },
+        {
+          "frame": 9352,
+          "round": 1,
+          "phase": "clear",
+          "coins": 4386,
+          "time": 24.266666666631195,
+          "breaks": 317
+        },
+        {
+          "frame": 9360,
+          "round": 1,
+          "phase": "clear",
+          "coins": 4386,
+          "time": 24.266666666631195,
+          "breaks": 317
+        },
+        {
+          "frame": 9480,
+          "round": 1,
+          "phase": "clear",
+          "coins": 4386,
+          "time": 24.266666666631195,
+          "breaks": 317
+        },
+        {
+          "frame": 9552,
+          "round": 2,
+          "phase": "choice",
+          "coins": 4386,
+          "time": 24.266666666631195,
+          "breaks": 317
+        },
+        {
+          "frame": 9554,
+          "round": 2,
+          "phase": "shop",
+          "coins": 4386,
+          "time": 24.266666666631195,
+          "breaks": 317
+        },
+        {
+          "frame": 9556,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4358,
+          "time": 179.96666666666664,
+          "breaks": 317
+        },
+        {
+          "frame": 9600,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4330,
+          "time": 179.23333333333272,
+          "breaks": 317
+        },
+        {
+          "frame": 9720,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4426,
+          "time": 177.23333333333113,
+          "breaks": 328
+        },
+        {
+          "frame": 9840,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4403,
+          "time": 175.23333333332954,
+          "breaks": 332
+        },
+        {
+          "frame": 9960,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4489,
+          "time": 173.23333333332795,
+          "breaks": 340
+        },
+        {
+          "frame": 10080,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4464,
+          "time": 171.23333333332636,
+          "breaks": 343
+        },
+        {
+          "frame": 10200,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4429,
+          "time": 169.23333333332477,
+          "breaks": 348
+        },
+        {
+          "frame": 10320,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4522,
+          "time": 167.23333333332317,
+          "breaks": 353
+        },
+        {
+          "frame": 10440,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4497,
+          "time": 165.23333333332158,
+          "breaks": 356
+        },
+        {
+          "frame": 10560,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4877,
+          "time": 163.23333333332,
+          "breaks": 362
+        },
+        {
+          "frame": 10680,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5024,
+          "time": 161.2333333333184,
+          "breaks": 366
+        },
+        {
+          "frame": 10800,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5011,
+          "time": 159.2333333333168,
+          "breaks": 371
+        },
+        {
+          "frame": 10920,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5140,
+          "time": 157.23333333331522,
+          "breaks": 373
+        },
+        {
+          "frame": 11040,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5110,
+          "time": 155.23333333331362,
+          "breaks": 376
+        },
+        {
+          "frame": 11160,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5090,
+          "time": 153.23333333331203,
+          "breaks": 379
+        },
+        {
+          "frame": 11280,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5060,
+          "time": 151.23333333331044,
+          "breaks": 383
+        },
+        {
+          "frame": 11400,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4976,
+          "time": 149.23333333330885,
+          "breaks": 386
+        },
+        {
+          "frame": 11520,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5017,
+          "time": 147.23333333330726,
+          "breaks": 393
+        },
+        {
+          "frame": 11640,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4994,
+          "time": 145.23333333330567,
+          "breaks": 396
+        },
+        {
+          "frame": 11760,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4941,
+          "time": 143.23333333330407,
+          "breaks": 400
+        },
+        {
+          "frame": 11880,
+          "round": 2,
+          "phase": "battle",
+          "coins": 4885,
+          "time": 141.23333333330248,
+          "breaks": 401
+        },
+        {
+          "frame": 12000,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5215,
+          "time": 139.2333333333009,
+          "breaks": 409
+        },
+        {
+          "frame": 12120,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5259,
+          "time": 137.2333333332993,
+          "breaks": 413
+        },
+        {
+          "frame": 12240,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5239,
+          "time": 135.2333333332977,
+          "breaks": 416
+        },
+        {
+          "frame": 12360,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5204,
+          "time": 133.23333333329612,
+          "breaks": 421
+        },
+        {
+          "frame": 12480,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5138,
+          "time": 131.23333333329452,
+          "breaks": 424
+        },
+        {
+          "frame": 12600,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5100,
+          "time": 129.23333333329293,
+          "breaks": 428
+        },
+        {
+          "frame": 12720,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5034,
+          "time": 127.23333333329201,
+          "breaks": 432
+        },
+        {
+          "frame": 12840,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5098,
+          "time": 125.23333333329212,
+          "breaks": 437
+        },
+        {
+          "frame": 12960,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5347,
+          "time": 123.23333333329224,
+          "breaks": 443
+        },
+        {
+          "frame": 13080,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5263,
+          "time": 121.23333333329235,
+          "breaks": 445
+        },
+        {
+          "frame": 13200,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5215,
+          "time": 119.23333333329246,
+          "breaks": 447
+        },
+        {
+          "frame": 13320,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5195,
+          "time": 117.23333333329258,
+          "breaks": 451
+        },
+        {
+          "frame": 13440,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5221,
+          "time": 115.23333333329269,
+          "breaks": 456
+        },
+        {
+          "frame": 13560,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5155,
+          "time": 113.2333333332928,
+          "breaks": 460
+        },
+        {
+          "frame": 13680,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5153,
+          "time": 111.23333333329292,
+          "breaks": 463
+        },
+        {
+          "frame": 13800,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5161,
+          "time": 109.23333333329303,
+          "breaks": 467
+        },
+        {
+          "frame": 13920,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5236,
+          "time": 107.23333333329315,
+          "breaks": 474
+        },
+        {
+          "frame": 14040,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5416,
+          "time": 105.23333333329326,
+          "breaks": 480
+        },
+        {
+          "frame": 14160,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5563,
+          "time": 103.23333333329337,
+          "breaks": 485
+        },
+        {
+          "frame": 14280,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5510,
+          "time": 101.23333333329349,
+          "breaks": 488
+        },
+        {
+          "frame": 14400,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5649,
+          "time": 99.2333333332936,
+          "breaks": 494
+        },
+        {
+          "frame": 14520,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5859,
+          "time": 97.23333333329371,
+          "breaks": 503
+        },
+        {
+          "frame": 14640,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5867,
+          "time": 95.23333333329383,
+          "breaks": 506
+        },
+        {
+          "frame": 14760,
+          "round": 2,
+          "phase": "battle",
+          "coins": 5847,
+          "time": 93.23333333329394,
+          "breaks": 510
+        },
+        {
+          "frame": 14880,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6142,
+          "time": 91.23333333329406,
+          "breaks": 515
+        },
+        {
+          "frame": 15000,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6278,
+          "time": 89.23333333329417,
+          "breaks": 522
+        },
+        {
+          "frame": 15120,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6283,
+          "time": 87.23333333329428,
+          "breaks": 525
+        },
+        {
+          "frame": 15240,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6217,
+          "time": 85.2333333332944,
+          "breaks": 528
+        },
+        {
+          "frame": 15360,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6372,
+          "time": 83.23333333329451,
+          "breaks": 534
+        },
+        {
+          "frame": 15480,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6408,
+          "time": 81.23333333329462,
+          "breaks": 536
+        },
+        {
+          "frame": 15600,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6714,
+          "time": 79.23333333329474,
+          "breaks": 541
+        },
+        {
+          "frame": 15720,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6679,
+          "time": 77.23333333329485,
+          "breaks": 544
+        },
+        {
+          "frame": 15840,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6659,
+          "time": 75.23333333329496,
+          "breaks": 547
+        },
+        {
+          "frame": 15960,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6673,
+          "time": 73.23333333329508,
+          "breaks": 552
+        },
+        {
+          "frame": 16080,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6681,
+          "time": 71.23333333329519,
+          "breaks": 555
+        },
+        {
+          "frame": 16200,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6668,
+          "time": 69.2333333332953,
+          "breaks": 556
+        },
+        {
+          "frame": 16320,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7025,
+          "time": 67.23333333329542,
+          "breaks": 561
+        },
+        {
+          "frame": 16440,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6959,
+          "time": 65.23333333329553,
+          "breaks": 564
+        },
+        {
+          "frame": 16560,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7000,
+          "time": 63.23333333329565,
+          "breaks": 568
+        },
+        {
+          "frame": 16680,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6916,
+          "time": 61.23333333329576,
+          "breaks": 570
+        },
+        {
+          "frame": 16800,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6868,
+          "time": 59.233333333295874,
+          "breaks": 573
+        },
+        {
+          "frame": 16920,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6994,
+          "time": 57.23333333329599,
+          "breaks": 576
+        },
+        {
+          "frame": 17040,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6946,
+          "time": 55.2333333332961,
+          "breaks": 579
+        },
+        {
+          "frame": 17160,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7070,
+          "time": 53.233333333296216,
+          "breaks": 583
+        },
+        {
+          "frame": 17280,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7068,
+          "time": 51.23333333329633,
+          "breaks": 587
+        },
+        {
+          "frame": 17400,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7020,
+          "time": 49.23333333329644,
+          "breaks": 591
+        },
+        {
+          "frame": 17520,
+          "round": 2,
+          "phase": "battle",
+          "coins": 6972,
+          "time": 47.23333333329656,
+          "breaks": 595
+        },
+        {
+          "frame": 17640,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7154,
+          "time": 45.23333333329667,
+          "breaks": 601
+        },
+        {
+          "frame": 17760,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7259,
+          "time": 43.233333333296784,
+          "breaks": 609
+        },
+        {
+          "frame": 17880,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7249,
+          "time": 41.2333333332969,
+          "breaks": 613
+        },
+        {
+          "frame": 18000,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7211,
+          "time": 39.23333333329701,
+          "breaks": 617
+        },
+        {
+          "frame": 18120,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7163,
+          "time": 37.233333333297125,
+          "breaks": 622
+        },
+        {
+          "frame": 18240,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7128,
+          "time": 35.23333333329724,
+          "breaks": 626
+        },
+        {
+          "frame": 18360,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7315,
+          "time": 33.23333333329735,
+          "breaks": 632
+        },
+        {
+          "frame": 18480,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7346,
+          "time": 31.233333333297466,
+          "breaks": 638
+        },
+        {
+          "frame": 18600,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7424,
+          "time": 29.23333333329758,
+          "breaks": 643
+        },
+        {
+          "frame": 18720,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7450,
+          "time": 27.233333333297693,
+          "breaks": 646
+        },
+        {
+          "frame": 18840,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7476,
+          "time": 25.233333333297807,
+          "breaks": 650
+        },
+        {
+          "frame": 18960,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7752,
+          "time": 23.23333333329792,
+          "breaks": 654
+        },
+        {
+          "frame": 19080,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7870,
+          "time": 21.233333333298035,
+          "breaks": 658
+        },
+        {
+          "frame": 19200,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7646,
+          "time": 19.233333333298148,
+          "breaks": 662
+        },
+        {
+          "frame": 19320,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7786,
+          "time": 17.233333333298262,
+          "breaks": 666
+        },
+        {
+          "frame": 19440,
+          "round": 2,
+          "phase": "battle",
+          "coins": 8062,
+          "time": 15.233333333298292,
+          "breaks": 670
+        },
+        {
+          "frame": 19560,
+          "round": 2,
+          "phase": "battle",
+          "coins": 8088,
+          "time": 13.233333333298193,
+          "breaks": 674
+        },
+        {
+          "frame": 19680,
+          "round": 2,
+          "phase": "battle",
+          "coins": 8092,
+          "time": 11.233333333298093,
+          "breaks": 678
+        },
+        {
+          "frame": 19800,
+          "round": 2,
+          "phase": "battle",
+          "coins": 8096,
+          "time": 9.233333333297994,
+          "breaks": 682
+        },
+        {
+          "frame": 19920,
+          "round": 2,
+          "phase": "battle",
+          "coins": 7986,
+          "time": 7.233333333297936,
+          "breaks": 686
+        },
+        {
+          "frame": 19938,
+          "round": 2,
+          "phase": "clear",
+          "coins": 10086,
+          "time": 6.949999999964604,
+          "breaks": 687
+        },
+        {
+          "frame": 20040,
+          "round": 2,
+          "phase": "clear",
+          "coins": 10086,
+          "time": 6.949999999964604,
+          "breaks": 687
+        },
+        {
+          "frame": 20138,
+          "round": 3,
+          "phase": "choice",
+          "coins": 10086,
+          "time": 6.949999999964604,
+          "breaks": 687
+        },
+        {
+          "frame": 20140,
+          "round": 3,
+          "phase": "shop",
+          "coins": 10086,
+          "time": 6.949999999964604,
+          "breaks": 687
+        },
+        {
+          "frame": 20142,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10058,
+          "time": 179.96666666666664,
+          "breaks": 687
+        },
+        {
+          "frame": 20160,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10058,
+          "time": 179.6666666666664,
+          "breaks": 687
+        },
+        {
+          "frame": 20280,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10149,
+          "time": 177.6666666666648,
+          "breaks": 699
+        },
+        {
+          "frame": 20400,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10324,
+          "time": 175.66666666666322,
+          "breaks": 704
+        },
+        {
+          "frame": 20520,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10338,
+          "time": 173.66666666666163,
+          "breaks": 707
+        },
+        {
+          "frame": 20640,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10364,
+          "time": 171.66666666666003,
+          "breaks": 711
+        },
+        {
+          "frame": 20760,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10320,
+          "time": 169.66666666665844,
+          "breaks": 716
+        },
+        {
+          "frame": 20880,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10319,
+          "time": 167.66666666665685,
+          "breaks": 718
+        },
+        {
+          "frame": 21000,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10290,
+          "time": 165.66666666665526,
+          "breaks": 721
+        },
+        {
+          "frame": 21120,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10241,
+          "time": 163.66666666665367,
+          "breaks": 723
+        },
+        {
+          "frame": 21240,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10288,
+          "time": 161.66666666665208,
+          "breaks": 729
+        },
+        {
+          "frame": 21360,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10340,
+          "time": 159.66666666665049,
+          "breaks": 734
+        },
+        {
+          "frame": 21480,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10603,
+          "time": 157.6666666666489,
+          "breaks": 741
+        },
+        {
+          "frame": 21600,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10567,
+          "time": 155.6666666666473,
+          "breaks": 744
+        },
+        {
+          "frame": 21720,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10551,
+          "time": 153.6666666666457,
+          "breaks": 748
+        },
+        {
+          "frame": 21840,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10487,
+          "time": 151.66666666664412,
+          "breaks": 750
+        },
+        {
+          "frame": 21960,
+          "round": 3,
+          "phase": "battle",
+          "coins": 10946,
+          "time": 149.66666666664253,
+          "breaks": 754
+        },
+        {
+          "frame": 22080,
+          "round": 3,
+          "phase": "battle",
+          "coins": 11126,
+          "time": 147.66666666664094,
+          "breaks": 758
+        },
+        {
+          "frame": 22200,
+          "round": 3,
+          "phase": "battle",
+          "coins": 11125,
+          "time": 145.66666666663934,
+          "breaks": 761
+        },
+        {
+          "frame": 22320,
+          "round": 3,
+          "phase": "battle",
+          "coins": 11129,
+          "time": 143.66666666663775,
+          "breaks": 764
+        },
+        {
+          "frame": 22440,
+          "round": 3,
+          "phase": "battle",
+          "coins": 11100,
+          "time": 141.66666666663616,
+          "breaks": 766
+        },
+        {
+          "frame": 22560,
+          "round": 3,
+          "phase": "battle",
+          "coins": 11461,
+          "time": 139.66666666663457,
+          "breaks": 801
+        },
+        {
+          "frame": 22680,
+          "round": 3,
+          "phase": "battle",
+          "coins": 11575,
+          "time": 137.66666666663298,
+          "breaks": 809
+        },
+        {
+          "frame": 22800,
+          "round": 3,
+          "phase": "battle",
+          "coins": 11741,
+          "time": 135.6666666666314,
+          "breaks": 825
+        },
+        {
+          "frame": 22920,
+          "round": 3,
+          "phase": "battle",
+          "coins": 11767,
+          "time": 133.6666666666298,
+          "breaks": 830
+        },
+        {
+          "frame": 23040,
+          "round": 3,
+          "phase": "battle",
+          "coins": 11866,
+          "time": 131.6666666666282,
+          "breaks": 840
+        },
+        {
+          "frame": 23160,
+          "round": 3,
+          "phase": "battle",
+          "coins": 12121,
+          "time": 129.6666666666266,
+          "breaks": 848
+        },
+        {
+          "frame": 23280,
+          "round": 3,
+          "phase": "battle",
+          "coins": 12120,
+          "time": 127.66666666662532,
+          "breaks": 851
+        },
+        {
+          "frame": 23400,
+          "round": 3,
+          "phase": "battle",
+          "coins": 12180,
+          "time": 125.66666666662543,
+          "breaks": 855
+        },
+        {
+          "frame": 23520,
+          "round": 3,
+          "phase": "battle",
+          "coins": 12596,
+          "time": 123.66666666662555,
+          "breaks": 860
+        },
+        {
+          "frame": 23640,
+          "round": 3,
+          "phase": "battle",
+          "coins": 12600,
+          "time": 121.66666666662566,
+          "breaks": 866
+        },
+        {
+          "frame": 23760,
+          "round": 3,
+          "phase": "battle",
+          "coins": 12544,
+          "time": 119.66666666662577,
+          "breaks": 866
+        },
+        {
+          "frame": 23880,
+          "round": 3,
+          "phase": "battle",
+          "coins": 12528,
+          "time": 117.66666666662589,
+          "breaks": 872
+        },
+        {
+          "frame": 24000,
+          "round": 3,
+          "phase": "battle",
+          "coins": 12547,
+          "time": 115.666666666626,
+          "breaks": 876
+        },
+        {
+          "frame": 24120,
+          "round": 3,
+          "phase": "battle",
+          "coins": 12695,
+          "time": 113.66666666662611,
+          "breaks": 880
+        },
+        {
+          "frame": 24240,
+          "round": 3,
+          "phase": "battle",
+          "coins": 13221,
+          "time": 111.66666666662623,
+          "breaks": 917
+        },
+        {
+          "frame": 24360,
+          "round": 3,
+          "phase": "battle",
+          "coins": 13332,
+          "time": 109.66666666662634,
+          "breaks": 930
+        },
+        {
+          "frame": 24480,
+          "round": 3,
+          "phase": "battle",
+          "coins": 13486,
+          "time": 107.66666666662645,
+          "breaks": 943
+        },
+        {
+          "frame": 24600,
+          "round": 3,
+          "phase": "battle",
+          "coins": 13567,
+          "time": 105.66666666662657,
+          "breaks": 955
+        },
+        {
+          "frame": 24720,
+          "round": 3,
+          "phase": "battle",
+          "coins": 14106,
+          "time": 103.66666666662668,
+          "breaks": 964
+        },
+        {
+          "frame": 24840,
+          "round": 3,
+          "phase": "battle",
+          "coins": 14238,
+          "time": 101.6666666666268,
+          "breaks": 969
+        },
+        {
+          "frame": 24960,
+          "round": 3,
+          "phase": "battle",
+          "coins": 14194,
+          "time": 99.66666666662691,
+          "breaks": 976
+        },
+        {
+          "frame": 25080,
+          "round": 3,
+          "phase": "battle",
+          "coins": 14354,
+          "time": 97.66666666662702,
+          "breaks": 979
+        },
+        {
+          "frame": 25200,
+          "round": 3,
+          "phase": "battle",
+          "coins": 14318,
+          "time": 95.66666666662714,
+          "breaks": 983
+        },
+        {
+          "frame": 25320,
+          "round": 3,
+          "phase": "battle",
+          "coins": 14234,
+          "time": 93.66666666662725,
+          "breaks": 986
+        },
+        {
+          "frame": 25440,
+          "round": 3,
+          "phase": "battle",
+          "coins": 14210,
+          "time": 91.66666666662736,
+          "breaks": 989
+        },
+        {
+          "frame": 25560,
+          "round": 3,
+          "phase": "battle",
+          "coins": 14194,
+          "time": 89.66666666662748,
+          "breaks": 991
+        },
+        {
+          "frame": 25680,
+          "round": 3,
+          "phase": "battle",
+          "coins": 14357,
+          "time": 87.66666666662759,
+          "breaks": 997
+        },
+        {
+          "frame": 25800,
+          "round": 3,
+          "phase": "battle",
+          "coins": 14328,
+          "time": 85.6666666666277,
+          "breaks": 999
+        },
+        {
+          "frame": 25920,
+          "round": 3,
+          "phase": "battle",
+          "coins": 14388,
+          "time": 83.66666666662782,
+          "breaks": 1003
+        },
+        {
+          "frame": 26040,
+          "round": 3,
+          "phase": "battle",
+          "coins": 14528,
+          "time": 81.66666666662793,
+          "breaks": 1006
+        },
+        {
+          "frame": 26160,
+          "round": 3,
+          "phase": "battle",
+          "coins": 14559,
+          "time": 79.66666666662805,
+          "breaks": 1012
+        },
+        {
+          "frame": 26280,
+          "round": 3,
+          "phase": "battle",
+          "coins": 15123,
+          "time": 77.66666666662816,
+          "breaks": 1053
+        },
+        {
+          "frame": 26400,
+          "round": 3,
+          "phase": "battle",
+          "coins": 15244,
+          "time": 75.66666666662827,
+          "breaks": 1064
+        },
+        {
+          "frame": 26520,
+          "round": 3,
+          "phase": "battle",
+          "coins": 15268,
+          "time": 73.66666666662839,
+          "breaks": 1072
+        },
+        {
+          "frame": 26640,
+          "round": 3,
+          "phase": "battle",
+          "coins": 15355,
+          "time": 71.6666666666285,
+          "breaks": 1082
+        },
+        {
+          "frame": 26760,
+          "round": 3,
+          "phase": "battle",
+          "coins": 15558,
+          "time": 69.66666666662861,
+          "breaks": 1088
+        },
+        {
+          "frame": 26880,
+          "round": 3,
+          "phase": "battle",
+          "coins": 15954,
+          "time": 67.66666666662873,
+          "breaks": 1091
+        },
+        {
+          "frame": 27000,
+          "round": 3,
+          "phase": "battle",
+          "coins": 16028,
+          "time": 65.66666666662884,
+          "breaks": 1098
+        },
+        {
+          "frame": 27120,
+          "round": 3,
+          "phase": "battle",
+          "coins": 16039,
+          "time": 63.666666666628956,
+          "breaks": 1104
+        },
+        {
+          "frame": 27240,
+          "round": 3,
+          "phase": "battle",
+          "coins": 15955,
+          "time": 61.66666666662907,
+          "breaks": 1106
+        },
+        {
+          "frame": 27360,
+          "round": 3,
+          "phase": "battle",
+          "coins": 15919,
+          "time": 59.66666666662918,
+          "breaks": 1108
+        },
+        {
+          "frame": 27480,
+          "round": 3,
+          "phase": "battle",
+          "coins": 15855,
+          "time": 57.6666666666293,
+          "breaks": 1110
+        },
+        {
+          "frame": 27600,
+          "round": 3,
+          "phase": "battle",
+          "coins": 15811,
+          "time": 55.66666666662941,
+          "breaks": 1114
+        },
+        {
+          "frame": 27720,
+          "round": 3,
+          "phase": "battle",
+          "coins": 15790,
+          "time": 53.666666666629524,
+          "breaks": 1117
+        },
+        {
+          "frame": 27840,
+          "round": 3,
+          "phase": "battle",
+          "coins": 16289,
+          "time": 51.66666666662964,
+          "breaks": 1123
+        },
+        {
+          "frame": 27960,
+          "round": 3,
+          "phase": "battle",
+          "coins": 16361,
+          "time": 49.66666666662975,
+          "breaks": 1128
+        },
+        {
+          "frame": 28080,
+          "round": 3,
+          "phase": "battle",
+          "coins": 16340,
+          "time": 47.666666666629865,
+          "breaks": 1131
+        },
+        {
+          "frame": 28200,
+          "round": 3,
+          "phase": "battle",
+          "coins": 16924,
+          "time": 45.66666666662998,
+          "breaks": 1174
+        },
+        {
+          "frame": 28320,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17201,
+          "time": 43.66666666663009,
+          "breaks": 1195
+        },
+        {
+          "frame": 28440,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17220,
+          "time": 41.666666666630206,
+          "breaks": 1202
+        },
+        {
+          "frame": 28560,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17251,
+          "time": 39.66666666663032,
+          "breaks": 1209
+        },
+        {
+          "frame": 28680,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17318,
+          "time": 37.666666666630434,
+          "breaks": 1215
+        },
+        {
+          "frame": 28800,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17433,
+          "time": 35.66666666663055,
+          "breaks": 1221
+        },
+        {
+          "frame": 28920,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17703,
+          "time": 33.66666666663066,
+          "breaks": 1231
+        },
+        {
+          "frame": 29040,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17863,
+          "time": 31.666666666630775,
+          "breaks": 1236
+        },
+        {
+          "frame": 29160,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17751,
+          "time": 29.66666666663089,
+          "breaks": 1238
+        },
+        {
+          "frame": 29280,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17828,
+          "time": 27.666666666631002,
+          "breaks": 1241
+        },
+        {
+          "frame": 29400,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17885,
+          "time": 25.666666666631116,
+          "breaks": 1244
+        },
+        {
+          "frame": 29520,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17789,
+          "time": 23.66666666663123,
+          "breaks": 1246
+        },
+        {
+          "frame": 29640,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17693,
+          "time": 21.666666666631343,
+          "breaks": 1247
+        },
+        {
+          "frame": 29760,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17469,
+          "time": 19.666666666631457,
+          "breaks": 1248
+        },
+        {
+          "frame": 29880,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17245,
+          "time": 17.66666666663157,
+          "breaks": 1251
+        },
+        {
+          "frame": 30000,
+          "round": 3,
+          "phase": "battle",
+          "coins": 17021,
+          "time": 15.666666666631647,
+          "breaks": 1254
+        },
+        {
+          "frame": 30120,
+          "round": 3,
+          "phase": "battle",
+          "coins": 16925,
+          "time": 13.666666666631547,
+          "breaks": 1257
+        },
+        {
+          "frame": 30240,
+          "round": 3,
+          "phase": "battle",
+          "coins": 16701,
+          "time": 11.666666666631448,
+          "breaks": 1260
+        },
+        {
+          "frame": 30360,
+          "round": 3,
+          "phase": "battle",
+          "coins": 16733,
+          "time": 9.666666666631349,
+          "breaks": 1263
+        },
+        {
+          "frame": 30392,
+          "round": 3,
+          "phase": "clear",
+          "coins": 18350,
+          "time": 9.133333333297989,
+          "breaks": 1265
+        },
+        {
+          "frame": 30480,
+          "round": 3,
+          "phase": "clear",
+          "coins": 18350,
+          "time": 9.133333333297989,
+          "breaks": 1265
+        },
+        {
+          "frame": 30592,
+          "round": 4,
+          "phase": "choice",
+          "coins": 18350,
+          "time": 9.133333333297989,
+          "breaks": 1265
+        },
+        {
+          "frame": 30594,
+          "round": 4,
+          "phase": "shop",
+          "coins": 18350,
+          "time": 9.133333333297989,
+          "breaks": 1265
+        },
+        {
+          "frame": 30596,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18322,
+          "time": 179.96666666666664,
+          "breaks": 1265
+        },
+        {
+          "frame": 30600,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18322,
+          "time": 179.89999999999992,
+          "breaks": 1265
+        },
+        {
+          "frame": 30720,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18493,
+          "time": 177.89999999999833,
+          "breaks": 1273
+        },
+        {
+          "frame": 30840,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18581,
+          "time": 175.89999999999674,
+          "breaks": 1284
+        },
+        {
+          "frame": 30960,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18714,
+          "time": 173.89999999999515,
+          "breaks": 1289
+        },
+        {
+          "frame": 31080,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18705,
+          "time": 171.89999999999355,
+          "breaks": 1291
+        },
+        {
+          "frame": 31200,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18665,
+          "time": 169.89999999999196,
+          "breaks": 1294
+        },
+        {
+          "frame": 31320,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18631,
+          "time": 167.89999999999037,
+          "breaks": 1300
+        },
+        {
+          "frame": 31440,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18639,
+          "time": 165.89999999998878,
+          "breaks": 1305
+        },
+        {
+          "frame": 31560,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18652,
+          "time": 163.8999999999872,
+          "breaks": 1313
+        },
+        {
+          "frame": 31680,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18618,
+          "time": 161.8999999999856,
+          "breaks": 1316
+        },
+        {
+          "frame": 31800,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18706,
+          "time": 159.899999999984,
+          "breaks": 1321
+        },
+        {
+          "frame": 31920,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18683,
+          "time": 157.8999999999824,
+          "breaks": 1324
+        },
+        {
+          "frame": 32040,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18627,
+          "time": 155.89999999998082,
+          "breaks": 1326
+        },
+        {
+          "frame": 32160,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18621,
+          "time": 153.89999999997923,
+          "breaks": 1332
+        },
+        {
+          "frame": 32280,
+          "round": 4,
+          "phase": "battle",
+          "coins": 18808,
+          "time": 151.89999999997764,
+          "breaks": 1338
+        },
+        {
+          "frame": 32400,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19001,
+          "time": 149.89999999997605,
+          "breaks": 1343
+        },
+        {
+          "frame": 32520,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19159,
+          "time": 147.89999999997445,
+          "breaks": 1346
+        },
+        {
+          "frame": 32640,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19097,
+          "time": 145.89999999997286,
+          "breaks": 1348
+        },
+        {
+          "frame": 32760,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19102,
+          "time": 143.89999999997127,
+          "breaks": 1352
+        },
+        {
+          "frame": 32880,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19276,
+          "time": 141.89999999996968,
+          "breaks": 1359
+        },
+        {
+          "frame": 33000,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19463,
+          "time": 139.8999999999681,
+          "breaks": 1362
+        },
+        {
+          "frame": 33120,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19468,
+          "time": 137.8999999999665,
+          "breaks": 1367
+        },
+        {
+          "frame": 33240,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19445,
+          "time": 135.8999999999649,
+          "breaks": 1369
+        },
+        {
+          "frame": 33360,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19610,
+          "time": 133.8999999999633,
+          "breaks": 1373
+        },
+        {
+          "frame": 33480,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19598,
+          "time": 131.89999999996172,
+          "breaks": 1375
+        },
+        {
+          "frame": 33600,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19536,
+          "time": 129.89999999996013,
+          "breaks": 1378
+        },
+        {
+          "frame": 33720,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19474,
+          "time": 127.89999999995864,
+          "breaks": 1381
+        },
+        {
+          "frame": 33840,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19440,
+          "time": 125.89999999995875,
+          "breaks": 1383
+        },
+        {
+          "frame": 33960,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19400,
+          "time": 123.89999999995887,
+          "breaks": 1390
+        },
+        {
+          "frame": 34080,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19355,
+          "time": 121.89999999995898,
+          "breaks": 1392
+        },
+        {
+          "frame": 34200,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19343,
+          "time": 119.89999999995909,
+          "breaks": 1395
+        },
+        {
+          "frame": 34320,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19281,
+          "time": 117.8999999999592,
+          "breaks": 1398
+        },
+        {
+          "frame": 34440,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19219,
+          "time": 115.89999999995932,
+          "breaks": 1399
+        },
+        {
+          "frame": 34560,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19224,
+          "time": 113.89999999995943,
+          "breaks": 1403
+        },
+        {
+          "frame": 34680,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19179,
+          "time": 111.89999999995955,
+          "breaks": 1405
+        },
+        {
+          "frame": 34800,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19214,
+          "time": 109.89999999995966,
+          "breaks": 1411
+        },
+        {
+          "frame": 34920,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19272,
+          "time": 107.89999999995977,
+          "breaks": 1414
+        },
+        {
+          "frame": 35040,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19266,
+          "time": 105.89999999995989,
+          "breaks": 1418
+        },
+        {
+          "frame": 35160,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19265,
+          "time": 103.89999999996,
+          "breaks": 1425
+        },
+        {
+          "frame": 35280,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19248,
+          "time": 101.89999999996012,
+          "breaks": 1429
+        },
+        {
+          "frame": 35400,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19532,
+          "time": 99.89999999996023,
+          "breaks": 1432
+        },
+        {
+          "frame": 35520,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19697,
+          "time": 97.89999999996034,
+          "breaks": 1437
+        },
+        {
+          "frame": 35640,
+          "round": 4,
+          "phase": "battle",
+          "coins": 19729,
+          "time": 95.89999999996046,
+          "breaks": 1443
+        },
+        {
+          "frame": 35760,
+          "round": 4,
+          "phase": "battle",
+          "coins": 20209,
+          "time": 93.89999999996057,
+          "breaks": 1447
+        },
+        {
+          "frame": 35880,
+          "round": 4,
+          "phase": "battle",
+          "coins": 20147,
+          "time": 91.89999999996068,
+          "breaks": 1450
+        },
+        {
+          "frame": 36000,
+          "round": 4,
+          "phase": "battle",
+          "coins": 20113,
+          "time": 89.8999999999608,
+          "breaks": 1454
+        },
+        {
+          "frame": 36120,
+          "round": 4,
+          "phase": "battle",
+          "coins": 20104,
+          "time": 87.89999999996091,
+          "breaks": 1457
+        },
+        {
+          "frame": 36240,
+          "round": 4,
+          "phase": "battle",
+          "coins": 20042,
+          "time": 85.89999999996103,
+          "breaks": 1463
+        },
+        {
+          "frame": 36360,
+          "round": 4,
+          "phase": "battle",
+          "coins": 20069,
+          "time": 83.89999999996114,
+          "breaks": 1469
+        },
+        {
+          "frame": 36480,
+          "round": 4,
+          "phase": "battle",
+          "coins": 20326,
+          "time": 81.89999999996125,
+          "breaks": 1473
+        },
+        {
+          "frame": 36600,
+          "round": 4,
+          "phase": "battle",
+          "coins": 20281,
+          "time": 79.89999999996137,
+          "breaks": 1477
+        },
+        {
+          "frame": 36720,
+          "round": 4,
+          "phase": "battle",
+          "coins": 20361,
+          "time": 77.89999999996148,
+          "breaks": 1482
+        },
+        {
+          "frame": 36840,
+          "round": 4,
+          "phase": "battle",
+          "coins": 20510,
+          "time": 75.8999999999616,
+          "breaks": 1489
+        },
+        {
+          "frame": 36960,
+          "round": 4,
+          "phase": "battle",
+          "coins": 20545,
+          "time": 73.89999999996171,
+          "breaks": 1495
+        },
+        {
+          "frame": 37080,
+          "round": 4,
+          "phase": "battle",
+          "coins": 20769,
+          "time": 71.89999999996182,
+          "breaks": 1498
+        },
+        {
+          "frame": 37200,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21196,
+          "time": 69.89999999996193,
+          "breaks": 1502
+        },
+        {
+          "frame": 37320,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21112,
+          "time": 67.89999999996205,
+          "breaks": 1505
+        },
+        {
+          "frame": 37440,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21153,
+          "time": 65.89999999996216,
+          "breaks": 1510
+        },
+        {
+          "frame": 37560,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21152,
+          "time": 63.899999999962276,
+          "breaks": 1514
+        },
+        {
+          "frame": 37680,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21317,
+          "time": 61.89999999996239,
+          "breaks": 1517
+        },
+        {
+          "frame": 37800,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21283,
+          "time": 59.8999999999625,
+          "breaks": 1520
+        },
+        {
+          "frame": 37920,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21509,
+          "time": 57.89999999996262,
+          "breaks": 1524
+        },
+        {
+          "frame": 38040,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21425,
+          "time": 55.89999999996273,
+          "breaks": 1526
+        },
+        {
+          "frame": 38160,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21391,
+          "time": 53.899999999962844,
+          "breaks": 1528
+        },
+        {
+          "frame": 38280,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21329,
+          "time": 51.89999999996296,
+          "breaks": 1532
+        },
+        {
+          "frame": 38400,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21342,
+          "time": 49.89999999996307,
+          "breaks": 1537
+        },
+        {
+          "frame": 38520,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21308,
+          "time": 47.899999999963185,
+          "breaks": 1539
+        },
+        {
+          "frame": 38640,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21307,
+          "time": 45.8999999999633,
+          "breaks": 1543
+        },
+        {
+          "frame": 38760,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21245,
+          "time": 43.89999999996341,
+          "breaks": 1544
+        },
+        {
+          "frame": 38880,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21766,
+          "time": 41.899999999963526,
+          "breaks": 1549
+        },
+        {
+          "frame": 39000,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21704,
+          "time": 39.89999999996364,
+          "breaks": 1553
+        },
+        {
+          "frame": 39120,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21642,
+          "time": 37.899999999963754,
+          "breaks": 1555
+        },
+        {
+          "frame": 39240,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21586,
+          "time": 35.89999999996387,
+          "breaks": 1555
+        },
+        {
+          "frame": 39360,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21546,
+          "time": 33.89999999996398,
+          "breaks": 1559
+        },
+        {
+          "frame": 39480,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21506,
+          "time": 31.899999999964095,
+          "breaks": 1562
+        },
+        {
+          "frame": 39600,
+          "round": 4,
+          "phase": "battle",
+          "coins": 21466,
+          "time": 29.89999999996421,
+          "breaks": 1565
+        },
+        {
+          "frame": 39706,
+          "round": 4,
+          "phase": "clear",
+          "coins": 23950,
+          "time": 28.133333333297642,
+          "breaks": 1569
+        },
+        {
+          "frame": 39720,
+          "round": 4,
+          "phase": "clear",
+          "coins": 23950,
+          "time": 28.133333333297642,
+          "breaks": 1569
+        },
+        {
+          "frame": 39840,
+          "round": 4,
+          "phase": "clear",
+          "coins": 23950,
+          "time": 28.133333333297642,
+          "breaks": 1569
+        },
+        {
+          "frame": 39906,
+          "round": 5,
+          "phase": "choice",
+          "coins": 23950,
+          "time": 28.133333333297642,
+          "breaks": 1569
+        },
+        {
+          "frame": 39908,
+          "round": 5,
+          "phase": "shop",
+          "coins": 23950,
+          "time": 28.133333333297642,
+          "breaks": 1569
+        },
+        {
+          "frame": 39910,
+          "round": 5,
+          "phase": "battle",
+          "coins": 23922,
+          "time": 179.96666666666664,
+          "breaks": 1569
+        },
+        {
+          "frame": 39960,
+          "round": 5,
+          "phase": "battle",
+          "coins": 23922,
+          "time": 179.13333333333264,
+          "breaks": 1569
+        },
+        {
+          "frame": 40080,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24012,
+          "time": 177.13333333333105,
+          "breaks": 1581
+        },
+        {
+          "frame": 40200,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24126,
+          "time": 175.13333333332946,
+          "breaks": 1587
+        },
+        {
+          "frame": 40320,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24118,
+          "time": 173.13333333332787,
+          "breaks": 1592
+        },
+        {
+          "frame": 40440,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24106,
+          "time": 171.13333333332628,
+          "breaks": 1597
+        },
+        {
+          "frame": 40560,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24915,
+          "time": 169.13333333332469,
+          "breaks": 1602
+        },
+        {
+          "frame": 40680,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24926,
+          "time": 167.1333333333231,
+          "breaks": 1605
+        },
+        {
+          "frame": 40800,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24933,
+          "time": 165.1333333333215,
+          "breaks": 1608
+        },
+        {
+          "frame": 40920,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24849,
+          "time": 163.1333333333199,
+          "breaks": 1609
+        },
+        {
+          "frame": 41040,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24841,
+          "time": 161.13333333331832,
+          "breaks": 1613
+        },
+        {
+          "frame": 41160,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24853,
+          "time": 159.13333333331673,
+          "breaks": 1617
+        },
+        {
+          "frame": 41280,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24817,
+          "time": 157.13333333331514,
+          "breaks": 1619
+        },
+        {
+          "frame": 41400,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24785,
+          "time": 155.13333333331354,
+          "breaks": 1621
+        },
+        {
+          "frame": 41520,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24773,
+          "time": 153.13333333331195,
+          "breaks": 1626
+        },
+        {
+          "frame": 41640,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24713,
+          "time": 151.13333333331036,
+          "breaks": 1629
+        },
+        {
+          "frame": 41760,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24681,
+          "time": 149.13333333330877,
+          "breaks": 1632
+        },
+        {
+          "frame": 41880,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24640,
+          "time": 147.13333333330718,
+          "breaks": 1635
+        },
+        {
+          "frame": 42000,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24604,
+          "time": 145.1333333333056,
+          "breaks": 1639
+        },
+        {
+          "frame": 42120,
+          "round": 5,
+          "phase": "battle",
+          "coins": 24898,
+          "time": 143.133333333304,
+          "breaks": 1643
+        },
+        {
+          "frame": 42240,
+          "round": 5,
+          "phase": "battle",
+          "coins": 25501,
+          "time": 141.1333333333024,
+          "breaks": 1648
+        },
+        {
+          "frame": 42360,
+          "round": 5,
+          "phase": "battle",
+          "coins": 25997,
+          "time": 139.1333333333008,
+          "breaks": 1673
+        },
+        {
+          "frame": 42480,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26401,
+          "time": 137.13333333329922,
+          "breaks": 1696
+        },
+        {
+          "frame": 42600,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26590,
+          "time": 135.13333333329763,
+          "breaks": 1709
+        },
+        {
+          "frame": 42720,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26707,
+          "time": 133.13333333329604,
+          "breaks": 1717
+        },
+        {
+          "frame": 42840,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26723,
+          "time": 131.13333333329444,
+          "breaks": 1725
+        },
+        {
+          "frame": 42960,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26706,
+          "time": 129.13333333329285,
+          "breaks": 1730
+        },
+        {
+          "frame": 43080,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26670,
+          "time": 127.13333333329201,
+          "breaks": 1733
+        },
+        {
+          "frame": 43200,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26686,
+          "time": 125.13333333329213,
+          "breaks": 1738
+        },
+        {
+          "frame": 43320,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26698,
+          "time": 123.13333333329224,
+          "breaks": 1743
+        },
+        {
+          "frame": 43440,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26681,
+          "time": 121.13333333329236,
+          "breaks": 1747
+        },
+        {
+          "frame": 43560,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26649,
+          "time": 119.13333333329247,
+          "breaks": 1752
+        },
+        {
+          "frame": 43680,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26814,
+          "time": 117.13333333329258,
+          "breaks": 1757
+        },
+        {
+          "frame": 43800,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26754,
+          "time": 115.1333333332927,
+          "breaks": 1761
+        },
+        {
+          "frame": 43920,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26971,
+          "time": 113.13333333329281,
+          "breaks": 1764
+        },
+        {
+          "frame": 44040,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26935,
+          "time": 111.13333333329292,
+          "breaks": 1767
+        },
+        {
+          "frame": 44160,
+          "round": 5,
+          "phase": "battle",
+          "coins": 26942,
+          "time": 109.13333333329304,
+          "breaks": 1771
+        },
+        {
+          "frame": 44280,
+          "round": 5,
+          "phase": "battle",
+          "coins": 27273,
+          "time": 107.13333333329315,
+          "breaks": 1775
+        },
+        {
+          "frame": 44400,
+          "round": 5,
+          "phase": "battle",
+          "coins": 27275,
+          "time": 105.13333333329327,
+          "breaks": 1778
+        },
+        {
+          "frame": 44520,
+          "round": 5,
+          "phase": "battle",
+          "coins": 27215,
+          "time": 103.13333333329338,
+          "breaks": 1780
+        },
+        {
+          "frame": 44640,
+          "round": 5,
+          "phase": "battle",
+          "coins": 27686,
+          "time": 101.13333333329349,
+          "breaks": 1810
+        },
+        {
+          "frame": 44760,
+          "round": 5,
+          "phase": "battle",
+          "coins": 27928,
+          "time": 99.1333333332936,
+          "breaks": 1830
+        },
+        {
+          "frame": 44880,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28045,
+          "time": 97.13333333329372,
+          "breaks": 1842
+        },
+        {
+          "frame": 45000,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28123,
+          "time": 95.13333333329383,
+          "breaks": 1855
+        },
+        {
+          "frame": 45120,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28170,
+          "time": 93.13333333329395,
+          "breaks": 1861
+        },
+        {
+          "frame": 45240,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28177,
+          "time": 91.13333333329406,
+          "breaks": 1867
+        },
+        {
+          "frame": 45360,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28353,
+          "time": 89.13333333329417,
+          "breaks": 1874
+        },
+        {
+          "frame": 45480,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28352,
+          "time": 87.13333333329429,
+          "breaks": 1880
+        },
+        {
+          "frame": 45600,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28565,
+          "time": 85.1333333332944,
+          "breaks": 1883
+        },
+        {
+          "frame": 45720,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28533,
+          "time": 83.13333333329452,
+          "breaks": 1884
+        },
+        {
+          "frame": 45840,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28497,
+          "time": 81.13333333329463,
+          "breaks": 1888
+        },
+        {
+          "frame": 45960,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28686,
+          "time": 79.13333333329474,
+          "breaks": 1892
+        },
+        {
+          "frame": 46080,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28721,
+          "time": 77.13333333329486,
+          "breaks": 1897
+        },
+        {
+          "frame": 46200,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28704,
+          "time": 75.13333333329497,
+          "breaks": 1899
+        },
+        {
+          "frame": 46320,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28862,
+          "time": 73.13333333329508,
+          "breaks": 1903
+        },
+        {
+          "frame": 46440,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28854,
+          "time": 71.1333333332952,
+          "breaks": 1907
+        },
+        {
+          "frame": 46560,
+          "round": 5,
+          "phase": "battle",
+          "coins": 28988,
+          "time": 69.13333333329531,
+          "breaks": 1911
+        },
+        {
+          "frame": 46680,
+          "round": 5,
+          "phase": "battle",
+          "coins": 29072,
+          "time": 67.13333333329543,
+          "breaks": 1914
+        },
+        {
+          "frame": 46800,
+          "round": 5,
+          "phase": "battle",
+          "coins": 29117,
+          "time": 65.13333333329554,
+          "breaks": 1916
+        },
+        {
+          "frame": 46920,
+          "round": 5,
+          "phase": "battle",
+          "coins": 29076,
+          "time": 63.13333333329565,
+          "breaks": 1920
+        },
+        {
+          "frame": 47040,
+          "round": 5,
+          "phase": "battle",
+          "coins": 29591,
+          "time": 61.13333333329577,
+          "breaks": 1950
+        },
+        {
+          "frame": 47160,
+          "round": 5,
+          "phase": "battle",
+          "coins": 29885,
+          "time": 59.13333333329588,
+          "breaks": 1964
+        },
+        {
+          "frame": 47280,
+          "round": 5,
+          "phase": "battle",
+          "coins": 30189,
+          "time": 57.133333333295994,
+          "breaks": 1981
+        },
+        {
+          "frame": 47400,
+          "round": 5,
+          "phase": "battle",
+          "coins": 30800,
+          "time": 55.13333333329611,
+          "breaks": 1990
+        },
+        {
+          "frame": 47520,
+          "round": 5,
+          "phase": "battle",
+          "coins": 31151,
+          "time": 53.13333333329622,
+          "breaks": 2000
+        },
+        {
+          "frame": 47640,
+          "round": 5,
+          "phase": "battle",
+          "coins": 31182,
+          "time": 51.133333333296335,
+          "breaks": 2006
+        },
+        {
+          "frame": 47760,
+          "round": 5,
+          "phase": "battle",
+          "coins": 31205,
+          "time": 49.13333333329645,
+          "breaks": 2009
+        },
+        {
+          "frame": 47880,
+          "round": 5,
+          "phase": "battle",
+          "coins": 31149,
+          "time": 47.13333333329656,
+          "breaks": 2010
+        },
+        {
+          "frame": 48000,
+          "round": 5,
+          "phase": "battle",
+          "coins": 31156,
+          "time": 45.133333333296676,
+          "breaks": 2016
+        },
+        {
+          "frame": 48120,
+          "round": 5,
+          "phase": "battle",
+          "coins": 31238,
+          "time": 43.13333333329679,
+          "breaks": 2022
+        },
+        {
+          "frame": 48240,
+          "round": 5,
+          "phase": "battle",
+          "coins": 31206,
+          "time": 41.1333333332969,
+          "breaks": 2027
+        },
+        {
+          "frame": 48360,
+          "round": 5,
+          "phase": "battle",
+          "coins": 31395,
+          "time": 39.13333333329702,
+          "breaks": 2032
+        },
+        {
+          "frame": 48480,
+          "round": 5,
+          "phase": "battle",
+          "coins": 31394,
+          "time": 37.13333333329713,
+          "breaks": 2034
+        },
+        {
+          "frame": 48600,
+          "round": 5,
+          "phase": "battle",
+          "coins": 31469,
+          "time": 35.133333333297244,
+          "breaks": 2038
+        },
+        {
+          "frame": 48720,
+          "round": 5,
+          "phase": "battle",
+          "coins": 31487,
+          "time": 33.13333333329736,
+          "breaks": 2043
+        },
+        {
+          "frame": 48840,
+          "round": 5,
+          "phase": "battle",
+          "coins": 31719,
+          "time": 31.13333333329747,
+          "breaks": 2046
+        },
+        {
+          "frame": 48960,
+          "round": 5,
+          "phase": "battle",
+          "coins": 31907,
+          "time": 29.133333333297585,
+          "breaks": 2051
+        },
+        {
+          "frame": 49080,
+          "round": 5,
+          "phase": "battle",
+          "coins": 32486,
+          "time": 27.1333333332977,
+          "breaks": 2056
+        },
+        {
+          "frame": 49200,
+          "round": 5,
+          "phase": "battle",
+          "coins": 32948,
+          "time": 25.133333333297813,
+          "breaks": 2058
+        },
+        {
+          "frame": 49214,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 49320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 49440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 49560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 49680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 49800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 49920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 50040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 50160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 50280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 50400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 50520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 50640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 50760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 50880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 51000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 51120,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 51240,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 51360,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 51480,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 51600,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 51720,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 51840,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 51960,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 52080,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 52200,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 52320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 52440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 52560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 52680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 52800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 52920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 53040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 53160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 53280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 53400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 53520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 53640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 53760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 53880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 54000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 54120,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 54240,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 54360,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 54480,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 54600,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 54720,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 54840,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 54960,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 55080,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 55200,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 55320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 55440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 55560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 55680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 55800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 55920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 56040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 56160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 56280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 56400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 56520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 56640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 56760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 56880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 57000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 57120,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 57240,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 57360,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 57480,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 57600,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 57720,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 57840,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 57960,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 58080,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 58200,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 58320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 58440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 58560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 58680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 58800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 58920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 59040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 59160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 59280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 59400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 59520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 59640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 59760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 59880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 60000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 60120,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 60240,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 60360,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 60480,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 60600,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 60720,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 60840,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 60960,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 61080,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 61200,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 61320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 61440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 61560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 61680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 61800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 61920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 62040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 62160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 62280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 62400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 62520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 62640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 62760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 62880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 63000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 63120,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 63240,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 63360,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 63480,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 63600,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 63720,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 63840,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 63960,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 64080,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 64200,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 64320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 64440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 64560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 64680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 64800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 64920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 65040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 65160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 65280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 65400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 65520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 65640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 65760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 65880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 66000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 66120,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 66240,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 66360,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 66480,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 66600,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 66720,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 66840,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 66960,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 67080,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 67200,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 67320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 67440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 67560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 67680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 67800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 67920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 68040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 68160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 68280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 68400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 68520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 68640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 68760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 68880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 69000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 69120,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 69240,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 69360,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 69480,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 69600,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 69720,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 69840,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 69960,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 70080,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 70200,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 70320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 70440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 70560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 70680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 70800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 70920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 71040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 71160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 71280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 71400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 71520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 71640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 71760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 71880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 72000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 72120,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 72240,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 72360,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 72480,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 72600,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 72720,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 72840,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 72960,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 73080,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 73200,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 73320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 73440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 73560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 73680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 73800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 73920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 74040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 74160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 74280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 74400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 74520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 74640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 74760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 74880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 75000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 75120,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 75240,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 75360,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 75480,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 75600,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 75720,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 75840,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 75960,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 76080,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 76200,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 76320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 76440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 76560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 76680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 76800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 76920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 77040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 77160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 77280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 77400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 77520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 77640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 77760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 77880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 78000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 78120,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 78240,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 78360,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 78480,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 78600,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 78720,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 78840,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 78960,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 79080,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 79200,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 79320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 79440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 79560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 79680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 79800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 79920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 80040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 80160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 80280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 80400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 80520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 80640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 80760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 80880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 81000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 81120,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 81240,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 81360,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 81480,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 81600,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 81720,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 81840,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 81960,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 82080,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 82200,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 82320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 82440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 82560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 82680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 82800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 82920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 83040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 83160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 83280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 83400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 83520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 83640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 83760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 83880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 84000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 84120,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 84240,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 84360,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 84480,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 84600,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 84720,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 84840,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 84960,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 85080,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 85200,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 85320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 85440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 85560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 85680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 85800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 85920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 86040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 86160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 86280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 86400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 86520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 86640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 86760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 86880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 87000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 87120,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 87240,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 87360,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 87480,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 87600,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 87720,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 87840,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 87960,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 88080,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 88200,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 88320,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 88440,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 88560,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 88680,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 88800,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 88920,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 89040,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 89160,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 89280,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 89400,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 89520,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 89640,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 89760,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 89880,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        },
+        {
+          "frame": 90000,
+          "round": 5,
+          "phase": "clear",
+          "coins": 34494,
+          "time": 24.91666666663116,
+          "breaks": 2059
+        }
+      ]
+    }
+  ],
+  "summary": [
+    {
+      "policy": "survival",
+      "name": "省錢長征",
+      "completed": 1,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 1,
+      "censored": 0,
+      "meanRoundsCleared": 0,
+      "meanFinalCoins": 1042,
+      "meanDrySeconds": 0,
+      "invariantFailures": 0
+    },
+    {
+      "policy": "thunder",
+      "name": "鏡面雷暴",
+      "completed": 0,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 0,
+      "censored": 0,
+      "meanRoundsCleared": null,
+      "meanFinalCoins": null,
+      "meanDrySeconds": null,
+      "invariantFailures": 0
+    },
+    {
+      "policy": "rebound",
+      "name": "折返蓄力",
+      "completed": 0,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 0,
+      "censored": 0,
+      "meanRoundsCleared": null,
+      "meanFinalCoins": null,
+      "meanDrySeconds": null,
+      "invariantFailures": 0
+    },
+    {
+      "policy": "momentum",
+      "name": "疾風破陣",
+      "completed": 1,
+      "victories": 0,
+      "bankruptcies": 1,
+      "timeouts": 0,
+      "censored": 0,
+      "meanRoundsCleared": 0,
+      "meanFinalCoins": 7,
+      "meanDrySeconds": 5.833333333333333,
+      "invariantFailures": 0
+    },
+    {
+      "policy": "cleave",
+      "name": "穿陣旋風",
+      "completed": 0,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 0,
+      "censored": 0,
+      "meanRoundsCleared": null,
+      "meanFinalCoins": null,
+      "meanDrySeconds": null,
+      "invariantFailures": 0
+    },
+    {
+      "policy": "frost",
+      "name": "霜鋼重擊",
+      "completed": 0,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 0,
+      "censored": 0,
+      "meanRoundsCleared": null,
+      "meanFinalCoins": null,
+      "meanDrySeconds": null,
+      "invariantFailures": 0
+    },
+    {
+      "policy": "frenzy",
+      "name": "狂獵續航",
+      "completed": 0,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 0,
+      "censored": 0,
+      "meanRoundsCleared": null,
+      "meanFinalCoins": null,
+      "meanDrySeconds": null,
+      "invariantFailures": 0
+    },
+    {
+      "policy": "embers",
+      "name": "背水餘燼",
+      "completed": 0,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 0,
+      "censored": 0,
+      "meanRoundsCleared": null,
+      "meanFinalCoins": null,
+      "meanDrySeconds": null,
+      "invariantFailures": 0
+    },
+    {
+      "policy": "cyclone",
+      "name": "落地風環",
+      "completed": 0,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 0,
+      "censored": 1,
+      "meanRoundsCleared": null,
+      "meanFinalCoins": null,
+      "meanDrySeconds": null,
+      "invariantFailures": 0
+    },
+    {
+      "policy": "sword",
+      "name": "劍兵專用",
+      "completed": 0,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 0,
+      "censored": 0,
+      "meanRoundsCleared": null,
+      "meanFinalCoins": null,
+      "meanDrySeconds": null,
+      "invariantFailures": 0
+    },
+    {
+      "policy": "spear",
+      "name": "槍兵專用",
+      "completed": 0,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 0,
+      "censored": 0,
+      "meanRoundsCleared": null,
+      "meanFinalCoins": null,
+      "meanDrySeconds": null,
+      "invariantFailures": 0
+    },
+    {
+      "policy": "cavalry",
+      "name": "騎兵專用",
+      "completed": 0,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 0,
+      "censored": 0,
+      "meanRoundsCleared": null,
+      "meanFinalCoins": null,
+      "meanDrySeconds": null,
+      "invariantFailures": 0
+    }
+  ]
+}

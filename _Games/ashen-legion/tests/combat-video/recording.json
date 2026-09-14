@@ -1,0 +1,132 @@
+{
+  "scope": "Actual production play and actual lottery results, no state injection",
+  "combatAt": 5.796,
+  "criticalAt": 8.668,
+  "winAt": 11.106,
+  "receipt": {
+    "prizes": [
+      {
+        "amount": 28,
+        "crystals": 0,
+        "id": 1,
+        "multiplier": 3.5,
+        "name": "菇背幼豬",
+        "playerId": 1,
+        "tier": 1,
+        "time": 3.8833333333333244,
+        "title": "",
+        "x": -0.6569158459463409,
+        "z": 7.335712400076462
+      },
+      {
+        "amount": 16,
+        "crystals": 0,
+        "id": 2,
+        "multiplier": 2,
+        "name": "苔羽蛾",
+        "playerId": 1,
+        "tier": 1,
+        "time": 6.883333333333314,
+        "title": "",
+        "x": -1.578766843818432,
+        "z": 5.96048959997336
+      },
+      {
+        "amount": 16,
+        "crystals": 1,
+        "id": 3,
+        "multiplier": 0.4,
+        "name": "橡果蹦蹦",
+        "playerId": 1,
+        "tier": 1,
+        "time": 7.5499999999999785,
+        "title": "",
+        "x": -5.413764837521832,
+        "z": -4.505963132096864
+      },
+      {
+        "amount": 28,
+        "crystals": 0,
+        "id": 4,
+        "multiplier": 0.7,
+        "name": "菇背幼豬",
+        "playerId": 1,
+        "tier": 1,
+        "time": 7.566666666666645,
+        "title": "",
+        "x": -6.313062438557506,
+        "z": -4.722408397165211
+      },
+      {
+        "amount": 28,
+        "crystals": 1,
+        "id": 5,
+        "multiplier": 0.7,
+        "name": "菇背幼豬",
+        "playerId": 1,
+        "tier": 1,
+        "time": 7.649999999999978,
+        "title": "",
+        "x": -6.612295161927791,
+        "z": -6.450932986342095
+      },
+      {
+        "amount": 110,
+        "crystals": 2,
+        "id": 6,
+        "multiplier": 2.75,
+        "name": "花冠樹靈",
+        "playerId": 1,
+        "tier": 3,
+        "time": 7.666666666666645,
+        "title": "BIG WIN",
+        "x": -4.394399668545611,
+        "z": -1.5561152136383818
+      }
+    ],
+    "fx": {
+      "ok": true,
+      "value": {
+        "componentBounds": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        "clipped": false,
+        "assetReady": true,
+        "currentFrame": 0.6719999992847647,
+        "state": "ready",
+        "generation": 2,
+        "backend": "canvas-2d",
+        "error": null
+      },
+      "celebrationVisible": true,
+      "activeTier": 3,
+      "activeAsset": "big-win",
+      "stage": "burst",
+      "rolledAmount": 0,
+      "targetAmount": 110,
+      "eventIds": [
+        6
+      ],
+      "completedAmounts": [],
+      "dockRect": {
+        "x": 574.690909090909,
+        "y": 90,
+        "width": 333.8181818181818,
+        "height": 76.5
+      },
+      "visualRect": {
+        "x": 412.32267870966086,
+        "y": 226.49061387096393,
+        "width": 615.3546425806783,
+        "height": 141.01877225807212
+      },
+      "usesMultiplier": false,
+      "pointerEvents": "none",
+      "diagnostics": []
+    }
+  },
+  "errors": []
+}

@@ -1,0 +1,68 @@
+{
+  "ok": true,
+  "value": {
+    "manifest_version": 5,
+    "valid": true,
+    "entries": [
+      {
+        "id": "project",
+        "source": "project.unone.json",
+        "source_exists": true,
+        "size_valid": true,
+        "hash_valid": true,
+        "cached": false,
+        "cache_valid": false,
+        "available": true,
+        "error": null
+      },
+      {
+        "id": "script",
+        "source": "main.luau",
+        "source_exists": true,
+        "size_valid": true,
+        "hash_valid": true,
+        "cached": false,
+        "cache_valid": false,
+        "available": true,
+        "error": null
+      },
+      {
+        "id": "scene",
+        "source": "scene.json",
+        "source_exists": true,
+        "size_valid": true,
+        "hash_valid": true,
+        "cached": false,
+        "cache_valid": false,
+        "available": true,
+        "error": null
+      },
+      {
+        "id": "asset-manifest",
+        "source": "assets.json",
+        "source_exists": true,
+        "size_valid": true,
+        "hash_valid": true,
+        "cached": false,
+        "cache_valid": false,
+        "available": true,
+        "error": null
+      },
+      {
+        "id": "content",
+        "source": "bundles/content.bundle",
+        "source_exists": true,
+        "size_valid": true,
+        "hash_valid": true,
+        "cached": false,
+        "cache_valid": false,
+        "available": true,
+        "error": null
+      }
+    ],
+    "active_generation": null,
+    "active_bundles": {}
+  },
+  "diagnostics": [],
+  "effects": []
+}

@@ -19,9 +19,16 @@ Rust retains each immutable packed allocation until the next successful **world 
 
 ## What is and is not eliminated
 
-The rendering response omits Base64 instance payloads. JS no longer decodes Base64 or copies it into an intermediate byte array. Rust keeps a contiguous validated allocation and JS reads it directly. Transform-to-matrix conversion and CPU-to-GPU upload still occur when a batch changes.
+The rendering response omits Base64 instance payloads. JS no longer decodes Base64 or copies it into an intermediate byte array. Rust keeps a contiguous validated allocation and JS reads it directly. Transform-to-matrix conversion and CPU-to-GPU upload still occur when a batch changes. Memory mode rewrites the already-encoded canonical snapshot instead of serializing the world a second time.
 
-Full snapshots and their canonical digests keep the original Base64 representation for compatibility. The engine still encodes that representation and currently retains both encoded and packed forms. Memory mode also constructs a lightweight presentation world from the canonical snapshot. This is not zero-copy end-to-end, nor the final binary-only engine storage design. Further work should be driven by measurements of canonical serialization, validation, packing and upload separately.
+Full snapshots used for rendering may still carry Base64 `data` on the JSON
+transport, or `memory` pointers on `wasm-memory-v1`. Canonical observation
+digests hash batch identity only (`asset`, `count`, `format`), not pose bytes.
+Packed storage is encoded to Base64 lazily when a JSON presentation actually
+needs `data`. Memory mode never encodes pose payloads. This is not zero-copy
+end-to-end, nor the final binary-only engine storage design. Further work
+should be driven by measurements of canonical serialization, validation,
+packing and upload separately.
 
 ## AI verification
 

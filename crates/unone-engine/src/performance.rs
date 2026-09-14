@@ -87,8 +87,9 @@ pub struct PerformanceReport {
     pub luau_positive_heap_delta_bytes_per_frame: usize,
     /// Mean canonical snapshot JSON bytes in explicitly measured frames.
     ///
-    /// Not Web presentation envelope or network bytes; binary instance transport
-    /// can make those sizes substantially different.
+    /// Canonical JSON excludes packed instance pose payloads. Web JSON
+    /// presentation and binary instance transport can make host envelope sizes
+    /// substantially different.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub observation_bytes: Option<usize>,
     /// Which build produced these numbers.

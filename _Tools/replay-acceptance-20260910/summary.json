@@ -1,0 +1,524 @@
+{
+  "originalUnchanged": true,
+  "results": [
+    {
+      "name": "yessir-exact",
+      "exitCode": 0,
+      "ok": true,
+      "status": "reproduced",
+      "regressionStatus": "passed",
+      "ticksExecuted": 240,
+      "originalMatcher": {
+        "actual": true,
+        "evaluated": true,
+        "expected": {
+          "code": "BATTLE_OBSERVED",
+          "endCondition": {
+            "kind": "after_tick",
+            "tick": 239
+          },
+          "flag": "game.replay.battle.observed",
+          "kind": "diagnostic"
+        },
+        "matched": true,
+        "status": "pass"
+      },
+      "overrideMatcher": null,
+      "memory": {
+        "samples": [],
+        "trends": []
+      },
+      "diagnostics": []
+    },
+    {
+      "name": "yessir-memory",
+      "exitCode": 0,
+      "ok": true,
+      "status": "reproduced",
+      "regressionStatus": "passed",
+      "ticksExecuted": 240,
+      "originalMatcher": {
+        "actual": true,
+        "evaluated": true,
+        "expected": {
+          "code": "BATTLE_OBSERVED",
+          "endCondition": {
+            "kind": "after_tick",
+            "tick": 239
+          },
+          "flag": "game.replay.battle.observed",
+          "kind": "diagnostic"
+        },
+        "matched": true,
+        "status": "pass"
+      },
+      "overrideMatcher": null,
+      "memory": {
+        "samples": [
+          {
+            "collected": true,
+            "full_gc_wall_ms": 0.0998,
+            "label": "menu_after_home",
+            "lua_used_after_bytes": 1216940,
+            "lua_used_before_bytes": 1748228,
+            "measurement_wall_ms": 0.1113,
+            "reclaimed_bytes": 531288,
+            "sequence": 1,
+            "tick": 60,
+            "warmup": true
+          },
+          {
+            "collected": true,
+            "full_gc_wall_ms": 0.0856,
+            "label": "menu_after_home",
+            "lua_used_after_bytes": 1217052,
+            "lua_used_before_bytes": 1687900,
+            "measurement_wall_ms": 0.0927,
+            "reclaimed_bytes": 470848,
+            "sequence": 2,
+            "tick": 120,
+            "warmup": false
+          },
+          {
+            "collected": true,
+            "full_gc_wall_ms": 0.08339999999999999,
+            "label": "menu_after_home",
+            "lua_used_after_bytes": 1217164,
+            "lua_used_before_bytes": 1656956,
+            "measurement_wall_ms": 0.0908,
+            "reclaimed_bytes": 439792,
+            "sequence": 3,
+            "tick": 180,
+            "warmup": false
+          },
+          {
+            "collected": true,
+            "full_gc_wall_ms": 0.081,
+            "label": "menu_after_home",
+            "lua_used_after_bytes": 1217276,
+            "lua_used_before_bytes": 1665228,
+            "measurement_wall_ms": 0.0887,
+            "reclaimed_bytes": 447952,
+            "sequence": 4,
+            "tick": 240,
+            "warmup": false
+          }
+        ],
+        "trends": [
+          {
+            "assessment": "growing_retained_heap_investigate",
+            "label": "menu_after_home",
+            "leak_proven": false,
+            "retained_delta_bytes": 224,
+            "samples": 3
+          }
+        ]
+      },
+      "diagnostics": []
+    },
+    {
+      "name": "yessir-idle-memory",
+      "exitCode": 0,
+      "ok": true,
+      "status": "reproduced",
+      "regressionStatus": "passed",
+      "ticksExecuted": 240,
+      "originalMatcher": {
+        "actual": true,
+        "evaluated": true,
+        "expected": {
+          "endCondition": {
+            "kind": "after_tick",
+            "tick": 239
+          },
+          "expectedValue": true,
+          "id": "menu_clean",
+          "kind": "invariant"
+        },
+        "matched": true,
+        "status": "pass"
+      },
+      "overrideMatcher": null,
+      "memory": {
+        "samples": [
+          {
+            "collected": true,
+            "full_gc_wall_ms": 0.0807,
+            "label": "menu_idle_control",
+            "lua_used_after_bytes": 1200580,
+            "lua_used_before_bytes": 1405260,
+            "measurement_wall_ms": 0.0912,
+            "reclaimed_bytes": 204680,
+            "sequence": 1,
+            "tick": 60,
+            "warmup": true
+          },
+          {
+            "collected": true,
+            "full_gc_wall_ms": 0.0626,
+            "label": "menu_idle_control",
+            "lua_used_after_bytes": 1184220,
+            "lua_used_before_bytes": 1331532,
+            "measurement_wall_ms": 0.0701,
+            "reclaimed_bytes": 147312,
+            "sequence": 2,
+            "tick": 120,
+            "warmup": false
+          },
+          {
+            "collected": true,
+            "full_gc_wall_ms": 0.0533,
+            "label": "menu_idle_control",
+            "lua_used_after_bytes": 1184220,
+            "lua_used_before_bytes": 1331532,
+            "measurement_wall_ms": 0.0598,
+            "reclaimed_bytes": 147312,
+            "sequence": 3,
+            "tick": 180,
+            "warmup": false
+          },
+          {
+            "collected": true,
+            "full_gc_wall_ms": 0.0532,
+            "label": "menu_idle_control",
+            "lua_used_after_bytes": 1184220,
+            "lua_used_before_bytes": 1331532,
+            "measurement_wall_ms": 0.0593,
+            "reclaimed_bytes": 147312,
+            "sequence": 4,
+            "tick": 240,
+            "warmup": false
+          }
+        ],
+        "trends": [
+          {
+            "assessment": "no_monotonic_growth_in_window",
+            "label": "menu_idle_control",
+            "leak_proven": false,
+            "retained_delta_bytes": 0,
+            "samples": 3
+          }
+        ]
+      },
+      "diagnostics": []
+    },
+    {
+      "name": "yessir-missing-input",
+      "exitCode": 1,
+      "ok": false,
+      "status": "incomplete",
+      "regressionStatus": "not_evaluated",
+      "ticksExecuted": null,
+      "originalMatcher": null,
+      "overrideMatcher": null,
+      "diagnostics": [
+        {
+          "code": "REPLAY_GATE_NOT_PASSED",
+          "severity": "ERROR",
+          "summary": "Replay or regression evaluation did not complete successfully",
+          "explanation": "Input coverage is missing/inconsistent/truncated; no implicit empty-frame padding",
+          "facts": {},
+          "likely_causes": [],
+          "suggested_actions": [],
+          "source": null
+        }
+      ]
+    },
+    {
+      "name": "yessir-absent-matcher",
+      "exitCode": 0,
+      "ok": true,
+      "status": "not_reproduced",
+      "regressionStatus": "passed",
+      "ticksExecuted": 240,
+      "originalMatcher": {
+        "actual": false,
+        "evaluated": true,
+        "expected": {
+          "code": "NOT_OBSERVED",
+          "endCondition": {
+            "kind": "after_tick",
+            "tick": 239
+          },
+          "flag": "game.replay.battle.observed",
+          "kind": "diagnostic"
+        },
+        "matched": false,
+        "status": "fail"
+      },
+      "overrideMatcher": null,
+      "memory": {
+        "samples": [],
+        "trends": []
+      },
+      "diagnostics": []
+    },
+    {
+      "name": "yessir-regression-failed",
+      "exitCode": 1,
+      "ok": false,
+      "status": "reproduced",
+      "regressionStatus": "failed",
+      "ticksExecuted": 240,
+      "originalMatcher": {
+        "actual": true,
+        "evaluated": true,
+        "expected": {
+          "code": "BATTLE_OBSERVED",
+          "endCondition": {
+            "kind": "after_tick",
+            "tick": 239
+          },
+          "flag": "game.replay.battle.observed",
+          "kind": "diagnostic"
+        },
+        "matched": true,
+        "status": "pass"
+      },
+      "overrideMatcher": null,
+      "memory": {
+        "samples": [],
+        "trends": []
+      },
+      "diagnostics": [
+        {
+          "code": "REPLAY_GATE_NOT_PASSED",
+          "severity": "ERROR",
+          "summary": "Replay or regression evaluation did not complete successfully",
+          "explanation": "Selected matcher evaluated",
+          "facts": {},
+          "likely_causes": [],
+          "suggested_actions": [],
+          "source": null
+        }
+      ]
+    },
+    {
+      "name": "yessir-version-mismatch",
+      "exitCode": 1,
+      "ok": false,
+      "status": "incompatible",
+      "regressionStatus": "not_evaluated",
+      "ticksExecuted": null,
+      "originalMatcher": null,
+      "overrideMatcher": null,
+      "diagnostics": [
+        {
+          "code": "REPLAY_GATE_NOT_PASSED",
+          "severity": "ERROR",
+          "summary": "Replay or regression evaluation did not complete successfully",
+          "explanation": "Exact-version game/engine/assets fingerprints differ",
+          "facts": {},
+          "likely_causes": [],
+          "suggested_actions": [],
+          "source": null
+        }
+      ]
+    },
+    {
+      "name": "yessir-compatible-override",
+      "exitCode": 0,
+      "ok": true,
+      "status": "reproduced",
+      "regressionStatus": "passed",
+      "ticksExecuted": 240,
+      "originalMatcher": {
+        "actual": true,
+        "evaluated": true,
+        "expected": {
+          "code": "BATTLE_OBSERVED",
+          "endCondition": {
+            "kind": "after_tick",
+            "tick": 239
+          },
+          "flag": "game.replay.battle.observed",
+          "kind": "diagnostic"
+        },
+        "matched": true,
+        "status": "pass"
+      },
+      "overrideMatcher": {
+        "actual": true,
+        "evaluated": true,
+        "expected": {
+          "endCondition": {
+            "kind": "after_tick",
+            "tick": 239
+          },
+          "expectedValue": true,
+          "id": "menu_clean",
+          "kind": "invariant"
+        },
+        "matched": true,
+        "status": "pass"
+      },
+      "memory": {
+        "samples": [],
+        "trends": []
+      },
+      "diagnostics": []
+    },
+    {
+      "name": "yessir-override-independent",
+      "exitCode": 0,
+      "ok": true,
+      "status": "reproduced",
+      "regressionStatus": "passed",
+      "ticksExecuted": 240,
+      "originalMatcher": {
+        "actual": false,
+        "evaluated": true,
+        "expected": {
+          "code": "NOT_OBSERVED",
+          "endCondition": {
+            "kind": "after_tick",
+            "tick": 239
+          },
+          "flag": "game.replay.battle.observed",
+          "kind": "diagnostic"
+        },
+        "matched": false,
+        "status": "fail"
+      },
+      "overrideMatcher": {
+        "actual": true,
+        "evaluated": true,
+        "expected": {
+          "endCondition": {
+            "kind": "after_tick",
+            "tick": 239
+          },
+          "expectedValue": true,
+          "id": "menu_clean",
+          "kind": "invariant"
+        },
+        "matched": true,
+        "status": "pass"
+      },
+      "memory": {
+        "samples": [],
+        "trends": []
+      },
+      "diagnostics": []
+    }
+  ],
+  "processEvidence": [
+    {
+      "args": [
+        "replay",
+        "fingerprint"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "stderr": ""
+    },
+    {
+      "args": [
+        "replay",
+        "scenario",
+        "--request",
+        "D:\\Projects\\YesSir\\_Tools\\replay-acceptance-20260910\\yessir-exact-request.json"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "stderr": ""
+    },
+    {
+      "args": [
+        "replay",
+        "scenario",
+        "--request",
+        "D:\\Projects\\YesSir\\_Tools\\replay-acceptance-20260910\\yessir-memory-request.json"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "stderr": ""
+    },
+    {
+      "args": [
+        "replay",
+        "scenario",
+        "--request",
+        "D:\\Projects\\YesSir\\_Tools\\replay-acceptance-20260910\\yessir-idle-memory-request.json"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "stderr": ""
+    },
+    {
+      "args": [
+        "replay",
+        "scenario",
+        "--request",
+        "D:\\Projects\\YesSir\\_Tools\\replay-acceptance-20260910\\yessir-missing-input-request.json"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "stderr": ""
+    },
+    {
+      "args": [
+        "replay",
+        "scenario",
+        "--request",
+        "D:\\Projects\\YesSir\\_Tools\\replay-acceptance-20260910\\yessir-absent-matcher-request.json"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "stderr": ""
+    },
+    {
+      "args": [
+        "replay",
+        "scenario",
+        "--request",
+        "D:\\Projects\\YesSir\\_Tools\\replay-acceptance-20260910\\yessir-regression-failed-request.json"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "stderr": ""
+    },
+    {
+      "args": [
+        "replay",
+        "fingerprint"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "stderr": ""
+    },
+    {
+      "args": [
+        "replay",
+        "scenario",
+        "--request",
+        "D:\\Projects\\YesSir\\_Tools\\replay-acceptance-20260910\\yessir-version-mismatch-request.json"
+      ],
+      "exitCode": 1,
+      "signal": null,
+      "stderr": ""
+    },
+    {
+      "args": [
+        "replay",
+        "scenario",
+        "--request",
+        "D:\\Projects\\YesSir\\_Tools\\replay-acceptance-20260910\\yessir-compatible-override-request.json"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "stderr": ""
+    },
+    {
+      "args": [
+        "replay",
+        "scenario",
+        "--request",
+        "D:\\Projects\\YesSir\\_Tools\\replay-acceptance-20260910\\yessir-override-independent-request.json"
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "stderr": ""
+    }
+  ]
+}

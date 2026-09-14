@@ -1,0 +1,181 @@
+{
+  "name": "bounce-does-not-reset-lifetime",
+  "frames": 403,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Start": true
+      }
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "LeaveShop": true
+      }
+    },
+    {},
+    {
+      "actions": {},
+      "pointer": {
+        "position": {
+          "x": 12.4,
+          "y": 12.2
+        },
+        "screen_position": {
+          "x": 50,
+          "y": 50
+        },
+        "down": true
+      }
+    },
+    {
+      "actions": {},
+      "pointer": {
+        "position": {
+          "x": 12.4,
+          "y": 12.2
+        },
+        "screen_position": {
+          "x": 50,
+          "y": 50
+        },
+        "down": false
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "troops",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "expired",
+        "equals": 1
+      }
+    },
+    {
+      "observation": {
+        "key": "refunded",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "breaks",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "troops_in_bounds",
+        "equals": true
+      }
+    },
+    {
+      "observation": {
+        "key": "economy_conserved",
+        "equals": true
+      }
+    }
+  ]
+}

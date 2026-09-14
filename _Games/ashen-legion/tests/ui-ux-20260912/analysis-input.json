@@ -1,0 +1,156 @@
+{
+  "source_items": [
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\ui-ux-20260912\\before\\1440x900\\shop.png",
+      "url": null,
+      "label": "E001",
+      "image_id": "before/1440x900/shop.png"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\ui-ux-20260912\\after\\1440x900\\shop.png",
+      "url": null,
+      "label": "E002",
+      "image_id": "after/1440x900/shop.png"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\ui-ux-20260912\\before\\1440x900\\purchase.png",
+      "url": null,
+      "label": "E003",
+      "image_id": "before/1440x900/purchase.png"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\ui-ux-20260912\\after\\1440x900\\purchase.png",
+      "url": null,
+      "label": "E004",
+      "image_id": "after/1440x900/purchase.png"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\ui-ux-20260912\\after\\1440x900\\equipped.png",
+      "url": null,
+      "label": "E005",
+      "image_id": "after/1440x900/equipped.png"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\ui-ux-20260912\\after\\390x844\\gear.png",
+      "url": null,
+      "label": "E006",
+      "image_id": "after/390x844/gear.png"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\ui-ux-20260912\\before\\390x844\\auto.png",
+      "url": null,
+      "label": "E007",
+      "image_id": "before/390x844/auto.png"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\ui-ux-20260912\\after\\1440x900\\auto.png",
+      "url": null,
+      "label": "E008",
+      "image_id": "after/1440x900/auto.png"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\ui-ux-20260912\\after\\390x844\\auto-empty.png",
+      "url": null,
+      "label": "E009",
+      "image_id": "after/390x844/auto-empty.png"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\ui-ux-20260912\\after\\1440x900\\pause.png",
+      "url": null,
+      "label": "E010",
+      "image_id": "after/1440x900/pause.png"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\ui-ux-20260912\\after\\390x844\\enchant-offer.png",
+      "url": null,
+      "label": "E011",
+      "image_id": "after/390x844/enchant-offer.png"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\ui-ux-20260912\\after\\1440x900\\result.png",
+      "url": null,
+      "label": "E012",
+      "image_id": "after/1440x900/result.png"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\ui-ux-20260912\\after\\844x390\\shop.png",
+      "url": null,
+      "label": "E013",
+      "image_id": "after/844x390/shop.png"
+    }
+  ],
+  "game_name": "森林領主",
+  "platform": "Unone 官方 Canvas / Windows Edge",
+  "region_server": null,
+  "build_or_version": "character-ui-v1",
+  "session_scope": "UI 主流程與明示局部 fixtures",
+  "expected_genre": "roguelike_build",
+  "is_new_account": true,
+  "has_voice": "unknown",
+  "has_subtitle": "unknown",
+  "tool_readiness": {
+    "browser_access": "available",
+    "ffmpeg": "unknown",
+    "yt_dlp": "unknown",
+    "ocr": "unknown",
+    "asr": "unknown",
+    "notes": [
+      "本機正式引擎渲染；實際 touchscreen 事件；54 份 UI 樹採樣"
+    ]
+  },
+  "analysis_goal": "依榛姨人物風格統一內頁，修正 UI/UX 與資訊層級",
+  "analysis_mode": "ux_ui",
+  "single_player_scope": "unknown",
+  "trailer_context": {
+    "trailer_type": "unknown",
+    "target_platforms": [],
+    "target_channels": [],
+    "release_status": "unknown",
+    "call_to_action": "unknown"
+  },
+  "foresight_context": {
+    "target_market": "unknown",
+    "target_platform": "unknown",
+    "business_model": "unknown",
+    "project_stage": "unknown",
+    "scope_weight": "casual_light | micro_midcore_heavy | large_scale | unknown",
+    "competitor_scope": [],
+    "research_budget": "unknown"
+  },
+  "voi_gate": {
+    "decision_to_change": "統一內頁美術、降低配裝往返與資訊雜訊",
+    "external_research_needed": false,
+    "research_questions": [],
+    "stop_conditions": [
+      "已完成當次可觀察的主流程及尺寸驗證"
+    ]
+  },
+  "template_id": "general_game_video_experience",
+  "output_formats": [
+    "markdown_report",
+    "structured_json"
+  ],
+  "excluded_scope": [
+    "首次遊玩者是否自然理解或喜歡",
+    "實體手機觸控誤觸率及效能",
+    "完整 20 分鐘體驗、留存、最終數值平衡",
+    "fixture 截圖不代表自然抽獎機率或完整通關"
+  ],
+  "known_context": [
+    "正式遊戲 UI 不使用 HTML 控制項",
+    "保留既有金幣/結晶及戰鬥規則"
+  ]
+}

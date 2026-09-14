@@ -18,7 +18,7 @@ for dev in [False,True]:
  args=['--project',str(project),'export','platform','--target','web','--output',str(root/('development' if dev else 'production'))]
  if dev:args+=['--development']
  v=run(args);assert v['value']['sdk_selection']['variant']==('development' if dev else 'production')
-for target in ['ios','android','typo']:
+for target in ['ios','android','android-webview','typo']:
  run(['--project',str(project),'export','platform','--target',target,'--output',str(root/'unsupported')],False,'SDK_TARGET_UNSUPPORTED');assert not (root/'unsupported').exists()
 run(['--project',str(project),'export','platform','--target','web','--runtime-id','missing','--output',str(root/'missing')],False,'SDK_RUNTIME_UNAVAILABLE')
 config=project/'project.unone.json';config_raw=config.read_bytes();config_data=json.loads(config_raw);config_data.setdefault('systems',{})['physics3d']=True;config.write_text(json.dumps(config_data))

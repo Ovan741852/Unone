@@ -1,0 +1,33 @@
+{
+  "version": 3,
+  "bundles": [
+    {
+      "id": "project",
+      "version": "1",
+      "source": "project.unone.json",
+      "sha256": "5aa1e1134932e951c9ad1b62236a07933a799cde751bf71f7b7075ad3221a0e9",
+      "size_bytes": 438,
+      "dependencies": []
+    },
+    {
+      "id": "script",
+      "version": "1",
+      "source": "main.luau",
+      "sha256": "1f570dd6ef044a7d9b820986b6ab488384f701f0f3d642cf373bbb29a00da1a0",
+      "size_bytes": 534,
+      "dependencies": [
+        "project"
+      ]
+    },
+    {
+      "id": "scene",
+      "version": "1",
+      "source": "scene.json",
+      "sha256": "91361055b7c264c0126e9e39e16356cb9767d44c54d0c49e41e6a46d1b68f982",
+      "size_bytes": 261,
+      "dependencies": [
+        "project"
+      ]
+    }
+  ]
+}

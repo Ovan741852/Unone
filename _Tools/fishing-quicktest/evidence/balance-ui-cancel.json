@@ -1,0 +1,57 @@
+{
+  "format": "unone.fishing.balance.v1",
+  "scriptHash": "8c0130e3aa665ec1d8f114d0cc1e159ff4251fbe1762132c955bef575992a694",
+  "sourceMatchesExport": true,
+  "policyVersion": 1,
+  "scope": "Implemented battle/choice only; no town/shop/potion/curse gameplay yet",
+  "policy": "Manual hold; retarget nearest small every 12 frames, rank-5 boss when present; first offered upgrade; fixed unit; no state edits",
+  "runs": [
+    {
+      "seed": 42,
+      "policy": "sword",
+      "status": "cancelled",
+      "frames": 1440
+    }
+  ],
+  "summary": [
+    {
+      "policy": "sword",
+      "name": "劍兵專用",
+      "completed": 0,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 0,
+      "censored": 0,
+      "meanRoundsCleared": null,
+      "meanFinalCoins": null,
+      "meanDrySeconds": null,
+      "invariantFailures": 0
+    },
+    {
+      "policy": "spear",
+      "name": "槍兵專用",
+      "completed": 0,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 0,
+      "censored": 0,
+      "meanRoundsCleared": null,
+      "meanFinalCoins": null,
+      "meanDrySeconds": null,
+      "invariantFailures": 0
+    },
+    {
+      "policy": "cavalry",
+      "name": "騎兵專用",
+      "completed": 0,
+      "victories": 0,
+      "bankruptcies": 0,
+      "timeouts": 0,
+      "censored": 0,
+      "meanRoundsCleared": null,
+      "meanFinalCoins": null,
+      "meanDrySeconds": null,
+      "invariantFailures": 0
+    }
+  ]
+}

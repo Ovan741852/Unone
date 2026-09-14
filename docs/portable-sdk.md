@@ -67,24 +67,40 @@ export. Validate supplied runtime builds against intended games before releasing
 ## Platform extension boundary
 
 The manifest separates SDK host from game target, variant, capabilities and files.
-New packagers reuse discovery, verification and project inspection. Web, Windows native and Android native targets are implemented in this SDK route.
-The updated native host supports meshes/instances, PNG palettes, native particles
-and non-DOM UI. UI images support PNG and a self-contained static SVG subset when
-the installed runtime advertises `ui.images: svg-static`. Audio playback and
-Spine/Effekseer rendering remain unsupported. Older runtimes do not gain UI/SVG
-support merely by using a new CLI. See [UI contract](formal-ui-host.md).
-Android packaging requires a platform runtime plus SDK/Java/signing tools.
+Game Luau and declared assets are shared. Presentation overlays and GPU/runtime
+files are host-specific; UI font settings are shared by Web and native.
+`sdk inspect --json` lists every target with the same capability
+shape (`family`, `exportable`, `renderer`, `presentation`, `decoders`).
+
+| Target | Family | Export | Notes |
+|---|---|---|---|
+| `web` | web-wasm | `export platform --target web` | WASM + JS player. `player.presentation.json` is this overlay. |
+| `windows` | native-wgpu | `export platform --target windows` | mesh/instances/particles/PNG and non-DOM UI in matching runtimes. Export rejects spine/effekseer. Audio fails at runtime if published. |
+| `android-x86_64` | native-wgpu | `export platform --target android-x86_64` | NativeActivity + wgpu. BlueStacks evidence only. |
+| `android-arm64` | native-wgpu | `export platform --target android-arm64` | Packager exists. No device evidence. |
+| `android-webview` | webview-wraps-web | **not** this command | `scripts/build-android-player.ps1` after a web export. System WebView, not wgpu. |
+| `ios` | native-wgpu | not implemented | ABI only. |
+
+Native export rejects enabled `spine`/`effekseer` and non-default web overlay keys in `player.presentation.json` (`runtime_backend=worker`, bloom, interpolation, show_performance, non-default `job_policy`). Audio still fails at native runtime if published. `sdk inspect --json` splits those as `export_blocked_systems` vs `runtime_blocked_systems`. Android packaging requires a platform runtime plus SDK/Java/signing tools.
+
+The current native host supports non-DOM UI. UI images support PNG and a
+self-contained static SVG subset when the **selected runtime** advertises
+`ui.images: svg-static`. The target catalog describes current host code;
+`sources.runtimes[].descriptor` records the installed bytes' declared capabilities.
+Older runtimes do not gain UI/SVG support merely by using a new CLI. Windows
+SVG/UI evidence is in the [compatibility ledger](reviews/2026-09-10-svg-sdk.md);
+Android/iOS UI device validation remains unperformed. See [UI contract](formal-ui-host.md).
 See [native validation](native-battle.md).
 
 | Target | Work needed |
 |---|---|
 | Windows native | Implemented; wgpu native renderer and verified content package |
-| Android | NativeActivity packager implemented; x86_64 tested on BlueStacks, arm64 not device-tested |
+| Android native | NativeActivity packager implemented; x86_64 tested on BlueStacks, arm64 not device-tested |
+| Android WebView | Separate APK that embeds a web export; not a native renderer |
 | iOS | iOS host/runtime and rendering integration, Xcode/macOS, provisioning/signing |
 
 Add versioned packager code and report toolchain prerequisites. Do not execute
-arbitrary manifest-provided shell commands. Native and WebView should have distinct
-target/runtime identities. Core gameplay contracts remain shared.
+arbitrary manifest-provided shell commands. Core gameplay contracts remain shared.
 
 ## Acceptance
 

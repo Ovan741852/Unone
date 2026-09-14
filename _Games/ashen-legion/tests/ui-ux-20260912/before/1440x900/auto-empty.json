@@ -1,0 +1,2302 @@
+{
+  "state": {
+    "activeSkills": {
+      "critical": 1,
+      "pierce": 1
+    },
+    "aimX": 0,
+    "aimZ": 0,
+    "arenaHalfExtent": 12.5,
+    "audioMuted": false,
+    "autoConfigOpen": true,
+    "autoDraft": {
+      "acorn": false,
+      "beetle": false,
+      "boar": false,
+      "elder": false,
+      "moth": false,
+      "piglet": false,
+      "stag": false,
+      "treant": false,
+      "turtle": false,
+      "wheel": false
+    },
+    "autoEnabled": false,
+    "autoTargets": {
+      "acorn": true,
+      "beetle": true,
+      "boar": true,
+      "elder": true,
+      "moth": true,
+      "piglet": true,
+      "stag": true,
+      "treant": true,
+      "turtle": true,
+      "wheel": true
+    },
+    "awardChances": [
+      0.325,
+      0.325,
+      0.275,
+      0.25,
+      0.225
+    ],
+    "balanceVersion": "2026-09-12-nearwin-v1",
+    "battleSeconds": 0.5666666666666668,
+    "beetleAwardChance": 0.125,
+    "bossPresent": false,
+    "bossSpawned": false,
+    "bounces": 0,
+    "breaks": 0,
+    "buildGuide": [
+      {
+        "core": [
+          "longlife",
+          "hunter_vigor",
+          "heat"
+        ],
+        "desc": "先用低價劍兵，一兩件裝備即可起步；熱機吃存活時間，擊殺最多延命1秒。",
+        "name": "省錢長征",
+        "tradeoff": "接觸死亡照常，延命不會讓劍兵穿怪。"
+      },
+      {
+        "core": [
+          "ricochet_precision",
+          "crit_power",
+          "lightning"
+        ],
+        "desc": "瞄準空隙折返蓄爆擊，再用雷鏈清旁邊小怪；穿透讓同一兵多次出手。",
+        "name": "鏡面雷暴",
+        "tradeoff": "雷鏈每兵最多兩次，反彈爆擊率最多額外45%。"
+      },
+      {
+        "core": [
+          "bounce_power",
+          "rebound_charge",
+          "bounce_life"
+        ],
+        "desc": "利用牆面兩次折返累積增傷；回春增加找角度的時間。",
+        "name": "折返蓄力",
+        "tradeoff": "碰怪仍按原本穿透次數結算，角落只算一次反彈。"
+      },
+      {
+        "core": [
+          "haste",
+          "momentum",
+          "finisher"
+        ],
+        "desc": "騎兵先用速度強化穿透，耗盡後把已用穿透轉成最後一撞傷害。",
+        "name": "疾風破陣",
+        "tradeoff": "加速不延長壽命；不追蹤時要選好射線。"
+      },
+      {
+        "core": [
+          "pierce",
+          "piercing_wave",
+          "shock"
+        ],
+        "desc": "每兩次成功穿透追加旋斬，主要命中再震盪；適合怪物潮。",
+        "name": "穿陣旋風",
+        "tradeoff": "旋斬和震盪都是次級傷害，不再互相觸發或爆擊。"
+      },
+      {
+        "core": [
+          "frost_touch",
+          "shatter",
+          "slow_force"
+        ],
+        "desc": "先用凝霜兵標記目標，碎冰兵跟進；搭配沉重把慢速換成傷害。",
+        "name": "霜鋼重擊",
+        "tradeoff": "同一次首次上霜不能立即吃碎冰；重步需負向速度加成。"
+      },
+      {
+        "core": [
+          "frenzy",
+          "hunter_vigor",
+          "pierce"
+        ],
+        "desc": "追著怪物潮累積5／10／15連殺，穿透兵靠擊殺延長作戰。",
+        "name": "狂獵續航",
+        "tradeoff": "2.5秒沒有擊殺後開始掉層；王少的時段不容易維持。"
+      },
+      {
+        "core": [
+          "last_stand",
+          "ember_burst",
+          "expire_burst"
+        ],
+        "desc": "活到最後四分之一壽命拚強力撞擊；接觸終結或到期各有爆發。",
+        "name": "背水餘燼",
+        "tradeoff": "接觸爆炸與到期爆炸不會在同一次死亡疊觸發；召回不爆炸。"
+      },
+      {
+        "core": [
+          "landing_spin",
+          "spin_master",
+          "king_hunter"
+        ],
+        "desc": "任何兵種都能裝落地旋轉斬，擴圈壓住怪群，再往前撞王。",
+        "name": "落地風環",
+        "tradeoff": "擴張不會自行授予旋轉技能；空中也會消耗壽命。"
+      }
+    ],
+    "buildIndex": 0,
+    "cards": [
+      {
+        "desc": "用結晶買賣裝備；配裝增加派兵金幣費",
+        "id": "market",
+        "name": "商店",
+        "type": "地點"
+      },
+      {
+        "desc": "8 結晶試附魔，可保留原詞綴",
+        "id": "enchant",
+        "name": "附魔坊",
+        "type": "地點"
+      },
+      {
+        "desc": "花金幣購買，最多攜帶兩瓶",
+        "id": "potion",
+        "name": "藥水攤",
+        "type": "地點"
+      }
+    ],
+    "chapter": "苔光林口",
+    "chestCount": 0,
+    "chestHold": 0,
+    "chests": {},
+    "choiceSeconds": 3.866666666666658,
+    "coinParticles": 0,
+    "coins": 320,
+    "contactDeaths": 0,
+    "contactHits": 0,
+    "costs": [
+      5,
+      10,
+      20
+    ],
+    "critUntil": 0,
+    "criticalHits": 0,
+    "crystalEarned": 0,
+    "crystalProgress": 0,
+    "crystalSold": 0,
+    "crystalSpent": 12,
+    "crystalStart": 18,
+    "crystals": 6,
+    "curseRewards": [
+      0,
+      0,
+      0
+    ],
+    "curses": {},
+    "damage": 1,
+    "damageEvent": 0,
+    "damageEvents": {},
+    "discount": 0,
+    "earned": 0,
+    "economyTuning": {
+      "awardScale": 0.5,
+      "deployScale": 0.5,
+      "nearBreak": 0.7,
+      "version": "2026-09-12-nearwin-v1"
+    },
+    "enchantUses": 0,
+    "equipSlot": 5,
+    "equipment": [
+      1,
+      1,
+      1
+    ],
+    "event": 0,
+    "expired": 0,
+    "fireMode": "manual",
+    "fireRearm": true,
+    "fired": 0,
+    "freeFired": 0,
+    "hasteUntil": 0,
+    "hordeAdded": 0,
+    "hordeAt": 36.5917055380579,
+    "hordeCount": 0,
+    "hordeNotice": 0,
+    "inventory": [
+      {
+        "name": "商店",
+        "type": "地點"
+      }
+    ],
+    "itemSerial": 1,
+    "items": [
+      {
+        "id": 1,
+        "name": "穿軍刃",
+        "paid": 12,
+        "skill": "pierce",
+        "slot": 5
+      }
+    ],
+    "kills": 0,
+    "lastCrystalGain": 0,
+    "lastMonster": "",
+    "lifetime": 1,
+    "loadouts": [
+      {
+        "areaBonus": 0,
+        "areaPenalty": 0,
+        "bounceCrit": 0,
+        "bounceLife": 0,
+        "bouncePower": 0,
+        "critAdd": 0,
+        "critChance": 0.1,
+        "critMultiplier": 1.5,
+        "crowdRing": 0,
+        "damageBonus": 0,
+        "deathBurst": 0,
+        "distance": 0,
+        "expireBurst": 0,
+        "finisher": 0,
+        "flightSpeed": 0,
+        "fracture": 0,
+        "frenzy": 0,
+        "frost": 0,
+        "heat": 0,
+        "hitEcho": 0,
+        "killLife": 0,
+        "kingDamage": 0,
+        "landingSpin": false,
+        "lastStand": 0,
+        "lifeBonus": 0,
+        "lightning": 0,
+        "momentum": 0,
+        "pierce": 1,
+        "pierceWave": 0,
+        "rally": 0,
+        "rapid": 0,
+        "reboundCharge": 0,
+        "recruit": 0,
+        "shatter": 0,
+        "shock": 0,
+        "showdown": 0,
+        "slowForce": 0,
+        "solitary": 0,
+        "soloHunt": 0,
+        "speedBonus": 0,
+        "spinDamage": 0,
+        "spinDuration": 0,
+        "spinMaster": 0,
+        "spinRadius": 0,
+        "thirdCrit": 0,
+        "wallQuake": 0
+      },
+      {
+        "areaBonus": 0,
+        "areaPenalty": 0,
+        "bounceCrit": 0,
+        "bounceLife": 0,
+        "bouncePower": 0,
+        "critAdd": 0,
+        "critChance": 0,
+        "critMultiplier": 1.5,
+        "crowdRing": 0,
+        "damageBonus": 0,
+        "deathBurst": 0,
+        "distance": 0,
+        "expireBurst": 0,
+        "finisher": 0,
+        "flightSpeed": 16,
+        "fracture": 0,
+        "frenzy": 0,
+        "frost": 0,
+        "heat": 0,
+        "hitEcho": 0,
+        "killLife": 0,
+        "kingDamage": 0,
+        "landingSpin": true,
+        "lastStand": 0,
+        "lifeBonus": 0,
+        "lightning": 0,
+        "momentum": 0,
+        "pierce": 0,
+        "pierceWave": 0,
+        "rally": 0,
+        "rapid": 0,
+        "reboundCharge": 0,
+        "recruit": 0,
+        "shatter": 0,
+        "shock": 0,
+        "showdown": 0,
+        "slowForce": 0,
+        "solitary": 0,
+        "soloHunt": 0,
+        "speedBonus": 0,
+        "spinDamage": 1,
+        "spinDuration": 0.55,
+        "spinMaster": 0,
+        "spinRadius": 2.9,
+        "thirdCrit": 0,
+        "wallQuake": 0
+      },
+      {
+        "areaBonus": 0,
+        "areaPenalty": 0,
+        "bounceCrit": 0,
+        "bounceLife": 0,
+        "bouncePower": 0,
+        "critAdd": 0,
+        "critChance": 0,
+        "critMultiplier": 1.5,
+        "crowdRing": 0,
+        "damageBonus": 0,
+        "deathBurst": 0,
+        "distance": 0,
+        "expireBurst": 0,
+        "finisher": 0,
+        "flightSpeed": 0,
+        "fracture": 0,
+        "frenzy": 0,
+        "frost": 0,
+        "heat": 0,
+        "hitEcho": 0,
+        "killLife": 0,
+        "kingDamage": 0,
+        "landingSpin": false,
+        "lastStand": 0,
+        "lifeBonus": 0,
+        "lightning": 0,
+        "momentum": 0,
+        "pierce": 20,
+        "pierceWave": 0,
+        "rally": 0,
+        "rapid": 0,
+        "reboundCharge": 0,
+        "recruit": 0,
+        "shatter": 0,
+        "shock": 0,
+        "showdown": 0,
+        "slowForce": 0,
+        "solitary": 0,
+        "soloHunt": 0,
+        "speedBonus": 0,
+        "spinDamage": 0,
+        "spinDuration": 0,
+        "spinMaster": 0,
+        "spinRadius": 0,
+        "thirdCrit": 0,
+        "wallQuake": 0
+      }
+    ],
+    "location": "market",
+    "lockEnabled": false,
+    "lockViolations": 0,
+    "lostPaid": 0,
+    "lotteryMisses": 0,
+    "lotteryResults": {},
+    "luck": 0,
+    "mapDuration": 1.5,
+    "mapElapsed": 1.4999999999999996,
+    "mapFrom": 0,
+    "mapMoving": false,
+    "mapPosition": 1,
+    "message": "",
+    "monsters": [
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 1,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": -10.432031,
+        "yaw": 5.030518444225902,
+        "z": -9.57047
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 2,
+        "name": "橡果蹦蹦",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "acorn",
+        "x": -7.021527,
+        "yaw": 3.0975424087836387,
+        "z": -10.588866
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 3,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": -3.551499,
+        "yaw": 1.2782204897196825,
+        "z": -9.097684
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 32,
+        "guardProgress": 0,
+        "id": 4,
+        "name": "菇背幼豬",
+        "rank": 2,
+        "scale": 1.15,
+        "skin": "piglet",
+        "x": -2.163,
+        "yaw": 4.328777724507235,
+        "z": -10.233547
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 5,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": 0.535399,
+        "yaw": 3.8944378531882413,
+        "z": -9.948458
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 6,
+        "name": "橡果蹦蹦",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "acorn",
+        "x": 3.326005,
+        "yaw": 4.935438662703401,
+        "z": -9.064601
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 7,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": 6.610765,
+        "yaw": 5.281120810694623,
+        "z": -8.769099
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 32,
+        "guardProgress": 0,
+        "id": 8,
+        "name": "菇背幼豬",
+        "rank": 2,
+        "scale": 1.15,
+        "skin": "piglet",
+        "x": 10.699323,
+        "yaw": 2.387754104268029,
+        "z": -9.906454
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 9,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": -9.769299,
+        "yaw": 0.577845497142852,
+        "z": -3.171879
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 10,
+        "name": "橡果蹦蹦",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "acorn",
+        "x": -8.1785,
+        "yaw": 4.868105930087211,
+        "z": -4.230986
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 11,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": -3.845852,
+        "yaw": 0.8953658428678418,
+        "z": -4.078767
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 32,
+        "guardProgress": 0,
+        "id": 12,
+        "name": "菇背幼豬",
+        "rank": 2,
+        "scale": 1.15,
+        "skin": "piglet",
+        "x": -0.365914,
+        "yaw": 1.1843644482069744,
+        "z": -3.956699
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 13,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": 0.569135,
+        "yaw": 5.167934437677146,
+        "z": -4.284751
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 14,
+        "name": "橡果蹦蹦",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "acorn",
+        "x": 4.448776,
+        "yaw": 0.20269732698455994,
+        "z": -2.938008
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 15,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": 7.684754,
+        "yaw": 0.28204117887648866,
+        "z": -3.244763
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 32,
+        "guardProgress": 0,
+        "id": 16,
+        "name": "菇背幼豬",
+        "rank": 2,
+        "scale": 1.15,
+        "skin": "piglet",
+        "x": 10.762372,
+        "yaw": 1.9385852798342376,
+        "z": -3.839652
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 17,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": -10.337469,
+        "yaw": 4.227968291119576,
+        "z": 1.380371
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 18,
+        "name": "橡果蹦蹦",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "acorn",
+        "x": -7.580435,
+        "yaw": 5.132137716787607,
+        "z": 1.939449
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 19,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": -4.034504,
+        "yaw": 3.119045197017591,
+        "z": 0.334609
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 32,
+        "guardProgress": 0,
+        "id": 20,
+        "name": "菇背幼豬",
+        "rank": 2,
+        "scale": 1.15,
+        "skin": "piglet",
+        "x": -0.645888,
+        "yaw": 2.196925284868466,
+        "z": 0.574288
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 21,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": 0.406949,
+        "yaw": 4.5619343640372305,
+        "z": 1.519239
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 22,
+        "name": "橡果蹦蹦",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "acorn",
+        "x": 4.631267,
+        "yaw": 2.866320881721599,
+        "z": 0.84676
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 23,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": 7.348609,
+        "yaw": 0.3250146008476963,
+        "z": 2.238589
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 32,
+        "guardProgress": 0,
+        "id": 24,
+        "name": "菇背幼豬",
+        "rank": 2,
+        "scale": 1.15,
+        "skin": "piglet",
+        "x": 10.476694,
+        "yaw": 1.4234310590154435,
+        "z": 1.648316
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 25,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": -10.98329,
+        "yaw": 5.0844115143693145,
+        "z": 7.282791
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 26,
+        "name": "橡果蹦蹦",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "acorn",
+        "x": -7.150513,
+        "yaw": 2.6265447724606537,
+        "z": 5.712201
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 27,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": -4.508847,
+        "yaw": 3.799466331352807,
+        "z": 5.687884
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 32,
+        "guardProgress": 0,
+        "id": 28,
+        "name": "菇背幼豬",
+        "rank": 2,
+        "scale": 1.15,
+        "skin": "piglet",
+        "x": -0.577159,
+        "yaw": 2.412158245190362,
+        "z": 5.804799
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 29,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": 1.66995,
+        "yaw": 6.24280036029956,
+        "z": 7.462171
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 30,
+        "name": "橡果蹦蹦",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "acorn",
+        "x": 4.749081,
+        "yaw": 0.30580227408894767,
+        "z": 7.273533
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 22,
+        "guardProgress": 0,
+        "id": 31,
+        "name": "苔羽蛾",
+        "rank": 1,
+        "scale": 0.9,
+        "skin": "moth",
+        "x": 7.272069,
+        "yaw": 2.451871108432918,
+        "z": 5.615468
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 32,
+        "guardProgress": 0,
+        "id": 32,
+        "name": "菇背幼豬",
+        "rank": 2,
+        "scale": 1.15,
+        "skin": "piglet",
+        "x": 10.213624,
+        "yaw": 2.799582609888808,
+        "z": 6.269945
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 100,
+        "guardProgress": 0,
+        "id": 33,
+        "name": "花冠樹靈",
+        "rank": 3,
+        "scale": 1.65,
+        "skin": "treant",
+        "x": -5.666902,
+        "yaw": 1.1298284415064244,
+        "z": -3.84279
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 100,
+        "guardProgress": 0,
+        "id": 34,
+        "name": "獠牙搬木王",
+        "rank": 3,
+        "scale": 1.65,
+        "skin": "boar",
+        "x": 5.812126,
+        "yaw": 3.6768522125493845,
+        "z": -5.316817
+      },
+      {
+        "animation": "walk",
+        "breaks": 0,
+        "damage": 0,
+        "guard": 160,
+        "guardProgress": 0,
+        "id": 35,
+        "name": "古榕守衛",
+        "rank": 4,
+        "scale": 2.1,
+        "skin": "elder",
+        "x": -0.277759,
+        "yaw": 3.995871102634945,
+        "z": -8.241908
+      }
+    ],
+    "offer": [
+      58,
+      61,
+      59
+    ],
+    "particles": 0,
+    "paused": true,
+    "pendingWheel": {},
+    "phase": "battle",
+    "piercesUsed": 0,
+    "playerBuffs": [
+      {
+        "critical": 0,
+        "haste": 0,
+        "pierce": 0
+      },
+      {
+        "critical": 0,
+        "haste": 0,
+        "pierce": 0
+      },
+      {
+        "critical": 0,
+        "haste": 0,
+        "pierce": 0
+      },
+      {
+        "critical": 0,
+        "haste": 0,
+        "pierce": 0
+      }
+    ],
+    "playerGold": [
+      320,
+      320,
+      320,
+      320
+    ],
+    "poolContributed": 0,
+    "poolPaidOut": 0,
+    "poolWinner": 0,
+    "potions": {},
+    "presentationDelay": 0,
+    "prize": 0,
+    "prizeTier": 0,
+    "procHits": 0,
+    "radius": 2.9,
+    "rallyUntil": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "rallyUsed": [
+      false,
+      false,
+      false,
+      false
+    ],
+    "rankEconomy": [
+      {
+        "attempts": 0,
+        "damage": 0,
+        "earned": 0
+      },
+      {
+        "attempts": 0,
+        "damage": 0,
+        "earned": 0
+      },
+      {
+        "attempts": 0,
+        "damage": 0,
+        "earned": 0
+      },
+      {
+        "attempts": 0,
+        "damage": 0,
+        "earned": 0
+      },
+      {
+        "attempts": 0,
+        "damage": 0,
+        "earned": 0
+      }
+    ],
+    "recruitUses": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "refreshUsed": false,
+    "refunded": 0,
+    "researchUsed": false,
+    "resultElapsed": 0,
+    "returnedTotal": 0,
+    "returnedUnits": 0,
+    "rewardClock": 5.916666666666651,
+    "rewards": {},
+    "round": 1,
+    "roundCrystalBonus": 0,
+    "roundCrystalEarned": 0,
+    "roundDuration": 180,
+    "roundRefund": 0,
+    "roundSettled": false,
+    "roundSpent": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "runeOwned": [
+      [
+        false,
+        false,
+        false
+      ],
+      [
+        false,
+        false,
+        false
+      ],
+      [
+        false,
+        false,
+        false
+      ]
+    ],
+    "runes": [
+      0,
+      0,
+      0
+    ],
+    "seat": 1,
+    "selected": 1,
+    "shopSpent": 0,
+    "shopVisits": 1,
+    "skillBook": {
+      "bounce_life": {
+        "deployExtra": 1,
+        "desc": "反彈延命 0.2 秒，每兵上限 1 秒；每支派兵 +1",
+        "name": "回春折返"
+      },
+      "bounce_power": {
+        "deployExtra": 1,
+        "desc": "每反彈傷害 +12%，上限 +60%；每支派兵 +1",
+        "name": "越彈越猛"
+      },
+      "crit_power": {
+        "deployExtra": 1,
+        "desc": "爆擊倍率 +0.25；每支派兵 +1",
+        "name": "猛擊"
+      },
+      "critical": {
+        "deployExtra": 1,
+        "desc": "目前兵種爆擊率 +10%，爆擊傷害至少 1.5 倍；每次傷害獨立判定；每支派兵 +1",
+        "name": "精準戰技"
+      },
+      "crowd_ring": {
+        "deployExtra": 1,
+        "desc": "落地時附近至少三怪，旋轉半徑+20%，每兵一次；每支派兵 +1",
+        "name": "聚獵"
+      },
+      "deadly": {
+        "deployExtra": 2,
+        "desc": "爆擊倍率+0.5；每支派兵 +2",
+        "name": "致命"
+      },
+      "distance": {
+        "deployExtra": 1,
+        "desc": "地面移動12單位後下一撞 +30%；每支派兵 +1",
+        "name": "遠征"
+      },
+      "double_pierce": {
+        "deployExtra": 4,
+        "desc": "穿透+2；每支派兵 +4",
+        "name": "雙重貫穿"
+      },
+      "ember_burst": {
+        "deployExtra": 4,
+        "desc": "終結接觸後範圍爆炸；每支派兵 +4",
+        "name": "餘燼"
+      },
+      "expire_burst": {
+        "deployExtra": 2,
+        "desc": "到期產生25%範圍傷害；每支派兵 +2",
+        "name": "不屈"
+      },
+      "finisher": {
+        "deployExtra": 2,
+        "desc": "穿透累積最後一撞傷害；每支派兵 +2",
+        "name": "破陣"
+      },
+      "fracture": {
+        "deployExtra": 1,
+        "desc": "命中前破防進度達70%，主要接觸傷害+20%；每支派兵 +1",
+        "name": "裂甲"
+      },
+      "frenzy": {
+        "deployExtra": 1,
+        "desc": "連殺 5/10/15 層增傷；每支派兵 +1",
+        "name": "狂獵戰旗"
+      },
+      "frost_touch": {
+        "deployExtra": 1,
+        "desc": "主要命中緩速；每支派兵 +1",
+        "name": "凝霜之握"
+      },
+      "giant": {
+        "deployExtra": 2,
+        "desc": "基礎傷害+25%；每支派兵 +2",
+        "name": "巨力"
+      },
+      "haste": {
+        "deployExtra": 1,
+        "desc": "移速 +15%；每支派兵 +1",
+        "name": "疾行"
+      },
+      "heat": {
+        "deployExtra": 1,
+        "desc": "每秒主要傷害 +5%，上限25%；每支派兵 +1",
+        "name": "熱機"
+      },
+      "heavy": {
+        "deployExtra": 2,
+        "desc": "速度 -20%，傷害 +35%；每支派兵 +2",
+        "name": "沉重"
+      },
+      "hit_echo": {
+        "deployExtra": 2,
+        "desc": "同兵命中三個不同主要目標後，追加20%範圍傷害，每兵一次；每支派兵 +2",
+        "name": "三重回響"
+      },
+      "hunter_vigor": {
+        "deployExtra": 1,
+        "desc": "擊殺延命 0.25 秒，每兵上限 1 秒；不復活；每支派兵 +1",
+        "name": "狩獵續航"
+      },
+      "king_hunter": {
+        "deployExtra": 2,
+        "desc": "對王主要傷害 +20%；每支派兵 +2",
+        "name": "獵王"
+      },
+      "landing_spin": {
+        "deployExtra": 6,
+        "desc": "目前兵種獲得落地旋轉斬，之後繼續前進；不消耗穿透次數；每支派兵 +6",
+        "name": "旋風戰技"
+      },
+      "last_stand": {
+        "deployExtra": 1,
+        "desc": "剩餘壽命低於25%時下一撞 +40%；每支派兵 +1",
+        "name": "最後一搏"
+      },
+      "lightning": {
+        "deployExtra": 3,
+        "desc": "爆擊雷鏈其他兩怪，每兵最多兩次；每支派兵 +3",
+        "name": "雷枝"
+      },
+      "longlife": {
+        "deployExtra": 1,
+        "desc": "壽命 +15%；每支派兵 +1",
+        "name": "長征"
+      },
+      "momentum": {
+        "deployExtra": 2,
+        "desc": "正向速度加成轉穿透傷害；每支派兵 +2",
+        "name": "勢能穿刺"
+      },
+      "pierce": {
+        "deployExtra": 2,
+        "desc": "目前兵種穿透 +1，可累加；穿透用完後，下次撞擊造成傷害並消失；每支派兵 +2",
+        "name": "穿軍尖鋒"
+      },
+      "piercing_wave": {
+        "deployExtra": 3,
+        "desc": "每第二次成功穿透，對其他最多四怪造成20%範圍傷害；每支派兵 +3",
+        "name": "穿陣旋斬"
+      },
+      "rally": {
+        "deployExtra": 1,
+        "desc": "本輪實付派兵400金幣後，全軍主要增傷15%持續10秒，每輪一次；每支派兵 +1",
+        "name": "集結"
+      },
+      "rapid": {
+        "deployExtra": 2,
+        "desc": "裝備此技能派兵頻率+25%，照價付費；每支派兵 +2",
+        "name": "急募"
+      },
+      "rebound_charge": {
+        "deployExtra": 1,
+        "desc": "反彈最多兩層，下一主要命中每層+20%；每支派兵 +1",
+        "name": "折光"
+      },
+      "recruit": {
+        "deployExtra": 1,
+        "desc": "少於80金幣時派兵半價，每玩家每輪最多三次；每支派兵 +1",
+        "name": "徵募"
+      },
+      "ricochet_precision": {
+        "deployExtra": 1,
+        "desc": "每反彈爆擊率 +15%，上限 +45%；每支派兵 +1",
+        "name": "鏡面準星"
+      },
+      "sharp": {
+        "deployExtra": 1,
+        "desc": "基礎傷害+10%；每支派兵 +1",
+        "name": "鋒利"
+      },
+      "shatter": {
+        "deployExtra": 2,
+        "desc": "命中已緩速目標 +30% 傷害；每兵一次碎冰波；每支派兵 +2",
+        "name": "碎冰"
+      },
+      "shock": {
+        "deployExtra": 4,
+        "desc": "主要命中向其他怪擴散 20% 範圍傷害；每支派兵 +4",
+        "name": "震盪"
+      },
+      "short_fuse": {
+        "deployExtra": 2,
+        "desc": "壽命-20%，傷害+45%；每支派兵 +2",
+        "name": "燃命"
+      },
+      "showdown": {
+        "deployExtra": 2,
+        "desc": "最後30秒主要傷害+25%；每支派兵 +2",
+        "name": "決戰"
+      },
+      "slow_force": {
+        "deployExtra": 1,
+        "desc": "負向移速加成的75%轉為主要傷害，上限30%；每支派兵 +1",
+        "name": "重步碾壓"
+      },
+      "solitary": {
+        "deployExtra": 1,
+        "desc": "自己只有一支付費活兵時，該兵主要傷害+30%；每支派兵 +1",
+        "name": "孤軍"
+      },
+      "solo_hunt": {
+        "deployExtra": 1,
+        "desc": "目標2單位內無其他活怪，主要傷害+25%；每支派兵 +1",
+        "name": "孤獵"
+      },
+      "spin_master": {
+        "deployExtra": 2,
+        "desc": "旋轉半徑 +0.4、旋轉傷害 +20%；需要落地旋轉斬；每支派兵 +2",
+        "name": "旋風擴張"
+      },
+      "third_crit": {
+        "deployExtra": 2,
+        "desc": "每第三次主要命中必定爆擊；每支派兵 +2",
+        "name": "決勝"
+      },
+      "wall_quake": {
+        "deployExtra": 2,
+        "desc": "第一次反彈：30%範圍傷害，最多四怪；每支派兵 +2",
+        "name": "震地"
+      },
+      "wide_blade": {
+        "deployExtra": 1,
+        "desc": "範圍半徑+20%，範圍傷害-10%；每支派兵 +1",
+        "name": "寬刃"
+      }
+    },
+    "skillSources": [
+      {},
+      {},
+      {}
+    ],
+    "skillTriggers": {},
+    "sold": 0,
+    "specialSpawned": false,
+    "spent": 0,
+    "spinHits": 0,
+    "stock": [
+      {
+        "currency": "crystal",
+        "deployExtra": 2,
+        "kind": "gear",
+        "name": "穿軍刃",
+        "price": 12,
+        "skill": "pierce",
+        "slot": 5,
+        "sold": true,
+        "value": 1
+      },
+      {
+        "currency": "crystal",
+        "deployExtra": 2,
+        "kind": "gear",
+        "name": "破陣護手",
+        "price": 14,
+        "skill": "finisher",
+        "slot": 4,
+        "value": 14
+      },
+      {
+        "currency": "crystal",
+        "deployExtra": 2,
+        "kind": "gear",
+        "name": "勢能戰槍",
+        "price": 12,
+        "skill": "momentum",
+        "slot": 5,
+        "value": 17
+      },
+      {
+        "currency": "crystal",
+        "deployExtra": 3,
+        "kind": "gear",
+        "name": "雷枝戰槍",
+        "price": 18,
+        "skill": "lightning",
+        "slot": 5,
+        "value": 3
+      }
+    ],
+    "streaks": [
+      {
+        "count": 0,
+        "time": 0
+      },
+      {
+        "count": 0,
+        "time": 0
+      },
+      {
+        "count": 0,
+        "time": 0
+      },
+      {
+        "count": 0,
+        "time": 0
+      }
+    ],
+    "targetFilter": "all",
+    "targetId": 0,
+    "targetName": "",
+    "tech": [
+      {},
+      {},
+      {}
+    ],
+    "time": 179.43333333333288,
+    "town": {
+      "gold": 0,
+      "levels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "version": 1
+    },
+    "townStartGold": 0,
+    "troops": 0,
+    "uiPage": 1,
+    "vfx": {},
+    "visualSerial": 0,
+    "visualTroops": {},
+    "wheelSpawned": false,
+    "won": false,
+    "worn": [
+      [
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "ui": {
+    "children": [
+      {
+        "asset": "texture://ui_panel",
+        "fit": "stretch",
+        "id": "screen_back",
+        "kind": "image",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 94,
+          "height": 94
+        }
+      },
+      {
+        "id": "screen_title",
+        "kind": "text",
+        "rect": {
+          "x": 7,
+          "y": 87,
+          "width": 67,
+          "height": 7
+        },
+        "text": "自動出征 · 選擇追擊目標"
+      },
+      {
+        "id": "screen_gold",
+        "kind": "text",
+        "rect": {
+          "x": 76,
+          "y": 88,
+          "width": 17,
+          "height": 5
+        },
+        "text": "金幣 320"
+      },
+      {
+        "asset": "texture://ui_hud-crystal",
+        "fit": "stretch",
+        "id": "screen_crystals_plate",
+        "kind": "image",
+        "rect": {
+          "x": 76,
+          "y": 84.5,
+          "width": 17,
+          "height": 3.5
+        }
+      },
+      {
+        "id": "screen_crystals",
+        "kind": "text",
+        "rect": {
+          "x": 76,
+          "y": 84.5,
+          "width": 17,
+          "height": 3.5
+        },
+        "text": "◆ 結晶 6"
+      },
+      {
+        "id": "auto_help",
+        "kind": "text",
+        "rect": {
+          "x": 7,
+          "y": 80.68827160493827,
+          "width": 86,
+          "height": 2.6234567901234565
+        },
+        "text": "勾選想打的種類；沒有目標時等待。設定期間戰鬥暫停。"
+      },
+      {
+        "asset": "texture://ui_button",
+        "fit": "stretch",
+        "id": "auto_preset_all_plate",
+        "kind": "image",
+        "rect": {
+          "x": 7,
+          "y": 73.5,
+          "width": 16.4,
+          "height": 5.5
+        }
+      },
+      {
+        "action": "Auto_all",
+        "id": "auto_preset_all",
+        "kind": "button",
+        "rect": {
+          "x": 7,
+          "y": 73.5,
+          "width": 16.4,
+          "height": 5.5
+        },
+        "text": "全選"
+      },
+      {
+        "asset": "texture://ui_button",
+        "fit": "stretch",
+        "id": "auto_preset_none_plate",
+        "kind": "image",
+        "rect": {
+          "x": 24.4,
+          "y": 73.5,
+          "width": 16.4,
+          "height": 5.5
+        }
+      },
+      {
+        "action": "Auto_none",
+        "id": "auto_preset_none",
+        "kind": "button",
+        "rect": {
+          "x": 24.4,
+          "y": 73.5,
+          "width": 16.4,
+          "height": 5.5
+        },
+        "text": "清空"
+      },
+      {
+        "asset": "texture://ui_button",
+        "fit": "stretch",
+        "id": "auto_preset_small_plate",
+        "kind": "image",
+        "rect": {
+          "x": 41.8,
+          "y": 73.5,
+          "width": 16.4,
+          "height": 5.5
+        }
+      },
+      {
+        "action": "Auto_small",
+        "id": "auto_preset_small",
+        "kind": "button",
+        "rect": {
+          "x": 41.8,
+          "y": 73.5,
+          "width": 16.4,
+          "height": 5.5
+        },
+        "text": "只選小怪"
+      },
+      {
+        "asset": "texture://ui_button",
+        "fit": "stretch",
+        "id": "auto_preset_boss_plate",
+        "kind": "image",
+        "rect": {
+          "x": 59.199999999999996,
+          "y": 73.5,
+          "width": 16.4,
+          "height": 5.5
+        }
+      },
+      {
+        "action": "Auto_boss",
+        "id": "auto_preset_boss",
+        "kind": "button",
+        "rect": {
+          "x": 59.199999999999996,
+          "y": 73.5,
+          "width": 16.4,
+          "height": 5.5
+        },
+        "text": "只選王"
+      },
+      {
+        "asset": "texture://ui_button",
+        "fit": "stretch",
+        "id": "auto_preset_special_plate",
+        "kind": "image",
+        "rect": {
+          "x": 76.6,
+          "y": 73.5,
+          "width": 16.4,
+          "height": 5.5
+        }
+      },
+      {
+        "action": "Auto_special",
+        "id": "auto_preset_special",
+        "kind": "button",
+        "rect": {
+          "x": 76.6,
+          "y": 73.5,
+          "width": 16.4,
+          "height": 5.5
+        },
+        "text": "只選奇遇"
+      },
+      {
+        "asset": "texture://ui_target-card",
+        "fit": "stretch",
+        "id": "auto_card_1",
+        "kind": "image",
+        "rect": {
+          "x": 7,
+          "y": 49,
+          "width": 16.4,
+          "height": 22
+        }
+      },
+      {
+        "asset": "texture://ui_target-acorn",
+        "fit": "contain",
+        "id": "auto_icon_1",
+        "kind": "image",
+        "rect": {
+          "x": 8,
+          "y": 55.5,
+          "width": 14.4,
+          "height": 15
+        }
+      },
+      {
+        "action": "Auto_target_acorn",
+        "id": "auto_pick_1",
+        "kind": "button",
+        "rect": {
+          "x": 7,
+          "y": 55.5,
+          "width": 16.4,
+          "height": 15.5
+        },
+        "text": ""
+      },
+      {
+        "action": "Auto_target_acorn",
+        "id": "auto_name_1",
+        "kind": "button",
+        "rect": {
+          "x": 7,
+          "y": 52,
+          "width": 16.4,
+          "height": 3.5
+        },
+        "text": "○ 橡果蹦蹦"
+      },
+      {
+        "action": "Auto_target_acorn",
+        "id": "auto_info_1",
+        "kind": "button",
+        "rect": {
+          "x": 7,
+          "y": 49.5,
+          "width": 16.4,
+          "height": 2.5
+        },
+        "text": "小怪 · 8 隻"
+      },
+      {
+        "asset": "texture://ui_target-card",
+        "fit": "stretch",
+        "id": "auto_card_2",
+        "kind": "image",
+        "rect": {
+          "x": 24.4,
+          "y": 49,
+          "width": 16.4,
+          "height": 22
+        }
+      },
+      {
+        "asset": "texture://ui_target-moth",
+        "fit": "contain",
+        "id": "auto_icon_2",
+        "kind": "image",
+        "rect": {
+          "x": 25.4,
+          "y": 55.5,
+          "width": 14.4,
+          "height": 15
+        }
+      },
+      {
+        "action": "Auto_target_moth",
+        "id": "auto_pick_2",
+        "kind": "button",
+        "rect": {
+          "x": 24.4,
+          "y": 55.5,
+          "width": 16.4,
+          "height": 15.5
+        },
+        "text": ""
+      },
+      {
+        "action": "Auto_target_moth",
+        "id": "auto_name_2",
+        "kind": "button",
+        "rect": {
+          "x": 24.4,
+          "y": 52,
+          "width": 16.4,
+          "height": 3.5
+        },
+        "text": "○ 苔羽蛾"
+      },
+      {
+        "action": "Auto_target_moth",
+        "id": "auto_info_2",
+        "kind": "button",
+        "rect": {
+          "x": 24.4,
+          "y": 49.5,
+          "width": 16.4,
+          "height": 2.5
+        },
+        "text": "小怪 · 16 隻"
+      },
+      {
+        "asset": "texture://ui_target-card",
+        "fit": "stretch",
+        "id": "auto_card_3",
+        "kind": "image",
+        "rect": {
+          "x": 41.8,
+          "y": 49,
+          "width": 16.4,
+          "height": 22
+        }
+      },
+      {
+        "asset": "texture://ui_target-piglet",
+        "fit": "contain",
+        "id": "auto_icon_3",
+        "kind": "image",
+        "rect": {
+          "x": 42.8,
+          "y": 55.5,
+          "width": 14.4,
+          "height": 15
+        }
+      },
+      {
+        "action": "Auto_target_piglet",
+        "id": "auto_pick_3",
+        "kind": "button",
+        "rect": {
+          "x": 41.8,
+          "y": 55.5,
+          "width": 16.4,
+          "height": 15.5
+        },
+        "text": ""
+      },
+      {
+        "action": "Auto_target_piglet",
+        "id": "auto_name_3",
+        "kind": "button",
+        "rect": {
+          "x": 41.8,
+          "y": 52,
+          "width": 16.4,
+          "height": 3.5
+        },
+        "text": "○ 菇背幼豬"
+      },
+      {
+        "action": "Auto_target_piglet",
+        "id": "auto_info_3",
+        "kind": "button",
+        "rect": {
+          "x": 41.8,
+          "y": 49.5,
+          "width": 16.4,
+          "height": 2.5
+        },
+        "text": "小怪 · 8 隻"
+      },
+      {
+        "asset": "texture://ui_target-card",
+        "fit": "stretch",
+        "id": "auto_card_4",
+        "kind": "image",
+        "rect": {
+          "x": 59.199999999999996,
+          "y": 49,
+          "width": 16.4,
+          "height": 22
+        }
+      },
+      {
+        "asset": "texture://ui_target-turtle",
+        "fit": "contain",
+        "id": "auto_icon_4",
+        "kind": "image",
+        "rect": {
+          "x": 60.199999999999996,
+          "y": 55.5,
+          "width": 14.4,
+          "height": 15
+        }
+      },
+      {
+        "action": "Auto_target_turtle",
+        "id": "auto_pick_4",
+        "kind": "button",
+        "rect": {
+          "x": 59.199999999999996,
+          "y": 55.5,
+          "width": 16.4,
+          "height": 15.5
+        },
+        "text": ""
+      },
+      {
+        "action": "Auto_target_turtle",
+        "id": "auto_name_4",
+        "kind": "button",
+        "rect": {
+          "x": 59.199999999999996,
+          "y": 52,
+          "width": 16.4,
+          "height": 3.5
+        },
+        "text": "○ 苔殼龜"
+      },
+      {
+        "action": "Auto_target_turtle",
+        "id": "auto_info_4",
+        "kind": "button",
+        "rect": {
+          "x": 59.199999999999996,
+          "y": 49.5,
+          "width": 16.4,
+          "height": 2.5
+        },
+        "text": "小怪 · 0 隻"
+      },
+      {
+        "asset": "texture://ui_target-card",
+        "fit": "stretch",
+        "id": "auto_card_5",
+        "kind": "image",
+        "rect": {
+          "x": 76.6,
+          "y": 49,
+          "width": 16.4,
+          "height": 22
+        }
+      },
+      {
+        "asset": "texture://ui_target-boar",
+        "fit": "contain",
+        "id": "auto_icon_5",
+        "kind": "image",
+        "rect": {
+          "x": 77.6,
+          "y": 55.5,
+          "width": 14.4,
+          "height": 15
+        }
+      },
+      {
+        "action": "Auto_target_boar",
+        "id": "auto_pick_5",
+        "kind": "button",
+        "rect": {
+          "x": 76.6,
+          "y": 55.5,
+          "width": 16.4,
+          "height": 15.5
+        },
+        "text": ""
+      },
+      {
+        "action": "Auto_target_boar",
+        "id": "auto_name_5",
+        "kind": "button",
+        "rect": {
+          "x": 76.6,
+          "y": 52,
+          "width": 16.4,
+          "height": 3.5
+        },
+        "text": "○ 獠牙搬木王"
+      },
+      {
+        "action": "Auto_target_boar",
+        "id": "auto_info_5",
+        "kind": "button",
+        "rect": {
+          "x": 76.6,
+          "y": 49.5,
+          "width": 16.4,
+          "height": 2.5
+        },
+        "text": "小王 · 1 隻"
+      },
+      {
+        "asset": "texture://ui_target-card",
+        "fit": "stretch",
+        "id": "auto_card_6",
+        "kind": "image",
+        "rect": {
+          "x": 7,
+          "y": 25,
+          "width": 16.4,
+          "height": 22
+        }
+      },
+      {
+        "asset": "texture://ui_target-treant",
+        "fit": "contain",
+        "id": "auto_icon_6",
+        "kind": "image",
+        "rect": {
+          "x": 8,
+          "y": 31.5,
+          "width": 14.4,
+          "height": 15
+        }
+      },
+      {
+        "action": "Auto_target_treant",
+        "id": "auto_pick_6",
+        "kind": "button",
+        "rect": {
+          "x": 7,
+          "y": 31.5,
+          "width": 16.4,
+          "height": 15.5
+        },
+        "text": ""
+      },
+      {
+        "action": "Auto_target_treant",
+        "id": "auto_name_6",
+        "kind": "button",
+        "rect": {
+          "x": 7,
+          "y": 28,
+          "width": 16.4,
+          "height": 3.5
+        },
+        "text": "○ 花冠樹靈"
+      },
+      {
+        "action": "Auto_target_treant",
+        "id": "auto_info_6",
+        "kind": "button",
+        "rect": {
+          "x": 7,
+          "y": 25.5,
+          "width": 16.4,
+          "height": 2.5
+        },
+        "text": "小王 · 1 隻"
+      },
+      {
+        "asset": "texture://ui_target-card",
+        "fit": "stretch",
+        "id": "auto_card_7",
+        "kind": "image",
+        "rect": {
+          "x": 24.4,
+          "y": 25,
+          "width": 16.4,
+          "height": 22
+        }
+      },
+      {
+        "asset": "texture://ui_target-elder",
+        "fit": "contain",
+        "id": "auto_icon_7",
+        "kind": "image",
+        "rect": {
+          "x": 25.4,
+          "y": 31.5,
+          "width": 14.4,
+          "height": 15
+        }
+      },
+      {
+        "action": "Auto_target_elder",
+        "id": "auto_pick_7",
+        "kind": "button",
+        "rect": {
+          "x": 24.4,
+          "y": 31.5,
+          "width": 16.4,
+          "height": 15.5
+        },
+        "text": ""
+      },
+      {
+        "action": "Auto_target_elder",
+        "id": "auto_name_7",
+        "kind": "button",
+        "rect": {
+          "x": 24.4,
+          "y": 28,
+          "width": 16.4,
+          "height": 3.5
+        },
+        "text": "○ 古榕守衛"
+      },
+      {
+        "action": "Auto_target_elder",
+        "id": "auto_info_7",
+        "kind": "button",
+        "rect": {
+          "x": 24.4,
+          "y": 25.5,
+          "width": 16.4,
+          "height": 2.5
+        },
+        "text": "中王 · 1 隻"
+      },
+      {
+        "asset": "texture://ui_target-card",
+        "fit": "stretch",
+        "id": "auto_card_8",
+        "kind": "image",
+        "rect": {
+          "x": 41.8,
+          "y": 25,
+          "width": 16.4,
+          "height": 22
+        }
+      },
+      {
+        "asset": "texture://ui_target-stag",
+        "fit": "contain",
+        "id": "auto_icon_8",
+        "kind": "image",
+        "rect": {
+          "x": 42.8,
+          "y": 31.5,
+          "width": 14.4,
+          "height": 15
+        }
+      },
+      {
+        "action": "Auto_target_stag",
+        "id": "auto_pick_8",
+        "kind": "button",
+        "rect": {
+          "x": 41.8,
+          "y": 31.5,
+          "width": 16.4,
+          "height": 15.5
+        },
+        "text": ""
+      },
+      {
+        "action": "Auto_target_stag",
+        "id": "auto_name_8",
+        "kind": "button",
+        "rect": {
+          "x": 41.8,
+          "y": 28,
+          "width": 16.4,
+          "height": 3.5
+        },
+        "text": "○ 冠角白鹿"
+      },
+      {
+        "action": "Auto_target_stag",
+        "id": "auto_info_8",
+        "kind": "button",
+        "rect": {
+          "x": 41.8,
+          "y": 25.5,
+          "width": 16.4,
+          "height": 2.5
+        },
+        "text": "大王 · 最後 30 秒 · 0 隻"
+      },
+      {
+        "asset": "texture://ui_target-card",
+        "fit": "stretch",
+        "id": "auto_card_9",
+        "kind": "image",
+        "rect": {
+          "x": 59.199999999999996,
+          "y": 25,
+          "width": 16.4,
+          "height": 22
+        }
+      },
+      {
+        "asset": "texture://ui_target-beetle",
+        "fit": "contain",
+        "id": "auto_icon_9",
+        "kind": "image",
+        "rect": {
+          "x": 60.199999999999996,
+          "y": 31.5,
+          "width": 14.4,
+          "height": 15
+        }
+      },
+      {
+        "action": "Auto_target_beetle",
+        "id": "auto_pick_9",
+        "kind": "button",
+        "rect": {
+          "x": 59.199999999999996,
+          "y": 31.5,
+          "width": 16.4,
+          "height": 15.5
+        },
+        "text": ""
+      },
+      {
+        "action": "Auto_target_beetle",
+        "id": "auto_name_9",
+        "kind": "button",
+        "rect": {
+          "x": 59.199999999999996,
+          "y": 28,
+          "width": 16.4,
+          "height": 3.5
+        },
+        "text": "○ 聚寶甲蟲"
+      },
+      {
+        "action": "Auto_target_beetle",
+        "id": "auto_info_9",
+        "kind": "button",
+        "rect": {
+          "x": 59.199999999999996,
+          "y": 25.5,
+          "width": 16.4,
+          "height": 2.5
+        },
+        "text": "共用獎池 · 0 隻"
+      },
+      {
+        "asset": "texture://ui_target-card",
+        "fit": "stretch",
+        "id": "auto_card_10",
+        "kind": "image",
+        "rect": {
+          "x": 76.6,
+          "y": 25,
+          "width": 16.4,
+          "height": 22
+        }
+      },
+      {
+        "asset": "texture://ui_target-wheel",
+        "fit": "contain",
+        "id": "auto_icon_10",
+        "kind": "image",
+        "rect": {
+          "x": 77.6,
+          "y": 31.5,
+          "width": 14.4,
+          "height": 15
+        }
+      },
+      {
+        "action": "Auto_target_wheel",
+        "id": "auto_pick_10",
+        "kind": "button",
+        "rect": {
+          "x": 76.6,
+          "y": 31.5,
+          "width": 16.4,
+          "height": 15.5
+        },
+        "text": ""
+      },
+      {
+        "action": "Auto_target_wheel",
+        "id": "auto_name_10",
+        "kind": "button",
+        "rect": {
+          "x": 76.6,
+          "y": 28,
+          "width": 16.4,
+          "height": 3.5
+        },
+        "text": "○ 金鈴狸"
+      },
+      {
+        "action": "Auto_target_wheel",
+        "id": "auto_info_10",
+        "kind": "button",
+        "rect": {
+          "x": 76.6,
+          "y": 25.5,
+          "width": 16.4,
+          "height": 2.5
+        },
+        "text": "奇遇輪盤 · 0 隻"
+      },
+      {
+        "id": "auto_summary",
+        "kind": "text",
+        "rect": {
+          "x": 7,
+          "y": 18.68827160493828,
+          "width": 86,
+          "height": 2.6234567901234565
+        },
+        "text": "尚未選擇目標 · 至少勾選一種才能開始"
+      },
+      {
+        "id": "auto_note",
+        "kind": "text",
+        "rect": {
+          "x": 7,
+          "y": 14.18827160493828,
+          "width": 86,
+          "height": 2.6234567901234565
+        },
+        "text": "可複選 · 途中碰到其他怪物仍會造成傷害"
+      },
+      {
+        "asset": "texture://ui_button",
+        "fit": "stretch",
+        "id": "auto_cancel_plate",
+        "kind": "image",
+        "rect": {
+          "x": 7,
+          "y": 5,
+          "width": 20,
+          "height": 6
+        }
+      },
+      {
+        "action": "Auto_cancel",
+        "id": "auto_cancel",
+        "kind": "button",
+        "rect": {
+          "x": 7,
+          "y": 5,
+          "width": 20,
+          "height": 6
+        },
+        "text": "取消"
+      },
+      {
+        "asset": "texture://ui_muted",
+        "fit": "stretch",
+        "id": "auto_stop_plate",
+        "kind": "image",
+        "rect": {
+          "x": 30,
+          "y": 5,
+          "width": 23,
+          "height": 6
+        }
+      },
+      {
+        "id": "auto_stop",
+        "kind": "text",
+        "rect": {
+          "x": 31,
+          "y": 5.5,
+          "width": 21,
+          "height": 5
+        },
+        "text": "關閉 AUTO"
+      },
+      {
+        "asset": "texture://ui_muted",
+        "fit": "stretch",
+        "id": "auto_apply_plate",
+        "kind": "image",
+        "rect": {
+          "x": 61,
+          "y": 5,
+          "width": 32,
+          "height": 6
+        }
+      },
+      {
+        "id": "auto_apply",
+        "kind": "text",
+        "rect": {
+          "x": 62,
+          "y": 5.5,
+          "width": 30,
+          "height": 5
+        },
+        "text": "開始自動 · 0 種"
+      }
+    ],
+    "id": "forest_lord",
+    "kind": "screen",
+    "node": "battle:auto"
+  },
+  "diagnostics": []
+}

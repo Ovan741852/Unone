@@ -1,0 +1,271 @@
+{
+  "ok": true,
+  "fixture": "battle time shortened to 3 seconds by intercepted test payload; production unchanged",
+  "errors": [],
+  "tree": {
+    "children": [
+      {
+        "asset": "texture://ui_defeat-back",
+        "fit": "stretch",
+        "id": "screen_back",
+        "kind": "image",
+        "rect": {
+          "height": 94,
+          "width": 94,
+          "x": 3,
+          "y": 3
+        }
+      },
+      {
+        "asset": "texture://ui_defeat-crest",
+        "fit": "stretch",
+        "id": "defeat_crest",
+        "kind": "image",
+        "rect": {
+          "height": 17,
+          "width": 14,
+          "x": 43,
+          "y": 77
+        }
+      },
+      {
+        "id": "defeat_title",
+        "kind": "text",
+        "rect": {
+          "height": 9,
+          "width": 60,
+          "x": 20,
+          "y": 66
+        },
+        "text": "遠 征 失 敗"
+      },
+      {
+        "id": "defeat_reason",
+        "kind": "text",
+        "rect": {
+          "height": 5,
+          "width": 76,
+          "x": 12,
+          "y": 59
+        },
+        "text": "時間耗盡，大王尚未開出大獎。 帶回城鎮建設金。"
+      },
+      {
+        "id": "defeat_route",
+        "kind": "text",
+        "rect": {
+          "height": 5,
+          "width": 76,
+          "x": 12,
+          "y": 52
+        },
+        "text": "止步 苔光林口  ·  已通過 0 / 7 站"
+      },
+      {
+        "id": "defeat_stat_label_1",
+        "kind": "text",
+        "rect": {
+          "height": 4,
+          "width": 24,
+          "x": 12,
+          "y": 45
+        },
+        "text": "累計戰鬥時間"
+      },
+      {
+        "id": "defeat_stat_value_1",
+        "kind": "text",
+        "rect": {
+          "height": 7,
+          "width": 24,
+          "x": 12,
+          "y": 38
+        },
+        "text": "00:03"
+      },
+      {
+        "id": "defeat_stat_label_2",
+        "kind": "text",
+        "rect": {
+          "height": 4,
+          "width": 24,
+          "x": 38,
+          "y": 45
+        },
+        "text": "全軍擊殺"
+      },
+      {
+        "id": "defeat_stat_value_2",
+        "kind": "text",
+        "rect": {
+          "height": 7,
+          "width": 24,
+          "x": 38,
+          "y": 38
+        },
+        "text": "0"
+      },
+      {
+        "id": "defeat_stat_label_3",
+        "kind": "text",
+        "rect": {
+          "height": 4,
+          "width": 24,
+          "x": 64,
+          "y": 45
+        },
+        "text": "破防次數"
+      },
+      {
+        "id": "defeat_stat_value_3",
+        "kind": "text",
+        "rect": {
+          "height": 7,
+          "width": 24,
+          "x": 64,
+          "y": 38
+        },
+        "text": "0"
+      },
+      {
+        "id": "defeat_stat_label_4",
+        "kind": "text",
+        "rect": {
+          "height": 4,
+          "width": 24,
+          "x": 12,
+          "y": 32
+        },
+        "text": "累計開獎金幣"
+      },
+      {
+        "id": "defeat_stat_value_4",
+        "kind": "text",
+        "rect": {
+          "height": 7,
+          "width": 24,
+          "x": 12,
+          "y": 25
+        },
+        "text": "0"
+      },
+      {
+        "id": "defeat_stat_label_5",
+        "kind": "text",
+        "rect": {
+          "height": 4,
+          "width": 24,
+          "x": 38,
+          "y": 32
+        },
+        "text": "派兵花費"
+      },
+      {
+        "id": "defeat_stat_value_5",
+        "kind": "text",
+        "rect": {
+          "height": 7,
+          "width": 24,
+          "x": 38,
+          "y": 25
+        },
+        "text": "0"
+      },
+      {
+        "id": "defeat_stat_label_6",
+        "kind": "text",
+        "rect": {
+          "height": 4,
+          "width": 24,
+          "x": 64,
+          "y": 32
+        },
+        "text": "累計倖存返還"
+      },
+      {
+        "id": "defeat_stat_value_6",
+        "kind": "text",
+        "rect": {
+          "height": 7,
+          "width": 24,
+          "x": 64,
+          "y": 25
+        },
+        "text": "0"
+      },
+      {
+        "id": "defeat_town_reward",
+        "kind": "text",
+        "rect": {
+          "height": 4,
+          "width": 76,
+          "x": 12,
+          "y": 20
+        },
+        "text": "城鎮建設金 +20 已入庫 · 金庫 20"
+      },
+      {
+        "id": "defeat_save",
+        "kind": "text",
+        "rect": {
+          "height": 3,
+          "width": 76,
+          "x": 12,
+          "y": 16
+        },
+        "text": "本局金幣與配裝不保留 · 城鎮升級保留"
+      },
+      {
+        "asset": "texture://ui_button",
+        "fit": "stretch",
+        "id": "defeat_town_plate",
+        "kind": "image",
+        "rect": {
+          "height": 8,
+          "width": 35,
+          "x": 12,
+          "y": 6
+        }
+      },
+      {
+        "action": "ReturnTown",
+        "id": "defeat_town",
+        "kind": "button",
+        "rect": {
+          "height": 8,
+          "width": 35,
+          "x": 12,
+          "y": 6
+        },
+        "text": "返回城鎮"
+      },
+      {
+        "asset": "texture://ui_button",
+        "fit": "stretch",
+        "id": "defeat_retry_plate",
+        "kind": "image",
+        "rect": {
+          "height": 8,
+          "width": 35,
+          "x": 53,
+          "y": 6
+        }
+      },
+      {
+        "action": "Start",
+        "id": "defeat_retry",
+        "kind": "button",
+        "rect": {
+          "height": 8,
+          "width": 35,
+          "x": 53,
+          "y": 6
+        },
+        "text": "重整旗鼓 · 再次出征"
+      }
+    ],
+    "id": "forest_lord",
+    "kind": "screen",
+    "node": "defeat:home"
+  }
+}

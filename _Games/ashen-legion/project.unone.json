@@ -1,0 +1,32 @@
+{
+  "asset_manifest": "assets.json",
+  "bundle_manifest": "bundles/manifest.json",
+  "entry_script": "main.luau",
+  "main_scene": "scene.json",
+  "name": "冥潮軍團 · ASHEN LEGION",
+  "systems": {
+    "physics2d": false,
+    "physics3d": false
+  },
+  "test_files": [
+    "tests/menu-does-not-spend.test.json",
+    "tests/exactly-one-choice.test.json",
+    "tests/held-choice-cannot-repeat.test.json",
+    "tests/pause-freezes-countdown.test.json",
+    "tests/timeout-loses.test.json",
+    "tests/missed-shots-bankruptcy.test.json",
+    "tests/one-click-one-soldier.test.json",
+    "tests/reset-clears-run.test.json",
+    "tests/corner-reflection-1.test.json",
+    "tests/corner-reflection-2.test.json",
+    "tests/corner-reflection-3.test.json",
+    "tests/corner-reflection-4.test.json",
+    "tests/bounce-does-not-reset-lifetime.test.json",
+    "tests/timeout-refunds-survivor-once.test.json",
+    "tests/timeout-does-not-refund-expired.test.json",
+    "tests/boss-delayed-before-final30.test.json",
+    "tests/boss-appears-final30.test.json",
+    "tests/horde-paused-single-surge.test.json",
+    "tests/horde-optional-quiet-round.test.json"
+  ]
+}

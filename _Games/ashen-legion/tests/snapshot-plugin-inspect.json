@@ -1,0 +1,92 @@
+{
+  "ok": true,
+  "value": {
+    "root": "\\\\?\\D:\\Projects\\YesSir\\plugins\\org.unone.blender",
+    "manifest_path": "\\\\?\\D:\\Projects\\YesSir\\plugins\\org.unone.blender\\plugin.json",
+    "manifest": {
+      "api": "unone.plugin.v1",
+      "id": "org.unone.blender",
+      "name": "Unone Blender bridge",
+      "version": "0.1.0",
+      "description": "Optional Blender bridge for AI scene sketches, GLB export, and canonical Unone scene data.",
+      "entry": {
+        "command": "node",
+        "args": [
+          "plugin.mjs"
+        ]
+      },
+      "capabilities": [
+        "scene.inspect",
+        "scene.preview",
+        "asset.import",
+        "artifact.export"
+      ],
+      "permissions": [
+        "project.read",
+        "project.write_staging",
+        "process.blender"
+      ],
+      "tools": [
+        {
+          "name": "plugin.test",
+          "title": "Test Blender bridge",
+          "description": "Run a dependency-free protocol and schema self-test.",
+          "input_schema": {
+            "type": "object"
+          }
+        },
+        {
+          "name": "blender.inspect",
+          "title": "Inspect Blender availability",
+          "description": "Report whether Blender is available and describe the bridge contract.",
+          "input_schema": {
+            "type": "object"
+          }
+        },
+        {
+          "name": "blender.export_scene",
+          "title": "Export canonical scene",
+          "description": "Convert a Blender-like entity list into a staged Unone scene.json artifact.",
+          "input_schema": {
+            "properties": {
+              "entities": {
+                "items": {
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "scene": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entities"
+            ],
+            "type": "object"
+          }
+        },
+        {
+          "name": "blender.preview",
+          "title": "Preview scene composition",
+          "description": "Validate scene composition before importing it into the runtime.",
+          "input_schema": {
+            "properties": {
+              "entities": {
+                "items": {
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "entities"
+            ],
+            "type": "object"
+          }
+        }
+      ]
+    }
+  },
+  "diagnostics": [],
+  "effects": []
+}

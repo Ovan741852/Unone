@@ -1,0 +1,2228 @@
+{
+  "ok": true,
+  "value": {
+    "screen": "forest_lord",
+    "cols": 96,
+    "rows": 48,
+    "ascii": "+------------------------------------------------------------------------------------------------+\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@#######################@@@@#############################################################@@@|\n|@@@@@#######################@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@############################@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@########################@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#############################################################@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|\n+------------------------------------------------------------------------------------------------+",
+    "nodes": [
+      {
+        "id": "interior_shade",
+        "kind": "image",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_scene-shade",
+        "text_fit": 0
+      },
+      {
+        "id": "screen_back",
+        "kind": "image",
+        "rect": {
+          "x": 33,
+          "y": 6,
+          "width": 64,
+          "height": 87
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_panel",
+        "text_fit": 0
+      },
+      {
+        "id": "screen_title",
+        "kind": "text",
+        "rect": {
+          "x": 37,
+          "y": 84,
+          "width": 35,
+          "height": 5
+        },
+        "text": "林間集市",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.16
+      },
+      {
+        "id": "screen_gold",
+        "kind": "text",
+        "rect": {
+          "x": 76,
+          "y": 86,
+          "width": 17,
+          "height": 3
+        },
+        "text": "金幣 320",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.3
+      },
+      {
+        "id": "screen_crystals_plate",
+        "kind": "image",
+        "rect": {
+          "x": 76,
+          "y": 82,
+          "width": 17,
+          "height": 3
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-crystal",
+        "text_fit": 0
+      },
+      {
+        "id": "screen_crystals",
+        "kind": "text",
+        "rect": {
+          "x": 76,
+          "y": 82,
+          "width": 17,
+          "height": 3
+        },
+        "text": "◆ 結晶 18",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.35
+      },
+      {
+        "id": "tab_home_plate",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 72,
+          "width": 13,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_selected",
+        "text_fit": 0
+      },
+      {
+        "id": "tab_home",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 73.5,
+          "width": 13,
+          "height": 3
+        },
+        "text": "補給 ◆",
+        "action": "UI_home",
+        "asset": null,
+        "text_fit": 0.26
+      },
+      {
+        "id": "tab_home_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 76.5,
+          "width": 13,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_home",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "tab_home_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 72,
+          "width": 13,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_home",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "tab_gear_plate",
+        "kind": "image",
+        "rect": {
+          "x": 51,
+          "y": 72,
+          "width": 13,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "tab_gear",
+        "kind": "button",
+        "rect": {
+          "x": 51,
+          "y": 73.5,
+          "width": 13,
+          "height": 3
+        },
+        "text": "武庫",
+        "action": "UI_gear",
+        "asset": null,
+        "text_fit": 0.13
+      },
+      {
+        "id": "tab_gear_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 51,
+          "y": 76.5,
+          "width": 13,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_gear",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "tab_gear_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 51,
+          "y": 72,
+          "width": 13,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_gear",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "tab_runes_plate",
+        "kind": "image",
+        "rect": {
+          "x": 65,
+          "y": 72,
+          "width": 13,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "tab_runes",
+        "kind": "button",
+        "rect": {
+          "x": 65,
+          "y": 73.5,
+          "width": 13,
+          "height": 3
+        },
+        "text": "符文",
+        "action": "UI_runes",
+        "asset": null,
+        "text_fit": 0.13
+      },
+      {
+        "id": "tab_runes_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 65,
+          "y": 76.5,
+          "width": 13,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_runes",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "tab_runes_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 65,
+          "y": 72,
+          "width": 13,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_runes",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "tab_builds_plate",
+        "kind": "image",
+        "rect": {
+          "x": 79,
+          "y": 72,
+          "width": 13,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "tab_builds",
+        "kind": "button",
+        "rect": {
+          "x": 79,
+          "y": 73.5,
+          "width": 13,
+          "height": 3
+        },
+        "text": "流派",
+        "action": "UI_builds",
+        "asset": null,
+        "text_fit": 0.13
+      },
+      {
+        "id": "tab_builds_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 79,
+          "y": 76.5,
+          "width": 13,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_builds",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "tab_builds_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 79,
+          "y": 72,
+          "width": 13,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "UI_builds",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "ready_plate",
+        "kind": "image",
+        "rect": {
+          "x": 76,
+          "y": 9,
+          "width": 17,
+          "height": 7
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_button",
+        "text_fit": 0
+      },
+      {
+        "id": "ready",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 11,
+          "width": 17,
+          "height": 3
+        },
+        "text": "出戰",
+        "action": "LeaveShop",
+        "asset": null,
+        "text_fit": 0.1
+      },
+      {
+        "id": "ready_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 14,
+          "width": 17,
+          "height": 2
+        },
+        "text": "",
+        "action": "LeaveShop",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "ready_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 76,
+          "y": 9,
+          "width": 17,
+          "height": 2
+        },
+        "text": "",
+        "action": "LeaveShop",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "story_portrait",
+        "kind": "image",
+        "rect": {
+          "x": 2,
+          "y": 31,
+          "width": 29,
+          "height": 45
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_quartermaster-v1",
+        "text_fit": 0
+      },
+      {
+        "id": "story_speaker",
+        "kind": "text",
+        "rect": {
+          "x": 5,
+          "y": 79,
+          "width": 24,
+          "height": 4
+        },
+        "text": "司務長 · 榛姨",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.38
+      },
+      {
+        "id": "story_quote",
+        "kind": "text",
+        "rect": {
+          "x": 5,
+          "y": 16,
+          "width": 25,
+          "height": 12
+        },
+        "text": "攤主留了好貨。裝備會提高派兵費，挑適合這支軍團的。",
+        "action": null,
+        "asset": null,
+        "text_fit": 3.38
+      },
+      {
+        "id": "stock_panel_1",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 22,
+          "width": 27,
+          "height": 46
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_card",
+        "text_fit": 0
+      },
+      {
+        "id": "stock_icon_1",
+        "kind": "image",
+        "rect": {
+          "x": 45,
+          "y": 52,
+          "width": 11,
+          "height": 13
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_gear-pierce",
+        "text_fit": 0
+      },
+      {
+        "id": "stock_name_1",
+        "kind": "text",
+        "rect": {
+          "x": 38,
+          "y": 45.5,
+          "width": 25,
+          "height": 4.5
+        },
+        "text": "穿軍刃",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.15
+      },
+      {
+        "id": "stock_desc_1",
+        "kind": "text",
+        "rect": {
+          "x": 39,
+          "y": 35,
+          "width": 23,
+          "height": 9
+        },
+        "text": "目前兵種穿透 +1，可累加",
+        "action": null,
+        "asset": null,
+        "text_fit": 1.43
+      },
+      {
+        "id": "stock_cost_1",
+        "kind": "text",
+        "rect": {
+          "x": 38,
+          "y": 31,
+          "width": 25,
+          "height": 3
+        },
+        "text": "劍兵派兵  4 → 5 金",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.44
+      },
+      {
+        "id": "buy_1_plate",
+        "kind": "image",
+        "rect": {
+          "x": 39,
+          "y": 23,
+          "width": 23,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "buy_1",
+        "kind": "button",
+        "rect": {
+          "x": 39,
+          "y": 24.5,
+          "width": 23,
+          "height": 3
+        },
+        "text": "◆ 12",
+        "action": "Buy1",
+        "asset": null,
+        "text_fit": 0.15
+      },
+      {
+        "id": "buy_1_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 39,
+          "y": 27.5,
+          "width": 23,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Buy1",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "buy_1_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 39,
+          "y": 23,
+          "width": 23,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Buy1",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "stock_panel_2",
+        "kind": "image",
+        "rect": {
+          "x": 66,
+          "y": 22,
+          "width": 27,
+          "height": 46
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_card",
+        "text_fit": 0
+      },
+      {
+        "id": "stock_icon_2",
+        "kind": "image",
+        "rect": {
+          "x": 74,
+          "y": 52,
+          "width": 11,
+          "height": 13
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_gear-finisher",
+        "text_fit": 0
+      },
+      {
+        "id": "stock_name_2",
+        "kind": "text",
+        "rect": {
+          "x": 67,
+          "y": 45.5,
+          "width": 25,
+          "height": 4.5
+        },
+        "text": "破陣護手",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.2
+      },
+      {
+        "id": "stock_desc_2",
+        "kind": "text",
+        "rect": {
+          "x": 68,
+          "y": 35,
+          "width": 23,
+          "height": 9
+        },
+        "text": "穿透累積最後一撞傷害",
+        "action": null,
+        "asset": null,
+        "text_fit": 1.1
+      },
+      {
+        "id": "stock_cost_2",
+        "kind": "text",
+        "rect": {
+          "x": 67,
+          "y": 31,
+          "width": 25,
+          "height": 3
+        },
+        "text": "劍兵派兵  4 → 5 金",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.44
+      },
+      {
+        "id": "buy_2_plate",
+        "kind": "image",
+        "rect": {
+          "x": 68,
+          "y": 23,
+          "width": 23,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "buy_2",
+        "kind": "button",
+        "rect": {
+          "x": 68,
+          "y": 24.5,
+          "width": 23,
+          "height": 3
+        },
+        "text": "◆ 14",
+        "action": "Buy2",
+        "asset": null,
+        "text_fit": 0.15
+      },
+      {
+        "id": "buy_2_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 68,
+          "y": 27.5,
+          "width": 23,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Buy2",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "buy_2_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 68,
+          "y": 23,
+          "width": 23,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Buy2",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "stock_prev_plate",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 9,
+          "width": 9,
+          "height": 7
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_muted",
+        "text_fit": 0
+      },
+      {
+        "id": "stock_prev",
+        "kind": "text",
+        "rect": {
+          "x": 38,
+          "y": 11,
+          "width": 7,
+          "height": 3
+        },
+        "text": "上一批",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.36
+      },
+      {
+        "id": "stock_next_plate",
+        "kind": "image",
+        "rect": {
+          "x": 47,
+          "y": 9,
+          "width": 9,
+          "height": 7
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "stock_next",
+        "kind": "button",
+        "rect": {
+          "x": 47,
+          "y": 11,
+          "width": 9,
+          "height": 3
+        },
+        "text": "下一批",
+        "action": "UI_page_next",
+        "asset": null,
+        "text_fit": 0.28
+      },
+      {
+        "id": "stock_next_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 47,
+          "y": 14,
+          "width": 9,
+          "height": 2
+        },
+        "text": "",
+        "action": "UI_page_next",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "stock_next_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 47,
+          "y": 9,
+          "width": 9,
+          "height": 2
+        },
+        "text": "",
+        "action": "UI_page_next",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "stock_page",
+        "kind": "text",
+        "rect": {
+          "x": 58,
+          "y": 13,
+          "width": 10,
+          "height": 3
+        },
+        "text": "1 / 2",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.42
+      },
+      {
+        "id": "refresh_plate",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 17,
+          "width": 20,
+          "height": 4
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "refresh",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 17.5,
+          "width": 20,
+          "height": 3
+        },
+        "text": "刷新 · ◆ 2",
+        "action": "RefreshShop",
+        "asset": null,
+        "text_fit": 0.34
+      },
+      {
+        "id": "refresh_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 20.5,
+          "width": 20,
+          "height": 0.5
+        },
+        "text": "",
+        "action": "RefreshShop",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "refresh_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 37,
+          "y": 17,
+          "width": 20,
+          "height": 0.5
+        },
+        "text": "",
+        "action": "RefreshShop",
+        "asset": null,
+        "text_fit": 0
+      }
+    ],
+    "findings": [],
+    "allowed_overlaps": [
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'screen_back' overlap by 64.0 x 87.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "screen_back"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'screen_title' overlap by 35.0 x 5.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "screen_title"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'screen_gold' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "screen_gold"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'screen_crystals_plate' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "screen_crystals_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'screen_crystals' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "screen_crystals"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_home_plate' overlap by 13.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_home_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_home' overlap by 13.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_home"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_home_hit_top' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_home_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_home_hit_bottom' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_home_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_gear_plate' overlap by 13.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_gear_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_gear' overlap by 13.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_gear"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_gear_hit_top' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_gear_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_gear_hit_bottom' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_gear_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_runes_plate' overlap by 13.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_runes_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_runes' overlap by 13.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_runes"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_runes_hit_top' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_runes_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_runes_hit_bottom' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_runes_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_builds_plate' overlap by 13.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_builds_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_builds' overlap by 13.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_builds"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_builds_hit_top' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_builds_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'tab_builds_hit_bottom' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "tab_builds_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'ready_plate' overlap by 17.0 x 7.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "ready_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'ready' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "ready"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'ready_hit_top' overlap by 17.0 x 2.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "ready_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'ready_hit_bottom' overlap by 17.0 x 2.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "ready_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'story_portrait' overlap by 29.0 x 45.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "story_portrait"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'story_speaker' overlap by 24.0 x 4.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "story_speaker"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'story_quote' overlap by 25.0 x 12.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "story_quote"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_panel_1' overlap by 27.0 x 46.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_panel_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_icon_1' overlap by 11.0 x 13.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_icon_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_name_1' overlap by 25.0 x 4.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_name_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_desc_1' overlap by 23.0 x 9.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_desc_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_cost_1' overlap by 25.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_cost_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'buy_1_plate' overlap by 23.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "buy_1_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'buy_1' overlap by 23.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "buy_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'buy_1_hit_top' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "buy_1_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'buy_1_hit_bottom' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "buy_1_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_panel_2' overlap by 27.0 x 46.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_panel_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_icon_2' overlap by 11.0 x 13.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_icon_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_name_2' overlap by 25.0 x 4.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_name_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_desc_2' overlap by 23.0 x 9.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_desc_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_cost_2' overlap by 25.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_cost_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'buy_2_plate' overlap by 23.0 x 6.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "buy_2_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'buy_2' overlap by 23.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "buy_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'buy_2_hit_top' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "buy_2_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'buy_2_hit_bottom' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "buy_2_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_prev_plate' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_prev_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_prev' overlap by 7.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_prev"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_next_plate' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_next_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_next' overlap by 9.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_next"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_next_hit_top' overlap by 9.0 x 2.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_next_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_next_hit_bottom' overlap by 9.0 x 2.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_next_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'stock_page' overlap by 10.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "stock_page"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'refresh_plate' overlap by 20.0 x 4.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "refresh_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'refresh' overlap by 20.0 x 3.0 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "refresh"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'refresh_hit_top' overlap by 20.0 x 0.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "refresh_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'interior_shade' and 'refresh_hit_bottom' overlap by 20.0 x 0.5 (design-space units).",
+        "nodes": [
+          "interior_shade",
+          "refresh_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'screen_title' overlap by 35.0 x 5.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "screen_title"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'screen_gold' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "screen_gold"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'screen_crystals_plate' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "screen_crystals_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'screen_crystals' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "screen_crystals"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_home_plate' overlap by 13.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_home_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_home' overlap by 13.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_home"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_home_hit_top' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_home_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_home_hit_bottom' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_home_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_gear_plate' overlap by 13.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_gear_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_gear' overlap by 13.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_gear"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_gear_hit_top' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_gear_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_gear_hit_bottom' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_gear_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_runes_plate' overlap by 13.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_runes_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_runes' overlap by 13.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_runes"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_runes_hit_top' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_runes_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_runes_hit_bottom' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_runes_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_builds_plate' overlap by 13.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_builds_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_builds' overlap by 13.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_builds"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_builds_hit_top' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_builds_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'tab_builds_hit_bottom' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "tab_builds_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'ready_plate' overlap by 17.0 x 7.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "ready_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'ready' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "ready"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'ready_hit_top' overlap by 17.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "ready_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'ready_hit_bottom' overlap by 17.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "ready_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_panel_1' overlap by 27.0 x 46.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_panel_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_icon_1' overlap by 11.0 x 13.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_icon_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_name_1' overlap by 25.0 x 4.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_name_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_desc_1' overlap by 23.0 x 9.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_desc_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_cost_1' overlap by 25.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_cost_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'buy_1_plate' overlap by 23.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "buy_1_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'buy_1' overlap by 23.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "buy_1"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'buy_1_hit_top' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "buy_1_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'buy_1_hit_bottom' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "buy_1_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_panel_2' overlap by 27.0 x 46.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_panel_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_icon_2' overlap by 11.0 x 13.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_icon_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_name_2' overlap by 25.0 x 4.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_name_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_desc_2' overlap by 23.0 x 9.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_desc_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_cost_2' overlap by 25.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_cost_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'buy_2_plate' overlap by 23.0 x 6.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "buy_2_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'buy_2' overlap by 23.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "buy_2"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'buy_2_hit_top' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "buy_2_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'buy_2_hit_bottom' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "buy_2_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_prev_plate' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_prev_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_prev' overlap by 7.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_prev"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_next_plate' overlap by 9.0 x 7.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_next_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_next' overlap by 9.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_next"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_next_hit_top' overlap by 9.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_next_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_next_hit_bottom' overlap by 9.0 x 2.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_next_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'stock_page' overlap by 10.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "stock_page"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'refresh_plate' overlap by 20.0 x 4.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "refresh_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'refresh' overlap by 20.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "refresh"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'refresh_hit_top' overlap by 20.0 x 0.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "refresh_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_back' and 'refresh_hit_bottom' overlap by 20.0 x 0.5 (design-space units).",
+        "nodes": [
+          "screen_back",
+          "refresh_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'screen_crystals_plate' and 'screen_crystals' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "screen_crystals_plate",
+          "screen_crystals"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'tab_home_plate' and 'tab_home' overlap by 13.0 x 3.0 (design-space units).",
+        "nodes": [
+          "tab_home_plate",
+          "tab_home"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'tab_home_plate' and 'tab_home_hit_top' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "tab_home_plate",
+          "tab_home_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'tab_home_plate' and 'tab_home_hit_bottom' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "tab_home_plate",
+          "tab_home_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'tab_gear_plate' and 'tab_gear' overlap by 13.0 x 3.0 (design-space units).",
+        "nodes": [
+          "tab_gear_plate",
+          "tab_gear"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'tab_gear_plate' and 'tab_gear_hit_top' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "tab_gear_plate",
+          "tab_gear_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'tab_gear_plate' and 'tab_gear_hit_bottom' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "tab_gear_plate",
+          "tab_gear_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'tab_runes_plate' and 'tab_runes' overlap by 13.0 x 3.0 (design-space units).",
+        "nodes": [
+          "tab_runes_plate",
+          "tab_runes"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'tab_runes_plate' and 'tab_runes_hit_top' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "tab_runes_plate",
+          "tab_runes_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'tab_runes_plate' and 'tab_runes_hit_bottom' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "tab_runes_plate",
+          "tab_runes_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'tab_builds_plate' and 'tab_builds' overlap by 13.0 x 3.0 (design-space units).",
+        "nodes": [
+          "tab_builds_plate",
+          "tab_builds"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'tab_builds_plate' and 'tab_builds_hit_top' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "tab_builds_plate",
+          "tab_builds_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'tab_builds_plate' and 'tab_builds_hit_bottom' overlap by 13.0 x 1.5 (design-space units).",
+        "nodes": [
+          "tab_builds_plate",
+          "tab_builds_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'ready_plate' and 'ready' overlap by 17.0 x 3.0 (design-space units).",
+        "nodes": [
+          "ready_plate",
+          "ready"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'ready_plate' and 'ready_hit_top' overlap by 17.0 x 2.0 (design-space units).",
+        "nodes": [
+          "ready_plate",
+          "ready_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'ready_plate' and 'ready_hit_bottom' overlap by 17.0 x 2.0 (design-space units).",
+        "nodes": [
+          "ready_plate",
+          "ready_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_1' and 'stock_icon_1' overlap by 11.0 x 13.0 (design-space units).",
+        "nodes": [
+          "stock_panel_1",
+          "stock_icon_1"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_1' and 'stock_name_1' overlap by 25.0 x 4.5 (design-space units).",
+        "nodes": [
+          "stock_panel_1",
+          "stock_name_1"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_1' and 'stock_desc_1' overlap by 23.0 x 9.0 (design-space units).",
+        "nodes": [
+          "stock_panel_1",
+          "stock_desc_1"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_1' and 'stock_cost_1' overlap by 25.0 x 3.0 (design-space units).",
+        "nodes": [
+          "stock_panel_1",
+          "stock_cost_1"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_1' and 'buy_1_plate' overlap by 23.0 x 6.0 (design-space units).",
+        "nodes": [
+          "stock_panel_1",
+          "buy_1_plate"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_1' and 'buy_1' overlap by 23.0 x 3.0 (design-space units).",
+        "nodes": [
+          "stock_panel_1",
+          "buy_1"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_1' and 'buy_1_hit_top' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "stock_panel_1",
+          "buy_1_hit_top"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_1' and 'buy_1_hit_bottom' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "stock_panel_1",
+          "buy_1_hit_bottom"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'buy_1_plate' and 'buy_1' overlap by 23.0 x 3.0 (design-space units).",
+        "nodes": [
+          "buy_1_plate",
+          "buy_1"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'buy_1_plate' and 'buy_1_hit_top' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "buy_1_plate",
+          "buy_1_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'buy_1_plate' and 'buy_1_hit_bottom' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "buy_1_plate",
+          "buy_1_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_2' and 'stock_icon_2' overlap by 11.0 x 13.0 (design-space units).",
+        "nodes": [
+          "stock_panel_2",
+          "stock_icon_2"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_2' and 'stock_name_2' overlap by 25.0 x 4.5 (design-space units).",
+        "nodes": [
+          "stock_panel_2",
+          "stock_name_2"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_2' and 'stock_desc_2' overlap by 23.0 x 9.0 (design-space units).",
+        "nodes": [
+          "stock_panel_2",
+          "stock_desc_2"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_2' and 'stock_cost_2' overlap by 25.0 x 3.0 (design-space units).",
+        "nodes": [
+          "stock_panel_2",
+          "stock_cost_2"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_2' and 'buy_2_plate' overlap by 23.0 x 6.0 (design-space units).",
+        "nodes": [
+          "stock_panel_2",
+          "buy_2_plate"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_2' and 'buy_2' overlap by 23.0 x 3.0 (design-space units).",
+        "nodes": [
+          "stock_panel_2",
+          "buy_2"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_2' and 'buy_2_hit_top' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "stock_panel_2",
+          "buy_2_hit_top"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_panel_2' and 'buy_2_hit_bottom' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "stock_panel_2",
+          "buy_2_hit_bottom"
+        ],
+        "resolution": "Authored card frame beneath its contained content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'buy_2_plate' and 'buy_2' overlap by 23.0 x 3.0 (design-space units).",
+        "nodes": [
+          "buy_2_plate",
+          "buy_2"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'buy_2_plate' and 'buy_2_hit_top' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "buy_2_plate",
+          "buy_2_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'buy_2_plate' and 'buy_2_hit_bottom' overlap by 23.0 x 1.5 (design-space units).",
+        "nodes": [
+          "buy_2_plate",
+          "buy_2_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_prev_plate' and 'stock_prev' overlap by 7.0 x 3.0 (design-space units).",
+        "nodes": [
+          "stock_prev_plate",
+          "stock_prev"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_next_plate' and 'stock_next' overlap by 9.0 x 3.0 (design-space units).",
+        "nodes": [
+          "stock_next_plate",
+          "stock_next"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_next_plate' and 'stock_next_hit_top' overlap by 9.0 x 2.0 (design-space units).",
+        "nodes": [
+          "stock_next_plate",
+          "stock_next_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'stock_next_plate' and 'stock_next_hit_bottom' overlap by 9.0 x 2.0 (design-space units).",
+        "nodes": [
+          "stock_next_plate",
+          "stock_next_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'refresh_plate' and 'refresh' overlap by 20.0 x 3.0 (design-space units).",
+        "nodes": [
+          "refresh_plate",
+          "refresh"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'refresh_plate' and 'refresh_hit_top' overlap by 20.0 x 0.5 (design-space units).",
+        "nodes": [
+          "refresh_plate",
+          "refresh_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'refresh_plate' and 'refresh_hit_bottom' overlap by 20.0 x 0.5 (design-space units).",
+        "nodes": [
+          "refresh_plate",
+          "refresh_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      }
+    ],
+    "readable": true,
+    "assumptions": [
+      "text_fit assumes a 16:9 viewport and a 0.5 character advance, so it is a              measurement to read, never a pass/fail",
+      "structure only: this says nothing about whether the screen looks good"
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

@@ -1,0 +1,63 @@
+{
+  "command": "D:/Projects/Unone/target/debug/game.exe",
+  "args": [
+    "plugin",
+    "test",
+    "--id",
+    "org.koncrate.unone-shader"
+  ],
+  "exit_code": 0,
+  "error": null,
+  "stderr": "",
+  "result": {
+    "ok": true,
+    "value": {
+      "capability_self_test": {
+        "failures": [],
+        "ok": true,
+        "passed": 5,
+        "total": 5
+      },
+      "plugin": "org.koncrate.unone-shader",
+      "presets": {
+        "diagnostic_policy": "Heuristics prioritize review; only measured runtime samples can identify a bottleneck.",
+        "languages": [
+          {
+            "id": "wgsl",
+            "reason": "matches Unone wgpu native renderer",
+            "status": "supported"
+          }
+        ],
+        "limits": {
+          "maxBindings": 64,
+          "maxProfileSamples": 4096,
+          "maxSourceBytes": 262144
+        },
+        "preview_modes": [
+          {
+            "function": "unone_preview_shade(uv, time)",
+            "id": "fullscreen_fragment_v1",
+            "status": "supported"
+          },
+          {
+            "id": "external",
+            "reason": "host owns entry points and resource bindings",
+            "status": "compile_host"
+          }
+        ],
+        "protocol": "unone.shader.v1"
+      },
+      "protocol": "unone.shader.v1",
+      "self_test": {
+        "failures": [],
+        "ok": true,
+        "passed": 4,
+        "total": 4
+      }
+    },
+    "diagnostics": [],
+    "effects": [
+      "plugin org.koncrate.unone-shader:plugin.test completed"
+    ]
+  }
+}

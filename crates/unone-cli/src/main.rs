@@ -26,6 +26,7 @@ mod assets;
 mod capabilities;
 mod diagnostics_replay;
 mod export;
+mod hosts;
 mod sdk;
 mod mcp;
 mod native_capture;

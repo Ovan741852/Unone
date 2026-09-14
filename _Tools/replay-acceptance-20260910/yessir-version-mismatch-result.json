@@ -1,0 +1,64 @@
+{
+  "ok": false,
+  "value": {
+    "actualTarget": {
+      "assets": {
+        "manifestHash": "sha256:f65ac21c9bc8c9ebe36bd2a0cb87119bd8d25fba583fb6813aebd6045fab0857"
+      },
+      "engine": {
+        "coreRevision": "sha256:934e73cce0b75a9ab6a1cff1908fba50180cc79cae31edb3f358faf42ee97865",
+        "version": "0.1.0"
+      },
+      "game": {
+        "id": "冥潮軍團 · ASHEN LEGION",
+        "revision": "sha256:3fdf919b5b4b1b66e69e6f583de06057548d4b439b2a4210ca22238fd5a66682",
+        "scriptHash": "sha256:1bb47332f47233c41abe2ef31d21d249174c36e49e5c66c6032caa8f87e35bc4"
+      }
+    },
+    "adapter": null,
+    "adapterInspectWallMs": null,
+    "backend": "headless_native",
+    "fingerprintDifferences": [
+      {
+        "actual": "sha256:3fdf919b5b4b1b66e69e6f583de06057548d4b439b2a4210ca22238fd5a66682",
+        "expected": "sha256:049e7692655d6e58a4a8646829ceb24d6361c38833d3826d9edbc741ce56d0cd",
+        "path": "/game/revision"
+      },
+      {
+        "actual": "sha256:1bb47332f47233c41abe2ef31d21d249174c36e49e5c66c6032caa8f87e35bc4",
+        "expected": "sha256:5c2c4b671c8217339dafc7989fc076e4a7b0ef19a2001afa5ba94eeb947415b0",
+        "path": "/game/scriptHash"
+      }
+    ],
+    "limitations": [],
+    "memory": null,
+    "memoryOptions": null,
+    "mode": null,
+    "originalMatcher": null,
+    "overrideMatcher": null,
+    "performance": null,
+    "reason": "Exact-version game/engine/assets fingerprints differ",
+    "regressionChecks": [],
+    "regressionStatus": "not_evaluated",
+    "samplingScope": null,
+    "schemaVersion": 1,
+    "source": null,
+    "status": "incompatible",
+    "statusMatcher": null,
+    "target": null,
+    "ticksExecuted": null
+  },
+  "diagnostics": [
+    {
+      "code": "REPLAY_GATE_NOT_PASSED",
+      "severity": "ERROR",
+      "summary": "Replay or regression evaluation did not complete successfully",
+      "explanation": "Exact-version game/engine/assets fingerprints differ",
+      "facts": {},
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": []
+}

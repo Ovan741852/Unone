@@ -1,0 +1,3314 @@
+{
+  "ok": true,
+  "scope": "Isolated synthetic presentation events, not game lottery evidence",
+  "samples": [
+    {
+      "width": 1440,
+      "height": 900,
+      "reduced": false,
+      "result": {
+        "states": [
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 1,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": false,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 0,
+            "activeAsset": null,
+            "stage": "idle",
+            "rolledAmount": 0,
+            "targetAmount": 0,
+            "eventIds": [],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": null,
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "burst",
+            "rolledAmount": 0,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 578.2454545454545,
+              "y": 93,
+              "width": 330.1090909090909,
+              "height": 75.65
+            },
+            "visualRect": {
+              "x": 417.6,
+              "y": 227.7,
+              "width": 604.8,
+              "height": 138.6
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 8,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "burst",
+            "rolledAmount": 0,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 578.2454545454545,
+              "y": 93,
+              "width": 330.1090909090909,
+              "height": 75.65
+            },
+            "visualRect": {
+              "x": 405.504,
+              "y": 224.928,
+              "width": 628.992,
+              "height": 144.144
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 38.00000000000002,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "count",
+            "rolledAmount": 16,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 578.2454545454545,
+              "y": 93,
+              "width": 330.1090909090909,
+              "height": 75.65
+            },
+            "visualRect": {
+              "x": 578.2454545454545,
+              "y": 93,
+              "width": 330.1090909090909,
+              "height": 75.65
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 100,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "hold",
+            "rolledAmount": 110,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 578.2454545454545,
+              "y": 93,
+              "width": 330.1090909090909,
+              "height": 75.65
+            },
+            "visualRect": {
+              "x": 578.2454545454545,
+              "y": 93,
+              "width": 330.1090909090909,
+              "height": 75.65
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 100,
+              "state": "ready",
+              "generation": 3,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "mega-win",
+            "stage": "count",
+            "rolledAmount": 110,
+            "targetAmount": 360,
+            "eventIds": [
+              2,
+              3
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 578.2454545454545,
+              "y": 93,
+              "width": 330.1090909090909,
+              "height": 75.65
+            },
+            "visualRect": {
+              "x": 578.2454545454545,
+              "y": 93,
+              "width": 330.1090909090909,
+              "height": 75.65
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 104,
+              "reducedMotion": false,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 0,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 1420,
+                "height": 890
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1460,
+            "eventIds": [
+              2,
+              3,
+              4
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 900
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 104,
+              "reducedMotion": false,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 0,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 1420,
+                "height": 890
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1570,
+            "eventIds": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 900
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 104,
+              "reducedMotion": false,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 0,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 1420,
+                "height": 890
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1570,
+            "eventIds": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 900
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 104,
+              "reducedMotion": false,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 0,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 1420,
+                "height": 890
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1570,
+            "eventIds": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 900
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          }
+        ],
+        "before": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 100,
+            "state": "ready",
+            "generation": 2,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": true,
+          "fullscreen": false,
+          "ultimate": null,
+          "activeTier": 3,
+          "activeAsset": "big-win",
+          "stage": "hold",
+          "rolledAmount": 110,
+          "targetAmount": 110,
+          "eventIds": [
+            2
+          ],
+          "completedAmounts": [],
+          "dockRect": {
+            "x": 578.2454545454545,
+            "y": 93,
+            "width": 330.1090909090909,
+            "height": 75.65
+          },
+          "visualRect": {
+            "x": 578.2454545454545,
+            "y": 93,
+            "width": 330.1090909090909,
+            "height": 75.65
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "same": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 100,
+            "state": "ready",
+            "generation": 2,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": true,
+          "fullscreen": false,
+          "ultimate": null,
+          "activeTier": 3,
+          "activeAsset": "big-win",
+          "stage": "hold",
+          "rolledAmount": 110,
+          "targetAmount": 110,
+          "eventIds": [
+            2
+          ],
+          "completedAmounts": [],
+          "dockRect": {
+            "x": 578.2454545454545,
+            "y": 93,
+            "width": 330.1090909090909,
+            "height": 75.65
+          },
+          "visualRect": {
+            "x": 578.2454545454545,
+            "y": 93,
+            "width": 330.1090909090909,
+            "height": 75.65
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "paused": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 0,
+            "state": "ready",
+            "generation": 4,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": false,
+          "fullscreen": true,
+          "ultimate": {
+            "age": 0,
+            "fullscreen": true,
+            "particleBudget": 104,
+            "reducedMotion": false,
+            "lottie": {
+              "ok": true,
+              "value": {
+                "componentBounds": {
+                  "x": 0,
+                  "y": 0,
+                  "w": 100,
+                  "h": 100
+                },
+                "clipped": false,
+                "assetReady": true,
+                "currentFrame": 0,
+                "state": "ready",
+                "generation": 1,
+                "backend": "canvas-2d",
+                "error": null
+              }
+            },
+            "safeRect": {
+              "x": 12,
+              "y": 4,
+              "width": 1420,
+              "height": 890
+            }
+          },
+          "activeTier": 4,
+          "activeAsset": "legendary-win",
+          "stage": "burst",
+          "rolledAmount": 110,
+          "targetAmount": 1570,
+          "eventIds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "completedAmounts": [],
+          "dockRect": null,
+          "visualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 900
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "exact": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 0,
+            "state": "ready",
+            "generation": 4,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": true,
+          "fullscreen": true,
+          "ultimate": {
+            "age": 4.833333333333316,
+            "fullscreen": true,
+            "particleBudget": 104,
+            "reducedMotion": false,
+            "lottie": {
+              "ok": true,
+              "value": {
+                "componentBounds": {
+                  "x": 0,
+                  "y": 0,
+                  "w": 100,
+                  "h": 100
+                },
+                "clipped": false,
+                "assetReady": true,
+                "currentFrame": 289.999999999999,
+                "state": "ready",
+                "generation": 1,
+                "backend": "canvas-2d",
+                "error": null
+              }
+            },
+            "safeRect": {
+              "x": 12,
+              "y": 4,
+              "width": 1420,
+              "height": 890
+            }
+          },
+          "activeTier": 4,
+          "activeAsset": "legendary-win",
+          "stage": "hold",
+          "rolledAmount": 1570,
+          "targetAmount": 1570,
+          "eventIds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "completedAmounts": [],
+          "dockRect": null,
+          "visualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 900
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "reset": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 0,
+            "state": "ready",
+            "generation": 4,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": false,
+          "fullscreen": false,
+          "ultimate": null,
+          "activeTier": 0,
+          "activeAsset": null,
+          "stage": "idle",
+          "rolledAmount": 0,
+          "targetAmount": 0,
+          "eventIds": [],
+          "completedAmounts": [],
+          "dockRect": null,
+          "visualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 1440,
+            "height": 900
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        }
+      }
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "reduced": false,
+      "result": {
+        "states": [
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 1,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": false,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 0,
+            "activeAsset": null,
+            "stage": "idle",
+            "rolledAmount": 0,
+            "targetAmount": 0,
+            "eventIds": [],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": null,
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "burst",
+            "rolledAmount": 0,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 330.65090909090907,
+              "y": 61,
+              "width": 211.4181818181818,
+              "height": 48.45
+            },
+            "visualRect": {
+              "x": 244.76000000000002,
+              "y": 88.08250000000002,
+              "width": 354.47999999999996,
+              "height": 81.23499999999999
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 8,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "burst",
+            "rolledAmount": 0,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 330.65090909090907,
+              "y": 61,
+              "width": 211.4181818181818,
+              "height": 48.45
+            },
+            "visualRect": {
+              "x": 237.6704,
+              "y": 86.45780000000002,
+              "width": 368.6592,
+              "height": 84.4844
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 38.00000000000002,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "count",
+            "rolledAmount": 16,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 330.65090909090907,
+              "y": 61,
+              "width": 211.4181818181818,
+              "height": 48.45
+            },
+            "visualRect": {
+              "x": 330.65090909090907,
+              "y": 61,
+              "width": 211.4181818181818,
+              "height": 48.45
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 100,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "hold",
+            "rolledAmount": 110,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 330.65090909090907,
+              "y": 61,
+              "width": 211.4181818181818,
+              "height": 48.45
+            },
+            "visualRect": {
+              "x": 330.65090909090907,
+              "y": 61,
+              "width": 211.4181818181818,
+              "height": 48.45
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 100,
+              "state": "ready",
+              "generation": 3,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "mega-win",
+            "stage": "count",
+            "rolledAmount": 110,
+            "targetAmount": 360,
+            "eventIds": [
+              2,
+              3
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 330.65090909090907,
+              "y": 61,
+              "width": 211.4181818181818,
+              "height": 48.45
+            },
+            "visualRect": {
+              "x": 330.65090909090907,
+              "y": 61,
+              "width": 211.4181818181818,
+              "height": 48.45
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 104,
+              "reducedMotion": false,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 0,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 824,
+                "height": 380
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1460,
+            "eventIds": [
+              2,
+              3,
+              4
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 844,
+              "height": 390
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 104,
+              "reducedMotion": false,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 0,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 824,
+                "height": 380
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1570,
+            "eventIds": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 844,
+              "height": 390
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 104,
+              "reducedMotion": false,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 0,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 824,
+                "height": 380
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1570,
+            "eventIds": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 844,
+              "height": 390
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 104,
+              "reducedMotion": false,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 0,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 824,
+                "height": 380
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1570,
+            "eventIds": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 844,
+              "height": 390
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          }
+        ],
+        "before": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 100,
+            "state": "ready",
+            "generation": 2,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": true,
+          "fullscreen": false,
+          "ultimate": null,
+          "activeTier": 3,
+          "activeAsset": "big-win",
+          "stage": "hold",
+          "rolledAmount": 110,
+          "targetAmount": 110,
+          "eventIds": [
+            2
+          ],
+          "completedAmounts": [],
+          "dockRect": {
+            "x": 330.65090909090907,
+            "y": 61,
+            "width": 211.4181818181818,
+            "height": 48.45
+          },
+          "visualRect": {
+            "x": 330.65090909090907,
+            "y": 61,
+            "width": 211.4181818181818,
+            "height": 48.45
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "same": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 100,
+            "state": "ready",
+            "generation": 2,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": true,
+          "fullscreen": false,
+          "ultimate": null,
+          "activeTier": 3,
+          "activeAsset": "big-win",
+          "stage": "hold",
+          "rolledAmount": 110,
+          "targetAmount": 110,
+          "eventIds": [
+            2
+          ],
+          "completedAmounts": [],
+          "dockRect": {
+            "x": 330.65090909090907,
+            "y": 61,
+            "width": 211.4181818181818,
+            "height": 48.45
+          },
+          "visualRect": {
+            "x": 330.65090909090907,
+            "y": 61,
+            "width": 211.4181818181818,
+            "height": 48.45
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "paused": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 0,
+            "state": "ready",
+            "generation": 4,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": false,
+          "fullscreen": true,
+          "ultimate": {
+            "age": 0,
+            "fullscreen": true,
+            "particleBudget": 104,
+            "reducedMotion": false,
+            "lottie": {
+              "ok": true,
+              "value": {
+                "componentBounds": {
+                  "x": 0,
+                  "y": 0,
+                  "w": 100,
+                  "h": 100
+                },
+                "clipped": false,
+                "assetReady": true,
+                "currentFrame": 0,
+                "state": "ready",
+                "generation": 1,
+                "backend": "canvas-2d",
+                "error": null
+              }
+            },
+            "safeRect": {
+              "x": 12,
+              "y": 4,
+              "width": 824,
+              "height": 380
+            }
+          },
+          "activeTier": 4,
+          "activeAsset": "legendary-win",
+          "stage": "burst",
+          "rolledAmount": 110,
+          "targetAmount": 1570,
+          "eventIds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "completedAmounts": [],
+          "dockRect": null,
+          "visualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 844,
+            "height": 390
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "exact": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 0,
+            "state": "ready",
+            "generation": 4,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": true,
+          "fullscreen": true,
+          "ultimate": {
+            "age": 4.833333333333316,
+            "fullscreen": true,
+            "particleBudget": 104,
+            "reducedMotion": false,
+            "lottie": {
+              "ok": true,
+              "value": {
+                "componentBounds": {
+                  "x": 0,
+                  "y": 0,
+                  "w": 100,
+                  "h": 100
+                },
+                "clipped": false,
+                "assetReady": true,
+                "currentFrame": 289.999999999999,
+                "state": "ready",
+                "generation": 1,
+                "backend": "canvas-2d",
+                "error": null
+              }
+            },
+            "safeRect": {
+              "x": 12,
+              "y": 4,
+              "width": 824,
+              "height": 380
+            }
+          },
+          "activeTier": 4,
+          "activeAsset": "legendary-win",
+          "stage": "hold",
+          "rolledAmount": 1570,
+          "targetAmount": 1570,
+          "eventIds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "completedAmounts": [],
+          "dockRect": null,
+          "visualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 844,
+            "height": 390
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "reset": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 0,
+            "state": "ready",
+            "generation": 4,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": false,
+          "fullscreen": false,
+          "ultimate": null,
+          "activeTier": 0,
+          "activeAsset": null,
+          "stage": "idle",
+          "rolledAmount": 0,
+          "targetAmount": 0,
+          "eventIds": [],
+          "completedAmounts": [],
+          "dockRect": null,
+          "visualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 844,
+            "height": 390
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        }
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "reduced": false,
+      "result": {
+        "states": [
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 1,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": false,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 0,
+            "activeAsset": null,
+            "stage": "idle",
+            "rolledAmount": 0,
+            "targetAmount": 0,
+            "eventIds": [],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": null,
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "burst",
+            "rolledAmount": 0,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 42.33090909090911,
+              "y": 220.84,
+              "width": 309.3381818181818,
+              "height": 70.89
+            },
+            "visualRect": {
+              "x": 15.599999999999994,
+              "y": 296.4875,
+              "width": 358.8,
+              "height": 82.225
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 8,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "burst",
+            "rolledAmount": 0,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 42.33090909090911,
+              "y": 220.84,
+              "width": 309.3381818181818,
+              "height": 70.89
+            },
+            "visualRect": {
+              "x": 8.423999999999989,
+              "y": 294.843,
+              "width": 373.15200000000004,
+              "height": 85.514
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 38.00000000000002,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "count",
+            "rolledAmount": 16,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 42.33090909090911,
+              "y": 220.84,
+              "width": 309.3381818181818,
+              "height": 70.89
+            },
+            "visualRect": {
+              "x": 42.33090909090911,
+              "y": 220.84,
+              "width": 309.3381818181818,
+              "height": 70.89
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 100,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "hold",
+            "rolledAmount": 110,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 42.33090909090911,
+              "y": 220.84,
+              "width": 309.3381818181818,
+              "height": 70.89
+            },
+            "visualRect": {
+              "x": 42.33090909090911,
+              "y": 220.84,
+              "width": 309.3381818181818,
+              "height": 70.89
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 100,
+              "state": "ready",
+              "generation": 3,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "mega-win",
+            "stage": "count",
+            "rolledAmount": 110,
+            "targetAmount": 360,
+            "eventIds": [
+              2,
+              3
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 42.33090909090911,
+              "y": 220.84,
+              "width": 309.3381818181818,
+              "height": 70.89
+            },
+            "visualRect": {
+              "x": 42.33090909090911,
+              "y": 220.84,
+              "width": 309.3381818181818,
+              "height": 70.89
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 60,
+              "reducedMotion": false,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 0,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 370,
+                "height": 834
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1460,
+            "eventIds": [
+              2,
+              3,
+              4
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 60,
+              "reducedMotion": false,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 0,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 370,
+                "height": 834
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1570,
+            "eventIds": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 60,
+              "reducedMotion": false,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 0,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 370,
+                "height": 834
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1570,
+            "eventIds": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 60,
+              "reducedMotion": false,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 0,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 370,
+                "height": 834
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1570,
+            "eventIds": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          }
+        ],
+        "before": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 100,
+            "state": "ready",
+            "generation": 2,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": true,
+          "fullscreen": false,
+          "ultimate": null,
+          "activeTier": 3,
+          "activeAsset": "big-win",
+          "stage": "hold",
+          "rolledAmount": 110,
+          "targetAmount": 110,
+          "eventIds": [
+            2
+          ],
+          "completedAmounts": [],
+          "dockRect": {
+            "x": 42.33090909090911,
+            "y": 220.84,
+            "width": 309.3381818181818,
+            "height": 70.89
+          },
+          "visualRect": {
+            "x": 42.33090909090911,
+            "y": 220.84,
+            "width": 309.3381818181818,
+            "height": 70.89
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "same": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 100,
+            "state": "ready",
+            "generation": 2,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": true,
+          "fullscreen": false,
+          "ultimate": null,
+          "activeTier": 3,
+          "activeAsset": "big-win",
+          "stage": "hold",
+          "rolledAmount": 110,
+          "targetAmount": 110,
+          "eventIds": [
+            2
+          ],
+          "completedAmounts": [],
+          "dockRect": {
+            "x": 42.33090909090911,
+            "y": 220.84,
+            "width": 309.3381818181818,
+            "height": 70.89
+          },
+          "visualRect": {
+            "x": 42.33090909090911,
+            "y": 220.84,
+            "width": 309.3381818181818,
+            "height": 70.89
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "paused": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 0,
+            "state": "ready",
+            "generation": 4,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": false,
+          "fullscreen": true,
+          "ultimate": {
+            "age": 0,
+            "fullscreen": true,
+            "particleBudget": 60,
+            "reducedMotion": false,
+            "lottie": {
+              "ok": true,
+              "value": {
+                "componentBounds": {
+                  "x": 0,
+                  "y": 0,
+                  "w": 100,
+                  "h": 100
+                },
+                "clipped": false,
+                "assetReady": true,
+                "currentFrame": 0,
+                "state": "ready",
+                "generation": 1,
+                "backend": "canvas-2d",
+                "error": null
+              }
+            },
+            "safeRect": {
+              "x": 12,
+              "y": 4,
+              "width": 370,
+              "height": 834
+            }
+          },
+          "activeTier": 4,
+          "activeAsset": "legendary-win",
+          "stage": "burst",
+          "rolledAmount": 110,
+          "targetAmount": 1570,
+          "eventIds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "completedAmounts": [],
+          "dockRect": null,
+          "visualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 390,
+            "height": 844
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "exact": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 0,
+            "state": "ready",
+            "generation": 4,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": true,
+          "fullscreen": true,
+          "ultimate": {
+            "age": 4.833333333333316,
+            "fullscreen": true,
+            "particleBudget": 60,
+            "reducedMotion": false,
+            "lottie": {
+              "ok": true,
+              "value": {
+                "componentBounds": {
+                  "x": 0,
+                  "y": 0,
+                  "w": 100,
+                  "h": 100
+                },
+                "clipped": false,
+                "assetReady": true,
+                "currentFrame": 289.999999999999,
+                "state": "ready",
+                "generation": 1,
+                "backend": "canvas-2d",
+                "error": null
+              }
+            },
+            "safeRect": {
+              "x": 12,
+              "y": 4,
+              "width": 370,
+              "height": 834
+            }
+          },
+          "activeTier": 4,
+          "activeAsset": "legendary-win",
+          "stage": "hold",
+          "rolledAmount": 1570,
+          "targetAmount": 1570,
+          "eventIds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "completedAmounts": [],
+          "dockRect": null,
+          "visualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 390,
+            "height": 844
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "reset": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 0,
+            "state": "ready",
+            "generation": 4,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": false,
+          "fullscreen": false,
+          "ultimate": null,
+          "activeTier": 0,
+          "activeAsset": null,
+          "stage": "idle",
+          "rolledAmount": 0,
+          "targetAmount": 0,
+          "eventIds": [],
+          "completedAmounts": [],
+          "dockRect": null,
+          "visualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 390,
+            "height": 844
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        }
+      }
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "reduced": true,
+      "result": {
+        "states": [
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 1,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": false,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 0,
+            "activeAsset": null,
+            "stage": "idle",
+            "rolledAmount": 0,
+            "targetAmount": 0,
+            "eventIds": [],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": null,
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 100,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "burst",
+            "rolledAmount": 0,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 58.516363636363636,
+              "y": 149.08,
+              "width": 206.96727272727273,
+              "height": 47.43
+            },
+            "visualRect": {
+              "x": 58.516363636363636,
+              "y": 149.08,
+              "width": 206.96727272727273,
+              "height": 47.43
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 100,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "burst",
+            "rolledAmount": 0,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 58.516363636363636,
+              "y": 149.08,
+              "width": 206.96727272727273,
+              "height": 47.43
+            },
+            "visualRect": {
+              "x": 58.516363636363636,
+              "y": 149.08,
+              "width": 206.96727272727273,
+              "height": 47.43
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 100,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "count",
+            "rolledAmount": 16,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 58.516363636363636,
+              "y": 149.08,
+              "width": 206.96727272727273,
+              "height": 47.43
+            },
+            "visualRect": {
+              "x": 58.516363636363636,
+              "y": 149.08,
+              "width": 206.96727272727273,
+              "height": 47.43
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 100,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "hold",
+            "rolledAmount": 110,
+            "targetAmount": 110,
+            "eventIds": [
+              2
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 58.516363636363636,
+              "y": 149.08,
+              "width": 206.96727272727273,
+              "height": 47.43
+            },
+            "visualRect": {
+              "x": 58.516363636363636,
+              "y": 149.08,
+              "width": 206.96727272727273,
+              "height": 47.43
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 100,
+              "state": "ready",
+              "generation": 3,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "mega-win",
+            "stage": "count",
+            "rolledAmount": 110,
+            "targetAmount": 360,
+            "eventIds": [
+              2,
+              3
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 58.516363636363636,
+              "y": 149.08,
+              "width": 206.96727272727273,
+              "height": 47.43
+            },
+            "visualRect": {
+              "x": 58.516363636363636,
+              "y": 149.08,
+              "width": 206.96727272727273,
+              "height": 47.43
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 0,
+              "reducedMotion": true,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 150,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 300,
+                "height": 558
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1460,
+            "eventIds": [
+              2,
+              3,
+              4
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 320,
+              "height": 568
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 0,
+              "reducedMotion": true,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 150,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 300,
+                "height": 558
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1570,
+            "eventIds": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 320,
+              "height": 568
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 0,
+              "reducedMotion": true,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 150,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 300,
+                "height": 558
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1570,
+            "eventIds": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 320,
+              "height": 568
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          },
+          {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 4,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": true,
+            "ultimate": {
+              "age": 0,
+              "fullscreen": true,
+              "particleBudget": 0,
+              "reducedMotion": true,
+              "lottie": {
+                "ok": true,
+                "value": {
+                  "componentBounds": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 100,
+                    "h": 100
+                  },
+                  "clipped": false,
+                  "assetReady": true,
+                  "currentFrame": 150,
+                  "state": "ready",
+                  "generation": 1,
+                  "backend": "canvas-2d",
+                  "error": null
+                }
+              },
+              "safeRect": {
+                "x": 12,
+                "y": 4,
+                "width": 300,
+                "height": 558
+              }
+            },
+            "activeTier": 4,
+            "activeAsset": "legendary-win",
+            "stage": "anticipation",
+            "rolledAmount": 110,
+            "targetAmount": 1570,
+            "eventIds": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": {
+              "x": 0,
+              "y": 0,
+              "width": 320,
+              "height": 568
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": []
+          }
+        ],
+        "before": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 100,
+            "state": "ready",
+            "generation": 2,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": true,
+          "fullscreen": false,
+          "ultimate": null,
+          "activeTier": 3,
+          "activeAsset": "big-win",
+          "stage": "hold",
+          "rolledAmount": 110,
+          "targetAmount": 110,
+          "eventIds": [
+            2
+          ],
+          "completedAmounts": [],
+          "dockRect": {
+            "x": 58.516363636363636,
+            "y": 149.08,
+            "width": 206.96727272727273,
+            "height": 47.43
+          },
+          "visualRect": {
+            "x": 58.516363636363636,
+            "y": 149.08,
+            "width": 206.96727272727273,
+            "height": 47.43
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "same": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 100,
+            "state": "ready",
+            "generation": 2,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": true,
+          "fullscreen": false,
+          "ultimate": null,
+          "activeTier": 3,
+          "activeAsset": "big-win",
+          "stage": "hold",
+          "rolledAmount": 110,
+          "targetAmount": 110,
+          "eventIds": [
+            2
+          ],
+          "completedAmounts": [],
+          "dockRect": {
+            "x": 58.516363636363636,
+            "y": 149.08,
+            "width": 206.96727272727273,
+            "height": 47.43
+          },
+          "visualRect": {
+            "x": 58.516363636363636,
+            "y": 149.08,
+            "width": 206.96727272727273,
+            "height": 47.43
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "paused": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 0,
+            "state": "ready",
+            "generation": 4,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": false,
+          "fullscreen": true,
+          "ultimate": {
+            "age": 0,
+            "fullscreen": true,
+            "particleBudget": 0,
+            "reducedMotion": true,
+            "lottie": {
+              "ok": true,
+              "value": {
+                "componentBounds": {
+                  "x": 0,
+                  "y": 0,
+                  "w": 100,
+                  "h": 100
+                },
+                "clipped": false,
+                "assetReady": true,
+                "currentFrame": 150,
+                "state": "ready",
+                "generation": 1,
+                "backend": "canvas-2d",
+                "error": null
+              }
+            },
+            "safeRect": {
+              "x": 12,
+              "y": 4,
+              "width": 300,
+              "height": 558
+            }
+          },
+          "activeTier": 4,
+          "activeAsset": "legendary-win",
+          "stage": "burst",
+          "rolledAmount": 110,
+          "targetAmount": 1570,
+          "eventIds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "completedAmounts": [],
+          "dockRect": null,
+          "visualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 320,
+            "height": 568
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "exact": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 0,
+            "state": "ready",
+            "generation": 4,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": true,
+          "fullscreen": true,
+          "ultimate": {
+            "age": 4.833333333333316,
+            "fullscreen": true,
+            "particleBudget": 0,
+            "reducedMotion": true,
+            "lottie": {
+              "ok": true,
+              "value": {
+                "componentBounds": {
+                  "x": 0,
+                  "y": 0,
+                  "w": 100,
+                  "h": 100
+                },
+                "clipped": false,
+                "assetReady": true,
+                "currentFrame": 150,
+                "state": "ready",
+                "generation": 1,
+                "backend": "canvas-2d",
+                "error": null
+              }
+            },
+            "safeRect": {
+              "x": 12,
+              "y": 4,
+              "width": 300,
+              "height": 558
+            }
+          },
+          "activeTier": 4,
+          "activeAsset": "legendary-win",
+          "stage": "hold",
+          "rolledAmount": 1570,
+          "targetAmount": 1570,
+          "eventIds": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "completedAmounts": [],
+          "dockRect": null,
+          "visualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 320,
+            "height": 568
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        },
+        "reset": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 0,
+            "state": "ready",
+            "generation": 4,
+            "backend": "canvas-2d",
+            "error": null
+          },
+          "celebrationVisible": false,
+          "fullscreen": false,
+          "ultimate": null,
+          "activeTier": 0,
+          "activeAsset": null,
+          "stage": "idle",
+          "rolledAmount": 0,
+          "targetAmount": 0,
+          "eventIds": [],
+          "completedAmounts": [],
+          "dockRect": null,
+          "visualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 320,
+            "height": 568
+          },
+          "usesMultiplier": false,
+          "pointerEvents": "none",
+          "diagnostics": []
+        }
+      }
+    }
+  ]
+}

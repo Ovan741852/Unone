@@ -1,0 +1,51 @@
+{
+  "name": "exactly-one-choice",
+  "frames": 33,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Start": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "LeaveShop": true
+      }
+    },
+    {}
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "phase",
+        "equals": "battle"
+      }
+    },
+    {
+      "observation": {
+        "key": "round",
+        "equals": 1
+      }
+    },
+    {
+      "observation": {
+        "key": "choices",
+        "equals": 1
+      }
+    },
+    {
+      "observation": {
+        "key": "economy_conserved",
+        "equals": true
+      }
+    }
+  ]
+}

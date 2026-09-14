@@ -1,0 +1,62 @@
+{
+  "tests": {
+    "boss-appears-final30.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "boss-delayed-before-final30.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "bounce-does-not-reset-lifetime.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "corner-reflection-1.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "corner-reflection-2.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "corner-reflection-3.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "corner-reflection-4.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "exactly-one-choice.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "held-choice-cannot-repeat.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "horde-optional-quiet-round.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "horde-paused-single-surge.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "menu-does-not-spend.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "missed-shots-bankruptcy.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "one-click-one-soldier.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "pause-freezes-countdown.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "reset-clears-run.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "timeout-does-not-refund-expired.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "timeout-loses.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    },
+    "timeout-refunds-survivor-once.test.json": {
+      "rulesVersion": "rpg-180-v2"
+    }
+  },
+  "sourceBeforeTypecheckFix": "e71fbcb649b494c2af98864519b5b3e98d5293e64420096c875e4630ccf0893d"
+}

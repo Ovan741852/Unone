@@ -1,0 +1,319 @@
+{
+  "ok": true,
+  "value": {
+    "project": "冥潮軍團 · ASHEN LEGION",
+    "systems": [
+      {
+        "id": "jobs",
+        "summary": "Isolated game-owned Luau buffer jobs; native background threads, Web inline backend.",
+        "status": "available",
+        "default_enabled": false,
+        "optional": true,
+        "build_feature": "jobs",
+        "compiled": true,
+        "luau_api": [
+          "api.jobs.register",
+          "api.jobs.submit",
+          "api.jobs.take",
+          "api.jobs.cancel",
+          "api.jobs.reset"
+        ],
+        "observation": [
+          "world.jobs"
+        ],
+        "when_disabled": "When disabled, api.jobs reports SYSTEM_DISABLED; no worker pool starts.",
+        "disable_when": "Enable for independent coarse batches; Web v1 is synchronous, not a Web Worker or arbitrary WASM module executor.",
+        "enabled": false,
+        "source": "default"
+      },
+      {
+        "id": "world",
+        "summary": "ECS world state for entities, transforms, and sprites.",
+        "status": "available",
+        "default_enabled": true,
+        "optional": false,
+        "build_feature": null,
+        "compiled": true,
+        "luau_api": [
+          "api.entity.*"
+        ],
+        "observation": [
+          "world.entities"
+        ],
+        "when_disabled": "Without the world there is no observable game state, so this system cannot be disabled.",
+        "disable_when": "Not applicable.",
+        "enabled": true,
+        "source": "default"
+      },
+      {
+        "id": "input",
+        "summary": "Host input boundary for semantic actions and world/screen pointers.",
+        "status": "available",
+        "default_enabled": true,
+        "optional": false,
+        "build_feature": null,
+        "compiled": true,
+        "luau_api": [
+          "api.input.isDown",
+          "api.input.pointer"
+        ],
+        "observation": [
+          "world.pointer"
+        ],
+        "when_disabled": "Deterministic tests cannot be replayed without input, so this system cannot be disabled.",
+        "disable_when": "Not applicable.",
+        "enabled": true,
+        "source": "default"
+      },
+      {
+        "id": "observation",
+        "summary": "Semantic projection and observation digest for the typed ViewModel.",
+        "status": "available",
+        "default_enabled": true,
+        "optional": false,
+        "build_feature": null,
+        "compiled": true,
+        "luau_api": [
+          "api.observation.set"
+        ],
+        "observation": [
+          "observation",
+          "observation_digest"
+        ],
+        "when_disabled": "Semantic assertions cannot run without observations, so this system cannot be disabled.",
+        "disable_when": "Not applicable.",
+        "enabled": true,
+        "source": "default"
+      },
+      {
+        "id": "physics3d",
+        "summary": "Opt-in fixed-step Rapier 3D rigid bodies, sphere/box/capsule/convex/static triangle mesh, sensors, collision groups, CCD, sleeping, ray/shape queries and sorted contact lifecycle. Lua owns commands and gameplay reactions. Legacy moving-sphere sweep remains available.",
+        "status": "available",
+        "default_enabled": false,
+        "optional": true,
+        "build_feature": "physics3d",
+        "compiled": true,
+        "luau_api": [
+          "api.physics3d.sweepSphere",
+          "api.physics3d.addBody",
+          "api.physics3d.raycast",
+          "api.physics3d.castShape",
+          "api.physics3d.overlap",
+          "api.physics3d.contacts"
+        ],
+        "observation": [
+          "physics3d"
+        ],
+        "when_disabled": "api.physics3d reports SYSTEM_DISABLED.",
+        "disable_when": "Games without 3D projectile queries.",
+        "enabled": false,
+        "source": "project"
+      },
+      {
+        "id": "physics2d",
+        "summary": "Fixed-step integration for 2D rigid bodies: gravity, linear damping, ground bounce and friction, and circle collisions with per-frame contact points. There is no angular velocity, non-circular collider, sensor, or raycast.",
+        "status": "available",
+        "default_enabled": true,
+        "optional": true,
+        "build_feature": "physics2d",
+        "compiled": true,
+        "luau_api": [
+          "api.physics.applyImpulse",
+          "api.entity.despawn"
+        ],
+        "observation": [
+          "world.entities[].rigidbody",
+          "world.contacts",
+          "world.ground_contacts"
+        ],
+        "when_disabled": "When disabled, the engine advances no rigid bodies and publishes no contacts; RigidBody2D keeps its scene initial values and api.physics reports SYSTEM_DISABLED.",
+        "disable_when": "Games without physics simulation, such as board, idle, AVG, and slot games; disabling this removes per-frame integration cost and unnecessary digest changes.",
+        "enabled": false,
+        "source": "project"
+      },
+      {
+        "id": "camera2d",
+        "summary": "2D camera position and zoom.",
+        "status": "available",
+        "default_enabled": true,
+        "optional": true,
+        "build_feature": "camera2d",
+        "compiled": true,
+        "luau_api": [
+          "api.camera.setPosition",
+          "api.camera.setZoom"
+        ],
+        "observation": [
+          "world.camera"
+        ],
+        "when_disabled": "When disabled, api.camera reports SYSTEM_DISABLED; the snapshot still emits a default camera so the host has a fixed view.",
+        "disable_when": "Fixed-screen, non-scrolling games.",
+        "enabled": true,
+        "source": "default"
+      },
+      {
+        "id": "camera3d",
+        "summary": "3D camera and observation projection for Mesh3D/Transform3D.",
+        "status": "available",
+        "default_enabled": true,
+        "optional": true,
+        "build_feature": "camera3d",
+        "compiled": true,
+        "luau_api": [
+          "api.camera3d.setPosition",
+          "api.camera3d.setTarget"
+        ],
+        "observation": [
+          "world.camera3d",
+          "world.entities[].mesh3d"
+        ],
+        "when_disabled": "When disabled, api.camera3d reports SYSTEM_DISABLED; api.entity 3D transforms are currently unaffected by this switch.",
+        "disable_when": "Pure 2D games; disabling this makes 'this project should not contain a 3D camera' a verifiable fact.",
+        "enabled": true,
+        "source": "default"
+      },
+      {
+        "id": "random",
+        "summary": "Seeded, replayable game randomness.",
+        "status": "available",
+        "default_enabled": true,
+        "optional": true,
+        "build_feature": "random",
+        "compiled": true,
+        "luau_api": [
+          "api.random.nextFloat",
+          "api.random.nextInt"
+        ],
+        "observation": [],
+        "when_disabled": "When disabled, api.random reports SYSTEM_DISABLED.",
+        "disable_when": "Fully deterministic games or level verification that permits no random source.",
+        "enabled": true,
+        "source": "default"
+      },
+      {
+        "id": "ui",
+        "summary": "Deterministic UI tree transport for engine verification (screen/text/button/image/component with rects, asset ids and actions).",
+        "status": "available",
+        "default_enabled": true,
+        "optional": true,
+        "build_feature": "ui",
+        "compiled": true,
+        "luau_api": [
+          "api.ui.setRoot"
+        ],
+        "observation": [
+          "ui"
+        ],
+        "when_disabled": "When disabled, api.ui reports SYSTEM_DISABLED and the host receives no UI tree.",
+        "disable_when": "Headless simulations or games whose host builds the UI independently.",
+        "enabled": true,
+        "source": "default"
+      },
+      {
+        "id": "save",
+        "summary": "Transport for the game's versioned JSON save payload and migrations.",
+        "status": "available",
+        "default_enabled": true,
+        "optional": true,
+        "build_feature": "save",
+        "compiled": true,
+        "luau_api": [
+          "api.save.set",
+          "api.save.get"
+        ],
+        "observation": [
+          "save_payload"
+        ],
+        "when_disabled": "When disabled, api.save reports SYSTEM_DISABLED.",
+        "disable_when": "Level verification or demos without saved state.",
+        "enabled": true,
+        "source": "default"
+      },
+      {
+        "id": "audio",
+        "summary": "Sound effects and BGM: the game publishes semantic audio events and loop state; the host decodes and mixes them.",
+        "status": "host_required",
+        "default_enabled": true,
+        "optional": true,
+        "build_feature": "audio",
+        "compiled": true,
+        "luau_api": [
+          "api.audio.play",
+          "api.audio.loop",
+          "api.audio.stop",
+          "api.audio.stopAll"
+        ],
+        "observation": [
+          "world.audio_events",
+          "world.audio_loops"
+        ],
+        "when_disabled": "When disabled, api.audio reports SYSTEM_DISABLED and the snapshot contains no audio events or loops.",
+        "disable_when": "Silent games or verification projects that only compare visuals. Classification rules (exclusive/fade) are decided by the engine and included in the digest; hosts produce the actual sound, and the Web hosts currently play it while native preview and Android remain silent.",
+        "enabled": true,
+        "source": "default"
+      },
+      {
+        "id": "spine",
+        "summary": "Spine skeletal animation: the game publishes semantic animation state; the host runs the Spine runtime.",
+        "status": "host_required",
+        "default_enabled": false,
+        "optional": true,
+        "build_feature": "spine",
+        "compiled": true,
+        "luau_api": [
+          "api.animation.play",
+          "api.animation.stop"
+        ],
+        "observation": [
+          "world.entities[].animation"
+        ],
+        "when_disabled": "When disabled, api.animation reports SYSTEM_DISABLED; animation declared by the scene still appears in the snapshot.",
+        "disable_when": "Games without skeletal animation; this system is disabled by default. Currently only the web/presentation Web host plays it with spine-webgl; native preview and the Android host do not. The engine only owns transport and determinism.",
+        "enabled": false,
+        "source": "default"
+      },
+      {
+        "id": "particle",
+        "summary": "Seeded fixed-frame 3D native particles, sampled by core and presented by the host.",
+        "status": "available",
+        "default_enabled": true,
+        "optional": true,
+        "build_feature": "particle",
+        "compiled": true,
+        "luau_api": [
+          "api.particle.play",
+          "api.particle.stop"
+        ],
+        "observation": [
+          "world.particles"
+        ],
+        "when_disabled": "Particle calls fail when disabled.",
+        "disable_when": "Disable if the game has no native particle effects.",
+        "enabled": true,
+        "source": "default"
+      },
+      {
+        "id": "effekseer",
+        "summary": "Effekseer effects: the game publishes semantic effect events; the host runs the Effekseer runtime.",
+        "status": "host_required",
+        "default_enabled": false,
+        "optional": true,
+        "build_feature": "effekseer",
+        "compiled": true,
+        "luau_api": [
+          "api.effect.spawn",
+          "api.effect.stop"
+        ],
+        "observation": [
+          "world.effects"
+        ],
+        "when_disabled": "When disabled, api.effect reports SYSTEM_DISABLED and the snapshot contains no effects.",
+        "disable_when": "Games without particle effects; this system is disabled by default. Currently only the web/presentation Web host plays it with Effekseer for WebGL; native preview and the Android host do not. The engine only owns transport and determinism.",
+        "enabled": false,
+        "source": "default"
+      }
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

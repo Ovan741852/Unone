@@ -1,0 +1,290 @@
+{
+  "command": "D:/Projects/Unone/target/debug/game.exe",
+  "args": [
+    "plugin",
+    "inspect",
+    "--id",
+    "org.koncrate.unone-ui"
+  ],
+  "exit_code": 0,
+  "error": null,
+  "stderr": "",
+  "result": {
+    "ok": true,
+    "value": {
+      "root": "\\\\?\\D:\\Projects\\UnoneUI",
+      "manifest_path": "\\\\?\\D:\\Projects\\UnoneUI\\plugin.json",
+      "manifest": {
+        "api": "unone.plugin.v1",
+        "id": "org.koncrate.unone-ui",
+        "name": "Unone UI Components",
+        "version": "0.4.0",
+        "description": "AI-readable Unone UI contracts, Core image/SVG asset references, reusable nested components, AABB layout preflight, explicit runtime readiness, and host requirements.",
+        "entry": {
+          "command": "node",
+          "args": [
+            "plugin.mjs"
+          ]
+        },
+        "capabilities": [
+          "ui.components",
+          "ui.inspect",
+          "ui.generate",
+          "ui.validate",
+          "ui.layout",
+          "ui.install"
+        ],
+        "permissions": [
+          "project.read",
+          "project.write_staging"
+        ],
+        "tools": [
+          {
+            "name": "plugin.test",
+            "title": "Test Unone UI plugin",
+            "description": "Run a dependency-free protocol and component-contract self-test.",
+            "input_schema": {
+              "additionalProperties": false,
+              "type": "object"
+            }
+          },
+          {
+            "name": "ui.list_components",
+            "title": "List UI components",
+            "description": "List the components, runtime support, host requirements, and AI authoring hints.",
+            "input_schema": {
+              "additionalProperties": false,
+              "type": "object"
+            }
+          },
+          {
+            "name": "ui.inspect_component",
+            "title": "Inspect UI component",
+            "description": "Read one component's props, events, state, constraints, and platform requirements.",
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "component": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "component"
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "name": "ui.generate",
+            "title": "Generate UI component",
+            "description": "Create a validated declarative component node without mutating the project.",
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "component": {
+                  "enum": [
+                    "text",
+                    "label",
+                    "button",
+                    "image",
+                    "component",
+                    "toggle",
+                    "input",
+                    "panel",
+                    "icon_button",
+                    "progress_bar",
+                    "tabs",
+                    "dialog",
+                    "modal",
+                    "tooltip"
+                  ],
+                  "type": "string"
+                },
+                "spec": {
+                  "description": "Component-specific props returned by ui.inspect_component.example; placement is exactly rect OR anchor+size. Image uses a stable asset:// or texture:// id (not a path/URL); component recursively owns Core-compatible children.",
+                  "examples": [
+                    {
+                      "action": "Start",
+                      "id": "start",
+                      "label": "Start",
+                      "rect": {
+                        "height": 10,
+                        "width": 40,
+                        "x": 30,
+                        "y": 40
+                      }
+                    },
+                    {
+                      "asset": "asset://ui/logo",
+                      "fit": "contain",
+                      "id": "logo",
+                      "rect": {
+                        "height": 10,
+                        "width": 20,
+                        "x": 10,
+                        "y": 80
+                      }
+                    }
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "component",
+                "spec"
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "name": "ui.validate",
+            "title": "Validate UI tree",
+            "description": "Validate component IDs, placement, props, asset-id shape, and the 256-node/16-wrapper tree limits with structured reasons and next actions.",
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "tree": {
+                  "description": "A screen with children made from ui.generate.node. Component children may nest; non-ready nodes validate with warnings and must not be sent directly to Core.",
+                  "examples": [
+                    {
+                      "children": [
+                        {
+                          "action": "Save",
+                          "id": "save",
+                          "kind": "button",
+                          "protocol": "unone.ui.v1",
+                          "rect": {
+                            "height": 8,
+                            "width": 30,
+                            "x": 10,
+                            "y": 10
+                          },
+                          "text": "Save"
+                        }
+                      ],
+                      "id": "settings",
+                      "kind": "screen",
+                      "node": "settings"
+                    }
+                  ],
+                  "properties": {
+                    "children": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "maxItems": 256,
+                      "type": "array"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "const": "screen"
+                    },
+                    "node": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "id",
+                    "node",
+                    "children"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "tree"
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "name": "ui.inspect_layout",
+            "title": "Inspect UI layout",
+            "description": "Project a plugin-authored screen to current-Core nodes, resolve anchors, draw an AI-readable grid, and report AABB overlap with concrete move/resize guidance. This is preflight; game ui preview --strict remains authoritative.",
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "aspect": {
+                  "default": 1.7777777778,
+                  "description": "Viewport aspect used to resolve anchor placement; default is the Core reference 16:9.",
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                },
+                "cols": {
+                  "default": 96,
+                  "maximum": 400,
+                  "minimum": 16,
+                  "type": "integer"
+                },
+                "rows": {
+                  "default": 48,
+                  "maximum": 200,
+                  "minimum": 8,
+                  "type": "integer"
+                },
+                "strict": {
+                  "default": false,
+                  "description": "Fail when overlap or an unprojected node is present.",
+                  "type": "boolean"
+                },
+                "tree": {
+                  "description": "A screen with children made from ui.generate.node. Composition-only and host-required nodes are reported as not projected.",
+                  "properties": {
+                    "children": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "maxItems": 256,
+                      "type": "array"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "const": "screen"
+                    },
+                    "node": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "id",
+                    "node",
+                    "children"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "tree"
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "name": "ui.install",
+            "title": "Stage Unone UI package",
+            "description": "Copy the Luau component module and machine-readable contract into project staging; never overwrites active files.",
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "replace": {
+                  "default": false,
+                  "description": "Allow overwriting differing staged files after reviewing hashes.",
+                  "type": "boolean"
+                }
+              },
+              "type": "object"
+            }
+          }
+        ]
+      }
+    },
+    "diagnostics": [],
+    "effects": []
+  }
+}

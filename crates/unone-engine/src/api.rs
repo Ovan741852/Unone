@@ -209,7 +209,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             ],
             "nil",
             vec!["Replace presentation batch atomically"],
-            "Copies the buffer. Included in snapshots and observation digests. Web renderer supports instancing; native currently does not.",
+            "Copies the buffer once. Identical bytes keep the previous revision. Pose bytes stay in host packed storage and are excluded from observation digests. JSON/Web memory transports attach them only for presentation.",
             vec![
                 "Invalid buffer or transform fails",
                 "Maximum 262144 instances and 256 batches per world",

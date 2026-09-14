@@ -1,0 +1,233 @@
+[
+  {
+    "id": "acorn",
+    "name": "橡果蹦蹦",
+    "rank": 1,
+    "model": "art-v2/acorn.glb",
+    "source": "art-v2/acorn.blend",
+    "texture": "art-v2/painted-atlas.png",
+    "clips": [
+      "idle",
+      "walk",
+      "attack",
+      "hit",
+      "death",
+      "spawn",
+      "stretch",
+      "run"
+    ],
+    "bones": 9,
+    "triangles": 734,
+    "artVersion": "sculpted-storybook-v2"
+  },
+  {
+    "id": "piglet",
+    "name": "菇背幼豬",
+    "rank": 2,
+    "model": "art-v2/piglet.glb",
+    "source": "art-v2/piglet.blend",
+    "texture": "art-v2/painted-atlas.png",
+    "clips": [
+      "idle",
+      "walk",
+      "attack",
+      "hit",
+      "death",
+      "spawn",
+      "stretch",
+      "run"
+    ],
+    "bones": 9,
+    "triangles": 1148,
+    "artVersion": "sculpted-storybook-v2"
+  },
+  {
+    "id": "moth",
+    "name": "苔羽蛾",
+    "rank": 1,
+    "model": "art-v2/moth.glb",
+    "source": "art-v2/moth.blend",
+    "texture": "art-v2/painted-atlas.png",
+    "clips": [
+      "idle",
+      "walk",
+      "attack",
+      "hit",
+      "death",
+      "spawn",
+      "stretch",
+      "run"
+    ],
+    "bones": 9,
+    "triangles": 1258,
+    "artVersion": "sculpted-storybook-v2"
+  },
+  {
+    "id": "turtle",
+    "name": "苔殼龜",
+    "rank": 2,
+    "model": "art-v2/turtle.glb",
+    "source": "art-v2/turtle.blend",
+    "texture": "art-v2/painted-atlas.png",
+    "clips": [
+      "idle",
+      "walk",
+      "attack",
+      "hit",
+      "death",
+      "spawn",
+      "stretch",
+      "run"
+    ],
+    "bones": 9,
+    "triangles": 966,
+    "artVersion": "sculpted-storybook-v2"
+  },
+  {
+    "id": "boar",
+    "name": "獠牙搬木王",
+    "rank": 3,
+    "model": "art-v2/boar.glb",
+    "source": "art-v2/boar.blend",
+    "texture": "art-v2/painted-atlas.png",
+    "clips": [
+      "idle",
+      "walk",
+      "attack",
+      "hit",
+      "death",
+      "spawn",
+      "stretch",
+      "run"
+    ],
+    "bones": 9,
+    "triangles": 886,
+    "artVersion": "sculpted-storybook-v2"
+  },
+  {
+    "id": "elder",
+    "name": "古榕守衛",
+    "rank": 4,
+    "model": "art-v2/elder.glb",
+    "source": "art-v2/elder.blend",
+    "texture": "art-v2/painted-atlas.png",
+    "clips": [
+      "idle",
+      "walk",
+      "attack",
+      "hit",
+      "death",
+      "spawn",
+      "stretch",
+      "run"
+    ],
+    "bones": 9,
+    "triangles": 1098,
+    "artVersion": "sculpted-storybook-v2"
+  },
+  {
+    "id": "treant",
+    "name": "花冠樹靈",
+    "rank": 3,
+    "model": "art-v2/treant.glb",
+    "source": "art-v2/treant.blend",
+    "texture": "art-v2/painted-atlas.png",
+    "clips": [
+      "idle",
+      "walk",
+      "attack",
+      "hit",
+      "death",
+      "spawn",
+      "stretch",
+      "run"
+    ],
+    "bones": 9,
+    "triangles": 1614,
+    "artVersion": "sculpted-storybook-v2"
+  },
+  {
+    "id": "stag",
+    "name": "冠角白鹿",
+    "rank": 5,
+    "model": "art-v2/stag.glb",
+    "source": "art-v2/stag.blend",
+    "texture": "art-v2/painted-atlas.png",
+    "clips": [
+      "idle",
+      "walk",
+      "attack",
+      "hit",
+      "death",
+      "spawn",
+      "stretch",
+      "run"
+    ],
+    "bones": 9,
+    "triangles": 915,
+    "artVersion": "sculpted-storybook-v2"
+  },
+  {
+    "id": "beetle",
+    "name": "聚寶甲蟲",
+    "rank": 4,
+    "model": "art-v2/beetle.glb",
+    "source": "art-v2/beetle.blend",
+    "texture": "art-v2/painted-atlas.png",
+    "clips": [
+      "idle",
+      "walk",
+      "attack",
+      "hit",
+      "death",
+      "spawn",
+      "stretch",
+      "run"
+    ],
+    "bones": 9,
+    "triangles": 956,
+    "artVersion": "sculpted-storybook-v2"
+  },
+  {
+    "id": "wheel",
+    "name": "金鈴狸",
+    "rank": 3,
+    "model": "art-v2/wheel.glb",
+    "source": "art-v2/wheel.blend",
+    "texture": "art-v2/painted-atlas.png",
+    "clips": [
+      "idle",
+      "walk",
+      "attack",
+      "hit",
+      "death",
+      "spawn",
+      "stretch",
+      "run"
+    ],
+    "bones": 9,
+    "triangles": 1404,
+    "artVersion": "sculpted-storybook-v2"
+  },
+  {
+    "id": "horse",
+    "name": "林地戰馬",
+    "rank": 0,
+    "model": "art-v2/horse.glb",
+    "source": "art-v2/horse.blend",
+    "texture": "art-v2/painted-atlas.png",
+    "clips": [
+      "idle",
+      "walk",
+      "attack",
+      "hit",
+      "death",
+      "spawn",
+      "stretch",
+      "run"
+    ],
+    "bones": 9,
+    "triangles": 836,
+    "artVersion": "sculpted-storybook-v2"
+  }
+]

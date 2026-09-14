@@ -1,0 +1,57 @@
+{
+  "ok": true,
+  "scope": "Disclosed forced award through actual WASM hit logic; no change to production chances",
+  "reports": [
+    {
+      "tier": 4,
+      "round": 1,
+      "duration": 6.4,
+      "initial": {
+        "coins": 1416,
+        "refunded": 20,
+        "crystals": 36,
+        "chestCount": 1,
+        "spent": 24,
+        "fired": 2,
+        "event": 1,
+        "time": 17
+      },
+      "pauseAndInputGate": true,
+      "resultAfterCeremony": true
+    },
+    {
+      "tier": 4,
+      "round": 7,
+      "duration": 6.4,
+      "initial": {
+        "coins": 1944,
+        "refunded": 20,
+        "crystals": 48,
+        "chestCount": 1,
+        "spent": 24,
+        "fired": 2,
+        "event": 1,
+        "time": 17
+      },
+      "pauseAndInputGate": true,
+      "resultAfterCeremony": true
+    },
+    {
+      "tier": 3,
+      "round": 1,
+      "duration": 3.3,
+      "initial": {
+        "coins": 816,
+        "refunded": 20,
+        "crystals": 32,
+        "chestCount": 1,
+        "spent": 24,
+        "fired": 2,
+        "event": 1,
+        "time": 17
+      },
+      "pauseAndInputGate": true,
+      "resultAfterCeremony": true
+    }
+  ]
+}

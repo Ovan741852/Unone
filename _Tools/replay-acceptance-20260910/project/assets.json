@@ -1,0 +1,217 @@
+{
+  "assets": [
+    {
+      "id": "texture://palette",
+      "kind": "texture2d",
+      "source": "assets/palette.png"
+    },
+    {
+      "id": "mesh://sword",
+      "kind": "mesh3d",
+      "source": "assets/sword.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://spear",
+      "kind": "mesh3d",
+      "source": "assets/spear.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://cavalry",
+      "kind": "mesh3d",
+      "source": "assets/cavalry.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://hound",
+      "kind": "mesh3d",
+      "source": "assets/hound.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://wraith",
+      "kind": "mesh3d",
+      "source": "assets/wraith.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://minotaur",
+      "kind": "mesh3d",
+      "source": "assets/minotaur.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://lord",
+      "kind": "mesh3d",
+      "source": "assets/lord.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://impact",
+      "kind": "mesh3d",
+      "source": "assets/impact.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://target",
+      "kind": "mesh3d",
+      "source": "assets/target.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://trail",
+      "kind": "mesh3d",
+      "source": "assets/trail.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://coin",
+      "kind": "mesh3d",
+      "source": "assets/coin.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://spark_gold",
+      "kind": "mesh3d",
+      "source": "assets/spark_gold.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://spark_jade",
+      "kind": "mesh3d",
+      "source": "assets/spark_jade.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://spark_red",
+      "kind": "mesh3d",
+      "source": "assets/spark_red.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://arena",
+      "kind": "mesh3d",
+      "source": "assets/arena.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "mesh://cannon",
+      "kind": "mesh3d",
+      "source": "assets/cannon.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "texture://sky_forest",
+      "kind": "texture2d",
+      "source": "assets/sky_forest.png"
+    },
+    {
+      "id": "mesh://sky_forest",
+      "kind": "mesh3d",
+      "source": "assets/sky_forest.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
+      "id": "texture://sky_forest_dusk",
+      "kind": "texture2d",
+      "source": "assets/sky_forest_dusk.png"
+    },
+    {
+      "id": "mesh://sky_forest_dusk",
+      "kind": "mesh3d",
+      "source": "assets/sky_forest_dusk.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    }
+  ]
+}

@@ -1,0 +1,726 @@
+{
+  "name": "held-choice-cannot-repeat",
+  "frames": 213,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Start": true
+      }
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "LeaveShop": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    },
+    {
+      "actions": {
+        "Choice1": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "phase",
+        "equals": "battle"
+      }
+    },
+    {
+      "observation": {
+        "key": "choices",
+        "equals": 1
+      }
+    },
+    {
+      "observation": {
+        "key": "fired",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "economy_conserved",
+        "equals": true
+      }
+    }
+  ]
+}

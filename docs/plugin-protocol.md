@@ -70,6 +70,40 @@ The result uses the regular Unone `EngineResult` shape. A plugin may create
 staged artifacts, but it must not silently overwrite active project files. The
 engine/game decides when a staged artifact becomes authoritative.
 
+For example, a failed validation returns a diagnostic with a stable code,
+field-level evidence, and structured recovery actions:
+
+```json
+{
+  "ok": false,
+  "value": null,
+  "diagnostics": [{
+    "code": "UI_COMPONENT_INVALID",
+    "severity": "ERROR",
+    "summary": "Component validation failed",
+    "explanation": "A required semantic action is missing.",
+    "facts": {
+      "errors": [{"code": "UI_ACTION_REQUIRED", "path": "spec.action", "message": "Provide an action name."}]
+    },
+    "likely_causes": [],
+    "suggested_actions": [{
+      "action": "inspect_component",
+      "description": "Call ui.inspect_component for the component's required properties.",
+      "command": null
+    }],
+    "source": null
+  }],
+  "effects": []
+}
+```
+
+Each `suggested_actions` entry is an object with `action`, `description`,
+and optional `command`, not a string. Return an empty array when no recovery
+action applies. Diagnostic severity is `ERROR`, `WARNING`, or `INFO`. Use
+`--json` to preserve field paths and other evidence in `facts`; a successful
+tool invocation does not by itself prove that a generated component can run
+on every host.
+
 ## Design rules
 
 - Plugin absence is a structured `PLUGIN_NOT_FOUND` result, not a silent skip.

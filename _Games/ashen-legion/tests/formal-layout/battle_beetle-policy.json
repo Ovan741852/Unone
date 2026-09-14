@@ -1,0 +1,187 @@
+{
+  "version": 1,
+  "screens": {
+    "forest_lord": [
+      {
+        "behind": "chapter_back",
+        "front": "chapter_crest",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "chapter_back",
+        "front": "chapter",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "chapter_back",
+        "front": "round",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "chapter_back",
+        "front": "shared_pool",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "objective_back",
+        "front": "objective",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "objective_back",
+        "front": "boss_timing",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "timer_plate",
+        "front": "time",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "coins_plate",
+        "front": "coins_icon",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "coins_plate",
+        "front": "coins",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "crystals_plate",
+        "front": "crystals_icon",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "crystals_plate",
+        "front": "crystals",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "hud_unit_plate_1",
+        "front": "hud_unit_icon_1",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "hud_unit_plate_1",
+        "front": "hud_unit_1",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "hud_unit_plate_1",
+        "front": "hud_unit_caption_1",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "hud_unit_icon_1",
+        "front": "hud_unit_1",
+        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "behind": "hud_unit_plate_2",
+        "front": "hud_unit_icon_2",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "hud_unit_plate_2",
+        "front": "hud_unit_2",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "hud_unit_plate_2",
+        "front": "hud_unit_caption_2",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "hud_unit_icon_2",
+        "front": "hud_unit_2",
+        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "behind": "hud_unit_plate_3",
+        "front": "hud_unit_icon_3",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "hud_unit_plate_3",
+        "front": "hud_unit_3",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "hud_unit_plate_3",
+        "front": "hud_unit_caption_3",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "hud_unit_icon_3",
+        "front": "hud_unit_3",
+        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "behind": "pause_plate",
+        "front": "pause_icon",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "pause_plate",
+        "front": "pause",
+        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "behind": "pause_icon",
+        "front": "pause",
+        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "behind": "mode_plate_lock",
+        "front": "mode_icon_lock",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "mode_plate_lock",
+        "front": "mode_lock",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "mode_plate_lock",
+        "front": "mode_label_lock",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "mode_icon_lock",
+        "front": "mode_lock",
+        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "behind": "mode_plate_auto",
+        "front": "mode_icon_auto",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "mode_plate_auto",
+        "front": "mode_auto",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "mode_plate_auto",
+        "front": "mode_label_auto",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "behind": "mode_icon_auto",
+        "front": "mode_auto",
+        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "behind": "auto_settings_plate",
+        "front": "auto_settings",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "target_plate",
+        "front": "target",
+        "reason": "Explicit HUD artwork under its own contained icon and text"
+      }
+    ]
+  }
+}

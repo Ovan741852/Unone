@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "url": "https://node.tail044891.ts.net:8444/?build=player-fov",
+  "evidence": [
+    {
+      "seat": 1,
+      "cannon": {
+        "x": 720,
+        "y": 791.9999999999999
+      },
+      "aim": [
+        1.2000005566099976,
+        -1.0999997126174712
+      ]
+    }
+  ],
+  "errors": []
+}

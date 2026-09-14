@@ -1,0 +1,947 @@
+{
+  "ok": true,
+  "value": {
+    "screen": "forest_lord",
+    "cols": 96,
+    "rows": 48,
+    "ascii": "+------------------------------------------------------------------------------------------------+\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|@@#####@####################@@@@@ @@##########################@@@                @######@  #### |\n|@@#####@####################@@@@@ @@@########################@@@@                @######@  #### |\n|@@#####@#################@@@@@@@@ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                @@@@@@@@  #### |\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                                                               |\n|@@#############################@@                                                               |\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                                                               |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                          @###################  |\n|                                                                          @###################  |\n|                                                                          @@@@@@@@@@@@@@@@@@@@  |\n|                                                                          @@@@@@@@@@@@@@@@@@@@  |\n|  ########################                                                ####################  |\n|  ########################                                                ####################  |\n|  ########################                                                                      |\n|  ########################                                                ####################  |\n|  ########################                                                ####################  |\n|  ########################                                                ####################  |\n|  ########################        @@@############@@ @@@##########@        ####################  |\n|  @@@@@@@@@@@@@@@@@@@@@@@@        @##############@@ @############@        @@@@@@@@@@@@@@@@@@@@  |\n|                                                                                                |\n+------------------------------------------------------------------------------------------------+",
+    "nodes": [
+      {
+        "id": "chapter_back",
+        "kind": "image",
+        "rect": {
+          "x": 0,
+          "y": 86,
+          "width": 34,
+          "height": 14
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-heading",
+        "text_fit": 0
+      },
+      {
+        "id": "chapter_crest",
+        "kind": "image",
+        "rect": {
+          "x": 2,
+          "y": 91,
+          "width": 5,
+          "height": 7
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_crest",
+        "text_fit": 0
+      },
+      {
+        "id": "chapter",
+        "kind": "text",
+        "rect": {
+          "x": 8,
+          "y": 94,
+          "width": 21,
+          "height": 4
+        },
+        "text": "苔光林口",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.21
+      },
+      {
+        "id": "round",
+        "kind": "text",
+        "rect": {
+          "x": 8,
+          "y": 90.80000000000001,
+          "width": 18,
+          "height": 2.6
+        },
+        "text": "遠征  1 / 7",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.37
+      },
+      {
+        "id": "objective_back",
+        "kind": "image",
+        "rect": {
+          "x": 35,
+          "y": 91,
+          "width": 33,
+          "height": 9
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-objective",
+        "text_fit": 0
+      },
+      {
+        "id": "objective",
+        "kind": "text",
+        "rect": {
+          "x": 38,
+          "y": 95.3,
+          "width": 27,
+          "height": 2.7
+        },
+        "text": "積蓄軍力 · 準備迎戰大王",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.37
+      },
+      {
+        "id": "boss_timing",
+        "kind": "text",
+        "rect": {
+          "x": 39,
+          "y": 92.8,
+          "width": 25,
+          "height": 2.2
+        },
+        "text": "大王於最後 30 秒登場",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.3
+      },
+      {
+        "id": "timer_plate",
+        "kind": "image",
+        "rect": {
+          "x": 84,
+          "y": 91,
+          "width": 9,
+          "height": 7.5
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-target",
+        "text_fit": 0
+      },
+      {
+        "id": "time",
+        "kind": "text",
+        "rect": {
+          "x": 85,
+          "y": 93.3,
+          "width": 7,
+          "height": 4
+        },
+        "text": "02:13",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.8
+      },
+      {
+        "id": "coins_plate",
+        "kind": "image",
+        "rect": {
+          "x": 35,
+          "y": 1.2000000000000002,
+          "width": 18,
+          "height": 4.8
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-gold",
+        "text_fit": 0
+      },
+      {
+        "id": "coins_icon",
+        "kind": "image",
+        "rect": {
+          "x": 36.2,
+          "y": 2.200000000000003,
+          "width": 2.1,
+          "height": 3
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_symbol-coin",
+        "text_fit": 0
+      },
+      {
+        "id": "coins",
+        "kind": "text",
+        "rect": {
+          "x": 38.5,
+          "y": 2.099999999999997,
+          "width": 12.5,
+          "height": 3.2
+        },
+        "text": "金幣 320",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.43
+      },
+      {
+        "id": "crystals_plate",
+        "kind": "image",
+        "rect": {
+          "x": 54,
+          "y": 1.2000000000000002,
+          "width": 15,
+          "height": 4.8
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-crystal",
+        "text_fit": 0
+      },
+      {
+        "id": "crystals_icon",
+        "kind": "image",
+        "rect": {
+          "x": 55.2,
+          "y": 2.200000000000003,
+          "width": 2,
+          "height": 3
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_symbol-crystal",
+        "text_fit": 0
+      },
+      {
+        "id": "crystals",
+        "kind": "text",
+        "rect": {
+          "x": 57.5,
+          "y": 2.099999999999997,
+          "width": 10,
+          "height": 3.2
+        },
+        "text": "結晶 18",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.45
+      },
+      {
+        "id": "hud_unit_plate_1",
+        "kind": "image",
+        "rect": {
+          "x": 2,
+          "y": 3,
+          "width": 8,
+          "height": 15
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-active",
+        "text_fit": 0
+      },
+      {
+        "id": "hud_unit_icon_1",
+        "kind": "image",
+        "rect": {
+          "x": 3.4,
+          "y": 10.2,
+          "width": 5.2,
+          "height": 6.8
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_symbol-sword",
+        "text_fit": 0
+      },
+      {
+        "id": "hud_unit_1",
+        "kind": "button",
+        "rect": {
+          "x": 2,
+          "y": 10,
+          "width": 8,
+          "height": 8
+        },
+        "text": "",
+        "action": "Unit1",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "hud_unit_caption_1",
+        "kind": "button",
+        "rect": {
+          "x": 2,
+          "y": 5,
+          "width": 8,
+          "height": 5
+        },
+        "text": "劍兵\n4",
+        "action": "Unit1",
+        "asset": null,
+        "text_fit": 0.7
+      },
+      {
+        "id": "hud_unit_plate_2",
+        "kind": "image",
+        "rect": {
+          "x": 10.6,
+          "y": 3,
+          "width": 8,
+          "height": 15
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-key",
+        "text_fit": 0
+      },
+      {
+        "id": "hud_unit_icon_2",
+        "kind": "image",
+        "rect": {
+          "x": 12,
+          "y": 10.2,
+          "width": 5.2,
+          "height": 6.8
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_symbol-spear",
+        "text_fit": 0
+      },
+      {
+        "id": "hud_unit_2",
+        "kind": "button",
+        "rect": {
+          "x": 10.6,
+          "y": 10,
+          "width": 8,
+          "height": 8
+        },
+        "text": "",
+        "action": "Unit2",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "hud_unit_caption_2",
+        "kind": "button",
+        "rect": {
+          "x": 10.6,
+          "y": 5,
+          "width": 8,
+          "height": 5
+        },
+        "text": "槍兵\n10",
+        "action": "Unit2",
+        "asset": null,
+        "text_fit": 0.88
+      },
+      {
+        "id": "hud_unit_plate_3",
+        "kind": "image",
+        "rect": {
+          "x": 19.2,
+          "y": 3,
+          "width": 8,
+          "height": 15
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-key",
+        "text_fit": 0
+      },
+      {
+        "id": "hud_unit_icon_3",
+        "kind": "image",
+        "rect": {
+          "x": 20.599999999999998,
+          "y": 10.2,
+          "width": 5.2,
+          "height": 6.8
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_symbol-cavalry",
+        "text_fit": 0
+      },
+      {
+        "id": "hud_unit_3",
+        "kind": "button",
+        "rect": {
+          "x": 19.2,
+          "y": 10,
+          "width": 8,
+          "height": 8
+        },
+        "text": "",
+        "action": "Unit3",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "hud_unit_caption_3",
+        "kind": "button",
+        "rect": {
+          "x": 19.2,
+          "y": 5,
+          "width": 8,
+          "height": 5
+        },
+        "text": "騎兵\n20",
+        "action": "Unit3",
+        "asset": null,
+        "text_fit": 0.88
+      },
+      {
+        "id": "pause_plate",
+        "kind": "image",
+        "rect": {
+          "x": 94.5,
+          "y": 91,
+          "width": 4,
+          "height": 7.5
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-key",
+        "text_fit": 0
+      },
+      {
+        "id": "pause_icon",
+        "kind": "image",
+        "rect": {
+          "x": 95.2,
+          "y": 93.2,
+          "width": 2.6,
+          "height": 4.3
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_symbol-pause",
+        "text_fit": 0
+      },
+      {
+        "id": "pause",
+        "kind": "button",
+        "rect": {
+          "x": 94.5,
+          "y": 91,
+          "width": 4,
+          "height": 7.5
+        },
+        "text": "",
+        "action": "Pause",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "mode_plate_lock",
+        "kind": "image",
+        "rect": {
+          "x": 77,
+          "y": 3,
+          "width": 10.4,
+          "height": 10
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-key",
+        "text_fit": 0
+      },
+      {
+        "id": "mode_icon_lock",
+        "kind": "image",
+        "rect": {
+          "x": 80.5,
+          "y": 7.4,
+          "width": 3.4,
+          "height": 4.6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_symbol-lock",
+        "text_fit": 0
+      },
+      {
+        "id": "mode_lock",
+        "kind": "button",
+        "rect": {
+          "x": 77,
+          "y": 6.8,
+          "width": 10.4,
+          "height": 6.2
+        },
+        "text": "",
+        "action": "Mode_lock",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "mode_label_lock",
+        "kind": "button",
+        "rect": {
+          "x": 77,
+          "y": 4.1999999999999975,
+          "width": 10.4,
+          "height": 2.6
+        },
+        "text": "LOCK · 關",
+        "action": "Mode_lock",
+        "asset": null,
+        "text_fit": 0.56
+      },
+      {
+        "id": "mode_plate_auto",
+        "kind": "image",
+        "rect": {
+          "x": 88,
+          "y": 3,
+          "width": 10.4,
+          "height": 10
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-key",
+        "text_fit": 0
+      },
+      {
+        "id": "mode_icon_auto",
+        "kind": "image",
+        "rect": {
+          "x": 91.5,
+          "y": 7.4,
+          "width": 3.4,
+          "height": 4.6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_symbol-auto",
+        "text_fit": 0
+      },
+      {
+        "id": "mode_auto",
+        "kind": "button",
+        "rect": {
+          "x": 88,
+          "y": 6.8,
+          "width": 10.4,
+          "height": 6.2
+        },
+        "text": "",
+        "action": "Mode_auto",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "mode_label_auto",
+        "kind": "button",
+        "rect": {
+          "x": 88,
+          "y": 4.1999999999999975,
+          "width": 10.4,
+          "height": 2.6
+        },
+        "text": "AUTO · 關",
+        "action": "Mode_auto",
+        "asset": null,
+        "text_fit": 0.56
+      },
+      {
+        "id": "auto_settings_plate",
+        "kind": "image",
+        "rect": {
+          "x": 77,
+          "y": 14,
+          "width": 21.4,
+          "height": 4.5
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-key",
+        "text_fit": 0
+      },
+      {
+        "id": "auto_settings",
+        "kind": "button",
+        "rect": {
+          "x": 77,
+          "y": 14,
+          "width": 21.4,
+          "height": 4.5
+        },
+        "text": "選擇目標 · 10 種",
+        "action": "Auto_settings",
+        "asset": null,
+        "text_fit": 0.65
+      },
+      {
+        "id": "target_plate",
+        "kind": "image",
+        "rect": {
+          "x": 77,
+          "y": 19.5,
+          "width": 21.4,
+          "height": 7.5
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_hud-target",
+        "text_fit": 0
+      },
+      {
+        "id": "target",
+        "kind": "text",
+        "rect": {
+          "x": 78,
+          "y": 23.9,
+          "width": 19.4,
+          "height": 2.6
+        },
+        "text": "按住戰場 · 派遣部隊",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.41
+      },
+      {
+        "id": "shared_pool",
+        "kind": "text",
+        "rect": {
+          "x": 2,
+          "y": 87.3,
+          "width": 30,
+          "height": 2.7
+        },
+        "text": "聚寶甲蟲 · 共用獎池 80",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.35
+      }
+    ],
+    "findings": [],
+    "allowed_overlaps": [
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'chapter_back' and 'chapter_crest' overlap by 5.0 x 7.0 (design-space units).",
+        "nodes": [
+          "chapter_back",
+          "chapter_crest"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'chapter_back' and 'chapter' overlap by 21.0 x 4.0 (design-space units).",
+        "nodes": [
+          "chapter_back",
+          "chapter"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'chapter_back' and 'round' overlap by 18.0 x 2.6 (design-space units).",
+        "nodes": [
+          "chapter_back",
+          "round"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'chapter_back' and 'shared_pool' overlap by 30.0 x 2.7 (design-space units).",
+        "nodes": [
+          "chapter_back",
+          "shared_pool"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'objective_back' and 'objective' overlap by 27.0 x 2.7 (design-space units).",
+        "nodes": [
+          "objective_back",
+          "objective"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'objective_back' and 'boss_timing' overlap by 25.0 x 2.2 (design-space units).",
+        "nodes": [
+          "objective_back",
+          "boss_timing"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'timer_plate' and 'time' overlap by 7.0 x 4.0 (design-space units).",
+        "nodes": [
+          "timer_plate",
+          "time"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'coins_plate' and 'coins_icon' overlap by 2.1 x 3.0 (design-space units).",
+        "nodes": [
+          "coins_plate",
+          "coins_icon"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'coins_plate' and 'coins' overlap by 12.5 x 3.2 (design-space units).",
+        "nodes": [
+          "coins_plate",
+          "coins"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'crystals_plate' and 'crystals_icon' overlap by 2.0 x 3.0 (design-space units).",
+        "nodes": [
+          "crystals_plate",
+          "crystals_icon"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'crystals_plate' and 'crystals' overlap by 10.0 x 3.2 (design-space units).",
+        "nodes": [
+          "crystals_plate",
+          "crystals"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'hud_unit_plate_1' and 'hud_unit_icon_1' overlap by 5.2 x 6.8 (design-space units).",
+        "nodes": [
+          "hud_unit_plate_1",
+          "hud_unit_icon_1"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'hud_unit_plate_1' and 'hud_unit_1' overlap by 8.0 x 8.0 (design-space units).",
+        "nodes": [
+          "hud_unit_plate_1",
+          "hud_unit_1"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'hud_unit_plate_1' and 'hud_unit_caption_1' overlap by 8.0 x 5.0 (design-space units).",
+        "nodes": [
+          "hud_unit_plate_1",
+          "hud_unit_caption_1"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'hud_unit_icon_1' and 'hud_unit_1' overlap by 5.2 x 6.8 (design-space units).",
+        "nodes": [
+          "hud_unit_icon_1",
+          "hud_unit_1"
+        ],
+        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'hud_unit_plate_2' and 'hud_unit_icon_2' overlap by 5.2 x 6.8 (design-space units).",
+        "nodes": [
+          "hud_unit_plate_2",
+          "hud_unit_icon_2"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'hud_unit_plate_2' and 'hud_unit_2' overlap by 8.0 x 8.0 (design-space units).",
+        "nodes": [
+          "hud_unit_plate_2",
+          "hud_unit_2"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'hud_unit_plate_2' and 'hud_unit_caption_2' overlap by 8.0 x 5.0 (design-space units).",
+        "nodes": [
+          "hud_unit_plate_2",
+          "hud_unit_caption_2"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'hud_unit_icon_2' and 'hud_unit_2' overlap by 5.2 x 6.8 (design-space units).",
+        "nodes": [
+          "hud_unit_icon_2",
+          "hud_unit_2"
+        ],
+        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'hud_unit_plate_3' and 'hud_unit_icon_3' overlap by 5.2 x 6.8 (design-space units).",
+        "nodes": [
+          "hud_unit_plate_3",
+          "hud_unit_icon_3"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'hud_unit_plate_3' and 'hud_unit_3' overlap by 8.0 x 8.0 (design-space units).",
+        "nodes": [
+          "hud_unit_plate_3",
+          "hud_unit_3"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'hud_unit_plate_3' and 'hud_unit_caption_3' overlap by 8.0 x 5.0 (design-space units).",
+        "nodes": [
+          "hud_unit_plate_3",
+          "hud_unit_caption_3"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'hud_unit_icon_3' and 'hud_unit_3' overlap by 5.2 x 6.8 (design-space units).",
+        "nodes": [
+          "hud_unit_icon_3",
+          "hud_unit_3"
+        ],
+        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'pause_plate' and 'pause_icon' overlap by 2.6 x 4.3 (design-space units).",
+        "nodes": [
+          "pause_plate",
+          "pause_icon"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'pause_plate' and 'pause' overlap by 4.0 x 7.5 (design-space units).",
+        "nodes": [
+          "pause_plate",
+          "pause"
+        ],
+        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'pause_icon' and 'pause' overlap by 2.6 x 4.3 (design-space units).",
+        "nodes": [
+          "pause_icon",
+          "pause"
+        ],
+        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'mode_plate_lock' and 'mode_icon_lock' overlap by 3.4 x 4.6 (design-space units).",
+        "nodes": [
+          "mode_plate_lock",
+          "mode_icon_lock"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'mode_plate_lock' and 'mode_lock' overlap by 10.4 x 6.2 (design-space units).",
+        "nodes": [
+          "mode_plate_lock",
+          "mode_lock"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'mode_plate_lock' and 'mode_label_lock' overlap by 10.4 x 2.6 (design-space units).",
+        "nodes": [
+          "mode_plate_lock",
+          "mode_label_lock"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'mode_icon_lock' and 'mode_lock' overlap by 3.4 x 4.6 (design-space units).",
+        "nodes": [
+          "mode_icon_lock",
+          "mode_lock"
+        ],
+        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'mode_plate_auto' and 'mode_icon_auto' overlap by 3.4 x 4.6 (design-space units).",
+        "nodes": [
+          "mode_plate_auto",
+          "mode_icon_auto"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'mode_plate_auto' and 'mode_auto' overlap by 10.4 x 6.2 (design-space units).",
+        "nodes": [
+          "mode_plate_auto",
+          "mode_auto"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'mode_plate_auto' and 'mode_label_auto' overlap by 10.4 x 2.6 (design-space units).",
+        "nodes": [
+          "mode_plate_auto",
+          "mode_label_auto"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'mode_icon_auto' and 'mode_auto' overlap by 3.4 x 4.6 (design-space units).",
+        "nodes": [
+          "mode_icon_auto",
+          "mode_auto"
+        ],
+        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'auto_settings_plate' and 'auto_settings' overlap by 21.4 x 4.5 (design-space units).",
+        "nodes": [
+          "auto_settings_plate",
+          "auto_settings"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'target_plate' and 'target' overlap by 19.4 x 2.6 (design-space units).",
+        "nodes": [
+          "target_plate",
+          "target"
+        ],
+        "resolution": "Explicit HUD artwork under its own contained icon and text"
+      }
+    ],
+    "readable": true,
+    "assumptions": [
+      "text_fit assumes a 16:9 viewport and a 0.5 character advance, so it is a              measurement to read, never a pass/fail",
+      "structure only: this says nothing about whether the screen looks good"
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

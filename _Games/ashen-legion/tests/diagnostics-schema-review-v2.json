@@ -1,0 +1,40 @@
+{
+  "schemas": "meta-validation passed",
+  "inputSchemaResolvedLocally": true,
+  "cases": [
+    {
+      "case": "document_start",
+      "valid": true,
+      "errorCount": 0
+    },
+    {
+      "case": "reject_render_frame",
+      "valid": false,
+      "errorCount": 1
+    },
+    {
+      "case": "reject_rng_only_checkpoint",
+      "valid": false,
+      "errorCount": 1
+    },
+    {
+      "case": "checkpoint_state_shape_only",
+      "valid": true,
+      "errorCount": 0
+    },
+    {
+      "case": "reject_unknown_input",
+      "valid": false,
+      "errorCount": 1
+    }
+  ],
+  "hashVector": {
+    "actual": "sha256:36e88d88ca2f8a23bee1a9e696bb48a03043ff111ce43a38f8a06d2586a1a560",
+    "expected": "sha256:36e88d88ca2f8a23bee1a9e696bb48a03043ff111ce43a38f8a06d2586a1a560",
+    "matches": true
+  },
+  "sampleCoverage": {
+    "throughTick": 0,
+    "endTick": 120
+  }
+}

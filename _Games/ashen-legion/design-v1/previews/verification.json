@@ -1,0 +1,111 @@
+{
+  "scope": "Design gallery and upstream lottie-web asset rendering ONLY; no Unone runtime integration",
+  "pages": 15,
+  "svgAssets": 51,
+  "lottieAssets": 4,
+  "animationEvidence": [
+    {
+      "id": "big-win",
+      "frame": 0,
+      "paths": 60
+    },
+    {
+      "id": "big-win",
+      "frame": 15,
+      "paths": 60
+    },
+    {
+      "id": "big-win",
+      "frame": 40,
+      "paths": 60
+    },
+    {
+      "id": "big-win",
+      "frame": 80,
+      "paths": 60
+    },
+    {
+      "id": "big-win",
+      "frame": 110,
+      "paths": 60
+    },
+    {
+      "id": "mega-win",
+      "frame": 0,
+      "paths": 100
+    },
+    {
+      "id": "mega-win",
+      "frame": 15,
+      "paths": 100
+    },
+    {
+      "id": "mega-win",
+      "frame": 40,
+      "paths": 100
+    },
+    {
+      "id": "mega-win",
+      "frame": 80,
+      "paths": 100
+    },
+    {
+      "id": "mega-win",
+      "frame": 110,
+      "paths": 100
+    },
+    {
+      "id": "legendary-win",
+      "frame": 0,
+      "paths": 152
+    },
+    {
+      "id": "legendary-win",
+      "frame": 15,
+      "paths": 152
+    },
+    {
+      "id": "legendary-win",
+      "frame": 40,
+      "paths": 152
+    },
+    {
+      "id": "legendary-win",
+      "frame": 80,
+      "paths": 152
+    },
+    {
+      "id": "legendary-win",
+      "frame": 110,
+      "paths": 152
+    },
+    {
+      "id": "coin-burst",
+      "frame": 0,
+      "paths": 56
+    },
+    {
+      "id": "coin-burst",
+      "frame": 15,
+      "paths": 56
+    },
+    {
+      "id": "coin-burst",
+      "frame": 40,
+      "paths": 56
+    },
+    {
+      "id": "coin-burst",
+      "frame": 80,
+      "paths": 56
+    },
+    {
+      "id": "coin-burst",
+      "frame": 110,
+      "paths": 56
+    }
+  ],
+  "errors": [],
+  "badResponses": [],
+  "checkedAt": "2026-09-09T14:44:44.795Z"
+}

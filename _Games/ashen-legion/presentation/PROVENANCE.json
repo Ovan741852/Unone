@@ -1,0 +1,6 @@
+{
+  "animator": "org.unone.animator 44ffbee via animator.install",
+  "lottie": "org.unone.lottie aa4e914 via lottie.install",
+  "renderer": "Unone 7a333b1 official presentation hooks",
+  "creatures": "Original Blender source wardrobe/blender/build_forest_creatures.py"
+}

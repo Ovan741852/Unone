@@ -1,0 +1,258 @@
+{
+  "sample_scope_gate": {
+    "sample_boundary": "2026-09-12 本機 Unone 正式 Canvas 版本。修改前 2 種尺寸、32 張截圖；修改後 3 種尺寸（1440×900、390×844、844×390）、54 張截圖。主選單至商店、購買配裝、戰鬥、AUTO、暫停使用真正觸控事件；附魔、通關與敗北由明示的瀏覽器局部 fixture 到達。",
+    "supported_judgment_scope": [
+      "截圖中美術一致性、可見資訊層級與冗餘",
+      "已走訪操作的銜接、取消、停用狀態",
+      "已採樣 UI 的邊界、互相遮擋與實際點擊範圍",
+      "配裝預覽與實際派兵價格是否一致"
+    ],
+    "unsupported_judgment_scope": [
+      "首次遊玩者是否自然理解或喜歡",
+      "實體手機觸控誤觸率及效能",
+      "完整 20 分鐘體驗、留存、最終數值平衡",
+      "fixture 截圖不代表自然抽獎機率或完整通關"
+    ],
+    "key_unknowns": [
+      "新玩家能否快速分辨金幣、結晶與城鎮建設資源",
+      "橫向小螢幕實際閱讀與點按舒適度",
+      "完整附魔描述及流派理解是否仍需要更多引導"
+    ]
+  },
+  "evidence_index": [
+    {
+      "evidence_id": "E001",
+      "source_id": "before/1440x900/shop.png",
+      "source_type": "screenshot",
+      "image_id": "before/1440x900/shop.png",
+      "region": "整頁分頁、商品購買與出戰",
+      "observed_fact": "多個按鈕同為大紅色；榛姨只是小縮圖。",
+      "event_type": "feature_exposure",
+      "supports_judgment": "原版主次操作的區別不足",
+      "confidence": 0.96,
+      "extraction_method": "direct_observation",
+      "uncertainty_note": null
+    },
+    {
+      "evidence_id": "E002",
+      "source_id": "after/1440x900/shop.png",
+      "source_type": "screenshot",
+      "image_id": "after/1440x900/shop.png",
+      "region": "左侧人物、右側商品及頁尾",
+      "observed_fact": "榛姨放大，橄欖綠分面紙材、古金邊線；出戰為朱紅，分頁及購買為次級綠。",
+      "event_type": "decision_point",
+      "supports_judgment": "人物與內頁風格統一且主操作更突出",
+      "confidence": 0.96,
+      "extraction_method": "direct_observation",
+      "uncertainty_note": null
+    },
+    {
+      "evidence_id": "E003",
+      "source_id": "before/1440x900/purchase.png",
+      "source_type": "screenshot",
+      "image_id": "before/1440x900/purchase.png",
+      "region": "購買後商品區與武庫入口",
+      "observed_fact": "購買後顯示已取得；需要切往武庫才能穿戴。",
+      "event_type": "first_use",
+      "supports_judgment": "購買至使用有額外導覽步驟",
+      "confidence": 0.96,
+      "extraction_method": "direct_observation",
+      "uncertainty_note": null
+    },
+    {
+      "evidence_id": "E004",
+      "source_id": "after/1440x900/purchase.png",
+      "source_type": "screenshot",
+      "image_id": "after/1440x900/purchase.png",
+      "region": "已購入的第一商品按鈕",
+      "observed_fact": "購買後按鈕改為穿給劍兵；卡面保留派兵費預覽。",
+      "event_type": "decision_point",
+      "supports_judgment": "直接穿戴入口減少往返",
+      "confidence": 0.96,
+      "extraction_method": "direct_observation",
+      "uncertainty_note": null
+    },
+    {
+      "evidence_id": "E005",
+      "source_id": "after/1440x900/equipped.png",
+      "source_type": "screenshot",
+      "image_id": "after/1440x900/equipped.png",
+      "region": "已購入的第一商品及費用",
+      "observed_fact": "直接穿戴後顯示已穿戴；金幣與結晶未再次扣款。",
+      "event_type": "first_use",
+      "supports_judgment": "購買和裝備使用形成連續流程",
+      "confidence": 0.96,
+      "extraction_method": "direct_observation",
+      "uncertainty_note": null
+    },
+    {
+      "evidence_id": "E006",
+      "source_id": "after/390x844/gear.png",
+      "source_type": "screenshot",
+      "image_id": "after/390x844/gear.png",
+      "region": "頂部分頁、部位列、物品卡",
+      "observed_fact": "已穿戴及先卸下呈停用；單頁沒有翻頁鈕，技能保留完整說明。",
+      "event_type": "feature_exposure",
+      "supports_judgment": "阻止無效出售並把詳細規則放在武庫",
+      "confidence": 0.96,
+      "extraction_method": "direct_observation",
+      "uncertainty_note": null
+    },
+    {
+      "evidence_id": "E007",
+      "source_id": "before/390x844/auto.png",
+      "source_type": "screenshot",
+      "image_id": "before/390x844/auto.png",
+      "region": "AUTO 標題與資源欄",
+      "observed_fact": "設定目標的頁面同時顯示金幣和結晶。",
+      "event_type": "feature_exposure",
+      "supports_judgment": "非決策資訊增加 AUTO 的閱讀負擔",
+      "confidence": 0.96,
+      "extraction_method": "direct_observation",
+      "uncertainty_note": null
+    },
+    {
+      "evidence_id": "E008",
+      "source_id": "after/1440x900/auto.png",
+      "source_type": "screenshot",
+      "image_id": "after/1440x900/auto.png",
+      "region": "怪物圖卡及底部確認",
+      "observed_fact": "僅保留目標、場上數量、快捷分類與啟動；設定期間暫停戰鬥。",
+      "event_type": "decision_point",
+      "supports_judgment": "AUTO 頁集中在選誰打",
+      "confidence": 0.96,
+      "extraction_method": "direct_observation",
+      "uncertainty_note": null
+    },
+    {
+      "evidence_id": "E009",
+      "source_id": "after/390x844/auto-empty.png",
+      "source_type": "screenshot",
+      "image_id": "after/390x844/auto-empty.png",
+      "region": "確認區",
+      "observed_fact": "零選取時提示至少選一種怪物，啟動呈停用，取消仍可用。",
+      "event_type": "control_release",
+      "supports_judgment": "不可提交空白設定且可無損退出",
+      "confidence": 0.96,
+      "extraction_method": "direct_observation",
+      "uncertainty_note": null
+    },
+    {
+      "evidence_id": "E010",
+      "source_id": "after/1440x900/pause.png",
+      "source_type": "screenshot",
+      "image_id": "after/1440x900/pause.png",
+      "region": "中央小視窗",
+      "observed_fact": "繼續征戰突出；作戰指南、音效與結束遠征為次級操作。",
+      "event_type": "control_release",
+      "supports_judgment": "暫停保留戰場上下文並突出繼續",
+      "confidence": 0.96,
+      "extraction_method": "direct_observation",
+      "uncertainty_note": null
+    },
+    {
+      "evidence_id": "E011",
+      "source_id": "after/390x844/enchant-offer.png",
+      "source_type": "screenshot",
+      "image_id": "after/390x844/enchant-offer.png",
+      "region": "待決詞綴與兩個操作",
+      "observed_fact": "明示兵種、裝備、原詞綴、剩餘次數與新效果；採用和保留並列。",
+      "event_type": "decision_point",
+      "supports_judgment": "附魔先解釋作用對象，再要求不可同時成立的決策",
+      "confidence": 0.96,
+      "extraction_method": "direct_observation",
+      "uncertainty_note": "明示 fixture"
+    },
+    {
+      "evidence_id": "E012",
+      "source_id": "after/1440x900/result.png",
+      "source_type": "screenshot",
+      "image_id": "after/1440x900/result.png",
+      "region": "結果主數字、返還及前進按鈕",
+      "observed_fact": "累計獲獎金幣為主視覺，倖存返還、結晶與戰鬥統計為次級。",
+      "event_type": "loop_closure",
+      "supports_judgment": "結算有主次，累計金額明確標示",
+      "confidence": 0.96,
+      "extraction_method": "direct_observation",
+      "uncertainty_note": "明示 fixture"
+    },
+    {
+      "evidence_id": "E013",
+      "source_id": "after/844x390/shop.png",
+      "source_type": "screenshot",
+      "image_id": "after/844x390/shop.png",
+      "region": "小螢幕橫向商品與按鈕",
+      "observed_fact": "保留人物和雙欄，按鈕文字與標題另按短高度放大。",
+      "event_type": "feature_exposure",
+      "supports_judgment": "已做短螢幕適配，但不以模擬器推定實機舒服",
+      "confidence": 0.96,
+      "extraction_method": "direct_observation",
+      "uncertainty_note": null
+    }
+  ],
+  "important_judgments": [
+    {
+      "judgment_id": "J001",
+      "claim": "內頁已以榛姨的分面繪本配色統一，主操作與補充選項分層。",
+      "judgment_type": "finding",
+      "evidence_refs": [
+        "E001",
+        "E002",
+        "E010"
+      ],
+      "confidence": 0.93,
+      "unsupported_by_sample": false
+    },
+    {
+      "judgment_id": "J002",
+      "claim": "買裝備到穿戴可在商品卡完成；詳細技能移到武庫閱讀。",
+      "judgment_type": "finding",
+      "evidence_refs": [
+        "E003",
+        "E004",
+        "E005",
+        "E006"
+      ],
+      "confidence": 0.98,
+      "unsupported_by_sample": false
+    },
+    {
+      "judgment_id": "J003",
+      "claim": "AUTO 移除無關資源，保留目標設定及清楚的空選狀態。",
+      "judgment_type": "finding",
+      "evidence_refs": [
+        "E007",
+        "E008",
+        "E009"
+      ],
+      "confidence": 0.98,
+      "unsupported_by_sample": false
+    },
+    {
+      "judgment_id": "J004",
+      "claim": "附魔與結算優先呈現當下需要決定、確認的資料。",
+      "judgment_type": "finding",
+      "evidence_refs": [
+        "E011",
+        "E012"
+      ],
+      "confidence": 0.92,
+      "unsupported_by_sample": false
+    },
+    {
+      "judgment_id": "J005",
+      "claim": "真人首次理解速度及實體手機點按舒適度尚未驗證。",
+      "judgment_type": "unknown",
+      "evidence_refs": [
+        "E013"
+      ],
+      "confidence": 1,
+      "unsupported_by_sample": true,
+      "unknowns": [
+        "新玩家能否快速分辨金幣、結晶與城鎮建設資源",
+        "橫向小螢幕實際閱讀與點按舒適度",
+        "完整附魔描述及流派理解是否仍需要更多引導"
+      ]
+    }
+  ]
+}
