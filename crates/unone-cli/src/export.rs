@@ -398,6 +398,44 @@ fn seal_web_generation(files:&mut Vec<(String,Vec<u8>)>,index:&str)->Result<(Str
     let index=replace_required(index.to_owned(),"<head>",&format!("<head><base href=\"{root}\">"))?;
     Ok((root,index))
 }
+fn push_unique_content_file(
+    files: &mut Vec<(String, Vec<u8>)>,
+    path: String,
+    bytes: Vec<u8>,
+) -> Result<()> {
+    if let Some((_, existing)) = files.iter().find(|(existing_path, _)| existing_path == &path) {
+        ensure!(
+            existing == &bytes,
+            "PLAYER_CONTENT_CONFLICT: {path} is referenced with different bytes"
+        );
+        return Ok(());
+    }
+    files.push((path, bytes));
+    Ok(())
+}
+
+#[cfg(test)]
+mod content_file_tests {
+    use super::push_unique_content_file;
+
+    #[test]
+    fn identical_references_are_deduplicated() {
+        let mut files = Vec::new();
+        push_unique_content_file(&mut files, "content/shared.png".into(), vec![1, 2, 3]).unwrap();
+        push_unique_content_file(&mut files, "content/shared.png".into(), vec![1, 2, 3]).unwrap();
+        assert_eq!(files.len(), 1);
+    }
+
+    #[test]
+    fn conflicting_references_are_rejected() {
+        let mut files = Vec::new();
+        push_unique_content_file(&mut files, "content/shared.png".into(), vec![1, 2, 3]).unwrap();
+        let error = push_unique_content_file(&mut files, "content/shared.png".into(), vec![9]);
+        assert!(error.is_err());
+        assert_eq!(files.len(), 1);
+    }
+}
+
 pub(crate) fn content(project:&Path)->Result<(unone_engine::ProjectConfig,unone_engine::SystemSettings,Value,Vec<(String,Vec<u8>)>)>{
     let mut files=Vec::new();
     let (config, _) = unone_engine::ProjectPaths::discover(project)
@@ -512,7 +550,11 @@ pub(crate) fn content(project:&Path)->Result<(unone_engine::ProjectConfig,unone_
                 );
             }
             for path in std::iter::once(&asset.source).chain(&asset.files) {
-                files.push((format!("content/{path}"), fs::read(inside(project, path)?)?));
+                push_unique_content_file(
+                    &mut files,
+                    format!("content/{path}"),
+                    fs::read(inside(project, path)?)?,
+                )?;
             }
         }
         serde_json::to_value(assets)?
@@ -532,7 +574,15 @@ pub(crate) fn content(project:&Path)->Result<(unone_engine::ProjectConfig,unone_
             );
         }
     }
-    files.push(("content/project.json".into(), serde_json::to_vec(&payload)?));
-    files.push(("content/assets.json".into(), serde_json::to_vec(&assets)?));
+    push_unique_content_file(
+        &mut files,
+        "content/project.json".into(),
+        serde_json::to_vec(&payload)?,
+    )?;
+    push_unique_content_file(
+        &mut files,
+        "content/assets.json".into(),
+        serde_json::to_vec(&assets)?,
+    )?;
     Ok((config,settings,assets,files))
 }
