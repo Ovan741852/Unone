@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "browser": "Codex IAB",
+  "origin": "http://127.0.0.1:58614/",
+  "sameTab": true,
+  "cacheCleared": false,
+  "A": {
+    "title": "Cache upgrade A",
+    "frame": 919,
+    "error": null,
+    "generation": "ebc914db018e33575d1a00fe428213d5b29b3625dc3952ce93465f1a2d546345"
+  },
+  "warmA": {
+    "title": "Cache upgrade A",
+    "frame": 407,
+    "error": null,
+    "cacheHits": 20,
+    "total": 23
+  },
+  "B": {
+    "title": "Cache upgrade B",
+    "frame": 1097,
+    "error": null,
+    "base": "releases/95ec50540a4aba648cd8c91db68eebdc1cc971ce33d6ee670f1f49cdad498b63/",
+    "allResourcesBelongToB": true,
+    "runtimeResources": [
+      {
+        "path": "runtime/unone-player.js",
+        "encoded_bytes": 101020,
+        "transfer_bytes": 101320
+      },
+      {
+        "path": "runtime/unone_player.wasm",
+        "encoded_bytes": 1545682,
+        "transfer_bytes": 1545982
+      }
+    ]
+  },
+  "visual": "SVG icon displayed in both generations",
+  "limits": [
+    "New-generation fixture upgrade, not a migration of an already published unversioned legacy index",
+    "Main-thread backend tested; worker URL graph is versioned but warm worker execution not exercised",
+    "Deployment must retain old releases and revalidate mutable index"
+  ]
+}

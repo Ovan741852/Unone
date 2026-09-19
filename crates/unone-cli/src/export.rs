@@ -7,6 +7,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/effekseer.js",
         "renderer/particles.js",
         "shared/ui-tree.js",
+        "shared/canvas-ui.mjs",
         "shared/host-input.js",
         "shared/webgpu-snapshot.js",
         "shared/audio-playback.js",
@@ -40,30 +41,6 @@ fn digest(bytes: &[u8]) -> String {
 }
 
 use unone_engine::MeshAsset as StaticMesh;
-#[derive(serde::Deserialize,serde::Serialize)]
-#[serde(default,deny_unknown_fields)]
-struct JobPolicy { mode: JobMode, max_workers: u8, memory_budget_mb: u16 }
-impl Default for JobPolicy {fn default()->Self{Self{mode:JobMode::Auto,max_workers:2,memory_budget_mb:128}}}
-#[derive(serde::Deserialize,serde::Serialize)]
-#[serde(rename_all="snake_case")]
-enum JobMode {Auto,Inline,Workers}
-#[derive(Default, serde::Deserialize, serde::Serialize)]
-#[serde(default, deny_unknown_fields)]
-struct PresentationSettings {
-    bloom: bool,
-    show_performance: bool,
-    runtime_backend: RuntimeBackend,
-    job_policy: JobPolicy,
-    interpolation: bool,
-    interpolate_instances: Vec<String>,
-}
-#[derive(Default, serde::Deserialize, serde::Serialize)]
-#[serde(rename_all = "snake_case")]
-enum RuntimeBackend {
-    #[default]
-    Main,
-    Worker,
-}
 fn inside(root: &Path, relative: &str) -> Result<PathBuf> {
     ensure!(
         !Path::new(relative).is_absolute() && !relative.split(['/', '\\']).any(|p| p == ".."),
@@ -169,19 +146,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             project.display()
         );
     }
-    let presentation = if project.join("player.presentation.json").exists() {
-        serde_json::from_slice::<PresentationSettings>(&fs::read(inside(
-            project,
-            "player.presentation.json",
-        )?)?)?
-    } else {
-        PresentationSettings::default()
-    };
-    ensure!(presentation.job_policy.max_workers<=4 && presentation.job_policy.memory_budget_mb<=1024,"JOB_POLICY_INVALID: max_workers must be 0..4 and memory_budget_mb 0..1024");
-    files.push((
-        "content/presentation.json".into(),
-        serde_json::to_vec(&presentation)?,
-    ));
+    append_presentation(project, &mut files)?;
     files.push((
         "runtime/runtime.json".into(),
         serde_json::to_vec(&manifest)?,
@@ -190,13 +155,15 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
         if (path == "shared/profile-window.js" && !development)
             || (path == "shared/audio-playback.js" && !settings.is_enabled("audio"))
             || (path == "shared/ui-tree.js" && !settings.is_enabled("ui"))
+            || (path == "shared/canvas-ui.mjs" && !settings.is_enabled("ui"))
             || (path == "renderer/particles.js" && !settings.is_enabled("particle"))
             || (path == "renderer/effekseer.js" && !settings.is_enabled("effekseer"))
             || (path == "vendor/rapier/LICENSE" && !compiled.iter().any(|v| v == "physics3d"))
         {
             continue;
         }
-        let mut bytes = fs::read(repo.join("web").join(path))?;
+        let source=repo.join("web").join(path);
+        let mut bytes = fs::read(&source).with_context(||format!("PLAYER_TEMPLATE_MISSING: {}; CLI and host templates must come from the same SDK/source revision",source.display()))?;
         if path == "renderer/three.js" {
             let mut text = String::from_utf8(bytes)?;
             if !settings.is_enabled("particle") {
@@ -226,8 +193,8 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             if !settings.is_enabled("ui") {
                 text = replace_required(
                     text,
-                    "import {createUiTree} from '../shared/ui-tree.js';",
-                    "const createUiTree = () => () => {};",
+                    "import {createCanvasUi,loadCanvasFont} from '../shared/canvas-ui.mjs';",
+                    "const createCanvasUi = () => ({draw(){},pointer(){return false},releaseAll(){},setFont(){}}); const loadCanvasFont = async () => {};",
                 )?;
             }
             if !settings.is_enabled("audio") {
@@ -308,6 +275,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     }
     let index = fs::read_to_string(repo.join("web/player/index.html"))?
         .replace("__RUNTIME_JS__", manifest["javascript"].as_str().unwrap());
+    let (release_root,index)=seal_web_generation(&mut files,&index)?;
     files.push(("index.html".into(), index.into_bytes()));
     files.sort_by(|a, b| a.0.cmp(&b.0));
     files.dedup_by(|a, b| a.0 == b.0 && a.1 == b.1);
@@ -318,7 +286,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             "export destination collision: {path}"
         );
     }
-    let report = json!({"version":1,"project":config.name,"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer":"three-webgl","total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
+    let report = json!({"version":1,"project":config.name,"release_root":release_root,"cache_policy":{"index.html":"no-cache, must-revalidate","releases/":"public, max-age=31536000, immutable","deployment":"publish complete generation before index; retain old generations for open clients","legacy_aliases":"unversioned files retained for existing CLI inspection tools; browser entry uses only release_root"},"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer":"three-webgl","total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
     // All validation and reads finish first. Remove only our newly created tree on write failure.
     fs::create_dir_all(output)?;
     let write = (|| -> Result<()> {
@@ -343,6 +311,29 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn web_generation_pins_all_resources_and_changes_on_any_input() {
+        let input=vec![("runtime/core.js".into(),b"js".to_vec()),("runtime/core.wasm".into(),b"wasm".to_vec()),("web/player/main.js".into(),b"host".to_vec()),("content/project.json".into(),b"project".to_vec())];
+        let html="<html><head></head></html>";
+        let (root,index)=seal_web_generation(&mut input.clone(),html).unwrap();
+        assert!(index.contains(&format!("<base href=\"{root}\">")));
+        let mut reversed=input.clone();reversed.reverse();assert_eq!(seal_web_generation(&mut reversed,html).unwrap().0,root);
+        for i in 0..input.len(){let mut changed=input.clone();changed[i].1.push(1);let (next,_)=seal_web_generation(&mut changed,html).unwrap();assert_ne!(next,root);for (path,bytes) in &input{if path!=&input[i].0{assert!(changed.contains(&(format!("{next}{path}"),bytes.clone())));}}}
+        assert_ne!(seal_web_generation(&mut input.clone(),"<head>new</head>").unwrap().0,root);
+        assert!(seal_web_generation(&mut input.clone(),"<head><base href='x'></head>").is_err());
+    }
+    #[test]
+    fn both_hosts_package_default_presentation_and_explicit_font() {
+        let dir=tempfile::tempdir().unwrap();let mut files=vec![];
+        append_presentation(dir.path(),&mut files).unwrap();
+        assert_eq!(files[0].0,"content/presentation.json");
+        fs::write(dir.path().join("font.ttf"),b"fixture-font-bytes").unwrap();
+        fs::write(dir.path().join("player.presentation.json"),br#"{"ui":{"font_source":"font.ttf","font_family":"Fixture"}}"#).unwrap();
+        files.clear();append_presentation(dir.path(),&mut files).unwrap();
+        assert!(files.iter().any(|(p,b)|p=="content/font.ttf"&&b==b"fixture-font-bytes"));
+        fs::write(dir.path().join("player.presentation.json"),br#"{"ui":{"font_source":"font.ttf"}}"#).unwrap();
+        assert!(append_presentation(dir.path(),&mut vec![]).unwrap_err().to_string().contains("UI_FONT_FAMILY_REQUIRED"));
+    }
     #[test]
     fn mesh_contract_rejects_bad_topology_uvs_and_unknown_fields() {
         let valid = json!({"version":1,"positions":[0,0,0,1,0,0,0,1,0],"uvs":[0,0,1,0,0,1],"indices":[0,1,2],"texture":"texture://test"});
@@ -382,6 +373,69 @@ mod tests {
 }
 
 /// Shared validated host payload and asset bytes for all player exporters.
+pub(crate) fn append_presentation(project:&Path, files:&mut Vec<(String,Vec<u8>)>)->Result<()> {
+    let presentation = crate::hosts::load_presentation(project)?.unwrap_or_default();
+    ensure!(presentation.job_policy.max_workers<=4 && presentation.job_policy.memory_budget_mb<=1024,"JOB_POLICY_INVALID: max_workers must be 0..4 and memory_budget_mb 0..1024");
+    if let Some(path)=&presentation.ui.font_source {
+        ensure!(presentation.ui.font_family.as_ref().is_some_and(|f|!f.trim().is_empty()),"UI_FONT_FAMILY_REQUIRED: specify the packaged font's family name");
+        let name=format!("content/{path}");
+        if !files.iter().any(|(p,_)|p==&name){files.push((name,fs::read(inside(project,path)?)?));}
+    }
+    files.push(("content/presentation.json".into(),serde_json::to_vec(&presentation)?));
+    Ok(())
+}
+
+/// The browser loads a closed immutable generation, including transitive imports
+/// and the JS/WASM pair. Legacy file aliases remain for CLI consumer compatibility.
+fn seal_web_generation(files:&mut Vec<(String,Vec<u8>)>,index:&str)->Result<(String,String)> {
+    ensure!(!index.contains("<base"),"PLAYER_BASE_CONFLICT: template must not supply a base element");
+    let mut inventory=files.iter().map(|(p,b)|(p.clone(),digest(b))).collect::<Vec<_>>();
+    inventory.sort();
+    let identity=serde_json::to_vec(&(index,inventory))?;
+    let root=format!("releases/{}/",digest(&identity));
+    let copies=files.iter().map(|(p,b)|(format!("{root}{p}"),b.clone())).collect::<Vec<_>>();
+    files.extend(copies);
+    let index=replace_required(index.to_owned(),"<head>",&format!("<head><base href=\"{root}\">"))?;
+    Ok((root,index))
+}
+fn push_unique_content_file(
+    files: &mut Vec<(String, Vec<u8>)>,
+    path: String,
+    bytes: Vec<u8>,
+) -> Result<()> {
+    if let Some((_, existing)) = files.iter().find(|(existing_path, _)| existing_path == &path) {
+        ensure!(
+            existing == &bytes,
+            "PLAYER_CONTENT_CONFLICT: {path} is referenced with different bytes"
+        );
+        return Ok(());
+    }
+    files.push((path, bytes));
+    Ok(())
+}
+
+#[cfg(test)]
+mod content_file_tests {
+    use super::push_unique_content_file;
+
+    #[test]
+    fn identical_references_are_deduplicated() {
+        let mut files = Vec::new();
+        push_unique_content_file(&mut files, "content/shared.png".into(), vec![1, 2, 3]).unwrap();
+        push_unique_content_file(&mut files, "content/shared.png".into(), vec![1, 2, 3]).unwrap();
+        assert_eq!(files.len(), 1);
+    }
+
+    #[test]
+    fn conflicting_references_are_rejected() {
+        let mut files = Vec::new();
+        push_unique_content_file(&mut files, "content/shared.png".into(), vec![1, 2, 3]).unwrap();
+        let error = push_unique_content_file(&mut files, "content/shared.png".into(), vec![9]);
+        assert!(error.is_err());
+        assert_eq!(files.len(), 1);
+    }
+}
+
 pub(crate) fn content(project:&Path)->Result<(unone_engine::ProjectConfig,unone_engine::SystemSettings,Value,Vec<(String,Vec<u8>)>)>{
     let mut files=Vec::new();
     let (config, _) = unone_engine::ProjectPaths::discover(project)
@@ -496,7 +550,11 @@ pub(crate) fn content(project:&Path)->Result<(unone_engine::ProjectConfig,unone_
                 );
             }
             for path in std::iter::once(&asset.source).chain(&asset.files) {
-                files.push((format!("content/{path}"), fs::read(inside(project, path)?)?));
+                push_unique_content_file(
+                    &mut files,
+                    format!("content/{path}"),
+                    fs::read(inside(project, path)?)?,
+                )?;
             }
         }
         serde_json::to_value(assets)?
@@ -516,7 +574,15 @@ pub(crate) fn content(project:&Path)->Result<(unone_engine::ProjectConfig,unone_
             );
         }
     }
-    files.push(("content/project.json".into(), serde_json::to_vec(&payload)?));
-    files.push(("content/assets.json".into(), serde_json::to_vec(&assets)?));
+    push_unique_content_file(
+        &mut files,
+        "content/project.json".into(),
+        serde_json::to_vec(&payload)?,
+    )?;
+    push_unique_content_file(
+        &mut files,
+        "content/assets.json".into(),
+        serde_json::to_vec(&assets)?,
+    )?;
     Ok((config,settings,assets,files))
 }

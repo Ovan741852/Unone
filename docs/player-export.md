@@ -16,6 +16,11 @@ default features disabled. A compile-time assertion rejects an engine built with
 sessions and script reload are unavailable in that build. The Web bridge shares
 input, save, viewport, ticking and observation with the developer host.
 
+`player.presentation.json` includes the **web-wasm** overlay (bloom, worker backend,
+interpolation) and shared UI/font settings. Native wgpu packages the UI/font
+settings and fails closed on web-only keys. Host identities and capability tables live in `game sdk inspect --json`;
+see [portable SDK](portable-sdk.md).
+
 From the repository root:
 
 ```powershell

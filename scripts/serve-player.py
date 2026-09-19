@@ -1,5 +1,6 @@
 """Serve an exported player with explicit JS/WASM MIME types on every OS."""
 import argparse
+import re
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -19,15 +20,21 @@ class Handler(SimpleHTTPRequestHandler):
                       '.js': 'text/javascript', '.mjs': 'text/javascript',
                       '.wasm': 'application/wasm'}
 
-    def do_GET(self):
-        # Mutable local exports must not combine cached engine bytes with new content.
-        for header in ('If-Modified-Since', 'If-None-Match'):
-            if header in self.headers:
-                del self.headers[header]
-        super().do_GET()
+    def immutable_generation(self):
+        return re.search(r'/releases/[0-9a-f]{64}/', self.path.split('?', 1)[0]) is not None
+
+    def send_head(self):
+        if not self.immutable_generation():
+            # Same-second index replacement can have unchanged size/mtime and
+            # must not receive a false 304 from SimpleHTTPRequestHandler.
+            for name in ('If-Modified-Since', 'If-None-Match'):
+                if name in self.headers:
+                    del self.headers[name]
+        return super().send_head()
 
     def end_headers(self):
-        self.send_header('Cache-Control', 'no-store')
+        self.send_header('Cache-Control', 'public, max-age=31536000, immutable'
+                         if self.immutable_generation() else 'no-store')
         super().end_headers()
 
 class PlayerServer(ThreadingHTTPServer):

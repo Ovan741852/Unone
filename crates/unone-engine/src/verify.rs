@@ -245,6 +245,10 @@ fn tests_step(project_root: &Path, paths: &ProjectPaths, required: bool) -> Veri
         );
     }
     let tests = EngineRuntime::run_tests(project_root);
+    let suite_passed = tests
+        .value
+        .as_ref()
+        .is_some_and(|report| report.passed);
     let summary = match tests.value.as_ref() {
         Some(report) => {
             let passed = report.cases.iter().filter(|case| case.passed).count();
@@ -252,12 +256,35 @@ fn tests_step(project_root: &Path, paths: &ProjectPaths, required: bool) -> Veri
         }
         None => "the test suite could not run".to_string(),
     };
+    let mut diagnostics = tests.diagnostics;
+    if let Some(report) = tests.value.as_ref() {
+        if !report.passed {
+            let failed_cases = report
+                .cases
+                .iter()
+                .filter(|case| !case.passed)
+                .map(|case| {
+                    serde_json::json!({
+                        "name": &case.name,
+                        "failures": &case.failures,
+                    })
+                })
+                .collect::<Vec<_>>();
+            let mut diagnostic = Diagnostic::error(
+                "TEST_ASSERTIONS_FAILED",
+                "A deterministic test assertion failed",
+                "The test runner completed, but one or more declared assertions did not match the observed world. Fix the assertion or the game behavior before activation.",
+            );
+            diagnostic.facts = serde_json::json!({ "failed_cases": failed_cases });
+            diagnostics.push(diagnostic);
+        }
+    }
     step(
         "tests",
         "game test",
-        resolve_status(tests.ok, required),
+        resolve_status(tests.ok && suite_passed, required),
         summary,
-        tests.diagnostics,
+        diagnostics,
     )
 }
 
@@ -655,5 +682,31 @@ return Game
                 types.diagnostics
             );
         }
+    }
+
+    #[test]
+    fn failed_test_assertions_fail_the_required_verify_gate() {
+        let dir = tempdir().unwrap();
+        write_project(dir.path(), GOOD_SCRIPT, r#"["tests/fail.test.json"]"#);
+        fs::write(
+            dir.path().join("tests/fail.test.json"),
+            r#"{"name":"fails intentionally","frames":1,"assertions":[{"observation":{"key":"frame_ok","equals":false}}]}"#,
+        )
+        .unwrap();
+
+        let result = verify(dir.path());
+        let report = result.value.expect("verify reports its steps");
+        let tests = report
+            .steps
+            .iter()
+            .find(|step| step.name == "tests")
+            .expect("tests step");
+        assert!(!result.ok, "a failed assertion must block activation");
+        assert_eq!(tests.status, StepStatus::Failed);
+        assert!(tests.summary.contains("0/1 deterministic cases passed"));
+        assert!(tests
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "TEST_ASSERTIONS_FAILED"));
     }
 }

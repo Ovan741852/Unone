@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-10T06:37:15.588Z",
+  "project": "D:/Projects/YesSir/_Games/ashen-legion",
+  "cli": "D:/Projects/Unone/target/debug/game.exe",
+  "cli_sha256": "b0419279427d9a86b35f84d6a61a0e85e8cf12e9b968fdbf50f70f08326b49d8",
+  "discovery_without_env": [
+    "org.unone.blender",
+    "org.unone.lottie"
+  ],
+  "explicit_plugin_root": "D:/Projects",
+  "plugins": [
+    {
+      "id": "org.koncrate.unone-ui",
+      "version": "0.4.0",
+      "manifestPath": "D:\\Projects\\UnoneUI\\plugin.json",
+      "manifest_sha256": "e1536516b475ce35825dae60f0361d4cdf0184e84e29e4359ad9399197655fdc",
+      "entryPath": "D:\\Projects\\UnoneUI\\plugin.mjs",
+      "entry_sha256": "91b804b9e6bb7658cc161d53e4eb5309df3e006dcc15b340712bb9d3ccb8aebc",
+      "commit": "8a695dbf19b88840a6bf1fdc0a3c27c87c12fc78",
+      "working_tree": "",
+      "inspect_ok": true,
+      "test_ok": true,
+      "test_exit": 0
+    },
+    {
+      "id": "org.koncrate.unone-shader",
+      "version": "0.1.0",
+      "manifestPath": "D:\\Projects\\Unone-shader\\plugin.json",
+      "manifest_sha256": "bfeb45eb0b570239d50a2b20ff35b5a718a7edeb84e34b9edf7ce390b56e5a3e",
+      "entryPath": "D:\\Projects\\Unone-shader\\plugin.mjs",
+      "entry_sha256": "69ef85940dfe2df34f48fde860aa25bdebb05a1d8ddbd0177fbfcc2e2e17640f",
+      "commit": "e27e45bc22a0705221dd5de7309c32caf7467bdb",
+      "working_tree": "",
+      "inspect_ok": true,
+      "test_ok": true,
+      "test_exit": 0
+    }
+  ],
+  "shipped_ui": {
+    "path": "D:/Projects/YesSir/_Games/ashen-legion/dist/web/web/shared/canvas-ui.mjs",
+    "sha256": "c85035eb90af6694b45fbed9ce027e6dd6b37d880ce146e99cff7f9a2869c332"
+  },
+  "scope": "Existing plugin inspect and self-test only. No SDK swap, no native full-game test, no long parity rerun."
+}

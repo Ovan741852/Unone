@@ -3,15 +3,15 @@ import {mkdtempSync,readFileSync,writeFileSync,rmSync,existsSync} from 'node:fs'
 import {tmpdir} from 'node:os';
 import {dirname,resolve,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {spawnSync} from 'node:child_process';
+import {runWithEvidence} from './process-result.mjs';
 import {parseArgs} from 'node:util';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-const {values}=parseArgs({options:{cli:{type:'string'},runtime:{type:'string'},fixture:{type:'string'},development:{type:'boolean',default:false}}});
+const {values}=parseArgs({options:{cli:{type:'string'},runtime:{type:'string'},fixture:{type:'string'},development:{type:'boolean',default:false},'timeout-ms':{type:'string'}}});
 const cli=resolve(values.cli??join(root,'target/debug/game.exe'));
 const fixture=resolve(values.fixture??join(root,'tests/host-parity-project'));
 const scratch=mkdtempSync(join(tmpdir(),'unone-player-parity-'));
 const output=join(scratch,'player');
-function run(command,args){return spawnSync(command,args,{encoding:'utf8',timeout:120000,maxBuffer:16*1024*1024});}
+function run(command,args){return runWithEvidence(command,args,{cwd:root,timeoutMs:Number(values['timeout-ms']??process.env.UNONE_PARITY_TIMEOUT_MS??120000)});}
 try {
   const args=['--project',fixture,'export','web','--output',output,'--json'];
   if(values.development)args.push('--development');

@@ -1,0 +1,1 @@
+{"api":"unone.plugin.v1","id":"org.unone.compat-probe","name":"Compatibility transport fixture (not a product plugin)","version":"1.0.0","entry":{"command":"node","args":["probe.mjs"]},"tools":[]}

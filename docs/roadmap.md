@@ -94,7 +94,7 @@ Stable IDs are retained for existing references, not a competing priority order.
 
 | ID | Gap | Current limitation |
 |---|---|---|
-| 16 | Native UI | Native preview and Android do not render UI trees; Web does. |
+| 16 | Native UI | Current native wgpu supports non-DOM UI and static SVG with matching runtime declarations; Windows fixture/SDK evidence is [recorded](reviews/2026-09-10-svg-sdk.md). Android/iOS UI device validation and broader whole-game presentation acceptance remain open. The earlier [gap record](proposals/native-ui-host-v1.md) is historical. |
 | 17 | Native textures | Preview verifies/decodes sprite bytes but draws procedural shapes. |
 | 18 | Native/mobile Spine and Effekseer | Actual presentation is Web-only; semantic state is not playback. |
 | 19 | iOS host | ABI exists; implementation and device evidence are absent. |

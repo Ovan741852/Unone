@@ -67,8 +67,35 @@ pub struct LayoutReport {
     pub ascii: String,
     pub nodes: Vec<LayoutNode>,
     pub findings: Vec<LayoutFinding>,
+    pub allowed_overlaps: Vec<LayoutFinding>,
     pub readable: bool,
     pub assumptions: Vec<String>,
+}
+
+/// Explicit per-screen art layering. Never permits a button to hide another
+/// interactive node: the earlier/background node must be an image.
+pub fn apply_overlap_policy(report:&mut LayoutReport, policy:&serde_json::Value)->Result<(),String> {
+    #[derive(serde::Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Pair {behind:String,front:String,reason:String}
+    #[derive(serde::Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Policy {version:u32,screens:std::collections::BTreeMap<String,Vec<Pair>>}
+    let policy:Policy=serde_json::from_value(policy.clone()).map_err(|e|e.to_string())?;
+    if policy.version!=1 {return Err("UI_OVERLAP_POLICY_VERSION: expected 1".into());}
+    let Some(pairs)=policy.screens.get(&report.screen) else{return Ok(());};
+    let mut approved=Vec::new();
+    for pair in pairs {
+        if pair.reason.trim().is_empty(){return Err("UI_OVERLAP_REASON_REQUIRED".into());}
+        let behind=report.nodes.iter().position(|n|n.id==pair.behind).ok_or_else(||format!("UI_OVERLAP_UNKNOWN_NODE: {}",pair.behind))?;
+        let front=report.nodes.iter().position(|n|n.id==pair.front).ok_or_else(||format!("UI_OVERLAP_UNKNOWN_NODE: {}",pair.front))?;
+        if behind>=front||report.nodes[behind].kind!="image" {return Err("UI_OVERLAP_POLICY_UNSAFE: behind must be an earlier image; button/button and occluding images cannot be exempted".into());}
+        let ids=vec![pair.behind.clone(),pair.front.clone()];
+        let finding=report.findings.iter().find(|f|f.code=="UI_NODES_OVERLAP"&&f.nodes==ids).ok_or("UI_OVERLAP_POLICY_STALE: pair does not currently overlap")?;
+        let mut finding=finding.clone();finding.code="UI_INTENTIONAL_ART_OVERLAP".into();finding.resolution=pair.reason.clone();approved.push(finding);
+    }
+    report.findings.retain(|f|!approved.iter().any(|a|a.nodes==f.nodes&&f.code=="UI_NODES_OVERLAP"));
+    report.allowed_overlaps.extend(approved);report.readable=report.findings.is_empty();Ok(())
 }
 
 fn node_parts(node: &UiNode) -> (&str, &str, &UiRect, &str, Option<&str>, Option<&str>) {
@@ -176,6 +203,7 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
     }
 
     LayoutReport {
+        allowed_overlaps:Vec::new(),
         screen: tree.id.clone(),
         cols,
         rows,
@@ -306,6 +334,17 @@ pub fn to_markdown(report: &LayoutReport) -> String {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn background_pair_allowance_preserves_interactive_overlap_gate(){
+        let tree=UiTree::from_json(serde_json::json!({"kind":"screen","id":"menu","node":"menu","children":[
+            {"kind":"image","id":"plate","asset":"asset://plate","rect":{"x":0,"y":0,"width":50,"height":50}},
+            {"kind":"button","id":"start","action":"Start","text":"","rect":{"x":0,"y":0,"width":50,"height":50}},
+            {"kind":"button","id":"other","action":"Other","text":"","rect":{"x":0,"y":0,"width":50,"height":50}}]})).unwrap();
+        let mut report=inspect(&tree,16,8);
+        super::apply_overlap_policy(&mut report,&serde_json::json!({"version":1,"screens":{"menu":[{"behind":"plate","front":"start","reason":"art beneath hit target"},{"behind":"plate","front":"other","reason":"background"}]}})).unwrap();
+        assert_eq!(report.allowed_overlaps.len(),2);assert_eq!(report.findings.len(),1);assert!(!report.readable);
+        assert!(super::apply_overlap_policy(&mut report,&serde_json::json!({"version":1,"screens":{"menu":[{"behind":"start","front":"other","reason":"cannot waive button overlap"}]}})).is_err());
+    }
     use super::{DEFAULT_LAYOUT_COLS, DEFAULT_LAYOUT_ROWS, inspect};
     use crate::ui::UiTree;
 

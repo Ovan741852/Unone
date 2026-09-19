@@ -2,6 +2,7 @@
 mod lod;
 mod particles;
 mod render;
+mod ui;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
@@ -147,6 +148,11 @@ fn emit(v: &Value) {
     }
 }
 struct App {
+    host_input: unone_engine::InputFrame,
+    pointer_edges: std::collections::VecDeque<unone_engine::PointerInput>,
+    world_pointer_owner: Option<u64>,
+    ui_input: ui::PointerRouter,
+    cursor: [f64; 2],
     package: Package,
     runtime: EngineRuntime,
     snapshot: WorldSnapshot,
@@ -169,6 +175,32 @@ struct App {
     captures: Vec<(String, f64)>,
 }
 impl App {
+    fn reset_input(&mut self) {
+        self.ui_input.release_all();
+        self.ui_input = Default::default();
+        self.host_input = Default::default();
+        self.pointer_edges.clear();
+        self.world_pointer_owner = None;
+    }
+    // Same Camera2D mapping as the Web host; gameplay owns any 3D raycast policy.
+    fn world_pointer(&mut self, x: f64, y: f64, down: bool, edge: bool) {
+        let c = &self.snapshot.camera;
+        let size = self.window.as_ref().unwrap().inner_size();
+        let h = c.view_height / c.zoom;
+        let p = unone_engine::PointerInput {
+            position: unone_engine::Vec2 {
+                x: c.position.x
+                    + (x - 50.) / 100. * h * size.width as f64 / size.height.max(1) as f64,
+                y: c.position.y + (y - 50.) / 100. * h,
+            },
+            down,
+            screen_position: Some(unone_engine::Vec2 { x, y }),
+        };
+        self.host_input.pointer = Some(p.clone());
+        if edge {
+            self.pointer_edges.push_back(p);
+        }
+    }
     fn new(
         package: Package,
         settings: Settings,
@@ -185,6 +217,11 @@ impl App {
         let snapshot = runtime.observe();
         Ok(Self {
             package,
+            ui_input: Default::default(),
+            cursor: [0., 0.],
+            host_input: Default::default(),
+            pointer_edges: Default::default(),
+            world_pointer_owner: None,
             runtime,
             snapshot,
             settings,
@@ -285,6 +322,15 @@ impl ApplicationHandler for App {
         })();
         match result {
             Ok((w, r)) => {
+                let size = w.inner_size();
+                if let Err(e) = self
+                    .runtime
+                    .set_viewport_aspect(size.width as f64 / size.height.max(1) as f64)
+                {
+                    self.fail(e.explanation, event_loop);
+                    return;
+                }
+                self.snapshot = self.runtime.observe();
                 self.window = Some(w);
                 self.renderer = Some(r);
                 self.boot_ms = self.boot.elapsed().as_secs_f64() * 1000.;
@@ -293,6 +339,7 @@ impl ApplicationHandler for App {
         }
     }
     fn suspended(&mut self, _: &ActiveEventLoop) {
+        self.reset_input();
         self.renderer = None;
         self.window = None;
         self.last = None;
@@ -309,6 +356,15 @@ impl ApplicationHandler for App {
                 event_loop.exit();
             }
             WindowEvent::Resized(s) => {
+                if s.height > 0 {
+                    if let Err(e) = self
+                        .runtime
+                        .set_viewport_aspect(s.width as f64 / s.height as f64)
+                    {
+                        self.fail(e.explanation, event_loop);
+                        return;
+                    }
+                }
                 if let Some(r) = &mut self.renderer {
                     r.resize(s.width, s.height);
                 }
@@ -327,10 +383,75 @@ impl ApplicationHandler for App {
                     _ => None,
                 };
                 if let Some(a) = action {
-                    self.runtime
-                        .set_input(a, event.state == ElementState::Pressed);
+                    self.host_input
+                        .actions
+                        .insert(a.into(), event.state == ElementState::Pressed);
                 }
             }
+            WindowEvent::CursorMoved { position, .. } => {
+                let size = self.window.as_ref().unwrap().inner_size();
+                self.cursor = [
+                    position.x / size.width.max(1) as f64 * 100.,
+                    100. - position.y / size.height.max(1) as f64 * 100.,
+                ];
+                if !self.ui_input.captured(0) && self.world_pointer_owner.is_none_or(|id| id == 0) {
+                    self.world_pointer(
+                        self.cursor[0],
+                        self.cursor[1],
+                        self.world_pointer_owner == Some(0),
+                        false,
+                    );
+                }
+            }
+            WindowEvent::MouseInput {
+                state,
+                button: winit::event::MouseButton::Left,
+                ..
+            } => {
+                if state == ElementState::Pressed {
+                    if !self.ui_input.down(
+                        self.snapshot.ui.as_ref(),
+                        0,
+                        self.cursor[0],
+                        self.cursor[1],
+                    ) && self.world_pointer_owner.is_none()
+                    {
+                        self.world_pointer_owner = Some(0);
+                        self.world_pointer(self.cursor[0], self.cursor[1], true, true);
+                    }
+                } else if !self.ui_input.up(0) && self.world_pointer_owner == Some(0) {
+                    self.world_pointer_owner = None;
+                    self.world_pointer(self.cursor[0], self.cursor[1], false, true);
+                }
+            }
+            WindowEvent::Touch(touch) => {
+                let size = self.window.as_ref().unwrap().inner_size();
+                let x = touch.location.x / size.width.max(1) as f64 * 100.;
+                let y = 100. - touch.location.y / size.height.max(1) as f64 * 100.;
+                let id = touch.id.wrapping_add(1);
+                match touch.phase {
+                    winit::event::TouchPhase::Started => {
+                        if !self.ui_input.down(self.snapshot.ui.as_ref(), id, x, y)
+                            && self.world_pointer_owner.is_none()
+                        {
+                            self.world_pointer_owner = Some(id);
+                            self.world_pointer(x, y, true, true);
+                        }
+                    }
+                    winit::event::TouchPhase::Ended | winit::event::TouchPhase::Cancelled => {
+                        if !self.ui_input.up(id) && self.world_pointer_owner == Some(id) {
+                            self.world_pointer_owner = None;
+                            self.world_pointer(x, y, false, true);
+                        }
+                    }
+                    winit::event::TouchPhase::Moved => {
+                        if self.world_pointer_owner == Some(id) {
+                            self.world_pointer(x, y, true, false);
+                        }
+                    }
+                }
+            }
+            WindowEvent::Focused(false) => self.reset_input(),
             WindowEvent::RedrawRequested => {
                 if self.paused {
                     return;
@@ -354,8 +475,16 @@ impl ApplicationHandler for App {
                         .get_or_insert(self.snapshot.frame);
                 }
                 for _ in 0..steps {
+                    self.ui_input.reconcile(self.snapshot.ui.as_ref());
+                    if let Some((action, down)) = self.ui_input.next_edge() {
+                        self.host_input.actions.insert(action, down);
+                    }
+                    let mut input = self.host_input.clone();
+                    if let Some(p) = self.pointer_edges.pop_front() {
+                        input.pointer = Some(p);
+                    }
                     let t = Instant::now();
-                    match self.runtime.tick() {
+                    match self.runtime.tick_with_input(&input) {
                         Ok(s) => self.snapshot = s,
                         Err(e) => {
                             self.fail(e.explanation, event_loop);
@@ -366,12 +495,15 @@ impl ApplicationHandler for App {
                         self.samples.tick_ms.push(t.elapsed().as_secs_f64() * 1000.);
                     }
                 }
-                if self.snapshot.ui.is_some()
-                    || !self.snapshot.audio_events.is_empty()
+                if !self.snapshot.audio_events.is_empty()
                     || !self.snapshot.audio_loops.is_empty()
                     || !self.snapshot.effects.is_empty()
                 {
-                    self.fail("NATIVE_PRESENTATION_UNSUPPORTED: this player currently supports mesh3d/instances3d and PNG; UI/audio/effects require a renderer adapter".into(),event_loop);
+                    self.fail(
+                        "NATIVE_PRESENTATION_UNSUPPORTED: audio/effects require a renderer adapter"
+                            .into(),
+                        event_loop,
+                    );
                     return;
                 }
                 let start = Instant::now();
@@ -428,7 +560,7 @@ pub fn desktop() -> R<()> {
     if std::env::args().nth(1).as_deref() == Some("--describe") {
         println!(
             "{}",
-            json!({"compiled_systems":unone_engine::compiled_systems(),"renderer":"wgpu-native-instanced","decoders":["unone-mesh-json","png-rgb-rgba"],"presentation":["mesh3d","instances3d","particle"],"dev_tools":false,"preview_tools":false,"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"}})
+            json!({"compiled_systems":unone_engine::compiled_systems(),"renderer":"wgpu-native-instanced","decoders":["unone-mesh-json","png-rgb-rgba"],"presentation":["mesh3d","instances3d","particle","ui"],"ui":{"backend":"cpu-raster-wgpu-overlay","nodes":["text","button","image","component"],"images":["png","svg-static"],"input":"mouse/touch semantic down-up; rectangular reverse-order hit testing","font":"system fallback or packaged presentation.ui.font_source","limitations":["UI redraw rasterizes/uploads the full surface when the tree changes","World camera3d remains required","Audio/effects are not implemented by this renderer","Android/iOS UI device validation has not been performed"]},"dev_tools":false,"preview_tools":false,"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"}})
         );
         return Ok(());
     }

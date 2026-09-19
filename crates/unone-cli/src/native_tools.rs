@@ -279,6 +279,8 @@ impl State {
             "step" => vec!["method", "count"],
             "input" => vec!["method", "frame"],
             "bloom" => vec!["method", "enabled"],
+            "memory.sample" => vec!["method", "label", "collect", "warmup"],
+            "memory.report" | "memory.reset" => vec!["method"],
             "profile.stop" | "describe" | "snapshot" | "observations" | "hierarchy" | "console"
             | "network" | "jobs" | "profile" | "memory" | "tools.list" | "journal" => vec!["method"],
             _ => return failure("DEVELOPER_REQUEST_INVALID", "Unknown method; use describe"),
@@ -291,7 +293,7 @@ impl State {
         }
         let mutating = matches!(
             method,
-            "profile.start" | "profile.stop" | "pause" | "step" | "input" | "tools.invoke"
+            "profile.start" | "profile.stop" | "pause" | "step" | "input" | "tools.invoke" | "memory.sample" | "memory.reset"
         );
         let result = (|| -> anyhow::Result<Value> {
             let mut snapshot = || {
@@ -301,7 +303,7 @@ impl State {
             };
             Ok(match method {
                 "describe" => {
-                    json!({"version":1,"host":"native","methods":["jobs","profile.start","profile.stop","screenshot","describe","snapshot","observations","hierarchy","console","network","profile","memory","tools.list","tools.invoke","pause","step","input","journal"],"unavailable":["instances.transport","bloom","js_heap","wasm_linear_memory","browser_network"],"semantics":"Same native runtime, between-tick commands. Lua callbacks are not transactional."})
+                    json!({"version":1,"host":"native","methods":["jobs","profile.start","profile.stop","memory.sample","memory.report","memory.reset","screenshot","describe","snapshot","observations","hierarchy","console","network","profile","memory","tools.list","tools.invoke","pause","step","input","journal"],"unavailable":["instances.transport","bloom","js_heap","wasm_linear_memory","browser_network"],"semantics":"Same native runtime, between-tick commands. Lua callbacks are not transactional."})
                 }
                 "jobs" => json!({"runtime":runtime.jobs_report(),"host":{"backend":"native"},"note":"Timing does not affect next-tick delivery; source paths and job IDs join runtime traces."}),
                 "snapshot" => snapshot()?,
@@ -341,6 +343,11 @@ impl State {
                 }
                 "memory" => {
                     json!({"host":"native","luau_used_bytes":runtime.preview_request(PreviewRequest::Profile {}).map_err(|e|anyhow::anyhow!(e.explanation))?["performance"]["luau_memory_bytes"],"wasm_linear_bytes":null,"js_heap":null,"note":"Native process RSS and GPU allocations are not currently instrumented; no browser memory is reported as native memory."})
+                }
+                "memory.sample" | "memory.report" | "memory.reset" => {
+                    let mut value = request.clone();
+                    value["method"] = json!(method.replace('.', "_"));
+                    runtime.preview_request(serde_json::from_value(value)?).map_err(|e|anyhow::anyhow!(e.explanation))?
                 }
                 "journal" => json!({"events":self.journal}),
                 "pause" => {
@@ -516,6 +523,11 @@ mod tests {
             state.request(&mut runtime, json!({"method":"memory"}))["value"]["wasm_linear_bytes"],
             Value::Null
         );
+        let sample = state.request(&mut runtime, json!({"method":"memory.sample","label":"idle"}));
+        assert_eq!(sample["ok"],true);
+        assert_eq!(sample["value"]["samples"][0]["collected"],false);
+        assert_eq!(state.request(&mut runtime,json!({"method":"memory.sample","label":"idle","collect":"yes"}))["ok"],false);
+        assert_eq!(state.request(&mut runtime,json!({"method":"memory.reset"}))["value"]["samples"],json!([]));
         assert_eq!(
             state.request(
                 &mut runtime,

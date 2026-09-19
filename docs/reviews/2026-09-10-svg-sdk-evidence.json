@@ -1,0 +1,341 @@
+{
+  "version": 1,
+  "startedAt": "2026-09-10T06:36:54.146Z",
+  "finishedAt": "2026-09-10T06:36:59.654Z",
+  "host": {
+    "platform": "win32",
+    "arch": "x64",
+    "node": "v24.14.1"
+  },
+  "sdkManifestSha256": "24cdd3e62b5a82977fbb020d077212a42b1f7b897cd1a0824ba7b5ff112fb379",
+  "files": [
+    {
+      "path": "bin/game.exe",
+      "bytes": 27034624,
+      "sha256": "7c0c115d0afb71c8e83710b1cbcef888a978e8181640fac32a7c1b70e064dbdb"
+    },
+    {
+      "path": "runtimes/web-production-0/runtime.json",
+      "bytes": 1032,
+      "sha256": "aa0d04ff1e1dbb81fb455ee1450d174e9fbc31a79ef8da439f7a20de746a5012"
+    },
+    {
+      "path": "runtimes/web-production-0/unone-player.js",
+      "bytes": 101000,
+      "sha256": "4f6ddb1170dcb426f060aad4b6773e738a56e990a1feb54dc8f1b38fc31d2d1e"
+    },
+    {
+      "path": "runtimes/web-production-0/unone_player.wasm",
+      "bytes": 1545679,
+      "sha256": "fc7734055aed41f566d8a556ce3fffd3b9a37df3baf2e00dafbdfa39b4c9fd39"
+    },
+    {
+      "path": "runtimes/windows-production-1/runtime.json",
+      "bytes": 2579,
+      "sha256": "55760ee63f315de2db24d3c774e2e9a101e0ec166b02778d8fb3fcaa065ddf49"
+    },
+    {
+      "path": "runtimes/windows-production-1/unone-native-player.exe",
+      "bytes": 16355328,
+      "sha256": "69fc24f7075bba70ecd2306818ce3e4cb350df1f9d6b500c3b5ed5e3956896ae"
+    },
+    {
+      "path": "scripts/pack-native-android.ps1",
+      "bytes": 5270,
+      "sha256": "87d05d09703efeeaf05bd3b91b358d5781ae0d1176498f1acc15c7af385ff6d4"
+    },
+    {
+      "path": "templates/web/developer/api.js",
+      "bytes": 11150,
+      "sha256": "d117f47dc0e2d147d41a1f0d84db0fcdb08b718601237a4fe6212b7ae10da181"
+    },
+    {
+      "path": "templates/web/developer/main.js",
+      "bytes": 3479,
+      "sha256": "af5fd4b1e7b43bd557ffb381ba9fa33725d5a0338deca9ad17425836aa347aa3"
+    },
+    {
+      "path": "templates/web/developer/panel.css",
+      "bytes": 4808,
+      "sha256": "8e89835bed868748f054a24d921a794b97e81a9634c11c7c43836466103d8725"
+    },
+    {
+      "path": "templates/web/developer/panel.js",
+      "bytes": 13407,
+      "sha256": "63ea77aac90ea58b0fd121bc08cb0ab5b17db8160f0c9b98ef8d40123ed87971"
+    },
+    {
+      "path": "templates/web/player/index.html",
+      "bytes": 1082,
+      "sha256": "8169c6ffaee6e9adc76a908183b1a0a032ffacfac3b952386a7b41b4fbfbf8c4"
+    },
+    {
+      "path": "templates/web/player/main.js",
+      "bytes": 9101,
+      "sha256": "eb6dd565b498e8045e25bac595373c54eb32d48c3b0f0132b6ab9ba3a326ee9b"
+    },
+    {
+      "path": "templates/web/renderer/bloom.js",
+      "bytes": 4241,
+      "sha256": "659f73c9cf0ae8f0d275af2b105282620b86612eb5ac4143683cfb6e91b54e32"
+    },
+    {
+      "path": "templates/web/renderer/effekseer.js",
+      "bytes": 2496,
+      "sha256": "10b28ca3e4e12bf6f32c7da32bcf8909ebd260e450980b0b81143d0fa9100d61"
+    },
+    {
+      "path": "templates/web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "templates/web/renderer/mesh.js",
+      "bytes": 1325,
+      "sha256": "d6ab0d724b58915428231be3eeccb18093eb5ed1a11021a5e3d1abfd3ea36170"
+    },
+    {
+      "path": "templates/web/renderer/particles.js",
+      "bytes": 1562,
+      "sha256": "e02dcfda4dabaf06e313906d815bac69f6b90049f700a09ed584316c45acc659"
+    },
+    {
+      "path": "templates/web/renderer/three.js",
+      "bytes": 13985,
+      "sha256": "66211d30c6d6f2b190954bb931bea400d2b68e98fb2d903f444bdc13577a98ee"
+    },
+    {
+      "path": "templates/web/shared/asset-encoding.js",
+      "bytes": 1026,
+      "sha256": "993d69e0b62dc0a144fe7296e05779e33629c86405fbf291f39a3ca5d8fe2c4b"
+    },
+    {
+      "path": "templates/web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "templates/web/shared/audio-playback.js",
+      "bytes": 9726,
+      "sha256": "299e6ae5aac03e14883fd86bd07654e85447ed23b308ace68d6b0c0e32dce618"
+    },
+    {
+      "path": "templates/web/shared/canvas-ui.mjs",
+      "bytes": 7076,
+      "sha256": "c63ed0505d92b9f04a2730c2645431d6297f01af05b720e179fe311c74cd58e4"
+    },
+    {
+      "path": "templates/web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11758,
+      "sha256": "eef3c381d2fcf03fa47ba03acb521091a8f2252425ae2d7232c457a0565b0132"
+    },
+    {
+      "path": "templates/web/shared/host-input.js",
+      "bytes": 3644,
+      "sha256": "a3408237b6b766718920d736c63151dc6390751d52ed22d9381d7bfeeb76eb03"
+    },
+    {
+      "path": "templates/web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "templates/web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "templates/web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "templates/web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "templates/web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "templates/web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "templates/web/shared/profile-window.js",
+      "bytes": 3162,
+      "sha256": "0c014e50f1450e63fe6a237e32eac0bcf95721d22b21c1415fa217100093c21e"
+    },
+    {
+      "path": "templates/web/shared/runtime-backend.mjs",
+      "bytes": 2506,
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "templates/web/shared/runtime-core.mjs",
+      "bytes": 4210,
+      "sha256": "e05a1a3f5a625824f3eab06ed07ae9da855cf441dff4d3751479d4e9827301d8"
+    },
+    {
+      "path": "templates/web/shared/runtime-worker.js",
+      "bytes": 1507,
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "templates/web/shared/ui-tree.js",
+      "bytes": 2951,
+      "sha256": "cd13464de96e356e8d69063a0aa88db4e754b6a25c6bc6e5263e323f720b8889"
+    },
+    {
+      "path": "templates/web/shared/webgpu-snapshot.js",
+      "bytes": 19886,
+      "sha256": "03a879b10a8e37b49f3d220bf36e8d554b1dfefa9b13c1b429d2d2c3d1bf25b7"
+    },
+    {
+      "path": "templates/web/vendor/effekseer/LICENSE",
+      "bytes": 1084,
+      "sha256": "9686573243a6e4732edef9e39ac1356371dc7f4a17d995bea32777e36463cb29"
+    },
+    {
+      "path": "templates/web/vendor/effekseer/effekseer.js",
+      "bytes": 198331,
+      "sha256": "225fe5e2ecc65af0970a16e23c74e554d8dbdfbd9ac4d7500f7c55f1a733fe61"
+    },
+    {
+      "path": "templates/web/vendor/effekseer/effekseer.wasm",
+      "bytes": 1089618,
+      "sha256": "f9689b3721fc815e2d4b0fbcd6daedf9e0b307038d40a6c5b17c0037508ad686"
+    },
+    {
+      "path": "templates/web/vendor/rapier/LICENSE",
+      "bytes": 11347,
+      "sha256": "ceacfa4d7fa67df64ab09a56fe248c50a3bfc9bc00374d69bd74ad763b14b89c"
+    },
+    {
+      "path": "templates/web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "templates/web/vendor/three/three.player.min.js",
+      "bytes": 495868,
+      "sha256": "3acbff194131b8740a21ad7fdc184c2a6fbeeab467b47aa33d3e300aeb95ea60"
+    }
+  ],
+  "limits": [
+    "Fixture plugin tests transport, not commercial plugin compatibility",
+    "Same computer relocation; not a second-machine or mobile test",
+    "Hash verification is not schema/renderer compatibility proof",
+    "SDK-UI-015 demonstrates no plugin semver compatibility gate; protocol success is not version certification"
+  ],
+  "checks": [
+    {
+      "id": "SDK-UI-001",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    },
+    {
+      "id": "SDK-UI-002",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    },
+    {
+      "id": "SDK-UI-003",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    },
+    {
+      "id": "SDK-UI-004",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    },
+    {
+      "id": "SDK-UI-005",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "SDK_HASH_MISMATCH"
+    },
+    {
+      "id": "SDK-UI-006",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "SDK_FILE_MISSING"
+    },
+    {
+      "id": "SDK-UI-007",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "SDK_HASH_MISMATCH"
+    },
+    {
+      "id": "SDK-UI-008",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "SDK_MANIFEST_INVALID"
+    },
+    {
+      "id": "SDK-UI-009",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    },
+    {
+      "id": "SDK-UI-010",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "PLUGIN_API"
+    },
+    {
+      "id": "SDK-UI-011",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "NATIVE_TEXTURE_FORMAT_UNSUPPORTED"
+    },
+    {
+      "id": "SDK-UI-012",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    },
+    {
+      "id": "SDK-UI-013",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "SDK_CLI_MISMATCH"
+    },
+    {
+      "id": "SDK-UI-014",
+      "passed": true,
+      "exit": 1,
+      "expectedSuccess": false,
+      "expectedCode": "PLUGIN_PROCESS_START_FAILED"
+    },
+    {
+      "id": "SDK-UI-015",
+      "passed": true,
+      "exit": 0,
+      "expectedSuccess": true,
+      "expectedCode": null
+    }
+  ]
+}

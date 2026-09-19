@@ -154,6 +154,16 @@ pub enum PreviewRequest {
         sampling: bool,
     },
     ProfileStop {},
+    /// Explicit diagnostic operation; collection is never automatic.
+    MemorySample {
+        label: String,
+        #[serde(default)]
+        collect: bool,
+        #[serde(default)]
+        warmup: bool,
+    },
+    MemoryReport {},
+    MemoryReset {},
     Invoke {
         id: String,
         revision: u64,
@@ -166,6 +176,17 @@ impl EngineRuntime {
         &mut self,
         request: PreviewRequest,
     ) -> Result<serde_json::Value, Box<Diagnostic>> {
+        match &request {
+            PreviewRequest::MemorySample { label, collect, warmup } => {
+                return self.memory_sample(label, *collect, *warmup);
+            }
+            PreviewRequest::MemoryReport {} => return Ok(self.memory_report()),
+            PreviewRequest::MemoryReset {} => {
+                self.lua.set_app_data(memory::History::default());
+                return Ok(self.memory_report());
+            }
+            _ => {}
+        }
         if matches!(request, PreviewRequest::Tools {}) {
             return Ok(serde_json::json!({"tools":self.debug_tools.borrow().describe()}));
         }

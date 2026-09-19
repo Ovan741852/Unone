@@ -12,7 +12,7 @@ mod jobs;
 mod physics;
 mod presentation;
 mod state;
-mod value;
+pub(super) mod value;
 
 pub(super) fn build_api(
     lua: &Lua,

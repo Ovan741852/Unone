@@ -35,6 +35,12 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
   const held = new Set();
   const pressed = new Set();
   const pointerFrames = [];
+  const semanticHeld = new Set(), semanticEdges = [];
+  function queueActionTransition(action,down){
+    if(!validAction(action)||typeof down!=='boolean')throw new TypeError('UI_ACTION_INVALID');
+    if(semanticEdges.length>=256){semanticEdges.length=0;semanticHeld.clear();throw new Error('UI_ACTION_QUEUE_FULL: release pointers and retry');}
+    semanticEdges.push({action,down});
+  }
 
   function queueAction(action) {
     if (validAction(action)) pressed.add(action);
@@ -58,10 +64,11 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
   }
 
   function consumeFrame() {
+    const semantic=semanticEdges.shift();if(semantic){if(semantic.down)semanticHeld.add(semantic.action);else semanticHeld.delete(semantic.action);}
     const edge = pointerFrames.shift();
     const framePointer = edge?.pointer ?? copyPointer(pointer);
     const actions = Object.fromEntries(
-      [...new Set([...held, ...pressed])].sort().map((action) => [action, true])
+      [...new Set([...held, ...pressed, ...semanticHeld])].sort().map((action) => [action, true])
     );
     pressed.clear();
     return { actions, pointer: framePointer };
@@ -72,10 +79,12 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
     pressed.clear();
     pointer.down = false;
     pointerFrames.length = 0;
+    semanticHeld.clear();semanticEdges.length=0;
   }
 
   return {
     queueAction,
+    queueActionTransition,
     setHeld,
     updatePointer,
     consumeFrame,

@@ -4,12 +4,14 @@ export const methods = {
   'tools.list':[], 'tools.invoke':['id','revision','value'], pause:['paused'], step:['count'],
   input:['frame'], bloom:['enabled'], journal:[], screenshot:['max_width','max_height'],
   'instances.transport':['mode'], restart:[],
+  'memory.sample':['label','collect','warmup'], 'memory.report':[], 'memory.reset':[],
 };
 export const requestSchema={type:'object',additionalProperties:false,required:['method'],properties:{
   method:{type:'string',enum:Object.keys(methods)},id:{type:'string'},revision:{type:'integer',minimum:0},
   value:{type:'boolean'},paused:{type:'boolean'},sampling:{type:'boolean'},count:{type:'integer',minimum:1,maximum:120},
   frame:{type:'object'},enabled:{type:'boolean'},max_width:{type:'integer',minimum:16,maximum:2048},max_height:{type:'integer',minimum:16,maximum:2048},
   mode:{type:'string',enum:['json','memory']},
+  label:{type:'string',minLength:1,maxLength:160,description:'Also limited to 160 UTF-8 bytes; non-ASCII labels may reach the byte limit sooner.'},collect:{type:'boolean'},warmup:{type:'boolean'},
 }};
 const fail=(code,message)=>{const e=new Error(message);e.code=code;throw e;};
 const clone=value=>JSON.parse(JSON.stringify(value));
@@ -35,7 +37,7 @@ export function createDeveloperAPI(host,telemetry){
       const bool=(key)=>{if(typeof input[key]!=='boolean')fail('DEVELOPER_REQUEST_INVALID',key+' must be boolean');return input[key];};
       let value;
       switch(input.method){
-        case 'describe':value={version:1,schema:requestSchema,methods,limits:{step_frames:120,journal_entries:200},profiling:{start:'profile.start',read:'profile',stop:'profile.stop',paths:{vm:'window.vm',host_timeline:'host_window.timeline',function_samples:'window.functions',publication:'publication',jobs:'jobs'},join:'VM and host tick entries share world frame; host spans use performance.now milliseconds. Check capabilities and retained limits before drawing conclusions.',unsupported:['JS GC pauses','Rust allocation throughput','full Luau GC duration','verified display presentation']},semantics:'Requests are asynchronous and ordered. Mutations execute between ticks. Tool callbacks are Lua gameplay code; failures may leave changes. No arbitrary eval.'};break;
+        case 'describe':value={version:1,schema:requestSchema,methods,limits:{step_frames:120,journal_entries:200},profiling:{start:'profile.start',read:'profile',stop:'profile.stop',paths:{vm:'window.vm',host_timeline:'host_window.timeline',function_samples:'window.functions',publication:'publication',jobs:'jobs'},join:'VM and host tick entries share world frame; host spans use performance.now milliseconds. Check capabilities and retained limits before drawing conclusions.',unsupported:['JS GC pauses','Rust allocation throughput','automatic full Luau GC duration (explicit memory.sample collection is measured)','verified display presentation']},semantics:'Requests are asynchronous and ordered. Mutations execute between ticks. Tool callbacks are Lua gameplay code; failures may leave changes. No arbitrary eval.'};break;
         case 'jobs':{const data=await core({method:'profile'});value={runtime:data.jobs??null,host:host.backendReport?.().jobs??null,note:'Wall-clock diagnostics are excluded from deterministic state; results become visible no earlier than the next tick.'};break;}
         case 'snapshot':value=await core();break;
         case 'observations':{const s=host.getSnapshot();value={frame:s.world.frame,observations:s.world.observations,renderer:host.getStats(),paused:host.getPaused()};break;}
@@ -65,6 +67,14 @@ export function createDeveloperAPI(host,telemetry){
           value={frame:data.counts_frame,runtime:data.performance,window:data.window,build:data.build,jobs:data.jobs??null,host_window:host.profileWindow?.read(host.getStats()??{})??null,publication:data.publication??null,backend:host.backendReport?.()??null,renderer:host.getStats(),paused:host.getPaused(),note:'renderer counters may use a different rolling window; bridge_ms includes WASM tick, not pure bridge cost'};break;
         }
         case 'memory':{const data=await core({method:'profile'});value={luau_used_bytes:data.performance.luau_memory_bytes,wasm_linear_bytes:host.backendReport?.().wasm_linear_bytes??host.module?.HEAPU8?.buffer.byteLength??null,js_heap:telemetry.heap(),renderer:host.getStats(),note:'WASM capacity is not live allocation; renderer counters are not GPU byte usage. Unsupported JS heap is null.'};break;}
+        case 'memory.sample':case 'memory.report':case 'memory.reset':{
+          const command={method:input.method.replace('.','_')};
+          if(input.method==='memory.sample'){
+            if(typeof input.label!=='string'||!input.label.length||new TextEncoder().encode(input.label).length>160)fail('DEVELOPER_REQUEST_INVALID','label must be 1..160 UTF-8 bytes');
+            command.label=input.label;command.collect='collect'in input?bool('collect'):false;command.warmup='warmup'in input?bool('warmup'):false;
+          }
+          mutating=input.method!=='memory.report';value=await core(command);break;
+        }
         case 'journal':value={events:journal};break;
         case 'pause':mutating=true;await host.setPaused(bool('paused'));host.releaseInput();value={paused:host.getPaused()};break;
         case 'step':{

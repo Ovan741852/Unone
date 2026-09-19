@@ -74,6 +74,58 @@
     },
     {
       "additionalProperties": false,
+      "description": "Explicit diagnostic operation; collection is never automatic.",
+      "properties": {
+        "collect": {
+          "default": false,
+          "type": "boolean"
+        },
+        "label": {
+          "type": "string"
+        },
+        "method": {
+          "const": "memory_sample",
+          "type": "string"
+        },
+        "warmup": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "method",
+        "label"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "const": "memory_report",
+          "type": "string"
+        }
+      },
+      "required": [
+        "method"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "const": "memory_reset",
+          "type": "string"
+        }
+      },
+      "required": [
+        "method"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
       "properties": {
         "id": {
           "type": "string"

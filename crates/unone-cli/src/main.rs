@@ -23,7 +23,10 @@ use winit::{
 };
 
 mod assets;
+mod capabilities;
+mod diagnostics_replay;
 mod export;
+mod hosts;
 mod sdk;
 mod mcp;
 mod native_capture;
@@ -31,6 +34,7 @@ mod native_clock;
 mod native_tools;
 mod plugins;
 mod session;
+mod sync;
 
 #[derive(Debug, Subcommand)]
 enum ExportCommand {
@@ -193,6 +197,8 @@ enum Command {
 #[derive(Debug, Subcommand)]
 enum ProjectCommand {
     Inspect,
+    /// Pack, verify, and activate every project bundle in the required order.
+    Sync,
     /// Create a five-file headless starter with two tests and next actions in a new or truly empty directory.
     Init {
         #[arg(long, help = "Project name written to project.unone.json")]
@@ -246,6 +252,14 @@ enum AssetCommand {
 
 #[derive(Debug, Subcommand)]
 enum ReplayCommand {
+    /// Embedded usage, schemas and Luau adapter example (no source checkout needed).
+    Describe,
+    /// Content fingerprints for the current headless project and executable.
+    Fingerprint,
+    /// Isolated, version-checked scenario replay. Request never changes the source capture.
+    Scenario { #[arg(long)] request: PathBuf },
+    #[command(hide = true)]
+    ScenarioWorker { #[arg(long)] request: PathBuf, #[arg(long)] output: PathBuf, #[arg(long)] timeout_ms: u64 },
     /// Run the project and write every frame to a recording file.
     Record {
         #[arg(long)]
@@ -280,6 +294,8 @@ enum UiCommand {
         rows: usize,
         #[arg(long, help = "Turn structural layout findings into a failing gate")]
         strict: bool,
+        #[arg(long, help = "Explicit per-screen background-image overlap intents (JSON)")]
+        overlap_policy: Option<PathBuf>,
     },
 }
 
@@ -324,6 +340,8 @@ enum ApiCommand {
 #[derive(Debug, Subcommand)]
 enum PlatformCommand {
     Capabilities,
+    /// Aggregate platform, renderer, runtime and plugin readiness for AI use.
+    Snapshot,
 }
 
 #[derive(Debug, Subcommand)]
@@ -460,6 +478,7 @@ fn run() -> Result<ExitCode> {
         }
         Command::Project { command } => match command {
             ProjectCommand::Inspect => print_result(inspect_project(&cli.project), cli.json),
+            ProjectCommand::Sync => print_result(sync::sync_project(&cli.project), cli.json),
             ProjectCommand::Init { name } => {
                 print_result(init_project(&cli.project, &name), cli.json)
             }
@@ -531,6 +550,14 @@ fn run() -> Result<ExitCode> {
         },
         Command::Verify => print_result(unone_engine::verify(&cli.project), cli.json),
         Command::Replay { command } => match command {
+            ReplayCommand::Describe => print_result(EngineResult::success(diagnostics_replay::describe()), cli.json),
+            ReplayCommand::Fingerprint => print_result(diagnostics_replay::fingerprint_result(&cli.project), cli.json),
+            ReplayCommand::Scenario { request } => print_result(diagnostics_replay::run(&cli.project, &request), cli.json),
+            ReplayCommand::ScenarioWorker { request, output, timeout_ms } => {
+                let report = diagnostics_replay::worker(&cli.project, &request, timeout_ms);
+                fs::write(output, serde_json::to_vec(&report)?)?;
+                Ok(ExitCode::SUCCESS)
+            },
             ReplayCommand::Record {
                 output,
                 frames,
@@ -699,6 +726,7 @@ fn run() -> Result<ExitCode> {
                 cols,
                 rows,
                 strict,
+                overlap_policy,
             } => {
                 let mut runtime = match EngineRuntime::load_with_seed(&cli.project, seed) {
                     Ok(runtime) => runtime,
@@ -752,7 +780,13 @@ fn run() -> Result<ExitCode> {
                         cli.json,
                     );
                 };
-                let report = unone_engine::inspect_layout(&tree, cols, rows);
+                let mut report = unone_engine::inspect_layout(&tree, cols, rows);
+                if let Some(path)=overlap_policy {
+                    let policy:serde_json::Value=serde_json::from_slice(&fs::read(path)?)?;
+                    if let Err(error)=unone_engine::apply_overlap_policy(&mut report,&policy) {
+                        return print_result(EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error("UI_OVERLAP_POLICY_INVALID","Unsafe or stale overlap policy",error)),cli.json);
+                    }
+                }
                 let findings = report.findings.clone();
                 let markdown = unone_engine::layout_markdown(&report);
                 let mut result = EngineResult::success(report);
@@ -890,6 +924,9 @@ fn run() -> Result<ExitCode> {
         Command::Platform { command } => match command {
             PlatformCommand::Capabilities => {
                 print_result(unone_engine::platform_capabilities(), cli.json)
+            }
+            PlatformCommand::Snapshot => {
+                print_result(capabilities::snapshot(&cli.project), cli.json)
             }
         },
         Command::Check { types } => {

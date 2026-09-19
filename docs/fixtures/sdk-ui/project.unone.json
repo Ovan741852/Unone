@@ -1,0 +1,1 @@
+{"name":"SDK UI compatibility probe","entry_script":"main.luau","main_scene":"scene.json","asset_manifest":"assets.json","systems":{"physics2d":false,"physics3d":false,"jobs":false,"audio":false,"spine":false,"effekseer":false,"particle":false}}

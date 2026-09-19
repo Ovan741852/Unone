@@ -83,6 +83,7 @@ pub use diff::{
 pub use host::{HostInputState, HostProject, host_error, parse_input_frame};
 #[cfg(feature = "dev-tools")]
 pub use layout::{
+    apply_overlap_policy,
     DEFAULT_LAYOUT_COLS, DEFAULT_LAYOUT_ROWS, LayoutFinding, LayoutNode, LayoutReport,
     draw as draw_layout, inspect as inspect_layout, to_markdown as layout_markdown,
 };

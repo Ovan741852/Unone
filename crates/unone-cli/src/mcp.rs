@@ -230,6 +230,7 @@ fn tool_names() -> Vec<&'static str> {
         "unone_plugin_call",
         "unone_project_inspect",
         "unone_project_init",
+        "unone_project_sync",
         "unone_asset_inspect",
         "unone_asset_describe",
         "unone_asset_read",
@@ -237,11 +238,15 @@ fn tool_names() -> Vec<&'static str> {
         "unone_verify",
         "unone_perf",
         "unone_replay_diff",
+        "unone_replay_fingerprint",
+        "unone_replay_describe",
+        "unone_replay_scenario",
         "unone_ui_preview",
         "unone_systems_list",
         "unone_systems_search",
         "unone_systems_set",
         "unone_platform_capabilities",
+        "unone_platform_snapshot",
         "unone_api_search",
         "unone_api_describe",
         "unone_check",
@@ -307,6 +312,14 @@ fn tool_definitions() -> Vec<Value> {
             object_schema(json!({})),
             true,
             true,
+        ),
+        tool(
+            "unone_project_sync",
+            "Synchronize project content",
+            "Run the engine-owned pack → verify → bundle activation workflow as one operation. The result preserves pack, verify, and activation reports; a failed verify never activates a new generation. This does not install plugins, contact a network, or execute arbitrary commands.",
+            object_schema(json!({})),
+            false,
+            false,
         ),
         tool(
             "unone_project_init",
@@ -423,6 +436,7 @@ fn tool_definitions() -> Vec<Value> {
                     "cols": {"type": "integer", "minimum": 16, "maximum": 400, "description": "Grid columns; defaults to 96."},
                     "rows": {"type": "integer", "minimum": 8, "maximum": 200, "description": "Grid rows; defaults to 48."},
                     "strict": {"type": "boolean", "default": false, "description": "Turn layout findings into ok=false."}
+                    ,"overlap_policy":{"type":"object","description":"version:1, screens:{screen:[{behind,front,reason}]}; only earlier background images may be exempted."}
                 }
             })),
             true,
@@ -467,6 +481,21 @@ fn tool_definitions() -> Vec<Value> {
             "unone_platform_capabilities",
             "Inspect platform capabilities",
             "Report verified native/Web capabilities and explicitly pending host work. Do not infer a pending platform from a compile-only result.",
+            object_schema(json!({})),
+            true,
+            true,
+        ),
+        tool("unone_replay_fingerprint", "Fingerprint headless replay target",
+            "Hash a private snapshot of declared project assets and Luau sources plus the actual CLI binary. Use this explicit target for replay scenario; no game execution.", object_schema(json!({"properties":{}})), true, true),
+        tool("unone_replay_describe", "Learn the replay contract",
+            "Return embedded usage, reproduction/result schemas and a real Luau adapter example. No repository checkout or Viewer required.",object_schema(json!({"properties":{}})),true,true),
+        tool("unone_replay_scenario", "Replay a versioned scenario",
+            "Run a request JSON in an isolated worker. Checks fingerprints, offline scenario schema and complete inputs; returns reproduced/not_reproduced/incompatible/incomplete/execution_failed plus independent regression verdicts, profiler and optional memory samples. Headless start captures only; no checkpoint restoration. Does not change source capture or production save.",
+            object_schema(json!({"properties":{"request":{"type":"string","description":"Path to request JSON; see docs/diagnostics-replay.md"}},"required":["request"]})), true, true),
+        tool(
+            "unone_platform_snapshot",
+            "Snapshot current AI capabilities",
+            "Aggregate the current platform, runtime, renderer, and plugin capability states with explicit verified/partial/pending status, limitations, evidence, and minimal examples. This is read-only and does not start plugins or probe a renderer.",
             object_schema(json!({})),
             true,
             true,
@@ -662,6 +691,7 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
             tool_result(crate::plugins::call(project, &id, &tool, input))
         }
         "unone_project_inspect" => tool_result(inspect_project(project)),
+        "unone_project_sync" => tool_result(crate::sync::sync_project(project)),
         "unone_project_init" => match required_string(arguments, "name") {
             Ok(name) => tool_result(init_project(project, &name)),
             Err(diagnostic) => argument_error(*diagnostic),
@@ -728,6 +758,12 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 }
             }
         }
+        "unone_replay_fingerprint" => tool_result(crate::diagnostics_replay::fingerprint_result(project)),
+        "unone_replay_describe" => tool_result(EngineResult::success(crate::diagnostics_replay::describe())),
+        "unone_replay_scenario" => match required_string(arguments, "request") {
+            Ok(path) => tool_result(crate::diagnostics_replay::run(project, Path::new(&path))),
+            Err(diagnostic) => argument_error(*diagnostic),
+        },
         "unone_replay_diff" => match required_string(arguments, "baseline") {
             Ok(baseline) => match unone_engine::read_recording(Path::new(&baseline)) {
                 Ok(recording) => tool_result(unone_engine::diff_run(project, &recording)),
@@ -760,7 +796,7 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 Ok(strict) => strict,
                 Err(diagnostic) => return argument_error(*diagnostic),
             };
-            tool_result(ui_preview(project, frames, seed, cols, rows, strict))
+            tool_result(ui_preview(project, frames, seed, cols, rows, strict, arguments.get("overlap_policy")))
         }
         "unone_systems_list" => tool_result(inspect_systems(project)),
         "unone_systems_search" => match required_string(arguments, "meaning") {
@@ -834,6 +870,7 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
             ))
         }
         "unone_platform_capabilities" => tool_result(platform_capabilities()),
+        "unone_platform_snapshot" => tool_result(crate::capabilities::snapshot(project)),
         "unone_api_search" => match required_string(arguments, "meaning") {
             Ok(meaning) => tool_result(api_search_result(project, &meaning)),
             Err(diagnostic) => argument_error(*diagnostic),
@@ -990,6 +1027,7 @@ fn ui_preview(
     cols: usize,
     rows: usize,
     strict: bool,
+    overlap_policy: Option<&serde_json::Value>,
 ) -> EngineResult<unone_engine::LayoutReport> {
     let mut runtime = match EngineRuntime::load_with_seed(project, seed) {
         Ok(runtime) => runtime,
@@ -1012,7 +1050,12 @@ fn ui_preview(
             format!("跑了 {frames} frame 之後 observation 沒有 ui；遊戲要先呼叫 api.ui.setRoot。"),
         ));
     };
-    let report = unone_engine::inspect_layout(&tree, cols, rows);
+    let mut report = unone_engine::inspect_layout(&tree, cols, rows);
+    if let Some(policy)=overlap_policy {
+        if let Err(error)=unone_engine::apply_overlap_policy(&mut report,policy) {
+            return EngineResult::failure(Diagnostic::error("UI_OVERLAP_POLICY_INVALID","Unsafe or stale overlap policy",error));
+        }
+    }
     let findings = report.findings.clone();
     let mut result = EngineResult::success(report);
     for finding in &findings {
@@ -1132,7 +1175,8 @@ mod tests {
         ProtocolState, bundle_install_arguments, call_tool, handle_message, tool_definitions,
     };
     use serde_json::json;
-    use std::path::Path;
+    use std::{fs, path::Path};
+    use tempfile::tempdir;
 
     #[test]
     fn advertised_argument_contract_rejects_typos_including_no_argument_tools() {
@@ -1177,7 +1221,27 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 27);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 32);
+    }
+
+    #[test]
+    fn platform_snapshot_tool_executes_and_returns_the_snapshot_shape() {
+        let dir = tempdir().unwrap();
+        fs::write(
+            dir.path().join("project.unone.json"),
+            r#"{"name":"McpSnapshot","entry_script":"main.luau"}"#,
+        )
+        .unwrap();
+        fs::write(dir.path().join("main.luau"), "return {}\n").unwrap();
+
+        let reply = call_tool(dir.path(), "unone_platform_snapshot", &json!({}));
+        assert_eq!(reply["isError"], false, "{reply}");
+        let result: serde_json::Value =
+            serde_json::from_str(reply["content"][0]["text"].as_str().unwrap()).unwrap();
+        assert_eq!(result["ok"], true, "{result}");
+        assert_eq!(result["value"]["schema_version"], 1);
+        assert!(result["value"]["renderers"].is_array());
+        assert!(result["value"]["project_systems"].is_object());
     }
 
     #[test]
@@ -1190,6 +1254,8 @@ mod tests {
         assert_eq!(names.first(), Some(&"unone_session"));
         assert_eq!(names.last(), Some(&"unone_bundle_install"));
         assert!(names.contains(&"unone_asset_describe"));
+        assert!(names.contains(&"unone_project_sync"));
+        assert!(names.contains(&"unone_platform_snapshot"));
         let plugin_list = tools.iter().find(|tool| tool["name"] == "unone_plugin_list").unwrap();
         assert!(plugin_list["description"].as_str().unwrap().contains("optional"));
         let project_init = tools.iter().find(|tool| tool["name"] == "unone_project_init").unwrap();

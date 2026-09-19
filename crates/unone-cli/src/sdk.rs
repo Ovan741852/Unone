@@ -233,9 +233,18 @@ fn template_files() -> Vec<&'static str> {
 pub fn inspect(explicit: Option<&Path>) -> Result<Value> {
     let root = root(explicit)?;
     let m = load(&root)?;
-    Ok(
-        json!({"version":m.version,"engine_version":m.engine_version,"host":m.host,"verified":true,"runtimes":m.runtimes,"targets":[{"id":"web","status":"supported","packager":"web-directory","toolchain":"none"},{"id":"android-arm64","status":"supported","renderer":"wgpu-native-instanced","requires":["Android SDK","JDK","local test signing"]},{"id":"android-x86_64","status":"supported","renderer":"wgpu-native-instanced","requires":["Android SDK","JDK","local test signing"]},{"id":"ios","status":"not_implemented","requires":["iOS runtime","Xcode/macOS","signing"]},{"id":"windows","status":"supported","renderer":"wgpu-native-instanced","presentation":["mesh3d","instances3d"],"decoders":["unone-mesh-json","png-rgb-rgba"]}]}),
-    )
+    let sources=m.runtimes.iter().map(|runtime|->Result<Value>{
+        let path=safe(&root,&format!("{}/runtime.json",runtime.path))?;
+        let data=fs::read(&path)?;
+        let descriptor:Value=serde_json::from_slice(&data)?;
+        Ok(json!({"id":runtime.id,"path":path,"sha256":hash(&data),"descriptor":descriptor,"evidence":"hash-verified declaration; not renderer execution"}))
+    }).collect::<Result<Vec<_>>>()?;
+    let source_evidence=json!({"sdk_root":root,"cli":{"path":safe(&root,&m.cli)?,"sha256":hash(&fs::read(safe(&root,&m.cli)?)?)},"templates":{"path":safe(&root,&m.templates)?,"files":m.files.iter().filter(|f|f.path.starts_with(&format!("{}/",m.templates))).collect::<Vec<_>>()},"runtimes":sources,"plugins":"separately discovered; not pinned or compatibility-certified by sdk.json; run plugin list/inspect/test"});
+    let mut report =
+        json!({"version":m.version,"engine_version":m.engine_version,"host":m.host,"verified":true,"runtimes":m.runtimes,"content":"shared-luau-and-declared-assets","targets":crate::hosts::inspect_targets()})
+    ;
+    report["sources"]=source_evidence;
+    Ok(report)
 }
 pub fn export(
     project: &Path,
@@ -245,10 +254,7 @@ pub fn export(
     id: Option<&str>,
     development: bool,
 ) -> Result<Value> {
-    ensure!(
-        ["web", "windows", "android-arm64", "android-x86_64"].contains(&target),
-        "SDK_TARGET_UNSUPPORTED: {target}; run game sdk inspect --json to list implemented packagers"
-    );
+    let host = crate::hosts::require_exportable(target)?;
     let root = root(explicit)?;
     let m = load(&root)?;
     let (config, _) = unone_engine::ProjectPaths::discover(project)
@@ -265,7 +271,7 @@ pub fn export(
         .runtimes
         .iter()
         .filter(|r| {
-            r.target == target
+            r.target == host.id
                 && r.variant == variant
                 && id.is_none_or(|id| id == r.id)
                 && systems.iter().all(|s| r.compiled_systems.contains(s))
@@ -274,18 +280,24 @@ pub fn export(
     candidates.sort_by(|a, b| a.bytes.cmp(&b.bytes).then(a.id.cmp(&b.id)));
     let selected=candidates.first().context("SDK_RUNTIME_UNAVAILABLE: no matching target/variant/systems; run game sdk inspect --json and install a compatible runtime pack")?;
     let runtime_root = safe(&root, &selected.path)?;
-    let mut result = if target == "web" {
-        crate::export::web_with_templates(
+    let mut result = match host.packager {
+        "web-directory" => crate::export::web_with_templates(
             project,
             output,
             Some(&runtime_root),
             development,
             &safe(&root, &m.templates)?,
-        )?
-    } else {
-        native_export(project, output, &root, &runtime_root, target, development)?
+        )?,
+        "native-directory" | "native-activity-apk" => {
+            native_export(project, output, &root, &runtime_root, host, development)?
+        }
+        _ => bail!(
+            "SDK_TARGET_UNSUPPORTED: {}; {}",
+            host.id,
+            host.note
+        ),
     };
-    result["sdk_selection"] = json!({"target":target,"runtime_id":selected.id,"variant":variant,"engine_version":m.engine_version});
+    result["sdk_selection"] = json!({"target":host.id,"family":host.family,"runtime_id":selected.id,"variant":variant,"engine_version":m.engine_version});
     Ok(result)
 }
 pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value> {
@@ -407,6 +419,13 @@ mod tests {
                 .contains("SDK_TARGET_UNSUPPORTED")
         );
         assert!(!out.exists());
+        assert!(
+            export(root.path(), &out, None, "android-webview", None, false)
+                .unwrap_err()
+                .to_string()
+                .contains("WebView")
+        );
+        assert!(!out.exists());
     }
 }
 
@@ -415,7 +434,7 @@ fn native_export(
     output: &Path,
     sdk: &Path,
     runtime: &Path,
-    target: &str,
+    host: &crate::hosts::Host,
     development: bool,
 ) -> Result<Value> {
     ensure!(!output.exists(), "SDK_OUTPUT_EXISTS");
@@ -426,7 +445,7 @@ fn native_export(
             .as_nanos()
     ));
     ensure!(!staging.exists(), "SDK_STAGING_EXISTS");
-    let result = native_export_staged(project, &staging, sdk, runtime, target, development);
+    let result = native_export_staged(project, &staging, sdk, runtime, host, development);
     match result {
         Ok(value) => {
             fs::rename(&staging, output)?;
@@ -445,12 +464,23 @@ fn native_export_staged(
     output: &Path,
     sdk: &Path,
     runtime: &Path,
-    target: &str,
+    host: &crate::hosts::Host,
     development: bool,
 ) -> Result<Value> {
+    ensure!(
+        host.family == "native-wgpu" && host.exportable,
+        "SDK_TARGET_UNSUPPORTED: {} is not an exportable native-wgpu packager",
+        host.id
+    );
     ensure!(!development, "NATIVE_DEVELOPMENT_VARIANT_UNAVAILABLE");
     ensure!(!output.exists(), "SDK_OUTPUT_EXISTS");
-    let (config, _, assets, mut files) = crate::export::content(project)?;
+    let (config, settings, assets, mut files) = crate::export::content(project)?;
+    crate::hosts::native_wgpu_export_gate(
+        &settings,
+        crate::hosts::load_presentation(project)?.as_ref(),
+    )?;
+    crate::export::append_presentation(project, &mut files)?;
+    let metadata: Value = serde_json::from_slice(&fs::read(runtime.join("runtime.json"))?)?;
     for asset in assets["assets"].as_array().context("ASSETS_INVALID")? {
         ensure!(
             ["mesh3d", "texture2d"].contains(&asset["kind"].as_str().unwrap_or("")),
@@ -458,20 +488,20 @@ fn native_export_staged(
             asset["kind"]
         );
         if asset["kind"] == "texture2d" {
-            ensure!(
-                asset["source"].as_str().unwrap_or("").ends_with(".png"),
-                "NATIVE_TEXTURE_FORMAT_UNSUPPORTED: PNG required"
-            );
+            // This gate admits UI sources. Mesh references are validated by the
+            // player separately; SVG here does not imply a mesh texture decoder.
+            let source=asset["source"].as_str().unwrap_or("").to_ascii_lowercase();
+            ensure!(source.ends_with(".png") || (source.ends_with(".svg") && metadata["ui"]["images"].as_array().is_some_and(|v|v.iter().any(|x|x=="svg-static"))),
+                "NATIVE_TEXTURE_FORMAT_UNSUPPORTED: {}; SVG UI requires a runtime advertising ui.images=svg-static; use a matching runtime or PNG companion",asset["source"]);
         }
     }
-    let metadata: Value = serde_json::from_slice(&fs::read(runtime.join("runtime.json"))?)?;
     let runtime_files = runtime_files(&metadata)?;
-    if target == "windows" {
+    if host.id == "windows" {
         for (name, _) in &runtime_files {
             files.push((name.clone(), fs::read(safe(runtime, name)?)?));
         }
     }
-    let report = json!({"version":1,"project":config.name,"target":target,"profile":"release","renderer":"wgpu-native-instanced","dev_tools":false,"preview_tools":false,"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":hash(b)})).collect::<Vec<_>>()});
+    let report = json!({"version":1,"project":config.name,"target":host.id,"family":host.family,"profile":"release","renderer":host.renderer,"presentation":host.presentation,"dev_tools":false,"preview_tools":false,"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":hash(b)})).collect::<Vec<_>>()});
     std::fs::create_dir_all(output)?;
     for (path, bytes) in &files {
         let p = output.join(path);
@@ -486,7 +516,7 @@ fn native_export_staged(
         output.join("native-player.json"),
         br#"{"seed":42,"frames":0,"warmup":60,"headless":false,"fixed_tick":false}"#,
     )?;
-    if target.starts_with("android-") {
+    if host.packager == "native-activity-apk" {
         let script = safe(sdk, "scripts/pack-native-android.ps1")?;
         let status = std::process::Command::new("powershell.exe")
             .args(["-NoProfile", "-ExecutionPolicy", "Bypass", "-File"])
@@ -496,7 +526,7 @@ fn native_export_staged(
             .arg("-RuntimeRoot")
             .arg(runtime)
             .arg("-Target")
-            .arg(target)
+            .arg(host.id)
             .arg("-AppName")
             .arg(&config.name)
             .output()?;
