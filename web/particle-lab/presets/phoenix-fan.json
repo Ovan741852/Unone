@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "duration_frames": 36,
+  "emitters": [
+    {"id":"phoenix-fan","count":12,"interval_frames":3,"lifetime_frames":44,"velocity_mode":"cone","direction":{"x":0,"y":0.15,"z":-1},"cone_angle_degrees":34,"speed_min":1.5,"speed_max":3.4,"gravity":{"x":0,"y":0.15,"z":0},"size_start":0.23,"size_end":0.035,"size_easing":"ease_out","rotation_start":-0.2,"angular_velocity":0.35,"color_start":[1,0.78,0.2,1],"color_end":[1,0.11,0.01,0],"sprite_shape":"streak","additive":true},
+    {"id":"phoenix-core","count":5,"start_delay_frames":4,"interval_frames":7,"lifetime_frames":26,"velocity_mode":"cone","direction":{"x":0,"y":0.1,"z":-1},"cone_angle_degrees":16,"speed_min":1.2,"speed_max":2.5,"size_start":0.34,"size_end":0.01,"color_start":[1,0.96,0.62,1],"color_end":[1,0.42,0.04,0],"sprite_shape":"diamond","additive":true}
+  ]
+}

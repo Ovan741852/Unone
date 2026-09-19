@@ -1,0 +1,8 @@
+{
+  "camera": { "projection": "orthographic", "orthographicSize": 10 },
+  "entities": [
+    { "id": "left", "transform": { "x": -4, "y": -2 }, "sprite": { "asset": "asset://switch-marker", "size": { "x": 2, "y": 2 }, "layer": 0 } },
+    { "id": "right", "transform": { "x": 4, "y": 2 }, "sprite": { "asset": "asset://switch-marker", "size": { "x": 2, "y": 2 }, "layer": 0 } },
+    { "id": "moving", "transform": { "x": 0, "y": 0 }, "sprite": { "asset": "asset://switch-marker", "size": { "x": 3, "y": 3 }, "layer": 1 } }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "asset_manifest": "assets.json",
+  "bundle_manifest": "bundles/manifest.json",
+  "entry_script": "main.luau",
+  "main_scene": "scene.json",
+  "name": "Web / Native switch acceptance",
+  "systems": {
+    "effekseer": false,
+    "physics2d": false,
+    "physics3d": false,
+    "spine": false
+  },
+  "test_files": [
+    "ready.test.json"
+  ],
+  "verify": {
+    "steps": [
+      "assets",
+      "tests"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "presets": [
+    {"id":"cast-release","label":"詠唱釋放","file":"cast-release.json"},
+    {"id":"fire-cloak","label":"火焰披風","file":"fire-cloak.json"},
+    {"id":"phoenix-fan","label":"鳳凰扇焰","file":"phoenix-fan.json"},
+    {"id":"poison-cloud","label":"毒霧擴散","file":"poison-cloud.json"},
+    {"id":"blessing-aura","label":"祝福光環","file":"blessing-aura.json"},
+    {"id":"death-burst","label":"死亡爆裂","file":"death-burst.json"}
+  ]
+}

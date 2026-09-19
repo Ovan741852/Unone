@@ -231,6 +231,7 @@ fn tool_names() -> Vec<&'static str> {
         "unone_project_inspect",
         "unone_project_init",
         "unone_project_sync",
+        "unone_project_prepare_inspect",
         "unone_asset_inspect",
         "unone_asset_describe",
         "unone_asset_read",
@@ -320,6 +321,21 @@ fn tool_definitions() -> Vec<Value> {
             object_schema(json!({})),
             false,
             false,
+        ),
+        tool(
+            "unone_project_prepare_inspect",
+            "Inspect preview target readiness",
+            "Read-only target/runtime/system/presentation preflight for the Web or Windows project-prepare handoff. It never packs, activates, exports, or creates an output directory; use project prepare after this check when a new generation is authorized.",
+            object_schema(json!({
+                "properties": {
+                    "target": {"type": "string", "enum": ["web", "windows"]},
+                    "runtime_id": {"type": "string", "description": "Optional trusted SDK runtime id."},
+                    "development": {"type": "boolean", "default": false}
+                },
+                "required": ["target"]
+            })),
+            true,
+            true,
         ),
         tool(
             "unone_project_init",
@@ -692,6 +708,27 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
         }
         "unone_project_inspect" => tool_result(inspect_project(project)),
         "unone_project_sync" => tool_result(crate::sync::sync_project(project)),
+        "unone_project_prepare_inspect" => {
+            let target = match required_string(arguments, "target") {
+                Ok(target) => target,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let runtime_id = match optional_string(arguments, "runtime_id") {
+                Ok(runtime_id) => runtime_id,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            let development = match optional_bool(arguments, "development", false) {
+                Ok(development) => development,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            tool_result(crate::prepare::project_preflight(
+                project,
+                None,
+                &target,
+                runtime_id.as_deref(),
+                development,
+            ))
+        }
         "unone_project_init" => match required_string(arguments, "name") {
             Ok(name) => tool_result(init_project(project, &name)),
             Err(diagnostic) => argument_error(*diagnostic),
@@ -1221,7 +1258,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 32);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 33);
     }
 
     #[test]
@@ -1245,6 +1282,25 @@ mod tests {
     }
 
     #[test]
+    fn prepare_inspect_rejects_non_desktop_targets_without_touching_the_project() {
+        let dir = tempdir().unwrap();
+        let reply = call_tool(
+            dir.path(),
+            "unone_project_prepare_inspect",
+            &json!({"target": "android-x86_64"}),
+        );
+        assert_eq!(reply["isError"], true, "{reply}");
+        let result: serde_json::Value =
+            serde_json::from_str(reply["content"][0]["text"].as_str().unwrap()).unwrap();
+        assert_eq!(result["value"]["schema"], "unone.project-prepare-preflight.v1");
+        assert_eq!(
+            result["diagnostics"][0]["code"],
+            "PROJECT_PREPARE_TARGET_UNSUPPORTED"
+        );
+        assert!(!dir.path().join(".unone").exists());
+    }
+
+    #[test]
     fn tool_definitions_are_deterministic_and_semantic() {
         let tools = tool_definitions();
         let names: Vec<&str> = tools
@@ -1255,6 +1311,7 @@ mod tests {
         assert_eq!(names.last(), Some(&"unone_bundle_install"));
         assert!(names.contains(&"unone_asset_describe"));
         assert!(names.contains(&"unone_project_sync"));
+        assert!(names.contains(&"unone_project_prepare_inspect"));
         assert!(names.contains(&"unone_platform_snapshot"));
         let plugin_list = tools.iter().find(|tool| tool["name"] == "unone_plugin_list").unwrap();
         assert!(plugin_list["description"].as_str().unwrap().contains("optional"));
@@ -1268,6 +1325,15 @@ mod tests {
                 .unwrap()
                 .len(),
             unone_engine::SUPPORTED_ASSET_KINDS.len()
+        );
+        let prepare = tools
+            .iter()
+            .find(|tool| tool["name"] == "unone_project_prepare_inspect")
+            .unwrap();
+        assert_eq!(prepare["annotations"]["readOnlyHint"], true);
+        assert_eq!(
+            prepare["inputSchema"]["properties"]["target"]["enum"],
+            json!(["web", "windows"])
         );
         let bundle_install = tools
             .iter()
