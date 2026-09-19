@@ -1,0 +1,807 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "battle:guide",
+    "children": [
+      {
+        "kind": "image",
+        "id": "screen_shade",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_fill",
+        "rect": {
+          "x": 3.8,
+          "y": 5,
+          "width": 92.4,
+          "height": 90
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tl",
+        "rect": {
+          "x": 3,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_t",
+        "rect": {
+          "x": 7.5,
+          "y": 85,
+          "width": 85,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tr",
+        "rect": {
+          "x": 92.5,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_l",
+        "rect": {
+          "x": 3,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_c",
+        "rect": {
+          "x": 7.5,
+          "y": 11,
+          "width": 85,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_r",
+        "rect": {
+          "x": 92.5,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_bl",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_b",
+        "rect": {
+          "x": 7.5,
+          "y": 3,
+          "width": 85,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_br",
+        "rect": {
+          "x": 92.5,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "screen_title",
+        "rect": {
+          "x": 9,
+          "y": 87.31378600823045,
+          "width": 58,
+          "height": 4.372427983539095
+        },
+        "text": "征途暫歇"
+      },
+      {
+        "kind": "text",
+        "id": "help_title",
+        "rect": {
+          "x": 16,
+          "y": 78.77970679012346,
+          "width": 68,
+          "height": 2.218364197530864
+        },
+        "text": "掌握這場狩獵"
+      },
+      {
+        "kind": "text",
+        "id": "help_1",
+        "rect": {
+          "x": 15,
+          "y": 68.5462962962963,
+          "width": 70,
+          "height": 2.314814814814815
+        },
+        "text": "按住戰場派兵，放開停止。"
+      },
+      {
+        "kind": "text",
+        "id": "help_2",
+        "rect": {
+          "x": 15,
+          "y": 60.5462962962963,
+          "width": 70,
+          "height": 2.314814814814815
+        },
+        "text": "劍兵碰撞消失；槍兵落地旋斬；騎兵穿透。"
+      },
+      {
+        "kind": "text",
+        "id": "help_3",
+        "rect": {
+          "x": 15,
+          "y": 52.5462962962963,
+          "width": 70,
+          "height": 2.314814814814815
+        },
+        "text": "碰牆反彈，壽命耗盡消失。"
+      },
+      {
+        "kind": "text",
+        "id": "help_4",
+        "rect": {
+          "x": 15,
+          "y": 44.5462962962963,
+          "width": 70,
+          "height": 2.314814814814815
+        },
+        "text": "破防只代表一次抽獎，未中獎的怪物留場。"
+      },
+      {
+        "kind": "text",
+        "id": "help_5",
+        "rect": {
+          "x": 15,
+          "y": 36.5462962962963,
+          "width": 70,
+          "height": 2.314814814814815
+        },
+        "text": "大王最後 30 秒登場，開出大獎才過關。"
+      },
+      {
+        "kind": "text",
+        "id": "help_6",
+        "rect": {
+          "x": 15,
+          "y": 28.546296296296298,
+          "width": 70,
+          "height": 2.314814814814815
+        },
+        "text": "金幣派兵，結晶強化；倖存部隊返還實付金幣。"
+      },
+      {
+        "kind": "image",
+        "id": "guide_back_plate_tl",
+        "rect": {
+          "x": 24,
+          "y": 10.933333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "guide_back_plate_t",
+        "rect": {
+          "x": 24.6,
+          "y": 10.933333333333334,
+          "width": 20.799999999999997,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "guide_back_plate_tr",
+        "rect": {
+          "x": 45.4,
+          "y": 10.933333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "guide_back_plate_l",
+        "rect": {
+          "x": 24,
+          "y": 7.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "guide_back_plate_c",
+        "rect": {
+          "x": 24.6,
+          "y": 7.066666666666666,
+          "width": 20.799999999999997,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "guide_back_plate_r",
+        "rect": {
+          "x": 45.4,
+          "y": 7.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "guide_back_plate_bl",
+        "rect": {
+          "x": 24,
+          "y": 6,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "guide_back_plate_b",
+        "rect": {
+          "x": 24.6,
+          "y": 6,
+          "width": 20.799999999999997,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "guide_back_plate_br",
+        "rect": {
+          "x": 45.4,
+          "y": 6,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "guide_back",
+        "rect": {
+          "x": 24,
+          "y": 7.585390946502056,
+          "width": 22,
+          "height": 2.8292181069958846
+        },
+        "text": "返回暫停",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "guide_back_hit_top",
+        "rect": {
+          "x": 24,
+          "y": 10.414609053497943,
+          "width": 22,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "guide_back_hit_bottom",
+        "rect": {
+          "x": 24,
+          "y": 6.000000000000002,
+          "width": 22,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "UI_home"
+      },
+      {
+        "kind": "image",
+        "id": "resume_plate_tl",
+        "rect": {
+          "x": 51,
+          "y": 10.760330578512397,
+          "width": 2.0919421487603316,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "resume_plate_t",
+        "rect": {
+          "x": 53.09194214876033,
+          "y": 10.760330578512397,
+          "width": 20.816115702479344,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "resume_plate_tr",
+        "rect": {
+          "x": 73.90805785123968,
+          "y": 10.760330578512397,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "resume_plate_l",
+        "rect": {
+          "x": 51,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603316,
+          "height": 3.5206611570247937
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "resume_plate_c",
+        "rect": {
+          "x": 53.09194214876033,
+          "y": 7.239669421487603,
+          "width": 20.816115702479344,
+          "height": 3.5206611570247937
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "resume_plate_r",
+        "rect": {
+          "x": 73.90805785123968,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603245,
+          "height": 3.5206611570247937
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "resume_plate_bl",
+        "rect": {
+          "x": 51,
+          "y": 6,
+          "width": 2.0919421487603316,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "resume_plate_b",
+        "rect": {
+          "x": 53.09194214876033,
+          "y": 6,
+          "width": 20.816115702479344,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "resume_plate_br",
+        "rect": {
+          "x": 73.90805785123968,
+          "y": 6,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "resume",
+        "rect": {
+          "x": 51,
+          "y": 7.585390946502056,
+          "width": 25,
+          "height": 2.8292181069958846
+        },
+        "text": "繼續戰鬥",
+        "action": "Pause"
+      },
+      {
+        "kind": "button",
+        "id": "resume_hit_top",
+        "rect": {
+          "x": 51,
+          "y": 10.414609053497943,
+          "width": 25,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Pause"
+      },
+      {
+        "kind": "button",
+        "id": "resume_hit_bottom",
+        "rect": {
+          "x": 51,
+          "y": 6.000000000000002,
+          "width": 25,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Pause"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "征途暫歇",
+      "font": 34,
+      "clip": {
+        "x": 172.8,
+        "y": 89.7888888888889,
+        "width": 1113.6,
+        "height": 47.22222222222223
+      },
+      "ink": {
+        "x": 662.5999999999999,
+        "y": 97.66562500000002,
+        "width": 134,
+        "height": 31
+      }
+    },
+    {
+      "text": "掌握這場狩獵",
+      "font": 17.25,
+      "clip": {
+        "x": 307.2,
+        "y": 205.22083333333336,
+        "width": 1305.6,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 908.25,
+        "y": 208.93437500000002,
+        "width": 103.25,
+        "height": 16
+      }
+    },
+    {
+      "text": "按住戰場派兵，放開停止。",
+      "font": 18,
+      "clip": {
+        "x": 288,
+        "y": 314.6999999999999,
+        "width": 1344,
+        "height": 25
+      },
+      "ink": {
+        "x": 852,
+        "y": 318.2156249999999,
+        "width": 210,
+        "height": 17
+      }
+    },
+    {
+      "text": "劍兵碰撞消失；槍兵落地旋斬；騎兵穿透。",
+      "font": 18,
+      "clip": {
+        "x": 288,
+        "y": 401.1,
+        "width": 1344,
+        "height": 25
+      },
+      "ink": {
+        "x": 789,
+        "y": 404.615625,
+        "width": 336,
+        "height": 19
+      }
+    },
+    {
+      "text": "碰牆反彈，壽命耗盡消失。",
+      "font": 18,
+      "clip": {
+        "x": 288,
+        "y": 487.5,
+        "width": 1344,
+        "height": 25
+      },
+      "ink": {
+        "x": 852,
+        "y": 491.015625,
+        "width": 210,
+        "height": 17
+      }
+    },
+    {
+      "text": "破防只代表一次抽獎，未中獎的怪物留場。",
+      "font": 18,
+      "clip": {
+        "x": 288,
+        "y": 573.9,
+        "width": 1344,
+        "height": 25
+      },
+      "ink": {
+        "x": 789,
+        "y": 577.415625,
+        "width": 336,
+        "height": 17
+      }
+    },
+    {
+      "text": "大王最後 30 秒登場，開出大獎才過關。",
+      "font": 18,
+      "clip": {
+        "x": 288,
+        "y": 660.3,
+        "width": 1344,
+        "height": 25
+      },
+      "ink": {
+        "x": 801.0673828125,
+        "y": 663.815625,
+        "width": 311.865234375,
+        "height": 17
+      }
+    },
+    {
+      "text": "金幣派兵，結晶強化；倖存部隊返還實付金幣。",
+      "font": 18,
+      "clip": {
+        "x": 288,
+        "y": 746.7,
+        "width": 1344,
+        "height": 25
+      },
+      "ink": {
+        "x": 771,
+        "y": 750.215625,
+        "width": 372,
+        "height": 19
+      }
+    },
+    {
+      "text": "返回暫停",
+      "font": 22,
+      "clip": {
+        "x": 460.8,
+        "y": 967.5222222222222,
+        "width": 422.4,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 628,
+        "y": 972.3781250000001,
+        "width": 88,
+        "height": 20
+      }
+    },
+    {
+      "text": "繼續戰鬥",
+      "font": 22,
+      "clip": {
+        "x": 979.2,
+        "y": 967.5222222222222,
+        "width": 480,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1176.2,
+        "y": 972.3781250000001,
+        "width": 85,
+        "height": 20
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 43,
+    "assets": [
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_scene-shade",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-br",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

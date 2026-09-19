@@ -1,0 +1,3543 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "battle:auto",
+    "children": [
+      {
+        "kind": "image",
+        "id": "screen_shade",
+        "rect": {
+          "x": 13,
+          "y": 6,
+          "width": 74,
+          "height": 86
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_fill",
+        "rect": {
+          "x": 5.765957446808511,
+          "y": 5.000000000000001,
+          "width": 88.46808510638299,
+          "height": 90.00000000000001
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tl",
+        "rect": {
+          "x": 5,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_t",
+        "rect": {
+          "x": 9.5,
+          "y": 85,
+          "width": 81,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tr",
+        "rect": {
+          "x": 90.5,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_l",
+        "rect": {
+          "x": 5,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_c",
+        "rect": {
+          "x": 9.5,
+          "y": 11,
+          "width": 81,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_r",
+        "rect": {
+          "x": 90.5,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_bl",
+        "rect": {
+          "x": 5,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_b",
+        "rect": {
+          "x": 9.5,
+          "y": 3,
+          "width": 81,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_br",
+        "rect": {
+          "x": 90.5,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "screen_title",
+        "rect": {
+          "x": 9,
+          "y": 90.77970679012346,
+          "width": 82,
+          "height": 2.218364197530864
+        },
+        "text": "AUTO · 追擊目標"
+      },
+      {
+        "kind": "text",
+        "id": "auto_help",
+        "rect": {
+          "x": 9,
+          "y": 84.15779320987654,
+          "width": 82,
+          "height": 1.8325617283950615
+        },
+        "text": "勾選要打的怪物；沒有指定目標時等待。"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_all_plate_tl",
+        "rect": {
+          "x": 9,
+          "y": 77.93333333333334,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_all_plate_t",
+        "rect": {
+          "x": 9.6,
+          "y": 77.93333333333334,
+          "width": 14.400000000000004,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_all_plate_tr",
+        "rect": {
+          "x": 24.000000000000004,
+          "y": 77.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_all_plate_l",
+        "rect": {
+          "x": 9,
+          "y": 74.06666666666666,
+          "width": 0.5999999999999996,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_all_plate_c",
+        "rect": {
+          "x": 9.6,
+          "y": 74.06666666666666,
+          "width": 14.400000000000004,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_all_plate_r",
+        "rect": {
+          "x": 24.000000000000004,
+          "y": 74.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_all_plate_bl",
+        "rect": {
+          "x": 9,
+          "y": 73,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_all_plate_b",
+        "rect": {
+          "x": 9.6,
+          "y": 73,
+          "width": 14.400000000000004,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_all_plate_br",
+        "rect": {
+          "x": 24.000000000000004,
+          "y": 73,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_all",
+        "rect": {
+          "x": 9,
+          "y": 74.58539094650206,
+          "width": 15.600000000000005,
+          "height": 2.8292181069958846
+        },
+        "text": "全選",
+        "action": "Auto_all"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_all_hit_top",
+        "rect": {
+          "x": 9,
+          "y": 77.41460905349794,
+          "width": 15.600000000000005,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_all"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_all_hit_bottom",
+        "rect": {
+          "x": 9,
+          "y": 73,
+          "width": 15.600000000000005,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_all"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_none_plate_tl",
+        "rect": {
+          "x": 25.6,
+          "y": 77.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_none_plate_t",
+        "rect": {
+          "x": 26.200000000000003,
+          "y": 77.93333333333334,
+          "width": 14.399999999999999,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_none_plate_tr",
+        "rect": {
+          "x": 40.6,
+          "y": 77.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_none_plate_l",
+        "rect": {
+          "x": 25.6,
+          "y": 74.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_none_plate_c",
+        "rect": {
+          "x": 26.200000000000003,
+          "y": 74.06666666666666,
+          "width": 14.399999999999999,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_none_plate_r",
+        "rect": {
+          "x": 40.6,
+          "y": 74.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_none_plate_bl",
+        "rect": {
+          "x": 25.6,
+          "y": 73,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_none_plate_b",
+        "rect": {
+          "x": 26.200000000000003,
+          "y": 73,
+          "width": 14.399999999999999,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_none_plate_br",
+        "rect": {
+          "x": 40.6,
+          "y": 73,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_none",
+        "rect": {
+          "x": 25.6,
+          "y": 74.58539094650206,
+          "width": 15.600000000000001,
+          "height": 2.8292181069958846
+        },
+        "text": "清空",
+        "action": "Auto_none"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_none_hit_top",
+        "rect": {
+          "x": 25.6,
+          "y": 77.41460905349794,
+          "width": 15.600000000000001,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_none"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_none_hit_bottom",
+        "rect": {
+          "x": 25.6,
+          "y": 73,
+          "width": 15.600000000000001,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_none"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_small_plate_tl",
+        "rect": {
+          "x": 42.2,
+          "y": 77.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_small_plate_t",
+        "rect": {
+          "x": 42.800000000000004,
+          "y": 77.93333333333334,
+          "width": 14.399999999999999,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_small_plate_tr",
+        "rect": {
+          "x": 57.2,
+          "y": 77.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_small_plate_l",
+        "rect": {
+          "x": 42.2,
+          "y": 74.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_small_plate_c",
+        "rect": {
+          "x": 42.800000000000004,
+          "y": 74.06666666666666,
+          "width": 14.399999999999999,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_small_plate_r",
+        "rect": {
+          "x": 57.2,
+          "y": 74.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_small_plate_bl",
+        "rect": {
+          "x": 42.2,
+          "y": 73,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_small_plate_b",
+        "rect": {
+          "x": 42.800000000000004,
+          "y": 73,
+          "width": 14.399999999999999,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_small_plate_br",
+        "rect": {
+          "x": 57.2,
+          "y": 73,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_small",
+        "rect": {
+          "x": 42.2,
+          "y": 74.58539094650206,
+          "width": 15.600000000000001,
+          "height": 2.8292181069958846
+        },
+        "text": "只選小怪",
+        "action": "Auto_small"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_small_hit_top",
+        "rect": {
+          "x": 42.2,
+          "y": 77.41460905349794,
+          "width": 15.600000000000001,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_small"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_small_hit_bottom",
+        "rect": {
+          "x": 42.2,
+          "y": 73,
+          "width": 15.600000000000001,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_small"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_boss_plate_tl",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 77.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_boss_plate_t",
+        "rect": {
+          "x": 59.400000000000006,
+          "y": 77.93333333333334,
+          "width": 14.400000000000006,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_boss_plate_tr",
+        "rect": {
+          "x": 73.80000000000001,
+          "y": 77.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_boss_plate_l",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 74.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_boss_plate_c",
+        "rect": {
+          "x": 59.400000000000006,
+          "y": 74.06666666666666,
+          "width": 14.400000000000006,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_boss_plate_r",
+        "rect": {
+          "x": 73.80000000000001,
+          "y": 74.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_boss_plate_bl",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 73,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_boss_plate_b",
+        "rect": {
+          "x": 59.400000000000006,
+          "y": 73,
+          "width": 14.400000000000006,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_boss_plate_br",
+        "rect": {
+          "x": 73.80000000000001,
+          "y": 73,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_boss",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 74.58539094650206,
+          "width": 15.600000000000001,
+          "height": 2.8292181069958846
+        },
+        "text": "只選王",
+        "action": "Auto_boss"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_boss_hit_top",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 77.41460905349794,
+          "width": 15.600000000000001,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_boss"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_boss_hit_bottom",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 73,
+          "width": 15.600000000000001,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_boss"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_special_plate_tl",
+        "rect": {
+          "x": 75.4,
+          "y": 77.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_special_plate_t",
+        "rect": {
+          "x": 76,
+          "y": 77.93333333333334,
+          "width": 14.400000000000006,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_special_plate_tr",
+        "rect": {
+          "x": 90.4,
+          "y": 77.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_special_plate_l",
+        "rect": {
+          "x": 75.4,
+          "y": 74.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_special_plate_c",
+        "rect": {
+          "x": 76,
+          "y": 74.06666666666666,
+          "width": 14.400000000000006,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_special_plate_r",
+        "rect": {
+          "x": 90.4,
+          "y": 74.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_special_plate_bl",
+        "rect": {
+          "x": 75.4,
+          "y": 73,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_special_plate_b",
+        "rect": {
+          "x": 76,
+          "y": 73,
+          "width": 14.400000000000006,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_preset_special_plate_br",
+        "rect": {
+          "x": 90.4,
+          "y": 73,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_special",
+        "rect": {
+          "x": 75.4,
+          "y": 74.58539094650206,
+          "width": 15.599999999999994,
+          "height": 2.8292181069958846
+        },
+        "text": "只選奇遇",
+        "action": "Auto_special"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_special_hit_top",
+        "rect": {
+          "x": 75.4,
+          "y": 77.41460905349794,
+          "width": 15.599999999999994,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_special"
+      },
+      {
+        "kind": "button",
+        "id": "auto_preset_special_hit_bottom",
+        "rect": {
+          "x": 75.4,
+          "y": 73,
+          "width": 15.599999999999994,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_special"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_1_tl",
+        "rect": {
+          "x": 9,
+          "y": 71.1925925925926,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_1_t",
+        "rect": {
+          "x": 9.6,
+          "y": 71.1925925925926,
+          "width": 14.400000000000004,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_1_tr",
+        "rect": {
+          "x": 24.000000000000004,
+          "y": 71.1925925925926,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_1_l",
+        "rect": {
+          "x": 9,
+          "y": 45.23333333333334,
+          "width": 0.5999999999999996,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_1_c",
+        "rect": {
+          "x": 9.6,
+          "y": 45.23333333333334,
+          "width": 14.400000000000004,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_1_r",
+        "rect": {
+          "x": 24.000000000000004,
+          "y": 45.23333333333334,
+          "width": 0.6000000000000014,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_1_bl",
+        "rect": {
+          "x": 9,
+          "y": 44.16666666666667,
+          "width": 0.5999999999999996,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_1_b",
+        "rect": {
+          "x": 9.6,
+          "y": 44.16666666666667,
+          "width": 14.400000000000004,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_1_br",
+        "rect": {
+          "x": 24.000000000000004,
+          "y": 44.16666666666667,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_icon_1",
+        "rect": {
+          "x": 12,
+          "y": 47.50000000000001,
+          "width": 9,
+          "height": 24.75925925925926
+        },
+        "asset": "texture://ui_target-acorn",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "auto_tick_1",
+        "rect": {
+          "x": 21,
+          "y": 70.77777777777779,
+          "width": 2.5,
+          "height": 1.4814814814814816
+        },
+        "asset": "texture://ui_target-check",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_pick_1",
+        "rect": {
+          "x": 9,
+          "y": 48.055555555555564,
+          "width": 15.6,
+          "height": 24.203703703703702
+        },
+        "text": "",
+        "action": "Auto_target_acorn"
+      },
+      {
+        "kind": "button",
+        "id": "auto_name_1",
+        "rect": {
+          "x": 9,
+          "y": 46.0082304526749,
+          "width": 15.6,
+          "height": 2.05761316872428
+        },
+        "text": "✓ 橡果蹦蹦",
+        "action": "Auto_target_acorn"
+      },
+      {
+        "kind": "button",
+        "id": "auto_info_1",
+        "rect": {
+          "x": 9,
+          "y": 44.17631172839507,
+          "width": 15.6,
+          "height": 1.8325617283950615
+        },
+        "text": "小怪 · 8 隻",
+        "action": "Auto_target_acorn"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_2_tl",
+        "rect": {
+          "x": 25.6,
+          "y": 71.1925925925926,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_2_t",
+        "rect": {
+          "x": 26.200000000000003,
+          "y": 71.1925925925926,
+          "width": 14.399999999999999,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_2_tr",
+        "rect": {
+          "x": 40.6,
+          "y": 71.1925925925926,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_2_l",
+        "rect": {
+          "x": 25.6,
+          "y": 45.23333333333334,
+          "width": 0.6000000000000014,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_2_c",
+        "rect": {
+          "x": 26.200000000000003,
+          "y": 45.23333333333334,
+          "width": 14.399999999999999,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_2_r",
+        "rect": {
+          "x": 40.6,
+          "y": 45.23333333333334,
+          "width": 0.6000000000000014,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_2_bl",
+        "rect": {
+          "x": 25.6,
+          "y": 44.16666666666667,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_2_b",
+        "rect": {
+          "x": 26.200000000000003,
+          "y": 44.16666666666667,
+          "width": 14.399999999999999,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_2_br",
+        "rect": {
+          "x": 40.6,
+          "y": 44.16666666666667,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_icon_2",
+        "rect": {
+          "x": 28.6,
+          "y": 47.50000000000001,
+          "width": 9,
+          "height": 24.75925925925926
+        },
+        "asset": "texture://ui_target-moth",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "auto_tick_2",
+        "rect": {
+          "x": 37.6,
+          "y": 70.77777777777779,
+          "width": 2.5,
+          "height": 1.4814814814814816
+        },
+        "asset": "texture://ui_target-check",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_pick_2",
+        "rect": {
+          "x": 25.6,
+          "y": 48.055555555555564,
+          "width": 15.6,
+          "height": 24.203703703703702
+        },
+        "text": "",
+        "action": "Auto_target_moth"
+      },
+      {
+        "kind": "button",
+        "id": "auto_name_2",
+        "rect": {
+          "x": 25.6,
+          "y": 46.0082304526749,
+          "width": 15.6,
+          "height": 2.05761316872428
+        },
+        "text": "✓ 苔羽蛾",
+        "action": "Auto_target_moth"
+      },
+      {
+        "kind": "button",
+        "id": "auto_info_2",
+        "rect": {
+          "x": 25.6,
+          "y": 44.17631172839507,
+          "width": 15.6,
+          "height": 1.8325617283950615
+        },
+        "text": "小怪 · 16 隻",
+        "action": "Auto_target_moth"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_3_tl",
+        "rect": {
+          "x": 42.2,
+          "y": 71.1925925925926,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_3_t",
+        "rect": {
+          "x": 42.800000000000004,
+          "y": 71.1925925925926,
+          "width": 14.399999999999999,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_3_tr",
+        "rect": {
+          "x": 57.2,
+          "y": 71.1925925925926,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_3_l",
+        "rect": {
+          "x": 42.2,
+          "y": 45.23333333333334,
+          "width": 0.6000000000000014,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_3_c",
+        "rect": {
+          "x": 42.800000000000004,
+          "y": 45.23333333333334,
+          "width": 14.399999999999999,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_3_r",
+        "rect": {
+          "x": 57.2,
+          "y": 45.23333333333334,
+          "width": 0.6000000000000014,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_3_bl",
+        "rect": {
+          "x": 42.2,
+          "y": 44.16666666666667,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_3_b",
+        "rect": {
+          "x": 42.800000000000004,
+          "y": 44.16666666666667,
+          "width": 14.399999999999999,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_3_br",
+        "rect": {
+          "x": 57.2,
+          "y": 44.16666666666667,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_icon_3",
+        "rect": {
+          "x": 45.2,
+          "y": 47.50000000000001,
+          "width": 9,
+          "height": 24.75925925925926
+        },
+        "asset": "texture://ui_target-piglet",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "auto_tick_3",
+        "rect": {
+          "x": 54.2,
+          "y": 70.77777777777779,
+          "width": 2.5,
+          "height": 1.4814814814814816
+        },
+        "asset": "texture://ui_target-check",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_pick_3",
+        "rect": {
+          "x": 42.2,
+          "y": 48.055555555555564,
+          "width": 15.6,
+          "height": 24.203703703703702
+        },
+        "text": "",
+        "action": "Auto_target_piglet"
+      },
+      {
+        "kind": "button",
+        "id": "auto_name_3",
+        "rect": {
+          "x": 42.2,
+          "y": 46.0082304526749,
+          "width": 15.6,
+          "height": 2.05761316872428
+        },
+        "text": "✓ 菇背幼豬",
+        "action": "Auto_target_piglet"
+      },
+      {
+        "kind": "button",
+        "id": "auto_info_3",
+        "rect": {
+          "x": 42.2,
+          "y": 44.17631172839507,
+          "width": 15.6,
+          "height": 1.8325617283950615
+        },
+        "text": "小怪 · 8 隻",
+        "action": "Auto_target_piglet"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_4_tl",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 71.1925925925926,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_4_t",
+        "rect": {
+          "x": 59.400000000000006,
+          "y": 71.1925925925926,
+          "width": 14.400000000000006,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_4_tr",
+        "rect": {
+          "x": 73.80000000000001,
+          "y": 71.1925925925926,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_4_l",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 45.23333333333334,
+          "width": 0.6000000000000014,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_4_c",
+        "rect": {
+          "x": 59.400000000000006,
+          "y": 45.23333333333334,
+          "width": 14.400000000000006,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_4_r",
+        "rect": {
+          "x": 73.80000000000001,
+          "y": 45.23333333333334,
+          "width": 0.5999999999999943,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_4_bl",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 44.16666666666667,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_4_b",
+        "rect": {
+          "x": 59.400000000000006,
+          "y": 44.16666666666667,
+          "width": 14.400000000000006,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_4_br",
+        "rect": {
+          "x": 73.80000000000001,
+          "y": 44.16666666666667,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_icon_4",
+        "rect": {
+          "x": 61.800000000000004,
+          "y": 47.50000000000001,
+          "width": 9,
+          "height": 24.75925925925926
+        },
+        "asset": "texture://ui_target-turtle",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "auto_tick_4",
+        "rect": {
+          "x": 70.80000000000001,
+          "y": 70.77777777777779,
+          "width": 2.5,
+          "height": 1.4814814814814816
+        },
+        "asset": "texture://ui_target-check",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_pick_4",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 48.055555555555564,
+          "width": 15.6,
+          "height": 24.203703703703702
+        },
+        "text": "",
+        "action": "Auto_target_turtle"
+      },
+      {
+        "kind": "button",
+        "id": "auto_name_4",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 46.0082304526749,
+          "width": 15.6,
+          "height": 2.05761316872428
+        },
+        "text": "✓ 苔殼龜",
+        "action": "Auto_target_turtle"
+      },
+      {
+        "kind": "button",
+        "id": "auto_info_4",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 44.17631172839507,
+          "width": 15.6,
+          "height": 1.8325617283950615
+        },
+        "text": "小怪 · 0 隻",
+        "action": "Auto_target_turtle"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_5_tl",
+        "rect": {
+          "x": 75.4,
+          "y": 71.1925925925926,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_5_t",
+        "rect": {
+          "x": 76,
+          "y": 71.1925925925926,
+          "width": 14.400000000000006,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_5_tr",
+        "rect": {
+          "x": 90.4,
+          "y": 71.1925925925926,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_5_l",
+        "rect": {
+          "x": 75.4,
+          "y": 45.23333333333334,
+          "width": 0.5999999999999943,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_5_c",
+        "rect": {
+          "x": 76,
+          "y": 45.23333333333334,
+          "width": 14.400000000000006,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_5_r",
+        "rect": {
+          "x": 90.4,
+          "y": 45.23333333333334,
+          "width": 0.5999999999999943,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_5_bl",
+        "rect": {
+          "x": 75.4,
+          "y": 44.16666666666667,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_5_b",
+        "rect": {
+          "x": 76,
+          "y": 44.16666666666667,
+          "width": 14.400000000000006,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_5_br",
+        "rect": {
+          "x": 90.4,
+          "y": 44.16666666666667,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_icon_5",
+        "rect": {
+          "x": 78.4,
+          "y": 47.50000000000001,
+          "width": 9,
+          "height": 24.75925925925926
+        },
+        "asset": "texture://ui_target-boar",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "auto_tick_5",
+        "rect": {
+          "x": 87.4,
+          "y": 70.77777777777779,
+          "width": 2.5,
+          "height": 1.4814814814814816
+        },
+        "asset": "texture://ui_target-check",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_pick_5",
+        "rect": {
+          "x": 75.4,
+          "y": 48.055555555555564,
+          "width": 15.6,
+          "height": 24.203703703703702
+        },
+        "text": "",
+        "action": "Auto_target_boar"
+      },
+      {
+        "kind": "button",
+        "id": "auto_name_5",
+        "rect": {
+          "x": 75.4,
+          "y": 46.0082304526749,
+          "width": 15.6,
+          "height": 2.05761316872428
+        },
+        "text": "✓ 獠牙搬木王",
+        "action": "Auto_target_boar"
+      },
+      {
+        "kind": "button",
+        "id": "auto_info_5",
+        "rect": {
+          "x": 75.4,
+          "y": 44.17631172839507,
+          "width": 15.6,
+          "height": 1.8325617283950615
+        },
+        "text": "小王 · 1 隻",
+        "action": "Auto_target_boar"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_6_tl",
+        "rect": {
+          "x": 9,
+          "y": 42.54444444444445,
+          "width": 0.5999999999999996,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_6_t",
+        "rect": {
+          "x": 9.6,
+          "y": 42.54444444444445,
+          "width": 14.400000000000004,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_6_tr",
+        "rect": {
+          "x": 24.000000000000004,
+          "y": 42.54444444444445,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_6_l",
+        "rect": {
+          "x": 9,
+          "y": 16.58518518518519,
+          "width": 0.5999999999999996,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_6_c",
+        "rect": {
+          "x": 9.6,
+          "y": 16.58518518518519,
+          "width": 14.400000000000004,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_6_r",
+        "rect": {
+          "x": 24.000000000000004,
+          "y": 16.58518518518519,
+          "width": 0.6000000000000014,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_6_bl",
+        "rect": {
+          "x": 9,
+          "y": 15.518518518518523,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_6_b",
+        "rect": {
+          "x": 9.6,
+          "y": 15.518518518518523,
+          "width": 14.400000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_6_br",
+        "rect": {
+          "x": 24.000000000000004,
+          "y": 15.518518518518523,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_icon_6",
+        "rect": {
+          "x": 12,
+          "y": 18.851851851851855,
+          "width": 9,
+          "height": 24.75925925925926
+        },
+        "asset": "texture://ui_target-treant",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "auto_tick_6",
+        "rect": {
+          "x": 21,
+          "y": 42.12962962962963,
+          "width": 2.5,
+          "height": 1.4814814814814816
+        },
+        "asset": "texture://ui_target-check",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_pick_6",
+        "rect": {
+          "x": 9,
+          "y": 19.407407407407412,
+          "width": 15.6,
+          "height": 24.203703703703702
+        },
+        "text": "",
+        "action": "Auto_target_treant"
+      },
+      {
+        "kind": "button",
+        "id": "auto_name_6",
+        "rect": {
+          "x": 9,
+          "y": 17.36008230452675,
+          "width": 15.6,
+          "height": 2.05761316872428
+        },
+        "text": "✓ 花冠樹靈",
+        "action": "Auto_target_treant"
+      },
+      {
+        "kind": "button",
+        "id": "auto_info_6",
+        "rect": {
+          "x": 9,
+          "y": 15.528163580246913,
+          "width": 15.6,
+          "height": 1.8325617283950615
+        },
+        "text": "小王 · 1 隻",
+        "action": "Auto_target_treant"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_7_tl",
+        "rect": {
+          "x": 25.6,
+          "y": 42.54444444444445,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_7_t",
+        "rect": {
+          "x": 26.200000000000003,
+          "y": 42.54444444444445,
+          "width": 14.399999999999999,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_7_tr",
+        "rect": {
+          "x": 40.6,
+          "y": 42.54444444444445,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_7_l",
+        "rect": {
+          "x": 25.6,
+          "y": 16.58518518518519,
+          "width": 0.6000000000000014,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_7_c",
+        "rect": {
+          "x": 26.200000000000003,
+          "y": 16.58518518518519,
+          "width": 14.399999999999999,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_7_r",
+        "rect": {
+          "x": 40.6,
+          "y": 16.58518518518519,
+          "width": 0.6000000000000014,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_7_bl",
+        "rect": {
+          "x": 25.6,
+          "y": 15.518518518518523,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_7_b",
+        "rect": {
+          "x": 26.200000000000003,
+          "y": 15.518518518518523,
+          "width": 14.399999999999999,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_7_br",
+        "rect": {
+          "x": 40.6,
+          "y": 15.518518518518523,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_icon_7",
+        "rect": {
+          "x": 28.6,
+          "y": 18.851851851851855,
+          "width": 9,
+          "height": 24.75925925925926
+        },
+        "asset": "texture://ui_target-elder",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "auto_tick_7",
+        "rect": {
+          "x": 37.6,
+          "y": 42.12962962962963,
+          "width": 2.5,
+          "height": 1.4814814814814816
+        },
+        "asset": "texture://ui_target-check",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_pick_7",
+        "rect": {
+          "x": 25.6,
+          "y": 19.407407407407412,
+          "width": 15.6,
+          "height": 24.203703703703702
+        },
+        "text": "",
+        "action": "Auto_target_elder"
+      },
+      {
+        "kind": "button",
+        "id": "auto_name_7",
+        "rect": {
+          "x": 25.6,
+          "y": 17.36008230452675,
+          "width": 15.6,
+          "height": 2.05761316872428
+        },
+        "text": "✓ 古榕守衛",
+        "action": "Auto_target_elder"
+      },
+      {
+        "kind": "button",
+        "id": "auto_info_7",
+        "rect": {
+          "x": 25.6,
+          "y": 15.528163580246913,
+          "width": 15.6,
+          "height": 1.8325617283950615
+        },
+        "text": "中王 · 1 隻",
+        "action": "Auto_target_elder"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_8_tl",
+        "rect": {
+          "x": 42.2,
+          "y": 42.54444444444445,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_8_t",
+        "rect": {
+          "x": 42.800000000000004,
+          "y": 42.54444444444445,
+          "width": 14.399999999999999,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_8_tr",
+        "rect": {
+          "x": 57.2,
+          "y": 42.54444444444445,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_8_l",
+        "rect": {
+          "x": 42.2,
+          "y": 16.58518518518519,
+          "width": 0.6000000000000014,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_8_c",
+        "rect": {
+          "x": 42.800000000000004,
+          "y": 16.58518518518519,
+          "width": 14.399999999999999,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_8_r",
+        "rect": {
+          "x": 57.2,
+          "y": 16.58518518518519,
+          "width": 0.6000000000000014,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_8_bl",
+        "rect": {
+          "x": 42.2,
+          "y": 15.518518518518523,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_8_b",
+        "rect": {
+          "x": 42.800000000000004,
+          "y": 15.518518518518523,
+          "width": 14.399999999999999,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_8_br",
+        "rect": {
+          "x": 57.2,
+          "y": 15.518518518518523,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_icon_8",
+        "rect": {
+          "x": 45.2,
+          "y": 18.851851851851855,
+          "width": 9,
+          "height": 24.75925925925926
+        },
+        "asset": "texture://ui_target-stag",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "auto_tick_8",
+        "rect": {
+          "x": 54.2,
+          "y": 42.12962962962963,
+          "width": 2.5,
+          "height": 1.4814814814814816
+        },
+        "asset": "texture://ui_target-check",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_pick_8",
+        "rect": {
+          "x": 42.2,
+          "y": 19.407407407407412,
+          "width": 15.6,
+          "height": 24.203703703703702
+        },
+        "text": "",
+        "action": "Auto_target_stag"
+      },
+      {
+        "kind": "button",
+        "id": "auto_name_8",
+        "rect": {
+          "x": 42.2,
+          "y": 17.36008230452675,
+          "width": 15.6,
+          "height": 2.05761316872428
+        },
+        "text": "✓ 冠角白鹿",
+        "action": "Auto_target_stag"
+      },
+      {
+        "kind": "button",
+        "id": "auto_info_8",
+        "rect": {
+          "x": 42.2,
+          "y": 15.528163580246913,
+          "width": 15.6,
+          "height": 1.8325617283950615
+        },
+        "text": "大王 · 最後 30 秒 · 0 隻",
+        "action": "Auto_target_stag"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_9_tl",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 42.54444444444445,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_9_t",
+        "rect": {
+          "x": 59.400000000000006,
+          "y": 42.54444444444445,
+          "width": 14.400000000000006,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_9_tr",
+        "rect": {
+          "x": 73.80000000000001,
+          "y": 42.54444444444445,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_9_l",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 16.58518518518519,
+          "width": 0.6000000000000014,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_9_c",
+        "rect": {
+          "x": 59.400000000000006,
+          "y": 16.58518518518519,
+          "width": 14.400000000000006,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_9_r",
+        "rect": {
+          "x": 73.80000000000001,
+          "y": 16.58518518518519,
+          "width": 0.5999999999999943,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_9_bl",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 15.518518518518523,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_9_b",
+        "rect": {
+          "x": 59.400000000000006,
+          "y": 15.518518518518523,
+          "width": 14.400000000000006,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_9_br",
+        "rect": {
+          "x": 73.80000000000001,
+          "y": 15.518518518518523,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_icon_9",
+        "rect": {
+          "x": 61.800000000000004,
+          "y": 18.851851851851855,
+          "width": 9,
+          "height": 24.75925925925926
+        },
+        "asset": "texture://ui_target-beetle",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "auto_tick_9",
+        "rect": {
+          "x": 70.80000000000001,
+          "y": 42.12962962962963,
+          "width": 2.5,
+          "height": 1.4814814814814816
+        },
+        "asset": "texture://ui_target-check",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_pick_9",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 19.407407407407412,
+          "width": 15.6,
+          "height": 24.203703703703702
+        },
+        "text": "",
+        "action": "Auto_target_beetle"
+      },
+      {
+        "kind": "button",
+        "id": "auto_name_9",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 17.36008230452675,
+          "width": 15.6,
+          "height": 2.05761316872428
+        },
+        "text": "✓ 聚寶甲蟲",
+        "action": "Auto_target_beetle"
+      },
+      {
+        "kind": "button",
+        "id": "auto_info_9",
+        "rect": {
+          "x": 58.800000000000004,
+          "y": 15.528163580246913,
+          "width": 15.6,
+          "height": 1.8325617283950615
+        },
+        "text": "共用獎池 · 0 隻",
+        "action": "Auto_target_beetle"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_10_tl",
+        "rect": {
+          "x": 75.4,
+          "y": 42.54444444444445,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_10_t",
+        "rect": {
+          "x": 76,
+          "y": 42.54444444444445,
+          "width": 14.400000000000006,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_10_tr",
+        "rect": {
+          "x": 90.4,
+          "y": 42.54444444444445,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_10_l",
+        "rect": {
+          "x": 75.4,
+          "y": 16.58518518518519,
+          "width": 0.5999999999999943,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_10_c",
+        "rect": {
+          "x": 76,
+          "y": 16.58518518518519,
+          "width": 14.400000000000006,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_10_r",
+        "rect": {
+          "x": 90.4,
+          "y": 16.58518518518519,
+          "width": 0.5999999999999943,
+          "height": 25.959259259259262
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_10_bl",
+        "rect": {
+          "x": 75.4,
+          "y": 15.518518518518523,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_10_b",
+        "rect": {
+          "x": 76,
+          "y": 15.518518518518523,
+          "width": 14.400000000000006,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_card_10_br",
+        "rect": {
+          "x": 90.4,
+          "y": 15.518518518518523,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_icon_10",
+        "rect": {
+          "x": 78.4,
+          "y": 18.851851851851855,
+          "width": 9,
+          "height": 24.75925925925926
+        },
+        "asset": "texture://ui_target-wheel",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "auto_tick_10",
+        "rect": {
+          "x": 87.4,
+          "y": 42.12962962962963,
+          "width": 2.5,
+          "height": 1.4814814814814816
+        },
+        "asset": "texture://ui_target-check",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_pick_10",
+        "rect": {
+          "x": 75.4,
+          "y": 19.407407407407412,
+          "width": 15.6,
+          "height": 24.203703703703702
+        },
+        "text": "",
+        "action": "Auto_target_wheel"
+      },
+      {
+        "kind": "button",
+        "id": "auto_name_10",
+        "rect": {
+          "x": 75.4,
+          "y": 17.36008230452675,
+          "width": 15.6,
+          "height": 2.05761316872428
+        },
+        "text": "✓ 金鈴狸",
+        "action": "Auto_target_wheel"
+      },
+      {
+        "kind": "button",
+        "id": "auto_info_10",
+        "rect": {
+          "x": 75.4,
+          "y": 15.528163580246913,
+          "width": 15.6,
+          "height": 1.8325617283950615
+        },
+        "text": "奇遇輪盤 · 0 隻",
+        "action": "Auto_target_wheel"
+      },
+      {
+        "kind": "text",
+        "id": "auto_summary",
+        "rect": {
+          "x": 9,
+          "y": 12.657793209876546,
+          "width": 34,
+          "height": 1.8325617283950615
+        },
+        "text": "已選 10 種"
+      },
+      {
+        "kind": "text",
+        "id": "auto_note",
+        "rect": {
+          "x": 44,
+          "y": 12.657793209876546,
+          "width": 47,
+          "height": 1.8325617283950615
+        },
+        "text": "設定期間暫停戰鬥"
+      },
+      {
+        "kind": "image",
+        "id": "auto_cancel_plate_tl",
+        "rect": {
+          "x": 9,
+          "y": 10.933333333333334,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_cancel_plate_t",
+        "rect": {
+          "x": 9.6,
+          "y": 10.933333333333334,
+          "width": 18.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_cancel_plate_tr",
+        "rect": {
+          "x": 28.400000000000002,
+          "y": 10.933333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_cancel_plate_l",
+        "rect": {
+          "x": 9,
+          "y": 7.066666666666666,
+          "width": 0.5999999999999996,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_cancel_plate_c",
+        "rect": {
+          "x": 9.6,
+          "y": 7.066666666666666,
+          "width": 18.800000000000004,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_cancel_plate_r",
+        "rect": {
+          "x": 28.400000000000002,
+          "y": 7.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_cancel_plate_bl",
+        "rect": {
+          "x": 9,
+          "y": 6,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_cancel_plate_b",
+        "rect": {
+          "x": 9.6,
+          "y": 6,
+          "width": 18.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_cancel_plate_br",
+        "rect": {
+          "x": 28.400000000000002,
+          "y": 6,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_cancel",
+        "rect": {
+          "x": 9,
+          "y": 7.585390946502056,
+          "width": 20.000000000000004,
+          "height": 2.8292181069958846
+        },
+        "text": "取消",
+        "action": "Auto_cancel"
+      },
+      {
+        "kind": "button",
+        "id": "auto_cancel_hit_top",
+        "rect": {
+          "x": 9,
+          "y": 10.414609053497943,
+          "width": 20.000000000000004,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_cancel"
+      },
+      {
+        "kind": "button",
+        "id": "auto_cancel_hit_bottom",
+        "rect": {
+          "x": 9,
+          "y": 6.000000000000002,
+          "width": 20.000000000000004,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_cancel"
+      },
+      {
+        "kind": "image",
+        "id": "auto_apply_plate_tl",
+        "rect": {
+          "x": 60,
+          "y": 10.760330578512397,
+          "width": 2.0919421487603316,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_apply_plate_t",
+        "rect": {
+          "x": 62.09194214876033,
+          "y": 10.760330578512397,
+          "width": 26.816115702479344,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_apply_plate_tr",
+        "rect": {
+          "x": 88.90805785123968,
+          "y": 10.760330578512397,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_apply_plate_l",
+        "rect": {
+          "x": 60,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603316,
+          "height": 3.5206611570247937
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_apply_plate_c",
+        "rect": {
+          "x": 62.09194214876033,
+          "y": 7.239669421487603,
+          "width": 26.816115702479344,
+          "height": 3.5206611570247937
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_apply_plate_r",
+        "rect": {
+          "x": 88.90805785123968,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603245,
+          "height": 3.5206611570247937
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_apply_plate_bl",
+        "rect": {
+          "x": 60,
+          "y": 6,
+          "width": 2.0919421487603316,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_apply_plate_b",
+        "rect": {
+          "x": 62.09194214876033,
+          "y": 6,
+          "width": 26.816115702479344,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_apply_plate_br",
+        "rect": {
+          "x": 88.90805785123968,
+          "y": 6,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_apply",
+        "rect": {
+          "x": 60,
+          "y": 7.585390946502056,
+          "width": 31,
+          "height": 2.8292181069958846
+        },
+        "text": "啟動 AUTO",
+        "action": "Auto_apply"
+      },
+      {
+        "kind": "button",
+        "id": "auto_apply_hit_top",
+        "rect": {
+          "x": 60,
+          "y": 10.414609053497943,
+          "width": 31,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_apply"
+      },
+      {
+        "kind": "button",
+        "id": "auto_apply_hit_bottom",
+        "rect": {
+          "x": 60,
+          "y": 6.000000000000002,
+          "width": 31,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_apply"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "AUTO · 追擊目標",
+      "font": 17.25,
+      "clip": {
+        "x": 172.8,
+        "y": 75.62083333333335,
+        "width": 1574.4,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 894.5188598632812,
+        "y": 79.33437500000002,
+        "width": 129.7122802734375,
+        "height": 16
+      }
+    },
+    {
+      "text": "勾選要打的怪物；沒有指定目標時等待。",
+      "font": 14.25,
+      "clip": {
+        "x": 172.8,
+        "y": 151.30416666666667,
+        "width": 1574.4,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 831.75,
+        "y": 155.76250000000002,
+        "width": 251.25,
+        "height": 13
+      }
+    },
+    {
+      "text": "全選",
+      "font": 22,
+      "clip": {
+        "x": 172.8,
+        "y": 243.9222222222222,
+        "width": 299.5200000000001,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 301.56000000000006,
+        "y": 249.778125,
+        "width": 43,
+        "height": 19
+      }
+    },
+    {
+      "text": "清空",
+      "font": 22,
+      "clip": {
+        "x": 491.52,
+        "y": 243.9222222222222,
+        "width": 299.52000000000004,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 620.28,
+        "y": 248.778125,
+        "width": 42,
+        "height": 20
+      }
+    },
+    {
+      "text": "只選小怪",
+      "font": 22,
+      "clip": {
+        "x": 810.24,
+        "y": 243.9222222222222,
+        "width": 299.52000000000004,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 917,
+        "y": 248.778125,
+        "width": 87,
+        "height": 21
+      }
+    },
+    {
+      "text": "只選王",
+      "font": 22,
+      "clip": {
+        "x": 1128.96,
+        "y": 243.9222222222222,
+        "width": 299.52000000000004,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1246.72,
+        "y": 249.778125,
+        "width": 64,
+        "height": 19
+      }
+    },
+    {
+      "text": "只選奇遇",
+      "font": 22,
+      "clip": {
+        "x": 1447.68,
+        "y": 243.9222222222222,
+        "width": 299.51999999999987,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1554.44,
+        "y": 248.778125,
+        "width": 87,
+        "height": 21
+      }
+    },
+    {
+      "text": "✓ 橡果蹦蹦",
+      "font": 16,
+      "clip": {
+        "x": 172.8,
+        "y": 560.8888888888888,
+        "width": 299.52,
+        "height": 22.22222222222222
+      },
+      "ink": {
+        "x": 282.5678125,
+        "y": 564.2499999999999,
+        "width": 79.984375,
+        "height": 15
+      }
+    },
+    {
+      "text": "小怪 · 8 隻",
+      "font": 14.25,
+      "clip": {
+        "x": 172.8,
+        "y": 583.1041666666665,
+        "width": 299.52,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 290.06958251953125,
+        "y": 587.5624999999999,
+        "width": 64.7308349609375,
+        "height": 12
+      }
+    },
+    {
+      "text": "✓ 苔羽蛾",
+      "font": 16,
+      "clip": {
+        "x": 491.52,
+        "y": 560.8888888888888,
+        "width": 299.52,
+        "height": 22.22222222222222
+      },
+      "ink": {
+        "x": 609.2878125,
+        "y": 564.2499999999999,
+        "width": 63.984375,
+        "height": 15
+      }
+    },
+    {
+      "text": "小怪 · 16 隻",
+      "font": 14.25,
+      "clip": {
+        "x": 491.52,
+        "y": 583.1041666666665,
+        "width": 299.52,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 604.6600048828125,
+        "y": 587.5624999999999,
+        "width": 72.989990234375,
+        "height": 12
+      }
+    },
+    {
+      "text": "✓ 菇背幼豬",
+      "font": 16,
+      "clip": {
+        "x": 810.24,
+        "y": 560.8888888888888,
+        "width": 299.52,
+        "height": 22.22222222222222
+      },
+      "ink": {
+        "x": 920.0078125,
+        "y": 564.2499999999999,
+        "width": 79.984375,
+        "height": 15
+      }
+    },
+    {
+      "text": "小怪 · 8 隻",
+      "font": 14.25,
+      "clip": {
+        "x": 810.24,
+        "y": 583.1041666666665,
+        "width": 299.52,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 927.5095825195312,
+        "y": 587.5624999999999,
+        "width": 64.7308349609375,
+        "height": 12
+      }
+    },
+    {
+      "text": "✓ 苔殼龜",
+      "font": 16,
+      "clip": {
+        "x": 1128.96,
+        "y": 560.8888888888888,
+        "width": 299.52,
+        "height": 22.22222222222222
+      },
+      "ink": {
+        "x": 1246.7278125,
+        "y": 564.2499999999999,
+        "width": 63.984375,
+        "height": 15
+      }
+    },
+    {
+      "text": "小怪 · 0 隻",
+      "font": 14.25,
+      "clip": {
+        "x": 1128.96,
+        "y": 583.1041666666665,
+        "width": 299.52,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 1246.2295825195313,
+        "y": 587.5624999999999,
+        "width": 64.7308349609375,
+        "height": 12
+      }
+    },
+    {
+      "text": "✓ 獠牙搬木王",
+      "font": 16,
+      "clip": {
+        "x": 1447.68,
+        "y": 560.8888888888888,
+        "width": 299.52,
+        "height": 22.22222222222222
+      },
+      "ink": {
+        "x": 1549.4478125,
+        "y": 564.2499999999999,
+        "width": 95.984375,
+        "height": 15
+      }
+    },
+    {
+      "text": "小王 · 1 隻",
+      "font": 14.25,
+      "clip": {
+        "x": 1447.68,
+        "y": 583.1041666666665,
+        "width": 299.52,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 1564.9495825195313,
+        "y": 587.5624999999999,
+        "width": 64.7308349609375,
+        "height": 12
+      }
+    },
+    {
+      "text": "✓ 花冠樹靈",
+      "font": 16,
+      "clip": {
+        "x": 172.8,
+        "y": 870.288888888889,
+        "width": 299.52,
+        "height": 22.22222222222222
+      },
+      "ink": {
+        "x": 282.5678125,
+        "y": 873.6500000000001,
+        "width": 79.984375,
+        "height": 15
+      }
+    },
+    {
+      "text": "小王 · 1 隻",
+      "font": 14.25,
+      "clip": {
+        "x": 172.8,
+        "y": 892.5041666666667,
+        "width": 299.52,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 290.06958251953125,
+        "y": 896.9625000000001,
+        "width": 64.7308349609375,
+        "height": 12
+      }
+    },
+    {
+      "text": "✓ 古榕守衛",
+      "font": 16,
+      "clip": {
+        "x": 491.52,
+        "y": 870.288888888889,
+        "width": 299.52,
+        "height": 22.22222222222222
+      },
+      "ink": {
+        "x": 601.2878125,
+        "y": 873.6500000000001,
+        "width": 79.984375,
+        "height": 15
+      }
+    },
+    {
+      "text": "中王 · 1 隻",
+      "font": 14.25,
+      "clip": {
+        "x": 491.52,
+        "y": 892.5041666666667,
+        "width": 299.52,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 609.7895825195312,
+        "y": 896.9625000000001,
+        "width": 63.7308349609375,
+        "height": 12
+      }
+    },
+    {
+      "text": "✓ 冠角白鹿",
+      "font": 16,
+      "clip": {
+        "x": 810.24,
+        "y": 870.288888888889,
+        "width": 299.52,
+        "height": 22.22222222222222
+      },
+      "ink": {
+        "x": 920.0078125,
+        "y": 873.6500000000001,
+        "width": 79.984375,
+        "height": 15
+      }
+    },
+    {
+      "text": "大王 · 最後 30 秒 · 0 隻",
+      "font": 14.25,
+      "clip": {
+        "x": 810.24,
+        "y": 892.5041666666667,
+        "width": 299.52,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 889.1083374023438,
+        "y": 896.9625000000001,
+        "width": 141.5333251953125,
+        "height": 12
+      }
+    },
+    {
+      "text": "✓ 聚寶甲蟲",
+      "font": 16,
+      "clip": {
+        "x": 1128.96,
+        "y": 870.288888888889,
+        "width": 299.52,
+        "height": 22.22222222222222
+      },
+      "ink": {
+        "x": 1238.7278125,
+        "y": 873.6500000000001,
+        "width": 79.984375,
+        "height": 15
+      }
+    },
+    {
+      "text": "共用獎池 · 0 隻",
+      "font": 14.25,
+      "clip": {
+        "x": 1128.96,
+        "y": 892.5041666666667,
+        "width": 299.52,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 1231.9795825195313,
+        "y": 896.9625000000001,
+        "width": 93.2308349609375,
+        "height": 12
+      }
+    },
+    {
+      "text": "✓ 金鈴狸",
+      "font": 16,
+      "clip": {
+        "x": 1447.68,
+        "y": 870.288888888889,
+        "width": 299.52,
+        "height": 22.22222222222222
+      },
+      "ink": {
+        "x": 1565.4478125,
+        "y": 873.6500000000001,
+        "width": 63.984375,
+        "height": 15
+      }
+    },
+    {
+      "text": "奇遇輪盤 · 0 隻",
+      "font": 14.25,
+      "clip": {
+        "x": 1447.68,
+        "y": 892.5041666666667,
+        "width": 299.52,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 1550.6995825195313,
+        "y": 896.9625000000001,
+        "width": 93.2308349609375,
+        "height": 12
+      }
+    },
+    {
+      "text": "已選 10 種",
+      "font": 14.25,
+      "clip": {
+        "x": 172.8,
+        "y": 923.5041666666666,
+        "width": 652.8,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 467.0033447265625,
+        "y": 927.9625,
+        "width": 65.143310546875,
+        "height": 12
+      }
+    },
+    {
+      "text": "設定期間暫停戰鬥",
+      "font": 14.25,
+      "clip": {
+        "x": 844.8,
+        "y": 923.5041666666666,
+        "width": 902.4,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 1239,
+        "y": 927.9625,
+        "width": 112.75,
+        "height": 12
+      }
+    },
+    {
+      "text": "取消",
+      "font": 22,
+      "clip": {
+        "x": 172.8,
+        "y": 967.5222222222222,
+        "width": 384.00000000000006,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 343.80000000000007,
+        "y": 973.3781250000001,
+        "width": 42,
+        "height": 19
+      }
+    },
+    {
+      "text": "啟動 AUTO",
+      "font": 22,
+      "clip": {
+        "x": 1152,
+        "y": 967.5222222222222,
+        "width": 595.2,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1395.64833984375,
+        "y": 973.3781250000001,
+        "width": 108.99609375,
+        "height": 19
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 239,
+    "assets": [
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_scene-shade",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_target-acorn",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_target-check",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_target-moth",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_target-piglet",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_target-turtle",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_target-boar",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_target-treant",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_target-elder",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_target-stag",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_target-beetle",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_target-wheel",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-br",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

@@ -1,0 +1,812 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "menu:profiles",
+    "children": [
+      {
+        "kind": "image",
+        "id": "screen_shade",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_fill",
+        "rect": {
+          "x": 3.8,
+          "y": 5,
+          "width": 92.4,
+          "height": 90
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tl",
+        "rect": {
+          "x": 3,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_t",
+        "rect": {
+          "x": 7.5,
+          "y": 85,
+          "width": 85,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tr",
+        "rect": {
+          "x": 92.5,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_l",
+        "rect": {
+          "x": 3,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_c",
+        "rect": {
+          "x": 7.5,
+          "y": 11,
+          "width": 85,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_r",
+        "rect": {
+          "x": 92.5,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_bl",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_b",
+        "rect": {
+          "x": 7.5,
+          "y": 3,
+          "width": 85,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_br",
+        "rect": {
+          "x": 92.5,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "screen_title",
+        "rect": {
+          "x": 9,
+          "y": 87.31378600823045,
+          "width": 82,
+          "height": 4.372427983539095
+        },
+        "text": "讀取進度"
+      },
+      {
+        "kind": "text",
+        "id": "profiles_hint",
+        "rect": {
+          "x": 9,
+          "y": 80.79012345679013,
+          "width": 82,
+          "height": 3.0864197530864192
+        },
+        "text": "選擇一個札記繼續；空白欄位可建立新進度。"
+      },
+      {
+        "kind": "text",
+        "id": "delete_warning",
+        "rect": {
+          "x": 16,
+          "y": 65.99074074074073,
+          "width": 68,
+          "height": 3.9999999999999996
+        },
+        "text": "確定刪除「林地札記 1」？\n這會清除城鎮等級與遠征紀錄。"
+      },
+      {
+        "kind": "image",
+        "id": "delete_confirm_plate_tl",
+        "rect": {
+          "x": 25,
+          "y": 41.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_confirm_plate_t",
+        "rect": {
+          "x": 25.6,
+          "y": 41.93333333333333,
+          "width": 20.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_confirm_plate_tr",
+        "rect": {
+          "x": 46.4,
+          "y": 41.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_confirm_plate_l",
+        "rect": {
+          "x": 25,
+          "y": 38.06666666666667,
+          "width": 0.6000000000000014,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_confirm_plate_c",
+        "rect": {
+          "x": 25.6,
+          "y": 38.06666666666667,
+          "width": 20.799999999999997,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_confirm_plate_r",
+        "rect": {
+          "x": 46.4,
+          "y": 38.06666666666667,
+          "width": 0.6000000000000014,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_confirm_plate_bl",
+        "rect": {
+          "x": 25,
+          "y": 37,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_confirm_plate_b",
+        "rect": {
+          "x": 25.6,
+          "y": 37,
+          "width": 20.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_confirm_plate_br",
+        "rect": {
+          "x": 46.4,
+          "y": 37,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "delete_confirm",
+        "rect": {
+          "x": 25,
+          "y": 38.58539094650206,
+          "width": 22,
+          "height": 2.8292181069958846
+        },
+        "text": "確認刪除",
+        "action": "ConfirmDelete"
+      },
+      {
+        "kind": "button",
+        "id": "delete_confirm_hit_top",
+        "rect": {
+          "x": 25,
+          "y": 41.41460905349794,
+          "width": 22,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "ConfirmDelete"
+      },
+      {
+        "kind": "button",
+        "id": "delete_confirm_hit_bottom",
+        "rect": {
+          "x": 25,
+          "y": 37,
+          "width": 22,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "ConfirmDelete"
+      },
+      {
+        "kind": "image",
+        "id": "delete_cancel_plate_tl",
+        "rect": {
+          "x": 53,
+          "y": 41.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_cancel_plate_t",
+        "rect": {
+          "x": 53.6,
+          "y": 41.93333333333333,
+          "width": 20.800000000000004,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_cancel_plate_tr",
+        "rect": {
+          "x": 74.4,
+          "y": 41.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_cancel_plate_l",
+        "rect": {
+          "x": 53,
+          "y": 38.06666666666667,
+          "width": 0.6000000000000014,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_cancel_plate_c",
+        "rect": {
+          "x": 53.6,
+          "y": 38.06666666666667,
+          "width": 20.800000000000004,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_cancel_plate_r",
+        "rect": {
+          "x": 74.4,
+          "y": 38.06666666666667,
+          "width": 0.5999999999999943,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_cancel_plate_bl",
+        "rect": {
+          "x": 53,
+          "y": 37,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_cancel_plate_b",
+        "rect": {
+          "x": 53.6,
+          "y": 37,
+          "width": 20.800000000000004,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "delete_cancel_plate_br",
+        "rect": {
+          "x": 74.4,
+          "y": 37,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "delete_cancel",
+        "rect": {
+          "x": 53,
+          "y": 38.58539094650206,
+          "width": 22,
+          "height": 2.8292181069958846
+        },
+        "text": "保留進度",
+        "action": "CancelDelete"
+      },
+      {
+        "kind": "button",
+        "id": "delete_cancel_hit_top",
+        "rect": {
+          "x": 53,
+          "y": 41.41460905349794,
+          "width": 22,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "CancelDelete"
+      },
+      {
+        "kind": "button",
+        "id": "delete_cancel_hit_bottom",
+        "rect": {
+          "x": 53,
+          "y": 37,
+          "width": 22,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "CancelDelete"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_tl",
+        "rect": {
+          "x": 32,
+          "y": 10.933333333333335,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_t",
+        "rect": {
+          "x": 32.6,
+          "y": 10.933333333333335,
+          "width": 34.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_tr",
+        "rect": {
+          "x": 67.4,
+          "y": 10.933333333333335,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_l",
+        "rect": {
+          "x": 32,
+          "y": 7.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_c",
+        "rect": {
+          "x": 32.6,
+          "y": 7.066666666666666,
+          "width": 34.800000000000004,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_r",
+        "rect": {
+          "x": 67.4,
+          "y": 7.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_bl",
+        "rect": {
+          "x": 32,
+          "y": 6,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_b",
+        "rect": {
+          "x": 32.6,
+          "y": 6,
+          "width": 34.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_br",
+        "rect": {
+          "x": 67.4,
+          "y": 6,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "profiles_back",
+        "rect": {
+          "x": 32,
+          "y": 7.456790123456797,
+          "width": 36,
+          "height": 3.0864197530864192
+        },
+        "text": "返回主選單",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "profiles_back_hit_top",
+        "rect": {
+          "x": 32,
+          "y": 10.543209876543209,
+          "width": 36,
+          "height": 1.4567901234567913
+        },
+        "text": "",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "profiles_back_hit_bottom",
+        "rect": {
+          "x": 32,
+          "y": 6.000000000000007,
+          "width": 36,
+          "height": 1.4567901234567913
+        },
+        "text": "",
+        "action": "UI_home"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "讀取進度",
+      "font": 34,
+      "clip": {
+        "x": 172.8,
+        "y": 89.7888888888889,
+        "width": 1574.4,
+        "height": 47.22222222222223
+      },
+      "ink": {
+        "x": 894,
+        "y": 97.66562500000002,
+        "width": 133,
+        "height": 31
+      }
+    },
+    {
+      "text": "選擇一個札記繼續；空白欄位可建立新進度。",
+      "font": 24,
+      "clip": {
+        "x": 172.8,
+        "y": 174.13333333333333,
+        "width": 1574.4,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 721,
+        "y": 179.15937499999998,
+        "width": 470,
+        "height": 24
+      }
+    },
+    {
+      "text": "確定刪除「林地札記 1」？",
+      "font": 18,
+      "clip": {
+        "x": 307.2,
+        "y": 324.1000000000001,
+        "width": 1305.6,
+        "height": 43.19999999999999
+      },
+      "ink": {
+        "x": 853.53369140625,
+        "y": 325.91562500000003,
+        "width": 208.9326171875,
+        "height": 17
+      }
+    },
+    {
+      "text": "這會清除城鎮等級與遠征紀錄。",
+      "font": 18,
+      "clip": {
+        "x": 307.2,
+        "y": 324.1000000000001,
+        "width": 1305.6,
+        "height": 43.19999999999999
+      },
+      "ink": {
+        "x": 834,
+        "y": 347.51562500000006,
+        "width": 246,
+        "height": 17
+      }
+    },
+    {
+      "text": "確認刪除",
+      "font": 22,
+      "clip": {
+        "x": 480,
+        "y": 632.7222222222223,
+        "width": 422.4,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 648.2,
+        "y": 637.5781250000001,
+        "width": 86,
+        "height": 20
+      }
+    },
+    {
+      "text": "保留進度",
+      "font": 22,
+      "clip": {
+        "x": 1017.6,
+        "y": 632.7222222222223,
+        "width": 422.4,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1185.8,
+        "y": 637.5781250000001,
+        "width": 87,
+        "height": 20
+      }
+    },
+    {
+      "text": "返回主選單",
+      "font": 24,
+      "clip": {
+        "x": 614.4,
+        "y": 966.1333333333333,
+        "width": 691.2,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 901,
+        "y": 972.159375,
+        "width": 118,
+        "height": 21
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 50,
+    "assets": [
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_scene-shade",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-br",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

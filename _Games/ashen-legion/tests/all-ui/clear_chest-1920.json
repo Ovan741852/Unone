@@ -1,0 +1,857 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "clear:home",
+    "children": [
+      {
+        "kind": "image",
+        "id": "screen_shade",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_fill",
+        "rect": {
+          "x": 3.8,
+          "y": 5,
+          "width": 92.4,
+          "height": 90
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tl",
+        "rect": {
+          "x": 3,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_t",
+        "rect": {
+          "x": 7.5,
+          "y": 85,
+          "width": 85,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tr",
+        "rect": {
+          "x": 92.5,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_l",
+        "rect": {
+          "x": 3,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_c",
+        "rect": {
+          "x": 7.5,
+          "y": 11,
+          "width": 85,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_r",
+        "rect": {
+          "x": 92.5,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_bl",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_b",
+        "rect": {
+          "x": 7.5,
+          "y": 3,
+          "width": 85,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_br",
+        "rect": {
+          "x": 92.5,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "screen_title",
+        "rect": {
+          "x": 9,
+          "y": 87.31378600823045,
+          "width": 58,
+          "height": 4.372427983539095
+        },
+        "text": "關卡凱旋"
+      },
+      {
+        "kind": "image",
+        "id": "screen_gold_icon",
+        "rect": {
+          "x": 71,
+          "y": 89.77777777777777,
+          "width": 3,
+          "height": 2.2222222222222223
+        },
+        "asset": "texture://ui_icon-coin",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "screen_gold",
+        "rect": {
+          "x": 75,
+          "y": 89.77970679012346,
+          "width": 7,
+          "height": 2.218364197530864
+        },
+        "text": "320"
+      },
+      {
+        "kind": "image",
+        "id": "screen_crystals_icon",
+        "rect": {
+          "x": 83,
+          "y": 89.77777777777777,
+          "width": 3,
+          "height": 2.2222222222222223
+        },
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "screen_crystals",
+        "rect": {
+          "x": 87,
+          "y": 89.77970679012346,
+          "width": 6,
+          "height": 2.218364197530864
+        },
+        "text": "18"
+      },
+      {
+        "kind": "text",
+        "id": "result_message",
+        "rect": {
+          "x": 9,
+          "y": 77.77970679012346,
+          "width": 82,
+          "height": 2.218364197530864
+        },
+        "text": "本關已完成，軍團準備繼續前行。"
+      },
+      {
+        "kind": "text",
+        "id": "result_earned",
+        "rect": {
+          "x": 9,
+          "y": 60.53497942386831,
+          "width": 38,
+          "height": 4.11522633744856
+        },
+        "text": "+0"
+      },
+      {
+        "kind": "text",
+        "id": "result_earned_label",
+        "rect": {
+          "x": 9,
+          "y": 69.15779320987654,
+          "width": 38,
+          "height": 1.8325617283950615
+        },
+        "text": "本次遠征累計獲獎金幣"
+      },
+      {
+        "kind": "text",
+        "id": "result_combat",
+        "rect": {
+          "x": 9,
+          "y": 44.779706790123456,
+          "width": 82,
+          "height": 2.218364197530864
+        },
+        "text": "擊殺 0 · 破防 0"
+      },
+      {
+        "kind": "text",
+        "id": "result_refund",
+        "rect": {
+          "x": 51,
+          "y": 66.77970679012346,
+          "width": 40,
+          "height": 2.218364197530864
+        },
+        "text": "倖存返還 0 金幣"
+      },
+      {
+        "kind": "text",
+        "id": "result_crystals",
+        "rect": {
+          "x": 51,
+          "y": 56.08333333333333,
+          "width": 40,
+          "height": 2.314814814814815
+        },
+        "text": "◆ 本輪開獎結晶 0 + 通關 0 · 持有 18"
+      },
+      {
+        "kind": "text",
+        "id": "result_story",
+        "rect": {
+          "x": 9,
+          "y": 22.157793209876548,
+          "width": 82,
+          "height": 1.8325617283950615
+        },
+        "text": "清點回來的士兵。下一處營火已在地圖上等候。"
+      },
+      {
+        "kind": "image",
+        "id": "chest_plate_tl",
+        "rect": {
+          "x": 26,
+          "y": 37.760330578512395,
+          "width": 2.0919421487603316,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "chest_plate_t",
+        "rect": {
+          "x": 28.09194214876033,
+          "y": 37.760330578512395,
+          "width": 43.816115702479344,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "chest_plate_tr",
+        "rect": {
+          "x": 71.90805785123968,
+          "y": 37.760330578512395,
+          "width": 2.0919421487603245,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "chest_plate_l",
+        "rect": {
+          "x": 26,
+          "y": 34.239669421487605,
+          "width": 2.0919421487603316,
+          "height": 3.52066115702479
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "chest_plate_c",
+        "rect": {
+          "x": 28.09194214876033,
+          "y": 34.239669421487605,
+          "width": 43.816115702479344,
+          "height": 3.52066115702479
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "chest_plate_r",
+        "rect": {
+          "x": 71.90805785123968,
+          "y": 34.239669421487605,
+          "width": 2.0919421487603245,
+          "height": 3.52066115702479
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "chest_plate_bl",
+        "rect": {
+          "x": 26,
+          "y": 33,
+          "width": 2.0919421487603316,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "chest_plate_b",
+        "rect": {
+          "x": 28.09194214876033,
+          "y": 33,
+          "width": 43.816115702479344,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "chest_plate_br",
+        "rect": {
+          "x": 71.90805785123968,
+          "y": 33,
+          "width": 2.0919421487603245,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "chest",
+        "rect": {
+          "x": 26,
+          "y": 34.58539094650206,
+          "width": 48,
+          "height": 2.8292181069958846
+        },
+        "text": "按住開啟寶箱 ×1",
+        "action": "OpenChest"
+      },
+      {
+        "kind": "button",
+        "id": "chest_hit_top",
+        "rect": {
+          "x": 26,
+          "y": 37.41460905349794,
+          "width": 48,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "OpenChest"
+      },
+      {
+        "kind": "button",
+        "id": "chest_hit_bottom",
+        "rect": {
+          "x": 26,
+          "y": 33,
+          "width": 48,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "OpenChest"
+      },
+      {
+        "kind": "image",
+        "id": "next_plate_tl",
+        "rect": {
+          "x": 32,
+          "y": 10.760330578512397,
+          "width": 2.0919421487603316,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "next_plate_t",
+        "rect": {
+          "x": 34.09194214876033,
+          "y": 10.760330578512397,
+          "width": 31.816115702479344,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "next_plate_tr",
+        "rect": {
+          "x": 65.90805785123968,
+          "y": 10.760330578512397,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "next_plate_l",
+        "rect": {
+          "x": 32,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603316,
+          "height": 3.5206611570247937
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "next_plate_c",
+        "rect": {
+          "x": 34.09194214876033,
+          "y": 7.239669421487603,
+          "width": 31.816115702479344,
+          "height": 3.5206611570247937
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "next_plate_r",
+        "rect": {
+          "x": 65.90805785123968,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603245,
+          "height": 3.5206611570247937
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "next_plate_bl",
+        "rect": {
+          "x": 32,
+          "y": 6,
+          "width": 2.0919421487603316,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "next_plate_b",
+        "rect": {
+          "x": 34.09194214876033,
+          "y": 6,
+          "width": 31.816115702479344,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "next_plate_br",
+        "rect": {
+          "x": 65.90805785123968,
+          "y": 6,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "next",
+        "rect": {
+          "x": 32,
+          "y": 7.585390946502056,
+          "width": 36,
+          "height": 2.8292181069958846
+        },
+        "text": "前往下一站",
+        "action": "Next"
+      },
+      {
+        "kind": "button",
+        "id": "next_hit_top",
+        "rect": {
+          "x": 32,
+          "y": 10.414609053497943,
+          "width": 36,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Next"
+      },
+      {
+        "kind": "button",
+        "id": "next_hit_bottom",
+        "rect": {
+          "x": 32,
+          "y": 6.000000000000002,
+          "width": 36,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Next"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "關卡凱旋",
+      "font": 34,
+      "clip": {
+        "x": 172.8,
+        "y": 89.7888888888889,
+        "width": 1113.6,
+        "height": 47.22222222222223
+      },
+      "ink": {
+        "x": 664.5999999999999,
+        "y": 97.66562500000002,
+        "width": 132,
+        "height": 31
+      }
+    },
+    {
+      "text": "320",
+      "font": 17.25,
+      "clip": {
+        "x": 1440,
+        "y": 86.42083333333336,
+        "width": 134.4,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1492.2031127929688,
+        "y": 92.13437500000003,
+        "width": 29.995849609375,
+        "height": 13
+      }
+    },
+    {
+      "text": "18",
+      "font": 17.25,
+      "clip": {
+        "x": 1670.4,
+        "y": 86.42083333333336,
+        "width": 115.2,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1719.0020751953125,
+        "y": 92.13437500000003,
+        "width": 18.9979248046875,
+        "height": 13
+      }
+    },
+    {
+      "text": "本關已完成，軍團準備繼續前行。",
+      "font": 17.25,
+      "clip": {
+        "x": 172.8,
+        "y": 216.02083333333337,
+        "width": 1574.4,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 830.625,
+        "y": 219.73437500000003,
+        "width": 252.5,
+        "height": 16
+      }
+    },
+    {
+      "text": "+0",
+      "font": 32,
+      "clip": {
+        "x": 172.8,
+        "y": 381.7777777777778,
+        "width": 729.6,
+        "height": 44.44444444444444
+      },
+      "ink": {
+        "x": 519.5296875,
+        "y": 391.48437500000006,
+        "width": 38.59375,
+        "height": 26
+      }
+    },
+    {
+      "text": "本次遠征累計獲獎金幣",
+      "font": 14.25,
+      "clip": {
+        "x": 172.8,
+        "y": 313.3041666666667,
+        "width": 729.6,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 466.35,
+        "y": 316.7625,
+        "width": 142.25,
+        "height": 13
+      }
+    },
+    {
+      "text": "擊殺 0 · 破防 0",
+      "font": 17.25,
+      "clip": {
+        "x": 172.8,
+        "y": 572.4208333333333,
+        "width": 1574.4,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 904.8892822265625,
+        "y": 576.134375,
+        "width": 110.2235107421875,
+        "height": 16
+      }
+    },
+    {
+      "text": "倖存返還 0 金幣",
+      "font": 17.25,
+      "clip": {
+        "x": 979.2,
+        "y": 334.8208333333334,
+        "width": 768,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1302.1385375976563,
+        "y": 338.53437500000007,
+        "width": 121.8729248046875,
+        "height": 16
+      }
+    },
+    {
+      "text": "◆ 本輪開獎結晶 0 + 通關 0 · 持有 18",
+      "font": 18,
+      "clip": {
+        "x": 979.2,
+        "y": 449.3,
+        "width": 768,
+        "height": 25
+      },
+      "ink": {
+        "x": 1220.22392578125,
+        "y": 452.815625,
+        "width": 285.51953125,
+        "height": 17
+      }
+    },
+    {
+      "text": "清點回來的士兵。下一處營火已在地圖上等候。",
+      "font": 14.25,
+      "clip": {
+        "x": 172.8,
+        "y": 820.9041666666666,
+        "width": 1574.4,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 810.375,
+        "y": 824.3625,
+        "width": 294,
+        "height": 13
+      }
+    },
+    {
+      "text": "按住開啟寶箱 ×1",
+      "font": 22,
+      "clip": {
+        "x": 499.2,
+        "y": 675.9222222222222,
+        "width": 921.6,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 877.76416015625,
+        "y": 679.778125,
+        "width": 164.720703125,
+        "height": 22
+      }
+    },
+    {
+      "text": "前往下一站",
+      "font": 22,
+      "clip": {
+        "x": 614.4,
+        "y": 967.5222222222222,
+        "width": 691.2,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 906,
+        "y": 972.3781250000001,
+        "width": 108,
+        "height": 20
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 47,
+    "assets": [
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_scene-shade",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-coin",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-crystal",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

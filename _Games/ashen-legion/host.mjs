@@ -7,6 +7,7 @@ import {createFirstScreenAssets} from './presentation/first-screen.mjs';
 import {createRewardPresentation} from './presentation/rewards.mjs';
 import {fitFormalUI} from './presentation/adaptive-ui.mjs';
 import {createUiMotion} from './presentation/ui-motion.mjs';
+import {createShopAccessibility} from './presentation/shop-accessibility.mjs';
 // Game-owned browser host: input/projection and presentation only.
 // Authoritative simulation is the exported Unone Rust/WASM + main.luau.
 import {createThreeRenderer} from './web/renderer/three.js';
@@ -24,6 +25,7 @@ let safeInsets={};
 function measureInsets(){safeInsets=viewport.safeInsets()}
 measureInsets();
 let backend,renderer,snapshot,scheduler,ready=false,lastFrame=-1,environments,themeId;
+const shopAccessibility=createShopAccessibility({canvas:formalCanvas,stage,onAction:action=>{if(ready)input.queueAction(action)},onHold:(action,held)=>{if(ready)input.queueActionTransition(action,held)}});
 let appliedQuality='';
 function applyPresentationSettings(game){
  const quality=game?.settings?.quality??'high';
@@ -72,12 +74,18 @@ function updatePointer(e,edge=false){
  }
  input.updatePointer({position:point,screen_position:{x:p.x/canvas.clientWidth*100,y:(1-p.y/canvas.clientHeight)*100},down},edge?'edge':'move');
 }
-function routeUi(e,kind){const p=viewport.toLocal(e),x=p.x/canvas.clientWidth*100,y=(1-p.y/canvas.clientHeight)*100;const hit=formalUi?.hitTest(x,y);uiMotion.pointer(kind,hit?.action?hit.nodeId:null);return formalUi?.pointer({kind,pointerId:e.pointerId,x,y})??false}
+function routeUi(e,kind){
+ const p=viewport.toLocal(e),x=p.x/canvas.clientWidth*100,y=(1-p.y/canvas.clientHeight)*100,hit=formalUi?.hitTest(x,y),id=hit?.nodeId??'';
+ const game=snapshot?.world.observations.game,fee=game?.refreshCost??2;
+ if(kind==='move')canvas.title=/^screen_gold/.test(id)?'金幣':/^screen_crystals/.test(id)?'強化結晶':/^stock_hit_/.test(id)?'查看裝備詳情：紫結晶是售價，金幣是派兵費變化':/^(stock_cost_|shop_detail_price)/.test(id)?'售價：消耗強化結晶':/^refresh(?:_|$)/.test(id)?`${game?.crystals<fee?'結晶不足：':''}重骰需要 ${fee} 結晶，不限次數，成功後加價`:'';
+ uiMotion.pointer(kind,hit?.action?hit.nodeId:null);return formalUi?.pointer({kind,pointerId:e.pointerId,x,y})??false;
+}
+canvas.addEventListener('pointerleave',()=>{canvas.title='';uiMotion.pointer('move',null)});
 canvas.addEventListener('pointerdown',e=>{if(e.button!==0)return;if(routeUi(e,'down')||snapshot?.world.observations.game.autoConfigOpen){canvas.setPointerCapture(e.pointerId);e.preventDefault();return}down=true;canvas.setPointerCapture(e.pointerId);updatePointer(e,true)});
 canvas.addEventListener('pointermove',e=>{if(!routeUi(e,'move'))updatePointer(e)});
 canvas.addEventListener('pointerup',e=>{const handled=routeUi(e,'up');down=false;if(!handled)updatePointer(e,true)});
 canvas.addEventListener('pointercancel',()=>{uiMotion.pointer('cancel');releaseInput()});
-window.addEventListener('keydown',e=>{if(!ready||e.target.closest('dialog'))return;if(['Space','Digit1','Digit2','Digit3','Escape'].includes(e.code)){e.preventDefault();if(!snapshot?.world.observations.game.autoConfigOpen||e.code==='Escape'){if(e.code==='Space')input.setHeld(e.code,true);else if(!e.repeat)input.queueAction(e.code)}}});
+window.addEventListener('keydown',e=>{if(!ready||e.defaultPrevented||e.target.closest('dialog,[data-shop-semantics]'))return;if(['Space','Digit1','Digit2','Digit3','Escape'].includes(e.code)){e.preventDefault();if(!snapshot?.world.observations.game.autoConfigOpen||e.code==='Escape'){if(e.code==='Space')input.setHeld(e.code,true);else if(!e.repeat)input.queueAction(e.code)}}});
 window.addEventListener('keyup',e=>input.setHeld(e.code,false));
 window.addEventListener('blur',()=>{releaseInput();if(['battle','celebration'].includes(snapshot?.world.observations.game.phase)&&!snapshot.world.observations.game.paused)input.queueAction('Pause')});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){releaseInput();if(['battle','celebration'].includes(snapshot?.world.observations.game.phase)&&!snapshot.world.observations.game.paused)input.queueAction('Pause')}});
@@ -131,6 +139,9 @@ async function start(){
   // Download time must not advance actor/VFX entry animation on the first frame.
   applyPresentationSettings(snapshot?.world?.observations?.game);
   renderer.draw(presentation(),firstVisualDraw?{dt:0}:undefined);firstVisualDraw=false;worldLabels?.draw(snapshot.world.observations.game);formalUi?.draw(uiMotion.draw(fitFormalUI(snapshot,{width:canvas.clientWidth,height:canvas.clientHeight,insets:safeInsets})));document.body.dataset.phase=snapshot.world.observations.game.phase;
+  const game=snapshot.world.observations.game;
+  formalCanvas?.setAttribute('aria-label',game.phase==='shop'&&game.location==='market'?'榛姨商店':'Unone 遊戲介面');
+  shopAccessibility.sync(uiMotion.tree(),game);
   if(snapshot.save_payload){const serialized=JSON.stringify(snapshot.save_payload);if(serialized!==savedFingerprint){try{localStorage.setItem('forest-lord-town-v1',serialized);savedFingerprint=serialized}catch(e){console.warn('Town save not persisted:',e.message)}}}
   if(snapshot.world.frame!==lastFrame){lastFrame=snapshot.world.frame;window.dispatchEvent(new CustomEvent('ashen-state',{detail:snapshot.world.observations.game}));}
  };
@@ -143,6 +154,6 @@ async function start(){
  await new Promise(requestAnimationFrame);draw();loading.mark('firstFrame');
  ready=true;document.body.dataset.ready='true';loading.finish();window.dispatchEvent(new CustomEvent('ashen-ready'));scheduler.start();
  window.addEventListener('resize',()=>{measureInsets();releaseInput();backend.request({kind:'aspect',value:canvas.clientWidth/canvas.clientHeight}).catch(fail)});
- window.addEventListener('pagehide',()=>{scheduler.stop();worldLabels?.dispose();formalUi?.dispose();renderer.dispose?.();backend.close()});
+ window.addEventListener('pagehide',()=>{scheduler.stop();shopAccessibility.dispose();worldLabels?.dispose();formalUi?.dispose();renderer.dispose?.();backend.close()});
 }
 start().catch(fail);

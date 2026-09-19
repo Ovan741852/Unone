@@ -2,136 +2,142 @@
   "ok": true,
   "checks": [
     {
-      "name": "components-1440",
+      "name": "components-1920",
       "failures": [],
-      "glyphCount": 48,
-      "minFont": 16
+      "glyphCount": 37,
+      "minFont": 22
     },
     {
-      "name": "components-detail1-1440",
+      "name": "components-detail1-1920",
       "failures": [],
-      "glyphCount": 56,
-      "minFont": 16
+      "glyphCount": 45,
+      "minFont": 22
     },
     {
-      "name": "components-detail2-1440",
+      "name": "components-detail2-1920",
       "failures": [],
-      "glyphCount": 56,
-      "minFont": 16
+      "glyphCount": 45,
+      "minFont": 22
     },
     {
-      "name": "components-detail3-1440",
+      "name": "components-detail3-1920",
       "failures": [],
-      "glyphCount": 56,
-      "minFont": 16
+      "glyphCount": 45,
+      "minFont": 22
     },
     {
-      "name": "components-detail4-1440",
+      "name": "components-detail4-1920",
       "failures": [],
-      "glyphCount": 56,
-      "minFont": 16
+      "glyphCount": 45,
+      "minFont": 22
+    },
+    {
+      "name": "components-1600",
+      "failures": [],
+      "glyphCount": 37,
+      "minFont": 22
+    },
+    {
+      "name": "components-detail1-1600",
+      "failures": [],
+      "glyphCount": 45,
+      "minFont": 22
+    },
+    {
+      "name": "components-detail2-1600",
+      "failures": [],
+      "glyphCount": 45,
+      "minFont": 22
+    },
+    {
+      "name": "components-detail3-1600",
+      "failures": [],
+      "glyphCount": 45,
+      "minFont": 22
+    },
+    {
+      "name": "components-detail4-1600",
+      "failures": [],
+      "glyphCount": 45,
+      "minFont": 22
     },
     {
       "name": "components-1280",
       "failures": [],
-      "glyphCount": 48,
-      "minFont": 14.2222
+      "glyphCount": 37,
+      "minFont": 22
     },
     {
       "name": "components-detail1-1280",
       "failures": [],
-      "glyphCount": 56,
-      "minFont": 14.2222
+      "glyphCount": 45,
+      "minFont": 22
     },
     {
       "name": "components-detail2-1280",
       "failures": [],
-      "glyphCount": 56,
-      "minFont": 14.2222
+      "glyphCount": 45,
+      "minFont": 22
     },
     {
       "name": "components-detail3-1280",
       "failures": [],
-      "glyphCount": 56,
-      "minFont": 14.2222
+      "glyphCount": 45,
+      "minFont": 22
     },
     {
       "name": "components-detail4-1280",
       "failures": [],
-      "glyphCount": 56,
-      "minFont": 14.2222
+      "glyphCount": 45,
+      "minFont": 22
     },
     {
-      "name": "components-900",
+      "name": "components-2560",
       "failures": [],
-      "glyphCount": 48,
-      "minFont": 10.24
+      "glyphCount": 37,
+      "minFont": 22
     },
     {
-      "name": "components-detail1-900",
+      "name": "components-detail1-2560",
       "failures": [],
-      "glyphCount": 56,
-      "minFont": 10.24
+      "glyphCount": 45,
+      "minFont": 22
     },
     {
-      "name": "components-detail2-900",
+      "name": "components-detail2-2560",
       "failures": [],
-      "glyphCount": 56,
-      "minFont": 10.24
+      "glyphCount": 45,
+      "minFont": 22
     },
     {
-      "name": "components-detail3-900",
+      "name": "components-detail3-2560",
       "failures": [],
-      "glyphCount": 56,
-      "minFont": 10.24
+      "glyphCount": 45,
+      "minFont": 22
     },
     {
-      "name": "components-detail4-900",
+      "name": "components-detail4-2560",
       "failures": [],
-      "glyphCount": 56,
-      "minFont": 10.24
+      "glyphCount": 45,
+      "minFont": 22
     },
     {
-      "name": "components-844",
+      "name": "components-purchased-desktop",
       "failures": [],
-      "glyphCount": 44,
-      "minFont": 10.24
+      "glyphCount": 45,
+      "minFont": 22
     },
     {
-      "name": "components-detail1-844",
+      "name": "components-receipt-desktop",
       "failures": [],
-      "glyphCount": 52,
-      "minFont": 10.24
+      "glyphCount": 37,
+      "minFont": 22
     },
     {
-      "name": "components-detail2-844",
+      "name": "components-rerolled-desktop",
       "failures": [],
-      "glyphCount": 52,
-      "minFont": 10.24
-    },
-    {
-      "name": "components-detail3-844",
-      "failures": [],
-      "glyphCount": 52,
-      "minFont": 10.24
-    },
-    {
-      "name": "components-detail4-844",
-      "failures": [],
-      "glyphCount": 52,
-      "minFont": 10.24
-    },
-    {
-      "name": "components-purchased-844",
-      "failures": [],
-      "glyphCount": 52,
-      "minFont": 10.24
-    },
-    {
-      "name": "components-receipt-844",
-      "failures": [],
-      "glyphCount": 44,
-      "minFont": 10.24
+      "glyphCount": 37,
+      "minFont": 22
     },
     {
       "name": "animation-long-copy-0",

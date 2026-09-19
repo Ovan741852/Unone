@@ -1,0 +1,625 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "battle:abandon",
+    "children": [
+      {
+        "kind": "image",
+        "id": "screen_shade",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_fill",
+        "rect": {
+          "x": 3.8,
+          "y": 5,
+          "width": 92.4,
+          "height": 90
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tl",
+        "rect": {
+          "x": 3,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_t",
+        "rect": {
+          "x": 7.5,
+          "y": 85,
+          "width": 85,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tr",
+        "rect": {
+          "x": 92.5,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_l",
+        "rect": {
+          "x": 3,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_c",
+        "rect": {
+          "x": 7.5,
+          "y": 11,
+          "width": 85,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_r",
+        "rect": {
+          "x": 92.5,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_bl",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_b",
+        "rect": {
+          "x": 7.5,
+          "y": 3,
+          "width": 85,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_br",
+        "rect": {
+          "x": 92.5,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "screen_title",
+        "rect": {
+          "x": 9,
+          "y": 87.31378600823045,
+          "width": 58,
+          "height": 4.372427983539095
+        },
+        "text": "征途暫歇"
+      },
+      {
+        "kind": "text",
+        "id": "abandon_warning",
+        "rect": {
+          "x": 15,
+          "y": 66.2962962962963,
+          "width": 70,
+          "height": 3.9999999999999996
+        },
+        "text": "結束這趟遠征？\n本局金幣、結晶與配裝不保留，城鎮建設保留。"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_cancel_plate_tl",
+        "rect": {
+          "x": 15,
+          "y": 38.93333333333333,
+          "width": 0.5999999999999996,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_cancel_plate_t",
+        "rect": {
+          "x": 15.6,
+          "y": 38.93333333333333,
+          "width": 31.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_cancel_plate_tr",
+        "rect": {
+          "x": 47.4,
+          "y": 38.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_cancel_plate_l",
+        "rect": {
+          "x": 15,
+          "y": 35.06666666666667,
+          "width": 0.5999999999999996,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_cancel_plate_c",
+        "rect": {
+          "x": 15.6,
+          "y": 35.06666666666667,
+          "width": 31.799999999999997,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_cancel_plate_r",
+        "rect": {
+          "x": 47.4,
+          "y": 35.06666666666667,
+          "width": 0.6000000000000014,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_cancel_plate_bl",
+        "rect": {
+          "x": 15,
+          "y": 34,
+          "width": 0.5999999999999996,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_cancel_plate_b",
+        "rect": {
+          "x": 15.6,
+          "y": 34,
+          "width": 31.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_cancel_plate_br",
+        "rect": {
+          "x": 47.4,
+          "y": 34,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "abandon_cancel",
+        "rect": {
+          "x": 15,
+          "y": 35.58539094650206,
+          "width": 33,
+          "height": 2.8292181069958846
+        },
+        "text": "繼續留在遠征",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "abandon_cancel_hit_top",
+        "rect": {
+          "x": 15,
+          "y": 38.41460905349794,
+          "width": 33,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "abandon_cancel_hit_bottom",
+        "rect": {
+          "x": 15,
+          "y": 34,
+          "width": 33,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "UI_home"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_confirm_plate_tl",
+        "rect": {
+          "x": 53,
+          "y": 38.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_confirm_plate_t",
+        "rect": {
+          "x": 53.6,
+          "y": 38.93333333333333,
+          "width": 31.800000000000004,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_confirm_plate_tr",
+        "rect": {
+          "x": 85.4,
+          "y": 38.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_confirm_plate_l",
+        "rect": {
+          "x": 53,
+          "y": 35.06666666666667,
+          "width": 0.6000000000000014,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_confirm_plate_c",
+        "rect": {
+          "x": 53.6,
+          "y": 35.06666666666667,
+          "width": 31.800000000000004,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_confirm_plate_r",
+        "rect": {
+          "x": 85.4,
+          "y": 35.06666666666667,
+          "width": 0.5999999999999943,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_confirm_plate_bl",
+        "rect": {
+          "x": 53,
+          "y": 34,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_confirm_plate_b",
+        "rect": {
+          "x": 53.6,
+          "y": 34,
+          "width": 31.800000000000004,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "abandon_confirm_plate_br",
+        "rect": {
+          "x": 85.4,
+          "y": 34,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "abandon_confirm",
+        "rect": {
+          "x": 53,
+          "y": 35.58539094650206,
+          "width": 33,
+          "height": 2.8292181069958846
+        },
+        "text": "結束遠征",
+        "action": "Home"
+      },
+      {
+        "kind": "button",
+        "id": "abandon_confirm_hit_top",
+        "rect": {
+          "x": 53,
+          "y": 38.41460905349794,
+          "width": 33,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Home"
+      },
+      {
+        "kind": "button",
+        "id": "abandon_confirm_hit_bottom",
+        "rect": {
+          "x": 53,
+          "y": 34,
+          "width": 33,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Home"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "征途暫歇",
+      "font": 34,
+      "clip": {
+        "x": 172.8,
+        "y": 89.7888888888889,
+        "width": 1113.6,
+        "height": 47.22222222222223
+      },
+      "ink": {
+        "x": 662.5999999999999,
+        "y": 97.66562500000002,
+        "width": 134,
+        "height": 31
+      }
+    },
+    {
+      "text": "結束這趟遠征？",
+      "font": 18,
+      "clip": {
+        "x": 288,
+        "y": 320.79999999999995,
+        "width": 1344,
+        "height": 43.19999999999999
+      },
+      "ink": {
+        "x": 897,
+        "y": 322.61562499999997,
+        "width": 122,
+        "height": 17
+      }
+    },
+    {
+      "text": "本局金幣、結晶與配裝不保留，城鎮建設保留。",
+      "font": 18,
+      "clip": {
+        "x": 288,
+        "y": 320.79999999999995,
+        "width": 1344,
+        "height": 43.19999999999999
+      },
+      "ink": {
+        "x": 771,
+        "y": 344.215625,
+        "width": 372,
+        "height": 17
+      }
+    },
+    {
+      "text": "繼續留在遠征",
+      "font": 22,
+      "clip": {
+        "x": 288,
+        "y": 665.1222222222221,
+        "width": 633.6,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 539.8,
+        "y": 669.978125,
+        "width": 130,
+        "height": 21
+      }
+    },
+    {
+      "text": "結束遠征",
+      "font": 22,
+      "clip": {
+        "x": 1017.6,
+        "y": 665.1222222222221,
+        "width": 633.6,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1291.4,
+        "y": 669.978125,
+        "width": 86,
+        "height": 20
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 37,
+    "assets": [
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_scene-shade",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-br",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

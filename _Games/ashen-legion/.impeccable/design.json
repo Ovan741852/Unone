@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-19T11:39:15Z",
+  "title": "Design System: 森林領主",
+  "extensions": {
+    "motion": [
+      { "name": "shop-entry", "value": "220ms", "purpose": "整個商品元件同步進場，來源 presentation/ui-motion.mjs。" },
+      { "name": "shop-stagger", "value": "20ms", "purpose": "每張卡依序錯開。" },
+      { "name": "ease-out-cubic", "value": "1 - (1 - t)^3", "purpose": "進場與按壓回復，t 夾在 0..1。" },
+      { "name": "hover-scale", "value": "1.012", "purpose": "同一元件的圖文與命中區一起放大。" },
+      { "name": "pressed-scale", "value": "0.98", "purpose": "按下時的整組縮放。" },
+      { "name": "release", "value": "280ms", "purpose": "放開後回復；reduced-motion 走靜態路徑。" }
+    ],
+    "breakpoints": [
+      { "name": "shop-short-landscape-height", "value": "500px" },
+      { "name": "shop-compact-label-width", "value": "1000px" }
+    ],
+    "shadows": [
+      { "name": "keyboard-focus-separator", "value": "0 0 0 3px #192219", "purpose": "焦點金框與精細素材之間的分隔環，不是卡片立體陰影。" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Keyboard focus indicator",
+      "kind": "custom",
+      "description": "僅示範正式鍵盤焦點樣式；精細 Canvas 視窗、卡片與按鈕以正式截圖和九宮格程式為準。",
+      "html": "<div class=\"ds-focus-sample\" tabindex=\"0\" aria-label=\"鍵盤焦點樣式範例\">Tab 聚焦</div>",
+      "css": ".ds-focus-sample{display:inline-block;margin:10px;padding:12px 20px;color:#f4e4b8;background:#0a1712;font:16px \"Microsoft JhengHei\",sans-serif;border-radius:4px;outline:none}.ds-focus-sample:focus-visible{outline:3px solid #ffe197;outline-offset:3px;box-shadow:0 0 0 3px #192219}"
+    }
+  ],
+  "narrative": {
+    "northStar": "榛姨的森林商店",
+    "overview": "這是使用者已確認方向的整理，不是新提案。以榛姨的衣料、皮革與舊金配件串起精細手繪遊戲 UI；墨綠底、舊金裝飾、磚紅主要操作，保留角色感與卡片收藏感。材料有細節，內容區保持安靜，閱讀與操作不被裝飾壓過。",
+    "keyCharacteristics": [
+      "榛姨與精細手繪素材的統一色調、線條與材質。",
+      "置中視窗、清楚的前後層次、安靜的內容底材。",
+      "共用卡片／按鈕與九宮格，角色和裝備保留原比例。",
+      "圖示＋數字呈現資源，詳情承接長敘述與完整技能。"
+    ],
+    "rules": [],
+    "dos": [
+      "沿用已確認的榛姨美術方向和共用母元件。",
+      "分開記錄全局視覺語言與商店專屬構圖／玩法。",
+      "檢查真實像素、字形、點擊、焦點與動畫狀態，再對照核准稿。",
+      "用正式截圖與測試證據說明完成範圍。"
+    ],
+    "donts": [
+      "不把整張生成 UI 圖當成正式介面，不把可變文字烙進圖片。",
+      "不逐張卡片另寫高度、字級與拉伸方法，不把按鈕四角拉扁。",
+      "不靠縮字、裁切或降低測試門檻處理爆框。",
+      "不拷貝參考遊戲美術，不把未驗證頁面／平台說成已完成。"
+    ]
+  }
+}

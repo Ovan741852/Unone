@@ -1,0 +1,977 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "battle:home",
+    "children": [
+      {
+        "kind": "image",
+        "id": "timeline_track",
+        "rect": {
+          "x": 7,
+          "y": 89,
+          "width": 86,
+          "height": 9
+        },
+        "asset": "texture://ui_timeline-track",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "timeline_fill",
+        "rect": {
+          "x": 7,
+          "y": 89,
+          "width": 1.72,
+          "height": 9
+        },
+        "asset": "texture://ui_timeline-fill",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "timeline_time",
+        "rect": {
+          "x": 42,
+          "y": 96.62037037037038,
+          "width": 16,
+          "height": 2.314814814814815
+        },
+        "text": "03:00"
+      },
+      {
+        "kind": "text",
+        "id": "timeline_round",
+        "rect": {
+          "x": 8,
+          "y": 93.8059413580247,
+          "width": 20,
+          "height": 1.8325617283950615
+        },
+        "text": "第 1 / 7 輪"
+      },
+      {
+        "kind": "text",
+        "id": "timeline_goal",
+        "rect": {
+          "x": 60,
+          "y": 93.8059413580247,
+          "width": 31,
+          "height": 1.8325617283950615
+        },
+        "text": "大王最後 30 秒登場"
+      },
+      {
+        "kind": "image",
+        "id": "timeline_wheel",
+        "rect": {
+          "x": 52.77777777777778,
+          "y": 94.3,
+          "width": 4,
+          "height": 4.5
+        },
+        "asset": "texture://ui_icon-refresh",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "timeline_beetle",
+        "rect": {
+          "x": 69.5,
+          "y": 94.3,
+          "width": 4,
+          "height": 4.5
+        },
+        "asset": "texture://ui_icon-coin",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "timeline_boss",
+        "rect": {
+          "x": 76.66666666666667,
+          "y": 94.3,
+          "width": 4,
+          "height": 4.5
+        },
+        "asset": "texture://ui_icon-crown",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "coins_plate",
+        "rect": {
+          "x": 35,
+          "y": 2,
+          "width": 18,
+          "height": 6
+        },
+        "asset": "texture://ui_hud-gold",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "coins_icon",
+        "rect": {
+          "x": 36,
+          "y": 4.57407407407407,
+          "width": 3,
+          "height": 2.7777777777777777
+        },
+        "asset": "texture://ui_symbol-coin",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "coins",
+        "rect": {
+          "x": 35,
+          "y": 3.585390946502056,
+          "width": 18,
+          "height": 2.8292181069958846
+        },
+        "text": "320"
+      },
+      {
+        "kind": "image",
+        "id": "crystals_plate",
+        "rect": {
+          "x": 55,
+          "y": 2,
+          "width": 18,
+          "height": 6
+        },
+        "asset": "texture://ui_hud-crystal",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "crystals_icon",
+        "rect": {
+          "x": 56,
+          "y": 4.57407407407407,
+          "width": 3,
+          "height": 2.7777777777777777
+        },
+        "asset": "texture://ui_symbol-crystal",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "crystals",
+        "rect": {
+          "x": 55,
+          "y": 3.585390946502056,
+          "width": 18,
+          "height": 2.8292181069958846
+        },
+        "text": "18"
+      },
+      {
+        "kind": "image",
+        "id": "hud_unit_plate_1",
+        "rect": {
+          "x": 2,
+          "y": 2.000000000000001,
+          "width": 8.4,
+          "height": 6.018518518518518
+        },
+        "asset": "texture://ui_hud-active",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "hud_unit_icon_1",
+        "rect": {
+          "x": 3.7,
+          "y": 5.240740740740741,
+          "width": 5,
+          "height": 2.7777777777777777
+        },
+        "asset": "texture://ui_symbol-sword",
+        "fit": "contain"
+      },
+      {
+        "kind": "button",
+        "id": "hud_unit_1",
+        "rect": {
+          "x": 2,
+          "y": 5.240740740740741,
+          "width": 8.4,
+          "height": 2.7777777777777777
+        },
+        "text": "",
+        "action": "Unit1"
+      },
+      {
+        "kind": "button",
+        "id": "hud_unit_caption_1",
+        "rect": {
+          "x": 2,
+          "y": 2.0092592592592586,
+          "width": 8.4,
+          "height": 3.2222222222222223
+        },
+        "text": "劍兵\n4",
+        "action": "Unit1"
+      },
+      {
+        "kind": "image",
+        "id": "hud_unit_plate_2",
+        "rect": {
+          "x": 11,
+          "y": 2.000000000000001,
+          "width": 8.4,
+          "height": 6.018518518518518
+        },
+        "asset": "texture://ui_hud-key",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "hud_unit_icon_2",
+        "rect": {
+          "x": 12.7,
+          "y": 5.240740740740741,
+          "width": 5,
+          "height": 2.7777777777777777
+        },
+        "asset": "texture://ui_symbol-spear",
+        "fit": "contain"
+      },
+      {
+        "kind": "button",
+        "id": "hud_unit_2",
+        "rect": {
+          "x": 11,
+          "y": 5.240740740740741,
+          "width": 8.4,
+          "height": 2.7777777777777777
+        },
+        "text": "",
+        "action": "Unit2"
+      },
+      {
+        "kind": "button",
+        "id": "hud_unit_caption_2",
+        "rect": {
+          "x": 11,
+          "y": 2.0092592592592586,
+          "width": 8.4,
+          "height": 3.2222222222222223
+        },
+        "text": "槍兵\n10",
+        "action": "Unit2"
+      },
+      {
+        "kind": "image",
+        "id": "hud_unit_plate_3",
+        "rect": {
+          "x": 20,
+          "y": 2.000000000000001,
+          "width": 8.4,
+          "height": 6.018518518518518
+        },
+        "asset": "texture://ui_hud-key",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "hud_unit_icon_3",
+        "rect": {
+          "x": 21.7,
+          "y": 5.240740740740741,
+          "width": 5,
+          "height": 2.7777777777777777
+        },
+        "asset": "texture://ui_symbol-cavalry",
+        "fit": "contain"
+      },
+      {
+        "kind": "button",
+        "id": "hud_unit_3",
+        "rect": {
+          "x": 20,
+          "y": 5.240740740740741,
+          "width": 8.4,
+          "height": 2.7777777777777777
+        },
+        "text": "",
+        "action": "Unit3"
+      },
+      {
+        "kind": "button",
+        "id": "hud_unit_caption_3",
+        "rect": {
+          "x": 20,
+          "y": 2.0092592592592586,
+          "width": 8.4,
+          "height": 3.2222222222222223
+        },
+        "text": "騎兵\n20",
+        "action": "Unit3"
+      },
+      {
+        "kind": "image",
+        "id": "pause_plate",
+        "rect": {
+          "x": 93,
+          "y": 92,
+          "width": 5.2,
+          "height": 6
+        },
+        "asset": "texture://ui_hud-key",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "pause_icon",
+        "rect": {
+          "x": 94,
+          "y": 94.66666666666666,
+          "width": 3,
+          "height": 2.5925925925925926
+        },
+        "asset": "texture://ui_symbol-pause",
+        "fit": "contain"
+      },
+      {
+        "kind": "button",
+        "id": "pause",
+        "rect": {
+          "x": 93,
+          "y": 92,
+          "width": 5.2,
+          "height": 6
+        },
+        "text": "",
+        "action": "Pause"
+      },
+      {
+        "kind": "image",
+        "id": "mode_plate_lock",
+        "rect": {
+          "x": 77,
+          "y": 2.000000000000001,
+          "width": 10.4,
+          "height": 6.018518518518518
+        },
+        "asset": "texture://ui_hud-key",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "mode_icon_lock",
+        "rect": {
+          "x": 80.5,
+          "y": 5.240740740740741,
+          "width": 3.4,
+          "height": 2.7777777777777777
+        },
+        "asset": "texture://ui_symbol-lock",
+        "fit": "contain"
+      },
+      {
+        "kind": "button",
+        "id": "mode_lock",
+        "rect": {
+          "x": 77,
+          "y": 5.240740740740741,
+          "width": 10.4,
+          "height": 2.7777777777777777
+        },
+        "text": "",
+        "action": "Mode_lock"
+      },
+      {
+        "kind": "button",
+        "id": "mode_label_lock",
+        "rect": {
+          "x": 77,
+          "y": 2.23148148148149,
+          "width": 10.4,
+          "height": 2.314814814814815
+        },
+        "text": "LOCK · 關",
+        "action": "Mode_lock"
+      },
+      {
+        "kind": "image",
+        "id": "mode_plate_auto",
+        "rect": {
+          "x": 88,
+          "y": 2.000000000000001,
+          "width": 10.4,
+          "height": 6.018518518518518
+        },
+        "asset": "texture://ui_hud-key",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "mode_icon_auto",
+        "rect": {
+          "x": 91.5,
+          "y": 5.240740740740741,
+          "width": 3.4,
+          "height": 2.7777777777777777
+        },
+        "asset": "texture://ui_symbol-auto",
+        "fit": "contain"
+      },
+      {
+        "kind": "button",
+        "id": "mode_auto",
+        "rect": {
+          "x": 88,
+          "y": 5.240740740740741,
+          "width": 10.4,
+          "height": 2.7777777777777777
+        },
+        "text": "",
+        "action": "Mode_auto"
+      },
+      {
+        "kind": "button",
+        "id": "mode_label_auto",
+        "rect": {
+          "x": 88,
+          "y": 2.23148148148149,
+          "width": 10.4,
+          "height": 2.314814814814815
+        },
+        "text": "AUTO · 關",
+        "action": "Mode_auto"
+      },
+      {
+        "kind": "image",
+        "id": "auto_settings_plate_tl",
+        "rect": {
+          "x": 77,
+          "y": 13.6925925925926,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_settings_plate_t",
+        "rect": {
+          "x": 77.6,
+          "y": 13.6925925925926,
+          "width": 20.200000000000017,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_settings_plate_tr",
+        "rect": {
+          "x": 97.80000000000001,
+          "y": 13.6925925925926,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_settings_plate_l",
+        "rect": {
+          "x": 77,
+          "y": 9.825925925925933,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_settings_plate_c",
+        "rect": {
+          "x": 77.6,
+          "y": 9.825925925925933,
+          "width": 20.200000000000017,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_settings_plate_r",
+        "rect": {
+          "x": 97.80000000000001,
+          "y": 9.825925925925933,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_settings_plate_bl",
+        "rect": {
+          "x": 77,
+          "y": 8.759259259259267,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_settings_plate_b",
+        "rect": {
+          "x": 77.6,
+          "y": 8.759259259259267,
+          "width": 20.200000000000017,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "auto_settings_plate_br",
+        "rect": {
+          "x": 97.80000000000001,
+          "y": 8.759259259259267,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "auto_settings",
+        "rect": {
+          "x": 77,
+          "y": 10.344650205761322,
+          "width": 21.400000000000006,
+          "height": 2.8292181069958846
+        },
+        "text": "選擇目標 · 10 種",
+        "action": "Auto_settings"
+      },
+      {
+        "kind": "button",
+        "id": "auto_settings_hit_top",
+        "rect": {
+          "x": 77,
+          "y": 13.17386831275721,
+          "width": 21.400000000000006,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_settings"
+      },
+      {
+        "kind": "button",
+        "id": "auto_settings_hit_bottom",
+        "rect": {
+          "x": 77,
+          "y": 8.759259259259268,
+          "width": 21.400000000000006,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Auto_settings"
+      },
+      {
+        "kind": "image",
+        "id": "target_plate",
+        "rect": {
+          "x": 77,
+          "y": 15.407407407407403,
+          "width": 21.4,
+          "height": 4.444444444444445
+        },
+        "asset": "texture://ui_hud-target",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "target",
+        "rect": {
+          "x": 77,
+          "y": 16.21502057613169,
+          "width": 21.4,
+          "height": 2.8292181069958846
+        },
+        "text": "按住戰場 · 派遣部隊"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "03:00",
+      "font": 18,
+      "clip": {
+        "x": 806.4,
+        "y": 11.499999999999886,
+        "width": 307.2,
+        "height": 25
+      },
+      "ink": {
+        "x": 937.060546875,
+        "y": 17.015624999999886,
+        "width": 45.4462890625,
+        "height": 14
+      }
+    },
+    {
+      "text": "第 1 / 7 輪",
+      "font": 14.25,
+      "clip": {
+        "x": 153.6,
+        "y": 47.10416666666661,
+        "width": 384,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 312.994775390625,
+        "y": 51.56249999999994,
+        "width": 64.96044921875,
+        "height": 12
+      }
+    },
+    {
+      "text": "大王最後 30 秒登場",
+      "font": 14.25,
+      "clip": {
+        "x": 1152,
+        "y": 47.10416666666661,
+        "width": 595.2,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 1387.9033447265624,
+        "y": 51.56249999999994,
+        "width": 123.143310546875,
+        "height": 12
+      }
+    },
+    {
+      "text": "320",
+      "font": 22,
+      "clip": {
+        "x": 672,
+        "y": 1010.7222222222222,
+        "width": 345.6,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 826.67353515625,
+        "y": 1017.578125,
+        "width": 37.501953125,
+        "height": 17
+      }
+    },
+    {
+      "text": "18",
+      "font": 22,
+      "clip": {
+        "x": 1056,
+        "y": 1010.7222222222222,
+        "width": 345.6,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1217.0490234375,
+        "y": 1017.578125,
+        "width": 23.7509765625,
+        "height": 17
+      }
+    },
+    {
+      "text": "劍兵",
+      "font": 14.5,
+      "clip": {
+        "x": 38.4,
+        "y": 1023.5,
+        "width": 161.28,
+        "height": 34.8
+      },
+      "ink": {
+        "x": 104.53999999999999,
+        "y": 1024.85625,
+        "width": 29.5,
+        "height": 14
+      }
+    },
+    {
+      "text": "4",
+      "font": 14.5,
+      "clip": {
+        "x": 38.4,
+        "y": 1023.5,
+        "width": 161.28,
+        "height": 34.8
+      },
+      "ink": {
+        "x": 113.83797363281249,
+        "y": 1044.2562500000001,
+        "width": 10,
+        "height": 11
+      }
+    },
+    {
+      "text": "槍兵",
+      "font": 14.5,
+      "clip": {
+        "x": 211.2,
+        "y": 1023.5,
+        "width": 161.28,
+        "height": 34.8
+      },
+      "ink": {
+        "x": 277.34,
+        "y": 1025.85625,
+        "width": 29.5,
+        "height": 13
+      }
+    },
+    {
+      "text": "10",
+      "font": 14.5,
+      "clip": {
+        "x": 211.2,
+        "y": 1023.5,
+        "width": 161.28,
+        "height": 34.8
+      },
+      "ink": {
+        "x": 284.435947265625,
+        "y": 1044.2562500000001,
+        "width": 16.404052734375,
+        "height": 11
+      }
+    },
+    {
+      "text": "騎兵",
+      "font": 14.5,
+      "clip": {
+        "x": 384,
+        "y": 1023.5,
+        "width": 161.28,
+        "height": 34.8
+      },
+      "ink": {
+        "x": 450.14,
+        "y": 1025.85625,
+        "width": 29.5,
+        "height": 13
+      }
+    },
+    {
+      "text": "20",
+      "font": 14.5,
+      "clip": {
+        "x": 384,
+        "y": 1023.5,
+        "width": 161.28,
+        "height": 34.8
+      },
+      "ink": {
+        "x": 456.235947265625,
+        "y": 1044.2562500000001,
+        "width": 17.404052734375,
+        "height": 11
+      }
+    },
+    {
+      "text": "LOCK · 關",
+      "font": 18,
+      "clip": {
+        "x": 1478.4,
+        "y": 1030.8999999999999,
+        "width": 199.68,
+        "height": 25
+      },
+      "ink": {
+        "x": 1540.51978515625,
+        "y": 1035.4156249999999,
+        "width": 75.4404296875,
+        "height": 16
+      }
+    },
+    {
+      "text": "AUTO · 關",
+      "font": 18,
+      "clip": {
+        "x": 1689.6,
+        "y": 1030.8999999999999,
+        "width": 199.68,
+        "height": 25
+      },
+      "ink": {
+        "x": 1748.1553320312498,
+        "y": 1035.4156249999999,
+        "width": 80.5693359375,
+        "height": 16
+      }
+    },
+    {
+      "text": "選擇目標 · 10 種",
+      "font": 22,
+      "clip": {
+        "x": 1478.4,
+        "y": 937.7222222222222,
+        "width": 410.88000000000017,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1606.3038671875001,
+        "y": 942.578125,
+        "width": 156.072265625,
+        "height": 20
+      }
+    },
+    {
+      "text": "按住戰場 · 派遣部隊",
+      "font": 22,
+      "clip": {
+        "x": 1478.4,
+        "y": 874.3222222222222,
+        "width": 410.88,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1588.8048437500001,
+        "y": 879.178125,
+        "width": 190.0703125,
+        "height": 21
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 51,
+    "assets": [
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-coin",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_timeline-track",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_timeline-fill",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-refresh",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-crown",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-gold",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-coin",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-crystal",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-crystal",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-active",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-sword",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-key",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-spear",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-cavalry",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-pause",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-lock",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-auto",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-target",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

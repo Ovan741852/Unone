@@ -12,6 +12,17 @@ const panel=`<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="512" v
 const plate=color=>`<svg xmlns="http://www.w3.org/2000/svg" width="512" height="128"><path d="M1 15L18 1H493L511 16V112L494 127H18L1 112Z" fill="${color}" stroke="#d3b572" stroke-width="2"/><path d="M8 23L23 8H486L504 23V105L488 120H23L8 105Z" fill="none" stroke="#070f0c" stroke-width="4"/><path d="M15 32L29 19H130L15 61ZM497 65L383 109H482L497 95Z" fill="#d8c18a" opacity=".13"/></svg>`;
 const crest=`<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><path d="M128 9L229 59L214 177L128 247L42 177L27 59Z" fill="#0c1e17" stroke="#d7b86b" stroke-width="7"/><path d="M128 29L209 70L196 166L128 221Z" fill="#456043"/><path d="M128 29L47 70L60 166L128 221Z" fill="#243d2e"/><path d="M62 81L83 99L94 58L128 89L162 58L173 99L194 81L178 133H78Z" fill="#edcc81" stroke="#111c13" stroke-width="5"/><path d="M81 145H175L167 170H144V203H112V170H89Z" fill="#b23f2c" stroke="#111c13" stroke-width="5"/><path d="M120 148H136V198H120Z" fill="#f3d996"/></svg>`;
 const inputs=[['panel',panel],['button',plate('#863625')],['muted',plate('#303b2e')],['crest',crest]];
+// Geometry only: a shared Luau path definition keeps the march and atlas aligned.
+const mapLiteral=readFileSync(join(root,'ui/formal-ui.luau'),'utf8').match(/local expeditionPoints=(\{\{[^\n]+\}\})/)?.[1];
+if(!mapLiteral)throw Error('Missing expedition points');
+const mapPoints=JSON.parse(mapLiteral.replace(/[{}]/g,c=>c==='{'?'[':']'));
+if(mapPoints.length!==8)throw Error('The expedition must have seven stations plus departure');
+for(let i=1;i<mapPoints.length;i++){
+ const [ax,ay]=mapPoints[i-1].map((v,j)=>v*(j?941:1672)/100),[bx,by]=mapPoints[i].map((v,j)=>v*(j?941:1672)/100),mx=(ax+bx)/2;
+ const d=`M${ax} ${ay}C${mx} ${ay} ${mx} ${by} ${bx} ${by}`;
+ for(const state of ['done','future'])inputs.push([`map-link-${i}-${state}`,`<svg xmlns="http://www.w3.org/2000/svg" width="1672" height="941"><path d="${d}" fill="none" stroke="#102722" stroke-opacity=".85" stroke-width="12"/><path d="${d}" fill="none" stroke="${state==='done'?'#efd397':'#b4a777'}" stroke-width="${state==='done'?5:4}" ${state==='future'?'stroke-dasharray="7 15"':''} stroke-linecap="round"/></svg>`]);
+}
+inputs.push(['map-current-ring',`<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><circle cx="64" cy="64" r="52" fill="none" stroke="#102722" stroke-width="9"/><circle cx="64" cy="64" r="52" fill="none" stroke="#f4d68f" stroke-width="3"/><path d="M58 1H70L64 11Z" fill="#f4d68f"/></svg>`]);
 // A quiet opaque surface belongs below the detailed raster frame. Do not
 // stretch a tiny cloth crop across a window (it magnifies texture noise).
 inputs.push(['shop-surface',`<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512"><defs><linearGradient id="surface" x2="1" y2="1"><stop stop-color="#18332e"/><stop offset="1" stop-color="#0b1c19"/></linearGradient></defs><rect width="512" height="512" fill="url(#surface)"/></svg>`]);
@@ -56,15 +67,18 @@ try{const page=await browser.newPage({viewport:{width:1100,height:600}});for(con
 const manifest=JSON.parse(readFileSync(join(root,'assets.json'),'utf8'));manifest.assets=manifest.assets.filter(a=>!a.id.startsWith('texture://ui_'));
 for(const name of inputs.map(x=>x[0]))manifest.assets.push({id:'texture://ui_'+name,kind:'texture2d',source:'assets/formal-ui/'+name+'.png'});
 for(const name of ['expedition-keyart-v1','quartermaster-v1','expedition-keyart-v2','portrait-lord-v2'])manifest.assets.push({id:'texture://ui_'+name,kind:'texture2d',source:'assets/formal-ui/'+name+'.png'});
-const generatedShopAssets=['shop-window-panel-v2','shop-card-rare-v2','shop-card-epic-v2','shop-card-legendary-v2','shop-button-primary-v2','shop-button-secondary-v2'];
+// Ivy has her own portrait; rune and military research are different people.
+manifest.assets.push({id:'texture://ui_portrait-runesmith',kind:'texture2d',source:'assets/formal-ui/characters-v1/portrait-runesmith.png'});
+for(const name of ['forest-map-v2','map-waypoint-v2'])manifest.assets.push({id:'texture://ui_'+name,kind:'texture2d',source:'assets/formal-ui/map-v2/'+name+'.png'});
+const generatedShopAssets=['shop-window-panel-v2','shop-card-rare-v2','shop-card-epic-v2','shop-card-legendary-v2','shop-button-primary-v2','shop-button-secondary-v2','control-quiet-v3'];
 const generatedShopSlices=['tl','t','tr','l','c','r','bl','b','br'];
 for(const name of generatedShopAssets)if(existsSync(join(dir,name+'.png'))){manifest.assets.push({id:'texture://ui_'+name,kind:'texture2d',source:'assets/formal-ui/'+name+'.png'});for(const slice of generatedShopSlices)if(existsSync(join(dir,`${name}-${slice}.png`)))manifest.assets.push({id:'texture://ui_'+name+'-'+slice,kind:'texture2d',source:'assets/formal-ui/'+name+'-'+slice+'.png'});}
 for(const creature of JSON.parse(readFileSync(join(root,'assets/creatures/manifest.json'),'utf8')).filter(c=>c.rank>0))manifest.assets.push({id:'texture://ui_target-'+creature.id,kind:'texture2d',source:'assets/formal-ui/target-'+creature.id+'.png'});
 // Keep approved ImageGen artwork authoritative across subsequent SVG/theme builds.
-for(const imgenPath of [join(root,'design-v1/hazel-imgen-manifest.json'),join(root,'design-v1/hazel-transparent-manifest.json')])if(existsSync(imgenPath)){
+for(const imgenPath of [join(root,'design-v1/hazel-imgen-manifest.json'),join(root,'design-v1/hazel-transparent-manifest.json'),join(root,'design-v1/hazel-character-manifest.json'),join(root,'design-v1/expedition-map-manifest.json'),join(root,'design-v1/desktop-ui-v4-manifest.json')])if(existsSync(imgenPath)){
  const art=JSON.parse(readFileSync(imgenPath,'utf8')),seen=new Set();
  for(const entry of art.entries){
-  if(!entry.runtime||!existsSync(join(root,entry.runtime)))throw Error('Run tools/import-hazel-imgen.mjs first: '+entry.id);
+  if(!entry.runtime||!existsSync(join(root,entry.runtime)))throw Error('Missing approved artwork for '+entry.id+' in '+imgenPath);
   for(const name of entry.resources??[entry.id]){
    const id='texture://ui_'+name;
    if(seen.has(id))throw Error('Duplicate ImageGen mapping: '+id);seen.add(id);

@@ -1,0 +1,3183 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "menu:town",
+    "children": [
+      {
+        "kind": "image",
+        "id": "town_scene",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_shop-backdrop",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_shade",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_fill",
+        "rect": {
+          "x": 3.8,
+          "y": 5,
+          "width": 92.4,
+          "height": 90
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tl",
+        "rect": {
+          "x": 3,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_t",
+        "rect": {
+          "x": 7.5,
+          "y": 85,
+          "width": 85,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tr",
+        "rect": {
+          "x": 92.5,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_l",
+        "rect": {
+          "x": 3,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_c",
+        "rect": {
+          "x": 7.5,
+          "y": 11,
+          "width": 85,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_r",
+        "rect": {
+          "x": 92.5,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_bl",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_b",
+        "rect": {
+          "x": 7.5,
+          "y": 3,
+          "width": 85,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_br",
+        "rect": {
+          "x": 92.5,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "screen_title",
+        "rect": {
+          "x": 9,
+          "y": 87.31378600823045,
+          "width": 82,
+          "height": 4.372427983539095
+        },
+        "text": "領地建設"
+      },
+      {
+        "kind": "image",
+        "id": "town_back_plate_tl",
+        "rect": {
+          "x": 48,
+          "y": 10.933333333333335,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_back_plate_t",
+        "rect": {
+          "x": 48.6,
+          "y": 10.933333333333335,
+          "width": 18.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_back_plate_tr",
+        "rect": {
+          "x": 67.4,
+          "y": 10.933333333333335,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_back_plate_l",
+        "rect": {
+          "x": 48,
+          "y": 7.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_back_plate_c",
+        "rect": {
+          "x": 48.6,
+          "y": 7.066666666666666,
+          "width": 18.800000000000004,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_back_plate_r",
+        "rect": {
+          "x": 67.4,
+          "y": 7.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_back_plate_bl",
+        "rect": {
+          "x": 48,
+          "y": 6,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_back_plate_b",
+        "rect": {
+          "x": 48.6,
+          "y": 6,
+          "width": 18.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_back_plate_br",
+        "rect": {
+          "x": 67.4,
+          "y": 6,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "town_back",
+        "rect": {
+          "x": 48,
+          "y": 7.585390946502056,
+          "width": 20,
+          "height": 2.8292181069958846
+        },
+        "text": "返回標題",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "town_back_hit_top",
+        "rect": {
+          "x": 48,
+          "y": 10.41460905349794,
+          "width": 20,
+          "height": 1.5853909465020586
+        },
+        "text": "",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "town_back_hit_bottom",
+        "rect": {
+          "x": 48,
+          "y": 6.000000000000001,
+          "width": 20,
+          "height": 1.5853909465020586
+        },
+        "text": "",
+        "action": "UI_home"
+      },
+      {
+        "kind": "image",
+        "id": "launch_expedition_plate_tl",
+        "rect": {
+          "x": 71,
+          "y": 10.760330578512399,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "launch_expedition_plate_t",
+        "rect": {
+          "x": 73.09194214876032,
+          "y": 10.760330578512399,
+          "width": 17.81611570247935,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "launch_expedition_plate_tr",
+        "rect": {
+          "x": 90.90805785123968,
+          "y": 10.760330578512399,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "launch_expedition_plate_l",
+        "rect": {
+          "x": 71,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603245,
+          "height": 3.5206611570247954
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "launch_expedition_plate_c",
+        "rect": {
+          "x": 73.09194214876032,
+          "y": 7.239669421487603,
+          "width": 17.81611570247935,
+          "height": 3.5206611570247954
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "launch_expedition_plate_r",
+        "rect": {
+          "x": 90.90805785123968,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603245,
+          "height": 3.5206611570247954
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "launch_expedition_plate_bl",
+        "rect": {
+          "x": 71,
+          "y": 6,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "launch_expedition_plate_b",
+        "rect": {
+          "x": 73.09194214876032,
+          "y": 6,
+          "width": 17.81611570247935,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "launch_expedition_plate_br",
+        "rect": {
+          "x": 90.90805785123968,
+          "y": 6,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "launch_expedition",
+        "rect": {
+          "x": 71,
+          "y": 7.585390946502056,
+          "width": 22,
+          "height": 2.8292181069958846
+        },
+        "text": "出發遠征",
+        "action": "LaunchExpedition"
+      },
+      {
+        "kind": "button",
+        "id": "launch_expedition_hit_top",
+        "rect": {
+          "x": 71,
+          "y": 10.41460905349794,
+          "width": 22,
+          "height": 1.5853909465020586
+        },
+        "text": "",
+        "action": "LaunchExpedition"
+      },
+      {
+        "kind": "button",
+        "id": "launch_expedition_hit_bottom",
+        "rect": {
+          "x": 71,
+          "y": 6.000000000000001,
+          "width": 22,
+          "height": 1.5853909465020586
+        },
+        "text": "",
+        "action": "LaunchExpedition"
+      },
+      {
+        "kind": "image",
+        "id": "town_lord",
+        "rect": {
+          "x": 9,
+          "y": 30,
+          "width": 23,
+          "height": 39
+        },
+        "asset": "texture://ui_portrait-lord-v2",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_heading",
+        "rect": {
+          "x": 37,
+          "y": 79.26851851851852,
+          "width": 56,
+          "height": 2.314814814814815
+        },
+        "text": "領地研究"
+      },
+      {
+        "kind": "text",
+        "id": "town_subheading",
+        "rect": {
+          "x": 37,
+          "y": 74.36111111111111,
+          "width": 56,
+          "height": 2.314814814814815
+        },
+        "text": "選擇研究，查看效果、前置條件與花費"
+      },
+      {
+        "kind": "image",
+        "id": "town_material_icon",
+        "rect": {
+          "x": 15,
+          "y": 75.55555555555556,
+          "width": 2.5,
+          "height": 4.444444444444445
+        },
+        "asset": "texture://ui_symbol-material",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_gold",
+        "rect": {
+          "x": 18.125,
+          "y": 75.97736625514403,
+          "width": 1.0535685221354167,
+          "height": 3.6008230452674894
+        },
+        "text": "0"
+      },
+      {
+        "kind": "text",
+        "id": "town_record",
+        "rect": {
+          "x": 8,
+          "y": 20.879629629629626,
+          "width": 26,
+          "height": 2.314814814814815
+        },
+        "text": "遠征 0 次 · 最遠到第 0 站"
+      },
+      {
+        "kind": "image",
+        "id": "town_1_plate_tl",
+        "rect": {
+          "x": 37,
+          "y": 69.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_1_plate_t",
+        "rect": {
+          "x": 37.6,
+          "y": 69.93333333333334,
+          "width": 25.799999999999997,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_1_plate_tr",
+        "rect": {
+          "x": 63.4,
+          "y": 69.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_1_plate_l",
+        "rect": {
+          "x": 37,
+          "y": 60.56666666666667,
+          "width": 0.6000000000000014,
+          "height": 9.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_1_plate_c",
+        "rect": {
+          "x": 37.6,
+          "y": 60.56666666666667,
+          "width": 25.799999999999997,
+          "height": 9.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_1_plate_r",
+        "rect": {
+          "x": 63.4,
+          "y": 60.56666666666667,
+          "width": 0.6000000000000014,
+          "height": 9.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_1_plate_bl",
+        "rect": {
+          "x": 37,
+          "y": 59.5,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_1_plate_b",
+        "rect": {
+          "x": 37.6,
+          "y": 59.5,
+          "width": 25.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_1_plate_br",
+        "rect": {
+          "x": 63.4,
+          "y": 59.5,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_icon_1",
+        "rect": {
+          "x": 38.1,
+          "y": 61.916666666666664,
+          "width": 3.75,
+          "height": 6.666666666666667
+        },
+        "asset": "texture://ui_skill-critical",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_name_1",
+        "rect": {
+          "x": 42.7,
+          "y": 65.55864197530865,
+          "width": 7.779134114583333,
+          "height": 3.0864197530864192
+        },
+        "text": "劍魂·命門 0/3"
+      },
+      {
+        "kind": "text",
+        "id": "town_effect_1",
+        "rect": {
+          "x": 42.7,
+          "y": 61.826646090534986,
+          "width": 12.1875,
+          "height": 2.957818930041152
+        },
+        "text": "爆擊率、碰撞傷害提升"
+      },
+      {
+        "kind": "image",
+        "id": "town_cost_icon_1",
+        "rect": {
+          "x": 58,
+          "y": 63.58333333333332,
+          "width": 1.875,
+          "height": 3.3333333333333335
+        },
+        "asset": "texture://ui_symbol-material",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_cost_1",
+        "rect": {
+          "x": 60.3,
+          "y": 63.44958847736625,
+          "width": 1.8988037109375002,
+          "height": 3.6008230452674894
+        },
+        "text": "60"
+      },
+      {
+        "kind": "button",
+        "id": "town_1",
+        "rect": {
+          "x": 37,
+          "y": 59.5,
+          "width": 27,
+          "height": 11.5
+        },
+        "text": "",
+        "action": "Town1"
+      },
+      {
+        "kind": "image",
+        "id": "town_2_plate_tl",
+        "rect": {
+          "x": 66,
+          "y": 69.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_2_plate_t",
+        "rect": {
+          "x": 66.6,
+          "y": 69.93333333333334,
+          "width": 25.80000000000001,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_2_plate_tr",
+        "rect": {
+          "x": 92.4,
+          "y": 69.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_2_plate_l",
+        "rect": {
+          "x": 66,
+          "y": 60.56666666666667,
+          "width": 0.5999999999999943,
+          "height": 9.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_2_plate_c",
+        "rect": {
+          "x": 66.6,
+          "y": 60.56666666666667,
+          "width": 25.80000000000001,
+          "height": 9.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_2_plate_r",
+        "rect": {
+          "x": 92.4,
+          "y": 60.56666666666667,
+          "width": 0.5999999999999943,
+          "height": 9.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_2_plate_bl",
+        "rect": {
+          "x": 66,
+          "y": 59.5,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_2_plate_b",
+        "rect": {
+          "x": 66.6,
+          "y": 59.5,
+          "width": 25.80000000000001,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_2_plate_br",
+        "rect": {
+          "x": 92.4,
+          "y": 59.5,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_icon_2",
+        "rect": {
+          "x": 67.1,
+          "y": 61.916666666666664,
+          "width": 3.75,
+          "height": 6.666666666666667
+        },
+        "asset": "texture://ui_skill-landing_spin",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_name_2",
+        "rect": {
+          "x": 71.7,
+          "y": 65.55864197530865,
+          "width": 7.779134114583333,
+          "height": 3.0864197530864192
+        },
+        "text": "槍陣·落星 0/3"
+      },
+      {
+        "kind": "text",
+        "id": "town_effect_2",
+        "rect": {
+          "x": 71.7,
+          "y": 61.826646090534986,
+          "width": 10.989583333333334,
+          "height": 2.957818930041152
+        },
+        "text": "旋轉半徑、傷害提升"
+      },
+      {
+        "kind": "image",
+        "id": "town_cost_icon_2",
+        "rect": {
+          "x": 87,
+          "y": 63.58333333333332,
+          "width": 1.875,
+          "height": 3.3333333333333335
+        },
+        "asset": "texture://ui_symbol-material",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_cost_2",
+        "rect": {
+          "x": 89.3,
+          "y": 63.44958847736625,
+          "width": 1.8988037109375002,
+          "height": 3.6008230452674894
+        },
+        "text": "60"
+      },
+      {
+        "kind": "button",
+        "id": "town_2",
+        "rect": {
+          "x": 66,
+          "y": 59.5,
+          "width": 27,
+          "height": 11.5
+        },
+        "text": "",
+        "action": "Town2"
+      },
+      {
+        "kind": "image",
+        "id": "town_3_plate_tl",
+        "rect": {
+          "x": 37,
+          "y": 56.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_3_plate_t",
+        "rect": {
+          "x": 37.6,
+          "y": 56.93333333333333,
+          "width": 25.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_3_plate_tr",
+        "rect": {
+          "x": 63.4,
+          "y": 56.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_3_plate_l",
+        "rect": {
+          "x": 37,
+          "y": 47.56666666666667,
+          "width": 0.6000000000000014,
+          "height": 9.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_3_plate_c",
+        "rect": {
+          "x": 37.6,
+          "y": 47.56666666666667,
+          "width": 25.799999999999997,
+          "height": 9.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_3_plate_r",
+        "rect": {
+          "x": 63.4,
+          "y": 47.56666666666667,
+          "width": 0.6000000000000014,
+          "height": 9.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_3_plate_bl",
+        "rect": {
+          "x": 37,
+          "y": 46.5,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_3_plate_b",
+        "rect": {
+          "x": 37.6,
+          "y": 46.5,
+          "width": 25.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_3_plate_br",
+        "rect": {
+          "x": 63.4,
+          "y": 46.5,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_icon_3",
+        "rect": {
+          "x": 38.1,
+          "y": 48.91666666666667,
+          "width": 3.75,
+          "height": 6.666666666666667
+        },
+        "asset": "texture://ui_skill-haste",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_name_3",
+        "rect": {
+          "x": 42.7,
+          "y": 52.558641975308646,
+          "width": 7.779134114583333,
+          "height": 3.0864197530864192
+        },
+        "text": "騎獵·長征 0/3"
+      },
+      {
+        "kind": "text",
+        "id": "town_effect_3",
+        "rect": {
+          "x": 42.7,
+          "y": 48.826646090534986,
+          "width": 8.59375,
+          "height": 2.957818930041152
+        },
+        "text": "壽命、移速提升"
+      },
+      {
+        "kind": "image",
+        "id": "town_cost_icon_3",
+        "rect": {
+          "x": 58,
+          "y": 50.58333333333333,
+          "width": 1.875,
+          "height": 3.3333333333333335
+        },
+        "asset": "texture://ui_symbol-material",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_cost_3",
+        "rect": {
+          "x": 60.3,
+          "y": 50.449588477366255,
+          "width": 1.8988037109375002,
+          "height": 3.6008230452674894
+        },
+        "text": "60"
+      },
+      {
+        "kind": "button",
+        "id": "town_3",
+        "rect": {
+          "x": 37,
+          "y": 46.5,
+          "width": 27,
+          "height": 11.5
+        },
+        "text": "",
+        "action": "Town3"
+      },
+      {
+        "kind": "image",
+        "id": "town_4_plate_tl",
+        "rect": {
+          "x": 66,
+          "y": 56.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_4_plate_t",
+        "rect": {
+          "x": 66.6,
+          "y": 56.93333333333333,
+          "width": 25.80000000000001,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_4_plate_tr",
+        "rect": {
+          "x": 92.4,
+          "y": 56.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_4_plate_l",
+        "rect": {
+          "x": 66,
+          "y": 47.56666666666667,
+          "width": 0.5999999999999943,
+          "height": 9.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_4_plate_c",
+        "rect": {
+          "x": 66.6,
+          "y": 47.56666666666667,
+          "width": 25.80000000000001,
+          "height": 9.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_4_plate_r",
+        "rect": {
+          "x": 92.4,
+          "y": 47.56666666666667,
+          "width": 0.5999999999999943,
+          "height": 9.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_4_plate_bl",
+        "rect": {
+          "x": 66,
+          "y": 46.5,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_4_plate_b",
+        "rect": {
+          "x": 66.6,
+          "y": 46.5,
+          "width": 25.80000000000001,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_4_plate_br",
+        "rect": {
+          "x": 92.4,
+          "y": 46.5,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_icon_4",
+        "rect": {
+          "x": 67.1,
+          "y": 48.91666666666667,
+          "width": 3.75,
+          "height": 6.666666666666667
+        },
+        "asset": "texture://ui_skill-rebound_charge",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_name_4",
+        "rect": {
+          "x": 71.7,
+          "y": 52.558641975308646,
+          "width": 7.779134114583333,
+          "height": 3.0864197530864192
+        },
+        "text": "折光·蓄勢 0/3"
+      },
+      {
+        "kind": "text",
+        "id": "town_effect_4",
+        "rect": {
+          "x": 71.7,
+          "y": 48.826646090534986,
+          "width": 10.989583333333334,
+          "height": 2.957818930041152
+        },
+        "text": "反彈蓄勢與傷害提升"
+      },
+      {
+        "kind": "image",
+        "id": "town_cost_icon_4",
+        "rect": {
+          "x": 87,
+          "y": 50.58333333333333,
+          "width": 1.875,
+          "height": 3.3333333333333335
+        },
+        "asset": "texture://ui_symbol-material",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_cost_4",
+        "rect": {
+          "x": 89.3,
+          "y": 50.449588477366255,
+          "width": 1.8988037109375002,
+          "height": 3.6008230452674894
+        },
+        "text": "60"
+      },
+      {
+        "kind": "button",
+        "id": "town_4",
+        "rect": {
+          "x": 66,
+          "y": 46.5,
+          "width": 27,
+          "height": 11.5
+        },
+        "text": "",
+        "action": "Town4"
+      },
+      {
+        "kind": "image",
+        "id": "town_5_plate_tl",
+        "rect": {
+          "x": 37,
+          "y": 43.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_5_plate_t",
+        "rect": {
+          "x": 37.6,
+          "y": 43.93333333333333,
+          "width": 25.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_5_plate_tr",
+        "rect": {
+          "x": 63.4,
+          "y": 43.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_5_plate_l",
+        "rect": {
+          "x": 37,
+          "y": 34.56666666666667,
+          "width": 0.6000000000000014,
+          "height": 9.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_5_plate_c",
+        "rect": {
+          "x": 37.6,
+          "y": 34.56666666666667,
+          "width": 25.799999999999997,
+          "height": 9.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_5_plate_r",
+        "rect": {
+          "x": 63.4,
+          "y": 34.56666666666667,
+          "width": 0.6000000000000014,
+          "height": 9.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_5_plate_bl",
+        "rect": {
+          "x": 37,
+          "y": 33.5,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_5_plate_b",
+        "rect": {
+          "x": 37.6,
+          "y": 33.5,
+          "width": 25.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_5_plate_br",
+        "rect": {
+          "x": 63.4,
+          "y": 33.5,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_icon_5",
+        "rect": {
+          "x": 38.1,
+          "y": 35.91666666666667,
+          "width": 3.75,
+          "height": 6.666666666666667
+        },
+        "asset": "texture://ui_icon-lock",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_name_5",
+        "rect": {
+          "x": 42.7,
+          "y": 39.558641975308646,
+          "width": 7.779134114583333,
+          "height": 3.0864197530864192
+        },
+        "text": "劍魂·斬首 0/3"
+      },
+      {
+        "kind": "text",
+        "id": "town_effect_5",
+        "rect": {
+          "x": 42.7,
+          "y": 35.826646090534986,
+          "width": 10.989583333333334,
+          "height": 2.957818930041152
+        },
+        "text": "穿透後終結傷害提升"
+      },
+      {
+        "kind": "image",
+        "id": "town_cost_icon_5",
+        "rect": {
+          "x": 58,
+          "y": 37.58333333333333,
+          "width": 1.875,
+          "height": 3.3333333333333335
+        },
+        "asset": "texture://ui_symbol-material",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_cost_5",
+        "rect": {
+          "x": 60.3,
+          "y": 37.449588477366255,
+          "width": 1.8988037109375002,
+          "height": 3.6008230452674894
+        },
+        "text": "80"
+      },
+      {
+        "kind": "button",
+        "id": "town_5",
+        "rect": {
+          "x": 37,
+          "y": 33.5,
+          "width": 27,
+          "height": 11.5
+        },
+        "text": "",
+        "action": "TownNode5"
+      },
+      {
+        "kind": "image",
+        "id": "town_6_plate_tl",
+        "rect": {
+          "x": 66,
+          "y": 43.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_6_plate_t",
+        "rect": {
+          "x": 66.6,
+          "y": 43.93333333333333,
+          "width": 25.80000000000001,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_6_plate_tr",
+        "rect": {
+          "x": 92.4,
+          "y": 43.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_6_plate_l",
+        "rect": {
+          "x": 66,
+          "y": 34.56666666666667,
+          "width": 0.5999999999999943,
+          "height": 9.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_6_plate_c",
+        "rect": {
+          "x": 66.6,
+          "y": 34.56666666666667,
+          "width": 25.80000000000001,
+          "height": 9.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_6_plate_r",
+        "rect": {
+          "x": 92.4,
+          "y": 34.56666666666667,
+          "width": 0.5999999999999943,
+          "height": 9.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_6_plate_bl",
+        "rect": {
+          "x": 66,
+          "y": 33.5,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_6_plate_b",
+        "rect": {
+          "x": 66.6,
+          "y": 33.5,
+          "width": 25.80000000000001,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_6_plate_br",
+        "rect": {
+          "x": 92.4,
+          "y": 33.5,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_icon_6",
+        "rect": {
+          "x": 67.1,
+          "y": 35.91666666666667,
+          "width": 3.75,
+          "height": 6.666666666666667
+        },
+        "asset": "texture://ui_icon-lock",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_name_6",
+        "rect": {
+          "x": 71.7,
+          "y": 39.558641975308646,
+          "width": 7.779134114583333,
+          "height": 3.0864197530864192
+        },
+        "text": "槍陣·雷鳴 0/3"
+      },
+      {
+        "kind": "text",
+        "id": "town_effect_6",
+        "rect": {
+          "x": 71.7,
+          "y": 35.826646090534986,
+          "width": 12.1875,
+          "height": 2.957818930041152
+        },
+        "text": "命中追加鏈式範圍傷害"
+      },
+      {
+        "kind": "image",
+        "id": "town_cost_icon_6",
+        "rect": {
+          "x": 87,
+          "y": 37.58333333333333,
+          "width": 1.875,
+          "height": 3.3333333333333335
+        },
+        "asset": "texture://ui_symbol-material",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_cost_6",
+        "rect": {
+          "x": 89.3,
+          "y": 37.449588477366255,
+          "width": 1.8988037109375002,
+          "height": 3.6008230452674894
+        },
+        "text": "90"
+      },
+      {
+        "kind": "button",
+        "id": "town_6",
+        "rect": {
+          "x": 66,
+          "y": 33.5,
+          "width": 27,
+          "height": 11.5
+        },
+        "text": "",
+        "action": "TownNode6"
+      },
+      {
+        "kind": "image",
+        "id": "town_7_plate_tl",
+        "rect": {
+          "x": 37,
+          "y": 30.933333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_7_plate_t",
+        "rect": {
+          "x": 37.6,
+          "y": 30.933333333333334,
+          "width": 25.799999999999997,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_7_plate_tr",
+        "rect": {
+          "x": 63.4,
+          "y": 30.933333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_7_plate_l",
+        "rect": {
+          "x": 37,
+          "y": 21.566666666666666,
+          "width": 0.6000000000000014,
+          "height": 9.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_7_plate_c",
+        "rect": {
+          "x": 37.6,
+          "y": 21.566666666666666,
+          "width": 25.799999999999997,
+          "height": 9.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_7_plate_r",
+        "rect": {
+          "x": 63.4,
+          "y": 21.566666666666666,
+          "width": 0.6000000000000014,
+          "height": 9.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_7_plate_bl",
+        "rect": {
+          "x": 37,
+          "y": 20.5,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_7_plate_b",
+        "rect": {
+          "x": 37.6,
+          "y": 20.5,
+          "width": 25.799999999999997,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_7_plate_br",
+        "rect": {
+          "x": 63.4,
+          "y": 20.5,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_icon_7",
+        "rect": {
+          "x": 38.1,
+          "y": 22.91666666666666,
+          "width": 3.75,
+          "height": 6.666666666666667
+        },
+        "asset": "texture://ui_icon-lock",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_name_7",
+        "rect": {
+          "x": 42.7,
+          "y": 26.558641975308646,
+          "width": 7.779134114583333,
+          "height": 3.0864197530864192
+        },
+        "text": "騎獵·穿陣 0/3"
+      },
+      {
+        "kind": "text",
+        "id": "town_effect_7",
+        "rect": {
+          "x": 42.7,
+          "y": 22.826646090534982,
+          "width": 12.1875,
+          "height": 2.957818930041152
+        },
+        "text": "穿透與速度轉傷害提升"
+      },
+      {
+        "kind": "image",
+        "id": "town_cost_icon_7",
+        "rect": {
+          "x": 58,
+          "y": 24.58333333333334,
+          "width": 1.875,
+          "height": 3.3333333333333335
+        },
+        "asset": "texture://ui_symbol-material",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_cost_7",
+        "rect": {
+          "x": 60.3,
+          "y": 24.449588477366262,
+          "width": 2.744038899739583,
+          "height": 3.6008230452674894
+        },
+        "text": "100"
+      },
+      {
+        "kind": "button",
+        "id": "town_7",
+        "rect": {
+          "x": 37,
+          "y": 20.5,
+          "width": 27,
+          "height": 11.5
+        },
+        "text": "",
+        "action": "TownNode7"
+      },
+      {
+        "kind": "image",
+        "id": "town_8_plate_tl",
+        "rect": {
+          "x": 66,
+          "y": 30.933333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_8_plate_t",
+        "rect": {
+          "x": 66.6,
+          "y": 30.933333333333334,
+          "width": 25.80000000000001,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_8_plate_tr",
+        "rect": {
+          "x": 92.4,
+          "y": 30.933333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_8_plate_l",
+        "rect": {
+          "x": 66,
+          "y": 21.566666666666666,
+          "width": 0.5999999999999943,
+          "height": 9.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_8_plate_c",
+        "rect": {
+          "x": 66.6,
+          "y": 21.566666666666666,
+          "width": 25.80000000000001,
+          "height": 9.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_8_plate_r",
+        "rect": {
+          "x": 92.4,
+          "y": 21.566666666666666,
+          "width": 0.5999999999999943,
+          "height": 9.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_8_plate_bl",
+        "rect": {
+          "x": 66,
+          "y": 20.5,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_8_plate_b",
+        "rect": {
+          "x": 66.6,
+          "y": 20.5,
+          "width": 25.80000000000001,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_8_plate_br",
+        "rect": {
+          "x": 92.4,
+          "y": 20.5,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_icon_8",
+        "rect": {
+          "x": 67.1,
+          "y": 22.91666666666666,
+          "width": 3.75,
+          "height": 6.666666666666667
+        },
+        "asset": "texture://ui_icon-lock",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_name_8",
+        "rect": {
+          "x": 71.7,
+          "y": 26.558641975308646,
+          "width": 7.779134114583333,
+          "height": 3.0864197530864192
+        },
+        "text": "軍魂·遺贈 0/3"
+      },
+      {
+        "kind": "text",
+        "id": "town_effect_8",
+        "rect": {
+          "x": 71.7,
+          "y": 22.826646090534982,
+          "width": 10.989583333333334,
+          "height": 2.957818930041152
+        },
+        "text": "死亡時強化一名隊友"
+      },
+      {
+        "kind": "image",
+        "id": "town_cost_icon_8",
+        "rect": {
+          "x": 87,
+          "y": 24.58333333333334,
+          "width": 1.875,
+          "height": 3.3333333333333335
+        },
+        "asset": "texture://ui_symbol-material",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "town_cost_8",
+        "rect": {
+          "x": 89.3,
+          "y": 24.449588477366262,
+          "width": 2.744038899739583,
+          "height": 3.6008230452674894
+        },
+        "text": "100"
+      },
+      {
+        "kind": "button",
+        "id": "town_8",
+        "rect": {
+          "x": 66,
+          "y": 20.5,
+          "width": 27,
+          "height": 11.5
+        },
+        "text": "",
+        "action": "TownNode8"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_shade",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_modal_fill",
+        "rect": {
+          "x": 16,
+          "y": 10.847457627118644,
+          "width": 68,
+          "height": 78.30508474576271
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_modal_tl",
+        "rect": {
+          "x": 15,
+          "y": 80,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_modal_t",
+        "rect": {
+          "x": 19.5,
+          "y": 80,
+          "width": 61,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_modal_tr",
+        "rect": {
+          "x": 80.5,
+          "y": 80,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_modal_l",
+        "rect": {
+          "x": 15,
+          "y": 16,
+          "width": 4.5,
+          "height": 64
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_modal_c",
+        "rect": {
+          "x": 19.5,
+          "y": 16,
+          "width": 61,
+          "height": 64
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_modal_r",
+        "rect": {
+          "x": 80.5,
+          "y": 16,
+          "width": 4.5,
+          "height": 64
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_modal_bl",
+        "rect": {
+          "x": 15,
+          "y": 8,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_modal_b",
+        "rect": {
+          "x": 19.5,
+          "y": 8,
+          "width": 61,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_modal_br",
+        "rect": {
+          "x": 80.5,
+          "y": 8,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "town_upgrade_kicker",
+        "rect": {
+          "x": 23,
+          "y": 84.15779320987654,
+          "width": 54,
+          "height": 1.8325617283950615
+        },
+        "text": "研究詳情"
+      },
+      {
+        "kind": "text",
+        "id": "town_upgrade_title",
+        "rect": {
+          "x": 23,
+          "y": 74.77970679012346,
+          "width": 54,
+          "height": 2.218364197530864
+        },
+        "text": "劍魂·命門"
+      },
+      {
+        "kind": "text",
+        "id": "town_upgrade_level",
+        "rect": {
+          "x": 23,
+          "y": 65.77970679012346,
+          "width": 54,
+          "height": 2.218364197530864
+        },
+        "text": "Lv.0  →  Lv.1"
+      },
+      {
+        "kind": "text",
+        "id": "town_upgrade_desc",
+        "rect": {
+          "x": 23,
+          "y": 55.80555555555555,
+          "width": 54,
+          "height": 2.314814814814815
+        },
+        "text": "劍兵爆擊率 +5%、碰撞傷害 +4%／級"
+      },
+      {
+        "kind": "text",
+        "id": "town_upgrade_cost",
+        "rect": {
+          "x": 23,
+          "y": 41.779706790123456,
+          "width": 54,
+          "height": 2.218364197530864
+        },
+        "text": "建材 60　·　持有 0"
+      },
+      {
+        "kind": "text",
+        "id": "town_upgrade_note",
+        "rect": {
+          "x": 23,
+          "y": 33.36111111111111,
+          "width": 54,
+          "height": 2.314814814814815
+        },
+        "text": "建材不足，先完成遠征取得建材。"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_confirm_plate_tl",
+        "rect": {
+          "x": 25,
+          "y": 15.933333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_confirm_plate_t",
+        "rect": {
+          "x": 25.6,
+          "y": 15.933333333333334,
+          "width": 21.79999999999999,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_confirm_plate_tr",
+        "rect": {
+          "x": 47.39999999999999,
+          "y": 15.933333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_confirm_plate_l",
+        "rect": {
+          "x": 25,
+          "y": 12.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_confirm_plate_c",
+        "rect": {
+          "x": 25.6,
+          "y": 12.066666666666666,
+          "width": 21.79999999999999,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_confirm_plate_r",
+        "rect": {
+          "x": 47.39999999999999,
+          "y": 12.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_confirm_plate_bl",
+        "rect": {
+          "x": 25,
+          "y": 11,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_confirm_plate_b",
+        "rect": {
+          "x": 25.6,
+          "y": 11,
+          "width": 21.79999999999999,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_confirm_plate_br",
+        "rect": {
+          "x": 47.39999999999999,
+          "y": 11,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "town_upgrade_confirm",
+        "rect": {
+          "x": 25,
+          "y": 12.585390946502056,
+          "width": 22.999999999999993,
+          "height": 2.8292181069958846
+        },
+        "text": "確認升級"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_cancel_plate_tl",
+        "rect": {
+          "x": 52,
+          "y": 15.933333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_cancel_plate_t",
+        "rect": {
+          "x": 52.6,
+          "y": 15.933333333333334,
+          "width": 21.80000000000002,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_cancel_plate_tr",
+        "rect": {
+          "x": 74.40000000000002,
+          "y": 15.933333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_cancel_plate_l",
+        "rect": {
+          "x": 52,
+          "y": 12.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_cancel_plate_c",
+        "rect": {
+          "x": 52.6,
+          "y": 12.066666666666666,
+          "width": 21.80000000000002,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_cancel_plate_r",
+        "rect": {
+          "x": 74.40000000000002,
+          "y": 12.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_cancel_plate_bl",
+        "rect": {
+          "x": 52,
+          "y": 11,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_cancel_plate_b",
+        "rect": {
+          "x": 52.6,
+          "y": 11,
+          "width": 21.80000000000002,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "town_upgrade_cancel_plate_br",
+        "rect": {
+          "x": 74.40000000000002,
+          "y": 11,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "town_upgrade_cancel",
+        "rect": {
+          "x": 52,
+          "y": 12.585390946502056,
+          "width": 23.000000000000014,
+          "height": 2.8292181069958846
+        },
+        "text": "先不升級",
+        "action": "TownUpgradeCancel"
+      },
+      {
+        "kind": "button",
+        "id": "town_upgrade_cancel_hit_top",
+        "rect": {
+          "x": 52,
+          "y": 15.414609053497943,
+          "width": 23.000000000000014,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "TownUpgradeCancel"
+      },
+      {
+        "kind": "button",
+        "id": "town_upgrade_cancel_hit_bottom",
+        "rect": {
+          "x": 52,
+          "y": 11.000000000000002,
+          "width": 23.000000000000014,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "TownUpgradeCancel"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "領地建設",
+      "font": 34,
+      "clip": {
+        "x": 172.8,
+        "y": 89.7888888888889,
+        "width": 1574.4,
+        "height": 47.22222222222223
+      },
+      "ink": {
+        "x": 894,
+        "y": 97.66562500000002,
+        "width": 133,
+        "height": 31
+      }
+    },
+    {
+      "text": "返回標題",
+      "font": 22,
+      "clip": {
+        "x": 921.6,
+        "y": 967.5222222222222,
+        "width": 384,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1069.6,
+        "y": 973.3781250000001,
+        "width": 88,
+        "height": 19
+      }
+    },
+    {
+      "text": "出發遠征",
+      "font": 22,
+      "clip": {
+        "x": 1363.2,
+        "y": 967.5222222222222,
+        "width": 422.4,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1532.4,
+        "y": 972.3781250000001,
+        "width": 85,
+        "height": 20
+      }
+    },
+    {
+      "text": "領地研究",
+      "font": 18,
+      "clip": {
+        "x": 710.4,
+        "y": 198.89999999999998,
+        "width": 1075.2,
+        "height": 25
+      },
+      "ink": {
+        "x": 1212,
+        "y": 202.41562499999998,
+        "width": 72,
+        "height": 17
+      }
+    },
+    {
+      "text": "選擇研究，查看效果、前置條件與花費",
+      "font": 18,
+      "clip": {
+        "x": 710.4,
+        "y": 251.89999999999998,
+        "width": 1075.2,
+        "height": 25
+      },
+      "ink": {
+        "x": 1095,
+        "y": 255.41562499999998,
+        "width": 305,
+        "height": 17
+      }
+    },
+    {
+      "text": "0",
+      "font": 28,
+      "clip": {
+        "x": 348,
+        "y": 220.55555555555554,
+        "width": 20.228515625000004,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 351,
+        "y": 228.921875,
+        "width": 15,
+        "height": 23
+      }
+    },
+    {
+      "text": "遠征 0 次 · 最遠到第 0 站",
+      "font": 18,
+      "clip": {
+        "x": 153.6,
+        "y": 829.5000000000001,
+        "width": 499.2,
+        "height": 25
+      },
+      "ink": {
+        "x": 305.1931640625,
+        "y": 833.0156250000001,
+        "width": 196.013671875,
+        "height": 17
+      }
+    },
+    {
+      "text": "劍魂·命門 0/3",
+      "font": 24,
+      "clip": {
+        "x": 819.84,
+        "y": 338.63333333333327,
+        "width": 149.359375,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 822.84,
+        "y": 344.65937499999995,
+        "width": 143.44921875,
+        "height": 23
+      }
+    },
+    {
+      "text": "爆擊率、碰撞傷害提升",
+      "font": 23,
+      "clip": {
+        "x": 819.84,
+        "y": 380.3277777777777,
+        "width": 234,
+        "height": 31.944444444444443
+      },
+      "ink": {
+        "x": 822.84,
+        "y": 385.26874999999995,
+        "width": 228,
+        "height": 22
+      }
+    },
+    {
+      "text": "60",
+      "font": 28,
+      "clip": {
+        "x": 1157.76,
+        "y": 355.8555555555556,
+        "width": 36.45703125000001,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1160.76,
+        "y": 364.22187500000007,
+        "width": 31.228515625,
+        "height": 23
+      }
+    },
+    {
+      "text": "槍陣·落星 0/3",
+      "font": 24,
+      "clip": {
+        "x": 1376.64,
+        "y": 338.63333333333327,
+        "width": 149.359375,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 1379.64,
+        "y": 344.65937499999995,
+        "width": 143.44921875,
+        "height": 23
+      }
+    },
+    {
+      "text": "旋轉半徑、傷害提升",
+      "font": 23,
+      "clip": {
+        "x": 1376.64,
+        "y": 380.3277777777777,
+        "width": 211,
+        "height": 31.944444444444443
+      },
+      "ink": {
+        "x": 1379.64,
+        "y": 385.26874999999995,
+        "width": 205,
+        "height": 22
+      }
+    },
+    {
+      "text": "60",
+      "font": 28,
+      "clip": {
+        "x": 1714.56,
+        "y": 355.8555555555556,
+        "width": 36.45703125000001,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1717.56,
+        "y": 364.22187500000007,
+        "width": 31.228515625,
+        "height": 23
+      }
+    },
+    {
+      "text": "騎獵·長征 0/3",
+      "font": 24,
+      "clip": {
+        "x": 819.84,
+        "y": 479.0333333333333,
+        "width": 149.359375,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 822.84,
+        "y": 485.059375,
+        "width": 143.44921875,
+        "height": 23
+      }
+    },
+    {
+      "text": "壽命、移速提升",
+      "font": 23,
+      "clip": {
+        "x": 819.84,
+        "y": 520.7277777777778,
+        "width": 165,
+        "height": 31.944444444444443
+      },
+      "ink": {
+        "x": 822.84,
+        "y": 525.6687499999999,
+        "width": 159,
+        "height": 22
+      }
+    },
+    {
+      "text": "60",
+      "font": 28,
+      "clip": {
+        "x": 1157.76,
+        "y": 496.25555555555553,
+        "width": 36.45703125000001,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1160.76,
+        "y": 504.62187499999993,
+        "width": 31.228515625,
+        "height": 23
+      }
+    },
+    {
+      "text": "折光·蓄勢 0/3",
+      "font": 24,
+      "clip": {
+        "x": 1376.64,
+        "y": 479.0333333333333,
+        "width": 149.359375,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 1379.64,
+        "y": 485.059375,
+        "width": 143.44921875,
+        "height": 23
+      }
+    },
+    {
+      "text": "反彈蓄勢與傷害提升",
+      "font": 23,
+      "clip": {
+        "x": 1376.64,
+        "y": 520.7277777777778,
+        "width": 211,
+        "height": 31.944444444444443
+      },
+      "ink": {
+        "x": 1379.64,
+        "y": 525.6687499999999,
+        "width": 205,
+        "height": 21
+      }
+    },
+    {
+      "text": "60",
+      "font": 28,
+      "clip": {
+        "x": 1714.56,
+        "y": 496.25555555555553,
+        "width": 36.45703125000001,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1717.56,
+        "y": 504.62187499999993,
+        "width": 31.228515625,
+        "height": 23
+      }
+    },
+    {
+      "text": "劍魂·斬首 0/3",
+      "font": 24,
+      "clip": {
+        "x": 819.84,
+        "y": 619.4333333333333,
+        "width": 149.359375,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 822.84,
+        "y": 625.4593749999999,
+        "width": 143.44921875,
+        "height": 23
+      }
+    },
+    {
+      "text": "穿透後終結傷害提升",
+      "font": 23,
+      "clip": {
+        "x": 819.84,
+        "y": 661.1277777777779,
+        "width": 211,
+        "height": 31.944444444444443
+      },
+      "ink": {
+        "x": 822.84,
+        "y": 666.06875,
+        "width": 205,
+        "height": 22
+      }
+    },
+    {
+      "text": "80",
+      "font": 28,
+      "clip": {
+        "x": 1157.76,
+        "y": 636.6555555555556,
+        "width": 36.45703125000001,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1160.76,
+        "y": 645.021875,
+        "width": 31.228515625,
+        "height": 23
+      }
+    },
+    {
+      "text": "槍陣·雷鳴 0/3",
+      "font": 24,
+      "clip": {
+        "x": 1376.64,
+        "y": 619.4333333333333,
+        "width": 149.359375,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 1379.64,
+        "y": 625.4593749999999,
+        "width": 143.44921875,
+        "height": 23
+      }
+    },
+    {
+      "text": "命中追加鏈式範圍傷害",
+      "font": 23,
+      "clip": {
+        "x": 1376.64,
+        "y": 661.1277777777779,
+        "width": 234,
+        "height": 31.944444444444443
+      },
+      "ink": {
+        "x": 1379.64,
+        "y": 666.06875,
+        "width": 229,
+        "height": 21
+      }
+    },
+    {
+      "text": "90",
+      "font": 28,
+      "clip": {
+        "x": 1714.56,
+        "y": 636.6555555555556,
+        "width": 36.45703125000001,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1717.56,
+        "y": 645.021875,
+        "width": 31.228515625,
+        "height": 23
+      }
+    },
+    {
+      "text": "騎獵·穿陣 0/3",
+      "font": 24,
+      "clip": {
+        "x": 819.84,
+        "y": 759.8333333333333,
+        "width": 149.359375,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 822.84,
+        "y": 765.8593749999999,
+        "width": 143.44921875,
+        "height": 23
+      }
+    },
+    {
+      "text": "穿透與速度轉傷害提升",
+      "font": 23,
+      "clip": {
+        "x": 819.84,
+        "y": 801.5277777777778,
+        "width": 234,
+        "height": 31.944444444444443
+      },
+      "ink": {
+        "x": 822.84,
+        "y": 806.46875,
+        "width": 228,
+        "height": 22
+      }
+    },
+    {
+      "text": "100",
+      "font": 28,
+      "clip": {
+        "x": 1157.76,
+        "y": 777.0555555555554,
+        "width": 52.68554687499999,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1161.76,
+        "y": 785.4218749999999,
+        "width": 46.45703125,
+        "height": 23
+      }
+    },
+    {
+      "text": "軍魂·遺贈 0/3",
+      "font": 24,
+      "clip": {
+        "x": 1376.64,
+        "y": 759.8333333333333,
+        "width": 149.359375,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 1379.64,
+        "y": 765.8593749999999,
+        "width": 143.44921875,
+        "height": 23
+      }
+    },
+    {
+      "text": "死亡時強化一名隊友",
+      "font": 23,
+      "clip": {
+        "x": 1376.64,
+        "y": 801.5277777777778,
+        "width": 211,
+        "height": 31.944444444444443
+      },
+      "ink": {
+        "x": 1379.64,
+        "y": 806.46875,
+        "width": 205,
+        "height": 21
+      }
+    },
+    {
+      "text": "100",
+      "font": 28,
+      "clip": {
+        "x": 1714.56,
+        "y": 777.0555555555554,
+        "width": 52.68554687499999,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1718.56,
+        "y": 785.4218749999999,
+        "width": 46.45703125,
+        "height": 23
+      }
+    },
+    {
+      "text": "研究詳情",
+      "font": 14.25,
+      "clip": {
+        "x": 441.6,
+        "y": 151.30416666666667,
+        "width": 1036.8,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 931.5,
+        "y": 155.76250000000002,
+        "width": 56.75,
+        "height": 12
+      }
+    },
+    {
+      "text": "劍魂·命門",
+      "font": 17.25,
+      "clip": {
+        "x": 441.6,
+        "y": 248.42083333333335,
+        "width": 1036.8,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 923.51220703125,
+        "y": 252.13437500000003,
+        "width": 71.7255859375,
+        "height": 16
+      }
+    },
+    {
+      "text": "Lv.0  →  Lv.1",
+      "font": 17.25,
+      "clip": {
+        "x": 441.6,
+        "y": 345.62083333333334,
+        "width": 1036.8,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 914.3121337890625,
+        "y": 351.334375,
+        "width": 92.3778076171875,
+        "height": 13
+      }
+    },
+    {
+      "text": "劍兵爆擊率 +5%、碰撞傷害 +4%／級",
+      "font": 18,
+      "clip": {
+        "x": 441.6,
+        "y": 452.30000000000007,
+        "width": 1036.8,
+        "height": 25
+      },
+      "ink": {
+        "x": 807.94921875,
+        "y": 455.81562500000007,
+        "width": 304.1015625,
+        "height": 18
+      }
+    },
+    {
+      "text": "建材 60　·　持有 0",
+      "font": 17.25,
+      "clip": {
+        "x": 441.6,
+        "y": 604.8208333333333,
+        "width": 1036.8,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 886.9528198242188,
+        "y": 608.534375,
+        "width": 146.096435546875,
+        "height": 16
+      }
+    },
+    {
+      "text": "建材不足，先完成遠征取得建材。",
+      "font": 18,
+      "clip": {
+        "x": 441.6,
+        "y": 694.7,
+        "width": 1036.8,
+        "height": 25
+      },
+      "ink": {
+        "x": 825,
+        "y": 698.215625,
+        "width": 264,
+        "height": 18
+      }
+    },
+    {
+      "text": "確認升級",
+      "font": 22,
+      "clip": {
+        "x": 480,
+        "y": 913.5222222222222,
+        "width": 441.59999999999985,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 657.8,
+        "y": 918.3781250000001,
+        "width": 87,
+        "height": 20
+      }
+    },
+    {
+      "text": "先不升級",
+      "font": 22,
+      "clip": {
+        "x": 998.4,
+        "y": 913.5222222222222,
+        "width": 441.6000000000003,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1176.2,
+        "y": 918.3781250000001,
+        "width": 87,
+        "height": 20
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 202,
+    "assets": [
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_scene-shade",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-backdrop",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_portrait-lord-v2",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-material",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_skill-critical",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_skill-landing_spin",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_skill-haste",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_skill-rebound_charge",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-lock",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

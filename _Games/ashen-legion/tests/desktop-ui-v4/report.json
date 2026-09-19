@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "checks": [
+    "Fixed 1920×1080 composition, unchanged text/rectangles, uniform centered scale at 1920×1080",
+    "Fixed 1920×1080 composition, unchanged text/rectangles, uniform centered scale at 1280×720",
+    "Fixed 1920×1080 composition, unchanged text/rectangles, uniform centered scale at 1600×1000",
+    "Fixed 1920×1080 composition, unchanged text/rectangles, uniform centered scale at 2560×1440",
+    "Real letterboxed pointer creates profile; research icons 72px, costs 36px, resource 48px; shared left axis and centered tight icon/value pairs",
+    "Profile/delete/settings omit run resources, Escape preserves save, primary/secondary profile actions share height and baseline",
+    "Keyboard focus follows the same letterbox transform; three equal portrait choices stay horizontal, avoid decoration, and portrait clicks enter the intended merchant",
+    "Shop retains balances; pointer leave clears hover and detail modal does not leave background cards at unequal heights"
+  ],
+  "errors": []
+}

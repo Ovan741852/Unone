@@ -38,12 +38,23 @@ console.log('PASS '+readObservation(module).world.observations.currency_checks+'
 function fixture(code){loadProject(module,{...payload,script:payload.script.replace('return Game',`local oldStart=Game.start\nfunction Game.start(api:any)oldStart(api);${code};publish(api)end\nreturn Game`)},42n)}
 function press(action){tick({actions:{[action]:true}});return tick({});}
 fixture('S.phase="shop";S.location="market";stockShop()');
-let s=press('Buy1');assert.equal(s.coins,320);assert.equal(s.crystals,6);assert.equal(s.items[0].paid,12);
-s=press('Sell1');assert.equal(s.coins,320);assert.equal(s.crystals,12);assert.equal(s.crystalSold,6);
-fixture('S.phase="shop";S.location="market";stockShop()');s=press('Rune1');assert.equal(s.crystals,12);assert.equal(s.coins,320);press('RuneOff');s=press('Rune1');assert.equal(s.crystals,12,'owned rune equip is free');
+const price=Object.values(readObservation(module).world.observations.game.stock)[0].price;
+let s=press('Buy1');assert.equal(s.coins,320);assert.equal(s.crystals,18-price);assert.equal(s.items[0].paid,price);
+s=press('Sell1');assert.equal(s.coins,320);assert.equal(s.crystals,18-price+Math.floor(price/2));assert.equal(s.crystalSold,Math.floor(price/2));
+fixture('S.phase="shop";S.location="rune";stockShop()');
+const rune=Object.values(readObservation(module).world.observations.game.stock)[0];
+s=press('Buy1');assert.equal(s.crystals,18-rune.price);assert.equal(s.coins,320);s=press('LeaveShop');
+s=press('Rune'+rune.value);assert.equal(s.crystals,18-rune.price);press('RuneOff');s=press('Rune'+rune.value);assert.equal(s.crystals,18-rune.price,'owned rune equip is free');
 fixture('S.phase="shop";S.location="tech";stockShop()');s=press('Buy1');assert.equal(s.crystals,11);s=press('Buy2');assert.equal(s.crystals,11,'research once per visit');
 fixture('S.phase="shop";S.location="enchant";addItem(gearCatalog[1],0);S.worn[1][5]=1;stockShop()');s=press('Enchant');assert.equal(s.crystals,10);s=press('KeepEnchant');assert.equal(s.crystals,10,'keeping old enchant does not refund');
-fixture('S.phase="shop";S.location="market";stockShop();S.crystals=0;S.crystalSpent=18');s=press('Buy1');assert.equal(s.coins,320);assert.equal(Object.keys(s.items).length,0);s=press('RefreshShop');assert.equal(s.coins,320);assert.equal(s.refreshUsed,false);
+fixture('S.phase="shop";S.location="market";stockShop();S.crystals=0;S.crystalSpent=18');s=press('Buy1');assert.equal(s.coins,320);assert.equal(Object.keys(s.items).length,0);s=press('RefreshShop');assert.equal(s.coins,320);assert.equal(s.refreshCount,0);
 fixture('S.phase="shop";S.location="potion";stockShop();S.coins=0;S.shopSpent=320');s=press('Buy1');assert.equal(s.crystals,18);assert.equal(Object.keys(s.potions).length,0);
-fixture('S.phase="shop";S.location="market";stockShop()');s=press('RefreshShop');assert.equal(s.crystals,16);s=press('RefreshShop');assert.equal(s.crystals,16);
+fixture('S.phase="shop";S.location="market";stockShop()');
+for(const [count,balance,next]of [[1,16,4],[2,12,6],[3,6,8]]){s=press('RefreshShop');assert.equal(s.crystals,balance);assert.equal(s.refreshCount,count);assert.equal(s.refreshCost,next);}
+const unchanged=JSON.stringify(s.stock);s=press('RefreshShop');assert.equal(s.crystals,6);assert.equal(s.refreshCount,3);assert.equal(JSON.stringify(s.stock),unchanged,'unaffordable reroll must not replace stock');
+s=press('UI_home');s=press('UI_home');assert.equal(s.refreshCost,8,'navigating UI must not reset the fee');
+fixture('S.phase="shop";S.location="market";stockShop();grantCrystals(100)');
+let expected=118;for(let i=1;i<=8;i++){expected-=2*i;s=press('RefreshShop');assert.equal(s.crystals,expected);assert.equal(s.refreshCount,i);assert.equal(s.refreshCost,2*(i+1));}
+fixture('S.phase="shop";S.location="market";stockShop();S.refreshCount=8;stockShop()');
+s=press('RefreshShop');assert.equal(s.crystals,16);assert.equal(s.refreshCount,1);assert.equal(s.refreshCost,4,'new shop visit resets the price');
 console.log('PASS actual semantic actions: buy/sell/rune/tech/enchant/refresh; insufficient resources never use the other purse.');

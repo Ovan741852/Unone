@@ -1,0 +1,133 @@
+{
+  "ok": true,
+  "checks": [
+    "Tab / Enter / Space purchase; visible focus; modal trap; Escape returns to originating card; sold action disabled",
+    "Sell tab and return to buying stay keyboard reachable",
+    "Touching card artwork opens detail (same action as card footer)",
+    "Keyboard rerolls charge 2 then 4; next fee and insufficient state are exposed",
+    "Letterboxed desktop stage retains keyboard focus and detail action without rotation or reflow"
+  ],
+  "errors": [],
+  "accessibilityTree": [
+    {
+      "role": "RootWebArea",
+      "name": "森林領主"
+    },
+    {
+      "role": "generic",
+      "name": ""
+    },
+    {
+      "role": "generic",
+      "name": ""
+    },
+    {
+      "role": "Canvas",
+      "name": "森林領主戰場與遊戲操作"
+    },
+    {
+      "role": "Canvas",
+      "name": ""
+    },
+    {
+      "role": "Canvas",
+      "name": "榛姨商店"
+    },
+    {
+      "role": "generic",
+      "name": ""
+    },
+    {
+      "role": "group",
+      "name": "裝備店"
+    },
+    {
+      "role": "paragraph",
+      "name": ""
+    },
+    {
+      "role": "paragraph",
+      "name": ""
+    },
+    {
+      "role": "button",
+      "name": "買入裝備"
+    },
+    {
+      "role": "button",
+      "name": "出售裝備"
+    },
+    {
+      "role": "button",
+      "name": "遠征靴，行軍後強化下一撞，售價 9 結晶，派兵費增加 1 金幣。查看詳情"
+    },
+    {
+      "role": "button",
+      "name": "雷枝戰槍，爆擊雷鏈兩怪，售價 18 結晶，派兵費增加 3 金幣。查看詳情"
+    },
+    {
+      "role": "button",
+      "name": "孤獵冠，孤立目標增傷，售價 10 結晶，派兵費增加 1 金幣。查看詳情"
+    },
+    {
+      "role": "button",
+      "name": "震盪護手，命中擴散範圍傷害，售價 14 結晶，派兵費增加 4 金幣。查看詳情"
+    },
+    {
+      "role": "button",
+      "name": "重骰商品，消耗 2 結晶"
+    },
+    {
+      "role": "button",
+      "name": "部隊配置"
+    },
+    {
+      "role": "button",
+      "name": "直接出戰，使用目前配裝；新買裝備需先穿戴"
+    },
+    {
+      "role": "StaticText",
+      "name": "金幣 320，強化結晶 18。下次重骰需要 2 結晶。"
+    },
+    {
+      "role": "StaticText",
+      "name": "點選商品卡查看完整技能。每個部位只裝一件。金色硬幣是派兵費變化，紫色結晶是商品售價。重骰不限次數，每次成功後加價。"
+    },
+    {
+      "role": "StaticText",
+      "name": "買入裝備"
+    },
+    {
+      "role": "StaticText",
+      "name": "出售裝備"
+    },
+    {
+      "role": "StaticText",
+      "name": "遠征靴，行軍後強化下一撞，售價 9 結晶，派兵費增加 1 金幣。查看詳情"
+    },
+    {
+      "role": "StaticText",
+      "name": "雷枝戰槍，爆擊雷鏈兩怪，售價 18 結晶，派兵費增加 3 金幣。查看詳情"
+    },
+    {
+      "role": "StaticText",
+      "name": "孤獵冠，孤立目標增傷，售價 10 結晶，派兵費增加 1 金幣。查看詳情"
+    },
+    {
+      "role": "StaticText",
+      "name": "震盪護手，命中擴散範圍傷害，售價 14 結晶，派兵費增加 4 金幣。查看詳情"
+    },
+    {
+      "role": "StaticText",
+      "name": "重骰商品，消耗 2 結晶"
+    },
+    {
+      "role": "StaticText",
+      "name": "部隊配置"
+    },
+    {
+      "role": "StaticText",
+      "name": "直接出戰，使用目前配裝；新買裝備需先穿戴"
+    }
+  ]
+}

@@ -19,6 +19,7 @@
   </div>
  </div></div>
  <script>
+ document.documentElement.style.setProperty('--desktop-scale',Math.min(innerWidth/1920,innerHeight/1080));
  // Visible before the module graph, runtime or game images have downloaded.
  (()=>{const layer=document.querySelector('#loading'),phase=document.querySelector('#loading-phase'),elapsed=document.querySelector('#loading-elapsed'),retry=document.querySelector('#loading-retry'),error=document.querySelector('#error');
   const started=performance.now(),timings={},groups=new Map(),meter=document.querySelector('#loading-progress');let finished=false,failed=false;

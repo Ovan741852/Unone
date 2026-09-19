@@ -1,0 +1,55 @@
+{
+  "date": "2026-09-19",
+  "gameCheckpoint": "4a498eb",
+  "pushedHead": "b100069883db0bd15a54b63298c341bb6b6d0f79",
+  "skill": {
+    "name": "impeccable",
+    "version": "4.3.1",
+    "repository": "https://github.com/pbakaus/impeccable",
+    "commit": "f2c7051853848826aac2f4646581d62a732155ad",
+    "engineVersion": "0.1.5",
+    "mode": "audit",
+    "runtimeUiModified": false
+  },
+  "detectorRaw": [
+    {
+      "antipattern": "marquee",
+      "name": "Auto-scrolling marquee",
+      "description": "Continuously auto-scrolling content demands attention it has not earned and hides half its content at any moment. Reserve motion for content that changes; let readers move at their own pace.",
+      "severity": "warning",
+      "category": "slop",
+      "file": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\index.html",
+      "line": 0,
+      "snippet": ".loading-meter[data-state=indeterminate] span — infinite horizontal loop animation \"loading-sweep\""
+    }
+  ],
+  "detectorAdjudication": "False positive: indeterminate loading progress, reduced-motion override, hidden when ready. Not content marquee.",
+  "liveBrowser": {
+    "url": "http://127.0.0.1:8190/?seed=42",
+    "surface": "Codex in-app browser",
+    "viewport": [1934, 1272],
+    "accessibleShopButtons": 0,
+    "visibleFocusableElements": [],
+    "formalCanvasTabIndex": -1,
+    "tabReachedShopControl": false,
+    "cardImageClickOpenedDetails": false,
+    "detailButtonClickOpenedDetails": true,
+    "escapeClosedDetails": true
+  },
+  "geometry": {
+    "source": "Committed tests/shop-layout/components-*.json; reused capture, not rerun in this trial",
+    "hitUnionIds": ["stock_detail_1", "stock_detail_1_hit_top", "stock_detail_1_hit_bottom"],
+    "samples": [
+      {"viewport": [1440,900], "buttonHitHeightPx": 49.5, "minimumFontPx": 16},
+      {"viewport": [1280,720], "buttonHitHeightPx": 39.6, "minimumFontPx": 14.2222},
+      {"viewport": [900,600], "buttonHitHeightPx": 33, "minimumFontPx": 10.24},
+      {"viewport": [844,390], "buttonHitHeightPx": 21.45, "minimumFontPx": 10.24}
+    ],
+    "existingRegressionCases": 28,
+    "existingRegressionOk": true
+  },
+  "sourceAndWebExportSha256": {
+    "host.mjs": "BF4C32BCC4AAD86FA2F559F8527BE706C0D1741D4EB613D79AE308C4620298F5",
+    "presentation/adaptive-ui.mjs": "D95676C80724DD80AED1328EDBA75E733C96563E613BB63A47ACE2E5F66DCF78"
+  }
+}

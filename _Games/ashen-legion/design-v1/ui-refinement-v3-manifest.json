@@ -1,0 +1,23 @@
+{
+  "version": "ui-refinement-v3",
+  "date": "2026-09-19",
+  "purpose": "Quiet secondary controls complementing Hazel's approved ornate primary UI; not a replacement art direction.",
+  "generator": "Built-in image generation",
+  "reference": "assets/formal-ui/shop-button-secondary-v2.png",
+  "original": "C:/Users/liNao/.codex/generated_images/01a004a9-a56e-7a40-b7d4-79fc1688ff21/exec-9f3a01e0-04e1-404e-aed2-4fecbd253f9b.png",
+  "source": "art-source/ui-refinement-v3/control-quiet-v3.png",
+  "runtime": "assets/formal-ui/control-quiet-v3.png",
+  "sha256": "b26c1acff7924f41e3f6316d4f31d98416a0bc803655a49b0a71786b2d7d96f2",
+  "processing": "Original PNG copied unchanged with alpha; existing nine-slice extraction trims transparent padding. No procedural image retouching.",
+  "trimmedSize": [
+    1940,
+    412
+  ],
+  "borders": [
+    80,
+    80,
+    80,
+    80
+  ],
+  "prompt": "Use case: stylized-concept. Asset type: production 9-slice fantasy game UI secondary control panel, NOT a UI mockup. Image 1 is a STYLE / MATERIAL reference only. Generate one new much quieter companion to this ornate button. Single wide rectangular blank panel with a width:height ratio of about 3:1, facing directly forward, perfect orthographic view. Deep forest-teal smooth worn leather interior, extremely subtle fine grain with quiet uniform darkness so live text will be legible. A very thin aged-brass rim, restrained realistic painted metal highlights and tiny corner joins; crisp almost-square slightly clipped corners. Finely hand-painted craftsmanship matching the reference but ONLY a thin metallic rim, NOT its bulky wood or ornaments. Absolutely NO leaves, acorns, branches, leather straps, corner medallions, gems, symbols, flourishes, inner gold stripes, lettering or glow. No loud shading patches. Top and bottom edges straight, left and right straight, width and thickness symmetrical. Interior takes at least 90% of panel area. Only a tiny soft contact shadow at the panel edge. Genuine transparent alpha outside the one panel, with 5% clear padding all around. No background, no checkerboard painted into image, no scene, no other assets. This must remain finely painted and tactile, not flat vector or glossy 3D. No text or watermarks."
+}

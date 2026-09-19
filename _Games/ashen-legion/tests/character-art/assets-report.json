@@ -1,0 +1,137 @@
+{
+  "ok": true,
+  "entries": [
+    {
+      "id": "portrait-sword",
+      "width": 1254,
+      "height": 1254,
+      "transparentRatio": 0.6573109589981915,
+      "opaqueRatio": 0.3313632420910185,
+      "borderOpaque": 0,
+      "colorBins": 580,
+      "bounds": {
+        "minX": 206,
+        "minY": 169,
+        "maxX": 1067,
+        "maxY": 1155
+      }
+    },
+    {
+      "id": "portrait-spear",
+      "width": 1254,
+      "height": 1254,
+      "transparentRatio": 0.47331791854582084,
+      "opaqueRatio": 0.5029843893480257,
+      "borderOpaque": 0,
+      "colorBins": 555,
+      "bounds": {
+        "minX": 86,
+        "minY": 35,
+        "maxX": 1165,
+        "maxY": 1234
+      }
+    },
+    {
+      "id": "portrait-cavalry",
+      "width": 1254,
+      "height": 1254,
+      "transparentRatio": 0.4125706829056111,
+      "opaqueRatio": 0.5704940363086926,
+      "borderOpaque": 0,
+      "colorBins": 554,
+      "bounds": {
+        "minX": 58,
+        "minY": 29,
+        "maxX": 1213,
+        "maxY": 1236
+      }
+    },
+    {
+      "id": "portrait-scholar",
+      "width": 1254,
+      "height": 1254,
+      "transparentRatio": 0.4818749062012724,
+      "opaqueRatio": 0.5043395424911415,
+      "borderOpaque": 0,
+      "colorBins": 464,
+      "bounds": {
+        "minX": 78,
+        "minY": 17,
+        "maxX": 1204,
+        "maxY": 1243
+      }
+    },
+    {
+      "id": "portrait-alchemist",
+      "width": 1254,
+      "height": 1254,
+      "transparentRatio": 0.4802539370028667,
+      "opaqueRatio": 0.49696664453652617,
+      "borderOpaque": 0,
+      "colorBins": 761,
+      "bounds": {
+        "minX": 143,
+        "minY": 33,
+        "maxX": 1143,
+        "maxY": 1238
+      }
+    },
+    {
+      "id": "portrait-smith",
+      "width": 1254,
+      "height": 1254,
+      "transparentRatio": 0.42428630296925435,
+      "opaqueRatio": 0.5612178190873733,
+      "borderOpaque": 0,
+      "colorBins": 466,
+      "bounds": {
+        "minX": 31,
+        "minY": 43,
+        "maxX": 1223,
+        "maxY": 1228
+      }
+    },
+    {
+      "id": "portrait-witch",
+      "width": 1254,
+      "height": 1254,
+      "transparentRatio": 0.42952694916935663,
+      "opaqueRatio": 0.5446621846772942,
+      "borderOpaque": 0,
+      "colorBins": 712,
+      "bounds": {
+        "minX": 107,
+        "minY": 14,
+        "maxX": 1131,
+        "maxY": 1238
+      }
+    },
+    {
+      "id": "portrait-runesmith",
+      "width": 1254,
+      "height": 1254,
+      "transparentRatio": 0.48858262809408615,
+      "opaqueRatio": 0.49346779301450666,
+      "borderOpaque": 0,
+      "colorBins": 608,
+      "bounds": {
+        "minX": 148,
+        "minY": 21,
+        "maxX": 1115,
+        "maxY": 1240
+      }
+    },
+    {
+      "id": "lord-approved-reuse",
+      "reusedApprovedArt": true
+    },
+    {
+      "id": "hazel-approved-reuse",
+      "reusedApprovedArt": true
+    },
+    {
+      "id": "keyart-approved-reuse",
+      "reusedApprovedArt": true
+    }
+  ]
+}

@@ -3,14 +3,19 @@
 const ease=t=>1-Math.pow(1-Math.max(0,Math.min(1,t)),3);
 const group=raw=>{
  const id=raw.replace(/_hit_(top|bottom)$/, '').replace(/_(tl|t|tr|l|c|r|bl|b|br)$/,'');
- const shopCard=id.match(/^stock_(?:panel|icon|name|desc|cost|deploy|detail|empty)_(\d+)(?:_plate)?$/);if(shopCard)return 'stock'+shopCard[1];
+ const shopCard=id.match(/^stock_(?:panel|icon|name|desc|cost(?:_icon)?|deploy(?:_icon)?|detail|hit|empty)_(\d+)(?:_plate)?$/);if(shopCard)return 'stock'+shopCard[1];
+ const slot=id.match(/^(?:slot_(?:frame_|hit_)?|worn_icon_)(\d+)$/);if(slot)return 'slot'+slot[1];
+ const pack=id.match(/^(?:pack_card_|gear_(?:icon_|name_|skill_|summary_|owner_|cost_)|equip_|inspect_|empty_pack_(?:icon_)?)(\d+)(?:_plate)?$/);if(pack)return 'gear'+pack[1];
+ if(/^refresh(?:_|$)/.test(id))return 'refresh';
+ const research=id.match(/^town_(?:(?:name|effect|cost(?:_icon)?|icon)_)?(\d+)(?:_plate)?$/);if(research)return 'townResearch'+research[1];
  const card=id.match(/^auto_(?:card|icon|tick|pick|name|info)_(\d+)$/);if(card)return 'autoCard'+card[1];
- let m=id.match(/^(?:choice_(?:plate_|icon_|name_|desc_)?|stock_(?:panel_|icon_|name_|desc_)|buy_)(\d+)(?:_plate)?$/);
+ const profile=id.match(/^profile_(?:card|slot|name|detail|load|delete|create)_(\d+)(?:_plate)?$/);if(profile)return 'profile'+profile[1];
+ let m=id.match(/^(?:choice_(?:plate_|icon_|name_|desc_|action_)?|stock_(?:panel_|icon_|name_|desc_)|buy_)(\d+)(?:_plate)?$/);
  if(m)return (id.startsWith('choice')?'choice':'stock')+m[1];
  m=id.match(/^(?:gear_(?:icon_|name_|skill_)|equip_|sell_)(\d+)(?:_plate)?$/);if(m)return 'gear'+m[1];
  m=id.match(/^hud_unit_(?:plate_|icon_|caption_)?(\d+)$/);if(m)return 'hud'+m[1];
  m=id.match(/^mode_(?:plate_|icon_|label_)?(manual|lock|auto)$/);if(m)return 'mode'+m[1];
- return id.replace(/_(plate|caption)$/,'');
+ return id.replace(/_(plate|caption|icon)$/,'');
 };
 function transform(rect,dx,dy,scale=1,pivot=rect){
  const cx=pivot.x+pivot.width/2,cy=pivot.y+pivot.height/2;
@@ -37,7 +42,7 @@ export function createUiMotion({reducedMotion=()=>false,now=()=>performance.now(
     copy.set(n.id,n.text);
     if(reduced)return n;
     let dx=0,dy=0,scale=1;
-    const fixed=/^(menu_art|menu_ground|screen_back(?:_|$)|shop_backdrop|shop_window_fill|shop_modal_scrim|shop_detail_shade|shop_detail_fill|shop_detail_modal|interior_shade|map_back)/.test(n.id);
+    const fixed=/^(menu_art|menu_ground|screen_back(?:_|$)|screen_shade|shop_backdrop|shop_window_fill|shop_modal_scrim|shop_detail_shade|shop_detail_fill|shop_detail_modal|town_upgrade_(shade|modal)|gear_detail_(shade|modal)|interior_shade|map_(back|link_|node_|number_|current_ring|cursor_icon))/.test(n.id);
     if(fixed)return n;
     if(!battle&&!fixed){const order=Number(g.match(/(?:choice|stock|gear|autoCard)(\d+)/)?.[1]??0),delay=Math.min(order,5)*20;
      const t=ease((age-delay)/220);dy=-(1-t)*1;

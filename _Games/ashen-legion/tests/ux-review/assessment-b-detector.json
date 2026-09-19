@@ -1,0 +1,71 @@
+[
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\index.html",
+    "line": 0,
+    "snippet": "background rgb(16, 37, 32) on div \"✦森林領主 正在展開遠征之書… 0 秒 重新載入\" is outside DESIGN.md colors",
+    "advisory": true,
+    "ignoreValue": "rgb(16, 37, 32)"
+  },
+  {
+    "antipattern": "design-system-font",
+    "name": "Font outside DESIGN.md",
+    "description": "A font is used that is not declared in DESIGN.md typography. Use the documented type system or update DESIGN.md if this is an intentional brand addition.",
+    "severity": "warning",
+    "category": "quality",
+    "file": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\index.html",
+    "line": 0,
+    "snippet": "h1 \"森林領主\" uses jhenghei; not declared in DESIGN.md typography",
+    "ignoreValue": "jhenghei"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\index.html",
+    "line": 0,
+    "snippet": "text color rgb(237, 223, 180) on h1 \"森林領主\" is outside DESIGN.md colors",
+    "advisory": true,
+    "ignoreValue": "rgb(237, 223, 180)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\index.html",
+    "line": 0,
+    "snippet": "border-top rgb(141, 121, 79) on div is outside DESIGN.md colors",
+    "advisory": true,
+    "ignoreValue": "rgb(141, 121, 79)"
+  },
+  {
+    "antipattern": "design-system-color",
+    "name": "Color outside DESIGN.md",
+    "description": "A literal color is outside the DESIGN.md palette and sidecar tonal ramps. This may be legitimate, but it should be an intentional design-system addition rather than drift.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\index.html",
+    "line": 0,
+    "snippet": "text color rgb(178, 185, 153) on p \"0 秒\" is outside DESIGN.md colors",
+    "advisory": true,
+    "ignoreValue": "rgb(178, 185, 153)"
+  },
+  {
+    "antipattern": "marquee",
+    "name": "Auto-scrolling marquee",
+    "description": "Continuously auto-scrolling content demands attention it has not earned and hides half its content at any moment. Reserve motion for content that changes; let readers move at their own pace.",
+    "severity": "warning",
+    "category": "slop",
+    "file": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\index.html",
+    "line": 0,
+    "snippet": ".loading-meter[data-state=indeterminate] span — infinite horizontal loop animation \"loading-sweep\""
+  }
+]

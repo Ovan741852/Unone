@@ -1,0 +1,1010 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "map:home",
+    "children": [
+      {
+        "kind": "image",
+        "id": "screen_shade",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_fill",
+        "rect": {
+          "x": 3.8,
+          "y": 5,
+          "width": 92.4,
+          "height": 90
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tl",
+        "rect": {
+          "x": 3,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_t",
+        "rect": {
+          "x": 7.5,
+          "y": 85,
+          "width": 85,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tr",
+        "rect": {
+          "x": 92.5,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_l",
+        "rect": {
+          "x": 3,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_c",
+        "rect": {
+          "x": 7.5,
+          "y": 11,
+          "width": 85,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_r",
+        "rect": {
+          "x": 92.5,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_bl",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_b",
+        "rect": {
+          "x": 7.5,
+          "y": 3,
+          "width": 85,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_br",
+        "rect": {
+          "x": 92.5,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "screen_title",
+        "rect": {
+          "x": 9,
+          "y": 87.31378600823045,
+          "width": 58,
+          "height": 4.372427983539095
+        },
+        "text": "森林王冠之路"
+      },
+      {
+        "kind": "image",
+        "id": "map_back",
+        "rect": {
+          "x": 7.515940488841654,
+          "y": 19.999999999999993,
+          "width": 59.96811902231669,
+          "height": 60.00000000000001
+        },
+        "asset": "texture://ui_forest-map-v2",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "map_link_1",
+        "rect": {
+          "x": 7.515940488841654,
+          "y": 19.999999999999993,
+          "width": 59.96811902231669,
+          "height": 60.00000000000001
+        },
+        "asset": "texture://ui_map-link-1-done",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "map_link_2",
+        "rect": {
+          "x": 7.515940488841654,
+          "y": 19.999999999999993,
+          "width": 59.96811902231669,
+          "height": 60.00000000000001
+        },
+        "asset": "texture://ui_map-link-2-future",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "map_link_3",
+        "rect": {
+          "x": 7.515940488841654,
+          "y": 19.999999999999993,
+          "width": 59.96811902231669,
+          "height": 60.00000000000001
+        },
+        "asset": "texture://ui_map-link-3-future",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "map_link_4",
+        "rect": {
+          "x": 7.515940488841654,
+          "y": 19.999999999999993,
+          "width": 59.96811902231669,
+          "height": 60.00000000000001
+        },
+        "asset": "texture://ui_map-link-4-future",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "map_link_5",
+        "rect": {
+          "x": 7.515940488841654,
+          "y": 19.999999999999993,
+          "width": 59.96811902231669,
+          "height": 60.00000000000001
+        },
+        "asset": "texture://ui_map-link-5-future",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "map_link_6",
+        "rect": {
+          "x": 7.515940488841654,
+          "y": 19.999999999999993,
+          "width": 59.96811902231669,
+          "height": 60.00000000000001
+        },
+        "asset": "texture://ui_map-link-6-future",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "map_link_7",
+        "rect": {
+          "x": 7.515940488841654,
+          "y": 19.999999999999993,
+          "width": 59.96811902231669,
+          "height": 60.00000000000001
+        },
+        "asset": "texture://ui_map-link-7-future",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "map_current_ring",
+        "rect": {
+          "x": 13.984393818632656,
+          "y": 31.574074074074044,
+          "width": 3.854166666666667,
+          "height": 6.851851851851852
+        },
+        "asset": "texture://ui_map-current-ring",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "map_node_1",
+        "rect": {
+          "x": 14.34897715196599,
+          "y": 32.22222222222222,
+          "width": 3.125,
+          "height": 5.555555555555555
+        },
+        "asset": "texture://ui_map-waypoint-v2",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "map_number_1",
+        "rect": {
+          "x": 14.34897715196599,
+          "y": 33.89081790123457,
+          "width": 3.125,
+          "height": 2.218364197530864
+        },
+        "text": "1"
+      },
+      {
+        "kind": "image",
+        "id": "map_node_2",
+        "rect": {
+          "x": 22.509415958200492,
+          "y": 49.07037037037038,
+          "width": 2.3958333333333335,
+          "height": 4.2592592592592595
+        },
+        "asset": "texture://ui_map-waypoint-v2",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "map_number_2",
+        "rect": {
+          "x": 22.509415958200492,
+          "y": 50.09081790123457,
+          "width": 2.3958333333333335,
+          "height": 2.218364197530864
+        },
+        "text": "2"
+      },
+      {
+        "kind": "image",
+        "id": "map_node_3",
+        "rect": {
+          "x": 32.10431500177117,
+          "y": 39.47037037037038,
+          "width": 2.3958333333333335,
+          "height": 4.2592592592592595
+        },
+        "asset": "texture://ui_map-waypoint-v2",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "map_number_3",
+        "rect": {
+          "x": 32.10431500177117,
+          "y": 40.49081790123458,
+          "width": 2.3958333333333335,
+          "height": 2.218364197530864
+        },
+        "text": "3"
+      },
+      {
+        "kind": "image",
+        "id": "map_node_4",
+        "rect": {
+          "x": 36.9017645235565,
+          "y": 55.670370370370385,
+          "width": 2.3958333333333335,
+          "height": 4.2592592592592595
+        },
+        "asset": "texture://ui_map-waypoint-v2",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "map_number_4",
+        "rect": {
+          "x": 36.9017645235565,
+          "y": 56.69081790123458,
+          "width": 2.3958333333333335,
+          "height": 2.218364197530864
+        },
+        "text": "4"
+      },
+      {
+        "kind": "image",
+        "id": "map_node_5",
+        "rect": {
+          "x": 45.896982376904,
+          "y": 42.47037037037037,
+          "width": 2.3958333333333335,
+          "height": 4.2592592592592595
+        },
+        "asset": "texture://ui_map-waypoint-v2",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "map_number_5",
+        "rect": {
+          "x": 45.896982376904,
+          "y": 43.490817901234564,
+          "width": 2.3958333333333335,
+          "height": 2.218364197530864
+        },
+        "text": "5"
+      },
+      {
+        "kind": "image",
+        "id": "map_node_6",
+        "rect": {
+          "x": 53.692837849805166,
+          "y": 53.27037037037038,
+          "width": 2.3958333333333335,
+          "height": 4.2592592592592595
+        },
+        "asset": "texture://ui_map-waypoint-v2",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "map_number_6",
+        "rect": {
+          "x": 53.692837849805166,
+          "y": 54.290817901234576,
+          "width": 2.3958333333333335,
+          "height": 2.218364197530864
+        },
+        "text": "6"
+      },
+      {
+        "kind": "image",
+        "id": "map_node_7",
+        "rect": {
+          "x": 60.289330942260015,
+          "y": 65.87037037037035,
+          "width": 2.3958333333333335,
+          "height": 4.2592592592592595
+        },
+        "asset": "texture://ui_map-waypoint-v2",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "map_number_7",
+        "rect": {
+          "x": 60.289330942260015,
+          "y": 66.89081790123456,
+          "width": 2.3958333333333335,
+          "height": 2.218364197530864
+        },
+        "text": "7"
+      },
+      {
+        "kind": "image",
+        "id": "map_lord",
+        "rect": {
+          "x": 76,
+          "y": 58,
+          "width": 12,
+          "height": 18
+        },
+        "asset": "texture://ui_portrait-lord-v2",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "map_stage",
+        "rect": {
+          "x": 77,
+          "y": 89.77970679012346,
+          "width": 16,
+          "height": 2.218364197530864
+        },
+        "text": "第 1 / 7 站"
+      },
+      {
+        "kind": "text",
+        "id": "map_current_title",
+        "rect": {
+          "x": 71,
+          "y": 51.03960905349795,
+          "width": 22,
+          "height": 2.957818930041152
+        },
+        "text": "苔光林口"
+      },
+      {
+        "kind": "text",
+        "id": "map_plan",
+        "rect": {
+          "x": 71,
+          "y": 38.77777777777778,
+          "width": 22,
+          "height": 3.9999999999999996
+        },
+        "text": "已抵達營地\n選一處景點，為戰鬥整備"
+      },
+      {
+        "kind": "text",
+        "id": "map_next",
+        "rect": {
+          "x": 71,
+          "y": 24.17592592592593,
+          "width": 22,
+          "height": 2.314814814814815
+        },
+        "text": "下一站 · 菇冠小徑"
+      },
+      {
+        "kind": "text",
+        "id": "map_progress",
+        "rect": {
+          "x": 8,
+          "y": 7.84259259259259,
+          "width": 59,
+          "height": 2.314814814814815
+        },
+        "text": "實線：已行經　點線：待前往"
+      },
+      {
+        "kind": "image",
+        "id": "visit_location_plate_tl",
+        "rect": {
+          "x": 71,
+          "y": 10.760330578512399,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "visit_location_plate_t",
+        "rect": {
+          "x": 73.09194214876032,
+          "y": 10.760330578512399,
+          "width": 17.81611570247935,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "visit_location_plate_tr",
+        "rect": {
+          "x": 90.90805785123968,
+          "y": 10.760330578512399,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "visit_location_plate_l",
+        "rect": {
+          "x": 71,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603245,
+          "height": 3.5206611570247954
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "visit_location_plate_c",
+        "rect": {
+          "x": 73.09194214876032,
+          "y": 7.239669421487603,
+          "width": 17.81611570247935,
+          "height": 3.5206611570247954
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "visit_location_plate_r",
+        "rect": {
+          "x": 90.90805785123968,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603245,
+          "height": 3.5206611570247954
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "visit_location_plate_bl",
+        "rect": {
+          "x": 71,
+          "y": 6,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "visit_location_plate_b",
+        "rect": {
+          "x": 73.09194214876032,
+          "y": 6,
+          "width": 17.81611570247935,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "visit_location_plate_br",
+        "rect": {
+          "x": 90.90805785123968,
+          "y": 6,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "visit_location",
+        "rect": {
+          "x": 71,
+          "y": 7.585390946502056,
+          "width": 22,
+          "height": 2.8292181069958846
+        },
+        "text": "選擇景點",
+        "action": "VisitLocation"
+      },
+      {
+        "kind": "button",
+        "id": "visit_location_hit_top",
+        "rect": {
+          "x": 71,
+          "y": 10.41460905349794,
+          "width": 22,
+          "height": 1.5853909465020586
+        },
+        "text": "",
+        "action": "VisitLocation"
+      },
+      {
+        "kind": "button",
+        "id": "visit_location_hit_bottom",
+        "rect": {
+          "x": 71,
+          "y": 6.000000000000001,
+          "width": 22,
+          "height": 1.5853909465020586
+        },
+        "text": "",
+        "action": "VisitLocation"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "森林王冠之路",
+      "font": 34,
+      "clip": {
+        "x": 172.8,
+        "y": 89.7888888888889,
+        "width": 1113.6,
+        "height": 47.22222222222223
+      },
+      "ink": {
+        "x": 628.5999999999999,
+        "y": 97.66562500000002,
+        "width": 202,
+        "height": 31
+      }
+    },
+    {
+      "text": "1",
+      "font": 17.25,
+      "clip": {
+        "x": 275.50036131774704,
+        "y": 690.0208333333333,
+        "width": 60,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 301.5013989154033,
+        "y": 695.7343749999999,
+        "width": 9,
+        "height": 13
+      }
+    },
+    {
+      "text": "2",
+      "font": 17.25,
+      "clip": {
+        "x": 432.1807863974494,
+        "y": 515.0608333333333,
+        "width": 46,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 450.1818239951057,
+        "y": 520.774375,
+        "width": 9,
+        "height": 13
+      }
+    },
+    {
+      "text": "3",
+      "font": 17.25,
+      "clip": {
+        "x": 616.4028480340064,
+        "y": 618.7408333333333,
+        "width": 46,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 634.4038856316627,
+        "y": 624.4543749999999,
+        "width": 9,
+        "height": 13
+      }
+    },
+    {
+      "text": "4",
+      "font": 17.25,
+      "clip": {
+        "x": 708.5138788522848,
+        "y": 443.7808333333332,
+        "width": 46,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 725.5149164499411,
+        "y": 449.4943749999999,
+        "width": 11,
+        "height": 13
+      }
+    },
+    {
+      "text": "5",
+      "font": 17.25,
+      "clip": {
+        "x": 881.2220616365568,
+        "y": 586.3408333333334,
+        "width": 46,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 900.223099234213,
+        "y": 592.054375,
+        "width": 8,
+        "height": 13
+      }
+    },
+    {
+      "text": "6",
+      "font": 17.25,
+      "clip": {
+        "x": 1030.902486716259,
+        "y": 469.70083333333326,
+        "width": 46,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1048.9035243139153,
+        "y": 475.41437499999995,
+        "width": 10,
+        "height": 13
+      }
+    },
+    {
+      "text": "7",
+      "font": 17.25,
+      "clip": {
+        "x": 1157.5551540913923,
+        "y": 333.6208333333335,
+        "width": 46,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1175.5561916890485,
+        "y": 339.3343750000002,
+        "width": 10,
+        "height": 13
+      }
+    },
+    {
+      "text": "第 1 / 7 站",
+      "font": 17.25,
+      "clip": {
+        "x": 1478.4,
+        "y": 86.42083333333336,
+        "width": 307.2,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1592.530517578125,
+        "y": 90.13437500000003,
+        "width": 78.68896484375,
+        "height": 17
+      }
+    },
+    {
+      "text": "苔光林口",
+      "font": 23,
+      "clip": {
+        "x": 1363.2,
+        "y": 496.8277777777777,
+        "width": 422.4,
+        "height": 31.944444444444443
+      },
+      "ink": {
+        "x": 1529.4,
+        "y": 501.76874999999995,
+        "width": 88,
+        "height": 21
+      }
+    },
+    {
+      "text": "已抵達營地",
+      "font": 18,
+      "clip": {
+        "x": 1363.2,
+        "y": 618,
+        "width": 422.4,
+        "height": 43.19999999999999
+      },
+      "ink": {
+        "x": 1530.4,
+        "y": 619.8156250000001,
+        "width": 89,
+        "height": 17
+      }
+    },
+    {
+      "text": "選一處景點，為戰鬥整備",
+      "font": 18,
+      "clip": {
+        "x": 1363.2,
+        "y": 618,
+        "width": 422.4,
+        "height": 43.19999999999999
+      },
+      "ink": {
+        "x": 1475.4,
+        "y": 641.415625,
+        "width": 198,
+        "height": 17
+      }
+    },
+    {
+      "text": "下一站 · 菇冠小徑",
+      "font": 18,
+      "clip": {
+        "x": 1363.2,
+        "y": 793.9000000000001,
+        "width": 422.4,
+        "height": 25
+      },
+      "ink": {
+        "x": 1504.82578125,
+        "y": 797.4156250000001,
+        "width": 139.1484375,
+        "height": 17
+      }
+    },
+    {
+      "text": "實線：已行經　點線：待前往",
+      "font": 18,
+      "clip": {
+        "x": 153.6,
+        "y": 970.3,
+        "width": 1132.8,
+        "height": 25
+      },
+      "ink": {
+        "x": 603,
+        "y": 973.815625,
+        "width": 234,
+        "height": 17
+      }
+    },
+    {
+      "text": "選擇景點",
+      "font": 22,
+      "clip": {
+        "x": 1363.2,
+        "y": 967.5222222222222,
+        "width": 422.4,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1531.4,
+        "y": 972.3781250000001,
+        "width": 86,
+        "height": 20
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 53,
+    "assets": [
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_scene-shade",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_portrait-lord-v2",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_forest-map-v2",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_map-link-1-done",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_map-link-2-future",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_map-link-3-future",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_map-link-4-future",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_map-link-5-future",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_map-link-6-future",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_map-link-7-future",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_map-current-ring",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_map-waypoint-v2",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

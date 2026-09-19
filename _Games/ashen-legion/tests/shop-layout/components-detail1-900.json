@@ -38,6 +38,18 @@
         }
       },
       {
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch",
+        "id": "screen_back_fill",
+        "kind": "image",
+        "rect": {
+          "x": 6.8,
+          "y": 8,
+          "width": 86.4,
+          "height": 84
+        }
+      },
+      {
         "asset": "texture://ui_shop-window-panel-v2-tl",
         "fit": "stretch",
         "id": "screen_back_tl",
@@ -150,9 +162,9 @@
         "kind": "text",
         "rect": {
           "x": 32,
-          "y": 85.74074074074075,
+          "y": 85.37962962962962,
           "width": 36,
-          "height": 2.518518518518519
+          "height": 3.2407407407407405
         },
         "text": "森林領主 · 榛姨的商店"
       },
@@ -168,26 +180,50 @@
         "text": "裝備店"
       },
       {
+        "asset": "texture://ui_icon-coin",
+        "fit": "contain",
+        "id": "screen_gold_icon",
+        "kind": "image",
+        "rect": {
+          "x": 78,
+          "y": 81.5,
+          "width": 3,
+          "height": 4
+        }
+      },
+      {
         "id": "screen_gold",
         "kind": "text",
         "rect": {
-          "x": 72,
-          "y": 81.74074074074075,
-          "width": 17,
-          "height": 2.518518518518519
+          "x": 81.7,
+          "y": 81.64814814814814,
+          "width": 7.3,
+          "height": 3.7037037037037033
         },
-        "text": "金幣 320"
+        "text": "320"
+      },
+      {
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain",
+        "id": "screen_crystals_icon",
+        "kind": "image",
+        "rect": {
+          "x": 78,
+          "y": 77,
+          "width": 3,
+          "height": 4
+        }
       },
       {
         "id": "screen_crystals",
         "kind": "text",
         "rect": {
-          "x": 72,
-          "y": 77.74074074074075,
-          "width": 17,
-          "height": 2.518518518518519
+          "x": 81.7,
+          "y": 77.14814814814814,
+          "width": 7.3,
+          "height": 3.7037037037037033
         },
-        "text": "◆ 結晶 18"
+        "text": "18"
       },
       {
         "asset": "texture://ui_shop-button-primary-v2-tl",
@@ -196,9 +232,9 @@
         "kind": "image",
         "rect": {
           "x": 10,
-          "y": 76.86363636363636,
-          "width": 2.2727272727272734,
-          "height": 1.1363636363636402
+          "y": 76.4848484848485,
+          "width": 3.0303030303030347,
+          "height": 1.5151515151515156
         }
       },
       {
@@ -207,10 +243,10 @@
         "id": "tab_home_plate_t",
         "kind": "image",
         "rect": {
-          "x": 12.272727272727273,
-          "y": 76.86363636363636,
-          "width": 11.454545454545453,
-          "height": 1.1363636363636402
+          "x": 13.030303030303035,
+          "y": 76.4848484848485,
+          "width": 9.93939393939393,
+          "height": 1.5151515151515156
         }
       },
       {
@@ -219,10 +255,10 @@
         "id": "tab_home_plate_tr",
         "kind": "image",
         "rect": {
-          "x": 23.727272727272727,
-          "y": 76.86363636363636,
-          "width": 2.2727272727272734,
-          "height": 1.1363636363636402
+          "x": 22.969696969696965,
+          "y": 76.4848484848485,
+          "width": 3.0303030303030347,
+          "height": 1.5151515151515156
         }
       },
       {
@@ -232,9 +268,9 @@
         "kind": "image",
         "rect": {
           "x": 10,
-          "y": 73.63636363636364,
-          "width": 2.2727272727272734,
-          "height": 3.2272727272727195
+          "y": 72.18181818181819,
+          "width": 3.0303030303030347,
+          "height": 4.303030303030312
         }
       },
       {
@@ -243,10 +279,10 @@
         "id": "tab_home_plate_c",
         "kind": "image",
         "rect": {
-          "x": 12.272727272727273,
-          "y": 73.63636363636364,
-          "width": 11.454545454545453,
-          "height": 3.2272727272727195
+          "x": 13.030303030303035,
+          "y": 72.18181818181819,
+          "width": 9.93939393939393,
+          "height": 4.303030303030312
         }
       },
       {
@@ -255,10 +291,10 @@
         "id": "tab_home_plate_r",
         "kind": "image",
         "rect": {
-          "x": 23.727272727272727,
-          "y": 73.63636363636364,
-          "width": 2.2727272727272734,
-          "height": 3.2272727272727195
+          "x": 22.969696969696965,
+          "y": 72.18181818181819,
+          "width": 3.0303030303030347,
+          "height": 4.303030303030312
         }
       },
       {
@@ -268,9 +304,9 @@
         "kind": "image",
         "rect": {
           "x": 10,
-          "y": 72.5,
-          "width": 2.2727272727272734,
-          "height": 1.1363636363636402
+          "y": 70.66666666666667,
+          "width": 3.0303030303030347,
+          "height": 1.5151515151515156
         }
       },
       {
@@ -279,10 +315,10 @@
         "id": "tab_home_plate_b",
         "kind": "image",
         "rect": {
-          "x": 12.272727272727273,
-          "y": 72.5,
-          "width": 11.454545454545453,
-          "height": 1.1363636363636402
+          "x": 13.030303030303035,
+          "y": 70.66666666666667,
+          "width": 9.93939393939393,
+          "height": 1.5151515151515156
         }
       },
       {
@@ -291,10 +327,10 @@
         "id": "tab_home_plate_br",
         "kind": "image",
         "rect": {
-          "x": 23.727272727272727,
-          "y": 72.5,
-          "width": 2.2727272727272734,
-          "height": 1.1363636363636402
+          "x": 22.969696969696965,
+          "y": 70.66666666666667,
+          "width": 3.0303030303030347,
+          "height": 1.5151515151515156
         }
       },
       {
@@ -303,9 +339,9 @@
         "kind": "button",
         "rect": {
           "x": 10,
-          "y": 73.99074074074075,
+          "y": 72.48148148148148,
           "width": 16,
-          "height": 2.518518518518519
+          "height": 3.7037037037037033
         },
         "text": "買入裝備"
       },
@@ -315,9 +351,9 @@
         "kind": "button",
         "rect": {
           "x": 10,
-          "y": 76.50925925925927,
+          "y": 76.18518518518519,
           "width": 16,
-          "height": 1.4907407407407405
+          "height": 1.8148148148148198
         },
         "text": ""
       },
@@ -327,118 +363,118 @@
         "kind": "button",
         "rect": {
           "x": 10,
-          "y": 72.5,
+          "y": 70.66666666666667,
           "width": 16,
-          "height": 1.4907407407407405
+          "height": 1.8148148148148198
         },
         "text": ""
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-tl",
+        "asset": "texture://ui_control-quiet-v3-tl",
         "fit": "stretch",
         "id": "tab_sell_plate_tl",
         "kind": "image",
         "rect": {
           "x": 28,
-          "y": 76.87525562372188,
-          "width": 2.2494887525562355,
-          "height": 1.124744376278116
+          "y": 77.00000000000001,
+          "width": 0.6666666666666679,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-t",
+        "asset": "texture://ui_control-quiet-v3-t",
         "fit": "stretch",
         "id": "tab_sell_plate_t",
         "kind": "image",
         "rect": {
-          "x": 30.249488752556235,
-          "y": 76.87525562372188,
-          "width": 11.501022494887525,
-          "height": 1.124744376278116
+          "x": 28.666666666666668,
+          "y": 77.00000000000001,
+          "width": 14.666666666666668,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-tr",
+        "asset": "texture://ui_control-quiet-v3-tr",
         "fit": "stretch",
         "id": "tab_sell_plate_tr",
         "kind": "image",
         "rect": {
-          "x": 41.75051124744376,
-          "y": 76.87525562372188,
-          "width": 2.249488752556239,
-          "height": 1.124744376278116
+          "x": 43.333333333333336,
+          "y": 77.00000000000001,
+          "width": 0.6666666666666643,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-l",
+        "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch",
         "id": "tab_sell_plate_l",
         "kind": "image",
         "rect": {
           "x": 28,
-          "y": 73.62474437627812,
-          "width": 2.2494887525562355,
-          "height": 3.250511247443768
+          "y": 71.66666666666667,
+          "width": 0.6666666666666679,
+          "height": 5.333333333333343
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-c",
+        "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch",
         "id": "tab_sell_plate_c",
         "kind": "image",
         "rect": {
-          "x": 30.249488752556235,
-          "y": 73.62474437627812,
-          "width": 11.501022494887525,
-          "height": 3.250511247443768
+          "x": 28.666666666666668,
+          "y": 71.66666666666667,
+          "width": 14.666666666666668,
+          "height": 5.333333333333343
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-r",
+        "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch",
         "id": "tab_sell_plate_r",
         "kind": "image",
         "rect": {
-          "x": 41.75051124744376,
-          "y": 73.62474437627812,
-          "width": 2.249488752556239,
-          "height": 3.250511247443768
+          "x": 43.333333333333336,
+          "y": 71.66666666666667,
+          "width": 0.6666666666666643,
+          "height": 5.333333333333343
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-bl",
+        "asset": "texture://ui_control-quiet-v3-bl",
         "fit": "stretch",
         "id": "tab_sell_plate_bl",
         "kind": "image",
         "rect": {
           "x": 28,
-          "y": 72.5,
-          "width": 2.2494887525562355,
-          "height": 1.124744376278116
+          "y": 70.66666666666667,
+          "width": 0.6666666666666679,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-b",
+        "asset": "texture://ui_control-quiet-v3-b",
         "fit": "stretch",
         "id": "tab_sell_plate_b",
         "kind": "image",
         "rect": {
-          "x": 30.249488752556235,
-          "y": 72.5,
-          "width": 11.501022494887525,
-          "height": 1.124744376278116
+          "x": 28.666666666666668,
+          "y": 70.66666666666667,
+          "width": 14.666666666666668,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-br",
+        "asset": "texture://ui_control-quiet-v3-br",
         "fit": "stretch",
         "id": "tab_sell_plate_br",
         "kind": "image",
         "rect": {
-          "x": 41.75051124744376,
-          "y": 72.5,
-          "width": 2.249488752556239,
-          "height": 1.124744376278116
+          "x": 43.333333333333336,
+          "y": 70.66666666666667,
+          "width": 0.6666666666666643,
+          "height": 1
         }
       },
       {
@@ -447,9 +483,9 @@
         "kind": "button",
         "rect": {
           "x": 28,
-          "y": 73.99074074074075,
+          "y": 72.48148148148148,
           "width": 16,
-          "height": 2.518518518518519
+          "height": 3.7037037037037033
         },
         "text": "出售裝備"
       },
@@ -459,9 +495,9 @@
         "kind": "button",
         "rect": {
           "x": 28,
-          "y": 76.50925925925927,
+          "y": 76.18518518518519,
           "width": 16,
-          "height": 1.4907407407407405
+          "height": 1.8148148148148198
         },
         "text": ""
       },
@@ -471,118 +507,118 @@
         "kind": "button",
         "rect": {
           "x": 28,
-          "y": 72.5,
+          "y": 70.66666666666667,
           "width": 16,
-          "height": 1.4907407407407405
+          "height": 1.8148148148148198
         },
         "text": ""
       },
       {
-        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "asset": "texture://ui_control-quiet-v3-tl",
         "fit": "stretch",
         "id": "ready_plate_tl",
         "kind": "image",
         "rect": {
-          "x": 70,
-          "y": 14.863636363636363,
-          "width": 2.2727272727272805,
-          "height": 1.1363636363636367
+          "x": 56,
+          "y": 15,
+          "width": 0.6666666666666643,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-primary-v2-t",
+        "asset": "texture://ui_control-quiet-v3-t",
         "fit": "stretch",
         "id": "ready_plate_t",
         "kind": "image",
         "rect": {
-          "x": 72.27272727272728,
-          "y": 14.863636363636363,
-          "width": 15.454545454545439,
-          "height": 1.1363636363636367
+          "x": 56.666666666666664,
+          "y": 15,
+          "width": 14.666666666666679,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "asset": "texture://ui_control-quiet-v3-tr",
         "fit": "stretch",
         "id": "ready_plate_tr",
         "kind": "image",
         "rect": {
-          "x": 87.72727272727272,
-          "y": 14.863636363636363,
-          "width": 2.2727272727272805,
-          "height": 1.1363636363636367
+          "x": 71.33333333333334,
+          "y": 15,
+          "width": 0.6666666666666714,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-primary-v2-l",
+        "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch",
         "id": "ready_plate_l",
         "kind": "image",
         "rect": {
-          "x": 70,
-          "y": 11.636363636363631,
-          "width": 2.2727272727272805,
-          "height": 3.227272727272732
+          "x": 56,
+          "y": 9.666666666666668,
+          "width": 0.6666666666666643,
+          "height": 5.333333333333332
         }
       },
       {
-        "asset": "texture://ui_shop-button-primary-v2-c",
+        "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch",
         "id": "ready_plate_c",
         "kind": "image",
         "rect": {
-          "x": 72.27272727272728,
-          "y": 11.636363636363631,
-          "width": 15.454545454545439,
-          "height": 3.227272727272732
+          "x": 56.666666666666664,
+          "y": 9.666666666666668,
+          "width": 14.666666666666679,
+          "height": 5.333333333333332
         }
       },
       {
-        "asset": "texture://ui_shop-button-primary-v2-r",
+        "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch",
         "id": "ready_plate_r",
         "kind": "image",
         "rect": {
-          "x": 87.72727272727272,
-          "y": 11.636363636363631,
-          "width": 2.2727272727272805,
-          "height": 3.227272727272732
+          "x": 71.33333333333334,
+          "y": 9.666666666666668,
+          "width": 0.6666666666666714,
+          "height": 5.333333333333332
         }
       },
       {
-        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "asset": "texture://ui_control-quiet-v3-bl",
         "fit": "stretch",
         "id": "ready_plate_bl",
         "kind": "image",
         "rect": {
-          "x": 70,
-          "y": 10.499999999999995,
-          "width": 2.2727272727272805,
-          "height": 1.1363636363636367
+          "x": 56,
+          "y": 8.666666666666668,
+          "width": 0.6666666666666643,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-primary-v2-b",
+        "asset": "texture://ui_control-quiet-v3-b",
         "fit": "stretch",
         "id": "ready_plate_b",
         "kind": "image",
         "rect": {
-          "x": 72.27272727272728,
-          "y": 10.499999999999995,
-          "width": 15.454545454545439,
-          "height": 1.1363636363636367
+          "x": 56.666666666666664,
+          "y": 8.666666666666668,
+          "width": 14.666666666666679,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-primary-v2-br",
+        "asset": "texture://ui_control-quiet-v3-br",
         "fit": "stretch",
         "id": "ready_plate_br",
         "kind": "image",
         "rect": {
-          "x": 87.72727272727272,
-          "y": 10.499999999999995,
-          "width": 2.2727272727272805,
-          "height": 1.1363636363636367
+          "x": 71.33333333333334,
+          "y": 8.666666666666668,
+          "width": 0.6666666666666714,
+          "height": 1
         }
       },
       {
@@ -590,22 +626,22 @@
         "id": "ready",
         "kind": "button",
         "rect": {
-          "x": 70,
-          "y": 11.990740740740733,
-          "width": 20,
-          "height": 2.518518518518519
+          "x": 56,
+          "y": 10.481481481481488,
+          "width": 16.000000000000014,
+          "height": 3.7037037037037033
         },
-        "text": "前往部隊配置"
+        "text": "部隊配置"
       },
       {
         "action": "LeaveShop",
         "id": "ready_hit_top",
         "kind": "button",
         "rect": {
-          "x": 70,
-          "y": 14.509259259259256,
-          "width": 20,
-          "height": 1.4907407407407431
+          "x": 56,
+          "y": 14.185185185185185,
+          "width": 16.000000000000014,
+          "height": 1.8148148148148144
         },
         "text": ""
       },
@@ -614,10 +650,154 @@
         "id": "ready_hit_bottom",
         "kind": "button",
         "rect": {
-          "x": 70,
-          "y": 10.49999999999999,
-          "width": 20,
-          "height": 1.4907407407407431
+          "x": 56,
+          "y": 8.666666666666666,
+          "width": 16.000000000000014,
+          "height": 1.8148148148148144
+        },
+        "text": ""
+      },
+      {
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch",
+        "id": "quick_deploy_plate_tl",
+        "kind": "image",
+        "rect": {
+          "x": 74,
+          "y": 14.484848484848484,
+          "width": 3.030303030303031,
+          "height": 1.5151515151515156
+        }
+      },
+      {
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch",
+        "id": "quick_deploy_plate_t",
+        "kind": "image",
+        "rect": {
+          "x": 77.03030303030303,
+          "y": 14.484848484848484,
+          "width": 9.939393939393952,
+          "height": 1.5151515151515156
+        }
+      },
+      {
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch",
+        "id": "quick_deploy_plate_tr",
+        "kind": "image",
+        "rect": {
+          "x": 86.96969696969698,
+          "y": 14.484848484848484,
+          "width": 3.030303030303031,
+          "height": 1.5151515151515156
+        }
+      },
+      {
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch",
+        "id": "quick_deploy_plate_l",
+        "kind": "image",
+        "rect": {
+          "x": 74,
+          "y": 10.181818181818183,
+          "width": 3.030303030303031,
+          "height": 4.303030303030301
+        }
+      },
+      {
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch",
+        "id": "quick_deploy_plate_c",
+        "kind": "image",
+        "rect": {
+          "x": 77.03030303030303,
+          "y": 10.181818181818183,
+          "width": 9.939393939393952,
+          "height": 4.303030303030301
+        }
+      },
+      {
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch",
+        "id": "quick_deploy_plate_r",
+        "kind": "image",
+        "rect": {
+          "x": 86.96969696969698,
+          "y": 10.181818181818183,
+          "width": 3.030303030303031,
+          "height": 4.303030303030301
+        }
+      },
+      {
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch",
+        "id": "quick_deploy_plate_bl",
+        "kind": "image",
+        "rect": {
+          "x": 74,
+          "y": 8.666666666666668,
+          "width": 3.030303030303031,
+          "height": 1.5151515151515156
+        }
+      },
+      {
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch",
+        "id": "quick_deploy_plate_b",
+        "kind": "image",
+        "rect": {
+          "x": 77.03030303030303,
+          "y": 8.666666666666668,
+          "width": 9.939393939393952,
+          "height": 1.5151515151515156
+        }
+      },
+      {
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch",
+        "id": "quick_deploy_plate_br",
+        "kind": "image",
+        "rect": {
+          "x": 86.96969696969698,
+          "y": 8.666666666666668,
+          "width": 3.030303030303031,
+          "height": 1.5151515151515156
+        }
+      },
+      {
+        "action": "QuickDeploy",
+        "id": "quick_deploy",
+        "kind": "button",
+        "rect": {
+          "x": 74,
+          "y": 10.481481481481488,
+          "width": 16.000000000000014,
+          "height": 3.7037037037037033
+        },
+        "text": "直接出戰"
+      },
+      {
+        "action": "QuickDeploy",
+        "id": "quick_deploy_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 74,
+          "y": 14.185185185185185,
+          "width": 16.000000000000014,
+          "height": 1.8148148148148144
+        },
+        "text": ""
+      },
+      {
+        "action": "QuickDeploy",
+        "id": "quick_deploy_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 74,
+          "y": 8.666666666666666,
+          "width": 16.000000000000014,
+          "height": 1.8148148148148144
         },
         "text": ""
       },
@@ -638,9 +818,9 @@
         "kind": "text",
         "rect": {
           "x": 10,
-          "y": 35.44444444444444,
+          "y": 35.379629629629626,
           "width": 16,
-          "height": 3.1111111111111107
+          "height": 3.2407407407407405
         },
         "text": "榛姨 · 商人"
       },
@@ -649,11 +829,11 @@
         "kind": "text",
         "rect": {
           "x": 10,
-          "y": 25.324,
+          "y": 23.300000000000004,
           "width": 16,
-          "height": 4.352
+          "height": 8.399999999999999
         },
-        "text": "榛姨把剛到貨的裝備排開。先\n看技能，再挑一件回去。"
+        "text": "榛姨把剛到貨的裝備排\n開。先看技能，再挑一\n件回去。"
       },
       {
         "asset": "texture://ui_shop-card-rare-v2-tl",
@@ -780,9 +960,9 @@
         "kind": "text",
         "rect": {
           "x": 30,
-          "y": 46.44444444444444,
+          "y": 46.14814814814815,
           "width": 10.75,
-          "height": 3.1111111111111107
+          "height": 3.7037037037037033
         },
         "text": "遠征靴"
       },
@@ -791,175 +971,66 @@
         "kind": "text",
         "rect": {
           "x": 30,
-          "y": 37.736000000000004,
+          "y": 38.199999999999996,
           "width": 10.75,
-          "height": 6.5280000000000005
+          "height": 5.6000000000000005
         },
-        "text": "腳部位 · 地面移動\n12單位後下一撞 +\n30%"
+        "text": "行軍後強化下\n一撞"
+      },
+      {
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain",
+        "id": "stock_cost_icon_1",
+        "kind": "image",
+        "rect": {
+          "x": 30,
+          "y": 31,
+          "width": 2,
+          "height": 3.5
+        }
       },
       {
         "id": "stock_cost_1",
         "kind": "text",
         "rect": {
-          "x": 30,
-          "y": 30.702,
-          "width": 5,
-          "height": 4.096
+          "x": 32.2,
+          "y": 30.898148148148145,
+          "width": 2.8,
+          "height": 3.7037037037037033
         },
-        "text": "售價\n◆ 9"
+        "text": "9"
       },
       {
         "id": "stock_deploy_1",
         "kind": "text",
         "rect": {
           "x": 35.75,
-          "y": 30.702,
+          "y": 29.949999999999996,
           "width": 5,
-          "height": 4.096
+          "height": 5.6000000000000005
         },
         "text": "派兵費\n+1"
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-tl",
-        "fit": "stretch",
-        "id": "stock_detail_1_plate_tl",
-        "kind": "image",
-        "rect": {
-          "x": 29.75,
-          "y": 27.87525562372188,
-          "width": 2.249488752556239,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-t",
-        "fit": "stretch",
-        "id": "stock_detail_1_plate_t",
-        "kind": "image",
-        "rect": {
-          "x": 31.99948875255624,
-          "y": 27.87525562372188,
-          "width": 6.751022494887522,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-tr",
-        "fit": "stretch",
-        "id": "stock_detail_1_plate_tr",
-        "kind": "image",
-        "rect": {
-          "x": 38.75051124744376,
-          "y": 27.87525562372188,
-          "width": 2.249488752556239,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-l",
-        "fit": "stretch",
-        "id": "stock_detail_1_plate_l",
-        "kind": "image",
-        "rect": {
-          "x": 29.75,
-          "y": 24.624744376278112,
-          "width": 2.249488752556239,
-          "height": 3.250511247443768
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-c",
-        "fit": "stretch",
-        "id": "stock_detail_1_plate_c",
-        "kind": "image",
-        "rect": {
-          "x": 31.99948875255624,
-          "y": 24.624744376278112,
-          "width": 6.751022494887522,
-          "height": 3.250511247443768
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-r",
-        "fit": "stretch",
-        "id": "stock_detail_1_plate_r",
-        "kind": "image",
-        "rect": {
-          "x": 38.75051124744376,
-          "y": 24.624744376278112,
-          "width": 2.249488752556239,
-          "height": 3.250511247443768
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-bl",
-        "fit": "stretch",
-        "id": "stock_detail_1_plate_bl",
-        "kind": "image",
-        "rect": {
-          "x": 29.75,
-          "y": 23.499999999999993,
-          "width": 2.249488752556239,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-b",
-        "fit": "stretch",
-        "id": "stock_detail_1_plate_b",
-        "kind": "image",
-        "rect": {
-          "x": 31.99948875255624,
-          "y": 23.499999999999993,
-          "width": 6.751022494887522,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-br",
-        "fit": "stretch",
-        "id": "stock_detail_1_plate_br",
-        "kind": "image",
-        "rect": {
-          "x": 38.75051124744376,
-          "y": 23.499999999999993,
-          "width": 2.249488752556239,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "action": "ShopDetail1",
         "id": "stock_detail_1",
-        "kind": "button",
+        "kind": "text",
         "rect": {
           "x": 29.75,
-          "y": 24.990740740740733,
+          "y": 24.629629629629626,
           "width": 11.25,
-          "height": 2.518518518518519
+          "height": 3.2407407407407405
         },
-        "text": "查看詳情"
+        "text": "詳情"
       },
       {
         "action": "ShopDetail1",
-        "id": "stock_detail_1_hit_top",
+        "id": "stock_hit_1",
         "kind": "button",
         "rect": {
-          "x": 29.75,
-          "y": 27.509259259259256,
-          "width": 11.25,
-          "height": 1.490740740740744
-        },
-        "text": ""
-      },
-      {
-        "action": "ShopDetail1",
-        "id": "stock_detail_1_hit_bottom",
-        "kind": "button",
-        "rect": {
-          "x": 29.75,
-          "y": 23.49999999999999,
-          "width": 11.25,
-          "height": 1.490740740740744
+          "x": 28,
+          "y": 20,
+          "width": 14.75,
+          "height": 51
         },
         "text": ""
       },
@@ -1088,9 +1159,9 @@
         "kind": "text",
         "rect": {
           "x": 45.75,
-          "y": 46.44444444444444,
+          "y": 46.14814814814815,
           "width": 10.75,
-          "height": 3.1111111111111107
+          "height": 3.7037037037037033
         },
         "text": "雷枝戰槍"
       },
@@ -1099,175 +1170,66 @@
         "kind": "text",
         "rect": {
           "x": 45.75,
-          "y": 37.736000000000004,
+          "y": 39.379629629629626,
           "width": 10.75,
-          "height": 6.5280000000000005
+          "height": 3.2407407407407405
         },
-        "text": "武器部位 · 爆擊雷\n鏈其他兩怪，每兵\n最多兩次"
+        "text": "爆擊雷鏈兩怪"
+      },
+      {
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain",
+        "id": "stock_cost_icon_2",
+        "kind": "image",
+        "rect": {
+          "x": 45.75,
+          "y": 31,
+          "width": 2,
+          "height": 3.5
+        }
       },
       {
         "id": "stock_cost_2",
         "kind": "text",
         "rect": {
-          "x": 45.75,
-          "y": 30.702,
-          "width": 5,
-          "height": 4.096
+          "x": 47.95,
+          "y": 30.898148148148145,
+          "width": 2.8,
+          "height": 3.7037037037037033
         },
-        "text": "售價\n◆ 18"
+        "text": "18"
       },
       {
         "id": "stock_deploy_2",
         "kind": "text",
         "rect": {
           "x": 51.5,
-          "y": 30.702,
+          "y": 29.949999999999996,
           "width": 5,
-          "height": 4.096
+          "height": 5.6000000000000005
         },
         "text": "派兵費\n+3"
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-tl",
-        "fit": "stretch",
-        "id": "stock_detail_2_plate_tl",
-        "kind": "image",
-        "rect": {
-          "x": 45.5,
-          "y": 27.87525562372188,
-          "width": 2.249488752556239,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-t",
-        "fit": "stretch",
-        "id": "stock_detail_2_plate_t",
-        "kind": "image",
-        "rect": {
-          "x": 47.74948875255624,
-          "y": 27.87525562372188,
-          "width": 6.751022494887522,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-tr",
-        "fit": "stretch",
-        "id": "stock_detail_2_plate_tr",
-        "kind": "image",
-        "rect": {
-          "x": 54.50051124744376,
-          "y": 27.87525562372188,
-          "width": 2.249488752556239,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-l",
-        "fit": "stretch",
-        "id": "stock_detail_2_plate_l",
-        "kind": "image",
-        "rect": {
-          "x": 45.5,
-          "y": 24.624744376278112,
-          "width": 2.249488752556239,
-          "height": 3.250511247443768
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-c",
-        "fit": "stretch",
-        "id": "stock_detail_2_plate_c",
-        "kind": "image",
-        "rect": {
-          "x": 47.74948875255624,
-          "y": 24.624744376278112,
-          "width": 6.751022494887522,
-          "height": 3.250511247443768
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-r",
-        "fit": "stretch",
-        "id": "stock_detail_2_plate_r",
-        "kind": "image",
-        "rect": {
-          "x": 54.50051124744376,
-          "y": 24.624744376278112,
-          "width": 2.249488752556239,
-          "height": 3.250511247443768
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-bl",
-        "fit": "stretch",
-        "id": "stock_detail_2_plate_bl",
-        "kind": "image",
-        "rect": {
-          "x": 45.5,
-          "y": 23.499999999999993,
-          "width": 2.249488752556239,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-b",
-        "fit": "stretch",
-        "id": "stock_detail_2_plate_b",
-        "kind": "image",
-        "rect": {
-          "x": 47.74948875255624,
-          "y": 23.499999999999993,
-          "width": 6.751022494887522,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-br",
-        "fit": "stretch",
-        "id": "stock_detail_2_plate_br",
-        "kind": "image",
-        "rect": {
-          "x": 54.50051124744376,
-          "y": 23.499999999999993,
-          "width": 2.249488752556239,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "action": "ShopDetail2",
         "id": "stock_detail_2",
-        "kind": "button",
+        "kind": "text",
         "rect": {
           "x": 45.5,
-          "y": 24.990740740740733,
+          "y": 24.629629629629626,
           "width": 11.25,
-          "height": 2.518518518518519
+          "height": 3.2407407407407405
         },
-        "text": "查看詳情"
+        "text": "詳情"
       },
       {
         "action": "ShopDetail2",
-        "id": "stock_detail_2_hit_top",
+        "id": "stock_hit_2",
         "kind": "button",
         "rect": {
-          "x": 45.5,
-          "y": 27.509259259259256,
-          "width": 11.25,
-          "height": 1.490740740740744
-        },
-        "text": ""
-      },
-      {
-        "action": "ShopDetail2",
-        "id": "stock_detail_2_hit_bottom",
-        "kind": "button",
-        "rect": {
-          "x": 45.5,
-          "y": 23.49999999999999,
-          "width": 11.25,
-          "height": 1.490740740740744
+          "x": 43.75,
+          "y": 20,
+          "width": 14.75,
+          "height": 51
         },
         "text": ""
       },
@@ -1396,9 +1358,9 @@
         "kind": "text",
         "rect": {
           "x": 61.5,
-          "y": 46.44444444444444,
+          "y": 46.14814814814815,
           "width": 10.75,
-          "height": 3.1111111111111107
+          "height": 3.7037037037037033
         },
         "text": "孤獵冠"
       },
@@ -1407,175 +1369,66 @@
         "kind": "text",
         "rect": {
           "x": 61.5,
-          "y": 37.736000000000004,
+          "y": 39.379629629629626,
           "width": 10.75,
-          "height": 6.5280000000000005
+          "height": 3.2407407407407405
         },
-        "text": "頭部位 · 目標2單位\n內無其他活怪，主\n要傷害+25%"
+        "text": "孤立目標增傷"
+      },
+      {
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain",
+        "id": "stock_cost_icon_3",
+        "kind": "image",
+        "rect": {
+          "x": 61.5,
+          "y": 31,
+          "width": 2,
+          "height": 3.5
+        }
       },
       {
         "id": "stock_cost_3",
         "kind": "text",
         "rect": {
-          "x": 61.5,
-          "y": 30.702,
-          "width": 5,
-          "height": 4.096
+          "x": 63.7,
+          "y": 30.898148148148145,
+          "width": 2.8,
+          "height": 3.7037037037037033
         },
-        "text": "售價\n◆ 10"
+        "text": "10"
       },
       {
         "id": "stock_deploy_3",
         "kind": "text",
         "rect": {
           "x": 67.25,
-          "y": 30.702,
+          "y": 29.949999999999996,
           "width": 5,
-          "height": 4.096
+          "height": 5.6000000000000005
         },
         "text": "派兵費\n+1"
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-tl",
-        "fit": "stretch",
-        "id": "stock_detail_3_plate_tl",
-        "kind": "image",
-        "rect": {
-          "x": 61.25,
-          "y": 27.87525562372188,
-          "width": 2.249488752556239,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-t",
-        "fit": "stretch",
-        "id": "stock_detail_3_plate_t",
-        "kind": "image",
-        "rect": {
-          "x": 63.49948875255624,
-          "y": 27.87525562372188,
-          "width": 6.751022494887515,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-tr",
-        "fit": "stretch",
-        "id": "stock_detail_3_plate_tr",
-        "kind": "image",
-        "rect": {
-          "x": 70.25051124744375,
-          "y": 27.87525562372188,
-          "width": 2.249488752556246,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-l",
-        "fit": "stretch",
-        "id": "stock_detail_3_plate_l",
-        "kind": "image",
-        "rect": {
-          "x": 61.25,
-          "y": 24.624744376278112,
-          "width": 2.249488752556239,
-          "height": 3.250511247443768
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-c",
-        "fit": "stretch",
-        "id": "stock_detail_3_plate_c",
-        "kind": "image",
-        "rect": {
-          "x": 63.49948875255624,
-          "y": 24.624744376278112,
-          "width": 6.751022494887515,
-          "height": 3.250511247443768
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-r",
-        "fit": "stretch",
-        "id": "stock_detail_3_plate_r",
-        "kind": "image",
-        "rect": {
-          "x": 70.25051124744375,
-          "y": 24.624744376278112,
-          "width": 2.249488752556246,
-          "height": 3.250511247443768
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-bl",
-        "fit": "stretch",
-        "id": "stock_detail_3_plate_bl",
-        "kind": "image",
-        "rect": {
-          "x": 61.25,
-          "y": 23.499999999999993,
-          "width": 2.249488752556239,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-b",
-        "fit": "stretch",
-        "id": "stock_detail_3_plate_b",
-        "kind": "image",
-        "rect": {
-          "x": 63.49948875255624,
-          "y": 23.499999999999993,
-          "width": 6.751022494887515,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-br",
-        "fit": "stretch",
-        "id": "stock_detail_3_plate_br",
-        "kind": "image",
-        "rect": {
-          "x": 70.25051124744375,
-          "y": 23.499999999999993,
-          "width": 2.249488752556246,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "action": "ShopDetail3",
         "id": "stock_detail_3",
-        "kind": "button",
+        "kind": "text",
         "rect": {
           "x": 61.25,
-          "y": 24.990740740740733,
+          "y": 24.629629629629626,
           "width": 11.25,
-          "height": 2.518518518518519
+          "height": 3.2407407407407405
         },
-        "text": "查看詳情"
+        "text": "詳情"
       },
       {
         "action": "ShopDetail3",
-        "id": "stock_detail_3_hit_top",
+        "id": "stock_hit_3",
         "kind": "button",
         "rect": {
-          "x": 61.25,
-          "y": 27.509259259259256,
-          "width": 11.25,
-          "height": 1.490740740740744
-        },
-        "text": ""
-      },
-      {
-        "action": "ShopDetail3",
-        "id": "stock_detail_3_hit_bottom",
-        "kind": "button",
-        "rect": {
-          "x": 61.25,
-          "y": 23.49999999999999,
-          "width": 11.25,
-          "height": 1.490740740740744
+          "x": 59.5,
+          "y": 20,
+          "width": 14.75,
+          "height": 51
         },
         "text": ""
       },
@@ -1704,9 +1557,9 @@
         "kind": "text",
         "rect": {
           "x": 77.25,
-          "y": 46.44444444444444,
+          "y": 46.14814814814815,
           "width": 10.75,
-          "height": 3.1111111111111107
+          "height": 3.7037037037037033
         },
         "text": "震盪護手"
       },
@@ -1715,175 +1568,66 @@
         "kind": "text",
         "rect": {
           "x": 77.25,
-          "y": 37.736000000000004,
+          "y": 38.199999999999996,
           "width": 10.75,
-          "height": 6.5280000000000005
+          "height": 5.6000000000000005
         },
-        "text": "手部位 · 主要命中\n向其他怪擴散 20% \n範圍傷害"
+        "text": "命中擴散範圍\n傷害"
+      },
+      {
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain",
+        "id": "stock_cost_icon_4",
+        "kind": "image",
+        "rect": {
+          "x": 77.25,
+          "y": 31,
+          "width": 2,
+          "height": 3.5
+        }
       },
       {
         "id": "stock_cost_4",
         "kind": "text",
         "rect": {
-          "x": 77.25,
-          "y": 30.702,
-          "width": 5,
-          "height": 4.096
+          "x": 79.45,
+          "y": 30.898148148148145,
+          "width": 2.8,
+          "height": 3.7037037037037033
         },
-        "text": "售價\n◆ 14"
+        "text": "14"
       },
       {
         "id": "stock_deploy_4",
         "kind": "text",
         "rect": {
           "x": 83,
-          "y": 30.702,
+          "y": 29.949999999999996,
           "width": 5,
-          "height": 4.096
+          "height": 5.6000000000000005
         },
         "text": "派兵費\n+4"
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-tl",
-        "fit": "stretch",
-        "id": "stock_detail_4_plate_tl",
-        "kind": "image",
-        "rect": {
-          "x": 77,
-          "y": 27.87525562372188,
-          "width": 2.249488752556246,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-t",
-        "fit": "stretch",
-        "id": "stock_detail_4_plate_t",
-        "kind": "image",
-        "rect": {
-          "x": 79.24948875255625,
-          "y": 27.87525562372188,
-          "width": 6.751022494887508,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-tr",
-        "fit": "stretch",
-        "id": "stock_detail_4_plate_tr",
-        "kind": "image",
-        "rect": {
-          "x": 86.00051124744375,
-          "y": 27.87525562372188,
-          "width": 2.249488752556246,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-l",
-        "fit": "stretch",
-        "id": "stock_detail_4_plate_l",
-        "kind": "image",
-        "rect": {
-          "x": 77,
-          "y": 24.624744376278112,
-          "width": 2.249488752556246,
-          "height": 3.250511247443768
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-c",
-        "fit": "stretch",
-        "id": "stock_detail_4_plate_c",
-        "kind": "image",
-        "rect": {
-          "x": 79.24948875255625,
-          "y": 24.624744376278112,
-          "width": 6.751022494887508,
-          "height": 3.250511247443768
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-r",
-        "fit": "stretch",
-        "id": "stock_detail_4_plate_r",
-        "kind": "image",
-        "rect": {
-          "x": 86.00051124744375,
-          "y": 24.624744376278112,
-          "width": 2.249488752556246,
-          "height": 3.250511247443768
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-bl",
-        "fit": "stretch",
-        "id": "stock_detail_4_plate_bl",
-        "kind": "image",
-        "rect": {
-          "x": 77,
-          "y": 23.499999999999993,
-          "width": 2.249488752556246,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-b",
-        "fit": "stretch",
-        "id": "stock_detail_4_plate_b",
-        "kind": "image",
-        "rect": {
-          "x": 79.24948875255625,
-          "y": 23.499999999999993,
-          "width": 6.751022494887508,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "asset": "texture://ui_shop-button-secondary-v2-br",
-        "fit": "stretch",
-        "id": "stock_detail_4_plate_br",
-        "kind": "image",
-        "rect": {
-          "x": 86.00051124744375,
-          "y": 23.499999999999993,
-          "width": 2.249488752556246,
-          "height": 1.1247443762781195
-        }
-      },
-      {
-        "action": "ShopDetail4",
         "id": "stock_detail_4",
-        "kind": "button",
+        "kind": "text",
         "rect": {
           "x": 77,
-          "y": 24.990740740740733,
+          "y": 24.629629629629626,
           "width": 11.25,
-          "height": 2.518518518518519
+          "height": 3.2407407407407405
         },
-        "text": "查看詳情"
+        "text": "詳情"
       },
       {
         "action": "ShopDetail4",
-        "id": "stock_detail_4_hit_top",
+        "id": "stock_hit_4",
         "kind": "button",
         "rect": {
-          "x": 77,
-          "y": 27.509259259259256,
-          "width": 11.25,
-          "height": 1.490740740740744
-        },
-        "text": ""
-      },
-      {
-        "action": "ShopDetail4",
-        "id": "stock_detail_4_hit_bottom",
-        "kind": "button",
-        "rect": {
-          "x": 77,
-          "y": 23.49999999999999,
-          "width": 11.25,
-          "height": 1.490740740740744
+          "x": 75.25,
+          "y": 20,
+          "width": 14.75,
+          "height": 51
         },
         "text": ""
       },
@@ -1920,6 +1664,18 @@
           "x": 23,
           "y": 16,
           "width": 54,
+          "height": 68
+        }
+      },
+      {
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch",
+        "id": "shop_detail_modal_fill",
+        "kind": "image",
+        "rect": {
+          "x": 22.8,
+          "y": 16,
+          "width": 54.4,
           "height": 68
         }
       },
@@ -2036,9 +1792,9 @@
         "kind": "text",
         "rect": {
           "x": 28,
-          "y": 76.74074074074075,
+          "y": 76.37962962962962,
           "width": 31,
-          "height": 2.518518518518519
+          "height": 3.2407407407407405
         },
         "text": "裝備詳情 · 稀有"
       },
@@ -2054,111 +1810,111 @@
         "text": "遠征靴"
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-tl",
+        "asset": "texture://ui_control-quiet-v3-tl",
         "fit": "stretch",
         "id": "shop_detail_close_plate_tl",
         "kind": "image",
         "rect": {
-          "x": 64,
-          "y": 78.87525562372188,
-          "width": 2.249488752556232,
-          "height": 1.124744376278116
+          "x": 61,
+          "y": 79,
+          "width": 0.6666666666666643,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-t",
+        "asset": "texture://ui_control-quiet-v3-t",
         "fit": "stretch",
         "id": "shop_detail_close_plate_t",
         "kind": "image",
         "rect": {
-          "x": 66.24948875255623,
-          "y": 78.87525562372188,
-          "width": 4.501022494887536,
-          "height": 1.124744376278116
+          "x": 61.666666666666664,
+          "y": 79,
+          "width": 10.666666666666664,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-tr",
+        "asset": "texture://ui_control-quiet-v3-tr",
         "fit": "stretch",
         "id": "shop_detail_close_plate_tr",
         "kind": "image",
         "rect": {
-          "x": 70.75051124744377,
-          "y": 78.87525562372188,
-          "width": 2.249488752556232,
-          "height": 1.124744376278116
+          "x": 72.33333333333333,
+          "y": 79,
+          "width": 0.6666666666666714,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-l",
+        "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch",
         "id": "shop_detail_close_plate_l",
         "kind": "image",
         "rect": {
-          "x": 64,
-          "y": 75.62474437627812,
-          "width": 2.249488752556232,
-          "height": 3.250511247443768
+          "x": 61,
+          "y": 73.66666666666667,
+          "width": 0.6666666666666643,
+          "height": 5.333333333333329
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-c",
+        "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch",
         "id": "shop_detail_close_plate_c",
         "kind": "image",
         "rect": {
-          "x": 66.24948875255623,
-          "y": 75.62474437627812,
-          "width": 4.501022494887536,
-          "height": 3.250511247443768
+          "x": 61.666666666666664,
+          "y": 73.66666666666667,
+          "width": 10.666666666666664,
+          "height": 5.333333333333329
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-r",
+        "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch",
         "id": "shop_detail_close_plate_r",
         "kind": "image",
         "rect": {
-          "x": 70.75051124744377,
-          "y": 75.62474437627812,
-          "width": 2.249488752556232,
-          "height": 3.250511247443768
+          "x": 72.33333333333333,
+          "y": 73.66666666666667,
+          "width": 0.6666666666666714,
+          "height": 5.333333333333329
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-bl",
+        "asset": "texture://ui_control-quiet-v3-bl",
         "fit": "stretch",
         "id": "shop_detail_close_plate_bl",
         "kind": "image",
         "rect": {
-          "x": 64,
-          "y": 74.5,
-          "width": 2.249488752556232,
-          "height": 1.124744376278116
+          "x": 61,
+          "y": 72.66666666666667,
+          "width": 0.6666666666666643,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-b",
+        "asset": "texture://ui_control-quiet-v3-b",
         "fit": "stretch",
         "id": "shop_detail_close_plate_b",
         "kind": "image",
         "rect": {
-          "x": 66.24948875255623,
-          "y": 74.5,
-          "width": 4.501022494887536,
-          "height": 1.124744376278116
+          "x": 61.666666666666664,
+          "y": 72.66666666666667,
+          "width": 10.666666666666664,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-br",
+        "asset": "texture://ui_control-quiet-v3-br",
         "fit": "stretch",
         "id": "shop_detail_close_plate_br",
         "kind": "image",
         "rect": {
-          "x": 70.75051124744377,
-          "y": 74.5,
-          "width": 2.249488752556232,
-          "height": 1.124744376278116
+          "x": 72.33333333333333,
+          "y": 72.66666666666667,
+          "width": 0.6666666666666714,
+          "height": 1
         }
       },
       {
@@ -2166,10 +1922,10 @@
         "id": "shop_detail_close",
         "kind": "button",
         "rect": {
-          "x": 64,
-          "y": 75.99074074074075,
-          "width": 9,
-          "height": 2.518518518518519
+          "x": 61,
+          "y": 74.48148148148148,
+          "width": 12,
+          "height": 3.7037037037037033
         },
         "text": "關閉"
       },
@@ -2178,10 +1934,10 @@
         "id": "shop_detail_close_hit_top",
         "kind": "button",
         "rect": {
-          "x": 64,
-          "y": 78.50925925925927,
-          "width": 9,
-          "height": 1.4907407407407405
+          "x": 61,
+          "y": 78.18518518518519,
+          "width": 12,
+          "height": 1.8148148148148127
         },
         "text": ""
       },
@@ -2190,10 +1946,10 @@
         "id": "shop_detail_close_hit_bottom",
         "kind": "button",
         "rect": {
-          "x": 64,
-          "y": 74.5,
-          "width": 9,
-          "height": 1.4907407407407405
+          "x": 61,
+          "y": 72.66666666666667,
+          "width": 12,
+          "height": 1.8148148148148127
         },
         "text": ""
       },
@@ -2214,31 +1970,43 @@
         "kind": "text",
         "rect": {
           "x": 40,
-          "y": 59.74074074074074,
+          "y": 59.379629629629626,
           "width": 29,
-          "height": 2.518518518518519
+          "height": 3.2407407407407405
         },
         "text": "腳部位裝備 · 買入後至部隊配置穿戴"
+      },
+      {
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain",
+        "id": "shop_detail_price_icon",
+        "kind": "image",
+        "rect": {
+          "x": 32,
+          "y": 50,
+          "width": 3,
+          "height": 4
+        }
       },
       {
         "id": "shop_detail_price",
         "kind": "text",
         "rect": {
-          "x": 28,
-          "y": 50.74074074074074,
-          "width": 20,
-          "height": 2.518518518518519
+          "x": 36,
+          "y": 50.14814814814815,
+          "width": 6,
+          "height": 3.7037037037037033
         },
-        "text": "售價 ◆ 9"
+        "text": "9"
       },
       {
         "id": "shop_detail_deploy",
         "kind": "text",
         "rect": {
           "x": 51,
-          "y": 50.74074074074074,
+          "y": 50.379629629629626,
           "width": 20,
-          "height": 2.518518518518519
+          "height": 3.2407407407407405
         },
         "text": "派兵費 +1"
       },
@@ -2247,9 +2015,9 @@
         "kind": "text",
         "rect": {
           "x": 28,
-          "y": 43.74074074074074,
+          "y": 43.379629629629626,
           "width": 44,
-          "height": 2.518518518518519
+          "height": 3.2407407407407405
         },
         "text": "技能條件與效果"
       },
@@ -2258,9 +2026,9 @@
         "kind": "text",
         "rect": {
           "x": 28,
-          "y": 34.74074074074074,
+          "y": 34.379629629629626,
           "width": 44,
-          "height": 2.518518518518519
+          "height": 3.2407407407407405
         },
         "text": "地面移動12單位後下一撞 +30%"
       },
@@ -2271,9 +2039,9 @@
         "kind": "image",
         "rect": {
           "x": 28,
-          "y": 25.863636363636363,
-          "width": 2.272727272727277,
-          "height": 1.1363636363636367
+          "y": 25.484848484848484,
+          "width": 3.030303030303031,
+          "height": 1.5151515151515156
         }
       },
       {
@@ -2282,10 +2050,10 @@
         "id": "shop_detail_buy_plate_t",
         "kind": "image",
         "rect": {
-          "x": 30.272727272727277,
-          "y": 25.863636363636363,
-          "width": 16.45454545454545,
-          "height": 1.1363636363636367
+          "x": 31.03030303030303,
+          "y": 25.484848484848484,
+          "width": 14.939393939393938,
+          "height": 1.5151515151515156
         }
       },
       {
@@ -2294,10 +2062,10 @@
         "id": "shop_detail_buy_plate_tr",
         "kind": "image",
         "rect": {
-          "x": 46.72727272727273,
-          "y": 25.863636363636363,
-          "width": 2.2727272727272734,
-          "height": 1.1363636363636367
+          "x": 45.96969696969697,
+          "y": 25.484848484848484,
+          "width": 3.030303030303031,
+          "height": 1.5151515151515156
         }
       },
       {
@@ -2307,9 +2075,9 @@
         "kind": "image",
         "rect": {
           "x": 28,
-          "y": 22.63636363636363,
-          "width": 2.272727272727277,
-          "height": 3.2272727272727337
+          "y": 21.181818181818183,
+          "width": 3.030303030303031,
+          "height": 4.303030303030301
         }
       },
       {
@@ -2318,10 +2086,10 @@
         "id": "shop_detail_buy_plate_c",
         "kind": "image",
         "rect": {
-          "x": 30.272727272727277,
-          "y": 22.63636363636363,
-          "width": 16.45454545454545,
-          "height": 3.2272727272727337
+          "x": 31.03030303030303,
+          "y": 21.181818181818183,
+          "width": 14.939393939393938,
+          "height": 4.303030303030301
         }
       },
       {
@@ -2330,10 +2098,10 @@
         "id": "shop_detail_buy_plate_r",
         "kind": "image",
         "rect": {
-          "x": 46.72727272727273,
-          "y": 22.63636363636363,
-          "width": 2.2727272727272734,
-          "height": 3.2272727272727337
+          "x": 45.96969696969697,
+          "y": 21.181818181818183,
+          "width": 3.030303030303031,
+          "height": 4.303030303030301
         }
       },
       {
@@ -2343,9 +2111,9 @@
         "kind": "image",
         "rect": {
           "x": 28,
-          "y": 21.499999999999993,
-          "width": 2.272727272727277,
-          "height": 1.1363636363636367
+          "y": 19.666666666666668,
+          "width": 3.030303030303031,
+          "height": 1.5151515151515156
         }
       },
       {
@@ -2354,10 +2122,10 @@
         "id": "shop_detail_buy_plate_b",
         "kind": "image",
         "rect": {
-          "x": 30.272727272727277,
-          "y": 21.499999999999993,
-          "width": 16.45454545454545,
-          "height": 1.1363636363636367
+          "x": 31.03030303030303,
+          "y": 19.666666666666668,
+          "width": 14.939393939393938,
+          "height": 1.5151515151515156
         }
       },
       {
@@ -2366,10 +2134,10 @@
         "id": "shop_detail_buy_plate_br",
         "kind": "image",
         "rect": {
-          "x": 46.72727272727273,
-          "y": 21.499999999999993,
-          "width": 2.2727272727272734,
-          "height": 1.1363636363636367
+          "x": 45.96969696969697,
+          "y": 19.666666666666668,
+          "width": 3.030303030303031,
+          "height": 1.5151515151515156
         }
       },
       {
@@ -2378,9 +2146,9 @@
         "kind": "button",
         "rect": {
           "x": 28,
-          "y": 22.990740740740733,
+          "y": 21.481481481481488,
           "width": 21,
-          "height": 2.518518518518519
+          "height": 3.7037037037037033
         },
         "text": "買入"
       },
@@ -2390,9 +2158,9 @@
         "kind": "button",
         "rect": {
           "x": 28,
-          "y": 25.509259259259256,
+          "y": 25.185185185185187,
           "width": 21,
-          "height": 1.490740740740744
+          "height": 1.8148148148148144
         },
         "text": ""
       },
@@ -2402,118 +2170,118 @@
         "kind": "button",
         "rect": {
           "x": 28,
-          "y": 21.49999999999999,
+          "y": 19.666666666666668,
           "width": 21,
-          "height": 1.490740740740744
+          "height": 1.8148148148148144
         },
         "text": ""
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-tl",
+        "asset": "texture://ui_control-quiet-v3-tl",
         "fit": "stretch",
         "id": "shop_detail_cancel_plate_tl",
         "kind": "image",
         "rect": {
           "x": 51,
-          "y": 25.87525562372188,
-          "width": 2.249488752556239,
-          "height": 1.1247443762781195
+          "y": 26,
+          "width": 0.6666666666666643,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-t",
+        "asset": "texture://ui_control-quiet-v3-t",
         "fit": "stretch",
         "id": "shop_detail_cancel_plate_t",
         "kind": "image",
         "rect": {
-          "x": 53.24948875255624,
-          "y": 25.87525562372188,
-          "width": 16.501022494887515,
-          "height": 1.1247443762781195
+          "x": 51.666666666666664,
+          "y": 26,
+          "width": 19.666666666666664,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-tr",
+        "asset": "texture://ui_control-quiet-v3-tr",
         "fit": "stretch",
         "id": "shop_detail_cancel_plate_tr",
         "kind": "image",
         "rect": {
-          "x": 69.75051124744375,
-          "y": 25.87525562372188,
-          "width": 2.249488752556246,
-          "height": 1.1247443762781195
+          "x": 71.33333333333333,
+          "y": 26,
+          "width": 0.6666666666666714,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-l",
+        "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch",
         "id": "shop_detail_cancel_plate_l",
         "kind": "image",
         "rect": {
           "x": 51,
-          "y": 22.624744376278112,
-          "width": 2.249488752556239,
-          "height": 3.250511247443768
+          "y": 20.666666666666668,
+          "width": 0.6666666666666643,
+          "height": 5.333333333333332
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-c",
+        "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch",
         "id": "shop_detail_cancel_plate_c",
         "kind": "image",
         "rect": {
-          "x": 53.24948875255624,
-          "y": 22.624744376278112,
-          "width": 16.501022494887515,
-          "height": 3.250511247443768
+          "x": 51.666666666666664,
+          "y": 20.666666666666668,
+          "width": 19.666666666666664,
+          "height": 5.333333333333332
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-r",
+        "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch",
         "id": "shop_detail_cancel_plate_r",
         "kind": "image",
         "rect": {
-          "x": 69.75051124744375,
-          "y": 22.624744376278112,
-          "width": 2.249488752556246,
-          "height": 3.250511247443768
+          "x": 71.33333333333333,
+          "y": 20.666666666666668,
+          "width": 0.6666666666666714,
+          "height": 5.333333333333332
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-bl",
+        "asset": "texture://ui_control-quiet-v3-bl",
         "fit": "stretch",
         "id": "shop_detail_cancel_plate_bl",
         "kind": "image",
         "rect": {
           "x": 51,
-          "y": 21.499999999999993,
-          "width": 2.249488752556239,
-          "height": 1.1247443762781195
+          "y": 19.666666666666668,
+          "width": 0.6666666666666643,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-b",
+        "asset": "texture://ui_control-quiet-v3-b",
         "fit": "stretch",
         "id": "shop_detail_cancel_plate_b",
         "kind": "image",
         "rect": {
-          "x": 53.24948875255624,
-          "y": 21.499999999999993,
-          "width": 16.501022494887515,
-          "height": 1.1247443762781195
+          "x": 51.666666666666664,
+          "y": 19.666666666666668,
+          "width": 19.666666666666664,
+          "height": 1
         }
       },
       {
-        "asset": "texture://ui_shop-button-secondary-v2-br",
+        "asset": "texture://ui_control-quiet-v3-br",
         "fit": "stretch",
         "id": "shop_detail_cancel_plate_br",
         "kind": "image",
         "rect": {
-          "x": 69.75051124744375,
-          "y": 21.499999999999993,
-          "width": 2.249488752556246,
-          "height": 1.1247443762781195
+          "x": 71.33333333333333,
+          "y": 19.666666666666668,
+          "width": 0.6666666666666714,
+          "height": 1
         }
       },
       {
@@ -2522,9 +2290,9 @@
         "kind": "button",
         "rect": {
           "x": 51,
-          "y": 22.990740740740733,
+          "y": 21.481481481481488,
           "width": 21,
-          "height": 2.518518518518519
+          "height": 3.7037037037037033
         },
         "text": "先不買"
       },
@@ -2534,9 +2302,9 @@
         "kind": "button",
         "rect": {
           "x": 51,
-          "y": 25.509259259259256,
+          "y": 25.185185185185187,
           "width": 21,
-          "height": 1.490740740740744
+          "height": 1.8148148148148144
         },
         "text": ""
       },
@@ -2546,9 +2314,9 @@
         "kind": "button",
         "rect": {
           "x": 51,
-          "y": 21.49999999999999,
+          "y": 19.666666666666668,
           "width": 21,
-          "height": 1.490740740740744
+          "height": 1.8148148148148144
         },
         "text": ""
       }
@@ -2560,18 +2328,18 @@
   "glyphs": [
     {
       "text": "森林領主 · 榛姨的商店",
-      "font": 10.88,
+      "font": 14,
       "clip": {
         "x": 288,
-        "y": 70.4444444444444,
+        "y": 68.27777777777784,
         "width": 324,
-        "height": 15.111111111111112
+        "height": 19.444444444444443
       },
       "ink": {
-        "x": 397.0663146972656,
-        "y": 72.24999999999996,
-        "width": 105.98738098144531,
-        "height": 11
+        "x": 381.88671875,
+        "y": 71.46875000000006,
+        "width": 136.2265625,
+        "height": 13
       }
     },
     {
@@ -2591,723 +2359,595 @@
       }
     },
     {
-      "text": "金幣 320",
-      "font": 10.88,
+      "text": "320",
+      "font": 16,
       "clip": {
-        "x": 648,
-        "y": 94.4444444444444,
-        "width": 153,
-        "height": 15.111111111111112
+        "x": 735.3,
+        "y": 87.88888888888896,
+        "width": 65.7,
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 702.8011322021484,
-        "y": 96.24999999999996,
-        "width": 44.09181213378906,
-        "height": 11
+        "x": 754.23984375,
+        "y": 93.25000000000007,
+        "width": 27.546875,
+        "height": 12
       }
     },
     {
-      "text": "◆ 結晶 18",
-      "font": 10.88,
+      "text": "18",
+      "font": 16,
       "clip": {
-        "x": 648,
-        "y": 118.4444444444444,
-        "width": 153,
-        "height": 15.111111111111112
+        "x": 735.3,
+        "y": 114.88888888888896,
+        "width": 65.7,
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 701.3295745849609,
-        "y": 120.24999999999996,
-        "width": 47.03492736816406,
-        "height": 11
+        "x": 759.8765625,
+        "y": 120.25000000000007,
+        "width": 17.2734375,
+        "height": 12
       }
     },
     {
       "text": "買入裝備",
-      "font": 10.88,
+      "font": 16,
       "clip": {
         "x": 90,
-        "y": 140.9444444444444,
+        "y": 142.8888888888889,
         "width": 144,
-        "height": 15.111111111111112
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 140.24002075195312,
-        "y": 142.74999999999994,
-        "width": 43.63996887207031,
-        "height": 11
+        "x": 131,
+        "y": 146.25000000000003,
+        "width": 63,
+        "height": 15
       }
     },
     {
       "text": "出售裝備",
-      "font": 10.88,
+      "font": 16,
       "clip": {
         "x": 252,
-        "y": 140.9444444444444,
+        "y": 142.8888888888889,
         "width": 144,
-        "height": 15.111111111111112
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 303.2400207519531,
-        "y": 142.74999999999994,
-        "width": 42.63996887207031,
-        "height": 11
+        "x": 293,
+        "y": 146.25000000000003,
+        "width": 63,
+        "height": 15
       }
     },
     {
-      "text": "前往部隊配置",
-      "font": 10.88,
+      "text": "部隊配置",
+      "font": 16,
       "clip": {
-        "x": 630,
-        "y": 512.9444444444445,
-        "width": 180,
-        "height": 15.111111111111112
+        "x": 504,
+        "y": 514.8888888888888,
+        "width": 144.0000000000001,
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 687.3600311279297,
-        "y": 514.75,
-        "width": 65.39994812011719,
-        "height": 11
+        "x": 544,
+        "y": 518.2499999999999,
+        "width": 64,
+        "height": 15
+      }
+    },
+    {
+      "text": "直接出戰",
+      "font": 16,
+      "clip": {
+        "x": 666,
+        "y": 514.8888888888888,
+        "width": 144.0000000000001,
+        "height": 22.22222222222222
+      },
+      "ink": {
+        "x": 706,
+        "y": 518.2499999999999,
+        "width": 64,
+        "height": 15
       }
     },
     {
       "text": "榛姨 · 商人",
-      "font": 13.44,
+      "font": 14,
       "clip": {
         "x": 90,
-        "y": 368.66666666666663,
+        "y": 368.2777777777778,
         "width": 144,
-        "height": 18.666666666666664
+        "height": 19.444444444444443
       },
       "ink": {
-        "x": 130.21129608154297,
-        "y": 372.24999999999994,
-        "width": 63.137420654296875,
+        "x": 128.88671875,
+        "y": 371.46875000000006,
+        "width": 66.2265625,
+        "height": 13
+      }
+    },
+    {
+      "text": "榛姨把剛到貨的裝備排",
+      "font": 14,
+      "clip": {
+        "x": 90,
+        "y": 409.79999999999995,
+        "width": 144,
+        "height": 50.39999999999999
+      },
+      "ink": {
+        "x": 92,
+        "y": 411.66874999999993,
+        "width": 140,
+        "height": 13
+      }
+    },
+    {
+      "text": "開。先看技能，再挑一",
+      "font": 14,
+      "clip": {
+        "x": 90,
+        "y": 409.79999999999995,
+        "width": 144,
+        "height": 50.39999999999999
+      },
+      "ink": {
+        "x": 93,
+        "y": 429.46874999999994,
+        "width": 139,
         "height": 12
       }
     },
     {
-      "text": "榛姨把剛到貨的裝備排開。先",
-      "font": 10.88,
+      "text": "件回去。",
+      "font": 14,
       "clip": {
         "x": 90,
-        "y": 421.944,
+        "y": 409.79999999999995,
         "width": 144,
-        "height": 26.112000000000002
+        "height": 50.39999999999999
       },
       "ink": {
-        "x": 91.28006744384766,
-        "y": 422.722,
-        "width": 141.55987548828125,
-        "height": 11
-      }
-    },
-    {
-      "text": "看技能，再挑一件回去。",
-      "font": 10.88,
-      "clip": {
-        "x": 90,
-        "y": 421.944,
-        "width": 144,
-        "height": 26.112000000000002
-      },
-      "ink": {
-        "x": 102.1600570678711,
-        "y": 435.778,
-        "width": 116.79989624023438,
-        "height": 11
+        "x": 134,
+        "y": 445.26874999999995,
+        "width": 51,
+        "height": 13
       }
     },
     {
       "text": "遠征靴",
-      "font": 13.44,
+      "font": 16,
       "clip": {
         "x": 270,
-        "y": 302.66666666666663,
+        "y": 300.88888888888886,
         "width": 96.75,
-        "height": 18.666666666666664
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 298.2150192260742,
-        "y": 306.24999999999994,
-        "width": 39.879974365234375,
+        "x": 294.375,
+        "y": 304.24999999999994,
+        "width": 48,
+        "height": 15
+      }
+    },
+    {
+      "text": "行軍後強化下",
+      "font": 14,
+      "clip": {
+        "x": 270,
+        "y": 337.2,
+        "width": 96.75,
+        "height": 33.6
+      },
+      "ink": {
+        "x": 276.375,
+        "y": 340.06875,
+        "width": 84,
         "height": 12
       }
     },
     {
-      "text": "腳部位 · 地面移動",
-      "font": 10.88,
+      "text": "一撞",
+      "font": 14,
       "clip": {
         "x": 270,
-        "y": 334.416,
+        "y": 337.2,
         "width": 96.75,
-        "height": 39.168
+        "height": 33.6
       },
       "ink": {
-        "x": 276.32130432128906,
-        "y": 336.194,
-        "width": 84.22740173339844,
-        "height": 10
+        "x": 304.375,
+        "y": 356.86875,
+        "width": 28,
+        "height": 12
       }
     },
     {
-      "text": "12單位後下一撞 +",
-      "font": 10.88,
+      "text": "9",
+      "font": 16,
       "clip": {
-        "x": 270,
-        "y": 334.416,
-        "width": 96.75,
-        "height": 39.168
+        "x": 289.8,
+        "y": 392.38888888888886,
+        "width": 25.2,
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 274.0581817626953,
-        "y": 348.25,
-        "width": 88.61177062988281,
-        "height": 11
-      }
-    },
-    {
-      "text": "30%",
-      "font": 10.88,
-      "clip": {
-        "x": 270,
-        "y": 334.416,
-        "width": 96.75,
-        "height": 39.168
-      },
-      "ink": {
-        "x": 307.2798614501953,
-        "y": 363.306,
-        "width": 22.611846923828125,
-        "height": 8
-      }
-    },
-    {
-      "text": "售價",
-      "font": 10.24,
-      "clip": {
-        "x": 270,
-        "y": 391.212,
-        "width": 45,
-        "height": 24.576
-      },
-      "ink": {
-        "x": 282.260009765625,
-        "y": 393.3481875,
-        "width": 20.239990234375,
-        "height": 9
-      }
-    },
-    {
-      "text": "◆ 9",
-      "font": 10.24,
-      "clip": {
-        "x": 270,
-        "y": 391.212,
-        "width": 45,
-        "height": 24.576
-      },
-      "ink": {
-        "x": 285.1800079345703,
-        "y": 405.6361875,
-        "width": 14.704986572265625,
-        "height": 8
+        "x": 297.76328125000003,
+        "y": 397.74999999999994,
+        "width": 9,
+        "height": 12
       }
     },
     {
       "text": "派兵費",
-      "font": 10.24,
+      "font": 14,
       "clip": {
         "x": 321.75,
-        "y": 391.212,
+        "y": 386.70000000000005,
         "width": 45,
-        "height": 24.576
+        "height": 33.6
       },
       "ink": {
-        "x": 328.8900146484375,
-        "y": 392.3481875,
-        "width": 30.47998046875,
-        "height": 10
+        "x": 323.25,
+        "y": 389.5687500000001,
+        "width": 42,
+        "height": 12
       }
     },
     {
       "text": "+1",
-      "font": 10.24,
+      "font": 14,
       "clip": {
         "x": 321.75,
-        "y": 391.212,
+        "y": 386.70000000000005,
         "width": 45,
-        "height": 24.576
+        "height": 33.6
       },
       "ink": {
-        "x": 337.50750732421875,
-        "y": 405.6361875,
-        "width": 13.54998779296875,
-        "height": 8
+        "x": 336.03173828125,
+        "y": 406.36875000000003,
+        "width": 17.322265625,
+        "height": 11
       }
     },
     {
-      "text": "查看詳情",
-      "font": 10.88,
+      "text": "詳情",
+      "font": 14,
       "clip": {
         "x": 267.75,
-        "y": 434.94444444444446,
+        "y": 432.7777777777779,
         "width": 101.25,
-        "height": 15.111111111111112
+        "height": 19.444444444444443
       },
       "ink": {
-        "x": 296.6150207519531,
-        "y": 436.75,
-        "width": 43.63996887207031,
-        "height": 11
+        "x": 304.375,
+        "y": 436.9687500000001,
+        "width": 28,
+        "height": 12
       }
     },
     {
       "text": "雷枝戰槍",
-      "font": 13.44,
+      "font": 16,
       "clip": {
         "x": 411.75,
-        "y": 302.66666666666663,
+        "y": 300.88888888888886,
         "width": 96.75,
-        "height": 18.666666666666664
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 433.2450256347656,
-        "y": 306.24999999999994,
-        "width": 53.31996154785156,
+        "x": 429.125,
+        "y": 304.24999999999994,
+        "width": 63,
+        "height": 15
+      }
+    },
+    {
+      "text": "爆擊雷鏈兩怪",
+      "font": 14,
+      "clip": {
+        "x": 411.75,
+        "y": 344.2777777777778,
+        "width": 96.75,
+        "height": 19.444444444444443
+      },
+      "ink": {
+        "x": 418.125,
+        "y": 347.46875000000006,
+        "width": 84,
+        "height": 13
+      }
+    },
+    {
+      "text": "18",
+      "font": 16,
+      "clip": {
+        "x": 431.55,
+        "y": 392.38888888888886,
+        "width": 25.2,
+        "height": 22.22222222222222
+      },
+      "ink": {
+        "x": 435.87656250000003,
+        "y": 397.74999999999994,
+        "width": 17.2734375,
         "height": 12
       }
     },
     {
-      "text": "武器部位 · 爆擊雷",
-      "font": 10.88,
-      "clip": {
-        "x": 411.75,
-        "y": 334.416,
-        "width": 96.75,
-        "height": 39.168
-      },
-      "ink": {
-        "x": 418.07130432128906,
-        "y": 336.194,
-        "width": 84.22740173339844,
-        "height": 10
-      }
-    },
-    {
-      "text": "鏈其他兩怪，每兵",
-      "font": 10.88,
-      "clip": {
-        "x": 411.75,
-        "y": 334.416,
-        "width": 96.75,
-        "height": 39.168
-      },
-      "ink": {
-        "x": 416.60504150390625,
-        "y": 348.25,
-        "width": 87.15992736816406,
-        "height": 11
-      }
-    },
-    {
-      "text": "最多兩次",
-      "font": 10.88,
-      "clip": {
-        "x": 411.75,
-        "y": 334.416,
-        "width": 96.75,
-        "height": 39.168
-      },
-      "ink": {
-        "x": 438.3650207519531,
-        "y": 361.306,
-        "width": 43.63996887207031,
-        "height": 11
-      }
-    },
-    {
-      "text": "售價",
-      "font": 10.24,
-      "clip": {
-        "x": 411.75,
-        "y": 391.212,
-        "width": 45,
-        "height": 24.576
-      },
-      "ink": {
-        "x": 424.010009765625,
-        "y": 393.3481875,
-        "width": 20.239990234375,
-        "height": 9
-      }
-    },
-    {
-      "text": "◆ 18",
-      "font": 10.24,
-      "clip": {
-        "x": 411.75,
-        "y": 391.212,
-        "width": 45,
-        "height": 24.576
-      },
-      "ink": {
-        "x": 423.96250915527344,
-        "y": 405.6361875,
-        "width": 20.639984130859375,
-        "height": 8
-      }
-    },
-    {
       "text": "派兵費",
-      "font": 10.24,
+      "font": 14,
       "clip": {
         "x": 463.5,
-        "y": 391.212,
+        "y": 386.70000000000005,
         "width": 45,
-        "height": 24.576
+        "height": 33.6
       },
       "ink": {
-        "x": 470.6400146484375,
-        "y": 392.3481875,
-        "width": 30.47998046875,
-        "height": 10
+        "x": 465,
+        "y": 389.5687500000001,
+        "width": 42,
+        "height": 12
       }
     },
     {
       "text": "+3",
-      "font": 10.24,
+      "font": 14,
       "clip": {
         "x": 463.5,
-        "y": 391.212,
+        "y": 386.70000000000005,
         "width": 45,
-        "height": 24.576
+        "height": 33.6
       },
       "ink": {
-        "x": 479.25750732421875,
-        "y": 405.6361875,
-        "width": 13.54998779296875,
-        "height": 8
-      }
-    },
-    {
-      "text": "查看詳情",
-      "font": 10.88,
-      "clip": {
-        "x": 409.5,
-        "y": 434.94444444444446,
-        "width": 101.25,
-        "height": 15.111111111111112
-      },
-      "ink": {
-        "x": 438.3650207519531,
-        "y": 436.75,
-        "width": 43.63996887207031,
+        "x": 477.78173828125,
+        "y": 406.36875000000003,
+        "width": 17.322265625,
         "height": 11
       }
     },
     {
-      "text": "孤獵冠",
-      "font": 13.44,
+      "text": "詳情",
+      "font": 14,
       "clip": {
-        "x": 553.5,
-        "y": 302.66666666666663,
-        "width": 96.75,
-        "height": 18.666666666666664
+        "x": 409.5,
+        "y": 432.7777777777779,
+        "width": 101.25,
+        "height": 19.444444444444443
       },
       "ink": {
-        "x": 581.7150192260742,
-        "y": 306.24999999999994,
-        "width": 39.879974365234375,
+        "x": 446.125,
+        "y": 436.9687500000001,
+        "width": 28,
         "height": 12
       }
     },
     {
-      "text": "頭部位 · 目標2單位",
-      "font": 10.88,
+      "text": "孤獵冠",
+      "font": 16,
       "clip": {
         "x": 553.5,
-        "y": 334.416,
+        "y": 300.88888888888886,
         "width": 96.75,
-        "height": 39.168
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 556.668342590332,
-        "y": 336.194,
-        "width": 90.5333251953125,
-        "height": 10
+        "x": 577.875,
+        "y": 304.24999999999994,
+        "width": 48,
+        "height": 15
       }
     },
     {
-      "text": "內無其他活怪，主",
-      "font": 10.88,
+      "text": "孤立目標增傷",
+      "font": 14,
       "clip": {
         "x": 553.5,
-        "y": 334.416,
+        "y": 344.2777777777778,
         "width": 96.75,
-        "height": 39.168
+        "height": 19.444444444444443
       },
       "ink": {
-        "x": 559.3550415039062,
-        "y": 349.25,
-        "width": 86.15992736816406,
-        "height": 10
+        "x": 559.875,
+        "y": 347.46875000000006,
+        "width": 84,
+        "height": 13
       }
     },
     {
-      "text": "要傷害+25%",
-      "font": 10.88,
+      "text": "10",
+      "font": 16,
       "clip": {
-        "x": 553.5,
-        "y": 334.416,
-        "width": 96.75,
-        "height": 39.168
+        "x": 573.3,
+        "y": 392.38888888888886,
+        "width": 25.2,
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 570.4489440917969,
-        "y": 361.306,
-        "width": 63.273681640625,
-        "height": 11
-      }
-    },
-    {
-      "text": "售價",
-      "font": 10.24,
-      "clip": {
-        "x": 553.5,
-        "y": 391.212,
-        "width": 45,
-        "height": 24.576
-      },
-      "ink": {
-        "x": 565.760009765625,
-        "y": 393.3481875,
-        "width": 20.239990234375,
-        "height": 9
-      }
-    },
-    {
-      "text": "◆ 10",
-      "font": 10.24,
-      "clip": {
-        "x": 553.5,
-        "y": 391.212,
-        "width": 45,
-        "height": 24.576
-      },
-      "ink": {
-        "x": 565.7125091552734,
-        "y": 405.6361875,
-        "width": 20.639984130859375,
-        "height": 8
+        "x": 577.6265625,
+        "y": 397.74999999999994,
+        "width": 17.2734375,
+        "height": 12
       }
     },
     {
       "text": "派兵費",
-      "font": 10.24,
+      "font": 14,
       "clip": {
         "x": 605.25,
-        "y": 391.212,
+        "y": 386.70000000000005,
         "width": 45,
-        "height": 24.576
+        "height": 33.6
       },
       "ink": {
-        "x": 612.3900146484375,
-        "y": 392.3481875,
-        "width": 30.47998046875,
-        "height": 10
+        "x": 606.75,
+        "y": 389.5687500000001,
+        "width": 42,
+        "height": 12
       }
     },
     {
       "text": "+1",
-      "font": 10.24,
+      "font": 14,
       "clip": {
         "x": 605.25,
-        "y": 391.212,
+        "y": 386.70000000000005,
         "width": 45,
-        "height": 24.576
+        "height": 33.6
       },
       "ink": {
-        "x": 621.0075073242188,
-        "y": 405.6361875,
-        "width": 13.54998779296875,
-        "height": 8
+        "x": 619.53173828125,
+        "y": 406.36875000000003,
+        "width": 17.322265625,
+        "height": 11
       }
     },
     {
-      "text": "查看詳情",
-      "font": 10.88,
+      "text": "詳情",
+      "font": 14,
       "clip": {
         "x": 551.25,
-        "y": 434.94444444444446,
+        "y": 432.7777777777779,
         "width": 101.25,
-        "height": 15.111111111111112
+        "height": 19.444444444444443
       },
       "ink": {
-        "x": 580.1150207519531,
-        "y": 436.75,
-        "width": 43.63996887207031,
-        "height": 11
+        "x": 587.875,
+        "y": 436.9687500000001,
+        "width": 28,
+        "height": 12
       }
     },
     {
       "text": "震盪護手",
-      "font": 13.44,
+      "font": 16,
       "clip": {
         "x": 695.25,
-        "y": 302.66666666666663,
+        "y": 300.88888888888886,
         "width": 96.75,
-        "height": 18.666666666666664
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 716.7450256347656,
-        "y": 307.24999999999994,
-        "width": 53.31996154785156,
-        "height": 11
+        "x": 711.625,
+        "y": 304.24999999999994,
+        "width": 64,
+        "height": 15
       }
     },
     {
-      "text": "手部位 · 主要命中",
-      "font": 10.88,
+      "text": "命中擴散範圍",
+      "font": 14,
       "clip": {
         "x": 695.25,
-        "y": 334.416,
+        "y": 337.2,
         "width": 96.75,
-        "height": 39.168
+        "height": 33.6
       },
       "ink": {
-        "x": 701.5713043212891,
-        "y": 335.194,
-        "width": 84.22740173339844,
-        "height": 11
+        "x": 701.625,
+        "y": 340.06875,
+        "width": 83,
+        "height": 12
       }
     },
     {
-      "text": "向其他怪擴散 20% ",
-      "font": 10.88,
+      "text": "傷害",
+      "font": 14,
       "clip": {
         "x": 695.25,
-        "y": 334.416,
+        "y": 337.2,
         "width": 96.75,
-        "height": 39.168
+        "height": 33.6
       },
       "ink": {
-        "x": 697.1699066162109,
-        "y": 348.25,
-        "width": 90.61177062988281,
-        "height": 11
+        "x": 729.625,
+        "y": 356.86875,
+        "width": 28,
+        "height": 12
       }
     },
     {
-      "text": "範圍傷害",
-      "font": 10.88,
+      "text": "14",
+      "font": 16,
       "clip": {
-        "x": 695.25,
-        "y": 334.416,
-        "width": 96.75,
-        "height": 39.168
+        "x": 715.05,
+        "y": 392.38888888888886,
+        "width": 25.2,
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 721.8650207519531,
-        "y": 361.306,
-        "width": 43.63996887207031,
-        "height": 11
-      }
-    },
-    {
-      "text": "售價",
-      "font": 10.24,
-      "clip": {
-        "x": 695.25,
-        "y": 391.212,
-        "width": 45,
-        "height": 24.576
-      },
-      "ink": {
-        "x": 707.510009765625,
-        "y": 393.3481875,
-        "width": 20.239990234375,
-        "height": 9
-      }
-    },
-    {
-      "text": "◆ 14",
-      "font": 10.24,
-      "clip": {
-        "x": 695.25,
-        "y": 391.212,
-        "width": 45,
-        "height": 24.576
-      },
-      "ink": {
-        "x": 707.4625091552734,
-        "y": 405.6361875,
-        "width": 20.639984130859375,
-        "height": 8
+        "x": 719.3765625,
+        "y": 397.74999999999994,
+        "width": 18.2734375,
+        "height": 12
       }
     },
     {
       "text": "派兵費",
-      "font": 10.24,
+      "font": 14,
       "clip": {
         "x": 747,
-        "y": 391.212,
+        "y": 386.70000000000005,
         "width": 45,
-        "height": 24.576
+        "height": 33.6
       },
       "ink": {
-        "x": 754.1400146484375,
-        "y": 392.3481875,
-        "width": 30.47998046875,
-        "height": 10
+        "x": 748.5,
+        "y": 389.5687500000001,
+        "width": 42,
+        "height": 12
       }
     },
     {
       "text": "+4",
-      "font": 10.24,
+      "font": 14,
       "clip": {
         "x": 747,
-        "y": 391.212,
+        "y": 386.70000000000005,
         "width": 45,
-        "height": 24.576
+        "height": 33.6
       },
       "ink": {
-        "x": 762.7575073242188,
-        "y": 405.6361875,
-        "width": 13.54998779296875,
-        "height": 8
+        "x": 761.28173828125,
+        "y": 406.36875000000003,
+        "width": 17.322265625,
+        "height": 11
       }
     },
     {
-      "text": "查看詳情",
-      "font": 10.88,
+      "text": "詳情",
+      "font": 14,
       "clip": {
         "x": 693,
-        "y": 434.94444444444446,
+        "y": 432.7777777777779,
         "width": 101.25,
-        "height": 15.111111111111112
+        "height": 19.444444444444443
       },
       "ink": {
-        "x": 721.8650207519531,
-        "y": 436.75,
-        "width": 43.63996887207031,
-        "height": 11
+        "x": 729.625,
+        "y": 436.9687500000001,
+        "width": 28,
+        "height": 12
       }
     },
     {
       "text": "裝備詳情 · 稀有",
-      "font": 10.88,
+      "font": 14,
       "clip": {
         "x": 252,
-        "y": 124.4444444444444,
+        "y": 122.27777777777784,
         "width": 279,
-        "height": 15.111111111111112
+        "height": 19.444444444444443
       },
       "ink": {
-        "x": 354.8862991333008,
-        "y": 126.24999999999994,
-        "width": 73.347412109375,
-        "height": 11
+        "x": 344.38671875,
+        "y": 125.46875000000006,
+        "width": 94.2265625,
+        "height": 13
       }
     },
     {
@@ -3328,130 +2968,130 @@
     },
     {
       "text": "關閉",
-      "font": 10.88,
+      "font": 16,
       "clip": {
-        "x": 576,
-        "y": 128.9444444444444,
-        "width": 81,
-        "height": 15.111111111111112
+        "x": 549,
+        "y": 130.8888888888889,
+        "width": 108,
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 605.6200103759766,
-        "y": 131.74999999999994,
-        "width": 21.879989624023438,
-        "height": 10
+        "x": 588,
+        "y": 135.25000000000003,
+        "width": 30,
+        "height": 14
       }
     },
     {
       "text": "腳部位裝備 · 買入後至部隊配置穿戴",
-      "font": 10.88,
+      "font": 14,
       "clip": {
         "x": 360,
-        "y": 226.44444444444446,
+        "y": 224.2777777777778,
         "width": 261,
-        "height": 15.111111111111112
+        "height": 19.444444444444443
       },
       "ink": {
-        "x": 404.9263458251953,
-        "y": 228.25,
-        "width": 171.26731872558594,
-        "height": 11
+        "x": 380.38671875,
+        "y": 228.46875000000003,
+        "width": 220.2265625,
+        "height": 12
       }
     },
     {
-      "text": "售價 ◆ 9",
-      "font": 10.88,
+      "text": "9",
+      "font": 16,
       "clip": {
-        "x": 252,
-        "y": 280.44444444444446,
-        "width": 180,
-        "height": 15.111111111111112
+        "x": 324,
+        "y": 276.88888888888886,
+        "width": 54,
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 321.98253631591797,
-        "y": 282.25,
-        "width": 39.72900390625,
-        "height": 11
+        "x": 346.36328125,
+        "y": 282.24999999999994,
+        "width": 9,
+        "height": 12
       }
     },
     {
       "text": "派兵費 +1",
-      "font": 10.88,
+      "font": 14,
       "clip": {
         "x": 459,
-        "y": 280.44444444444446,
+        "y": 278.2777777777778,
         "width": 180,
-        "height": 15.111111111111112
+        "height": 19.444444444444443
       },
       "ink": {
-        "x": 524.1561279296875,
-        "y": 282.25,
-        "width": 49.38182067871094,
-        "height": 11
+        "x": 517.03173828125,
+        "y": 282.46875000000006,
+        "width": 63.822265625,
+        "height": 12
       }
     },
     {
       "text": "技能條件與效果",
-      "font": 10.88,
+      "font": 14,
       "clip": {
         "x": 252,
-        "y": 322.44444444444446,
+        "y": 320.2777777777778,
         "width": 396,
-        "height": 15.111111111111112
+        "height": 19.444444444444443
       },
       "ink": {
-        "x": 411.92003631591797,
-        "y": 324.25,
-        "width": 76.27993774414062,
-        "height": 11
+        "x": 401,
+        "y": 323.46875000000006,
+        "width": 98,
+        "height": 13
       }
     },
     {
       "text": "地面移動12單位後下一撞 +30%",
-      "font": 10.88,
+      "font": 14,
       "clip": {
         "x": 252,
-        "y": 376.44444444444446,
+        "y": 374.2777777777778,
         "width": 396,
-        "height": 15.111111111111112
+        "height": 19.444444444444443
       },
       "ink": {
-        "x": 372.82806396484375,
-        "y": 378.25,
-        "width": 154.76544189453125,
-        "height": 11
+        "x": 350.69775390625,
+        "y": 378.46875000000006,
+        "width": 199.279296875,
+        "height": 12
       }
     },
     {
       "text": "買入",
-      "font": 10.88,
+      "font": 16,
       "clip": {
         "x": 252,
-        "y": 446.94444444444446,
+        "y": 448.88888888888874,
         "width": 189,
-        "height": 15.111111111111112
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 335.62001037597656,
-        "y": 449.75,
-        "width": 21.879989624023438,
-        "height": 10
+        "x": 331.5,
+        "y": 453.24999999999983,
+        "width": 31,
+        "height": 14
       }
     },
     {
       "text": "先不買",
-      "font": 10.88,
+      "font": 16,
       "clip": {
         "x": 459,
-        "y": 446.94444444444446,
+        "y": 448.88888888888874,
         "width": 189,
-        "height": 15.111111111111112
+        "height": 22.22222222222222
       },
       "ink": {
-        "x": 537.1800155639648,
-        "y": 448.75,
-        "width": 32.759979248046875,
-        "height": 11
+        "x": 529.5,
+        "y": 453.24999999999983,
+        "width": 48,
+        "height": 14
       }
     }
   ]

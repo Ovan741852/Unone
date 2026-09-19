@@ -1,0 +1,20 @@
+{
+  "version": "desktop-ui-v4",
+  "date": "2026-09-19",
+  "generator": "Built-in image generation",
+  "reference": "assets/formal-ui/quartermaster-v1.png",
+  "entries": [
+    {
+      "id": "symbol-material",
+      "resources": [
+        "symbol-material"
+      ],
+      "original": "C:/Users/liNao/.codex/generated_images/01a004a9-a56e-7a40-b7d4-79fc1688ff21/exec-8d2f15d0-3e4f-409f-b036-1f3a160f1acf.png",
+      "source": "art-source/desktop-ui-v4/materials.png",
+      "runtime": "assets/formal-ui/desktop-v4/materials.png",
+      "sha256": "894eab1a01be3a99efbefe6c6b71f370b5cb206adfa1c1684940a7d8d8b321f7",
+      "prompt": "Use case: stylized-concept. Asset type: a single production fantasy game construction-material resource icon. Image 1 is STYLE REFERENCE ONLY: match Hazel's warm finely painted leather, aged brass, wood and forest palette, not the character. Draw a compact bundle of three squared timber planks with two rough grey stone blocks, firmly tied with a leather strap, a small aged-brass clasp. Clear chunky silhouette recognisable at 40px, rich but restrained painted detail, warm upper-left light, visible wood end grain. Centered square composition, the bundle occupies 85% of the square, all parts fully visible. Genuine transparent alpha outside; no environment, floor, card frame, badge, circle, text, numbers, coin, gem, glow or watermark. Painterly fantasy game UI asset, not flat vector, not pixel art, not glossy plastic.",
+      "processing": "Copied unchanged, including original alpha; no synthetic background removal."
+    }
+  ]
+}

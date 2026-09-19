@@ -1,0 +1,1625 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "menu:settings",
+    "children": [
+      {
+        "kind": "image",
+        "id": "screen_shade",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_fill",
+        "rect": {
+          "x": 3.8,
+          "y": 5,
+          "width": 92.4,
+          "height": 90
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tl",
+        "rect": {
+          "x": 3,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_t",
+        "rect": {
+          "x": 7.5,
+          "y": 85,
+          "width": 85,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tr",
+        "rect": {
+          "x": 92.5,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_l",
+        "rect": {
+          "x": 3,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_c",
+        "rect": {
+          "x": 7.5,
+          "y": 11,
+          "width": 85,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_r",
+        "rect": {
+          "x": 92.5,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_bl",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_b",
+        "rect": {
+          "x": 7.5,
+          "y": 3,
+          "width": 85,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_br",
+        "rect": {
+          "x": 92.5,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "screen_title",
+        "rect": {
+          "x": 9,
+          "y": 87.31378600823045,
+          "width": 82,
+          "height": 4.372427983539095
+        },
+        "text": "系統設定"
+      },
+      {
+        "kind": "text",
+        "id": "settings_hint",
+        "rect": {
+          "x": 9,
+          "y": 79.77970679012346,
+          "width": 82,
+          "height": 2.218364197530864
+        },
+        "text": "設定會儲存在目前裝置，下次開啟仍會保留。"
+      },
+      {
+        "kind": "text",
+        "id": "settings_music_label",
+        "rect": {
+          "x": 14,
+          "y": 66.8425925925926,
+          "width": 29,
+          "height": 2.314814814814815
+        },
+        "text": "音樂音量"
+      },
+      {
+        "kind": "text",
+        "id": "settings_music_value",
+        "rect": {
+          "x": 50,
+          "y": 66.8425925925926,
+          "width": 18,
+          "height": 2.314814814814815
+        },
+        "text": "70%"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_down_plate_tl",
+        "rect": {
+          "x": 72,
+          "y": 69.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_down_plate_t",
+        "rect": {
+          "x": 72.6,
+          "y": 69.93333333333334,
+          "width": 6.800000000000011,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_down_plate_tr",
+        "rect": {
+          "x": 79.4,
+          "y": 69.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_down_plate_l",
+        "rect": {
+          "x": 72,
+          "y": 66.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_down_plate_c",
+        "rect": {
+          "x": 72.6,
+          "y": 66.06666666666666,
+          "width": 6.800000000000011,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_down_plate_r",
+        "rect": {
+          "x": 79.4,
+          "y": 66.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_down_plate_bl",
+        "rect": {
+          "x": 72,
+          "y": 65,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_down_plate_b",
+        "rect": {
+          "x": 72.6,
+          "y": 65,
+          "width": 6.800000000000011,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_down_plate_br",
+        "rect": {
+          "x": 79.4,
+          "y": 65,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "settings_music_down",
+        "rect": {
+          "x": 72,
+          "y": 66.58539094650206,
+          "width": 8,
+          "height": 2.8292181069958846
+        },
+        "text": "−",
+        "action": "Setting_music_down"
+      },
+      {
+        "kind": "button",
+        "id": "settings_music_down_hit_top",
+        "rect": {
+          "x": 72,
+          "y": 69.41460905349794,
+          "width": 8,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Setting_music_down"
+      },
+      {
+        "kind": "button",
+        "id": "settings_music_down_hit_bottom",
+        "rect": {
+          "x": 72,
+          "y": 65,
+          "width": 8,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Setting_music_down"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_up_plate_tl",
+        "rect": {
+          "x": 83,
+          "y": 69.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_up_plate_t",
+        "rect": {
+          "x": 83.6,
+          "y": 69.93333333333334,
+          "width": 6.800000000000011,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_up_plate_tr",
+        "rect": {
+          "x": 90.4,
+          "y": 69.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_up_plate_l",
+        "rect": {
+          "x": 83,
+          "y": 66.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_up_plate_c",
+        "rect": {
+          "x": 83.6,
+          "y": 66.06666666666666,
+          "width": 6.800000000000011,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_up_plate_r",
+        "rect": {
+          "x": 90.4,
+          "y": 66.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_up_plate_bl",
+        "rect": {
+          "x": 83,
+          "y": 65,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_up_plate_b",
+        "rect": {
+          "x": 83.6,
+          "y": 65,
+          "width": 6.800000000000011,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_music_up_plate_br",
+        "rect": {
+          "x": 90.4,
+          "y": 65,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "settings_music_up",
+        "rect": {
+          "x": 83,
+          "y": 66.58539094650206,
+          "width": 8,
+          "height": 2.8292181069958846
+        },
+        "text": "＋",
+        "action": "Setting_music_up"
+      },
+      {
+        "kind": "button",
+        "id": "settings_music_up_hit_top",
+        "rect": {
+          "x": 83,
+          "y": 69.41460905349794,
+          "width": 8,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Setting_music_up"
+      },
+      {
+        "kind": "button",
+        "id": "settings_music_up_hit_bottom",
+        "rect": {
+          "x": 83,
+          "y": 65,
+          "width": 8,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Setting_music_up"
+      },
+      {
+        "kind": "text",
+        "id": "settings_sfx_label",
+        "rect": {
+          "x": 14,
+          "y": 53.84259259259259,
+          "width": 29,
+          "height": 2.314814814814815
+        },
+        "text": "音效音量"
+      },
+      {
+        "kind": "text",
+        "id": "settings_sfx_value",
+        "rect": {
+          "x": 50,
+          "y": 53.84259259259259,
+          "width": 18,
+          "height": 2.314814814814815
+        },
+        "text": "85%"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_down_plate_tl",
+        "rect": {
+          "x": 72,
+          "y": 56.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_down_plate_t",
+        "rect": {
+          "x": 72.6,
+          "y": 56.93333333333333,
+          "width": 6.800000000000011,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_down_plate_tr",
+        "rect": {
+          "x": 79.4,
+          "y": 56.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_down_plate_l",
+        "rect": {
+          "x": 72,
+          "y": 53.06666666666667,
+          "width": 0.5999999999999943,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_down_plate_c",
+        "rect": {
+          "x": 72.6,
+          "y": 53.06666666666667,
+          "width": 6.800000000000011,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_down_plate_r",
+        "rect": {
+          "x": 79.4,
+          "y": 53.06666666666667,
+          "width": 0.5999999999999943,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_down_plate_bl",
+        "rect": {
+          "x": 72,
+          "y": 52,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_down_plate_b",
+        "rect": {
+          "x": 72.6,
+          "y": 52,
+          "width": 6.800000000000011,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_down_plate_br",
+        "rect": {
+          "x": 79.4,
+          "y": 52,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "settings_sfx_down",
+        "rect": {
+          "x": 72,
+          "y": 53.58539094650206,
+          "width": 8,
+          "height": 2.8292181069958846
+        },
+        "text": "−",
+        "action": "Setting_sfx_down"
+      },
+      {
+        "kind": "button",
+        "id": "settings_sfx_down_hit_top",
+        "rect": {
+          "x": 72,
+          "y": 56.41460905349794,
+          "width": 8,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Setting_sfx_down"
+      },
+      {
+        "kind": "button",
+        "id": "settings_sfx_down_hit_bottom",
+        "rect": {
+          "x": 72,
+          "y": 52,
+          "width": 8,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Setting_sfx_down"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_up_plate_tl",
+        "rect": {
+          "x": 83,
+          "y": 56.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_up_plate_t",
+        "rect": {
+          "x": 83.6,
+          "y": 56.93333333333333,
+          "width": 6.800000000000011,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_up_plate_tr",
+        "rect": {
+          "x": 90.4,
+          "y": 56.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_up_plate_l",
+        "rect": {
+          "x": 83,
+          "y": 53.06666666666667,
+          "width": 0.5999999999999943,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_up_plate_c",
+        "rect": {
+          "x": 83.6,
+          "y": 53.06666666666667,
+          "width": 6.800000000000011,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_up_plate_r",
+        "rect": {
+          "x": 90.4,
+          "y": 53.06666666666667,
+          "width": 0.5999999999999943,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_up_plate_bl",
+        "rect": {
+          "x": 83,
+          "y": 52,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_up_plate_b",
+        "rect": {
+          "x": 83.6,
+          "y": 52,
+          "width": 6.800000000000011,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_sfx_up_plate_br",
+        "rect": {
+          "x": 90.4,
+          "y": 52,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "settings_sfx_up",
+        "rect": {
+          "x": 83,
+          "y": 53.58539094650206,
+          "width": 8,
+          "height": 2.8292181069958846
+        },
+        "text": "＋",
+        "action": "Setting_sfx_up"
+      },
+      {
+        "kind": "button",
+        "id": "settings_sfx_up_hit_top",
+        "rect": {
+          "x": 83,
+          "y": 56.41460905349794,
+          "width": 8,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Setting_sfx_up"
+      },
+      {
+        "kind": "button",
+        "id": "settings_sfx_up_hit_bottom",
+        "rect": {
+          "x": 83,
+          "y": 52,
+          "width": 8,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Setting_sfx_up"
+      },
+      {
+        "kind": "text",
+        "id": "settings_quality_label",
+        "rect": {
+          "x": 14,
+          "y": 40.84259259259259,
+          "width": 29,
+          "height": 2.314814814814815
+        },
+        "text": "畫質"
+      },
+      {
+        "kind": "text",
+        "id": "settings_quality_value",
+        "rect": {
+          "x": 50,
+          "y": 40.84259259259259,
+          "width": 18,
+          "height": 2.314814814814815
+        },
+        "text": "高"
+      },
+      {
+        "kind": "image",
+        "id": "settings_quality_plate_tl",
+        "rect": {
+          "x": 72,
+          "y": 43.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_quality_plate_t",
+        "rect": {
+          "x": 72.6,
+          "y": 43.93333333333333,
+          "width": 17.80000000000001,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_quality_plate_tr",
+        "rect": {
+          "x": 90.4,
+          "y": 43.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_quality_plate_l",
+        "rect": {
+          "x": 72,
+          "y": 40.06666666666667,
+          "width": 0.5999999999999943,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_quality_plate_c",
+        "rect": {
+          "x": 72.6,
+          "y": 40.06666666666667,
+          "width": 17.80000000000001,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_quality_plate_r",
+        "rect": {
+          "x": 90.4,
+          "y": 40.06666666666667,
+          "width": 0.5999999999999943,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_quality_plate_bl",
+        "rect": {
+          "x": 72,
+          "y": 39,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_quality_plate_b",
+        "rect": {
+          "x": 72.6,
+          "y": 39,
+          "width": 17.80000000000001,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_quality_plate_br",
+        "rect": {
+          "x": 90.4,
+          "y": 39,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "settings_quality",
+        "rect": {
+          "x": 72,
+          "y": 40.58539094650206,
+          "width": 19,
+          "height": 2.8292181069958846
+        },
+        "text": "切換",
+        "action": "Setting_quality"
+      },
+      {
+        "kind": "button",
+        "id": "settings_quality_hit_top",
+        "rect": {
+          "x": 72,
+          "y": 43.41460905349794,
+          "width": 19,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Setting_quality"
+      },
+      {
+        "kind": "button",
+        "id": "settings_quality_hit_bottom",
+        "rect": {
+          "x": 72,
+          "y": 39,
+          "width": 19,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Setting_quality"
+      },
+      {
+        "kind": "text",
+        "id": "settings_language_label",
+        "rect": {
+          "x": 14,
+          "y": 27.842592592592588,
+          "width": 29,
+          "height": 2.314814814814815
+        },
+        "text": "語系"
+      },
+      {
+        "kind": "text",
+        "id": "settings_language_value",
+        "rect": {
+          "x": 50,
+          "y": 27.842592592592588,
+          "width": 18,
+          "height": 2.314814814814815
+        },
+        "text": "繁中"
+      },
+      {
+        "kind": "image",
+        "id": "settings_language_plate_tl",
+        "rect": {
+          "x": 72,
+          "y": 30.933333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_language_plate_t",
+        "rect": {
+          "x": 72.6,
+          "y": 30.933333333333334,
+          "width": 17.80000000000001,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_language_plate_tr",
+        "rect": {
+          "x": 90.4,
+          "y": 30.933333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_language_plate_l",
+        "rect": {
+          "x": 72,
+          "y": 27.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_language_plate_c",
+        "rect": {
+          "x": 72.6,
+          "y": 27.066666666666666,
+          "width": 17.80000000000001,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_language_plate_r",
+        "rect": {
+          "x": 90.4,
+          "y": 27.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_language_plate_bl",
+        "rect": {
+          "x": 72,
+          "y": 26,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_language_plate_b",
+        "rect": {
+          "x": 72.6,
+          "y": 26,
+          "width": 17.80000000000001,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_language_plate_br",
+        "rect": {
+          "x": 90.4,
+          "y": 26,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "settings_language",
+        "rect": {
+          "x": 72,
+          "y": 27.585390946502056,
+          "width": 19,
+          "height": 2.8292181069958846
+        },
+        "text": "切換",
+        "action": "Setting_language"
+      },
+      {
+        "kind": "button",
+        "id": "settings_language_hit_top",
+        "rect": {
+          "x": 72,
+          "y": 30.41460905349794,
+          "width": 19,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Setting_language"
+      },
+      {
+        "kind": "button",
+        "id": "settings_language_hit_bottom",
+        "rect": {
+          "x": 72,
+          "y": 26,
+          "width": 19,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Setting_language"
+      },
+      {
+        "kind": "image",
+        "id": "settings_back_plate_tl",
+        "rect": {
+          "x": 32,
+          "y": 10.933333333333335,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_back_plate_t",
+        "rect": {
+          "x": 32.6,
+          "y": 10.933333333333335,
+          "width": 34.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_back_plate_tr",
+        "rect": {
+          "x": 67.4,
+          "y": 10.933333333333335,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_back_plate_l",
+        "rect": {
+          "x": 32,
+          "y": 7.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_back_plate_c",
+        "rect": {
+          "x": 32.6,
+          "y": 7.066666666666666,
+          "width": 34.800000000000004,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_back_plate_r",
+        "rect": {
+          "x": 67.4,
+          "y": 7.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_back_plate_bl",
+        "rect": {
+          "x": 32,
+          "y": 6,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_back_plate_b",
+        "rect": {
+          "x": 32.6,
+          "y": 6,
+          "width": 34.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_back_plate_br",
+        "rect": {
+          "x": 67.4,
+          "y": 6,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "settings_back",
+        "rect": {
+          "x": 32,
+          "y": 7.585390946502056,
+          "width": 36,
+          "height": 2.8292181069958846
+        },
+        "text": "返回主選單",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "settings_back_hit_top",
+        "rect": {
+          "x": 32,
+          "y": 10.41460905349794,
+          "width": 36,
+          "height": 1.5853909465020586
+        },
+        "text": "",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "settings_back_hit_bottom",
+        "rect": {
+          "x": 32,
+          "y": 6.000000000000001,
+          "width": 36,
+          "height": 1.5853909465020586
+        },
+        "text": "",
+        "action": "UI_home"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "系統設定",
+      "font": 34,
+      "clip": {
+        "x": 172.8,
+        "y": 89.7888888888889,
+        "width": 1574.4,
+        "height": 47.22222222222223
+      },
+      "ink": {
+        "x": 893,
+        "y": 97.66562500000002,
+        "width": 134,
+        "height": 31
+      }
+    },
+    {
+      "text": "設定會儲存在目前裝置，下次開啟仍會保留。",
+      "font": 17.25,
+      "clip": {
+        "x": 172.8,
+        "y": 194.42083333333335,
+        "width": 1574.4,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 787.5,
+        "y": 198.134375,
+        "width": 338.75,
+        "height": 17
+      }
+    },
+    {
+      "text": "音樂音量",
+      "font": 18,
+      "clip": {
+        "x": 268.8,
+        "y": 333.0999999999999,
+        "width": 556.8,
+        "height": 25
+      },
+      "ink": {
+        "x": 512.2,
+        "y": 336.6156249999999,
+        "width": 71,
+        "height": 17
+      }
+    },
+    {
+      "text": "70%",
+      "font": 18,
+      "clip": {
+        "x": 960,
+        "y": 333.0999999999999,
+        "width": 345.6,
+        "height": 25
+      },
+      "ink": {
+        "x": 1114.44404296875,
+        "y": 338.6156249999999,
+        "width": 36.865234375,
+        "height": 14
+      }
+    },
+    {
+      "text": "−",
+      "font": 22,
+      "clip": {
+        "x": 1382.4,
+        "y": 330.3222222222222,
+        "width": 153.6,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1451.9822265625,
+        "y": 347.17812499999997,
+        "width": 15,
+        "height": 1
+      }
+    },
+    {
+      "text": "＋",
+      "font": 22,
+      "clip": {
+        "x": 1593.6,
+        "y": 330.3222222222222,
+        "width": 153.6,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1664.3999999999999,
+        "y": 341.17812499999997,
+        "width": 12,
+        "height": 12
+      }
+    },
+    {
+      "text": "音效音量",
+      "font": 18,
+      "clip": {
+        "x": 268.8,
+        "y": 473.5,
+        "width": 556.8,
+        "height": 25
+      },
+      "ink": {
+        "x": 512.2,
+        "y": 477.015625,
+        "width": 71,
+        "height": 17
+      }
+    },
+    {
+      "text": "85%",
+      "font": 18,
+      "clip": {
+        "x": 960,
+        "y": 473.5,
+        "width": 345.6,
+        "height": 25
+      },
+      "ink": {
+        "x": 1114.44404296875,
+        "y": 479.015625,
+        "width": 36.865234375,
+        "height": 14
+      }
+    },
+    {
+      "text": "−",
+      "font": 22,
+      "clip": {
+        "x": 1382.4,
+        "y": 470.7222222222223,
+        "width": 153.6,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1451.9822265625,
+        "y": 487.57812500000006,
+        "width": 15,
+        "height": 1
+      }
+    },
+    {
+      "text": "＋",
+      "font": 22,
+      "clip": {
+        "x": 1593.6,
+        "y": 470.7222222222223,
+        "width": 153.6,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1664.3999999999999,
+        "y": 481.57812500000006,
+        "width": 12,
+        "height": 12
+      }
+    },
+    {
+      "text": "畫質",
+      "font": 18,
+      "clip": {
+        "x": 268.8,
+        "y": 613.9,
+        "width": 556.8,
+        "height": 25
+      },
+      "ink": {
+        "x": 529.2,
+        "y": 618.415625,
+        "width": 36,
+        "height": 16
+      }
+    },
+    {
+      "text": "高",
+      "font": 18,
+      "clip": {
+        "x": 960,
+        "y": 613.9,
+        "width": 345.6,
+        "height": 25
+      },
+      "ink": {
+        "x": 1124.8,
+        "y": 617.415625,
+        "width": 16,
+        "height": 17
+      }
+    },
+    {
+      "text": "切換",
+      "font": 22,
+      "clip": {
+        "x": 1382.4,
+        "y": 611.1222222222223,
+        "width": 364.8,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1543.8000000000002,
+        "y": 615.9781250000001,
+        "width": 42,
+        "height": 20
+      }
+    },
+    {
+      "text": "語系",
+      "font": 18,
+      "clip": {
+        "x": 268.8,
+        "y": 754.3000000000002,
+        "width": 556.8,
+        "height": 25
+      },
+      "ink": {
+        "x": 529.2,
+        "y": 757.8156250000002,
+        "width": 36,
+        "height": 17
+      }
+    },
+    {
+      "text": "繁中",
+      "font": 18,
+      "clip": {
+        "x": 960,
+        "y": 754.3000000000002,
+        "width": 345.6,
+        "height": 25
+      },
+      "ink": {
+        "x": 1114.8,
+        "y": 757.8156250000002,
+        "width": 35,
+        "height": 17
+      }
+    },
+    {
+      "text": "切換",
+      "font": 22,
+      "clip": {
+        "x": 1382.4,
+        "y": 751.5222222222222,
+        "width": 364.8,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1543.8000000000002,
+        "y": 756.3781250000001,
+        "width": 42,
+        "height": 20
+      }
+    },
+    {
+      "text": "返回主選單",
+      "font": 22,
+      "clip": {
+        "x": 614.4,
+        "y": 967.5222222222222,
+        "width": 691.2,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 905,
+        "y": 973.3781250000001,
+        "width": 109,
+        "height": 19
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 105,
+    "assets": [
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_scene-shade",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-br",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

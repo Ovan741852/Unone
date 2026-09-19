@@ -1,11 +1,12 @@
 const {chromium}=require('C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 const assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs'),os=require('node:os');
+const uiPoint=require('./ui-test-pointer.cjs');
 const captureDir=fs.mkdtempSync(path.join(os.tmpdir(),'ashen-legion-ui-'));
 (async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
  const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[],trees={};page.on('pageerror',e=>errors.push(e.message));
  await page.goto((process.env.GAME_TEST_URL||'http://127.0.0.1:8190/')+'?seed=42');await page.waitForSelector('body[data-ready="true"]',{timeout:60000});
  const state=()=>page.evaluate(()=>window.ashen.state());
- async function click(action,target){const r=await page.evaluate(({action,target})=>window.ashen.uiTree().children.find(n=>n.kind==='button'&&(target?n.id===target:n.action===action))?.rect,{action,target});assert.ok(r,'Missing action '+action);const v=page.viewportSize();await page.mouse.click((r.x+r.width/2)*v.width/100,(100-r.y-r.height/2)*v.height/100);await page.waitForTimeout(130);}
+ async function click(action,target){const r=await page.evaluate(({action,target})=>window.ashen.uiTree().children.find(n=>n.kind==='button'&&(target?n.id===target:n.action===action))?.rect,{action,target});assert.ok(r,'Missing action '+action);const p=await uiPoint(page,r);await page.mouse.click(p.x,p.y);await page.waitForTimeout(130);}
  async function capture(name){await page.waitForFunction(()=>window.ashen.metrics().ui.assets.every(a=>a.state==='ready'));trees[name]=await page.evaluate(()=>window.ashen.uiTree());await page.screenshot({path:path.join(captureDir,'formal-ui-'+name+'.png')});}
  await capture('menu');assert.equal(await page.locator('button:visible,section:visible,aside:visible,dialog:visible').count(),0);
  await click('Start');assert.equal((await state()).phase,'menu');await capture('town');

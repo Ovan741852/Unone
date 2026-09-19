@@ -1,0 +1,1355 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "choice:home",
+    "children": [
+      {
+        "kind": "image",
+        "id": "screen_shade",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_fill",
+        "rect": {
+          "x": 3.8,
+          "y": 5,
+          "width": 92.4,
+          "height": 90
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tl",
+        "rect": {
+          "x": 3,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_t",
+        "rect": {
+          "x": 7.5,
+          "y": 85,
+          "width": 85,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tr",
+        "rect": {
+          "x": 92.5,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_l",
+        "rect": {
+          "x": 3,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_c",
+        "rect": {
+          "x": 7.5,
+          "y": 11,
+          "width": 85,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_r",
+        "rect": {
+          "x": 92.5,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_bl",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_b",
+        "rect": {
+          "x": 7.5,
+          "y": 3,
+          "width": 85,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_br",
+        "rect": {
+          "x": 92.5,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "screen_title",
+        "rect": {
+          "x": 9,
+          "y": 87.31378600823045,
+          "width": 82,
+          "height": 4.372427983539095
+        },
+        "text": "苔光林口 · 選擇景點"
+      },
+      {
+        "kind": "image",
+        "id": "view_map_plate_tl",
+        "rect": {
+          "x": 53,
+          "y": 11.933333333333339,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "view_map_plate_t",
+        "rect": {
+          "x": 53.6,
+          "y": 11.933333333333339,
+          "width": 15.800000000000018,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "view_map_plate_tr",
+        "rect": {
+          "x": 69.40000000000002,
+          "y": 11.933333333333339,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "view_map_plate_l",
+        "rect": {
+          "x": 53,
+          "y": 8.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666725
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "view_map_plate_c",
+        "rect": {
+          "x": 53.6,
+          "y": 8.066666666666666,
+          "width": 15.800000000000018,
+          "height": 3.8666666666666725
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "view_map_plate_r",
+        "rect": {
+          "x": 69.40000000000002,
+          "y": 8.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666725
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "view_map_plate_bl",
+        "rect": {
+          "x": 53,
+          "y": 7,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "view_map_plate_b",
+        "rect": {
+          "x": 53.6,
+          "y": 7,
+          "width": 15.800000000000018,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "view_map_plate_br",
+        "rect": {
+          "x": 69.40000000000002,
+          "y": 7,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "view_map",
+        "rect": {
+          "x": 53,
+          "y": 8.585390946502056,
+          "width": 17.000000000000014,
+          "height": 2.8292181069958846
+        },
+        "text": "查看地圖",
+        "action": "ViewMap"
+      },
+      {
+        "kind": "button",
+        "id": "view_map_hit_top",
+        "rect": {
+          "x": 53,
+          "y": 11.414609053497939,
+          "width": 17.000000000000014,
+          "height": 1.5853909465020604
+        },
+        "text": "",
+        "action": "ViewMap"
+      },
+      {
+        "kind": "button",
+        "id": "view_map_hit_bottom",
+        "rect": {
+          "x": 53,
+          "y": 6.999999999999999,
+          "width": 17.000000000000014,
+          "height": 1.5853909465020604
+        },
+        "text": "",
+        "action": "ViewMap"
+      },
+      {
+        "kind": "image",
+        "id": "choice_loadout_plate_tl",
+        "rect": {
+          "x": 30,
+          "y": 11.933333333333335,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_loadout_plate_t",
+        "rect": {
+          "x": 30.6,
+          "y": 11.933333333333335,
+          "width": 18.799999999999997,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_loadout_plate_tr",
+        "rect": {
+          "x": 49.4,
+          "y": 11.933333333333335,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_loadout_plate_l",
+        "rect": {
+          "x": 30,
+          "y": 8.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_loadout_plate_c",
+        "rect": {
+          "x": 30.6,
+          "y": 8.066666666666666,
+          "width": 18.799999999999997,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_loadout_plate_r",
+        "rect": {
+          "x": 49.4,
+          "y": 8.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_loadout_plate_bl",
+        "rect": {
+          "x": 30,
+          "y": 7,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_loadout_plate_b",
+        "rect": {
+          "x": 30.6,
+          "y": 7,
+          "width": 18.799999999999997,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_loadout_plate_br",
+        "rect": {
+          "x": 49.4,
+          "y": 7,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "choice_loadout",
+        "rect": {
+          "x": 30,
+          "y": 8.585390946502056,
+          "width": 20,
+          "height": 2.8292181069958846
+        },
+        "text": "部隊配置",
+        "action": "OpenLoadout"
+      },
+      {
+        "kind": "button",
+        "id": "choice_loadout_hit_top",
+        "rect": {
+          "x": 30,
+          "y": 11.41460905349794,
+          "width": 20,
+          "height": 1.5853909465020586
+        },
+        "text": "",
+        "action": "OpenLoadout"
+      },
+      {
+        "kind": "button",
+        "id": "choice_loadout_hit_bottom",
+        "rect": {
+          "x": 30,
+          "y": 7.000000000000001,
+          "width": 20,
+          "height": 1.5853909465020586
+        },
+        "text": "",
+        "action": "OpenLoadout"
+      },
+      {
+        "kind": "text",
+        "id": "choice_hint",
+        "rect": {
+          "x": 12,
+          "y": 79.79012345679013,
+          "width": 76,
+          "height": 3.0864197530864192
+        },
+        "text": "隨機景點 · 選一處拜訪"
+      },
+      {
+        "kind": "text",
+        "id": "choice_quote",
+        "rect": {
+          "x": 12,
+          "y": 74.79012345679013,
+          "width": 76,
+          "height": 3.0864197530864192
+        },
+        "text": "苔光照亮了舊路。領主，先讓每一枚金幣帶人回家。"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_1_tl",
+        "rect": {
+          "x": 15,
+          "y": 56.02127659574468,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_1_t",
+        "rect": {
+          "x": 19.914893617021278,
+          "y": 56.02127659574468,
+          "width": 12.170212765957444,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_1_tr",
+        "rect": {
+          "x": 32.08510638297872,
+          "y": 56.02127659574468,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_1_l",
+        "rect": {
+          "x": 15,
+          "y": 30.97872340425532,
+          "width": 4.914893617021278,
+          "height": 25.04255319148936
+        },
+        "asset": "texture://ui_shop-card-rare-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_1_c",
+        "rect": {
+          "x": 19.914893617021278,
+          "y": 30.97872340425532,
+          "width": 12.170212765957444,
+          "height": 25.04255319148936
+        },
+        "asset": "texture://ui_shop-card-rare-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_1_r",
+        "rect": {
+          "x": 32.08510638297872,
+          "y": 30.97872340425532,
+          "width": 4.914893617021278,
+          "height": 25.04255319148936
+        },
+        "asset": "texture://ui_shop-card-rare-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_1_bl",
+        "rect": {
+          "x": 15,
+          "y": 16,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_1_b",
+        "rect": {
+          "x": 19.914893617021278,
+          "y": 16,
+          "width": 12.170212765957444,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_1_br",
+        "rect": {
+          "x": 32.08510638297872,
+          "y": 16,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_icon_1",
+        "rect": {
+          "x": 18,
+          "y": 39,
+          "width": 16,
+          "height": 20.5
+        },
+        "asset": "texture://ui_quartermaster-v1",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "choice_name_1",
+        "rect": {
+          "x": 18,
+          "y": 34.877597736625525,
+          "width": 16,
+          "height": 3.3114711934156373
+        },
+        "text": "裝備店"
+      },
+      {
+        "kind": "text",
+        "id": "choice_desc_1",
+        "rect": {
+          "x": 18,
+          "y": 28.82407407407408,
+          "width": 16,
+          "height": 5.166666666666667
+        },
+        "text": "結晶買賣裝備；購入後放進背\n包"
+      },
+      {
+        "kind": "text",
+        "id": "choice_action_1",
+        "rect": {
+          "x": 18,
+          "y": 20.790123456790127,
+          "width": 16,
+          "height": 3.0864197530864192
+        },
+        "text": "拜訪此處"
+      },
+      {
+        "kind": "button",
+        "id": "choice_1",
+        "rect": {
+          "x": 15,
+          "y": 16,
+          "width": 22,
+          "height": 55
+        },
+        "text": "",
+        "action": "Choice1"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_2_tl",
+        "rect": {
+          "x": 39,
+          "y": 56.02127659574468,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_2_t",
+        "rect": {
+          "x": 43.91489361702128,
+          "y": 56.02127659574468,
+          "width": 12.170212765957444,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_2_tr",
+        "rect": {
+          "x": 56.08510638297872,
+          "y": 56.02127659574468,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_2_l",
+        "rect": {
+          "x": 39,
+          "y": 30.97872340425532,
+          "width": 4.914893617021278,
+          "height": 25.04255319148936
+        },
+        "asset": "texture://ui_shop-card-rare-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_2_c",
+        "rect": {
+          "x": 43.91489361702128,
+          "y": 30.97872340425532,
+          "width": 12.170212765957444,
+          "height": 25.04255319148936
+        },
+        "asset": "texture://ui_shop-card-rare-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_2_r",
+        "rect": {
+          "x": 56.08510638297872,
+          "y": 30.97872340425532,
+          "width": 4.914893617021278,
+          "height": 25.04255319148936
+        },
+        "asset": "texture://ui_shop-card-rare-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_2_bl",
+        "rect": {
+          "x": 39,
+          "y": 16,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_2_b",
+        "rect": {
+          "x": 43.91489361702128,
+          "y": 16,
+          "width": 12.170212765957444,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_2_br",
+        "rect": {
+          "x": 56.08510638297872,
+          "y": 16,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_icon_2",
+        "rect": {
+          "x": 42,
+          "y": 39,
+          "width": 16,
+          "height": 20.5
+        },
+        "asset": "texture://ui_portrait-alchemist",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "choice_name_2",
+        "rect": {
+          "x": 42,
+          "y": 34.877597736625525,
+          "width": 16,
+          "height": 3.3114711934156373
+        },
+        "text": "藥水攤"
+      },
+      {
+        "kind": "text",
+        "id": "choice_desc_2",
+        "rect": {
+          "x": 42,
+          "y": 29.864197530864203,
+          "width": 16,
+          "height": 3.0864197530864192
+        },
+        "text": "花金幣購買，最多攜帶兩瓶"
+      },
+      {
+        "kind": "text",
+        "id": "choice_action_2",
+        "rect": {
+          "x": 42,
+          "y": 20.790123456790127,
+          "width": 16,
+          "height": 3.0864197530864192
+        },
+        "text": "拜訪此處"
+      },
+      {
+        "kind": "button",
+        "id": "choice_2",
+        "rect": {
+          "x": 39,
+          "y": 16,
+          "width": 22,
+          "height": 55
+        },
+        "text": "",
+        "action": "Choice2"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_3_tl",
+        "rect": {
+          "x": 63,
+          "y": 56.02127659574468,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_3_t",
+        "rect": {
+          "x": 67.91489361702128,
+          "y": 56.02127659574468,
+          "width": 12.170212765957444,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_3_tr",
+        "rect": {
+          "x": 80.08510638297872,
+          "y": 56.02127659574468,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_3_l",
+        "rect": {
+          "x": 63,
+          "y": 30.97872340425532,
+          "width": 4.914893617021278,
+          "height": 25.04255319148936
+        },
+        "asset": "texture://ui_shop-card-rare-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_3_c",
+        "rect": {
+          "x": 67.91489361702128,
+          "y": 30.97872340425532,
+          "width": 12.170212765957444,
+          "height": 25.04255319148936
+        },
+        "asset": "texture://ui_shop-card-rare-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_3_r",
+        "rect": {
+          "x": 80.08510638297872,
+          "y": 30.97872340425532,
+          "width": 4.914893617021278,
+          "height": 25.04255319148936
+        },
+        "asset": "texture://ui_shop-card-rare-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_3_bl",
+        "rect": {
+          "x": 63,
+          "y": 16,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_3_b",
+        "rect": {
+          "x": 67.91489361702128,
+          "y": 16,
+          "width": 12.170212765957444,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_plate_3_br",
+        "rect": {
+          "x": 80.08510638297872,
+          "y": 16,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "choice_icon_3",
+        "rect": {
+          "x": 66,
+          "y": 39,
+          "width": 16,
+          "height": 20.5
+        },
+        "asset": "texture://ui_portrait-scholar",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "choice_name_3",
+        "rect": {
+          "x": 66,
+          "y": 34.877597736625525,
+          "width": 16,
+          "height": 3.3114711934156373
+        },
+        "text": "科技研究"
+      },
+      {
+        "kind": "text",
+        "id": "choice_desc_3",
+        "rect": {
+          "x": 66,
+          "y": 28.82407407407408,
+          "width": 16,
+          "height": 5.166666666666667
+        },
+        "text": "7 結晶研究隨機兵種能力；本\n局生效"
+      },
+      {
+        "kind": "text",
+        "id": "choice_action_3",
+        "rect": {
+          "x": 66,
+          "y": 20.790123456790127,
+          "width": 16,
+          "height": 3.0864197530864192
+        },
+        "text": "拜訪此處"
+      },
+      {
+        "kind": "button",
+        "id": "choice_3",
+        "rect": {
+          "x": 63,
+          "y": 16,
+          "width": 22,
+          "height": 55
+        },
+        "text": "",
+        "action": "Choice3"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "苔光林口 · 選擇景點",
+      "font": 34,
+      "clip": {
+        "x": 172.8,
+        "y": 89.7888888888889,
+        "width": 1574.4,
+        "height": 47.22222222222223
+      },
+      "ink": {
+        "x": 813.58203125,
+        "y": 98.66562500000002,
+        "width": 293.8359375,
+        "height": 30
+      }
+    },
+    {
+      "text": "查看地圖",
+      "font": 22,
+      "clip": {
+        "x": 1017.6,
+        "y": 956.7222222222222,
+        "width": 326.4000000000003,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1137.8000000000002,
+        "y": 961.578125,
+        "width": 86,
+        "height": 20
+      }
+    },
+    {
+      "text": "部隊配置",
+      "font": 22,
+      "clip": {
+        "x": 576,
+        "y": 956.7222222222222,
+        "width": 384,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 725,
+        "y": 961.578125,
+        "width": 86,
+        "height": 20
+      }
+    },
+    {
+      "text": "隨機景點 · 選一處拜訪",
+      "font": 24,
+      "clip": {
+        "x": 230.4,
+        "y": 184.9333333333333,
+        "width": 1459.2,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 845.234375,
+        "y": 189.95937499999997,
+        "width": 230.53125,
+        "height": 23
+      }
+    },
+    {
+      "text": "苔光照亮了舊路。領主，先讓每一枚金幣帶人回家。",
+      "font": 24,
+      "clip": {
+        "x": 230.4,
+        "y": 238.9333333333333,
+        "width": 1459.2,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 685,
+        "y": 244.95937499999997,
+        "width": 542,
+        "height": 22
+      }
+    },
+    {
+      "text": "裝備店",
+      "font": 25.75,
+      "clip": {
+        "x": 345.6,
+        "y": 667.5580555555556,
+        "width": 307.2,
+        "height": 35.763888888888886
+      },
+      "ink": {
+        "x": 461.57500000000005,
+        "y": 673.486875,
+        "width": 75.5,
+        "height": 23
+      }
+    },
+    {
+      "text": "結晶買賣裝備；購入後放進背",
+      "font": 23.25,
+      "clip": {
+        "x": 345.6,
+        "y": 712.8999999999999,
+        "width": 307.2,
+        "height": 55.8
+      },
+      "ink": {
+        "x": 349.07500000000005,
+        "y": 715.9281249999998,
+        "width": 300,
+        "height": 23
+      }
+    },
+    {
+      "text": "包",
+      "font": 23.25,
+      "clip": {
+        "x": 345.6,
+        "y": 712.8999999999999,
+        "width": 307.2,
+        "height": 55.8
+      },
+      "ink": {
+        "x": 488.57500000000005,
+        "y": 743.8281249999999,
+        "width": 21,
+        "height": 21
+      }
+    },
+    {
+      "text": "拜訪此處",
+      "font": 24,
+      "clip": {
+        "x": 345.6,
+        "y": 822.1333333333333,
+        "width": 307.2,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 452.20000000000005,
+        "y": 827.159375,
+        "width": 95,
+        "height": 23
+      }
+    },
+    {
+      "text": "藥水攤",
+      "font": 25.75,
+      "clip": {
+        "x": 806.4,
+        "y": 667.5580555555556,
+        "width": 307.2,
+        "height": 35.763888888888886
+      },
+      "ink": {
+        "x": 922.375,
+        "y": 673.486875,
+        "width": 75.5,
+        "height": 24
+      }
+    },
+    {
+      "text": "花金幣購買，最多攜帶兩瓶",
+      "font": 24,
+      "clip": {
+        "x": 806.4,
+        "y": 724.1333333333333,
+        "width": 307.2,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 817,
+        "y": 730.159375,
+        "width": 287,
+        "height": 21
+      }
+    },
+    {
+      "text": "拜訪此處",
+      "font": 24,
+      "clip": {
+        "x": 806.4,
+        "y": 822.1333333333333,
+        "width": 307.2,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 913,
+        "y": 827.159375,
+        "width": 95,
+        "height": 23
+      }
+    },
+    {
+      "text": "科技研究",
+      "font": 25.75,
+      "clip": {
+        "x": 1267.2,
+        "y": 667.5580555555556,
+        "width": 307.2,
+        "height": 35.763888888888886
+      },
+      "ink": {
+        "x": 1370.3,
+        "y": 673.486875,
+        "width": 101.25,
+        "height": 24
+      }
+    },
+    {
+      "text": "7 結晶研究隨機兵種能力；本",
+      "font": 23.25,
+      "clip": {
+        "x": 1267.2,
+        "y": 712.8999999999999,
+        "width": 307.2,
+        "height": 55.8
+      },
+      "ink": {
+        "x": 1271.6560180664062,
+        "y": 715.9281249999998,
+        "width": 298.0379638671875,
+        "height": 23
+      }
+    },
+    {
+      "text": "局生效",
+      "font": 23.25,
+      "clip": {
+        "x": 1267.2,
+        "y": 712.8999999999999,
+        "width": 307.2,
+        "height": 55.8
+      },
+      "ink": {
+        "x": 1386.925,
+        "y": 743.8281249999999,
+        "width": 68.5,
+        "height": 21
+      }
+    },
+    {
+      "text": "拜訪此處",
+      "font": 24,
+      "clip": {
+        "x": 1267.2,
+        "y": 822.1333333333333,
+        "width": 307.2,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 1373.8,
+        "y": 827.159375,
+        "width": 95,
+        "height": 23
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 80,
+    "assets": [
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_scene-shade",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_quartermaster-v1",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_portrait-alchemist",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_portrait-scholar",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

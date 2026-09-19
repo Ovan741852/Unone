@@ -2,6 +2,7 @@
 // Source borders follow the artwork, never a percentage of the destination.
 export const slices=['tl','t','tr','l','c','r','bl','b','br'];
 export const skins={
+ 'control-quiet-v3':{borders:[80,80,80,80],trim:true,scale:.12},
  'shop-window-panel-v2':{borders:[360,540,360,360],scale:.20},
  'shop-card-rare-v2':{borders:[210,360,210,360],scale:'width'},
  'shop-card-epic-v2':{borders:[210,360,210,360],scale:'width'},
@@ -29,7 +30,7 @@ export function fitNineSlice(nodes,source,viewport,metadata){
 }
 
 let measureContext;
-export function fitLabel(value,{width,height,size,maxLines=Infinity,wrap=false}){
+export function fitLabel(value,{width,height,size,minSize=8,maxLines=Infinity,wrap=false}){
  // This must use the same family as the official Canvas UI, not character counts.
  measureContext??=document.createElement('canvas').getContext('2d');
  const ctx=measureContext;let lines=[];
@@ -45,7 +46,10 @@ export function fitLabel(value,{width,height,size,maxLines=Infinity,wrap=false})
   }
   return result;
  };
- for(;size>=8;size-=.25){lines=breakLines(size);const count=Math.min(lines.length,maxLines);if(Math.max(...lines.map(measure),1)<=width&&size*Math.max(count*1.2,1/.72)<=height)break;}
+ size=Math.max(size,minSize);
+ for(;;size=Math.max(minSize,size-.25)){lines=breakLines(size);const count=Math.min(lines.length,maxLines);if(size===minSize||Math.max(...lines.map(measure),1)<=width&&size*Math.max(count*1.2,1/.72)<=height)break;}
+ // Single-line names may elide, but never squeeze below the readability floor.
+ if(maxLines===1&&lines.length===1&&measure(lines[0])>width){let last=lines[0];while(last&&measure(last+'…')>width)last=last.slice(0,-1);lines=[last+'…'];}
  if(lines.length>maxLines){lines=lines.slice(0,maxLines);let last=lines.at(-1);while(last&&measure(last+'…')>width)last=last.slice(0,-1);lines[lines.length-1]=last+'…';}
- return {text:lines.join('\n'),height:size*Math.max(lines.length*1.2,1/.72),fontSize:size};
+ return {text:lines.join('\n'),width:Math.max(...lines.map(measure),1),height:size*Math.max(lines.length*1.2,1/.72),fontSize:size};
 }

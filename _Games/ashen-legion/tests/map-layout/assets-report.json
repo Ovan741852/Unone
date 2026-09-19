@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "entries": [
+    {
+      "id": "forest-map-v2",
+      "width": 1672,
+      "height": 941,
+      "sha256": "6cb0a4d5d83126a06864be8b7a2131fc2330015307437dd2930d8d1e11324339",
+      "mappings": [
+        "forest-map-v2",
+        "route-map",
+        "route-map-portrait"
+      ]
+    },
+    {
+      "id": "map-waypoint-v2",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "da049ce44e97a54a9e69be0ccbdde8fecc3eab861ab36506865aa558bb0edfb2",
+      "mappings": [
+        "map-waypoint-v2",
+        "route-current",
+        "route-cleared",
+        "route-future"
+      ]
+    }
+  ],
+  "routeSegments": 7,
+  "sharedLuauAnchors": true
+}

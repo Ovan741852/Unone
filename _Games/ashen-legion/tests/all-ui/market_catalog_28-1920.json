@@ -1,0 +1,2671 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "shop:home",
+    "children": [
+      {
+        "kind": "image",
+        "id": "shop_backdrop",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_shop-backdrop",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "shop_backdrop_shade",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "shop_window_fill",
+        "rect": {
+          "x": 7,
+          "y": 9,
+          "width": 86,
+          "height": 83
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_fill",
+        "rect": {
+          "x": 6.8,
+          "y": 8,
+          "width": 86.4,
+          "height": 84
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tl",
+        "rect": {
+          "x": 6,
+          "y": 82,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_t",
+        "rect": {
+          "x": 10.5,
+          "y": 82,
+          "width": 79,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tr",
+        "rect": {
+          "x": 89.5,
+          "y": 82,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_l",
+        "rect": {
+          "x": 6,
+          "y": 14,
+          "width": 4.5,
+          "height": 68
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_c",
+        "rect": {
+          "x": 10.5,
+          "y": 14,
+          "width": 79,
+          "height": 68
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_r",
+        "rect": {
+          "x": 89.5,
+          "y": 14,
+          "width": 4.5,
+          "height": 68
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_bl",
+        "rect": {
+          "x": 6,
+          "y": 6,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_b",
+        "rect": {
+          "x": 10.5,
+          "y": 6,
+          "width": 79,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_br",
+        "rect": {
+          "x": 89.5,
+          "y": 6,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "shop_window_title",
+        "rect": {
+          "x": 32,
+          "y": 85.58539094650206,
+          "width": 36,
+          "height": 2.8292181069958846
+        },
+        "text": "森林領主 · 榛姨的商店"
+      },
+      {
+        "kind": "text",
+        "id": "screen_title",
+        "rect": {
+          "x": 10,
+          "y": 80.31378600823045,
+          "width": 24,
+          "height": 4.372427983539095
+        },
+        "text": "裝備店"
+      },
+      {
+        "kind": "image",
+        "id": "screen_gold_icon",
+        "rect": {
+          "x": 78,
+          "y": 81.5,
+          "width": 3,
+          "height": 4
+        },
+        "asset": "texture://ui_icon-coin",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "screen_gold",
+        "rect": {
+          "x": 81.7,
+          "y": 81.69958847736625,
+          "width": 7.3,
+          "height": 3.6008230452674894
+        },
+        "text": "320"
+      },
+      {
+        "kind": "image",
+        "id": "screen_crystals_icon",
+        "rect": {
+          "x": 78,
+          "y": 77,
+          "width": 3,
+          "height": 4
+        },
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "screen_crystals",
+        "rect": {
+          "x": 81.7,
+          "y": 77.19958847736625,
+          "width": 7.3,
+          "height": 3.6008230452674894
+        },
+        "text": "18"
+      },
+      {
+        "kind": "image",
+        "id": "tab_home_plate_tl",
+        "rect": {
+          "x": 10,
+          "y": 76.65702479338843,
+          "width": 2.2662706611570247,
+          "height": 1.3429752066115697
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_home_plate_t",
+        "rect": {
+          "x": 12.266270661157025,
+          "y": 76.65702479338843,
+          "width": 11.467458677685949,
+          "height": 1.3429752066115697
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_home_plate_tr",
+        "rect": {
+          "x": 23.733729338842974,
+          "y": 76.65702479338843,
+          "width": 2.2662706611570265,
+          "height": 1.3429752066115697
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_home_plate_l",
+        "rect": {
+          "x": 10,
+          "y": 72.84297520661157,
+          "width": 2.2662706611570247,
+          "height": 3.8140495867768607
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_home_plate_c",
+        "rect": {
+          "x": 12.266270661157025,
+          "y": 72.84297520661157,
+          "width": 11.467458677685949,
+          "height": 3.8140495867768607
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_home_plate_r",
+        "rect": {
+          "x": 23.733729338842974,
+          "y": 72.84297520661157,
+          "width": 2.2662706611570265,
+          "height": 3.8140495867768607
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_home_plate_bl",
+        "rect": {
+          "x": 10,
+          "y": 71.5,
+          "width": 2.2662706611570247,
+          "height": 1.3429752066115697
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_home_plate_b",
+        "rect": {
+          "x": 12.266270661157025,
+          "y": 71.5,
+          "width": 11.467458677685949,
+          "height": 1.3429752066115697
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_home_plate_br",
+        "rect": {
+          "x": 23.733729338842974,
+          "y": 71.5,
+          "width": 2.2662706611570265,
+          "height": 1.3429752066115697
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "tab_home",
+        "rect": {
+          "x": 10,
+          "y": 73.2067901234568,
+          "width": 16,
+          "height": 3.0864197530864192
+        },
+        "text": "買入裝備",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "tab_home_hit_top",
+        "rect": {
+          "x": 10,
+          "y": 76.29320987654322,
+          "width": 16,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "tab_home_hit_bottom",
+        "rect": {
+          "x": 10,
+          "y": 71.5,
+          "width": 16,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "UI_home"
+      },
+      {
+        "kind": "image",
+        "id": "tab_sell_plate_tl",
+        "rect": {
+          "x": 28,
+          "y": 76.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_sell_plate_t",
+        "rect": {
+          "x": 28.6,
+          "y": 76.93333333333334,
+          "width": 14.799999999999997,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_sell_plate_tr",
+        "rect": {
+          "x": 43.4,
+          "y": 76.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_sell_plate_l",
+        "rect": {
+          "x": 28,
+          "y": 72.56666666666666,
+          "width": 0.6000000000000014,
+          "height": 4.366666666666674
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_sell_plate_c",
+        "rect": {
+          "x": 28.6,
+          "y": 72.56666666666666,
+          "width": 14.799999999999997,
+          "height": 4.366666666666674
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_sell_plate_r",
+        "rect": {
+          "x": 43.4,
+          "y": 72.56666666666666,
+          "width": 0.6000000000000014,
+          "height": 4.366666666666674
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_sell_plate_bl",
+        "rect": {
+          "x": 28,
+          "y": 71.5,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_sell_plate_b",
+        "rect": {
+          "x": 28.6,
+          "y": 71.5,
+          "width": 14.799999999999997,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_sell_plate_br",
+        "rect": {
+          "x": 43.4,
+          "y": 71.5,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "tab_sell",
+        "rect": {
+          "x": 28,
+          "y": 73.2067901234568,
+          "width": 16,
+          "height": 3.0864197530864192
+        },
+        "text": "出售裝備",
+        "action": "UI_sell"
+      },
+      {
+        "kind": "button",
+        "id": "tab_sell_hit_top",
+        "rect": {
+          "x": 28,
+          "y": 76.29320987654322,
+          "width": 16,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "UI_sell"
+      },
+      {
+        "kind": "button",
+        "id": "tab_sell_hit_bottom",
+        "rect": {
+          "x": 28,
+          "y": 71.5,
+          "width": 16,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "UI_sell"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_tl",
+        "rect": {
+          "x": 56,
+          "y": 14.933333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_t",
+        "rect": {
+          "x": 56.6,
+          "y": 14.933333333333334,
+          "width": 14.800000000000018,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_tr",
+        "rect": {
+          "x": 71.40000000000002,
+          "y": 14.933333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_l",
+        "rect": {
+          "x": 56,
+          "y": 10.566666666666666,
+          "width": 0.6000000000000014,
+          "height": 4.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_c",
+        "rect": {
+          "x": 56.6,
+          "y": 10.566666666666666,
+          "width": 14.800000000000018,
+          "height": 4.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_r",
+        "rect": {
+          "x": 71.40000000000002,
+          "y": 10.566666666666666,
+          "width": 0.5999999999999943,
+          "height": 4.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_bl",
+        "rect": {
+          "x": 56,
+          "y": 9.5,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_b",
+        "rect": {
+          "x": 56.6,
+          "y": 9.5,
+          "width": 14.800000000000018,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_br",
+        "rect": {
+          "x": 71.40000000000002,
+          "y": 9.5,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "ready",
+        "rect": {
+          "x": 56,
+          "y": 11.206790123456797,
+          "width": 16.000000000000014,
+          "height": 3.0864197530864192
+        },
+        "text": "部隊配置",
+        "action": "LeaveShop"
+      },
+      {
+        "kind": "button",
+        "id": "ready_hit_top",
+        "rect": {
+          "x": 56,
+          "y": 14.293209876543209,
+          "width": 16.000000000000014,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "LeaveShop"
+      },
+      {
+        "kind": "button",
+        "id": "ready_hit_bottom",
+        "rect": {
+          "x": 56,
+          "y": 9.500000000000007,
+          "width": 16.000000000000014,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "LeaveShop"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_tl",
+        "rect": {
+          "x": 74,
+          "y": 14.65702479338843,
+          "width": 2.266270661157023,
+          "height": 1.3429752066115697
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_t",
+        "rect": {
+          "x": 76.26627066115702,
+          "y": 14.65702479338843,
+          "width": 11.467458677685968,
+          "height": 1.3429752066115697
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_tr",
+        "rect": {
+          "x": 87.73372933884299,
+          "y": 14.65702479338843,
+          "width": 2.266270661157023,
+          "height": 1.3429752066115697
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_l",
+        "rect": {
+          "x": 74,
+          "y": 10.84297520661157,
+          "width": 2.266270661157023,
+          "height": 3.8140495867768607
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_c",
+        "rect": {
+          "x": 76.26627066115702,
+          "y": 10.84297520661157,
+          "width": 11.467458677685968,
+          "height": 3.8140495867768607
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_r",
+        "rect": {
+          "x": 87.73372933884299,
+          "y": 10.84297520661157,
+          "width": 2.266270661157023,
+          "height": 3.8140495867768607
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_bl",
+        "rect": {
+          "x": 74,
+          "y": 9.5,
+          "width": 2.266270661157023,
+          "height": 1.3429752066115697
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_b",
+        "rect": {
+          "x": 76.26627066115702,
+          "y": 9.5,
+          "width": 11.467458677685968,
+          "height": 1.3429752066115697
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_br",
+        "rect": {
+          "x": 87.73372933884299,
+          "y": 9.5,
+          "width": 2.266270661157023,
+          "height": 1.3429752066115697
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "quick_deploy",
+        "rect": {
+          "x": 74,
+          "y": 11.206790123456797,
+          "width": 16.000000000000014,
+          "height": 3.0864197530864192
+        },
+        "text": "直接出戰",
+        "action": "QuickDeploy"
+      },
+      {
+        "kind": "button",
+        "id": "quick_deploy_hit_top",
+        "rect": {
+          "x": 74,
+          "y": 14.293209876543209,
+          "width": 16.000000000000014,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "QuickDeploy"
+      },
+      {
+        "kind": "button",
+        "id": "quick_deploy_hit_bottom",
+        "rect": {
+          "x": 74,
+          "y": 9.500000000000007,
+          "width": 16.000000000000014,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "QuickDeploy"
+      },
+      {
+        "kind": "image",
+        "id": "shopkeeper_portrait",
+        "rect": {
+          "x": 10,
+          "y": 41,
+          "width": 16,
+          "height": 28
+        },
+        "asset": "texture://ui_quartermaster-v1",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "shopkeeper_name",
+        "rect": {
+          "x": 10,
+          "y": 35.199588477366255,
+          "width": 16,
+          "height": 3.6008230452674894
+        },
+        "text": "榛姨 · 商人"
+      },
+      {
+        "kind": "text",
+        "id": "shopkeeper_line",
+        "rect": {
+          "x": 10,
+          "y": 25.055555555555554,
+          "width": 16,
+          "height": 4.888888888888888
+        },
+        "text": "榛姨把剛到貨的裝備排開。先\n看技能，再挑一件回去。"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_1_tl",
+        "rect": {
+          "x": 28,
+          "y": 60.968119022316685,
+          "width": 3.291710945802336,
+          "height": 10.031880977683315
+        },
+        "asset": "texture://ui_shop-card-epic-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_1_t",
+        "rect": {
+          "x": 31.291710945802336,
+          "y": 60.968119022316685,
+          "width": 8.166578108395328,
+          "height": 10.031880977683315
+        },
+        "asset": "texture://ui_shop-card-epic-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_1_tr",
+        "rect": {
+          "x": 39.458289054197664,
+          "y": 60.968119022316685,
+          "width": 3.291710945802336,
+          "height": 10.031880977683315
+        },
+        "asset": "texture://ui_shop-card-epic-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_1_l",
+        "rect": {
+          "x": 28,
+          "y": 30.031880977683308,
+          "width": 3.291710945802336,
+          "height": 30.936238044633377
+        },
+        "asset": "texture://ui_shop-card-epic-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_1_c",
+        "rect": {
+          "x": 31.291710945802336,
+          "y": 30.031880977683308,
+          "width": 8.166578108395328,
+          "height": 30.936238044633377
+        },
+        "asset": "texture://ui_shop-card-epic-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_1_r",
+        "rect": {
+          "x": 39.458289054197664,
+          "y": 30.031880977683308,
+          "width": 3.291710945802336,
+          "height": 30.936238044633377
+        },
+        "asset": "texture://ui_shop-card-epic-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_1_bl",
+        "rect": {
+          "x": 28,
+          "y": 19.999999999999996,
+          "width": 3.291710945802336,
+          "height": 10.031880977683311
+        },
+        "asset": "texture://ui_shop-card-epic-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_1_b",
+        "rect": {
+          "x": 31.291710945802336,
+          "y": 19.999999999999996,
+          "width": 8.166578108395328,
+          "height": 10.031880977683311
+        },
+        "asset": "texture://ui_shop-card-epic-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_1_br",
+        "rect": {
+          "x": 39.458289054197664,
+          "y": 19.999999999999996,
+          "width": 3.291710945802336,
+          "height": 10.031880977683311
+        },
+        "asset": "texture://ui_shop-card-epic-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_icon_1",
+        "rect": {
+          "x": 31.25,
+          "y": 50.5,
+          "width": 8.25,
+          "height": 12
+        },
+        "asset": "texture://ui_gear-bounce_power",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "stock_name_1",
+        "rect": {
+          "x": 30,
+          "y": 46.199588477366255,
+          "width": 10.75,
+          "height": 3.6008230452674894
+        },
+        "text": "折返頭冠"
+      },
+      {
+        "kind": "text",
+        "id": "stock_desc_1",
+        "rect": {
+          "x": 30,
+          "y": 39.58539094650206,
+          "width": 10.75,
+          "height": 2.8292181069958846
+        },
+        "text": "反彈後累積增傷"
+      },
+      {
+        "kind": "image",
+        "id": "stock_cost_icon_1",
+        "rect": {
+          "x": 30,
+          "y": 31,
+          "width": 2,
+          "height": 3.5
+        },
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "stock_cost_1",
+        "rect": {
+          "x": 32.2,
+          "y": 30.949588477366248,
+          "width": 2.8,
+          "height": 3.6008230452674894
+        },
+        "text": "12"
+      },
+      {
+        "kind": "text",
+        "id": "stock_deploy_1",
+        "rect": {
+          "x": 35.75,
+          "y": 30.305555555555554,
+          "width": 5,
+          "height": 4.888888888888888
+        },
+        "text": "派兵費\n+1"
+      },
+      {
+        "kind": "text",
+        "id": "stock_detail_1",
+        "rect": {
+          "x": 29.75,
+          "y": 24.835390946502056,
+          "width": 11.25,
+          "height": 2.8292181069958846
+        },
+        "text": "查看詳情"
+      },
+      {
+        "kind": "button",
+        "id": "stock_hit_1",
+        "rect": {
+          "x": 28,
+          "y": 20,
+          "width": 14.75,
+          "height": 51
+        },
+        "text": "",
+        "action": "ShopDetail1"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_2_tl",
+        "rect": {
+          "x": 43.75,
+          "y": 60.968119022316685,
+          "width": 3.291710945802336,
+          "height": 10.031880977683315
+        },
+        "asset": "texture://ui_shop-card-epic-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_2_t",
+        "rect": {
+          "x": 47.041710945802336,
+          "y": 60.968119022316685,
+          "width": 8.166578108395328,
+          "height": 10.031880977683315
+        },
+        "asset": "texture://ui_shop-card-epic-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_2_tr",
+        "rect": {
+          "x": 55.208289054197664,
+          "y": 60.968119022316685,
+          "width": 3.291710945802336,
+          "height": 10.031880977683315
+        },
+        "asset": "texture://ui_shop-card-epic-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_2_l",
+        "rect": {
+          "x": 43.75,
+          "y": 30.031880977683308,
+          "width": 3.291710945802336,
+          "height": 30.936238044633377
+        },
+        "asset": "texture://ui_shop-card-epic-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_2_c",
+        "rect": {
+          "x": 47.041710945802336,
+          "y": 30.031880977683308,
+          "width": 8.166578108395328,
+          "height": 30.936238044633377
+        },
+        "asset": "texture://ui_shop-card-epic-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_2_r",
+        "rect": {
+          "x": 55.208289054197664,
+          "y": 30.031880977683308,
+          "width": 3.291710945802336,
+          "height": 30.936238044633377
+        },
+        "asset": "texture://ui_shop-card-epic-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_2_bl",
+        "rect": {
+          "x": 43.75,
+          "y": 19.999999999999996,
+          "width": 3.291710945802336,
+          "height": 10.031880977683311
+        },
+        "asset": "texture://ui_shop-card-epic-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_2_b",
+        "rect": {
+          "x": 47.041710945802336,
+          "y": 19.999999999999996,
+          "width": 8.166578108395328,
+          "height": 10.031880977683311
+        },
+        "asset": "texture://ui_shop-card-epic-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_2_br",
+        "rect": {
+          "x": 55.208289054197664,
+          "y": 19.999999999999996,
+          "width": 3.291710945802336,
+          "height": 10.031880977683311
+        },
+        "asset": "texture://ui_shop-card-epic-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_icon_2",
+        "rect": {
+          "x": 47,
+          "y": 50.5,
+          "width": 8.25,
+          "height": 12
+        },
+        "asset": "texture://ui_gear-flame_cloak",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "stock_name_2",
+        "rect": {
+          "x": 45.75,
+          "y": 46.199588477366255,
+          "width": 10.75,
+          "height": 3.6008230452674894
+        },
+        "text": "火焰斗篷"
+      },
+      {
+        "kind": "text",
+        "id": "stock_desc_2",
+        "rect": {
+          "x": 45.75,
+          "y": 39.58539094650206,
+          "width": 10.75,
+          "height": 2.8292181069958846
+        },
+        "text": "詠唱後週期灼燒近敵"
+      },
+      {
+        "kind": "image",
+        "id": "stock_cost_icon_2",
+        "rect": {
+          "x": 45.75,
+          "y": 31,
+          "width": 2,
+          "height": 3.5
+        },
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "stock_cost_2",
+        "rect": {
+          "x": 47.95,
+          "y": 30.949588477366248,
+          "width": 2.8,
+          "height": 3.6008230452674894
+        },
+        "text": "14"
+      },
+      {
+        "kind": "text",
+        "id": "stock_deploy_2",
+        "rect": {
+          "x": 51.5,
+          "y": 30.305555555555554,
+          "width": 5,
+          "height": 4.888888888888888
+        },
+        "text": "派兵費\n+4"
+      },
+      {
+        "kind": "text",
+        "id": "stock_detail_2",
+        "rect": {
+          "x": 45.5,
+          "y": 24.835390946502056,
+          "width": 11.25,
+          "height": 2.8292181069958846
+        },
+        "text": "查看詳情"
+      },
+      {
+        "kind": "button",
+        "id": "stock_hit_2",
+        "rect": {
+          "x": 43.75,
+          "y": 20,
+          "width": 14.75,
+          "height": 51
+        },
+        "text": "",
+        "action": "ShopDetail2"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_3_tl",
+        "rect": {
+          "x": 59.5,
+          "y": 60.968119022316685,
+          "width": 3.291710945802336,
+          "height": 10.031880977683315
+        },
+        "asset": "texture://ui_shop-card-legendary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_3_t",
+        "rect": {
+          "x": 62.791710945802336,
+          "y": 60.968119022316685,
+          "width": 8.166578108395328,
+          "height": 10.031880977683315
+        },
+        "asset": "texture://ui_shop-card-legendary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_3_tr",
+        "rect": {
+          "x": 70.95828905419766,
+          "y": 60.968119022316685,
+          "width": 3.291710945802336,
+          "height": 10.031880977683315
+        },
+        "asset": "texture://ui_shop-card-legendary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_3_l",
+        "rect": {
+          "x": 59.5,
+          "y": 30.031880977683308,
+          "width": 3.291710945802336,
+          "height": 30.936238044633377
+        },
+        "asset": "texture://ui_shop-card-legendary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_3_c",
+        "rect": {
+          "x": 62.791710945802336,
+          "y": 30.031880977683308,
+          "width": 8.166578108395328,
+          "height": 30.936238044633377
+        },
+        "asset": "texture://ui_shop-card-legendary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_3_r",
+        "rect": {
+          "x": 70.95828905419766,
+          "y": 30.031880977683308,
+          "width": 3.291710945802336,
+          "height": 30.936238044633377
+        },
+        "asset": "texture://ui_shop-card-legendary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_3_bl",
+        "rect": {
+          "x": 59.5,
+          "y": 19.999999999999996,
+          "width": 3.291710945802336,
+          "height": 10.031880977683311
+        },
+        "asset": "texture://ui_shop-card-legendary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_3_b",
+        "rect": {
+          "x": 62.791710945802336,
+          "y": 19.999999999999996,
+          "width": 8.166578108395328,
+          "height": 10.031880977683311
+        },
+        "asset": "texture://ui_shop-card-legendary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_3_br",
+        "rect": {
+          "x": 70.95828905419766,
+          "y": 19.999999999999996,
+          "width": 3.291710945802336,
+          "height": 10.031880977683311
+        },
+        "asset": "texture://ui_shop-card-legendary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_icon_3",
+        "rect": {
+          "x": 62.75,
+          "y": 50.5,
+          "width": 8.25,
+          "height": 12
+        },
+        "asset": "texture://ui_gear-phoenix_fire",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "stock_name_3",
+        "rect": {
+          "x": 61.5,
+          "y": 46.199588477366255,
+          "width": 10.75,
+          "height": 3.6008230452674894
+        },
+        "text": "鳳凰法杖"
+      },
+      {
+        "kind": "text",
+        "id": "stock_desc_3",
+        "rect": {
+          "x": 61.5,
+          "y": 39.58539094650206,
+          "width": 10.75,
+          "height": 2.8292181069958846
+        },
+        "text": "週期噴火灼燒三怪"
+      },
+      {
+        "kind": "image",
+        "id": "stock_cost_icon_3",
+        "rect": {
+          "x": 61.5,
+          "y": 31,
+          "width": 2,
+          "height": 3.5
+        },
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "stock_cost_3",
+        "rect": {
+          "x": 63.7,
+          "y": 30.949588477366248,
+          "width": 2.8,
+          "height": 3.6008230452674894
+        },
+        "text": "17"
+      },
+      {
+        "kind": "text",
+        "id": "stock_deploy_3",
+        "rect": {
+          "x": 67.25,
+          "y": 30.305555555555554,
+          "width": 5,
+          "height": 4.888888888888888
+        },
+        "text": "派兵費\n+5"
+      },
+      {
+        "kind": "text",
+        "id": "stock_detail_3",
+        "rect": {
+          "x": 61.25,
+          "y": 24.835390946502056,
+          "width": 11.25,
+          "height": 2.8292181069958846
+        },
+        "text": "查看詳情"
+      },
+      {
+        "kind": "button",
+        "id": "stock_hit_3",
+        "rect": {
+          "x": 59.5,
+          "y": 20,
+          "width": 14.75,
+          "height": 51
+        },
+        "text": "",
+        "action": "ShopDetail3"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_4_tl",
+        "rect": {
+          "x": 75.25,
+          "y": 60.968119022316685,
+          "width": 3.291710945802336,
+          "height": 10.031880977683315
+        },
+        "asset": "texture://ui_shop-card-epic-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_4_t",
+        "rect": {
+          "x": 78.54171094580234,
+          "y": 60.968119022316685,
+          "width": 8.166578108395328,
+          "height": 10.031880977683315
+        },
+        "asset": "texture://ui_shop-card-epic-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_4_tr",
+        "rect": {
+          "x": 86.70828905419766,
+          "y": 60.968119022316685,
+          "width": 3.291710945802336,
+          "height": 10.031880977683315
+        },
+        "asset": "texture://ui_shop-card-epic-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_4_l",
+        "rect": {
+          "x": 75.25,
+          "y": 30.031880977683308,
+          "width": 3.291710945802336,
+          "height": 30.936238044633377
+        },
+        "asset": "texture://ui_shop-card-epic-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_4_c",
+        "rect": {
+          "x": 78.54171094580234,
+          "y": 30.031880977683308,
+          "width": 8.166578108395328,
+          "height": 30.936238044633377
+        },
+        "asset": "texture://ui_shop-card-epic-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_4_r",
+        "rect": {
+          "x": 86.70828905419766,
+          "y": 30.031880977683308,
+          "width": 3.291710945802336,
+          "height": 30.936238044633377
+        },
+        "asset": "texture://ui_shop-card-epic-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_4_bl",
+        "rect": {
+          "x": 75.25,
+          "y": 19.999999999999996,
+          "width": 3.291710945802336,
+          "height": 10.031880977683311
+        },
+        "asset": "texture://ui_shop-card-epic-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_4_b",
+        "rect": {
+          "x": 78.54171094580234,
+          "y": 19.999999999999996,
+          "width": 8.166578108395328,
+          "height": 10.031880977683311
+        },
+        "asset": "texture://ui_shop-card-epic-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_panel_4_br",
+        "rect": {
+          "x": 86.70828905419766,
+          "y": 19.999999999999996,
+          "width": 3.291710945802336,
+          "height": 10.031880977683311
+        },
+        "asset": "texture://ui_shop-card-epic-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "stock_icon_4",
+        "rect": {
+          "x": 78.5,
+          "y": 50.5,
+          "width": 8.25,
+          "height": 12
+        },
+        "asset": "texture://ui_gear-plague_vial",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "stock_name_4",
+        "rect": {
+          "x": 77.25,
+          "y": 46.199588477366255,
+          "width": 10.75,
+          "height": 3.6008230452674894
+        },
+        "text": "鍊金藥匣"
+      },
+      {
+        "kind": "text",
+        "id": "stock_desc_4",
+        "rect": {
+          "x": 77.25,
+          "y": 39.58539094650206,
+          "width": 10.75,
+          "height": 2.8292181069958846
+        },
+        "text": "行軍投下中毒霧"
+      },
+      {
+        "kind": "image",
+        "id": "stock_cost_icon_4",
+        "rect": {
+          "x": 77.25,
+          "y": 31,
+          "width": 2,
+          "height": 3.5
+        },
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "stock_cost_4",
+        "rect": {
+          "x": 79.45,
+          "y": 30.949588477366248,
+          "width": 2.8,
+          "height": 3.6008230452674894
+        },
+        "text": "13"
+      },
+      {
+        "kind": "text",
+        "id": "stock_deploy_4",
+        "rect": {
+          "x": 83,
+          "y": 30.305555555555554,
+          "width": 5,
+          "height": 4.888888888888888
+        },
+        "text": "派兵費\n+4"
+      },
+      {
+        "kind": "text",
+        "id": "stock_detail_4",
+        "rect": {
+          "x": 77,
+          "y": 24.835390946502056,
+          "width": 11.25,
+          "height": 2.8292181069958846
+        },
+        "text": "查看詳情"
+      },
+      {
+        "kind": "button",
+        "id": "stock_hit_4",
+        "rect": {
+          "x": 75.25,
+          "y": 20,
+          "width": 14.75,
+          "height": 51
+        },
+        "text": "",
+        "action": "ShopDetail4"
+      },
+      {
+        "kind": "text",
+        "id": "stock_hint",
+        "rect": {
+          "x": 10,
+          "y": 11.335390946502056,
+          "width": 28,
+          "height": 2.8292181069958846
+        },
+        "text": "買入後至配裝穿戴"
+      },
+      {
+        "kind": "image",
+        "id": "refresh_plate_tl",
+        "rect": {
+          "x": 40,
+          "y": 14.933333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "refresh_plate_t",
+        "rect": {
+          "x": 40.6,
+          "y": 14.933333333333334,
+          "width": 12.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "refresh_plate_tr",
+        "rect": {
+          "x": 53.400000000000006,
+          "y": 14.933333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "refresh_plate_l",
+        "rect": {
+          "x": 40,
+          "y": 10.566666666666666,
+          "width": 0.6000000000000014,
+          "height": 4.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "refresh_plate_c",
+        "rect": {
+          "x": 40.6,
+          "y": 10.566666666666666,
+          "width": 12.800000000000004,
+          "height": 4.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "refresh_plate_r",
+        "rect": {
+          "x": 53.400000000000006,
+          "y": 10.566666666666666,
+          "width": 0.6000000000000014,
+          "height": 4.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "refresh_plate_bl",
+        "rect": {
+          "x": 40,
+          "y": 9.5,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "refresh_plate_b",
+        "rect": {
+          "x": 40.6,
+          "y": 9.5,
+          "width": 12.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "refresh_plate_br",
+        "rect": {
+          "x": 53.400000000000006,
+          "y": 9.5,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "refresh",
+        "rect": {
+          "x": 40,
+          "y": 11.25,
+          "width": 14,
+          "height": 3
+        },
+        "text": "",
+        "action": "RefreshShop"
+      },
+      {
+        "kind": "button",
+        "id": "refresh_hit_top",
+        "rect": {
+          "x": 40,
+          "y": 14.25,
+          "width": 14,
+          "height": 1.75
+        },
+        "text": "",
+        "action": "RefreshShop"
+      },
+      {
+        "kind": "button",
+        "id": "refresh_hit_bottom",
+        "rect": {
+          "x": 40,
+          "y": 9.5,
+          "width": 14,
+          "height": 1.75
+        },
+        "text": "",
+        "action": "RefreshShop"
+      },
+      {
+        "kind": "image",
+        "id": "refresh_icon",
+        "rect": {
+          "x": 41.8,
+          "y": 11.083333333333337,
+          "width": 2.5,
+          "height": 3.3333333333333335
+        },
+        "asset": "texture://ui_icon-refresh",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "refresh_currency_icon",
+        "rect": {
+          "x": 45,
+          "y": 11.083333333333337,
+          "width": 2,
+          "height": 3.3333333333333335
+        },
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "refresh_cost",
+        "rect": {
+          "x": 48,
+          "y": 11.09426440329219,
+          "width": 4,
+          "height": 3.3114711934156373
+        },
+        "text": "2"
+      },
+      {
+        "kind": "button",
+        "id": "refresh_content_hit",
+        "rect": {
+          "x": 40,
+          "y": 9.5,
+          "width": 14,
+          "height": 6.5
+        },
+        "text": "",
+        "action": "RefreshShop"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "森林領主 · 榛姨的商店",
+      "font": 22,
+      "clip": {
+        "x": 614.4,
+        "y": 125.1222222222222,
+        "width": 691.2,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 853.96484375,
+        "y": 129.97812499999998,
+        "width": 212.0703125,
+        "height": 20
+      }
+    },
+    {
+      "text": "裝備店",
+      "font": 34,
+      "clip": {
+        "x": 192,
+        "y": 165.3888888888889,
+        "width": 460.8,
+        "height": 47.22222222222223
+      },
+      "ink": {
+        "x": 372.4,
+        "y": 173.26562500000003,
+        "width": 100,
+        "height": 31
+      }
+    },
+    {
+      "text": "320",
+      "font": 28,
+      "clip": {
+        "x": 1568.64,
+        "y": 158.75555555555565,
+        "width": 140.16,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1615.3772265625,
+        "y": 167.1218750000001,
+        "width": 47.45703125,
+        "height": 23
+      }
+    },
+    {
+      "text": "18",
+      "font": 28,
+      "clip": {
+        "x": 1568.64,
+        "y": 207.3555555555556,
+        "width": 140.16,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1624.491484375,
+        "y": 215.72187500000007,
+        "width": 30.228515625,
+        "height": 23
+      }
+    },
+    {
+      "text": "買入裝備",
+      "font": 24,
+      "clip": {
+        "x": 192,
+        "y": 256.0333333333333,
+        "width": 307.2,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 298.6,
+        "y": 262.059375,
+        "width": 94,
+        "height": 21
+      }
+    },
+    {
+      "text": "出售裝備",
+      "font": 24,
+      "clip": {
+        "x": 537.6,
+        "y": 256.0333333333333,
+        "width": 307.2,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 645.2,
+        "y": 262.059375,
+        "width": 93,
+        "height": 21
+      }
+    },
+    {
+      "text": "部隊配置",
+      "font": 24,
+      "clip": {
+        "x": 1075.2,
+        "y": 925.6333333333333,
+        "width": 307.2000000000003,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 1181.8000000000002,
+        "y": 931.659375,
+        "width": 94,
+        "height": 21
+      }
+    },
+    {
+      "text": "直接出戰",
+      "font": 24,
+      "clip": {
+        "x": 1420.8,
+        "y": 925.6333333333333,
+        "width": 307.2000000000003,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 1527.4,
+        "y": 931.659375,
+        "width": 94,
+        "height": 21
+      }
+    },
+    {
+      "text": "榛姨 · 商人",
+      "font": 28,
+      "clip": {
+        "x": 192,
+        "y": 660.9555555555555,
+        "width": 307.2,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 280.3734375,
+        "y": 667.321875,
+        "width": 130.453125,
+        "height": 26
+      }
+    },
+    {
+      "text": "榛姨把剛到貨的裝備排開。先",
+      "font": 22,
+      "clip": {
+        "x": 192,
+        "y": 756.6,
+        "width": 307.2,
+        "height": 52.79999999999999
+      },
+      "ink": {
+        "x": 203.60000000000002,
+        "y": 759.378125,
+        "width": 284,
+        "height": 20
+      }
+    },
+    {
+      "text": "看技能，再挑一件回去。",
+      "font": 22,
+      "clip": {
+        "x": 192,
+        "y": 756.6,
+        "width": 307.2,
+        "height": 52.79999999999999
+      },
+      "ink": {
+        "x": 225.60000000000002,
+        "y": 785.778125,
+        "width": 233,
+        "height": 20
+      }
+    },
+    {
+      "text": "折返頭冠",
+      "font": 28,
+      "clip": {
+        "x": 576,
+        "y": 542.1555555555556,
+        "width": 206.4,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 624.2,
+        "y": 549.521875,
+        "width": 110,
+        "height": 25
+      }
+    },
+    {
+      "text": "反彈後累積增傷",
+      "font": 22,
+      "clip": {
+        "x": 576,
+        "y": 621.9222222222222,
+        "width": 206.4,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 603.2,
+        "y": 626.778125,
+        "width": 152,
+        "height": 20
+      }
+    },
+    {
+      "text": "12",
+      "font": 28,
+      "clip": {
+        "x": 618.2400000000001,
+        "y": 706.8555555555556,
+        "width": 53.76,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 630.8914843750001,
+        "y": 715.2218750000001,
+        "width": 29.228515625,
+        "height": 22
+      }
+    },
+    {
+      "text": "派兵費",
+      "font": 22,
+      "clip": {
+        "x": 686.4,
+        "y": 699.9,
+        "width": 96,
+        "height": 52.79999999999999
+      },
+      "ink": {
+        "x": 702.4,
+        "y": 702.6781249999999,
+        "width": 64,
+        "height": 20
+      }
+    },
+    {
+      "text": "+1",
+      "font": 22,
+      "clip": {
+        "x": 686.4,
+        "y": 699.9,
+        "width": 96,
+        "height": 52.79999999999999
+      },
+      "ink": {
+        "x": 721.91416015625,
+        "y": 731.078125,
+        "width": 26.220703125,
+        "height": 17
+      }
+    },
+    {
+      "text": "查看詳情",
+      "font": 22,
+      "clip": {
+        "x": 571.2,
+        "y": 781.2222222222222,
+        "width": 216,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 636.2,
+        "y": 786.078125,
+        "width": 87,
+        "height": 20
+      }
+    },
+    {
+      "text": "火焰斗篷",
+      "font": 28,
+      "clip": {
+        "x": 878.4,
+        "y": 542.1555555555556,
+        "width": 206.4,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 926.6,
+        "y": 548.521875,
+        "width": 110,
+        "height": 26
+      }
+    },
+    {
+      "text": "詠唱後週期灼燒近敵",
+      "font": 22,
+      "clip": {
+        "x": 878.4,
+        "y": 621.9222222222222,
+        "width": 206.4,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 883.6,
+        "y": 626.778125,
+        "width": 196,
+        "height": 20
+      }
+    },
+    {
+      "text": "14",
+      "font": 28,
+      "clip": {
+        "x": 920.64,
+        "y": 706.8555555555556,
+        "width": 53.76,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 933.291484375,
+        "y": 715.2218750000001,
+        "width": 30.228515625,
+        "height": 22
+      }
+    },
+    {
+      "text": "派兵費",
+      "font": 22,
+      "clip": {
+        "x": 988.8,
+        "y": 699.9,
+        "width": 96,
+        "height": 52.79999999999999
+      },
+      "ink": {
+        "x": 1004.8,
+        "y": 702.6781249999999,
+        "width": 64,
+        "height": 20
+      }
+    },
+    {
+      "text": "+4",
+      "font": 22,
+      "clip": {
+        "x": 988.8,
+        "y": 699.9,
+        "width": 96,
+        "height": 52.79999999999999
+      },
+      "ink": {
+        "x": 1024.31416015625,
+        "y": 731.078125,
+        "width": 27.220703125,
+        "height": 17
+      }
+    },
+    {
+      "text": "查看詳情",
+      "font": 22,
+      "clip": {
+        "x": 873.6,
+        "y": 781.2222222222222,
+        "width": 216,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 938.6,
+        "y": 786.078125,
+        "width": 87,
+        "height": 20
+      }
+    },
+    {
+      "text": "鳳凰法杖",
+      "font": 28,
+      "clip": {
+        "x": 1180.8,
+        "y": 542.1555555555556,
+        "width": 206.4,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1229,
+        "y": 548.521875,
+        "width": 110,
+        "height": 26
+      }
+    },
+    {
+      "text": "週期噴火灼燒三怪",
+      "font": 22,
+      "clip": {
+        "x": 1180.8,
+        "y": 621.9222222222222,
+        "width": 206.4,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1196,
+        "y": 626.778125,
+        "width": 176,
+        "height": 21
+      }
+    },
+    {
+      "text": "17",
+      "font": 28,
+      "clip": {
+        "x": 1223.04,
+        "y": 706.8555555555556,
+        "width": 53.76,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1235.691484375,
+        "y": 715.2218750000001,
+        "width": 30.228515625,
+        "height": 22
+      }
+    },
+    {
+      "text": "派兵費",
+      "font": 22,
+      "clip": {
+        "x": 1291.2,
+        "y": 699.9,
+        "width": 96,
+        "height": 52.79999999999999
+      },
+      "ink": {
+        "x": 1307.2,
+        "y": 702.6781249999999,
+        "width": 64,
+        "height": 20
+      }
+    },
+    {
+      "text": "+5",
+      "font": 22,
+      "clip": {
+        "x": 1291.2,
+        "y": 699.9,
+        "width": 96,
+        "height": 52.79999999999999
+      },
+      "ink": {
+        "x": 1326.71416015625,
+        "y": 731.078125,
+        "width": 26.220703125,
+        "height": 17
+      }
+    },
+    {
+      "text": "查看詳情",
+      "font": 22,
+      "clip": {
+        "x": 1176,
+        "y": 781.2222222222222,
+        "width": 216,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1241,
+        "y": 786.078125,
+        "width": 87,
+        "height": 20
+      }
+    },
+    {
+      "text": "鍊金藥匣",
+      "font": 28,
+      "clip": {
+        "x": 1483.2,
+        "y": 542.1555555555556,
+        "width": 206.4,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1531.4,
+        "y": 548.521875,
+        "width": 110,
+        "height": 26
+      }
+    },
+    {
+      "text": "行軍投下中毒霧",
+      "font": 22,
+      "clip": {
+        "x": 1483.2,
+        "y": 621.9222222222222,
+        "width": 206.4,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1510.4,
+        "y": 627.778125,
+        "width": 152,
+        "height": 19
+      }
+    },
+    {
+      "text": "13",
+      "font": 28,
+      "clip": {
+        "x": 1525.44,
+        "y": 706.8555555555556,
+        "width": 53.76,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1538.0914843750002,
+        "y": 715.2218750000001,
+        "width": 29.228515625,
+        "height": 23
+      }
+    },
+    {
+      "text": "派兵費",
+      "font": 22,
+      "clip": {
+        "x": 1593.6,
+        "y": 699.9,
+        "width": 96,
+        "height": 52.79999999999999
+      },
+      "ink": {
+        "x": 1609.6,
+        "y": 702.6781249999999,
+        "width": 64,
+        "height": 20
+      }
+    },
+    {
+      "text": "+4",
+      "font": 22,
+      "clip": {
+        "x": 1593.6,
+        "y": 699.9,
+        "width": 96,
+        "height": 52.79999999999999
+      },
+      "ink": {
+        "x": 1629.11416015625,
+        "y": 731.078125,
+        "width": 27.220703125,
+        "height": 17
+      }
+    },
+    {
+      "text": "查看詳情",
+      "font": 22,
+      "clip": {
+        "x": 1478.4,
+        "y": 781.2222222222222,
+        "width": 216,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1543.4,
+        "y": 786.078125,
+        "width": 87,
+        "height": 20
+      }
+    },
+    {
+      "text": "買入後至配裝穿戴",
+      "font": 22,
+      "clip": {
+        "x": 192,
+        "y": 927.0222222222222,
+        "width": 537.6,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 373.8,
+        "y": 931.8781250000001,
+        "width": 174,
+        "height": 20
+      }
+    },
+    {
+      "text": "2",
+      "font": 25.75,
+      "clip": {
+        "x": 921.6,
+        "y": 924.4180555555555,
+        "width": 76.8,
+        "height": 35.763888888888886
+      },
+      "ink": {
+        "x": 953.5377807617188,
+        "y": 932.346875,
+        "width": 13,
+        "height": 20
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 155,
+    "assets": [
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_scene-shade",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-coin",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-crystal",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-backdrop",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_quartermaster-v1",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-refresh",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-epic-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-epic-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-epic-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-epic-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-epic-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-epic-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-epic-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-epic-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-epic-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_gear-bounce_power",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_gear-flame_cloak",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-legendary-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-legendary-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-legendary-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-legendary-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-legendary-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-legendary-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-legendary-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-legendary-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-legendary-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_gear-phoenix_fire",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_gear-plague_vial",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

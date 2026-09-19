@@ -1,0 +1,791 @@
+{
+  "fixture": true,
+  "ok": true,
+  "cases": [
+    {
+      "name": "menu",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 41,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "profiles",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 97,
+      "failures": [],
+      "minFont": 24
+    },
+    {
+      "name": "profiles_saved",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 109,
+      "failures": [],
+      "minFont": 24
+    },
+    {
+      "name": "delete",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 50,
+      "failures": [],
+      "minFont": 18
+    },
+    {
+      "name": "settings",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 105,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "town",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 163,
+      "failures": [],
+      "minFont": 18
+    },
+    {
+      "name": "town_modal",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 202,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "map",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 53,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "choice",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 80,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_modal",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 196,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_sold",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "sell_empty",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 68,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "sell",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 147,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "gear",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 254,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "gear_empty",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 200,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "runes",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 177,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "enchant_empty",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 145,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "enchant",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 149,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "enchant_offer",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 171,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "battle",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 51,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "auto",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 239,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "auto_empty",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 227,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "pause",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 60,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "guide",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 43,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "abandon",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 37,
+      "failures": [],
+      "minFont": 18
+    },
+    {
+      "name": "celebration",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 1,
+      "failures": [],
+      "minFont": 18
+    },
+    {
+      "name": "celebration_pause",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 14,
+      "failures": [],
+      "minFont": 18
+    },
+    {
+      "name": "clear",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 35,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "clear_chest",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 47,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "clear_reward",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 48,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "victory",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 35,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "defeat",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 42,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "shop_rune",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 126,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "shop_potion",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 102,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "shop_tech",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 102,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "shop_curse",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 102,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "sell_rune",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 127,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "market_catalog_0",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_4",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_8",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_12",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_16",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_20",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_24",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_28",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_32",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_36",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_40",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_44",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_48",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_52",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_56",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_60",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_64",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_68",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_72",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 155,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "market_catalog_76",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 141,
+      "failures": [],
+      "minFont": 22
+    },
+    {
+      "name": "gear_detail",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 217,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "gear_other_owner",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 254,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "gear_other_owner_detail",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 219,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "town_populated",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 163,
+      "failures": [],
+      "minFont": 18
+    },
+    {
+      "name": "profiles_populated",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 109,
+      "failures": [],
+      "minFont": 24
+    },
+    {
+      "name": "gear_spear",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 254,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "gear_cavalry",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 254,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "runes_page3",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 175,
+      "failures": [],
+      "minFont": 14.25
+    },
+    {
+      "name": "detail_rune",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 166,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "detail_potion",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 142,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "detail_tech",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 142,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "detail_curse",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 142,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "shop_receipt",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 126,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_1_start",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_1_middle",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_1_arriving",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_station_2",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 53,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_2_start",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_2_middle",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_2_arriving",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_station_3",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 53,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_3_start",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_3_middle",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_3_arriving",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_station_4",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 53,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_4_start",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_4_middle",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_4_arriving",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_station_5",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 53,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_5_start",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_5_middle",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_5_arriving",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_station_6",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 53,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_6_start",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_6_middle",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_6_arriving",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_station_7",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 53,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_7_start",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_7_middle",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    },
+    {
+      "name": "map_7_arriving",
+      "width": 1920,
+      "height": 1080,
+      "nodes": 52,
+      "failures": [],
+      "minFont": 17.25
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,49 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "celebration:home",
+    "children": [
+      {
+        "kind": "text",
+        "id": "outro_wait",
+        "rect": {
+          "x": 20,
+          "y": 4.34259259259259,
+          "width": 60,
+          "height": 2.314814814814815
+        },
+        "text": "凱旋時刻 · 稍後清點戰利品"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "凱旋時刻 · 稍後清點戰利品",
+      "font": 18,
+      "clip": {
+        "x": 384,
+        "y": 1008.1,
+        "width": 1152,
+        "height": 25
+      },
+      "ink": {
+        "x": 854.42578125,
+        "y": 1011.615625,
+        "width": 210.1484375,
+        "height": 17
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 1,
+    "assets": [],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

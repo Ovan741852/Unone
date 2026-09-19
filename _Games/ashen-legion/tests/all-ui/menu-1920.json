@@ -1,0 +1,677 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "menu:home",
+    "children": [
+      {
+        "kind": "image",
+        "id": "menu_ground",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "menu_art",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_expedition-keyart-v2",
+        "fit": "cover"
+      },
+      {
+        "kind": "image",
+        "id": "crest",
+        "rect": {
+          "x": 15,
+          "y": 67,
+          "width": 16,
+          "height": 20
+        },
+        "asset": "texture://ui_crest",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "title",
+        "rect": {
+          "x": 8,
+          "y": 59.52816358024692,
+          "width": 34,
+          "height": 6.462191358024691
+        },
+        "text": "森林領主"
+      },
+      {
+        "kind": "text",
+        "id": "subtitle",
+        "rect": {
+          "x": 8,
+          "y": 49.779706790123456,
+          "width": 36,
+          "height": 2.218364197530864
+        },
+        "text": "七輪遠征 · 奪回森林王冠"
+      },
+      {
+        "kind": "image",
+        "id": "start_plate_tl",
+        "rect": {
+          "x": 9,
+          "y": 38.760330578512395,
+          "width": 2.09194214876033,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "start_plate_t",
+        "rect": {
+          "x": 11.09194214876033,
+          "y": 38.760330578512395,
+          "width": 29.816115702479337,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "start_plate_tr",
+        "rect": {
+          "x": 40.90805785123967,
+          "y": 38.760330578512395,
+          "width": 2.0919421487603316,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "start_plate_l",
+        "rect": {
+          "x": 9,
+          "y": 35.239669421487605,
+          "width": 2.09194214876033,
+          "height": 3.52066115702479
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "start_plate_c",
+        "rect": {
+          "x": 11.09194214876033,
+          "y": 35.239669421487605,
+          "width": 29.816115702479337,
+          "height": 3.52066115702479
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "start_plate_r",
+        "rect": {
+          "x": 40.90805785123967,
+          "y": 35.239669421487605,
+          "width": 2.0919421487603316,
+          "height": 3.52066115702479
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "start_plate_bl",
+        "rect": {
+          "x": 9,
+          "y": 34,
+          "width": 2.09194214876033,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "start_plate_b",
+        "rect": {
+          "x": 11.09194214876033,
+          "y": 34,
+          "width": 29.816115702479337,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "start_plate_br",
+        "rect": {
+          "x": 40.90805785123967,
+          "y": 34,
+          "width": 2.0919421487603316,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "start",
+        "rect": {
+          "x": 9,
+          "y": 35.58539094650206,
+          "width": 34,
+          "height": 2.8292181069958846
+        },
+        "text": "讀取進度",
+        "action": "Start"
+      },
+      {
+        "kind": "button",
+        "id": "start_hit_top",
+        "rect": {
+          "x": 9,
+          "y": 38.41460905349794,
+          "width": 34,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Start"
+      },
+      {
+        "kind": "button",
+        "id": "start_hit_bottom",
+        "rect": {
+          "x": 9,
+          "y": 34,
+          "width": 34,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Start"
+      },
+      {
+        "kind": "image",
+        "id": "settings_plate_tl",
+        "rect": {
+          "x": 9,
+          "y": 32.007407407407406,
+          "width": 0.5999999999999996,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_plate_t",
+        "rect": {
+          "x": 9.6,
+          "y": 32.007407407407406,
+          "width": 32.8,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_plate_tr",
+        "rect": {
+          "x": 42.4,
+          "y": 32.007407407407406,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_plate_l",
+        "rect": {
+          "x": 9,
+          "y": 28.140740740740743,
+          "width": 0.5999999999999996,
+          "height": 3.8666666666666636
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_plate_c",
+        "rect": {
+          "x": 9.6,
+          "y": 28.140740740740743,
+          "width": 32.8,
+          "height": 3.8666666666666636
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_plate_r",
+        "rect": {
+          "x": 42.4,
+          "y": 28.140740740740743,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666636
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_plate_bl",
+        "rect": {
+          "x": 9,
+          "y": 27.074074074074076,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_plate_b",
+        "rect": {
+          "x": 9.6,
+          "y": 27.074074074074076,
+          "width": 32.8,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "settings_plate_br",
+        "rect": {
+          "x": 42.4,
+          "y": 27.074074074074076,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "settings",
+        "rect": {
+          "x": 9,
+          "y": 28.659465020576132,
+          "width": 34,
+          "height": 2.8292181069958846
+        },
+        "text": "系統設定",
+        "action": "UI_settings"
+      },
+      {
+        "kind": "button",
+        "id": "settings_hit_top",
+        "rect": {
+          "x": 9,
+          "y": 31.488683127572017,
+          "width": 34,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "UI_settings"
+      },
+      {
+        "kind": "button",
+        "id": "settings_hit_bottom",
+        "rect": {
+          "x": 9,
+          "y": 27.074074074074076,
+          "width": 34,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "UI_settings"
+      },
+      {
+        "kind": "image",
+        "id": "exit_plate_tl",
+        "rect": {
+          "x": 9,
+          "y": 25.081481481481486,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "exit_plate_t",
+        "rect": {
+          "x": 9.6,
+          "y": 25.081481481481486,
+          "width": 32.8,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "exit_plate_tr",
+        "rect": {
+          "x": 42.4,
+          "y": 25.081481481481486,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "exit_plate_l",
+        "rect": {
+          "x": 9,
+          "y": 21.21481481481482,
+          "width": 0.5999999999999996,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "exit_plate_c",
+        "rect": {
+          "x": 9.6,
+          "y": 21.21481481481482,
+          "width": 32.8,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "exit_plate_r",
+        "rect": {
+          "x": 42.4,
+          "y": 21.21481481481482,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "exit_plate_bl",
+        "rect": {
+          "x": 9,
+          "y": 20.148148148148152,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "exit_plate_b",
+        "rect": {
+          "x": 9.6,
+          "y": 20.148148148148152,
+          "width": 32.8,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "exit_plate_br",
+        "rect": {
+          "x": 42.4,
+          "y": 20.148148148148152,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "exit",
+        "rect": {
+          "x": 9,
+          "y": 21.733539094650208,
+          "width": 34,
+          "height": 2.8292181069958846
+        },
+        "text": "離開",
+        "action": "ExitGame"
+      },
+      {
+        "kind": "button",
+        "id": "exit_hit_top",
+        "rect": {
+          "x": 9,
+          "y": 24.562757201646093,
+          "width": 34,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "ExitGame"
+      },
+      {
+        "kind": "button",
+        "id": "exit_hit_bottom",
+        "rect": {
+          "x": 9,
+          "y": 20.148148148148152,
+          "width": 34,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "ExitGame"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "森林領主",
+      "font": 50.25,
+      "clip": {
+        "x": 153.6,
+        "y": 367.3041666666666,
+        "width": 652.8,
+        "height": 69.79166666666666
+      },
+      "ink": {
+        "x": 381.5,
+        "y": 379.80937499999993,
+        "width": 195.75,
+        "height": 45
+      }
+    },
+    {
+      "text": "七輪遠征 · 奪回森林王冠",
+      "font": 17.25,
+      "clip": {
+        "x": 153.6,
+        "y": 518.4208333333333,
+        "width": 691.2,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 406.64970703125005,
+        "y": 522.134375,
+        "width": 184.8505859375,
+        "height": 16
+      }
+    },
+    {
+      "text": "讀取進度",
+      "font": 22,
+      "clip": {
+        "x": 172.8,
+        "y": 665.1222222222221,
+        "width": 652.8,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 456.2,
+        "y": 669.978125,
+        "width": 87,
+        "height": 20
+      }
+    },
+    {
+      "text": "系統設定",
+      "font": 22,
+      "clip": {
+        "x": 172.8,
+        "y": 739.9222222222222,
+        "width": 652.8,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 456.2,
+        "y": 744.778125,
+        "width": 86,
+        "height": 20
+      }
+    },
+    {
+      "text": "離開",
+      "font": 22,
+      "clip": {
+        "x": 172.8,
+        "y": 814.7222222222222,
+        "width": 652.8,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 478.2,
+        "y": 819.578125,
+        "width": 42,
+        "height": 20
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 41,
+    "assets": [
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_expedition-keyart-v2",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_crest",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

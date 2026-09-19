@@ -245,6 +245,81 @@
       "source": "assets/formal-ui/crest.png"
     },
     {
+      "id": "texture://ui_map-link-1-done",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-1-done.png"
+    },
+    {
+      "id": "texture://ui_map-link-1-future",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-1-future.png"
+    },
+    {
+      "id": "texture://ui_map-link-2-done",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-2-done.png"
+    },
+    {
+      "id": "texture://ui_map-link-2-future",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-2-future.png"
+    },
+    {
+      "id": "texture://ui_map-link-3-done",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-3-done.png"
+    },
+    {
+      "id": "texture://ui_map-link-3-future",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-3-future.png"
+    },
+    {
+      "id": "texture://ui_map-link-4-done",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-4-done.png"
+    },
+    {
+      "id": "texture://ui_map-link-4-future",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-4-future.png"
+    },
+    {
+      "id": "texture://ui_map-link-5-done",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-5-done.png"
+    },
+    {
+      "id": "texture://ui_map-link-5-future",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-5-future.png"
+    },
+    {
+      "id": "texture://ui_map-link-6-done",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-6-done.png"
+    },
+    {
+      "id": "texture://ui_map-link-6-future",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-6-future.png"
+    },
+    {
+      "id": "texture://ui_map-link-7-done",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-7-done.png"
+    },
+    {
+      "id": "texture://ui_map-link-7-future",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-link-7-future.png"
+    },
+    {
+      "id": "texture://ui_map-current-ring",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-current-ring.png"
+    },
+    {
       "id": "texture://ui_shop-surface",
       "kind": "texture2d",
       "source": "assets/formal-ui/shop-surface.png"
@@ -302,37 +377,37 @@
     {
       "id": "texture://ui_route-map",
       "kind": "texture2d",
-      "source": "assets/formal-ui/route-map.png"
+      "source": "assets/formal-ui/map-v2/forest-map-v2.png"
     },
     {
       "id": "texture://ui_route-map-portrait",
       "kind": "texture2d",
-      "source": "assets/formal-ui/route-map-portrait.png"
+      "source": "assets/formal-ui/map-v2/forest-map-v2.png"
     },
     {
       "id": "texture://ui_route-cleared",
       "kind": "texture2d",
-      "source": "assets/formal-ui/route-cleared.png"
+      "source": "assets/formal-ui/map-v2/map-waypoint-v2.png"
     },
     {
       "id": "texture://ui_route-current",
       "kind": "texture2d",
-      "source": "assets/formal-ui/route-current.png"
+      "source": "assets/formal-ui/map-v2/map-waypoint-v2.png"
     },
     {
       "id": "texture://ui_route-future",
       "kind": "texture2d",
-      "source": "assets/formal-ui/route-future.png"
+      "source": "assets/formal-ui/map-v2/map-waypoint-v2.png"
     },
     {
       "id": "texture://ui_portrait-lord",
       "kind": "texture2d",
-      "source": "assets/formal-ui/portrait-lord.png"
+      "source": "assets/formal-ui/portrait-lord-v2.png"
     },
     {
       "id": "texture://ui_keyart",
       "kind": "texture2d",
-      "source": "assets/formal-ui/keyart.png"
+      "source": "assets/formal-ui/expedition-keyart-v2.png"
     },
     {
       "id": "texture://ui_scene-town",
@@ -362,7 +437,7 @@
     {
       "id": "texture://ui_symbol-material",
       "kind": "texture2d",
-      "source": "assets/formal-ui/symbol-material.png"
+      "source": "assets/formal-ui/desktop-v4/materials.png"
     },
     {
       "id": "texture://ui_town-constellation",
@@ -812,42 +887,42 @@
     {
       "id": "texture://ui_portrait-alchemist",
       "kind": "texture2d",
-      "source": "assets/formal-ui/portrait-alchemist.png"
+      "source": "assets/formal-ui/characters-v1/portrait-alchemist.png"
     },
     {
       "id": "texture://ui_portrait-cavalry",
       "kind": "texture2d",
-      "source": "assets/formal-ui/portrait-cavalry.png"
+      "source": "assets/formal-ui/characters-v1/portrait-cavalry.png"
     },
     {
       "id": "texture://ui_portrait-merchant",
       "kind": "texture2d",
-      "source": "assets/formal-ui/portrait-merchant.png"
+      "source": "assets/formal-ui/quartermaster-v1.png"
     },
     {
       "id": "texture://ui_portrait-scholar",
       "kind": "texture2d",
-      "source": "assets/formal-ui/portrait-scholar.png"
+      "source": "assets/formal-ui/characters-v1/portrait-scholar.png"
     },
     {
       "id": "texture://ui_portrait-smith",
       "kind": "texture2d",
-      "source": "assets/formal-ui/portrait-smith.png"
+      "source": "assets/formal-ui/characters-v1/portrait-smith.png"
     },
     {
       "id": "texture://ui_portrait-spear",
       "kind": "texture2d",
-      "source": "assets/formal-ui/portrait-spear.png"
+      "source": "assets/formal-ui/characters-v1/portrait-spear.png"
     },
     {
       "id": "texture://ui_portrait-sword",
       "kind": "texture2d",
-      "source": "assets/formal-ui/portrait-sword.png"
+      "source": "assets/formal-ui/characters-v1/portrait-sword.png"
     },
     {
       "id": "texture://ui_portrait-witch",
       "kind": "texture2d",
-      "source": "assets/formal-ui/portrait-witch.png"
+      "source": "assets/formal-ui/characters-v1/portrait-witch.png"
     },
     {
       "id": "texture://ui_symbol-sword",
@@ -1505,6 +1580,21 @@
       "source": "assets/formal-ui/portrait-lord-v2.png"
     },
     {
+      "id": "texture://ui_portrait-runesmith",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/characters-v1/portrait-runesmith.png"
+    },
+    {
+      "id": "texture://ui_forest-map-v2",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-v2/forest-map-v2.png"
+    },
+    {
+      "id": "texture://ui_map-waypoint-v2",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/map-v2/map-waypoint-v2.png"
+    },
+    {
       "id": "texture://ui_shop-window-panel-v2",
       "kind": "texture2d",
       "source": "assets/formal-ui/shop-window-panel-v2.png"
@@ -1803,6 +1893,56 @@
       "id": "texture://ui_shop-button-secondary-v2-br",
       "kind": "texture2d",
       "source": "assets/formal-ui/shop-button-secondary-v2-br.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-tl.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-t.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-tr.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-l.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-c.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-r.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-bl.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-b.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-br.png"
     },
     {
       "id": "texture://ui_target-acorn",

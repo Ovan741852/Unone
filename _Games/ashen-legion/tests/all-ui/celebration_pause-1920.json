@@ -1,0 +1,262 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "celebration:home",
+    "children": [
+      {
+        "kind": "image",
+        "id": "outro_pause_back",
+        "rect": {
+          "x": 17,
+          "y": 35,
+          "width": 66,
+          "height": 31
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "outro_pause_title",
+        "rect": {
+          "x": 25,
+          "y": 56.34259259259259,
+          "width": 50,
+          "height": 2.314814814814815
+        },
+        "text": "榮耀暫歇"
+      },
+      {
+        "kind": "image",
+        "id": "outro_resume_plate_tl",
+        "rect": {
+          "x": 30,
+          "y": 47.14049586776859,
+          "width": 3.137913223140494,
+          "height": 1.8595041322314074
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "outro_resume_plate_t",
+        "rect": {
+          "x": 33.137913223140494,
+          "y": 47.14049586776859,
+          "width": 33.724173553719005,
+          "height": 1.8595041322314074
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "outro_resume_plate_tr",
+        "rect": {
+          "x": 66.8620867768595,
+          "y": 47.14049586776859,
+          "width": 3.137913223140501,
+          "height": 1.8595041322314074
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "outro_resume_plate_l",
+        "rect": {
+          "x": 30,
+          "y": 41.85950413223141,
+          "width": 3.137913223140494,
+          "height": 5.280991735537185
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "outro_resume_plate_c",
+        "rect": {
+          "x": 33.137913223140494,
+          "y": 41.85950413223141,
+          "width": 33.724173553719005,
+          "height": 5.280991735537185
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "outro_resume_plate_r",
+        "rect": {
+          "x": 66.8620867768595,
+          "y": 41.85950413223141,
+          "width": 3.137913223140501,
+          "height": 5.280991735537185
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "outro_resume_plate_bl",
+        "rect": {
+          "x": 30,
+          "y": 40,
+          "width": 3.137913223140494,
+          "height": 1.8595041322314074
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "outro_resume_plate_b",
+        "rect": {
+          "x": 33.137913223140494,
+          "y": 40,
+          "width": 33.724173553719005,
+          "height": 1.8595041322314074
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "outro_resume_plate_br",
+        "rect": {
+          "x": 66.8620867768595,
+          "y": 40,
+          "width": 3.137913223140501,
+          "height": 1.8595041322314074
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "outro_resume",
+        "rect": {
+          "x": 30,
+          "y": 43.08539094650206,
+          "width": 40,
+          "height": 2.8292181069958846
+        },
+        "text": "繼續大獎演出",
+        "action": "Pause"
+      },
+      {
+        "kind": "button",
+        "id": "outro_resume_hit_top",
+        "rect": {
+          "x": 30,
+          "y": 45.91460905349794,
+          "width": 40,
+          "height": 3.0853909465020575
+        },
+        "text": "",
+        "action": "Pause"
+      },
+      {
+        "kind": "button",
+        "id": "outro_resume_hit_bottom",
+        "rect": {
+          "x": 30,
+          "y": 40,
+          "width": 40,
+          "height": 3.0853909465020575
+        },
+        "text": "",
+        "action": "Pause"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "榮耀暫歇",
+      "font": 18,
+      "clip": {
+        "x": 480,
+        "y": 446.5,
+        "width": 960,
+        "height": 25
+      },
+      "ink": {
+        "x": 925,
+        "y": 450.015625,
+        "width": 71,
+        "height": 17
+      }
+    },
+    {
+      "text": "繼續大獎演出",
+      "font": 22,
+      "clip": {
+        "x": 576,
+        "y": 584.1222222222223,
+        "width": 768,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 895,
+        "y": 588.9781250000001,
+        "width": 129,
+        "height": 20
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 14,
+    "assets": [
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-br",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

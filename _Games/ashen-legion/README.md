@@ -12,3 +12,10 @@
 所有遊戲規則在 main.luau。presentation 只讀取 observation 播動畫及粒子。更新規則後執行 `node _Games/ashen-legion/tools/finish_export.mjs` 同步匯出，再跑 verify-rpg.mjs、verify-skills.mjs 及 run-json-tests.mjs。
 
 美術與技能總索引：[design-v1/delivery-manifest.json](design-v1/delivery-manifest.json)。技能規格：[design-v1/BUILDS-V2.md](design-v1/BUILDS-V2.md)。數值快測：[BALANCE-REPORT-V2.md](../../_Tools/fishing-quicktest/evidence/BALANCE-REPORT-V2.md)。
+
+## UI 製作規範
+
+- [製作與交付總則](UI-PRODUCTION.md)：先排版、拆元件、製作素材、正式接入、批次驗收及設計稿比對。
+- [現行視覺規格](DESIGN.md)：榛姨色調、精細母元件、字體、九宮格與互動表現。
+- [商店詳細規格](design-v1/UI-DESIGN-GUIDELINES-20260919.md)：尺寸、間距、圖示數值、字級、命中區及小螢幕配置。
+- [最新修正驗證](tests/ui-skill-trial/REPORT.md)：實際通過項目和未測範圍；歷史預覽不代表正式交付狀態。

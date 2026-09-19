@@ -1,8 +1,10 @@
 # 正式遊戲介面交付 · 2026-09-10
 
+> 現行製作入口：[UI-PRODUCTION.md](UI-PRODUCTION.md)；視覺規格：[DESIGN.md](DESIGN.md)。本頁主要保留歷史交付；最新裝備店鍵盤／整卡點擊／小螢幕及重骰修正範圍，見 [2026-09-19 修正報告](tests/ui-skill-trial/REPORT.md)。歷史案例數與資產數不可當成最新版測試結果。
+
 2026-09-11 更新：玩家固定，沒有換位按鈕；金幣與強化結晶分開顯示，商店與結算已更新，UI 資產共 66 張。12 頁 strict 排版與三種解析度的真實 Canvas 操作通過。現行經濟規格與驗證見 [CURRENCY-SPLIT.md](tests/CURRENCY-SPLIT.md)，以下原交付紀錄保留供歷史追溯。
 
-正式入口 http://127.0.0.1:8190/ 使用 Unone 官方非 DOM UI renderer。HTML 只提供 canvas surface、載入錯誤與視窗尺寸。`web-overlay.html` 保留原開發介面；正式入口不 import ui.mjs / rpg-ui.mjs。
+正式入口 http://127.0.0.1:8190/ 使用 Unone 官方 Canvas UI renderer。HTML 提供 canvas surface、載入錯誤與視窗尺寸；2026-09-19 起裝備店另有 Canvas fallback 語意按鈕與鍵盤焦點投影，不是第二套可見遊戲介面，也不另算玩法。`web-overlay.html` 保留原開發介面；正式入口不 import ui.mjs / rpg-ui.mjs。
 
 ## 所有權與檔案
 
@@ -37,6 +39,6 @@
 - `tools/verify-rpg.mjs`：99 項玩法 fixture 及真實輸入買裝／出戰、城鎮存檔通過。19 個 JSON 回歸通過；未重跑 72 局平衡批次。
 - Unone `verify-player-parity.mjs --timeout-ms 600000`：最終正式腳本的 19 個案例 native／WASM observation digest 一致，`selected_project_export_verified: true`。原本 120 秒 wrapper 逾時問題已由 Unone 修為可設定逾時並提供明確診斷。
 
-建置：修改 formal-ui.luau 後先執行 `node tools/slice-shop-assets.mjs`，再執行 `node tools/build-formal-ui.mjs`，最後 `node tools/finish_export.mjs`。後者由 D:/Projects/Unone 複製官方 UI 和 input 模組；不要在 YesSir 偽造引擎 API。若重建 WASM，從 Unone checkout 執行官方 build-web-live，指定 YesSir 專案；production artifact 位於 dist/formal-runtime，必須通過 native/WASM parity 才交付。
+建置：修改素材切線時先執行 `node tools/slice-shop-assets.mjs`；修改 formal-ui.luau 後執行 `node tools/build-formal-ui.mjs`，成功後執行 `node tools/finish_export.mjs`。後者由 D:/Projects/Unone 複製官方 UI 和 input 模組；不要在 YesSir 偽造引擎 API。若重建 WASM，從 Unone checkout 執行官方 build-web-live，指定 YesSir 專案；production artifact 位於 dist/formal-runtime，必須通過 native/WASM parity 才交付。
 
 目前交付與截圖驗收平台是 Web player（Unone WASM + Canvas UI）。Unone 另有 native UI adapter，但本遊戲的完整動畫、特效及 native 整局整合未驗收，不宣稱已完成 native standalone。中文字形目前用 Windows 微軟正黑體／系統 fallback，跨裝置完全一致的字型仍需攜帶有授權的字型檔。四席是本機切換，共用池可玩，網路多人尚未完成。

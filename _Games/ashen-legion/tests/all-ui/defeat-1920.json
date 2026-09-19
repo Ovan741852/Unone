@@ -1,0 +1,879 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "defeat:home",
+    "children": [
+      {
+        "kind": "image",
+        "id": "screen_back",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 94,
+          "height": 94
+        },
+        "asset": "texture://ui_defeat-back",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_crest",
+        "rect": {
+          "x": 44,
+          "y": 78,
+          "width": 12,
+          "height": 15
+        },
+        "asset": "texture://ui_defeat-crest",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_title",
+        "rect": {
+          "x": 20,
+          "y": 73.12654320987654,
+          "width": 60,
+          "height": 3.8580246913580245
+        },
+        "text": "遠 征 失 敗"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_reason",
+        "rect": {
+          "x": 12,
+          "y": 62.77970679012347,
+          "width": 76,
+          "height": 2.218364197530864
+        },
+        "text": "金幣用盡，軍團需要重新整備。"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_route",
+        "rect": {
+          "x": 12,
+          "y": 55.157793209876544,
+          "width": 76,
+          "height": 1.8325617283950615
+        },
+        "text": "止步 苔光林口  ·  已通過 0 / 7 站"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_stat_label_1",
+        "rect": {
+          "x": 12,
+          "y": 47.157793209876544,
+          "width": 24,
+          "height": 1.8325617283950615
+        },
+        "text": "累計戰鬥時間"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_stat_value_1",
+        "rect": {
+          "x": 12,
+          "y": 44.565843621399175,
+          "width": 24,
+          "height": 2.57201646090535
+        },
+        "text": "00:00"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_stat_label_2",
+        "rect": {
+          "x": 38,
+          "y": 47.157793209876544,
+          "width": 24,
+          "height": 1.8325617283950615
+        },
+        "text": "全軍擊殺"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_stat_value_2",
+        "rect": {
+          "x": 38,
+          "y": 44.565843621399175,
+          "width": 24,
+          "height": 2.57201646090535
+        },
+        "text": "0"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_stat_label_3",
+        "rect": {
+          "x": 64,
+          "y": 47.157793209876544,
+          "width": 24,
+          "height": 1.8325617283950615
+        },
+        "text": "破防次數"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_stat_value_3",
+        "rect": {
+          "x": 64,
+          "y": 44.565843621399175,
+          "width": 24,
+          "height": 2.57201646090535
+        },
+        "text": "0"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_stat_label_4",
+        "rect": {
+          "x": 12,
+          "y": 34.157793209876544,
+          "width": 24,
+          "height": 1.8325617283950615
+        },
+        "text": "累計開獎金幣"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_stat_value_4",
+        "rect": {
+          "x": 12,
+          "y": 31.56584362139918,
+          "width": 24,
+          "height": 2.57201646090535
+        },
+        "text": "0"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_stat_label_5",
+        "rect": {
+          "x": 38,
+          "y": 34.157793209876544,
+          "width": 24,
+          "height": 1.8325617283950615
+        },
+        "text": "派兵花費"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_stat_value_5",
+        "rect": {
+          "x": 38,
+          "y": 31.56584362139918,
+          "width": 24,
+          "height": 2.57201646090535
+        },
+        "text": "0"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_stat_label_6",
+        "rect": {
+          "x": 64,
+          "y": 34.157793209876544,
+          "width": 24,
+          "height": 1.8325617283950615
+        },
+        "text": "累計倖存返還"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_stat_value_6",
+        "rect": {
+          "x": 64,
+          "y": 31.56584362139918,
+          "width": 24,
+          "height": 2.57201646090535
+        },
+        "text": "0"
+      },
+      {
+        "kind": "text",
+        "id": "defeat_town_reward",
+        "rect": {
+          "x": 12,
+          "y": 20.157793209876548,
+          "width": 76,
+          "height": 1.8325617283950615
+        },
+        "text": "建材 +0 已入庫 · 庫存 0"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_town_plate_tl",
+        "rect": {
+          "x": 12,
+          "y": 10.933333333333334,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_town_plate_t",
+        "rect": {
+          "x": 12.6,
+          "y": 10.933333333333334,
+          "width": 33.8,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_town_plate_tr",
+        "rect": {
+          "x": 46.4,
+          "y": 10.933333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_town_plate_l",
+        "rect": {
+          "x": 12,
+          "y": 7.066666666666666,
+          "width": 0.5999999999999996,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_town_plate_c",
+        "rect": {
+          "x": 12.6,
+          "y": 7.066666666666666,
+          "width": 33.8,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_town_plate_r",
+        "rect": {
+          "x": 46.4,
+          "y": 7.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_town_plate_bl",
+        "rect": {
+          "x": 12,
+          "y": 6,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_town_plate_b",
+        "rect": {
+          "x": 12.6,
+          "y": 6,
+          "width": 33.8,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_town_plate_br",
+        "rect": {
+          "x": 46.4,
+          "y": 6,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "defeat_town",
+        "rect": {
+          "x": 12,
+          "y": 7.585390946502056,
+          "width": 35,
+          "height": 2.8292181069958846
+        },
+        "text": "返回領主札記",
+        "action": "ReturnTown"
+      },
+      {
+        "kind": "button",
+        "id": "defeat_town_hit_top",
+        "rect": {
+          "x": 12,
+          "y": 10.414609053497943,
+          "width": 35,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "ReturnTown"
+      },
+      {
+        "kind": "button",
+        "id": "defeat_town_hit_bottom",
+        "rect": {
+          "x": 12,
+          "y": 6.000000000000002,
+          "width": 35,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "ReturnTown"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_retry_plate_tl",
+        "rect": {
+          "x": 53,
+          "y": 10.760330578512397,
+          "width": 2.0919421487603316,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_retry_plate_t",
+        "rect": {
+          "x": 55.09194214876033,
+          "y": 10.760330578512397,
+          "width": 30.816115702479344,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_retry_plate_tr",
+        "rect": {
+          "x": 85.90805785123968,
+          "y": 10.760330578512397,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_retry_plate_l",
+        "rect": {
+          "x": 53,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603316,
+          "height": 3.5206611570247937
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_retry_plate_c",
+        "rect": {
+          "x": 55.09194214876033,
+          "y": 7.239669421487603,
+          "width": 30.816115702479344,
+          "height": 3.5206611570247937
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_retry_plate_r",
+        "rect": {
+          "x": 85.90805785123968,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603245,
+          "height": 3.5206611570247937
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_retry_plate_bl",
+        "rect": {
+          "x": 53,
+          "y": 6,
+          "width": 2.0919421487603316,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_retry_plate_b",
+        "rect": {
+          "x": 55.09194214876033,
+          "y": 6,
+          "width": 30.816115702479344,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "defeat_retry_plate_br",
+        "rect": {
+          "x": 85.90805785123968,
+          "y": 6,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "defeat_retry",
+        "rect": {
+          "x": 53,
+          "y": 7.585390946502056,
+          "width": 35,
+          "height": 2.8292181069958846
+        },
+        "text": "重整旗鼓 · 再次出征",
+        "action": "Start"
+      },
+      {
+        "kind": "button",
+        "id": "defeat_retry_hit_top",
+        "rect": {
+          "x": 53,
+          "y": 10.414609053497943,
+          "width": 35,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Start"
+      },
+      {
+        "kind": "button",
+        "id": "defeat_retry_hit_bottom",
+        "rect": {
+          "x": 53,
+          "y": 6.000000000000002,
+          "width": 35,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Start"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "遠 征 失 敗",
+      "font": 30,
+      "clip": {
+        "x": 384,
+        "y": 248.56666666666663,
+        "width": 1152,
+        "height": 41.66666666666666
+      },
+      "ink": {
+        "x": 889.75,
+        "y": 256.103125,
+        "width": 140.5,
+        "height": 27
+      }
+    },
+    {
+      "text": "金幣用盡，軍團需要重新整備。",
+      "font": 17.25,
+      "clip": {
+        "x": 230.4,
+        "y": 378.0208333333332,
+        "width": 1459.2,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 839.25,
+        "y": 381.7343749999999,
+        "width": 235.25,
+        "height": 16
+      }
+    },
+    {
+      "text": "止步 苔光林口  ·  已通過 0 / 7 站",
+      "font": 14.25,
+      "clip": {
+        "x": 230.4,
+        "y": 464.50416666666666,
+        "width": 1459.2,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 859.846435546875,
+        "y": 467.9625,
+        "width": 200.05712890625,
+        "height": 13
+      }
+    },
+    {
+      "text": "累計戰鬥時間",
+      "font": 14.25,
+      "clip": {
+        "x": 230.4,
+        "y": 550.9041666666667,
+        "width": 460.8,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 418.05,
+        "y": 555.3625000000001,
+        "width": 84.25,
+        "height": 12
+      }
+    },
+    {
+      "text": "00:00",
+      "font": 20,
+      "clip": {
+        "x": 230.4,
+        "y": 570.911111111111,
+        "width": 460.8,
+        "height": 27.77777777777778
+      },
+      "ink": {
+        "x": 435.31171875,
+        "y": 577.596875,
+        "width": 50.384765625,
+        "height": 15
+      }
+    },
+    {
+      "text": "全軍擊殺",
+      "font": 14.25,
+      "clip": {
+        "x": 729.6,
+        "y": 550.9041666666667,
+        "width": 460.8,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 931.5,
+        "y": 555.3625000000001,
+        "width": 56.75,
+        "height": 12
+      }
+    },
+    {
+      "text": "0",
+      "font": 20,
+      "clip": {
+        "x": 729.6,
+        "y": 570.911111111111,
+        "width": 460.8,
+        "height": 27.77777777777778
+      },
+      "ink": {
+        "x": 954.2041015625,
+        "y": 577.596875,
+        "width": 11,
+        "height": 15
+      }
+    },
+    {
+      "text": "破防次數",
+      "font": 14.25,
+      "clip": {
+        "x": 1228.8,
+        "y": 550.9041666666667,
+        "width": 460.8,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 1430.7,
+        "y": 555.3625000000001,
+        "width": 56.75,
+        "height": 12
+      }
+    },
+    {
+      "text": "0",
+      "font": 20,
+      "clip": {
+        "x": 1228.8,
+        "y": 570.911111111111,
+        "width": 460.8,
+        "height": 27.77777777777778
+      },
+      "ink": {
+        "x": 1453.4041015625,
+        "y": 577.596875,
+        "width": 11,
+        "height": 15
+      }
+    },
+    {
+      "text": "累計開獎金幣",
+      "font": 14.25,
+      "clip": {
+        "x": 230.4,
+        "y": 691.3041666666666,
+        "width": 460.8,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 418.05,
+        "y": 695.7624999999999,
+        "width": 85.25,
+        "height": 12
+      }
+    },
+    {
+      "text": "0",
+      "font": 20,
+      "clip": {
+        "x": 230.4,
+        "y": 711.3111111111111,
+        "width": 460.8,
+        "height": 27.77777777777778
+      },
+      "ink": {
+        "x": 455.0041015625,
+        "y": 717.996875,
+        "width": 11,
+        "height": 15
+      }
+    },
+    {
+      "text": "派兵花費",
+      "font": 14.25,
+      "clip": {
+        "x": 729.6,
+        "y": 691.3041666666666,
+        "width": 460.8,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 931.5,
+        "y": 695.7624999999999,
+        "width": 56.75,
+        "height": 12
+      }
+    },
+    {
+      "text": "0",
+      "font": 20,
+      "clip": {
+        "x": 729.6,
+        "y": 711.3111111111111,
+        "width": 460.8,
+        "height": 27.77777777777778
+      },
+      "ink": {
+        "x": 954.2041015625,
+        "y": 717.996875,
+        "width": 11,
+        "height": 15
+      }
+    },
+    {
+      "text": "累計倖存返還",
+      "font": 14.25,
+      "clip": {
+        "x": 1228.8,
+        "y": 691.3041666666666,
+        "width": 460.8,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 1416.45,
+        "y": 694.7624999999999,
+        "width": 85.25,
+        "height": 13
+      }
+    },
+    {
+      "text": "0",
+      "font": 20,
+      "clip": {
+        "x": 1228.8,
+        "y": 711.3111111111111,
+        "width": 460.8,
+        "height": 27.77777777777778
+      },
+      "ink": {
+        "x": 1453.4041015625,
+        "y": 717.996875,
+        "width": 11,
+        "height": 15
+      }
+    },
+    {
+      "text": "建材 +0 已入庫 · 庫存 0",
+      "font": 14.25,
+      "clip": {
+        "x": 230.4,
+        "y": 842.5041666666666,
+        "width": 1459.2,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 886.064208984375,
+        "y": 846.9625,
+        "width": 147.6124267578125,
+        "height": 12
+      }
+    },
+    {
+      "text": "返回領主札記",
+      "font": 22,
+      "clip": {
+        "x": 230.4,
+        "y": 967.5222222222222,
+        "width": 672,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 500.4,
+        "y": 972.3781250000001,
+        "width": 131,
+        "height": 20
+      }
+    },
+    {
+      "text": "重整旗鼓 · 再次出征",
+      "font": 22,
+      "clip": {
+        "x": 1017.6,
+        "y": 967.5222222222222,
+        "width": 672,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1258.56484375,
+        "y": 972.3781250000001,
+        "width": 190.0703125,
+        "height": 20
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 42,
+    "assets": [
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_defeat-back",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_defeat-crest",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-br",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

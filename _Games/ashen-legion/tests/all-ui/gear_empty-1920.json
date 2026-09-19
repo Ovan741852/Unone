@@ -1,0 +1,2928 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "loadout:gear",
+    "children": [
+      {
+        "kind": "image",
+        "id": "screen_shade",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_fill",
+        "rect": {
+          "x": 3.8,
+          "y": 5,
+          "width": 92.4,
+          "height": 90
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tl",
+        "rect": {
+          "x": 3,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_t",
+        "rect": {
+          "x": 7.5,
+          "y": 85,
+          "width": 85,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tr",
+        "rect": {
+          "x": 92.5,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_l",
+        "rect": {
+          "x": 3,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_c",
+        "rect": {
+          "x": 7.5,
+          "y": 11,
+          "width": 85,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_r",
+        "rect": {
+          "x": 92.5,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_bl",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_b",
+        "rect": {
+          "x": 7.5,
+          "y": 3,
+          "width": 85,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_br",
+        "rect": {
+          "x": 92.5,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "screen_title",
+        "rect": {
+          "x": 9,
+          "y": 87.31378600823045,
+          "width": 58,
+          "height": 4.372427983539095
+        },
+        "text": "部隊裝備"
+      },
+      {
+        "kind": "image",
+        "id": "screen_gold_icon",
+        "rect": {
+          "x": 71,
+          "y": 89.77777777777777,
+          "width": 3,
+          "height": 2.2222222222222223
+        },
+        "asset": "texture://ui_icon-coin",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "screen_gold",
+        "rect": {
+          "x": 75,
+          "y": 89.77970679012346,
+          "width": 7,
+          "height": 2.218364197530864
+        },
+        "text": "320"
+      },
+      {
+        "kind": "image",
+        "id": "screen_crystals_icon",
+        "rect": {
+          "x": 83,
+          "y": 89.77777777777777,
+          "width": 3,
+          "height": 2.2222222222222223
+        },
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "screen_crystals",
+        "rect": {
+          "x": 87,
+          "y": 89.77970679012346,
+          "width": 6,
+          "height": 2.218364197530864
+        },
+        "text": "18"
+      },
+      {
+        "kind": "image",
+        "id": "tab_gear_plate_tl",
+        "rect": {
+          "x": 8,
+          "y": 81.7603305785124,
+          "width": 2.09194214876033,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_gear_plate_t",
+        "rect": {
+          "x": 10.09194214876033,
+          "y": 81.7603305785124,
+          "width": 17.816115702479337,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_gear_plate_tr",
+        "rect": {
+          "x": 27.90805785123967,
+          "y": 81.7603305785124,
+          "width": 2.0919421487603316,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_gear_plate_l",
+        "rect": {
+          "x": 8,
+          "y": 78.2396694214876,
+          "width": 2.09194214876033,
+          "height": 3.52066115702479
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_gear_plate_c",
+        "rect": {
+          "x": 10.09194214876033,
+          "y": 78.2396694214876,
+          "width": 17.816115702479337,
+          "height": 3.52066115702479
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_gear_plate_r",
+        "rect": {
+          "x": 27.90805785123967,
+          "y": 78.2396694214876,
+          "width": 2.0919421487603316,
+          "height": 3.52066115702479
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_gear_plate_bl",
+        "rect": {
+          "x": 8,
+          "y": 77,
+          "width": 2.09194214876033,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_gear_plate_b",
+        "rect": {
+          "x": 10.09194214876033,
+          "y": 77,
+          "width": 17.816115702479337,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_gear_plate_br",
+        "rect": {
+          "x": 27.90805785123967,
+          "y": 77,
+          "width": 2.0919421487603316,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "tab_gear",
+        "rect": {
+          "x": 8,
+          "y": 78.58539094650206,
+          "width": 22,
+          "height": 2.8292181069958846
+        },
+        "text": "裝備",
+        "action": "UI_gear"
+      },
+      {
+        "kind": "button",
+        "id": "tab_gear_hit_top",
+        "rect": {
+          "x": 8,
+          "y": 81.41460905349794,
+          "width": 22,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "UI_gear"
+      },
+      {
+        "kind": "button",
+        "id": "tab_gear_hit_bottom",
+        "rect": {
+          "x": 8,
+          "y": 77,
+          "width": 22,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "UI_gear"
+      },
+      {
+        "kind": "image",
+        "id": "tab_runes_plate_tl",
+        "rect": {
+          "x": 32,
+          "y": 81.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_runes_plate_t",
+        "rect": {
+          "x": 32.6,
+          "y": 81.93333333333334,
+          "width": 20.799999999999997,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_runes_plate_tr",
+        "rect": {
+          "x": 53.4,
+          "y": 81.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_runes_plate_l",
+        "rect": {
+          "x": 32,
+          "y": 78.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_runes_plate_c",
+        "rect": {
+          "x": 32.6,
+          "y": 78.06666666666666,
+          "width": 20.799999999999997,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_runes_plate_r",
+        "rect": {
+          "x": 53.4,
+          "y": 78.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_runes_plate_bl",
+        "rect": {
+          "x": 32,
+          "y": 77,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_runes_plate_b",
+        "rect": {
+          "x": 32.6,
+          "y": 77,
+          "width": 20.799999999999997,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "tab_runes_plate_br",
+        "rect": {
+          "x": 53.4,
+          "y": 77,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "tab_runes",
+        "rect": {
+          "x": 32,
+          "y": 78.58539094650206,
+          "width": 22,
+          "height": 2.8292181069958846
+        },
+        "text": "符文",
+        "action": "UI_runes"
+      },
+      {
+        "kind": "button",
+        "id": "tab_runes_hit_top",
+        "rect": {
+          "x": 32,
+          "y": 81.41460905349794,
+          "width": 22,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "UI_runes"
+      },
+      {
+        "kind": "button",
+        "id": "tab_runes_hit_bottom",
+        "rect": {
+          "x": 32,
+          "y": 77,
+          "width": 22,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "UI_runes"
+      },
+      {
+        "kind": "image",
+        "id": "loadout_return_plate_tl",
+        "rect": {
+          "x": 8,
+          "y": 10.933333333333332,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "loadout_return_plate_t",
+        "rect": {
+          "x": 8.6,
+          "y": 10.933333333333332,
+          "width": 18.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "loadout_return_plate_tr",
+        "rect": {
+          "x": 27.400000000000006,
+          "y": 10.933333333333332,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "loadout_return_plate_l",
+        "rect": {
+          "x": 8,
+          "y": 7.066666666666666,
+          "width": 0.5999999999999996,
+          "height": 3.8666666666666654
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "loadout_return_plate_c",
+        "rect": {
+          "x": 8.6,
+          "y": 7.066666666666666,
+          "width": 18.800000000000004,
+          "height": 3.8666666666666654
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "loadout_return_plate_r",
+        "rect": {
+          "x": 27.400000000000006,
+          "y": 7.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666654
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "loadout_return_plate_bl",
+        "rect": {
+          "x": 8,
+          "y": 6,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "loadout_return_plate_b",
+        "rect": {
+          "x": 8.6,
+          "y": 6,
+          "width": 18.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "loadout_return_plate_br",
+        "rect": {
+          "x": 27.400000000000006,
+          "y": 6,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "loadout_return",
+        "rect": {
+          "x": 8,
+          "y": 7.585390946502056,
+          "width": 20.000000000000007,
+          "height": 2.8292181069958846
+        },
+        "text": "返回商店",
+        "action": "ReturnFromLoadout"
+      },
+      {
+        "kind": "button",
+        "id": "loadout_return_hit_top",
+        "rect": {
+          "x": 8,
+          "y": 10.414609053497943,
+          "width": 20.000000000000007,
+          "height": 1.5853909465020568
+        },
+        "text": "",
+        "action": "ReturnFromLoadout"
+      },
+      {
+        "kind": "button",
+        "id": "loadout_return_hit_bottom",
+        "rect": {
+          "x": 8,
+          "y": 6.000000000000003,
+          "width": 20.000000000000007,
+          "height": 1.5853909465020568
+        },
+        "text": "",
+        "action": "ReturnFromLoadout"
+      },
+      {
+        "kind": "image",
+        "id": "deploy_plate_tl",
+        "rect": {
+          "x": 71,
+          "y": 10.760330578512395,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "deploy_plate_t",
+        "rect": {
+          "x": 73.09194214876032,
+          "y": 10.760330578512395,
+          "width": 17.81611570247935,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "deploy_plate_tr",
+        "rect": {
+          "x": 90.90805785123968,
+          "y": 10.760330578512395,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "deploy_plate_l",
+        "rect": {
+          "x": 71,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603245,
+          "height": 3.520661157024792
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "deploy_plate_c",
+        "rect": {
+          "x": 73.09194214876032,
+          "y": 7.239669421487603,
+          "width": 17.81611570247935,
+          "height": 3.520661157024792
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "deploy_plate_r",
+        "rect": {
+          "x": 90.90805785123968,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603245,
+          "height": 3.520661157024792
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "deploy_plate_bl",
+        "rect": {
+          "x": 71,
+          "y": 6,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "deploy_plate_b",
+        "rect": {
+          "x": 73.09194214876032,
+          "y": 6,
+          "width": 17.81611570247935,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "deploy_plate_br",
+        "rect": {
+          "x": 90.90805785123968,
+          "y": 6,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "deploy",
+        "rect": {
+          "x": 71,
+          "y": 7.585390946502056,
+          "width": 22,
+          "height": 2.8292181069958846
+        },
+        "text": "整備完成 · 出戰",
+        "action": "Deploy"
+      },
+      {
+        "kind": "button",
+        "id": "deploy_hit_top",
+        "rect": {
+          "x": 71,
+          "y": 10.414609053497943,
+          "width": 22,
+          "height": 1.5853909465020568
+        },
+        "text": "",
+        "action": "Deploy"
+      },
+      {
+        "kind": "button",
+        "id": "deploy_hit_bottom",
+        "rect": {
+          "x": 71,
+          "y": 6.000000000000003,
+          "width": 22,
+          "height": 1.5853909465020568
+        },
+        "text": "",
+        "action": "Deploy"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_1_plate_tl",
+        "rect": {
+          "x": 8,
+          "y": 60.93333333333333,
+          "width": 0.5999999999999996,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_1_plate_t",
+        "rect": {
+          "x": 8.6,
+          "y": 60.93333333333333,
+          "width": 14.799999999999999,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_1_plate_tr",
+        "rect": {
+          "x": 23.4,
+          "y": 60.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_1_plate_l",
+        "rect": {
+          "x": 8,
+          "y": 57.06666666666667,
+          "width": 0.5999999999999996,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_1_plate_c",
+        "rect": {
+          "x": 8.6,
+          "y": 57.06666666666667,
+          "width": 14.799999999999999,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_1_plate_r",
+        "rect": {
+          "x": 23.4,
+          "y": 57.06666666666667,
+          "width": 0.6000000000000014,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_1_plate_bl",
+        "rect": {
+          "x": 8,
+          "y": 56,
+          "width": 0.5999999999999996,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_1_plate_b",
+        "rect": {
+          "x": 8.6,
+          "y": 56,
+          "width": 14.799999999999999,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_1_plate_br",
+        "rect": {
+          "x": 23.4,
+          "y": 56,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "roster_unit_1",
+        "rect": {
+          "x": 8,
+          "y": 57.58539094650206,
+          "width": 16,
+          "height": 2.8292181069958846
+        },
+        "text": "◆ 劍兵",
+        "action": "Unit1"
+      },
+      {
+        "kind": "button",
+        "id": "roster_unit_1_hit_top",
+        "rect": {
+          "x": 8,
+          "y": 60.41460905349794,
+          "width": 16,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Unit1"
+      },
+      {
+        "kind": "button",
+        "id": "roster_unit_1_hit_bottom",
+        "rect": {
+          "x": 8,
+          "y": 56,
+          "width": 16,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Unit1"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_2_plate_tl",
+        "rect": {
+          "x": 8,
+          "y": 46.93333333333333,
+          "width": 0.5999999999999996,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_2_plate_t",
+        "rect": {
+          "x": 8.6,
+          "y": 46.93333333333333,
+          "width": 14.799999999999999,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_2_plate_tr",
+        "rect": {
+          "x": 23.4,
+          "y": 46.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_2_plate_l",
+        "rect": {
+          "x": 8,
+          "y": 43.06666666666667,
+          "width": 0.5999999999999996,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_2_plate_c",
+        "rect": {
+          "x": 8.6,
+          "y": 43.06666666666667,
+          "width": 14.799999999999999,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_2_plate_r",
+        "rect": {
+          "x": 23.4,
+          "y": 43.06666666666667,
+          "width": 0.6000000000000014,
+          "height": 3.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_2_plate_bl",
+        "rect": {
+          "x": 8,
+          "y": 42,
+          "width": 0.5999999999999996,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_2_plate_b",
+        "rect": {
+          "x": 8.6,
+          "y": 42,
+          "width": 14.799999999999999,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_2_plate_br",
+        "rect": {
+          "x": 23.4,
+          "y": 42,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "roster_unit_2",
+        "rect": {
+          "x": 8,
+          "y": 43.58539094650206,
+          "width": 16,
+          "height": 2.8292181069958846
+        },
+        "text": "槍兵",
+        "action": "Unit2"
+      },
+      {
+        "kind": "button",
+        "id": "roster_unit_2_hit_top",
+        "rect": {
+          "x": 8,
+          "y": 46.41460905349794,
+          "width": 16,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Unit2"
+      },
+      {
+        "kind": "button",
+        "id": "roster_unit_2_hit_bottom",
+        "rect": {
+          "x": 8,
+          "y": 42,
+          "width": 16,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Unit2"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_3_plate_tl",
+        "rect": {
+          "x": 8,
+          "y": 32.93333333333333,
+          "width": 0.5999999999999996,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_3_plate_t",
+        "rect": {
+          "x": 8.6,
+          "y": 32.93333333333333,
+          "width": 14.799999999999999,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_3_plate_tr",
+        "rect": {
+          "x": 23.4,
+          "y": 32.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_3_plate_l",
+        "rect": {
+          "x": 8,
+          "y": 29.066666666666666,
+          "width": 0.5999999999999996,
+          "height": 3.8666666666666636
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_3_plate_c",
+        "rect": {
+          "x": 8.6,
+          "y": 29.066666666666666,
+          "width": 14.799999999999999,
+          "height": 3.8666666666666636
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_3_plate_r",
+        "rect": {
+          "x": 23.4,
+          "y": 29.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666636
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_3_plate_bl",
+        "rect": {
+          "x": 8,
+          "y": 28,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_3_plate_b",
+        "rect": {
+          "x": 8.6,
+          "y": 28,
+          "width": 14.799999999999999,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "roster_unit_3_plate_br",
+        "rect": {
+          "x": 23.4,
+          "y": 28,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "roster_unit_3",
+        "rect": {
+          "x": 8,
+          "y": 29.585390946502056,
+          "width": 16,
+          "height": 2.8292181069958846
+        },
+        "text": "騎兵",
+        "action": "Unit3"
+      },
+      {
+        "kind": "button",
+        "id": "roster_unit_3_hit_top",
+        "rect": {
+          "x": 8,
+          "y": 32.41460905349794,
+          "width": 16,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Unit3"
+      },
+      {
+        "kind": "button",
+        "id": "roster_unit_3_hit_bottom",
+        "rect": {
+          "x": 8,
+          "y": 28,
+          "width": 16,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Unit3"
+      },
+      {
+        "kind": "text",
+        "id": "troop_quote",
+        "rect": {
+          "x": 8,
+          "y": 20.779706790123452,
+          "width": 16,
+          "height": 2.218364197530864
+        },
+        "text": "派兵 4 金"
+      },
+      {
+        "kind": "image",
+        "id": "paper_doll_portrait",
+        "rect": {
+          "x": 37,
+          "y": 31,
+          "width": 14,
+          "height": 23
+        },
+        "asset": "texture://ui_portrait-sword",
+        "fit": "contain"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_1_tl",
+        "rect": {
+          "x": 37,
+          "y": 60.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_1_t",
+        "rect": {
+          "x": 37.6,
+          "y": 60.93333333333334,
+          "width": 12.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_1_tr",
+        "rect": {
+          "x": 50.4,
+          "y": 60.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_1_l",
+        "rect": {
+          "x": 37,
+          "y": 51.06666666666667,
+          "width": 0.6000000000000014,
+          "height": 9.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_1_c",
+        "rect": {
+          "x": 37.6,
+          "y": 51.06666666666667,
+          "width": 12.799999999999997,
+          "height": 9.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_1_r",
+        "rect": {
+          "x": 50.4,
+          "y": 51.06666666666667,
+          "width": 0.6000000000000014,
+          "height": 9.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_1_bl",
+        "rect": {
+          "x": 37,
+          "y": 50,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_1_b",
+        "rect": {
+          "x": 37.6,
+          "y": 50,
+          "width": 12.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_1_br",
+        "rect": {
+          "x": 50.4,
+          "y": 50,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "worn_icon_1",
+        "rect": {
+          "x": 41.5,
+          "y": 56.5,
+          "width": 5,
+          "height": 5.5
+        },
+        "asset": "texture://ui_icon-helmet",
+        "fit": "contain"
+      },
+      {
+        "kind": "button",
+        "id": "slot_1",
+        "rect": {
+          "x": 37,
+          "y": 52.09259259259259,
+          "width": 14,
+          "height": 2.314814814814815
+        },
+        "text": "頭",
+        "action": "Slot1"
+      },
+      {
+        "kind": "button",
+        "id": "slot_hit_1",
+        "rect": {
+          "x": 37,
+          "y": 50,
+          "width": 14,
+          "height": 12
+        },
+        "text": "",
+        "action": "Slot1"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_2_tl",
+        "rect": {
+          "x": 27,
+          "y": 47.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_2_t",
+        "rect": {
+          "x": 27.6,
+          "y": 47.93333333333333,
+          "width": 12.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_2_tr",
+        "rect": {
+          "x": 40.4,
+          "y": 47.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_2_l",
+        "rect": {
+          "x": 27,
+          "y": 38.06666666666667,
+          "width": 0.6000000000000014,
+          "height": 9.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_2_c",
+        "rect": {
+          "x": 27.6,
+          "y": 38.06666666666667,
+          "width": 12.799999999999997,
+          "height": 9.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_2_r",
+        "rect": {
+          "x": 40.4,
+          "y": 38.06666666666667,
+          "width": 0.6000000000000014,
+          "height": 9.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_2_bl",
+        "rect": {
+          "x": 27,
+          "y": 37,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_2_b",
+        "rect": {
+          "x": 27.6,
+          "y": 37,
+          "width": 12.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_2_br",
+        "rect": {
+          "x": 40.4,
+          "y": 37,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "worn_icon_2",
+        "rect": {
+          "x": 31.5,
+          "y": 43.5,
+          "width": 5,
+          "height": 5.5
+        },
+        "asset": "texture://ui_icon-body",
+        "fit": "contain"
+      },
+      {
+        "kind": "button",
+        "id": "slot_2",
+        "rect": {
+          "x": 27,
+          "y": 39.09259259259259,
+          "width": 14,
+          "height": 2.314814814814815
+        },
+        "text": "身",
+        "action": "Slot2"
+      },
+      {
+        "kind": "button",
+        "id": "slot_hit_2",
+        "rect": {
+          "x": 27,
+          "y": 37,
+          "width": 14,
+          "height": 12
+        },
+        "text": "",
+        "action": "Slot2"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_3_tl",
+        "rect": {
+          "x": 47,
+          "y": 47.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_3_t",
+        "rect": {
+          "x": 47.6,
+          "y": 47.93333333333333,
+          "width": 12.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_3_tr",
+        "rect": {
+          "x": 60.4,
+          "y": 47.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_3_l",
+        "rect": {
+          "x": 47,
+          "y": 38.06666666666667,
+          "width": 0.6000000000000014,
+          "height": 9.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_3_c",
+        "rect": {
+          "x": 47.6,
+          "y": 38.06666666666667,
+          "width": 12.799999999999997,
+          "height": 9.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_3_r",
+        "rect": {
+          "x": 60.4,
+          "y": 38.06666666666667,
+          "width": 0.6000000000000014,
+          "height": 9.86666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_3_bl",
+        "rect": {
+          "x": 47,
+          "y": 37,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_3_b",
+        "rect": {
+          "x": 47.6,
+          "y": 37,
+          "width": 12.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_3_br",
+        "rect": {
+          "x": 60.4,
+          "y": 37,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "worn_icon_3",
+        "rect": {
+          "x": 51.5,
+          "y": 43.5,
+          "width": 5,
+          "height": 5.5
+        },
+        "asset": "texture://ui_icon-boots",
+        "fit": "contain"
+      },
+      {
+        "kind": "button",
+        "id": "slot_3",
+        "rect": {
+          "x": 47,
+          "y": 39.09259259259259,
+          "width": 14,
+          "height": 2.314814814814815
+        },
+        "text": "腳",
+        "action": "Slot3"
+      },
+      {
+        "kind": "button",
+        "id": "slot_hit_3",
+        "rect": {
+          "x": 47,
+          "y": 37,
+          "width": 14,
+          "height": 12
+        },
+        "text": "",
+        "action": "Slot3"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_4_tl",
+        "rect": {
+          "x": 27,
+          "y": 33.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_4_t",
+        "rect": {
+          "x": 27.6,
+          "y": 33.93333333333333,
+          "width": 12.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_4_tr",
+        "rect": {
+          "x": 40.4,
+          "y": 33.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_4_l",
+        "rect": {
+          "x": 27,
+          "y": 24.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 9.866666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_4_c",
+        "rect": {
+          "x": 27.6,
+          "y": 24.066666666666666,
+          "width": 12.799999999999997,
+          "height": 9.866666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_4_r",
+        "rect": {
+          "x": 40.4,
+          "y": 24.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 9.866666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_4_bl",
+        "rect": {
+          "x": 27,
+          "y": 23,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_4_b",
+        "rect": {
+          "x": 27.6,
+          "y": 23,
+          "width": 12.799999999999997,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_4_br",
+        "rect": {
+          "x": 40.4,
+          "y": 23,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "worn_icon_4",
+        "rect": {
+          "x": 31.5,
+          "y": 29.5,
+          "width": 5,
+          "height": 5.5
+        },
+        "asset": "texture://ui_icon-gloves",
+        "fit": "contain"
+      },
+      {
+        "kind": "button",
+        "id": "slot_4",
+        "rect": {
+          "x": 27,
+          "y": 25.092592592592588,
+          "width": 14,
+          "height": 2.314814814814815
+        },
+        "text": "手",
+        "action": "Slot4"
+      },
+      {
+        "kind": "button",
+        "id": "slot_hit_4",
+        "rect": {
+          "x": 27,
+          "y": 23,
+          "width": 14,
+          "height": 12
+        },
+        "text": "",
+        "action": "Slot4"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_5_tl",
+        "rect": {
+          "x": 47,
+          "y": 33.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_5_t",
+        "rect": {
+          "x": 47.6,
+          "y": 33.93333333333333,
+          "width": 12.799999999999997,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_5_tr",
+        "rect": {
+          "x": 60.4,
+          "y": 33.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_5_l",
+        "rect": {
+          "x": 47,
+          "y": 24.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 9.866666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_5_c",
+        "rect": {
+          "x": 47.6,
+          "y": 24.066666666666666,
+          "width": 12.799999999999997,
+          "height": 9.866666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_5_r",
+        "rect": {
+          "x": 60.4,
+          "y": 24.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 9.866666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_5_bl",
+        "rect": {
+          "x": 47,
+          "y": 23,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_5_b",
+        "rect": {
+          "x": 47.6,
+          "y": 23,
+          "width": 12.799999999999997,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "slot_frame_5_br",
+        "rect": {
+          "x": 60.4,
+          "y": 23,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "worn_icon_5",
+        "rect": {
+          "x": 51.5,
+          "y": 29.5,
+          "width": 5,
+          "height": 5.5
+        },
+        "asset": "texture://ui_icon-weapon",
+        "fit": "contain"
+      },
+      {
+        "kind": "button",
+        "id": "slot_5",
+        "rect": {
+          "x": 47,
+          "y": 25.092592592592588,
+          "width": 14,
+          "height": 2.314814814814815
+        },
+        "text": "◆ 武器",
+        "action": "Slot5"
+      },
+      {
+        "kind": "button",
+        "id": "slot_hit_5",
+        "rect": {
+          "x": 47,
+          "y": 23,
+          "width": 14,
+          "height": 12
+        },
+        "text": "",
+        "action": "Slot5"
+      },
+      {
+        "kind": "image",
+        "id": "unequip_plate_tl",
+        "rect": {
+          "x": 30,
+          "y": 10.933333333333332,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unequip_plate_t",
+        "rect": {
+          "x": 30.6,
+          "y": 10.933333333333332,
+          "width": 27.799999999999997,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unequip_plate_tr",
+        "rect": {
+          "x": 58.4,
+          "y": 10.933333333333332,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unequip_plate_l",
+        "rect": {
+          "x": 30,
+          "y": 7.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666654
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unequip_plate_c",
+        "rect": {
+          "x": 30.6,
+          "y": 7.066666666666666,
+          "width": 27.799999999999997,
+          "height": 3.8666666666666654
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unequip_plate_r",
+        "rect": {
+          "x": 58.4,
+          "y": 7.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666654
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unequip_plate_bl",
+        "rect": {
+          "x": 30,
+          "y": 6,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unequip_plate_b",
+        "rect": {
+          "x": 30.6,
+          "y": 6,
+          "width": 27.799999999999997,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unequip_plate_br",
+        "rect": {
+          "x": 58.4,
+          "y": 6,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "unequip",
+        "rect": {
+          "x": 30,
+          "y": 7.585390946502056,
+          "width": 29,
+          "height": 2.8292181069958846
+        },
+        "text": "目前空置"
+      },
+      {
+        "kind": "text",
+        "id": "bag_heading",
+        "rect": {
+          "x": 64,
+          "y": 70.77970679012346,
+          "width": 29,
+          "height": 2.218364197530864
+        },
+        "text": "行囊 · 武器"
+      },
+      {
+        "kind": "image",
+        "id": "pack_card_1",
+        "rect": {
+          "x": 64,
+          "y": 43,
+          "width": 29,
+          "height": 23
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "empty_pack_icon_1",
+        "rect": {
+          "x": 65,
+          "y": 53,
+          "width": 6,
+          "height": 10
+        },
+        "asset": "texture://ui_icon-weapon",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "empty_pack_1",
+        "rect": {
+          "x": 73,
+          "y": 58.779706790123456,
+          "width": 18,
+          "height": 2.218364197530864
+        },
+        "text": "空的行囊"
+      },
+      {
+        "kind": "image",
+        "id": "pack_card_2",
+        "rect": {
+          "x": 64,
+          "y": 19,
+          "width": 29,
+          "height": 23
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "empty_pack_icon_2",
+        "rect": {
+          "x": 65,
+          "y": 29,
+          "width": 6,
+          "height": 10
+        },
+        "asset": "texture://ui_icon-weapon",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "empty_pack_2",
+        "rect": {
+          "x": 73,
+          "y": 34.779706790123456,
+          "width": 18,
+          "height": 2.218364197530864
+        },
+        "text": "空的行囊"
+      },
+      {
+        "kind": "image",
+        "id": "gear_prev_plate_tl",
+        "rect": {
+          "x": 62,
+          "y": 81.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_prev_plate_t",
+        "rect": {
+          "x": 62.6,
+          "y": 81.93333333333334,
+          "width": 4.800000000000004,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_prev_plate_tr",
+        "rect": {
+          "x": 67.4,
+          "y": 81.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_prev_plate_l",
+        "rect": {
+          "x": 62,
+          "y": 78.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_prev_plate_c",
+        "rect": {
+          "x": 62.6,
+          "y": 78.06666666666666,
+          "width": 4.800000000000004,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_prev_plate_r",
+        "rect": {
+          "x": 67.4,
+          "y": 78.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_prev_plate_bl",
+        "rect": {
+          "x": 62,
+          "y": 77,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_prev_plate_b",
+        "rect": {
+          "x": 62.6,
+          "y": 77,
+          "width": 4.800000000000004,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_prev_plate_br",
+        "rect": {
+          "x": 67.4,
+          "y": 77,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "gear_prev",
+        "rect": {
+          "x": 62,
+          "y": 78.58539094650206,
+          "width": 6,
+          "height": 2.8292181069958846
+        },
+        "text": "‹"
+      },
+      {
+        "kind": "text",
+        "id": "gear_page",
+        "rect": {
+          "x": 71,
+          "y": 78.8425925925926,
+          "width": 13,
+          "height": 2.314814814814815
+        },
+        "text": "1 / 1"
+      },
+      {
+        "kind": "image",
+        "id": "gear_next_plate_tl",
+        "rect": {
+          "x": 87,
+          "y": 81.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_next_plate_t",
+        "rect": {
+          "x": 87.6,
+          "y": 81.93333333333334,
+          "width": 4.800000000000011,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_next_plate_tr",
+        "rect": {
+          "x": 92.4,
+          "y": 81.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_next_plate_l",
+        "rect": {
+          "x": 87,
+          "y": 78.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_next_plate_c",
+        "rect": {
+          "x": 87.6,
+          "y": 78.06666666666666,
+          "width": 4.800000000000011,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_next_plate_r",
+        "rect": {
+          "x": 92.4,
+          "y": 78.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_next_plate_bl",
+        "rect": {
+          "x": 87,
+          "y": 77,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_next_plate_b",
+        "rect": {
+          "x": 87.6,
+          "y": 77,
+          "width": 4.800000000000011,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "gear_next_plate_br",
+        "rect": {
+          "x": 92.4,
+          "y": 77,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "gear_next",
+        "rect": {
+          "x": 87,
+          "y": 78.58539094650206,
+          "width": 6,
+          "height": 2.8292181069958846
+        },
+        "text": "›"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "部隊裝備",
+      "font": 34,
+      "clip": {
+        "x": 172.8,
+        "y": 89.7888888888889,
+        "width": 1113.6,
+        "height": 47.22222222222223
+      },
+      "ink": {
+        "x": 663.5999999999999,
+        "y": 97.66562500000002,
+        "width": 133,
+        "height": 31
+      }
+    },
+    {
+      "text": "320",
+      "font": 17.25,
+      "clip": {
+        "x": 1440,
+        "y": 86.42083333333336,
+        "width": 134.4,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1492.2031127929688,
+        "y": 92.13437500000003,
+        "width": 29.995849609375,
+        "height": 13
+      }
+    },
+    {
+      "text": "18",
+      "font": 17.25,
+      "clip": {
+        "x": 1670.4,
+        "y": 86.42083333333336,
+        "width": 115.2,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1719.0020751953125,
+        "y": 92.13437500000003,
+        "width": 18.9979248046875,
+        "height": 13
+      }
+    },
+    {
+      "text": "裝備",
+      "font": 22,
+      "clip": {
+        "x": 153.6,
+        "y": 200.7222222222222,
+        "width": 422.4,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 343.79999999999995,
+        "y": 206.57812499999997,
+        "width": 43,
+        "height": 19
+      }
+    },
+    {
+      "text": "符文",
+      "font": 22,
+      "clip": {
+        "x": 614.4,
+        "y": 200.7222222222222,
+        "width": 422.4,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 804.5999999999999,
+        "y": 205.57812499999997,
+        "width": 43,
+        "height": 20
+      }
+    },
+    {
+      "text": "返回商店",
+      "font": 22,
+      "clip": {
+        "x": 153.6,
+        "y": 967.5222222222222,
+        "width": 384.00000000000017,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 301.6000000000001,
+        "y": 972.3781250000001,
+        "width": 87,
+        "height": 20
+      }
+    },
+    {
+      "text": "整備完成 · 出戰",
+      "font": 22,
+      "clip": {
+        "x": 1363.2,
+        "y": 967.5222222222222,
+        "width": 422.4,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1501.36484375,
+        "y": 972.3781250000001,
+        "width": 147.0703125,
+        "height": 20
+      }
+    },
+    {
+      "text": "◆ 劍兵",
+      "font": 22,
+      "clip": {
+        "x": 153.6,
+        "y": 427.52222222222224,
+        "width": 307.2,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 276.84892578125,
+        "y": 432.378125,
+        "width": 61.7021484375,
+        "height": 20
+      }
+    },
+    {
+      "text": "槍兵",
+      "font": 22,
+      "clip": {
+        "x": 153.6,
+        "y": 578.7222222222223,
+        "width": 307.2,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 286.2,
+        "y": 583.5781250000001,
+        "width": 43,
+        "height": 20
+      }
+    },
+    {
+      "text": "騎兵",
+      "font": 22,
+      "clip": {
+        "x": 153.6,
+        "y": 729.9222222222222,
+        "width": 307.2,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 286.2,
+        "y": 734.778125,
+        "width": 43,
+        "height": 20
+      }
+    },
+    {
+      "text": "派兵 4 金",
+      "font": 17.25,
+      "clip": {
+        "x": 153.6,
+        "y": 831.6208333333334,
+        "width": 307.2,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 272.01353759765624,
+        "y": 835.334375,
+        "width": 70.1229248046875,
+        "height": 16
+      }
+    },
+    {
+      "text": "頭",
+      "font": 18,
+      "clip": {
+        "x": 710.4,
+        "y": 492.4,
+        "width": 268.8,
+        "height": 25
+      },
+      "ink": {
+        "x": 835.8,
+        "y": 496.915625,
+        "width": 18,
+        "height": 16
+      }
+    },
+    {
+      "text": "身",
+      "font": 18,
+      "clip": {
+        "x": 518.4,
+        "y": 632.8,
+        "width": 268.8,
+        "height": 25
+      },
+      "ink": {
+        "x": 643.8,
+        "y": 636.315625,
+        "width": 18,
+        "height": 17
+      }
+    },
+    {
+      "text": "腳",
+      "font": 18,
+      "clip": {
+        "x": 902.4,
+        "y": 632.8,
+        "width": 268.8,
+        "height": 25
+      },
+      "ink": {
+        "x": 1027.8,
+        "y": 637.315625,
+        "width": 17,
+        "height": 16
+      }
+    },
+    {
+      "text": "手",
+      "font": 18,
+      "clip": {
+        "x": 518.4,
+        "y": 784.0000000000001,
+        "width": 268.8,
+        "height": 25
+      },
+      "ink": {
+        "x": 643.8,
+        "y": 787.5156250000001,
+        "width": 18,
+        "height": 17
+      }
+    },
+    {
+      "text": "◆ 武器",
+      "font": 18,
+      "clip": {
+        "x": 902.4,
+        "y": 784.0000000000001,
+        "width": 268.8,
+        "height": 25
+      },
+      "ink": {
+        "x": 1011.14912109375,
+        "y": 788.5156250000001,
+        "width": 51.3017578125,
+        "height": 16
+      }
+    },
+    {
+      "text": "目前空置",
+      "font": 22,
+      "clip": {
+        "x": 576,
+        "y": 967.5222222222222,
+        "width": 556.8,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 813.4,
+        "y": 972.3781250000001,
+        "width": 84,
+        "height": 20
+      }
+    },
+    {
+      "text": "行囊 · 武器",
+      "font": 17.25,
+      "clip": {
+        "x": 1228.8,
+        "y": 291.62083333333334,
+        "width": 556.8,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1466.3997070312498,
+        "y": 295.334375,
+        "width": 81.3505859375,
+        "height": 16
+      }
+    },
+    {
+      "text": "空的行囊",
+      "font": 17.25,
+      "clip": {
+        "x": 1401.6,
+        "y": 421.22083333333336,
+        "width": 345.6,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1539.8999999999999,
+        "y": 424.93437500000005,
+        "width": 68.75,
+        "height": 16
+      }
+    },
+    {
+      "text": "空的行囊",
+      "font": 17.25,
+      "clip": {
+        "x": 1401.6,
+        "y": 680.4208333333335,
+        "width": 345.6,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1539.8999999999999,
+        "y": 684.1343750000001,
+        "width": 68.75,
+        "height": 16
+      }
+    },
+    {
+      "text": "‹",
+      "font": 22,
+      "clip": {
+        "x": 1190.4,
+        "y": 200.7222222222222,
+        "width": 115.2,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1244.26708984375,
+        "y": 214.57812499999997,
+        "width": 8,
+        "height": 8
+      }
+    },
+    {
+      "text": "1 / 1",
+      "font": 18,
+      "clip": {
+        "x": 1363.2,
+        "y": 203.49999999999997,
+        "width": 249.6,
+        "height": 25
+      },
+      "ink": {
+        "x": 1470.314453125,
+        "y": 209.01562499999997,
+        "width": 35.9384765625,
+        "height": 16
+      }
+    },
+    {
+      "text": "›",
+      "font": 22,
+      "clip": {
+        "x": 1670.4,
+        "y": 200.7222222222222,
+        "width": 115.2,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1724.26708984375,
+        "y": 214.57812499999997,
+        "width": 7,
+        "height": 8
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 200,
+    "assets": [
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_scene-shade",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-coin",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-crystal",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_portrait-sword",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-helmet",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-body",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-boots",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-gloves",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-weapon",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

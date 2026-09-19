@@ -1,0 +1,2297 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "shop:home",
+    "children": [
+      {
+        "kind": "image",
+        "id": "screen_shade",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_fill",
+        "rect": {
+          "x": 3.8,
+          "y": 5,
+          "width": 92.4,
+          "height": 90
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tl",
+        "rect": {
+          "x": 3,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_t",
+        "rect": {
+          "x": 7.5,
+          "y": 85,
+          "width": 85,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tr",
+        "rect": {
+          "x": 92.5,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_l",
+        "rect": {
+          "x": 3,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_c",
+        "rect": {
+          "x": 7.5,
+          "y": 11,
+          "width": 85,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_r",
+        "rect": {
+          "x": 92.5,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_bl",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_b",
+        "rect": {
+          "x": 7.5,
+          "y": 3,
+          "width": 85,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_br",
+        "rect": {
+          "x": 92.5,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "screen_title",
+        "rect": {
+          "x": 9,
+          "y": 87.31378600823045,
+          "width": 58,
+          "height": 4.372427983539095
+        },
+        "text": "附魔鐵砧"
+      },
+      {
+        "kind": "image",
+        "id": "screen_gold_icon",
+        "rect": {
+          "x": 71,
+          "y": 89.77777777777777,
+          "width": 3,
+          "height": 2.2222222222222223
+        },
+        "asset": "texture://ui_icon-coin",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "screen_gold",
+        "rect": {
+          "x": 75,
+          "y": 89.77970679012346,
+          "width": 7,
+          "height": 2.218364197530864
+        },
+        "text": "320"
+      },
+      {
+        "kind": "image",
+        "id": "screen_crystals_icon",
+        "rect": {
+          "x": 83,
+          "y": 89.77777777777777,
+          "width": 3,
+          "height": 2.2222222222222223
+        },
+        "asset": "texture://ui_icon-crystal",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "screen_crystals",
+        "rect": {
+          "x": 87,
+          "y": 89.77970679012346,
+          "width": 6,
+          "height": 2.218364197530864
+        },
+        "text": "18"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_tl",
+        "rect": {
+          "x": 62,
+          "y": 10.933333333333332,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_t",
+        "rect": {
+          "x": 62.6,
+          "y": 10.933333333333332,
+          "width": 12.800000000000018,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_tr",
+        "rect": {
+          "x": 75.40000000000002,
+          "y": 10.933333333333332,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_l",
+        "rect": {
+          "x": 62,
+          "y": 7.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666654
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_c",
+        "rect": {
+          "x": 62.6,
+          "y": 7.066666666666666,
+          "width": 12.800000000000018,
+          "height": 3.8666666666666654
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_r",
+        "rect": {
+          "x": 75.40000000000002,
+          "y": 7.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666654
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_bl",
+        "rect": {
+          "x": 62,
+          "y": 6,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_b",
+        "rect": {
+          "x": 62.6,
+          "y": 6,
+          "width": 12.800000000000018,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "ready_plate_br",
+        "rect": {
+          "x": 75.40000000000002,
+          "y": 6,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "ready",
+        "rect": {
+          "x": 62,
+          "y": 7.585390946502056,
+          "width": 14.000000000000014,
+          "height": 2.8292181069958846
+        },
+        "text": "部隊配置",
+        "action": "LeaveShop"
+      },
+      {
+        "kind": "button",
+        "id": "ready_hit_top",
+        "rect": {
+          "x": 62,
+          "y": 10.414609053497943,
+          "width": 14.000000000000014,
+          "height": 1.5853909465020568
+        },
+        "text": "",
+        "action": "LeaveShop"
+      },
+      {
+        "kind": "button",
+        "id": "ready_hit_bottom",
+        "rect": {
+          "x": 62,
+          "y": 6.000000000000003,
+          "width": 14.000000000000014,
+          "height": 1.5853909465020568
+        },
+        "text": "",
+        "action": "LeaveShop"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_tl",
+        "rect": {
+          "x": 78,
+          "y": 10.760330578512399,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_t",
+        "rect": {
+          "x": 80.09194214876032,
+          "y": 10.760330578512399,
+          "width": 10.816115702479351,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_tr",
+        "rect": {
+          "x": 90.90805785123968,
+          "y": 10.760330578512399,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_l",
+        "rect": {
+          "x": 78,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603245,
+          "height": 3.5206611570247954
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_c",
+        "rect": {
+          "x": 80.09194214876032,
+          "y": 7.239669421487603,
+          "width": 10.816115702479351,
+          "height": 3.5206611570247954
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_r",
+        "rect": {
+          "x": 90.90805785123968,
+          "y": 7.239669421487603,
+          "width": 2.0919421487603245,
+          "height": 3.5206611570247954
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_bl",
+        "rect": {
+          "x": 78,
+          "y": 6,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_b",
+        "rect": {
+          "x": 80.09194214876032,
+          "y": 6,
+          "width": 10.816115702479351,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "quick_deploy_plate_br",
+        "rect": {
+          "x": 90.90805785123968,
+          "y": 6,
+          "width": 2.0919421487603245,
+          "height": 1.2396694214876032
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "quick_deploy",
+        "rect": {
+          "x": 78,
+          "y": 7.585390946502056,
+          "width": 15,
+          "height": 2.8292181069958846
+        },
+        "text": "直接出戰",
+        "action": "QuickDeploy"
+      },
+      {
+        "kind": "button",
+        "id": "quick_deploy_hit_top",
+        "rect": {
+          "x": 78,
+          "y": 10.41460905349794,
+          "width": 15,
+          "height": 1.5853909465020586
+        },
+        "text": "",
+        "action": "QuickDeploy"
+      },
+      {
+        "kind": "button",
+        "id": "quick_deploy_hit_bottom",
+        "rect": {
+          "x": 78,
+          "y": 6.000000000000001,
+          "width": 15,
+          "height": 1.5853909465020586
+        },
+        "text": "",
+        "action": "QuickDeploy"
+      },
+      {
+        "kind": "image",
+        "id": "shopkeeper_portrait",
+        "rect": {
+          "x": 9,
+          "y": 40,
+          "width": 23,
+          "height": 29
+        },
+        "asset": "texture://ui_portrait-smith",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "shopkeeper_name",
+        "rect": {
+          "x": 8,
+          "y": 35.779706790123456,
+          "width": 25,
+          "height": 2.218364197530864
+        },
+        "text": "鍛造師 · 布洛克"
+      },
+      {
+        "kind": "text",
+        "id": "shopkeeper_line",
+        "rect": {
+          "x": 8,
+          "y": 22.5,
+          "width": 25,
+          "height": 6
+        },
+        "text": "鐵匠等你落槌。先穿好裝備；\n新詞綴不合意，也能保留舊的\n。"
+      },
+      {
+        "kind": "text",
+        "id": "enchant_heading",
+        "rect": {
+          "x": 37,
+          "y": 80.77970679012346,
+          "width": 56,
+          "height": 2.218364197530864
+        },
+        "text": "選擇已穿戴的部位"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_1_plate_tl",
+        "rect": {
+          "x": 37,
+          "y": 73.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_1_plate_t",
+        "rect": {
+          "x": 37.6,
+          "y": 73.93333333333334,
+          "width": 9.199999999999996,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_1_plate_tr",
+        "rect": {
+          "x": 46.8,
+          "y": 73.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_1_plate_l",
+        "rect": {
+          "x": 37,
+          "y": 70.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_1_plate_c",
+        "rect": {
+          "x": 37.6,
+          "y": 70.06666666666666,
+          "width": 9.199999999999996,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_1_plate_r",
+        "rect": {
+          "x": 46.8,
+          "y": 70.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_1_plate_bl",
+        "rect": {
+          "x": 37,
+          "y": 69,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_1_plate_b",
+        "rect": {
+          "x": 37.6,
+          "y": 69,
+          "width": 9.199999999999996,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_1_plate_br",
+        "rect": {
+          "x": 46.8,
+          "y": 69,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "enchant_slot_1",
+        "rect": {
+          "x": 37,
+          "y": 70.58539094650206,
+          "width": 10.399999999999999,
+          "height": 2.8292181069958846
+        },
+        "text": "頭"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_2_plate_tl",
+        "rect": {
+          "x": 48.2,
+          "y": 73.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_2_plate_t",
+        "rect": {
+          "x": 48.800000000000004,
+          "y": 73.93333333333334,
+          "width": 9.199999999999996,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_2_plate_tr",
+        "rect": {
+          "x": 58,
+          "y": 73.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_2_plate_l",
+        "rect": {
+          "x": 48.2,
+          "y": 70.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_2_plate_c",
+        "rect": {
+          "x": 48.800000000000004,
+          "y": 70.06666666666666,
+          "width": 9.199999999999996,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_2_plate_r",
+        "rect": {
+          "x": 58,
+          "y": 70.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_2_plate_bl",
+        "rect": {
+          "x": 48.2,
+          "y": 69,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_2_plate_b",
+        "rect": {
+          "x": 48.800000000000004,
+          "y": 69,
+          "width": 9.199999999999996,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_2_plate_br",
+        "rect": {
+          "x": 58,
+          "y": 69,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "enchant_slot_2",
+        "rect": {
+          "x": 48.2,
+          "y": 70.58539094650206,
+          "width": 10.399999999999999,
+          "height": 2.8292181069958846
+        },
+        "text": "身"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_3_plate_tl",
+        "rect": {
+          "x": 59.4,
+          "y": 73.93333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_3_plate_t",
+        "rect": {
+          "x": 60,
+          "y": 73.93333333333334,
+          "width": 9.200000000000003,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_3_plate_tr",
+        "rect": {
+          "x": 69.2,
+          "y": 73.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_3_plate_l",
+        "rect": {
+          "x": 59.4,
+          "y": 70.06666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_3_plate_c",
+        "rect": {
+          "x": 60,
+          "y": 70.06666666666666,
+          "width": 9.200000000000003,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_3_plate_r",
+        "rect": {
+          "x": 69.2,
+          "y": 70.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_3_plate_bl",
+        "rect": {
+          "x": 59.4,
+          "y": 69,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_3_plate_b",
+        "rect": {
+          "x": 60,
+          "y": 69,
+          "width": 9.200000000000003,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_3_plate_br",
+        "rect": {
+          "x": 69.2,
+          "y": 69,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "enchant_slot_3",
+        "rect": {
+          "x": 59.4,
+          "y": 70.58539094650206,
+          "width": 10.399999999999999,
+          "height": 2.8292181069958846
+        },
+        "text": "腳"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_4_plate_tl",
+        "rect": {
+          "x": 70.6,
+          "y": 73.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_4_plate_t",
+        "rect": {
+          "x": 71.19999999999999,
+          "y": 73.93333333333334,
+          "width": 9.200000000000017,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_4_plate_tr",
+        "rect": {
+          "x": 80.4,
+          "y": 73.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_4_plate_l",
+        "rect": {
+          "x": 70.6,
+          "y": 70.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_4_plate_c",
+        "rect": {
+          "x": 71.19999999999999,
+          "y": 70.06666666666666,
+          "width": 9.200000000000017,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_4_plate_r",
+        "rect": {
+          "x": 80.4,
+          "y": 70.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_4_plate_bl",
+        "rect": {
+          "x": 70.6,
+          "y": 69,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_4_plate_b",
+        "rect": {
+          "x": 71.19999999999999,
+          "y": 69,
+          "width": 9.200000000000017,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_4_plate_br",
+        "rect": {
+          "x": 80.4,
+          "y": 69,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "enchant_slot_4",
+        "rect": {
+          "x": 70.6,
+          "y": 70.58539094650206,
+          "width": 10.400000000000006,
+          "height": 2.8292181069958846
+        },
+        "text": "手"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_5_plate_tl",
+        "rect": {
+          "x": 81.8,
+          "y": 73.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_5_plate_t",
+        "rect": {
+          "x": 82.39999999999999,
+          "y": 73.93333333333334,
+          "width": 9.200000000000017,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_5_plate_tr",
+        "rect": {
+          "x": 91.60000000000001,
+          "y": 73.93333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_5_plate_l",
+        "rect": {
+          "x": 81.8,
+          "y": 70.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_5_plate_c",
+        "rect": {
+          "x": 82.39999999999999,
+          "y": 70.06666666666666,
+          "width": 9.200000000000017,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_5_plate_r",
+        "rect": {
+          "x": 91.60000000000001,
+          "y": 70.06666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.8666666666666742
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_5_plate_bl",
+        "rect": {
+          "x": 81.8,
+          "y": 69,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_5_plate_b",
+        "rect": {
+          "x": 82.39999999999999,
+          "y": 69,
+          "width": 9.200000000000017,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_slot_5_plate_br",
+        "rect": {
+          "x": 91.60000000000001,
+          "y": 69,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "enchant_slot_5",
+        "rect": {
+          "x": 81.8,
+          "y": 70.58539094650206,
+          "width": 10.400000000000006,
+          "height": 2.8292181069958846
+        },
+        "text": "武器",
+        "action": "Slot5"
+      },
+      {
+        "kind": "button",
+        "id": "enchant_slot_5_hit_top",
+        "rect": {
+          "x": 81.8,
+          "y": 73.41460905349794,
+          "width": 10.400000000000006,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Slot5"
+      },
+      {
+        "kind": "button",
+        "id": "enchant_slot_5_hit_bottom",
+        "rect": {
+          "x": 81.8,
+          "y": 69,
+          "width": 10.400000000000006,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Slot5"
+      },
+      {
+        "kind": "image",
+        "id": "unit_1_plate_tl",
+        "rect": {
+          "x": 37,
+          "y": 67.01958983777166,
+          "width": 2.0919421487603316,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_1_plate_t",
+        "rect": {
+          "x": 39.09194214876033,
+          "y": 67.01958983777166,
+          "width": 13.816115702479337,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_1_plate_tr",
+        "rect": {
+          "x": 52.90805785123967,
+          "y": 67.01958983777166,
+          "width": 2.0919421487603316,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_1_plate_l",
+        "rect": {
+          "x": 37,
+          "y": 63.49892868074687,
+          "width": 2.0919421487603316,
+          "height": 3.52066115702479
+        },
+        "asset": "texture://ui_shop-button-primary-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_1_plate_c",
+        "rect": {
+          "x": 39.09194214876033,
+          "y": 63.49892868074687,
+          "width": 13.816115702479337,
+          "height": 3.52066115702479
+        },
+        "asset": "texture://ui_shop-button-primary-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_1_plate_r",
+        "rect": {
+          "x": 52.90805785123967,
+          "y": 63.49892868074687,
+          "width": 2.0919421487603316,
+          "height": 3.52066115702479
+        },
+        "asset": "texture://ui_shop-button-primary-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_1_plate_bl",
+        "rect": {
+          "x": 37,
+          "y": 62.25925925925927,
+          "width": 2.0919421487603316,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_1_plate_b",
+        "rect": {
+          "x": 39.09194214876033,
+          "y": 62.25925925925927,
+          "width": 13.816115702479337,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_1_plate_br",
+        "rect": {
+          "x": 52.90805785123967,
+          "y": 62.25925925925927,
+          "width": 2.0919421487603316,
+          "height": 1.239669421487605
+        },
+        "asset": "texture://ui_shop-button-primary-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "unit_1",
+        "rect": {
+          "x": 37,
+          "y": 63.844650205761326,
+          "width": 18,
+          "height": 2.8292181069958846
+        },
+        "text": "◆ 劍兵 · 5 金",
+        "action": "Unit1"
+      },
+      {
+        "kind": "button",
+        "id": "unit_1_hit_top",
+        "rect": {
+          "x": 37,
+          "y": 66.67386831275721,
+          "width": 18,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Unit1"
+      },
+      {
+        "kind": "button",
+        "id": "unit_1_hit_bottom",
+        "rect": {
+          "x": 37,
+          "y": 62.25925925925927,
+          "width": 18,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Unit1"
+      },
+      {
+        "kind": "image",
+        "id": "unit_2_plate_tl",
+        "rect": {
+          "x": 56,
+          "y": 67.1925925925926,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_2_plate_t",
+        "rect": {
+          "x": 56.6,
+          "y": 67.1925925925926,
+          "width": 16.800000000000004,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_2_plate_tr",
+        "rect": {
+          "x": 73.4,
+          "y": 67.1925925925926,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_2_plate_l",
+        "rect": {
+          "x": 56,
+          "y": 63.32592592592594,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_2_plate_c",
+        "rect": {
+          "x": 56.6,
+          "y": 63.32592592592594,
+          "width": 16.800000000000004,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_2_plate_r",
+        "rect": {
+          "x": 73.4,
+          "y": 63.32592592592594,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_2_plate_bl",
+        "rect": {
+          "x": 56,
+          "y": 62.25925925925927,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_2_plate_b",
+        "rect": {
+          "x": 56.6,
+          "y": 62.25925925925927,
+          "width": 16.800000000000004,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_2_plate_br",
+        "rect": {
+          "x": 73.4,
+          "y": 62.25925925925927,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "unit_2",
+        "rect": {
+          "x": 56,
+          "y": 63.844650205761326,
+          "width": 18,
+          "height": 2.8292181069958846
+        },
+        "text": "槍兵 · 10 金",
+        "action": "Unit2"
+      },
+      {
+        "kind": "button",
+        "id": "unit_2_hit_top",
+        "rect": {
+          "x": 56,
+          "y": 66.67386831275721,
+          "width": 18,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Unit2"
+      },
+      {
+        "kind": "button",
+        "id": "unit_2_hit_bottom",
+        "rect": {
+          "x": 56,
+          "y": 62.25925925925927,
+          "width": 18,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Unit2"
+      },
+      {
+        "kind": "image",
+        "id": "unit_3_plate_tl",
+        "rect": {
+          "x": 75,
+          "y": 67.1925925925926,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_3_plate_t",
+        "rect": {
+          "x": 75.6,
+          "y": 67.1925925925926,
+          "width": 16.80000000000001,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_3_plate_tr",
+        "rect": {
+          "x": 92.4,
+          "y": 67.1925925925926,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666629
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_3_plate_l",
+        "rect": {
+          "x": 75,
+          "y": 63.32592592592594,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_3_plate_c",
+        "rect": {
+          "x": 75.6,
+          "y": 63.32592592592594,
+          "width": 16.80000000000001,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_3_plate_r",
+        "rect": {
+          "x": 92.4,
+          "y": 63.32592592592594,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_3_plate_bl",
+        "rect": {
+          "x": 75,
+          "y": 62.25925925925927,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_3_plate_b",
+        "rect": {
+          "x": 75.6,
+          "y": 62.25925925925927,
+          "width": 16.80000000000001,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "unit_3_plate_br",
+        "rect": {
+          "x": 92.4,
+          "y": 62.25925925925927,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "unit_3",
+        "rect": {
+          "x": 75,
+          "y": 63.844650205761326,
+          "width": 18,
+          "height": 2.8292181069958846
+        },
+        "text": "騎兵 · 20 金",
+        "action": "Unit3"
+      },
+      {
+        "kind": "button",
+        "id": "unit_3_hit_top",
+        "rect": {
+          "x": 75,
+          "y": 66.67386831275721,
+          "width": 18,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Unit3"
+      },
+      {
+        "kind": "button",
+        "id": "unit_3_hit_bottom",
+        "rect": {
+          "x": 75,
+          "y": 62.25925925925927,
+          "width": 18,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Unit3"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_item_icon",
+        "rect": {
+          "x": 38,
+          "y": 29,
+          "width": 10,
+          "height": 17
+        },
+        "asset": "texture://ui_gear-pierce",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "enchant_item_name",
+        "rect": {
+          "x": 50,
+          "y": 43.779706790123456,
+          "width": 41,
+          "height": 2.218364197530864
+        },
+        "text": "穿軍刃"
+      },
+      {
+        "kind": "text",
+        "id": "enchant_current",
+        "rect": {
+          "x": 50,
+          "y": 40.9537037037037,
+          "width": 41,
+          "height": 2.314814814814815
+        },
+        "text": "目前詞綴 · 無"
+      },
+      {
+        "kind": "text",
+        "id": "enchant_cost",
+        "rect": {
+          "x": 37,
+          "y": 24.17592592592593,
+          "width": 28,
+          "height": 2.314814814814815
+        },
+        "text": "每次消耗 8 結晶 · 每處最多兩次"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_roll_plate_tl",
+        "rect": {
+          "x": 67,
+          "y": 25.933333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_roll_plate_t",
+        "rect": {
+          "x": 67.6,
+          "y": 25.933333333333334,
+          "width": 24.80000000000001,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_roll_plate_tr",
+        "rect": {
+          "x": 92.4,
+          "y": 25.933333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_roll_plate_l",
+        "rect": {
+          "x": 67,
+          "y": 22.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_roll_plate_c",
+        "rect": {
+          "x": 67.6,
+          "y": 22.066666666666666,
+          "width": 24.80000000000001,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_roll_plate_r",
+        "rect": {
+          "x": 92.4,
+          "y": 22.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_roll_plate_bl",
+        "rect": {
+          "x": 67,
+          "y": 21,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_roll_plate_b",
+        "rect": {
+          "x": 67.6,
+          "y": 21,
+          "width": 24.80000000000001,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "enchant_roll_plate_br",
+        "rect": {
+          "x": 92.4,
+          "y": 21,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "enchant_roll",
+        "rect": {
+          "x": 67,
+          "y": 22.585390946502056,
+          "width": 26,
+          "height": 2.8292181069958846
+        },
+        "text": "試附魔",
+        "action": "Enchant"
+      },
+      {
+        "kind": "button",
+        "id": "enchant_roll_hit_top",
+        "rect": {
+          "x": 67,
+          "y": 25.41460905349794,
+          "width": 26,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Enchant"
+      },
+      {
+        "kind": "button",
+        "id": "enchant_roll_hit_bottom",
+        "rect": {
+          "x": 67,
+          "y": 21,
+          "width": 26,
+          "height": 1.5853909465020577
+        },
+        "text": "",
+        "action": "Enchant"
+      },
+      {
+        "kind": "text",
+        "id": "enchant_chances",
+        "rect": {
+          "x": 8,
+          "y": 7.84259259259259,
+          "width": 50,
+          "height": 2.314814814814815
+        },
+        "text": "普通 70% · 精良 25% · 史詩 5%"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "附魔鐵砧",
+      "font": 34,
+      "clip": {
+        "x": 172.8,
+        "y": 89.7888888888889,
+        "width": 1113.6,
+        "height": 47.22222222222223
+      },
+      "ink": {
+        "x": 663.5999999999999,
+        "y": 97.66562500000002,
+        "width": 133,
+        "height": 31
+      }
+    },
+    {
+      "text": "320",
+      "font": 17.25,
+      "clip": {
+        "x": 1440,
+        "y": 86.42083333333336,
+        "width": 134.4,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1492.2031127929688,
+        "y": 92.13437500000003,
+        "width": 29.995849609375,
+        "height": 13
+      }
+    },
+    {
+      "text": "18",
+      "font": 17.25,
+      "clip": {
+        "x": 1670.4,
+        "y": 86.42083333333336,
+        "width": 115.2,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1719.0020751953125,
+        "y": 92.13437500000003,
+        "width": 18.9979248046875,
+        "height": 13
+      }
+    },
+    {
+      "text": "部隊配置",
+      "font": 22,
+      "clip": {
+        "x": 1190.4,
+        "y": 967.5222222222222,
+        "width": 268.8000000000003,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1281.8000000000002,
+        "y": 972.3781250000001,
+        "width": 86,
+        "height": 20
+      }
+    },
+    {
+      "text": "直接出戰",
+      "font": 22,
+      "clip": {
+        "x": 1497.6,
+        "y": 967.5222222222222,
+        "width": 288,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1598.6,
+        "y": 972.3781250000001,
+        "width": 87,
+        "height": 20
+      }
+    },
+    {
+      "text": "鍛造師 · 布洛克",
+      "font": 17.25,
+      "clip": {
+        "x": 153.6,
+        "y": 669.6208333333334,
+        "width": 480,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 335.54970703125,
+        "y": 673.334375,
+        "width": 115.8505859375,
+        "height": 16
+      }
+    },
+    {
+      "text": "鐵匠等你落槌。先穿好裝備；",
+      "font": 18,
+      "clip": {
+        "x": 153.6,
+        "y": 772.2,
+        "width": 480,
+        "height": 64.8
+      },
+      "ink": {
+        "x": 276.6,
+        "y": 774.015625,
+        "width": 227,
+        "height": 19
+      }
+    },
+    {
+      "text": "新詞綴不合意，也能保留舊的",
+      "font": 18,
+      "clip": {
+        "x": 153.6,
+        "y": 772.2,
+        "width": 480,
+        "height": 64.8
+      },
+      "ink": {
+        "x": 276.6,
+        "y": 795.615625,
+        "width": 233,
+        "height": 17
+      }
+    },
+    {
+      "text": "。",
+      "font": 18,
+      "clip": {
+        "x": 153.6,
+        "y": 772.2,
+        "width": 480,
+        "height": 64.8
+      },
+      "ink": {
+        "x": 391.6,
+        "y": 824.215625,
+        "width": 5,
+        "height": 4
+      }
+    },
+    {
+      "text": "選擇已穿戴的部位",
+      "font": 17.25,
+      "clip": {
+        "x": 710.4,
+        "y": 183.62083333333337,
+        "width": 1075.2,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1179,
+        "y": 187.33437500000002,
+        "width": 137.75,
+        "height": 16
+      }
+    },
+    {
+      "text": "頭",
+      "font": 22,
+      "clip": {
+        "x": 710.4,
+        "y": 287.1222222222222,
+        "width": 199.67999999999995,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 800.24,
+        "y": 292.978125,
+        "width": 21,
+        "height": 19
+      }
+    },
+    {
+      "text": "身",
+      "font": 22,
+      "clip": {
+        "x": 925.44,
+        "y": 287.1222222222222,
+        "width": 199.67999999999995,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1015.28,
+        "y": 292.978125,
+        "width": 21,
+        "height": 19
+      }
+    },
+    {
+      "text": "腳",
+      "font": 22,
+      "clip": {
+        "x": 1140.48,
+        "y": 287.1222222222222,
+        "width": 199.67999999999995,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1230.32,
+        "y": 291.978125,
+        "width": 20,
+        "height": 20
+      }
+    },
+    {
+      "text": "手",
+      "font": 22,
+      "clip": {
+        "x": 1355.52,
+        "y": 287.1222222222222,
+        "width": 199.68000000000012,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1445.3600000000001,
+        "y": 291.978125,
+        "width": 20,
+        "height": 20
+      }
+    },
+    {
+      "text": "武器",
+      "font": 22,
+      "clip": {
+        "x": 1570.56,
+        "y": 287.1222222222222,
+        "width": 199.68000000000012,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1649.4,
+        "y": 291.978125,
+        "width": 43,
+        "height": 20
+      }
+    },
+    {
+      "text": "◆ 劍兵 · 5 金",
+      "font": 22,
+      "clip": {
+        "x": 710.4,
+        "y": 359.9222222222222,
+        "width": 345.6,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 824.68828125,
+        "y": 364.778125,
+        "width": 117.0234375,
+        "height": 20
+      }
+    },
+    {
+      "text": "槍兵 · 10 金",
+      "font": 22,
+      "clip": {
+        "x": 1075.2,
+        "y": 359.9222222222222,
+        "width": 345.6,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1192.4638671875,
+        "y": 364.778125,
+        "width": 111.072265625,
+        "height": 20
+      }
+    },
+    {
+      "text": "騎兵 · 20 金",
+      "font": 22,
+      "clip": {
+        "x": 1440,
+        "y": 359.9222222222222,
+        "width": 345.6,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1557.2638671875,
+        "y": 364.778125,
+        "width": 111.072265625,
+        "height": 20
+      }
+    },
+    {
+      "text": "穿軍刃",
+      "font": 17.25,
+      "clip": {
+        "x": 960,
+        "y": 583.2208333333333,
+        "width": 787.2,
+        "height": 23.95833333333333
+      },
+      "ink": {
+        "x": 1328.725,
+        "y": 586.9343749999999,
+        "width": 49.5,
+        "height": 16
+      }
+    },
+    {
+      "text": "目前詞綴 · 無",
+      "font": 18,
+      "clip": {
+        "x": 960,
+        "y": 612.7,
+        "width": 787.2,
+        "height": 25
+      },
+      "ink": {
+        "x": 1305.02578125,
+        "y": 616.215625,
+        "width": 100.1484375,
+        "height": 17
+      }
+    },
+    {
+      "text": "每次消耗 8 結晶 · 每處最多兩次",
+      "font": 18,
+      "clip": {
+        "x": 710.4,
+        "y": 793.9000000000001,
+        "width": 537.6,
+        "height": 25
+      },
+      "ink": {
+        "x": 854.90947265625,
+        "y": 797.4156250000001,
+        "width": 248.5810546875,
+        "height": 17
+      }
+    },
+    {
+      "text": "試附魔",
+      "font": 22,
+      "clip": {
+        "x": 1286.4,
+        "y": 805.5222222222222,
+        "width": 499.2,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1504,
+        "y": 810.3781250000001,
+        "width": 64,
+        "height": 20
+      }
+    },
+    {
+      "text": "普通 70% · 精良 25% · 史詩 5%",
+      "font": 18,
+      "clip": {
+        "x": 153.6,
+        "y": 970.3,
+        "width": 960,
+        "height": 25
+      },
+      "ink": {
+        "x": 509.85,
+        "y": 973.815625,
+        "width": 247.6533203125,
+        "height": 17
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 149,
+    "assets": [
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_scene-shade",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-coin",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-crystal",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-button-primary-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_portrait-smith",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_gear-pierce",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

@@ -1,0 +1,1580 @@
+{
+  "tree": {
+    "kind": "screen",
+    "id": "forest_lord",
+    "node": "menu:profiles",
+    "children": [
+      {
+        "kind": "image",
+        "id": "screen_shade",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 100,
+          "height": 100
+        },
+        "asset": "texture://ui_scene-shade",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_fill",
+        "rect": {
+          "x": 3.8,
+          "y": 5,
+          "width": 92.4,
+          "height": 90
+        },
+        "asset": "texture://ui_shop-surface",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tl",
+        "rect": {
+          "x": 3,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_t",
+        "rect": {
+          "x": 7.5,
+          "y": 85,
+          "width": 85,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_tr",
+        "rect": {
+          "x": 92.5,
+          "y": 85,
+          "width": 4.5,
+          "height": 12
+        },
+        "asset": "texture://ui_shop-window-panel-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_l",
+        "rect": {
+          "x": 3,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_c",
+        "rect": {
+          "x": 7.5,
+          "y": 11,
+          "width": 85,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_r",
+        "rect": {
+          "x": 92.5,
+          "y": 11,
+          "width": 4.5,
+          "height": 74
+        },
+        "asset": "texture://ui_shop-window-panel-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_bl",
+        "rect": {
+          "x": 3,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_b",
+        "rect": {
+          "x": 7.5,
+          "y": 3,
+          "width": 85,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "screen_back_br",
+        "rect": {
+          "x": 92.5,
+          "y": 3,
+          "width": 4.5,
+          "height": 8
+        },
+        "asset": "texture://ui_shop-window-panel-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "screen_title",
+        "rect": {
+          "x": 9,
+          "y": 87.31378600823045,
+          "width": 82,
+          "height": 4.372427983539095
+        },
+        "text": "讀取進度"
+      },
+      {
+        "kind": "text",
+        "id": "profiles_hint",
+        "rect": {
+          "x": 9,
+          "y": 80.79012345679013,
+          "width": 82,
+          "height": 3.0864197530864192
+        },
+        "text": "選擇一個札記繼續；空白欄位可建立新進度。"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_1_tl",
+        "rect": {
+          "x": 13,
+          "y": 59.021276595744695,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_1_t",
+        "rect": {
+          "x": 17.914893617021278,
+          "y": 59.021276595744695,
+          "width": 12.170212765957444,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_1_tr",
+        "rect": {
+          "x": 30.085106382978722,
+          "y": 59.021276595744695,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_1_l",
+        "rect": {
+          "x": 13,
+          "y": 32.97872340425532,
+          "width": 4.914893617021278,
+          "height": 26.042553191489375
+        },
+        "asset": "texture://ui_shop-card-rare-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_1_c",
+        "rect": {
+          "x": 17.914893617021278,
+          "y": 32.97872340425532,
+          "width": 12.170212765957444,
+          "height": 26.042553191489375
+        },
+        "asset": "texture://ui_shop-card-rare-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_1_r",
+        "rect": {
+          "x": 30.085106382978722,
+          "y": 32.97872340425532,
+          "width": 4.914893617021278,
+          "height": 26.042553191489375
+        },
+        "asset": "texture://ui_shop-card-rare-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_1_bl",
+        "rect": {
+          "x": 13,
+          "y": 18,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_1_b",
+        "rect": {
+          "x": 17.914893617021278,
+          "y": 18,
+          "width": 12.170212765957444,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_1_br",
+        "rect": {
+          "x": 30.085106382978722,
+          "y": 18,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "profile_slot_1",
+        "rect": {
+          "x": 16,
+          "y": 57.69753086419753,
+          "width": 16,
+          "height": 3.0864197530864192
+        },
+        "text": "札記 1"
+      },
+      {
+        "kind": "text",
+        "id": "profile_name_1",
+        "rect": {
+          "x": 16,
+          "y": 52.25514403292181,
+          "width": 16,
+          "height": 3.6008230452674894
+        },
+        "text": "尚未建立"
+      },
+      {
+        "kind": "text",
+        "id": "profile_detail_1",
+        "rect": {
+          "x": 16,
+          "y": 42.53703703703703,
+          "width": 16,
+          "height": 5.333333333333333
+        },
+        "text": "沒有遠征紀錄\n建立後從第一站開始"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_1_plate_tl",
+        "rect": {
+          "x": 16,
+          "y": 37.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_1_plate_t",
+        "rect": {
+          "x": 16.6,
+          "y": 37.93333333333333,
+          "width": 14.799999999999994,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_1_plate_tr",
+        "rect": {
+          "x": 31.399999999999995,
+          "y": 37.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_1_plate_l",
+        "rect": {
+          "x": 16,
+          "y": 33.56666666666667,
+          "width": 0.6000000000000014,
+          "height": 4.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_1_plate_c",
+        "rect": {
+          "x": 16.6,
+          "y": 33.56666666666667,
+          "width": 14.799999999999994,
+          "height": 4.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_1_plate_r",
+        "rect": {
+          "x": 31.399999999999995,
+          "y": 33.56666666666667,
+          "width": 0.6000000000000014,
+          "height": 4.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_1_plate_bl",
+        "rect": {
+          "x": 16,
+          "y": 32.5,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_1_plate_b",
+        "rect": {
+          "x": 16.6,
+          "y": 32.5,
+          "width": 14.799999999999994,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_1_plate_br",
+        "rect": {
+          "x": 31.399999999999995,
+          "y": 32.5,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "profile_create_1",
+        "rect": {
+          "x": 16,
+          "y": 34.20679012345679,
+          "width": 15.999999999999996,
+          "height": 3.0864197530864192
+        },
+        "text": "建立新檔",
+        "action": "Profile1"
+      },
+      {
+        "kind": "button",
+        "id": "profile_create_1_hit_top",
+        "rect": {
+          "x": 16,
+          "y": 37.29320987654321,
+          "width": 15.999999999999996,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "Profile1"
+      },
+      {
+        "kind": "button",
+        "id": "profile_create_1_hit_bottom",
+        "rect": {
+          "x": 16,
+          "y": 32.49999999999999,
+          "width": 15.999999999999996,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "Profile1"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_2_tl",
+        "rect": {
+          "x": 39,
+          "y": 59.021276595744695,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_2_t",
+        "rect": {
+          "x": 43.91489361702128,
+          "y": 59.021276595744695,
+          "width": 12.170212765957444,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_2_tr",
+        "rect": {
+          "x": 56.08510638297872,
+          "y": 59.021276595744695,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_2_l",
+        "rect": {
+          "x": 39,
+          "y": 32.97872340425532,
+          "width": 4.914893617021278,
+          "height": 26.042553191489375
+        },
+        "asset": "texture://ui_shop-card-rare-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_2_c",
+        "rect": {
+          "x": 43.91489361702128,
+          "y": 32.97872340425532,
+          "width": 12.170212765957444,
+          "height": 26.042553191489375
+        },
+        "asset": "texture://ui_shop-card-rare-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_2_r",
+        "rect": {
+          "x": 56.08510638297872,
+          "y": 32.97872340425532,
+          "width": 4.914893617021278,
+          "height": 26.042553191489375
+        },
+        "asset": "texture://ui_shop-card-rare-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_2_bl",
+        "rect": {
+          "x": 39,
+          "y": 18,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_2_b",
+        "rect": {
+          "x": 43.91489361702128,
+          "y": 18,
+          "width": 12.170212765957444,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_2_br",
+        "rect": {
+          "x": 56.08510638297872,
+          "y": 18,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "profile_slot_2",
+        "rect": {
+          "x": 42,
+          "y": 57.69753086419753,
+          "width": 16,
+          "height": 3.0864197530864192
+        },
+        "text": "札記 2"
+      },
+      {
+        "kind": "text",
+        "id": "profile_name_2",
+        "rect": {
+          "x": 42,
+          "y": 52.25514403292181,
+          "width": 16,
+          "height": 3.6008230452674894
+        },
+        "text": "尚未建立"
+      },
+      {
+        "kind": "text",
+        "id": "profile_detail_2",
+        "rect": {
+          "x": 42,
+          "y": 42.53703703703703,
+          "width": 16,
+          "height": 5.333333333333333
+        },
+        "text": "沒有遠征紀錄\n建立後從第一站開始"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_2_plate_tl",
+        "rect": {
+          "x": 42,
+          "y": 37.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_2_plate_t",
+        "rect": {
+          "x": 42.6,
+          "y": 37.93333333333333,
+          "width": 14.79999999999999,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_2_plate_tr",
+        "rect": {
+          "x": 57.39999999999999,
+          "y": 37.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_2_plate_l",
+        "rect": {
+          "x": 42,
+          "y": 33.56666666666667,
+          "width": 0.6000000000000014,
+          "height": 4.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_2_plate_c",
+        "rect": {
+          "x": 42.6,
+          "y": 33.56666666666667,
+          "width": 14.79999999999999,
+          "height": 4.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_2_plate_r",
+        "rect": {
+          "x": 57.39999999999999,
+          "y": 33.56666666666667,
+          "width": 0.6000000000000014,
+          "height": 4.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_2_plate_bl",
+        "rect": {
+          "x": 42,
+          "y": 32.5,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_2_plate_b",
+        "rect": {
+          "x": 42.6,
+          "y": 32.5,
+          "width": 14.79999999999999,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_2_plate_br",
+        "rect": {
+          "x": 57.39999999999999,
+          "y": 32.5,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "profile_create_2",
+        "rect": {
+          "x": 42,
+          "y": 34.20679012345679,
+          "width": 15.999999999999993,
+          "height": 3.0864197530864192
+        },
+        "text": "建立新檔",
+        "action": "Profile2"
+      },
+      {
+        "kind": "button",
+        "id": "profile_create_2_hit_top",
+        "rect": {
+          "x": 42,
+          "y": 37.29320987654321,
+          "width": 15.999999999999993,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "Profile2"
+      },
+      {
+        "kind": "button",
+        "id": "profile_create_2_hit_bottom",
+        "rect": {
+          "x": 42,
+          "y": 32.49999999999999,
+          "width": 15.999999999999993,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "Profile2"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_3_tl",
+        "rect": {
+          "x": 65,
+          "y": 59.021276595744695,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_3_t",
+        "rect": {
+          "x": 69.91489361702128,
+          "y": 59.021276595744695,
+          "width": 12.170212765957444,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_3_tr",
+        "rect": {
+          "x": 82.08510638297872,
+          "y": 59.021276595744695,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_3_l",
+        "rect": {
+          "x": 65,
+          "y": 32.97872340425532,
+          "width": 4.914893617021278,
+          "height": 26.042553191489375
+        },
+        "asset": "texture://ui_shop-card-rare-v2-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_3_c",
+        "rect": {
+          "x": 69.91489361702128,
+          "y": 32.97872340425532,
+          "width": 12.170212765957444,
+          "height": 26.042553191489375
+        },
+        "asset": "texture://ui_shop-card-rare-v2-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_3_r",
+        "rect": {
+          "x": 82.08510638297872,
+          "y": 32.97872340425532,
+          "width": 4.914893617021278,
+          "height": 26.042553191489375
+        },
+        "asset": "texture://ui_shop-card-rare-v2-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_3_bl",
+        "rect": {
+          "x": 65,
+          "y": 18,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_3_b",
+        "rect": {
+          "x": 69.91489361702128,
+          "y": 18,
+          "width": 12.170212765957444,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_card_3_br",
+        "rect": {
+          "x": 82.08510638297872,
+          "y": 18,
+          "width": 4.914893617021278,
+          "height": 14.97872340425532
+        },
+        "asset": "texture://ui_shop-card-rare-v2-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "profile_slot_3",
+        "rect": {
+          "x": 68,
+          "y": 57.69753086419753,
+          "width": 16,
+          "height": 3.0864197530864192
+        },
+        "text": "札記 3"
+      },
+      {
+        "kind": "text",
+        "id": "profile_name_3",
+        "rect": {
+          "x": 68,
+          "y": 52.25514403292181,
+          "width": 16,
+          "height": 3.6008230452674894
+        },
+        "text": "尚未建立"
+      },
+      {
+        "kind": "text",
+        "id": "profile_detail_3",
+        "rect": {
+          "x": 68,
+          "y": 42.53703703703703,
+          "width": 16,
+          "height": 5.333333333333333
+        },
+        "text": "沒有遠征紀錄\n建立後從第一站開始"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_3_plate_tl",
+        "rect": {
+          "x": 68,
+          "y": 37.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_3_plate_t",
+        "rect": {
+          "x": 68.6,
+          "y": 37.93333333333333,
+          "width": 14.800000000000026,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_3_plate_tr",
+        "rect": {
+          "x": 83.40000000000002,
+          "y": 37.93333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_3_plate_l",
+        "rect": {
+          "x": 68,
+          "y": 33.56666666666667,
+          "width": 0.5999999999999943,
+          "height": 4.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_3_plate_c",
+        "rect": {
+          "x": 68.6,
+          "y": 33.56666666666667,
+          "width": 14.800000000000026,
+          "height": 4.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_3_plate_r",
+        "rect": {
+          "x": 83.40000000000002,
+          "y": 33.56666666666667,
+          "width": 0.5999999999999943,
+          "height": 4.36666666666666
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_3_plate_bl",
+        "rect": {
+          "x": 68,
+          "y": 32.5,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_3_plate_b",
+        "rect": {
+          "x": 68.6,
+          "y": 32.5,
+          "width": 14.800000000000026,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profile_create_3_plate_br",
+        "rect": {
+          "x": 83.40000000000002,
+          "y": 32.5,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "profile_create_3",
+        "rect": {
+          "x": 68,
+          "y": 34.20679012345679,
+          "width": 16.000000000000014,
+          "height": 3.0864197530864192
+        },
+        "text": "建立新檔",
+        "action": "Profile3"
+      },
+      {
+        "kind": "button",
+        "id": "profile_create_3_hit_top",
+        "rect": {
+          "x": 68,
+          "y": 37.29320987654321,
+          "width": 16.000000000000014,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "Profile3"
+      },
+      {
+        "kind": "button",
+        "id": "profile_create_3_hit_bottom",
+        "rect": {
+          "x": 68,
+          "y": 32.49999999999999,
+          "width": 16.000000000000014,
+          "height": 1.7067901234567904
+        },
+        "text": "",
+        "action": "Profile3"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_tl",
+        "rect": {
+          "x": 32,
+          "y": 10.933333333333335,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_t",
+        "rect": {
+          "x": 32.6,
+          "y": 10.933333333333335,
+          "width": 34.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_tr",
+        "rect": {
+          "x": 67.4,
+          "y": 10.933333333333335,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_l",
+        "rect": {
+          "x": 32,
+          "y": 7.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_c",
+        "rect": {
+          "x": 32.6,
+          "y": 7.066666666666666,
+          "width": 34.800000000000004,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_r",
+        "rect": {
+          "x": 67.4,
+          "y": 7.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 3.866666666666669
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_bl",
+        "rect": {
+          "x": 32,
+          "y": 6,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_b",
+        "rect": {
+          "x": 32.6,
+          "y": 6,
+          "width": 34.800000000000004,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "profiles_back_plate_br",
+        "rect": {
+          "x": 67.4,
+          "y": 6,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "profiles_back",
+        "rect": {
+          "x": 32,
+          "y": 7.456790123456797,
+          "width": 36,
+          "height": 3.0864197530864192
+        },
+        "text": "返回主選單",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "profiles_back_hit_top",
+        "rect": {
+          "x": 32,
+          "y": 10.543209876543209,
+          "width": 36,
+          "height": 1.4567901234567913
+        },
+        "text": "",
+        "action": "UI_home"
+      },
+      {
+        "kind": "button",
+        "id": "profiles_back_hit_bottom",
+        "rect": {
+          "x": 32,
+          "y": 6.000000000000007,
+          "width": 36,
+          "height": 1.4567901234567913
+        },
+        "text": "",
+        "action": "UI_home"
+      }
+    ]
+  },
+  "glyphs": [
+    {
+      "text": "讀取進度",
+      "font": 34,
+      "clip": {
+        "x": 172.8,
+        "y": 89.7888888888889,
+        "width": 1574.4,
+        "height": 47.22222222222223
+      },
+      "ink": {
+        "x": 894,
+        "y": 97.66562500000002,
+        "width": 133,
+        "height": 31
+      }
+    },
+    {
+      "text": "選擇一個札記繼續；空白欄位可建立新進度。",
+      "font": 24,
+      "clip": {
+        "x": 172.8,
+        "y": 174.13333333333333,
+        "width": 1574.4,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 721,
+        "y": 179.15937499999998,
+        "width": 470,
+        "height": 24
+      }
+    },
+    {
+      "text": "札記 1",
+      "font": 24,
+      "clip": {
+        "x": 307.2,
+        "y": 423.53333333333336,
+        "width": 307.2,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 427.84492187499995,
+        "y": 428.55937500000005,
+        "width": 66,
+        "height": 22
+      }
+    },
+    {
+      "text": "尚未建立",
+      "font": 28,
+      "clip": {
+        "x": 307.2,
+        "y": 476.75555555555553,
+        "width": 307.2,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 407.79999999999995,
+        "y": 483.121875,
+        "width": 108,
+        "height": 26
+      }
+    },
+    {
+      "text": "沒有遠征紀錄",
+      "font": 24,
+      "clip": {
+        "x": 307.2,
+        "y": 563.0000000000001,
+        "width": 307.2,
+        "height": 57.6
+      },
+      "ink": {
+        "x": 389.79999999999995,
+        "y": 566.7593750000001,
+        "width": 143,
+        "height": 21
+      }
+    },
+    {
+      "text": "建立後從第一站開始",
+      "font": 24,
+      "clip": {
+        "x": 307.2,
+        "y": 563.0000000000001,
+        "width": 307.2,
+        "height": 57.6
+      },
+      "ink": {
+        "x": 353.79999999999995,
+        "y": 595.559375,
+        "width": 215,
+        "height": 21
+      }
+    },
+    {
+      "text": "建立新檔",
+      "font": 24,
+      "clip": {
+        "x": 307.2,
+        "y": 677.2333333333335,
+        "width": 307.19999999999993,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 413.79999999999995,
+        "y": 683.2593750000001,
+        "width": 94,
+        "height": 21
+      }
+    },
+    {
+      "text": "札記 2",
+      "font": 24,
+      "clip": {
+        "x": 806.4,
+        "y": 423.53333333333336,
+        "width": 307.2,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 927.044921875,
+        "y": 428.55937500000005,
+        "width": 66,
+        "height": 22
+      }
+    },
+    {
+      "text": "尚未建立",
+      "font": 28,
+      "clip": {
+        "x": 806.4,
+        "y": 476.75555555555553,
+        "width": 307.2,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 907,
+        "y": 483.121875,
+        "width": 108,
+        "height": 26
+      }
+    },
+    {
+      "text": "沒有遠征紀錄",
+      "font": 24,
+      "clip": {
+        "x": 806.4,
+        "y": 563.0000000000001,
+        "width": 307.2,
+        "height": 57.6
+      },
+      "ink": {
+        "x": 889,
+        "y": 566.7593750000001,
+        "width": 143,
+        "height": 21
+      }
+    },
+    {
+      "text": "建立後從第一站開始",
+      "font": 24,
+      "clip": {
+        "x": 806.4,
+        "y": 563.0000000000001,
+        "width": 307.2,
+        "height": 57.6
+      },
+      "ink": {
+        "x": 853,
+        "y": 595.559375,
+        "width": 215,
+        "height": 21
+      }
+    },
+    {
+      "text": "建立新檔",
+      "font": 24,
+      "clip": {
+        "x": 806.4,
+        "y": 677.2333333333335,
+        "width": 307.1999999999999,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 912.9999999999999,
+        "y": 683.2593750000001,
+        "width": 94,
+        "height": 21
+      }
+    },
+    {
+      "text": "札記 3",
+      "font": 24,
+      "clip": {
+        "x": 1305.6,
+        "y": 423.53333333333336,
+        "width": 307.2,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 1426.2449218749998,
+        "y": 428.55937500000005,
+        "width": 66,
+        "height": 22
+      }
+    },
+    {
+      "text": "尚未建立",
+      "font": 28,
+      "clip": {
+        "x": 1305.6,
+        "y": 476.75555555555553,
+        "width": 307.2,
+        "height": 38.888888888888886
+      },
+      "ink": {
+        "x": 1406.1999999999998,
+        "y": 483.121875,
+        "width": 108,
+        "height": 26
+      }
+    },
+    {
+      "text": "沒有遠征紀錄",
+      "font": 24,
+      "clip": {
+        "x": 1305.6,
+        "y": 563.0000000000001,
+        "width": 307.2,
+        "height": 57.6
+      },
+      "ink": {
+        "x": 1388.1999999999998,
+        "y": 566.7593750000001,
+        "width": 143,
+        "height": 21
+      }
+    },
+    {
+      "text": "建立後從第一站開始",
+      "font": 24,
+      "clip": {
+        "x": 1305.6,
+        "y": 563.0000000000001,
+        "width": 307.2,
+        "height": 57.6
+      },
+      "ink": {
+        "x": 1352.1999999999998,
+        "y": 595.559375,
+        "width": 215,
+        "height": 21
+      }
+    },
+    {
+      "text": "建立新檔",
+      "font": 24,
+      "clip": {
+        "x": 1305.6,
+        "y": 677.2333333333335,
+        "width": 307.2000000000003,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 1412.2,
+        "y": 683.2593750000001,
+        "width": 94,
+        "height": 21
+      }
+    },
+    {
+      "text": "返回主選單",
+      "font": 24,
+      "clip": {
+        "x": 614.4,
+        "y": 966.1333333333333,
+        "width": 691.2,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 901,
+        "y": 972.159375,
+        "width": 118,
+        "height": 21
+      }
+    }
+  ],
+  "metrics": {
+    "backend": "canvas2d",
+    "nodes": 97,
+    "assets": [
+      {
+        "id": "texture://ui_shop-surface",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_scene-shade",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-window-panel-v2-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_shop-card-rare-v2-br",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  }
+}

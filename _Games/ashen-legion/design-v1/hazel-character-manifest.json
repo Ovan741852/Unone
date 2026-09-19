@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-19",
+  "mode": "built-in image_gen",
+  "useCase": "style-transfer",
+  "styleReference": "assets/formal-ui/quartermaster-v1.png",
+  "scope": "Formal UI character portraits only. Retain approved Hazel, lord, and key art; no 3D combat model changes.",
+  "packaging": "Lossless copies of generated PNGs, retaining alpha and originals; no background removal, repainting or image resampling.",
+  "entries": [
+    {
+      "id": "portrait-sword",
+      "subject": "Sword infantry",
+      "generated": true,
+      "source": "C:/Users/liNao/.codex/generated_images/01a004a9-a56e-7a40-b7d4-79fc1688ff21/exec-fee90d4a-d9e7-4bed-a39f-b0a670a705e3.png",
+      "original": "art-source/hazel-characters-v1/portrait-sword-r2.png",
+      "runtime": "assets/formal-ui/characters-v1/portrait-sword.png",
+      "resources": [
+        "portrait-sword"
+      ],
+      "sourceSha256": "ce97ac34504b45f3d8695db20d00393d1114b8d27e7683cfdefab7f6c4fe696a",
+      "runtimeSha256": "ce97ac34504b45f3d8695db20d00393d1114b8d27e7683cfdefab7f6c4fe696a",
+      "referenceImages": [
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/quartermaster-v1.png",
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/portrait-sword.png"
+      ],
+      "prompt": "Create ONE production-ready game character portrait PNG, genuine transparent alpha background (not black, not white, no checkerboard illustration). Waist-up isolated figure, centered square canvas, 7% clear margin on all sides including all props. Fully painted detailed storybook fantasy RPG illustration, hand-painted angular brushwork, natural expressive facial anatomy and textured cloth/leather/aged gold/steel, warm directional light upper left, restrained rim light. Match image 1's APPROVED Hazel portrait's finish, face detailing and palette EXACTLY: deep pine green and teal, brick red, warm cream, aged gold. Do not reproduce Hazel's face or outfit on the new character. Stylized but finely finished, NOT vector art, NOT polygon/chibi toy, NOT photorealism, NOT smooth 3D render. A single clean bust silhouette, no border, no badge, no UI, no text, no title, no scenery, no ground/shadow. Clear readable eyes and distinct face at 96px; hands anatomically coherent. Keep all weapons, headgear and elbows inside frame.\n\nCharacter specifics: Image 2 is the old identity and equipment reference only, not a style target. Reinterpret its adult clean-shaven dark-haired sword infantryman as a fully painted human, not a block-shaped toy. Teal steel open-face helmet with short brick-red crest; green quilted armour with steel pauldrons; leather gloves, red short scarf. Keep the identifying RED shield with gold diamond emblem on viewer right and a short upright silver sword on viewer left. Friendly determined young adult guard. Bust through belt with both shield and sword tip fully inside canvas.",
+      "revision": 2,
+      "revisionPrompt": "Use case: precise-object-edit. Keep this exact painted sword infantryman, face, outfit, red crest, red diamond-emblem shield and sword unchanged. Only fix framing: zoom OUT by 20%, uniformly make the complete figure smaller and center it on a square transparent canvas. Reconstruct the missing tiny TOP of the red helmet crest. REQUIRE an obvious blank transparent margin at least 80 pixels above the FULL red helmet crest and 50 pixels left, right and below the silhouette. Whole weapon tips, all elbows, entire shield and lower torso silhouette inside the canvas. Do NOT fill the background; genuine transparent alpha PNG. No new background, no border, no words, no added objects. Maintain the same fine painted finish and colors. The figure must NOT touch any canvas edge.",
+      "revisionReference": "C:/Users/liNao/.codex/generated_images/01a004a9-a56e-7a40-b7d4-79fc1688ff21/exec-58516216-8406-4c33-b943-6dd688035fdd.png"
+    },
+    {
+      "id": "portrait-spear",
+      "subject": "Spear infantry",
+      "generated": true,
+      "source": "C:/Users/liNao/.codex/generated_images/01a004a9-a56e-7a40-b7d4-79fc1688ff21/exec-6a6fca6d-9afd-4978-add1-633d06815e84.png",
+      "original": "art-source/hazel-characters-v1/portrait-spear.png",
+      "runtime": "assets/formal-ui/characters-v1/portrait-spear.png",
+      "resources": [
+        "portrait-spear"
+      ],
+      "sourceSha256": "bc4aeb19ab269d3ec56ca339a69e93edef2709b05fc19b89c55baf0952a02198",
+      "runtimeSha256": "bc4aeb19ab269d3ec56ca339a69e93edef2709b05fc19b89c55baf0952a02198",
+      "referenceImages": [
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/quartermaster-v1.png",
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/portrait-spear.png"
+      ],
+      "prompt": "Create ONE production-ready game character portrait PNG, genuine transparent alpha background (not black, not white, no checkerboard illustration). Waist-up isolated figure, centered square canvas, 7% clear margin on all sides including all props. Fully painted detailed storybook fantasy RPG illustration, hand-painted angular brushwork, natural expressive facial anatomy and textured cloth/leather/aged gold/steel, warm directional light upper left, restrained rim light. Match image 1's APPROVED Hazel portrait's finish, face detailing and palette EXACTLY: deep pine green and teal, brick red, warm cream, aged gold. Do not reproduce Hazel's face or outfit on the new character. Stylized but finely finished, NOT vector art, NOT polygon/chibi toy, NOT photorealism, NOT smooth 3D render. A single clean bust silhouette, no border, no badge, no UI, no text, no title, no scenery, no ground/shadow. Clear readable eyes and distinct face at 96px; hands anatomically coherent. Keep all weapons, headgear and elbows inside frame.\n\nCharacter specifics: Image 2 is old identity/equipment only, not a style target. Adult male spear infantryman, short dark hair, mature steady expression, teal open-face helmet with pale jade green central ridge, pine green padded coat, weathered steel shoulderplates and leather gauntlets. Pale mint unit accent, old gold buckle. Hold ONE upright wooden spear at viewer right; frame the entire pointed steel spearhead and his holding gloved hand within the image. Waist-up; shaft terminates naturally at bottom of bust, no extra spear. Visually distinct from sword and cavalry, no shield."
+    },
+    {
+      "id": "portrait-cavalry",
+      "subject": "Cavalry",
+      "generated": true,
+      "source": "C:/Users/liNao/.codex/generated_images/01a004a9-a56e-7a40-b7d4-79fc1688ff21/exec-6185f3d1-7dd1-474f-aa93-07096b9777f0.png",
+      "original": "art-source/hazel-characters-v1/portrait-cavalry.png",
+      "runtime": "assets/formal-ui/characters-v1/portrait-cavalry.png",
+      "resources": [
+        "portrait-cavalry"
+      ],
+      "sourceSha256": "b65bf06021ee3a851d64d415efe782f2f3eceebc2dde4c2664e38771b8faf036",
+      "runtimeSha256": "b65bf06021ee3a851d64d415efe782f2f3eceebc2dde4c2664e38771b8faf036",
+      "referenceImages": [
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/quartermaster-v1.png",
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/portrait-cavalry.png"
+      ],
+      "prompt": "Create ONE production-ready game character portrait PNG, genuine transparent alpha background (not black, not white, no checkerboard illustration). Waist-up isolated figure, centered square canvas, 7% clear margin on all sides including all props. Fully painted detailed storybook fantasy RPG illustration, hand-painted angular brushwork, natural expressive facial anatomy and textured cloth/leather/aged gold/steel, warm directional light upper left, restrained rim light. Match image 1's APPROVED Hazel portrait's finish, face detailing and palette EXACTLY: deep pine green and teal, brick red, warm cream, aged gold. Do not reproduce Hazel's face or outfit on the new character. Stylized but finely finished, NOT vector art, NOT polygon/chibi toy, NOT photorealism, NOT smooth 3D render. A single clean bust silhouette, no border, no badge, no UI, no text, no title, no scenery, no ground/shadow. Clear readable eyes and distinct face at 96px; hands anatomically coherent. Keep all weapons, headgear and elbows inside frame.\n\nCharacter specifics: Image 2 is old identity/equipment only, not a style target. Adult male cavalry rider, teal and aged gold open-face helmet with short dark teal crest, golden ochre armoured surcoat, steel pauldrons and gloves, leather reins. Confident lively face. A SMALL tan horse's head and upper neck beside his lower torso on viewer left makes the cavalry role immediately readable. Correct horse anatomy and leather bridle, NOT a toy/hobbyhorse. Bust of mounted rider and horse neck integrated as one isolated portrait. Hold reins, NO lance (avoid overly narrow silhouette). Keep full head/helmet/horse ears inside frame."
+    },
+    {
+      "id": "portrait-scholar",
+      "subject": "Military scholar Sern",
+      "generated": true,
+      "source": "C:/Users/liNao/.codex/generated_images/01a004a9-a56e-7a40-b7d4-79fc1688ff21/exec-336eb087-9dbb-4314-897c-c8c9175781f2.png",
+      "original": "art-source/hazel-characters-v1/portrait-scholar.png",
+      "runtime": "assets/formal-ui/characters-v1/portrait-scholar.png",
+      "resources": [
+        "portrait-scholar"
+      ],
+      "sourceSha256": "2b8df2e76221dad9316110c10af44c65cd8d4bc85542276feb079281ad6628a2",
+      "runtimeSha256": "2b8df2e76221dad9316110c10af44c65cd8d4bc85542276feb079281ad6628a2",
+      "referenceImages": [
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/quartermaster-v1.png",
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/portrait-scholar.png"
+      ],
+      "prompt": "Create ONE production-ready game character portrait PNG, genuine transparent alpha background (not black, not white, no checkerboard illustration). Waist-up isolated figure, centered square canvas, 7% clear margin on all sides including all props. Fully painted detailed storybook fantasy RPG illustration, hand-painted angular brushwork, natural expressive facial anatomy and textured cloth/leather/aged gold/steel, warm directional light upper left, restrained rim light. Match image 1's APPROVED Hazel portrait's finish, face detailing and palette EXACTLY: deep pine green and teal, brick red, warm cream, aged gold. Do not reproduce Hazel's face or outfit on the new character. Stylized but finely finished, NOT vector art, NOT polygon/chibi toy, NOT photorealism, NOT smooth 3D render. A single clean bust silhouette, no border, no badge, no UI, no text, no title, no scenery, no ground/shadow. Clear readable eyes and distinct face at 96px; hands anatomically coherent. Keep all weapons, headgear and elbows inside frame.\n\nCharacter specifics: Image 2 is old identity/costume reference only. Adult male military scholar Sern, scholarly narrow angular face, dark brown short hair with silver at temples, thin small round brass spectacles, teal/blue folded scholar cap, cream tunic, deep teal scarf and quilted forest-green cloak. Hold an open aged-cream technical book across his lower chest with both hands; sketches may be abstract line markings but no readable writing. Brass compass clipped at belt. Wise wry expression. Waist-up, book clearly visible. No wizard hat, no magic, no weapons."
+    },
+    {
+      "id": "portrait-alchemist",
+      "subject": "Apothecary Fran",
+      "generated": true,
+      "source": "C:/Users/liNao/.codex/generated_images/01a004a9-a56e-7a40-b7d4-79fc1688ff21/exec-cb3f5ae8-ebad-42cf-97fd-faab7f776a15.png",
+      "original": "art-source/hazel-characters-v1/portrait-alchemist.png",
+      "runtime": "assets/formal-ui/characters-v1/portrait-alchemist.png",
+      "resources": [
+        "portrait-alchemist"
+      ],
+      "sourceSha256": "4a09c599ce65ee6fc5bf83006a10f1e8bf4811cbaacfa8de7013d1959e1bac5a",
+      "runtimeSha256": "4a09c599ce65ee6fc5bf83006a10f1e8bf4811cbaacfa8de7013d1959e1bac5a",
+      "referenceImages": [
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/quartermaster-v1.png",
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/portrait-alchemist.png"
+      ],
+      "prompt": "Create ONE production-ready game character portrait PNG, genuine transparent alpha background (not black, not white, no checkerboard illustration). Waist-up isolated figure, centered square canvas, 7% clear margin on all sides including all props. Fully painted detailed storybook fantasy RPG illustration, hand-painted angular brushwork, natural expressive facial anatomy and textured cloth/leather/aged gold/steel, warm directional light upper left, restrained rim light. Match image 1's APPROVED Hazel portrait's finish, face detailing and palette EXACTLY: deep pine green and teal, brick red, warm cream, aged gold. Do not reproduce Hazel's face or outfit on the new character. Stylized but finely finished, NOT vector art, NOT polygon/chibi toy, NOT photorealism, NOT smooth 3D render. A single clean bust silhouette, no border, no badge, no UI, no text, no title, no scenery, no ground/shadow. Clear readable eyes and distinct face at 96px; hands anatomically coherent. Keep all weapons, headgear and elbows inside frame.\n\nCharacter specifics: Image 2 is old silhouette/palette reference only, not a style target. Reinterpret apothecary Fran as a clearly adult woman aged 30, short golden-blonde bob with pale mint green cloth headband, green work tunic, teal apron, leather belt with small stoppered vials, cream rolled sleeves. Kind lively expression, a subtle freckle. Hold a single luminous mint-green diamond-shaped glass potion bottle carefully in one gloved hand at chest height. Other hand supports a small folded herb bundle. Fine painterly textures, no cleavage, fully dressed practical artisan. Waist-up."
+    },
+    {
+      "id": "portrait-smith",
+      "subject": "Smith Brock",
+      "generated": true,
+      "source": "C:/Users/liNao/.codex/generated_images/01a004a9-a56e-7a40-b7d4-79fc1688ff21/exec-afc24e91-6d59-4d2e-8b5b-78595a0f3c6e.png",
+      "original": "art-source/hazel-characters-v1/portrait-smith.png",
+      "runtime": "assets/formal-ui/characters-v1/portrait-smith.png",
+      "resources": [
+        "portrait-smith"
+      ],
+      "sourceSha256": "29ec63d3ab8ca3fd765ab6f18fe9c036215ef67f85bd53603b014ca90dff4920",
+      "runtimeSha256": "29ec63d3ab8ca3fd765ab6f18fe9c036215ef67f85bd53603b014ca90dff4920",
+      "referenceImages": [
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/quartermaster-v1.png",
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/portrait-smith.png"
+      ],
+      "prompt": "Create ONE production-ready game character portrait PNG, genuine transparent alpha background (not black, not white, no checkerboard illustration). Waist-up isolated figure, centered square canvas, 7% clear margin on all sides including all props. Fully painted detailed storybook fantasy RPG illustration, hand-painted angular brushwork, natural expressive facial anatomy and textured cloth/leather/aged gold/steel, warm directional light upper left, restrained rim light. Match image 1's APPROVED Hazel portrait's finish, face detailing and palette EXACTLY: deep pine green and teal, brick red, warm cream, aged gold. Do not reproduce Hazel's face or outfit on the new character. Stylized but finely finished, NOT vector art, NOT polygon/chibi toy, NOT photorealism, NOT smooth 3D render. A single clean bust silhouette, no border, no badge, no UI, no text, no title, no scenery, no ground/shadow. Clear readable eyes and distinct face at 96px; hands anatomically coherent. Keep all weapons, headgear and elbows inside frame.\n\nCharacter specifics: Image 2 is old identity/costume reference. Adult stocky male smith Brock, medium brown swept hair, squared brown beard, warm weathered face, brick-brown heavy leather apron over teal tunic, cream rolled sleeves, brass rivets, muscular but natural forearms, thick work gloves. His defining dark iron forging hammer rests upright against one shoulder, held by ONE hand; other hand rests on belt, relaxed confident smile. Warm soot marks, no scenery, no sparks. Waist-up."
+    },
+    {
+      "id": "portrait-witch",
+      "subject": "Forest witch Mora",
+      "generated": true,
+      "source": "C:/Users/liNao/.codex/generated_images/01a004a9-a56e-7a40-b7d4-79fc1688ff21/exec-0f0cca50-17f3-48e3-818b-73e323240b71.png",
+      "original": "art-source/hazel-characters-v1/portrait-witch.png",
+      "runtime": "assets/formal-ui/characters-v1/portrait-witch.png",
+      "resources": [
+        "portrait-witch"
+      ],
+      "sourceSha256": "656664867e11baf081b0f0e2a161404d7466708ba1e8e1d661f90051cb463a7e",
+      "runtimeSha256": "656664867e11baf081b0f0e2a161404d7466708ba1e8e1d661f90051cb463a7e",
+      "referenceImages": [
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/quartermaster-v1.png",
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/portrait-witch.png"
+      ],
+      "prompt": "Create ONE production-ready game character portrait PNG, genuine transparent alpha background (not black, not white, no checkerboard illustration). Waist-up isolated figure, centered square canvas, 7% clear margin on all sides including all props. Fully painted detailed storybook fantasy RPG illustration, hand-painted angular brushwork, natural expressive facial anatomy and textured cloth/leather/aged gold/steel, warm directional light upper left, restrained rim light. Match image 1's APPROVED Hazel portrait's finish, face detailing and palette EXACTLY: deep pine green and teal, brick red, warm cream, aged gold. Do not reproduce Hazel's face or outfit on the new character. Stylized but finely finished, NOT vector art, NOT polygon/chibi toy, NOT photorealism, NOT smooth 3D render. A single clean bust silhouette, no border, no badge, no UI, no text, no title, no scenery, no ground/shadow. Clear readable eyes and distinct face at 96px; hands anatomically coherent. Keep all weapons, headgear and elbows inside frame.\n\nCharacter specifics: Image 2 is old role, hat and plum/teal color reference only. Forest witch Mora, clearly adult woman aged 40, intelligent warm mischievous expression, long wavy dark brown hair with a silver lock. Preserve the plum-purple broad pointed hat with small gold diamond pin, plum shoulder wrap over deep teal forest robes and leather belt. Elegant botanical embroidery, small acorn charm. Hold a tied herb sprig at chest height with relaxed natural hand, no staff, no fireball, no floating particles. Waist-up, entire pointed hat fully inside frame with clearance."
+    },
+    {
+      "id": "portrait-runesmith",
+      "subject": "Rune engraver Ivy",
+      "generated": true,
+      "source": "C:/Users/liNao/.codex/generated_images/01a004a9-a56e-7a40-b7d4-79fc1688ff21/exec-83346a94-b610-403e-a213-9cb8cb392f35.png",
+      "original": "art-source/hazel-characters-v1/portrait-runesmith.png",
+      "runtime": "assets/formal-ui/characters-v1/portrait-runesmith.png",
+      "resources": [
+        "portrait-runesmith"
+      ],
+      "sourceSha256": "644197c5aa671a9239a35ea036e08a2b1dd5206e38ebd02cd9dd6a68b0c5ea01",
+      "runtimeSha256": "644197c5aa671a9239a35ea036e08a2b1dd5206e38ebd02cd9dd6a68b0c5ea01",
+      "referenceImages": [
+        "D:/Projects/YesSir/_Games/ashen-legion/assets/formal-ui/quartermaster-v1.png"
+      ],
+      "prompt": "Create ONE production-ready game character portrait PNG, genuine transparent alpha background (not black, not white, no checkerboard illustration). Waist-up isolated figure, centered square canvas, 7% clear margin on all sides including all props. Fully painted detailed storybook fantasy RPG illustration, hand-painted angular brushwork, natural expressive facial anatomy and textured cloth/leather/aged gold/steel, warm directional light upper left, restrained rim light. Match image 1's APPROVED Hazel portrait's finish, face detailing and palette EXACTLY: deep pine green and teal, brick red, warm cream, aged gold. Do not reproduce Hazel's face or outfit on the new character. Stylized but finely finished, NOT vector art, NOT polygon/chibi toy, NOT photorealism, NOT smooth 3D render. A single clean bust silhouette, no border, no badge, no UI, no text, no title, no scenery, no ground/shadow. Clear readable eyes and distinct face at 96px; hands anatomically coherent. Keep all weapons, headgear and elbows inside frame.\n\nCharacter specifics: This is a new distinct portrait for rune engraver Ivy, separate from the male scholar. Adult woman aged 28 with auburn hair in one practical side braid, intelligent smiling eyes, cream shirt, pine green artisan vest and deep teal shoulder scarf secured with a small aged gold acorn brooch. Subtle indigo rune-worker apron. Hold a small palm-sized jade engraved stone tablet in one leather-gloved hand and a fine brass engraving stylus in the other, both clearly formed. Small cyan incised symbol on stone only, no floating magic or aura. Hair and hands fully visible, waist-up, no hat, no book, no weapons."
+    },
+    {
+      "id": "lord-approved-reuse",
+      "generated": false,
+      "runtime": "assets/formal-ui/portrait-lord-v2.png",
+      "resources": [
+        "portrait-lord"
+      ],
+      "runtimeSha256": "109c05ce118eb72382e697ab298f73bef6efaaebaef65111581d2d60ac291d1d"
+    },
+    {
+      "id": "hazel-approved-reuse",
+      "generated": false,
+      "runtime": "assets/formal-ui/quartermaster-v1.png",
+      "resources": [
+        "portrait-merchant"
+      ],
+      "runtimeSha256": "0383b38ed651b5645e31737d8e8ee9cffdbd39acceb114e96563f73d10d18e5e"
+    },
+    {
+      "id": "keyart-approved-reuse",
+      "generated": false,
+      "runtime": "assets/formal-ui/expedition-keyart-v2.png",
+      "resources": [
+        "keyart"
+      ],
+      "runtimeSha256": "9d4b7030f97a3b1765e90c17fc5ae408b7a6e19da91e879c9df9dea696c8507b"
+    }
+  ]
+}
