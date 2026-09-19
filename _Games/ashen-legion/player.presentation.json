@@ -1,1 +1,1 @@
-{"bloom":false,"interpolation":true,"interpolate_instances":["sword","spear","cavalry","hound","wraith","minotaur","lord"]}
+{"ui":{"font_source":"fonts/NotoSansCJKtc-Regular.otf","font_family":"Noto Sans CJK TC"},"bloom":true,"interpolation":true,"interpolate_instances":["sword","spear","cavalry","hound","wraith","minotaur","lord"]}

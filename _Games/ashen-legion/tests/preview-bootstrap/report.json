@@ -1,0 +1,63 @@
+{
+  "counted": {
+    "loading": {
+      "host": 249.59999999962747,
+      "runtime": 350.09999999962747,
+      "sceneStart": 369.80000000074506,
+      "elapsedMs": 404.69999999925494,
+      "finished": false,
+      "failed": false,
+      "groups": {
+        "部隊與裝備": {
+          "done": 0,
+          "total": 89
+        },
+        "首屏圖片": {
+          "done": 0,
+          "total": 6
+        }
+      }
+    },
+    "now": "0",
+    "max": "95",
+    "text": "部隊與裝備 0 / 89 · 首屏圖片 0 / 6"
+  },
+  "ready": {
+    "host": 249.59999999962747,
+    "runtime": 350.09999999962747,
+    "sceneStart": 369.80000000074506,
+    "sceneReady": 469.19999999925494,
+    "rewardsReady": 477,
+    "firstImages": 536.5999999996275,
+    "actorsReady": 658.6999999992549,
+    "models": 658.8000000007451,
+    "firstDrawStart": 659,
+    "firstDraw": 980.5,
+    "firstFrame": 1015.5999999996275,
+    "elapsedMs": 1118.300000000745,
+    "finished": true,
+    "failed": false,
+    "groups": {
+      "部隊與裝備": {
+        "done": 89,
+        "total": 89
+      },
+      "首屏圖片": {
+        "done": 6,
+        "total": 6
+      }
+    }
+  },
+  "signals": [
+    {
+      "type": "koncrate-preview-content",
+      "state": "loading"
+    },
+    {
+      "type": "koncrate-preview-content",
+      "state": "error",
+      "message": "首屏圖片載入失敗：texture://ui_expedition-keyart-v2"
+    }
+  ],
+  "scope": "Actual exported game, a blocked module, one blocked first-screen image, then a real 503 image failure in a same-origin parent iframe. Parent messagebox/exit is owned and tested by Koncrate."
+}

@@ -1,0 +1,51 @@
+{
+  "sourceSha256": "db8bcc730b3be54b4dfe68a22b78f3d002835e55994e725531b838a2209813e9",
+  "reports": [
+    {
+      "bounces": 7,
+      "bystanderDamage": 90,
+      "contactAt": 0.5666666666666668,
+      "dt": 0.016666666666666666,
+      "exitAt": 0.6833333333333338,
+      "lock": false,
+      "maxDwell": 0.11666666666666665,
+      "pierces": 2,
+      "treeDamage": 90
+    },
+    {
+      "bounces": 7,
+      "bystanderDamage": 90,
+      "contactAt": 0.6,
+      "dt": 0.06666666666666667,
+      "exitAt": 0.7333333333333333,
+      "lock": false,
+      "maxDwell": 0.13333333333333333,
+      "pierces": 2,
+      "treeDamage": 90
+    },
+    {
+      "bounces": 0,
+      "bystanderDamage": 0,
+      "contactAt": 0.5666666666666668,
+      "dt": 0.016666666666666666,
+      "exitAt": 0,
+      "lock": true,
+      "maxDwell": 7.433333333333312,
+      "pierces": 1,
+      "treeDamage": 90
+    },
+    {
+      "bounces": 0,
+      "bystanderDamage": 0,
+      "contactAt": 0.6,
+      "dt": 0.06666666666666667,
+      "exitAt": 0,
+      "lock": true,
+      "maxDwell": 7.399999999999993,
+      "pierces": 1,
+      "treeDamage": 90
+    }
+  ],
+  "passedAssertions": 36,
+  "scope": "Pre-fix actual WASM fixture; failed assertions collected without aborting to measure the original bug."
+}

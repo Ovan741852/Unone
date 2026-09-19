@@ -1,0 +1,7 @@
+{
+  "ok": true,
+  "checks": 128,
+  "mesh": "mesh://spark_ice",
+  "count": 40,
+  "scope": "Production effect pool and presentation updater under deterministic WASM fixture"
+}

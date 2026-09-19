@@ -1,0 +1,591 @@
+{
+  "ok": false,
+  "seed": 42,
+  "choice": 2,
+  "base": {
+    "nodes": 172,
+    "findings": [],
+    "allowed": [
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_icon_1",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_name_1",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_desc_1",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_cost_1",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_deploy_1",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_detail_1_plate_tl",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_detail_1_plate_t",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_detail_1_plate_tr",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_detail_1_plate_l",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_detail_1_plate_c",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_detail_1_plate_r",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_detail_1_plate_bl",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_detail_1_plate_b",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_detail_1_plate_br",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_detail_1",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_detail_1_hit_top",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_1",
+        "front": "stock_detail_1_hit_bottom",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_icon_2",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_name_2",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_desc_2",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_cost_2",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_deploy_2",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_detail_2_plate_tl",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_detail_2_plate_t",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_detail_2_plate_tr",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_detail_2_plate_l",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_detail_2_plate_c",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_detail_2_plate_r",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_detail_2_plate_bl",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_detail_2_plate_b",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_detail_2_plate_br",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_detail_2",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_detail_2_hit_top",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_2",
+        "front": "stock_detail_2_hit_bottom",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_icon_3",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_name_3",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_desc_3",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_cost_3",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_deploy_3",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_detail_3_plate_tl",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_detail_3_plate_t",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_detail_3_plate_tr",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_detail_3_plate_l",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_detail_3_plate_c",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_detail_3_plate_r",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_detail_3_plate_bl",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_detail_3_plate_b",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_detail_3_plate_br",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_detail_3",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_detail_3_hit_top",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_3",
+        "front": "stock_detail_3_hit_bottom",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_icon_4",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_name_4",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_desc_4",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_cost_4",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_deploy_4",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_detail_4_plate_tl",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_detail_4_plate_t",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_detail_4_plate_tr",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_detail_4_plate_l",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_detail_4_plate_c",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_detail_4_plate_r",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_detail_4_plate_bl",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_detail_4_plate_b",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_detail_4_plate_br",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_detail_4",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_detail_4_hit_top",
+        "reason": "card owns its icon, copy and detail hit area"
+      },
+      {
+        "behind": "stock_panel_4",
+        "front": "stock_detail_4_hit_bottom",
+        "reason": "card owns its icon, copy and detail hit area"
+      }
+    ]
+  },
+  "detail": {
+    "nodes": 215,
+    "findings": [
+      {
+        "kind": "containment",
+        "detail": "shop_detail_shade crosses modal",
+        "nodes": [
+          "shop_detail_modal",
+          "shop_detail_shade"
+        ]
+      }
+    ],
+    "allowed": [
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_fill",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_kicker",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_title",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_close_plate_tl",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_close_plate_t",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_close_plate_tr",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_close_plate_l",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_close_plate_c",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_close_plate_r",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_close_plate_bl",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_close_plate_b",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_close_plate_br",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_close",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_close_hit_top",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_close_hit_bottom",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_icon",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_story",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_price",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_deploy",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_trigger",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_effect",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_buy_plate_tl",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_buy_plate_t",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_buy_plate_tr",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_buy_plate_l",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_buy_plate_c",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_buy_plate_r",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_buy_plate_bl",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_buy_plate_b",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_buy_plate_br",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_buy",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_buy_hit_top",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_buy_hit_bottom",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_cancel_plate_tl",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_cancel_plate_t",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_cancel_plate_tr",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_cancel_plate_l",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_cancel_plate_c",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_cancel_plate_r",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_cancel_plate_bl",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_cancel_plate_b",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_cancel_plate_br",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_cancel",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_cancel_hit_top",
+        "reason": "detail modal owns its content and controls"
+      },
+      {
+        "behind": "shop_detail_modal",
+        "front": "shop_detail_cancel_hit_bottom",
+        "reason": "detail modal owns its content and controls"
+      }
+    ]
+  }
+}

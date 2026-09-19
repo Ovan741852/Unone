@@ -6,7 +6,9 @@ export function createSceneLighting({THREE:T,scene,renderer}){
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
  key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:85});
  key.shadow.bias=-.0003;key.shadow.normalBias=.035;key.shadow.camera.updateProjectionMatrix();
- const flashes=Array.from({length:4},()=>{const l=new T.PointLight(0xffa344,0,7,2);scene.add(l);return l});
+ const flashes=Array.from({length:4},()=>{const l=new T.PointLight(0xffa344,0,4.5,2);scene.add(l);return l});
+ const flashColors={lightning:0x81c4ff,frost:0x62c9eb,ember:0xff8e42,leaf:0xaad86b,cleave:0xffc27b,shock:0x64cabf};
+ const motionPreference=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
  const day={key:new T.Color(0xffd49a),rim:new T.Color(0xaaa2df),sky:new T.Color(0xe8dec8),ground:new T.Color(0x766071),fog:new T.Color(0xc1c2a0)};
  const night={key:new T.Color(0xdeb795),rim:new T.Color(0x899be1),sky:new T.Color(0x8499b6),ground:new T.Color(0x554455),fog:new T.Color(0x596977)};
  scene.fog=new T.Fog(day.fog,48,108);
@@ -33,8 +35,11 @@ export function createSceneLighting({THREE:T,scene,renderer}){
   ambient.color.copy(day.sky).lerp(night.sky,mix);ambient.groundColor.copy(day.ground).lerp(night.ground,mix);ambient.intensity=.65-.2*mix;
   if(side==='left')rim.intensity=0;if(side==='right')key.intensity=0;
   scene.fog.color.copy(day.fog).lerp(night.fog,mix);
-  const events=[...Object.values(s?.vfx??{}),...Object.values(s?.rewards??{})].filter(e=>time-e.time>=0&&time-e.time<.55).sort((a,b)=>b.time-a.time).slice(0,4);
-  flashes.forEach((light,i)=>{const e=events[i];light.intensity=e?18*(1-(time-e.time)/.55):0;if(e)light.position.set(e.x,.8,e.z);});
+  const events=[...Object.values(s?.vfx??{}),...Object.values(s?.rewards??{})].filter(e=>time-e.time>=0&&time-e.time<.32).sort((a,b)=>b.time-a.time).slice(0,4);
+  flashes.forEach((light,i)=>{const e=events[i];
+   light.intensity=e?(e.kind?2.2:4)*(1-(time-e.time)/.32)**2*(motionPreference?.matches?.4:1):0;
+   if(e){light.color.setHex(flashColors[e.kind]??0xffb75b);light.position.set(e.x,1.3,e.z);}
+  });
   last={mode,side,nightMix:mix,shadowMap:2048,primaryLights:2,left:{color:'#'+key.color.getHexString(),intensity:key.intensity},right:{color:'#'+rim.color.getHexString(),intensity:rim.intensity},eventLights:events.length,litArena:true};
  }
  return {update,setMode(value){if(!['day','night','cycle'].includes(value))throw Error('Unknown lighting mode');mode=value;},setSide(value){if(!['left','right','both'].includes(value))throw Error('Unknown light side');side=value;},inspect:()=>last,dispose(){scene.onBeforeRender=original;scene.fog=null;scene.remove(key,rim,ambient,...flashes);key.shadow.dispose();ink.dispose();}};

@@ -1,0 +1,4589 @@
+{
+  "scope": "Landscape only; production UI/stock, controlled skill loadout in actual combat. No fabricated damage or visual receipts for screenshots.",
+  "ui": {
+    "diagnostics": []
+  },
+  "draw": {
+    "first": {
+      "style": "storybook-faceted-v1",
+      "activeEvents": 7,
+      "eventBudget": 36,
+      "skippedEvents": 0,
+      "kinds": {
+        "effect:plague_vial": 2,
+        "effect:phoenix_fire": 1,
+        "cast:flame_cloak": 1,
+        "cast:phoenix_fire": 1,
+        "buff:poison": 1,
+        "buff:burn": 1
+      },
+      "fieldFootprints": 1,
+      "trailSegments": 0,
+      "trailSlots": 0,
+      "ink": {
+        "vertices": 420,
+        "capacity": 42000,
+        "droppedTriangles": 0
+      },
+      "core": {
+        "vertices": 228,
+        "capacity": 36000,
+        "droppedTriangles": 0
+      },
+      "reducedMotion": false,
+      "clock": 2,
+      "drawCalls": 2,
+      "debug": "final"
+    },
+    "stable": true,
+    "budget": {
+      "style": "storybook-faceted-v1",
+      "activeEvents": 28,
+      "eventBudget": 36,
+      "skippedEvents": 572,
+      "kinds": {
+        "effect:plague_vial": 8,
+        "effect:phoenix_fire": 4,
+        "cast:flame_cloak": 4,
+        "cast:phoenix_fire": 4,
+        "buff:poison": 4,
+        "buff:burn": 4
+      },
+      "fieldFootprints": 66,
+      "trailSegments": 0,
+      "trailSlots": 0,
+      "ink": {
+        "vertices": 3168,
+        "capacity": 42000,
+        "droppedTriangles": 0
+      },
+      "core": {
+        "vertices": 3888,
+        "capacity": 36000,
+        "droppedTriangles": 0
+      },
+      "reducedMotion": false,
+      "clock": 2,
+      "drawCalls": 2,
+      "debug": "final"
+    },
+    "sameBuffers": true,
+    "cleared": {
+      "style": "storybook-faceted-v1",
+      "activeEvents": 0,
+      "eventBudget": 36,
+      "skippedEvents": 0,
+      "kinds": {},
+      "fieldFootprints": 0,
+      "trailSegments": 0,
+      "trailSlots": 0,
+      "ink": {
+        "vertices": 0,
+        "capacity": 42000,
+        "droppedTriangles": 0
+      },
+      "core": {
+        "vertices": 0,
+        "capacity": 36000,
+        "droppedTriangles": 0
+      },
+      "reducedMotion": false,
+      "clock": 2,
+      "drawCalls": 0,
+      "debug": "final"
+    }
+  },
+  "live": {
+    "skillRuntime": {
+      "buffs": [
+        {
+          "age": 1.5499999999999987,
+          "id": 5,
+          "kind": "pierce",
+          "phase": "active",
+          "radius": 0.65,
+          "remaining": 15,
+          "sourceId": 36,
+          "x": 11.43934946228951,
+          "z": -1.3823886352032462
+        },
+        {
+          "age": 1.299999999999999,
+          "id": 12,
+          "kind": "pierce",
+          "phase": "active",
+          "radius": 0.65,
+          "remaining": 16,
+          "sourceId": 37,
+          "x": 10.127429724372487,
+          "z": -7.266821632544627
+        },
+        {
+          "age": 1.0499999999999985,
+          "id": 40,
+          "kind": "pierce",
+          "phase": "active",
+          "radius": 0.65,
+          "remaining": 15,
+          "sourceId": 38,
+          "x": -1.978285852308087,
+          "z": -11.6765522492247
+        },
+        {
+          "age": 0.7333333333333307,
+          "id": 65,
+          "kind": "burn",
+          "phase": "active",
+          "playerId": 1,
+          "radius": 0.7,
+          "remaining": 2.116666666666669,
+          "since": 0.9833333333333347,
+          "sourceId": 36,
+          "targetId": 22,
+          "x": 5.164250211867018,
+          "y": 0.1,
+          "z": -0.5877588086759822
+        },
+        {
+          "age": 0.7333333333333307,
+          "id": 68,
+          "kind": "burn",
+          "phase": "active",
+          "playerId": 1,
+          "radius": 0.7,
+          "remaining": 2.116666666666669,
+          "since": 0.9833333333333347,
+          "sourceId": 36,
+          "targetId": 31,
+          "x": 7.702379082432948,
+          "y": 0.1,
+          "z": 4.233783788142412
+        },
+        {
+          "age": 0.7999999999999976,
+          "id": 81,
+          "kind": "pierce",
+          "phase": "active",
+          "radius": 0.65,
+          "remaining": 16,
+          "sourceId": 39,
+          "x": -0.8066985573894395,
+          "z": -7.383391877749515
+        },
+        {
+          "age": 0.466666666666665,
+          "id": 115,
+          "kind": "burn",
+          "phase": "active",
+          "playerId": 1,
+          "radius": 0.7,
+          "remaining": 2.3666666666666685,
+          "since": 1.2500000000000004,
+          "sourceId": 37,
+          "targetId": 23,
+          "x": 7.8443573329858625,
+          "y": 0.1,
+          "z": 3.709809719429055
+        },
+        {
+          "age": 0.466666666666665,
+          "id": 118,
+          "kind": "burn",
+          "phase": "active",
+          "playerId": 1,
+          "radius": 0.7,
+          "remaining": 2.3666666666666685,
+          "since": 1.2500000000000004,
+          "sourceId": 37,
+          "targetId": 30,
+          "x": 5.256153844772351,
+          "y": 0.1,
+          "z": 8.735942342120667
+        },
+        {
+          "age": 0.549999999999998,
+          "id": 138,
+          "kind": "pierce",
+          "phase": "active",
+          "radius": 0.65,
+          "remaining": 19,
+          "sourceId": 41,
+          "x": -0.10192707273774655,
+          "z": -1.3996180413952477
+        },
+        {
+          "age": 0.29999999999999893,
+          "id": 151,
+          "kind": "poison",
+          "phase": "active",
+          "playerId": 1,
+          "radius": 0.7,
+          "remaining": 1.9833333333333334,
+          "since": 1.4166666666666665,
+          "sourceId": 36,
+          "targetId": 14,
+          "x": 4.761312940160051,
+          "y": 0.1,
+          "z": -1.4172922622834123
+        },
+        {
+          "age": 0.29999999999999893,
+          "id": 153,
+          "kind": "poison",
+          "phase": "active",
+          "playerId": 1,
+          "radius": 0.7,
+          "remaining": 1.9833333333333334,
+          "since": 1.4166666666666665,
+          "sourceId": 36,
+          "targetId": 22,
+          "x": 5.164250211867018,
+          "y": 0.1,
+          "z": -0.5877588086759822
+        },
+        {
+          "age": 0.2166666666666659,
+          "id": 179,
+          "kind": "burn",
+          "phase": "active",
+          "playerId": 1,
+          "radius": 0.7,
+          "remaining": 2.8666666666666667,
+          "since": 1.4999999999999996,
+          "sourceId": 38,
+          "targetId": 27,
+          "x": -5.458100420468816,
+          "y": 0.1,
+          "z": 4.459400333640188
+        },
+        {
+          "age": 0.29999999999999893,
+          "id": 198,
+          "kind": "pierce",
+          "phase": "active",
+          "radius": 0.65,
+          "remaining": 19,
+          "sourceId": 42,
+          "x": 6.058308568351802,
+          "z": 7.611220500979014
+        },
+        {
+          "age": 0.04999999999999982,
+          "id": 212,
+          "kind": "poison",
+          "phase": "active",
+          "playerId": 1,
+          "radius": 0.7,
+          "remaining": 1.9833333333333334,
+          "since": 1.6666666666666656,
+          "sourceId": 36,
+          "targetId": 7,
+          "x": 5.302652149324141,
+          "y": 0.1,
+          "z": -7.932978970269225
+        },
+        {
+          "age": 0.04999999999999982,
+          "id": 214,
+          "kind": "poison",
+          "phase": "active",
+          "playerId": 1,
+          "radius": 0.7,
+          "remaining": 1.9833333333333334,
+          "since": 1.6666666666666656,
+          "sourceId": 36,
+          "targetId": 34,
+          "x": 5.430853237765222,
+          "y": 0.1,
+          "z": -5.959768717356192
+        },
+        {
+          "age": 0.13333333333333286,
+          "id": 245,
+          "kind": "burn",
+          "phase": "apply",
+          "playerId": 1,
+          "radius": 0.7,
+          "remaining": 2.8666666666666667,
+          "since": 1.5833333333333326,
+          "sourceId": 39,
+          "targetId": 20,
+          "x": 0.6121062508385195,
+          "y": 0.1,
+          "z": -0.3354963131421013
+        },
+        {
+          "age": 0.04999999999999982,
+          "id": 268,
+          "kind": "pierce",
+          "phase": "apply",
+          "radius": 0.65,
+          "remaining": 20,
+          "sourceId": 43,
+          "x": 1.3232499332246555,
+          "z": 11.300550382611153
+        }
+      ],
+      "casts": [
+        {
+          "age": 1.1999999999999988,
+          "id": 1,
+          "kind": "flame_cloak",
+          "phase": "channel",
+          "playerId": 1,
+          "radius": 2,
+          "since": 0.5166666666666666,
+          "sourceId": 36,
+          "x": 11.43934946228951,
+          "y": 0.1,
+          "z": -1.3823886352032462
+        },
+        {
+          "age": 0.9499999999999981,
+          "id": 8,
+          "kind": "flame_cloak",
+          "phase": "channel",
+          "playerId": 1,
+          "radius": 2,
+          "since": 0.7666666666666674,
+          "sourceId": 37,
+          "x": 10.127429724372487,
+          "y": 0.1,
+          "z": -7.266821632544627
+        },
+        {
+          "age": 0.6999999999999975,
+          "id": 36,
+          "kind": "flame_cloak",
+          "phase": "channel",
+          "playerId": 1,
+          "radius": 2,
+          "since": 1.016666666666668,
+          "sourceId": 38,
+          "x": -1.978285852308087,
+          "y": 0.1,
+          "z": -11.6765522492247
+        },
+        {
+          "age": 0.4499999999999984,
+          "id": 77,
+          "kind": "flame_cloak",
+          "phase": "channel",
+          "playerId": 1,
+          "radius": 2,
+          "since": 1.266666666666667,
+          "sourceId": 39,
+          "x": -0.8066985573894395,
+          "y": 0.1,
+          "z": -7.383391877749515
+        },
+        {
+          "age": 0.1999999999999993,
+          "id": 132,
+          "kind": "flame_cloak",
+          "phase": "channel",
+          "playerId": 1,
+          "radius": 2,
+          "since": 1.5166666666666662,
+          "sourceId": 41,
+          "x": -0.10192707273774655,
+          "y": 0.1,
+          "z": -1.3996180413952477
+        },
+        {
+          "age": 0.18333333333333268,
+          "id": 134,
+          "kind": "phoenix_fire",
+          "phase": "channel",
+          "playerId": 1,
+          "progress": 0.9166666666666634,
+          "radius": 0.7,
+          "since": 1.5333333333333328,
+          "sourceId": 41,
+          "x": -0.10192707273774655,
+          "y": 0.1,
+          "z": -1.3996180413952477
+        },
+        {
+          "age": 0.13333333333333286,
+          "id": 182,
+          "kind": "plague_vial",
+          "phase": "end",
+          "playerId": 1,
+          "progress": 0.7407407407407381,
+          "radius": 1.8,
+          "since": 1.5833333333333326,
+          "sourceId": 41,
+          "x": -0.04496782620782936,
+          "y": 0.1,
+          "z": 6.200168511149157
+        },
+        {
+          "age": 0.13333333333333286,
+          "id": 184,
+          "kind": "plague_vial",
+          "phase": "end",
+          "playerId": 1,
+          "progress": 0.7407407407407381,
+          "radius": 1.8,
+          "since": 1.5833333333333326,
+          "sourceId": 39,
+          "x": -0.4938970759527184,
+          "y": 0.1,
+          "z": 0.2101682381125486
+        },
+        {
+          "age": 0.13333333333333286,
+          "id": 186,
+          "kind": "plague_vial",
+          "phase": "end",
+          "playerId": 1,
+          "progress": 0.7407407407407381,
+          "radius": 1.8,
+          "since": 1.5833333333333326,
+          "sourceId": 38,
+          "x": -1.3909822399041227,
+          "y": 0.1,
+          "z": -5.746174199763885
+        },
+        {
+          "age": 0.13333333333333286,
+          "id": 188,
+          "kind": "plague_vial",
+          "phase": "end",
+          "playerId": 1,
+          "progress": 0.7407407407407381,
+          "radius": 1.8,
+          "since": 1.5833333333333326,
+          "sourceId": 37,
+          "x": 7.691718778004419,
+          "y": 0.1,
+          "z": -10.534059519586352
+        },
+        {
+          "age": 0.13333333333333286,
+          "id": 190,
+          "kind": "plague_vial",
+          "phase": "end",
+          "playerId": 1,
+          "progress": 0.7407407407407381,
+          "radius": 1.8,
+          "since": 1.5833333333333326,
+          "sourceId": 36,
+          "x": 9.127140528422482,
+          "y": 0.1,
+          "z": -8.622118591917484
+        },
+        {
+          "age": 0.033333333333333215,
+          "id": 192,
+          "kind": "flame_cloak",
+          "phase": "release",
+          "playerId": 1,
+          "progress": 0.4166666666666652,
+          "radius": 2,
+          "since": 1.6833333333333322,
+          "sourceId": 42,
+          "x": 6.058308568351802,
+          "y": 0.1,
+          "z": 7.611220500979014
+        },
+        {
+          "age": 0.016666666666666607,
+          "id": 194,
+          "kind": "phoenix_fire",
+          "phase": "release",
+          "playerId": 1,
+          "progress": 0.2083333333333326,
+          "radius": 0.7,
+          "since": 1.6999999999999988,
+          "sourceId": 42,
+          "x": 6.058308568351802,
+          "y": 0.1,
+          "z": 7.611220500979014
+        },
+        {
+          "age": 0.08333333333333304,
+          "id": 250,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "playerId": 1,
+          "progress": 0.694444444444442,
+          "radius": 1.8,
+          "since": 1.6333333333333324,
+          "sourceId": 42,
+          "x": 4.78287518554089,
+          "y": 0.1,
+          "z": 8.577279342878173
+        },
+        {
+          "age": 0.08333333333333304,
+          "id": 252,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "playerId": 1,
+          "progress": 0.694444444444442,
+          "radius": 1.8,
+          "since": 1.6333333333333324,
+          "sourceId": 41,
+          "x": -0.08993565241565869,
+          "y": 0.1,
+          "z": 0.20033702229831413
+        },
+        {
+          "age": 0.08333333333333304,
+          "id": 254,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "playerId": 1,
+          "progress": 0.694444444444442,
+          "radius": 1.8,
+          "since": 1.6333333333333324,
+          "sourceId": 39,
+          "x": -0.7408456139290771,
+          "y": 0.1,
+          "z": -5.784747642831183
+        },
+        {
+          "age": 0.08333333333333304,
+          "id": 256,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "playerId": 1,
+          "progress": 0.694444444444442,
+          "radius": 1.8,
+          "since": 1.6333333333333324,
+          "sourceId": 38,
+          "x": -1.8546429865388314,
+          "y": 0.1,
+          "z": -11.728232266351844
+        },
+        {
+          "age": 0.08333333333333304,
+          "id": 258,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "playerId": 1,
+          "progress": 0.694444444444442,
+          "radius": 1.8,
+          "since": 1.6333333333333324,
+          "sourceId": 37,
+          "x": 9.614648472505523,
+          "y": 0.1,
+          "z": -8.782425600517056
+        },
+        {
+          "age": 0.08333333333333304,
+          "id": 260,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "playerId": 1,
+          "progress": 0.694444444444442,
+          "radius": 1.8,
+          "since": 1.6333333333333324,
+          "sourceId": 36,
+          "x": 10.952568634106978,
+          "y": 0.1,
+          "z": -2.90654231030098
+        },
+        {
+          "age": 0.06666666666666643,
+          "id": 262,
+          "kind": "flame_cloak",
+          "phase": "windup",
+          "playerId": 1,
+          "progress": 0.23809523809523722,
+          "radius": 2,
+          "since": 1.649999999999999,
+          "sourceId": 43,
+          "x": 1.3232499332246555,
+          "y": 0.1,
+          "z": 11.300550382611153
+        },
+        {
+          "age": 0.04999999999999982,
+          "id": 264,
+          "kind": "phoenix_fire",
+          "phase": "windup",
+          "playerId": 1,
+          "progress": 0.1785714285714279,
+          "radius": 0.7,
+          "since": 1.6666666666666656,
+          "sourceId": 43,
+          "x": 1.3232499332246555,
+          "y": 0.1,
+          "z": 11.300550382611153
+        }
+      ],
+      "clock": 1.7166666666666655,
+      "entities": [
+        {
+          "age": 0.7499999999999974,
+          "id": 25,
+          "kind": "plague_vial",
+          "phase": "active",
+          "playerId": 1,
+          "progress": 0.24999999999999914,
+          "radius": 1.8,
+          "since": 0.966666666666668,
+          "sourceId": 36,
+          "tx": 2.2817851321056217,
+          "tz": 5.0555296479793705,
+          "x": 2.2817851321056217,
+          "y": 0.1,
+          "z": 5.0555296479793705
+        },
+        {
+          "age": 0.4833333333333316,
+          "id": 54,
+          "kind": "plague_vial",
+          "phase": "active",
+          "playerId": 1,
+          "progress": 0.16111111111111054,
+          "radius": 1.8,
+          "since": 1.2333333333333338,
+          "sourceId": 36,
+          "tx": 4.107213237790123,
+          "tz": -0.6600466336371309,
+          "x": 4.107213237790123,
+          "y": 0.1,
+          "z": -0.6600466336371309
+        },
+        {
+          "age": 0.4833333333333316,
+          "id": 57,
+          "kind": "plague_vial",
+          "phase": "active",
+          "playerId": 1,
+          "progress": 0.16111111111111054,
+          "radius": 1.8,
+          "since": 1.2333333333333338,
+          "sourceId": 37,
+          "tx": 2.4036621181263786,
+          "tz": 5.095606400129268,
+          "x": 2.4036621181263786,
+          "y": 0.1,
+          "z": 5.095606400129268
+        },
+        {
+          "age": 0.2333333333333325,
+          "id": 98,
+          "kind": "plague_vial",
+          "phase": "active",
+          "playerId": 1,
+          "progress": 0.0777777777777775,
+          "radius": 1.8,
+          "since": 1.483333333333333,
+          "sourceId": 36,
+          "tx": 5.932641343474618,
+          "tz": -6.375622915253633,
+          "x": 5.932641343474618,
+          "y": 0.1,
+          "z": -6.375622915253633
+        },
+        {
+          "age": 0.2333333333333325,
+          "id": 101,
+          "kind": "plague_vial",
+          "phase": "active",
+          "playerId": 1,
+          "progress": 0.0777777777777775,
+          "radius": 1.8,
+          "since": 1.483333333333333,
+          "sourceId": 37,
+          "tx": 4.326591812627485,
+          "tz": -0.5879084797673225,
+          "x": 4.326591812627485,
+          "y": 0.1,
+          "z": -0.5879084797673225
+        },
+        {
+          "age": 0.2333333333333325,
+          "id": 104,
+          "kind": "plague_vial",
+          "phase": "active",
+          "playerId": 1,
+          "progress": 0.0777777777777775,
+          "radius": 1.8,
+          "since": 1.483333333333333,
+          "sourceId": 38,
+          "tx": -0.5795759332933841,
+          "tz": 4.72242741676505,
+          "x": -0.5795759332933841,
+          "y": 0.1,
+          "z": 4.72242741676505
+        },
+        {
+          "age": 0.13333333333333286,
+          "id": 141,
+          "kind": "phoenix_fire",
+          "phase": "death",
+          "playerId": 1,
+          "radius": 0.35,
+          "since": 1.5833333333333326,
+          "sourceId": 39,
+          "targetId": 20,
+          "tx": 0.4662518813794394,
+          "tz": -0.2300140733588367,
+          "x": 0.4662518813794394,
+          "y": 0.4000000000000001,
+          "z": -0.23001407335883695
+        },
+        {
+          "age": 0.13333333333333286,
+          "id": 143,
+          "kind": "phoenix_fire",
+          "phase": "death",
+          "playerId": 1,
+          "radius": 0.35,
+          "since": 1.5833333333333326,
+          "sourceId": 39,
+          "targetId": 27,
+          "tx": -5.348041996419169,
+          "tz": 4.601833276794876,
+          "x": -5.348041996419169,
+          "y": 0.4000000000000001,
+          "z": 4.601833276794876
+        },
+        {
+          "age": 0.4499999999999984,
+          "id": 158,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.9999999999999964,
+          "radius": 1.8,
+          "since": 1.266666666666667,
+          "sourceId": 36,
+          "tx": 7.758069449159112,
+          "tz": -12.091199196870136,
+          "x": 7.75806944915911,
+          "y": 0.40000000000001573,
+          "z": -12.09119919687013
+        },
+        {
+          "age": 0.4499999999999984,
+          "id": 161,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.9999999999999964,
+          "radius": 1.8,
+          "since": 1.266666666666667,
+          "sourceId": 37,
+          "tx": 6.249521507128591,
+          "tz": -6.2714233596639115,
+          "x": 6.2495215071285894,
+          "y": 0.40000000000001573,
+          "z": -6.271423359663906
+        },
+        {
+          "age": 0.4499999999999984,
+          "id": 164,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.9999999999999964,
+          "radius": 1.8,
+          "since": 1.266666666666667,
+          "sourceId": 38,
+          "tx": -1.043236679928091,
+          "tz": -1.2596306498229137,
+          "x": -1.0432366799280905,
+          "y": 0.40000000000001573,
+          "z": -1.2596306498229084
+        },
+        {
+          "age": 0.4499999999999984,
+          "id": 167,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.9999999999999964,
+          "radius": 1.8,
+          "since": 1.266666666666667,
+          "sourceId": 39,
+          "tx": -0.30868567247044887,
+          "tz": 4.706355148820344,
+          "x": -0.30868567247044865,
+          "y": 0.40000000000001573,
+          "z": 4.706355148820349
+        },
+        {
+          "age": 0.2666666666666657,
+          "id": 201,
+          "kind": "phoenix_fire",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.7017543859649098,
+          "radius": 0.35,
+          "since": 1.4499999999999997,
+          "sourceId": 41,
+          "targetId": 20,
+          "tx": 0.6121062508385195,
+          "tz": -0.3354963131421013,
+          "x": 0.41345449787545563,
+          "y": 0.8431708081135405,
+          "z": 1.2558523702063065
+        },
+        {
+          "age": 0.2666666666666657,
+          "id": 203,
+          "kind": "phoenix_fire",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.7017543859649098,
+          "radius": 0.35,
+          "since": 1.4499999999999997,
+          "sourceId": 41,
+          "targetId": 27,
+          "tx": -5.458100420468816,
+          "tz": 4.459400333640188,
+          "x": -3.846339657427923,
+          "y": 0.8431708081135405,
+          "z": 4.6206921223342174
+        },
+        {
+          "age": 0.1999999999999993,
+          "id": 218,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.44444444444444287,
+          "radius": 1.8,
+          "since": 1.5166666666666662,
+          "sourceId": 36,
+          "tx": 9.583497554843605,
+          "tz": -7.193224521513359,
+          "x": 9.329965873498535,
+          "y": 1.7787308542170899,
+          "z": -7.987054560626764
+        },
+        {
+          "age": 0.1999999999999993,
+          "id": 221,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.44444444444444287,
+          "radius": 1.8,
+          "since": 1.5166666666666662,
+          "sourceId": 37,
+          "tx": 8.172451201629695,
+          "tz": -11.954938239560498,
+          "x": 7.905377632948985,
+          "y": 1.7787308542170899,
+          "z": -11.165561172908193
+        },
+        {
+          "age": 0.1999999999999993,
+          "id": 224,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.44444444444444287,
+          "radius": 1.8,
+          "since": 1.5166666666666662,
+          "sourceId": 38,
+          "tx": -1.5068974265628001,
+          "tz": -7.241688716410876,
+          "x": -1.4425001006413125,
+          "y": 1.7787308542170899,
+          "z": -6.410847318273657
+        },
+        {
+          "age": 0.1999999999999993,
+          "id": 227,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.44444444444444287,
+          "radius": 1.8,
+          "since": 1.5166666666666662,
+          "sourceId": 39,
+          "tx": -0.5556342104468083,
+          "tz": -1.288560732123384,
+          "x": -0.521335802394536,
+          "y": 1.7787308542170899,
+          "z": -0.45593352643675245
+        },
+        {
+          "age": 0.1999999999999993,
+          "id": 230,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.44444444444444287,
+          "radius": 1.8,
+          "since": 1.5166666666666662,
+          "sourceId": 41,
+          "tx": -0.05620978275978669,
+          "tz": 4.700210638936446,
+          "x": -0.0499642513420326,
+          "y": 1.7787308542170899,
+          "z": 5.53352056794351
+        },
+        {
+          "age": 0.016666666666666607,
+          "id": 271,
+          "kind": "phoenix_fire",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.04385964912280686,
+          "radius": 0.35,
+          "since": 1.6999999999999988,
+          "sourceId": 42,
+          "targetId": 31,
+          "tx": 7.702379082432948,
+          "tz": 4.233783788142412,
+          "x": 5.8255435936922275,
+          "y": 0.47554445680012425,
+          "z": 7.694009271834882
+        },
+        {
+          "age": 0.016666666666666607,
+          "id": 273,
+          "kind": "phoenix_fire",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.04385964912280686,
+          "radius": 0.35,
+          "since": 1.6999999999999988,
+          "sourceId": 42,
+          "targetId": 30,
+          "tx": 5.256153844772351,
+          "tz": 8.735942342120667,
+          "x": 5.718253013093079,
+          "y": 0.47554445680012425,
+          "z": 7.891472366307612
+        },
+        {
+          "age": 0.016666666666666607,
+          "id": 275,
+          "kind": "phoenix_fire",
+          "phase": "flight",
+          "playerId": 1,
+          "progress": 0.04385964912280686,
+          "radius": 0.35,
+          "since": 1.6999999999999988,
+          "sourceId": 42,
+          "targetId": 32,
+          "tx": 10.734303673295628,
+          "tz": 4.8073617532662,
+          "x": 5.958522742414274,
+          "y": 0.47554445680012425,
+          "z": 7.719166200129785
+        }
+      ],
+      "events": [
+        {
+          "domain": "effect",
+          "id": 102,
+          "kind": "plague_vial",
+          "phase": "spawn",
+          "refId": 101,
+          "sourceId": 37,
+          "time": 1.016666666666668,
+          "x": 3.8458593890022086,
+          "z": 0.8329702402068236
+        },
+        {
+          "domain": "cast",
+          "id": 103,
+          "kind": "plague_vial",
+          "phase": "release",
+          "refId": 71,
+          "sourceId": 38,
+          "time": 1.016666666666668,
+          "x": -0.4636607466347072,
+          "z": 6.217941933412041
+        },
+        {
+          "domain": "effect",
+          "id": 105,
+          "kind": "plague_vial",
+          "phase": "spawn",
+          "refId": 104,
+          "sourceId": 38,
+          "time": 1.016666666666668,
+          "x": -0.4636607466347072,
+          "z": 6.217941933412041
+        },
+        {
+          "domain": "cast",
+          "id": 106,
+          "kind": "flame_cloak",
+          "phase": "channel",
+          "refId": 36,
+          "sourceId": 38,
+          "time": 1.016666666666668,
+          "x": -0.6800357617309039,
+          "z": 3.4263148356709925
+        },
+        {
+          "domain": "effect",
+          "id": 107,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "refId": 104,
+          "sourceId": 38,
+          "time": 1.016666666666668,
+          "x": -0.4636607466347072,
+          "z": 6.217941933412041
+        },
+        {
+          "domain": "effect",
+          "id": 108,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "refId": 101,
+          "sourceId": 37,
+          "time": 1.016666666666668,
+          "x": 3.8458593890022086,
+          "z": 0.8329702402068236
+        },
+        {
+          "domain": "effect",
+          "id": 109,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "refId": 98,
+          "sourceId": 36,
+          "time": 1.016666666666668,
+          "x": 5.476284317053494,
+          "z": -4.946728844849508
+        },
+        {
+          "domain": "cast",
+          "id": 110,
+          "kind": "phoenix_fire",
+          "phase": "channel",
+          "refId": 38,
+          "sourceId": 38,
+          "time": 1.0333333333333345,
+          "x": -0.7109464781732177,
+          "z": 3.027510964565128
+        },
+        {
+          "domain": "cast",
+          "id": 111,
+          "kind": "plague_vial",
+          "phase": "end",
+          "refId": 75,
+          "sourceId": 36,
+          "time": 1.0833333333333344,
+          "x": 5.476284317053494,
+          "z": -4.946728844849508
+        },
+        {
+          "domain": "cast",
+          "id": 112,
+          "kind": "plague_vial",
+          "phase": "end",
+          "refId": 73,
+          "sourceId": 37,
+          "time": 1.0833333333333344,
+          "x": 3.8458593890022086,
+          "z": 0.8329702402068236
+        },
+        {
+          "domain": "cast",
+          "id": 113,
+          "kind": "plague_vial",
+          "phase": "end",
+          "refId": 71,
+          "sourceId": 38,
+          "time": 1.0833333333333344,
+          "x": -0.4636607466347072,
+          "z": 6.217941933412041
+        },
+        {
+          "domain": "effect",
+          "id": 114,
+          "kind": "phoenix_fire",
+          "phase": "death",
+          "reason": "target_gone",
+          "refId": 88,
+          "sourceId": 38,
+          "targetId": 21,
+          "time": 1.0833333333333344,
+          "x": -0.46552585864543655,
+          "z": 3.9152031510341554
+        },
+        {
+          "domain": "buff",
+          "id": 116,
+          "kind": "burn",
+          "phase": "apply",
+          "refId": 115,
+          "sourceId": 37,
+          "targetId": 23,
+          "time": 1.0833333333333344,
+          "x": 7.571336490896379,
+          "z": 2.8995723345937634
+        },
+        {
+          "domain": "effect",
+          "id": 117,
+          "kind": "phoenix_fire",
+          "phase": "death",
+          "reason": "impact",
+          "refId": 47,
+          "sourceId": 37,
+          "targetId": 23,
+          "time": 1.0833333333333344,
+          "x": 7.571336490896379,
+          "z": 2.8995723345937634
+        },
+        {
+          "domain": "buff",
+          "id": 119,
+          "kind": "burn",
+          "phase": "apply",
+          "refId": 118,
+          "sourceId": 37,
+          "targetId": 30,
+          "time": 1.0833333333333344,
+          "x": 4.959069272544822,
+          "z": 7.938673368763534
+        },
+        {
+          "domain": "effect",
+          "id": 120,
+          "kind": "phoenix_fire",
+          "phase": "death",
+          "reason": "impact",
+          "refId": 45,
+          "sourceId": 37,
+          "targetId": 30,
+          "time": 1.0833333333333344,
+          "x": 4.959069272544822,
+          "z": 7.938673368763534
+        },
+        {
+          "domain": "buff",
+          "id": 122,
+          "kind": "burn",
+          "phase": "apply",
+          "refId": 121,
+          "sourceId": 37,
+          "targetId": 28,
+          "time": 1.0833333333333344,
+          "x": -0.11231177862754425,
+          "z": 5.2847763735224556
+        },
+        {
+          "domain": "effect",
+          "id": 123,
+          "kind": "phoenix_fire",
+          "phase": "death",
+          "reason": "impact",
+          "refId": 43,
+          "sourceId": 37,
+          "targetId": 28,
+          "time": 1.0833333333333344,
+          "x": -0.11231177862754427,
+          "z": 5.2847763735224556
+        },
+        {
+          "domain": "cast",
+          "id": 125,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 124,
+          "sourceId": 39,
+          "time": 1.1333333333333342,
+          "x": -0.24694853797635913,
+          "z": 6.205084119056276
+        },
+        {
+          "domain": "cast",
+          "id": 127,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 126,
+          "sourceId": 38,
+          "time": 1.1333333333333342,
+          "x": -0.9273214932694143,
+          "z": 0.2358838668240777
+        },
+        {
+          "domain": "cast",
+          "id": 129,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 128,
+          "sourceId": 37,
+          "time": 1.1333333333333342,
+          "x": 5.768789083503315,
+          "z": -4.850544639689765
+        },
+        {
+          "domain": "cast",
+          "id": 131,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 130,
+          "sourceId": 36,
+          "time": 1.1333333333333342,
+          "x": 7.301712422737989,
+          "z": -10.662305126466011
+        },
+        {
+          "domain": "cast",
+          "id": 133,
+          "kind": "flame_cloak",
+          "phase": "windup",
+          "refId": 132,
+          "sourceId": 41,
+          "time": 1.1500000000000008,
+          "x": -0.0029978550805219565,
+          "z": 11.80001123407661
+        },
+        {
+          "domain": "cast",
+          "id": 135,
+          "kind": "phoenix_fire",
+          "phase": "windup",
+          "refId": 134,
+          "sourceId": 41,
+          "time": 1.1666666666666674,
+          "x": -0.0029978550805219565,
+          "z": 11.80001123407661
+        },
+        {
+          "domain": "effect",
+          "id": 136,
+          "kind": "phoenix_fire",
+          "phase": "death",
+          "reason": "target_gone",
+          "refId": 84,
+          "sourceId": 38,
+          "targetId": 28,
+          "time": 1.1666666666666674,
+          "x": -0.2910973995973024,
+          "z": 5.124765279103896
+        },
+        {
+          "domain": "buff",
+          "id": 137,
+          "kind": "burn",
+          "phase": "expire",
+          "reason": "target_gone",
+          "refId": 121,
+          "sourceId": 37,
+          "targetId": 28,
+          "time": 1.1666666666666674,
+          "x": -0.037336371429850954,
+          "z": 5.200901834384884
+        },
+        {
+          "domain": "cast",
+          "id": 139,
+          "kind": "flame_cloak",
+          "phase": "release",
+          "refId": 77,
+          "sourceId": 39,
+          "time": 1.183333333333334,
+          "x": -0.2798750097065404,
+          "z": 5.405762001597112
+        },
+        {
+          "domain": "cast",
+          "id": 140,
+          "kind": "phoenix_fire",
+          "phase": "release",
+          "refId": 79,
+          "sourceId": 39,
+          "time": 1.2000000000000006,
+          "x": -0.296338245571631,
+          "z": 5.00610094286753
+        },
+        {
+          "domain": "effect",
+          "id": 142,
+          "kind": "phoenix_fire",
+          "phase": "spawn",
+          "refId": 141,
+          "sourceId": 39,
+          "targetId": 20,
+          "time": 1.2000000000000006,
+          "x": -0.296338245571631,
+          "z": 5.00610094286753
+        },
+        {
+          "domain": "effect",
+          "id": 144,
+          "kind": "phoenix_fire",
+          "phase": "spawn",
+          "refId": 143,
+          "sourceId": 39,
+          "targetId": 27,
+          "time": 1.2000000000000006,
+          "x": -0.296338245571631,
+          "z": 5.00610094286753
+        },
+        {
+          "domain": "effect",
+          "id": 145,
+          "kind": "phoenix_fire",
+          "phase": "flight",
+          "refId": 143,
+          "sourceId": 39,
+          "targetId": 27,
+          "time": 1.2000000000000006,
+          "x": -0.296338245571631,
+          "z": 5.00610094286753
+        },
+        {
+          "domain": "effect",
+          "id": 146,
+          "kind": "phoenix_fire",
+          "phase": "flight",
+          "refId": 141,
+          "sourceId": 39,
+          "targetId": 20,
+          "time": 1.2000000000000006,
+          "x": -0.296338245571631,
+          "z": 5.00610094286753
+        },
+        {
+          "domain": "cast",
+          "id": 147,
+          "kind": "phoenix_fire",
+          "phase": "end",
+          "refId": 38,
+          "sourceId": 38,
+          "time": 1.2333333333333338,
+          "x": -1.0818750754809836,
+          "z": -1.758135488705244
+        },
+        {
+          "domain": "cast",
+          "id": 148,
+          "kind": "flame_cloak",
+          "phase": "pulse",
+          "refId": 1,
+          "sourceId": 36,
+          "time": 1.2333333333333338,
+          "x": 7.910188457966154,
+          "z": -12.432502779661819
+        },
+        {
+          "domain": "effect",
+          "id": 149,
+          "kind": "plague_vial",
+          "phase": "active",
+          "refId": 57,
+          "sourceId": 37,
+          "time": 1.2333333333333338,
+          "x": 2.4036621181263786,
+          "z": 5.095606400129268
+        },
+        {
+          "domain": "effect",
+          "id": 150,
+          "kind": "plague_vial",
+          "phase": "active",
+          "refId": 54,
+          "sourceId": 36,
+          "time": 1.2333333333333338,
+          "x": 4.107213237790123,
+          "z": -0.6600466336371309
+        },
+        {
+          "domain": "buff",
+          "id": 152,
+          "kind": "poison",
+          "phase": "apply",
+          "refId": 151,
+          "sourceId": 36,
+          "targetId": 14,
+          "time": 1.2500000000000004,
+          "x": 4.634486276272801,
+          "z": -2.034394358639619
+        },
+        {
+          "domain": "buff",
+          "id": 154,
+          "kind": "poison",
+          "phase": "apply",
+          "refId": 153,
+          "sourceId": 36,
+          "targetId": 22,
+          "time": 1.2500000000000004,
+          "x": 4.882010403278306,
+          "z": -0.04100958221078947
+        },
+        {
+          "domain": "buff",
+          "id": 155,
+          "kind": "burn",
+          "phase": "active",
+          "refId": 115,
+          "sourceId": 37,
+          "targetId": 23,
+          "time": 1.2500000000000004,
+          "x": 7.643184080919927,
+          "z": 3.1127926990241033
+        },
+        {
+          "domain": "buff",
+          "id": 156,
+          "kind": "burn",
+          "phase": "active",
+          "refId": 118,
+          "sourceId": 37,
+          "targetId": 30,
+          "time": 1.2500000000000004,
+          "x": 5.026807395710579,
+          "z": 8.153234657606562
+        },
+        {
+          "domain": "cast",
+          "id": 157,
+          "kind": "plague_vial",
+          "phase": "release",
+          "refId": 130,
+          "sourceId": 36,
+          "time": 1.266666666666667,
+          "x": 7.301712422737989,
+          "z": -10.662305126466011
+        },
+        {
+          "domain": "effect",
+          "id": 159,
+          "kind": "plague_vial",
+          "phase": "spawn",
+          "refId": 158,
+          "sourceId": 36,
+          "time": 1.266666666666667,
+          "x": 7.301712422737989,
+          "z": -10.662305126466011
+        },
+        {
+          "domain": "cast",
+          "id": 160,
+          "kind": "plague_vial",
+          "phase": "release",
+          "refId": 128,
+          "sourceId": 37,
+          "time": 1.266666666666667,
+          "x": 5.768789083503315,
+          "z": -4.850544639689765
+        },
+        {
+          "domain": "effect",
+          "id": 162,
+          "kind": "plague_vial",
+          "phase": "spawn",
+          "refId": 161,
+          "sourceId": 37,
+          "time": 1.266666666666667,
+          "x": 5.768789083503315,
+          "z": -4.850544639689765
+        },
+        {
+          "domain": "cast",
+          "id": 163,
+          "kind": "plague_vial",
+          "phase": "release",
+          "refId": 126,
+          "sourceId": 38,
+          "time": 1.266666666666667,
+          "x": -0.9273214932694143,
+          "z": 0.2358838668240777
+        },
+        {
+          "domain": "effect",
+          "id": 165,
+          "kind": "plague_vial",
+          "phase": "spawn",
+          "refId": 164,
+          "sourceId": 38,
+          "time": 1.266666666666667,
+          "x": -0.9273214932694143,
+          "z": 0.2358838668240777
+        },
+        {
+          "domain": "cast",
+          "id": 166,
+          "kind": "plague_vial",
+          "phase": "release",
+          "refId": 124,
+          "sourceId": 39,
+          "time": 1.266666666666667,
+          "x": -0.24694853797635913,
+          "z": 6.205084119056276
+        },
+        {
+          "domain": "effect",
+          "id": 168,
+          "kind": "plague_vial",
+          "phase": "spawn",
+          "refId": 167,
+          "sourceId": 39,
+          "time": 1.266666666666667,
+          "x": -0.24694853797635913,
+          "z": 6.205084119056276
+        },
+        {
+          "domain": "cast",
+          "id": 169,
+          "kind": "flame_cloak",
+          "phase": "channel",
+          "refId": 77,
+          "sourceId": 39,
+          "time": 1.266666666666667,
+          "x": -0.36219118903199354,
+          "z": 3.4074567079492013
+        },
+        {
+          "domain": "effect",
+          "id": 170,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "refId": 167,
+          "sourceId": 39,
+          "time": 1.266666666666667,
+          "x": -0.24694853797635913,
+          "z": 6.205084119056276
+        },
+        {
+          "domain": "effect",
+          "id": 171,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "refId": 164,
+          "sourceId": 38,
+          "time": 1.266666666666667,
+          "x": -0.9273214932694143,
+          "z": 0.2358838668240777
+        },
+        {
+          "domain": "effect",
+          "id": 172,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "refId": 161,
+          "sourceId": 37,
+          "time": 1.266666666666667,
+          "x": 5.768789083503315,
+          "z": -4.850544639689765
+        },
+        {
+          "domain": "effect",
+          "id": 173,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "refId": 158,
+          "sourceId": 36,
+          "time": 1.266666666666667,
+          "x": 7.301712422737989,
+          "z": -10.662305126466011
+        },
+        {
+          "domain": "cast",
+          "id": 174,
+          "kind": "phoenix_fire",
+          "phase": "channel",
+          "refId": 79,
+          "sourceId": 39,
+          "time": 1.2833333333333337,
+          "x": -0.3786544248970842,
+          "z": 3.007795649219619
+        },
+        {
+          "domain": "cast",
+          "id": 175,
+          "kind": "plague_vial",
+          "phase": "end",
+          "refId": 130,
+          "sourceId": 36,
+          "time": 1.3333333333333335,
+          "x": 7.301712422737989,
+          "z": -10.662305126466011
+        },
+        {
+          "domain": "cast",
+          "id": 176,
+          "kind": "plague_vial",
+          "phase": "end",
+          "refId": 128,
+          "sourceId": 37,
+          "time": 1.3333333333333335,
+          "x": 5.768789083503315,
+          "z": -4.850544639689765
+        },
+        {
+          "domain": "cast",
+          "id": 177,
+          "kind": "plague_vial",
+          "phase": "end",
+          "refId": 126,
+          "sourceId": 38,
+          "time": 1.3333333333333335,
+          "x": -0.9273214932694143,
+          "z": 0.2358838668240777
+        },
+        {
+          "domain": "cast",
+          "id": 178,
+          "kind": "plague_vial",
+          "phase": "end",
+          "refId": 124,
+          "sourceId": 39,
+          "time": 1.3333333333333335,
+          "x": -0.24694853797635913,
+          "z": 6.205084119056276
+        },
+        {
+          "domain": "buff",
+          "id": 180,
+          "kind": "burn",
+          "phase": "apply",
+          "refId": 179,
+          "sourceId": 38,
+          "targetId": 27,
+          "time": 1.3333333333333335,
+          "x": -5.14168245132608,
+          "z": 4.868895045209916
+        },
+        {
+          "domain": "effect",
+          "id": 181,
+          "kind": "phoenix_fire",
+          "phase": "death",
+          "reason": "impact",
+          "refId": 86,
+          "sourceId": 38,
+          "targetId": 27,
+          "time": 1.3333333333333335,
+          "x": -5.14168245132608,
+          "z": 4.868895045209916
+        },
+        {
+          "domain": "cast",
+          "id": 183,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 182,
+          "sourceId": 41,
+          "time": 1.3833333333333333,
+          "x": -0.04496782620782936,
+          "z": 6.200168511149157
+        },
+        {
+          "domain": "cast",
+          "id": 185,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 184,
+          "sourceId": 39,
+          "time": 1.3833333333333333,
+          "x": -0.4938970759527184,
+          "z": 0.2101682381125486
+        },
+        {
+          "domain": "cast",
+          "id": 187,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 186,
+          "sourceId": 38,
+          "time": 1.3833333333333333,
+          "x": -1.3909822399041227,
+          "z": -5.746174199763885
+        },
+        {
+          "domain": "cast",
+          "id": 189,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 188,
+          "sourceId": 37,
+          "time": 1.3833333333333333,
+          "x": 7.691718778004419,
+          "z": -10.534059519586352
+        },
+        {
+          "domain": "cast",
+          "id": 191,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 190,
+          "sourceId": 36,
+          "time": 1.3833333333333333,
+          "x": 9.127140528422482,
+          "z": -8.622118591917484
+        },
+        {
+          "domain": "cast",
+          "id": 193,
+          "kind": "flame_cloak",
+          "phase": "windup",
+          "refId": 192,
+          "sourceId": 42,
+          "time": 1.4,
+          "x": 0.3188583457027263,
+          "z": 11.95848528952521
+        },
+        {
+          "domain": "cast",
+          "id": 195,
+          "kind": "phoenix_fire",
+          "phase": "windup",
+          "refId": 194,
+          "sourceId": 42,
+          "time": 1.4166666666666665,
+          "x": 0.3188583457027263,
+          "z": 11.95848528952521
+        },
+        {
+          "domain": "buff",
+          "id": 196,
+          "kind": "poison",
+          "phase": "active",
+          "refId": 151,
+          "sourceId": 36,
+          "targetId": 14,
+          "time": 1.4166666666666665,
+          "x": 4.67978151337539,
+          "z": -1.8140007527981166
+        },
+        {
+          "domain": "buff",
+          "id": 197,
+          "kind": "poison",
+          "phase": "active",
+          "refId": 153,
+          "sourceId": 36,
+          "targetId": 22,
+          "time": 1.4166666666666665,
+          "x": 4.943167312857494,
+          "z": -0.25753863894619067
+        },
+        {
+          "domain": "cast",
+          "id": 199,
+          "kind": "flame_cloak",
+          "phase": "release",
+          "refId": 132,
+          "sourceId": 41,
+          "time": 1.4333333333333331,
+          "x": -0.050963536368873276,
+          "z": 5.400190979302377
+        },
+        {
+          "domain": "cast",
+          "id": 200,
+          "kind": "phoenix_fire",
+          "phase": "release",
+          "refId": 134,
+          "sourceId": 41,
+          "time": 1.4499999999999997,
+          "x": -0.053961391449395234,
+          "z": 5.000202213378987
+        },
+        {
+          "domain": "effect",
+          "id": 202,
+          "kind": "phoenix_fire",
+          "phase": "spawn",
+          "refId": 201,
+          "sourceId": 41,
+          "targetId": 20,
+          "time": 1.4499999999999997,
+          "x": -0.053961391449395234,
+          "z": 5.000202213378987
+        },
+        {
+          "domain": "effect",
+          "id": 204,
+          "kind": "phoenix_fire",
+          "phase": "spawn",
+          "refId": 203,
+          "sourceId": 41,
+          "targetId": 27,
+          "time": 1.4499999999999997,
+          "x": -0.053961391449395234,
+          "z": 5.000202213378987
+        },
+        {
+          "domain": "effect",
+          "id": 205,
+          "kind": "phoenix_fire",
+          "phase": "flight",
+          "refId": 203,
+          "sourceId": 41,
+          "targetId": 27,
+          "time": 1.4499999999999997,
+          "x": -0.053961391449395234,
+          "z": 5.000202213378987
+        },
+        {
+          "domain": "effect",
+          "id": 206,
+          "kind": "phoenix_fire",
+          "phase": "flight",
+          "refId": 201,
+          "sourceId": 41,
+          "targetId": 20,
+          "time": 1.4499999999999997,
+          "x": -0.053961391449395234,
+          "z": 5.000202213378987
+        },
+        {
+          "domain": "cast",
+          "id": 207,
+          "kind": "phoenix_fire",
+          "phase": "end",
+          "refId": 79,
+          "sourceId": 39,
+          "time": 1.483333333333333,
+          "x": -0.5762132552781715,
+          "z": -1.7881370555353655
+        },
+        {
+          "domain": "cast",
+          "id": 208,
+          "kind": "flame_cloak",
+          "phase": "pulse",
+          "refId": 8,
+          "sourceId": 37,
+          "time": 1.483333333333333,
+          "x": 8.332695342838122,
+          "z": -12.428564479551888
+        },
+        {
+          "domain": "effect",
+          "id": 209,
+          "kind": "plague_vial",
+          "phase": "active",
+          "refId": 104,
+          "sourceId": 38,
+          "time": 1.483333333333333,
+          "x": -0.5795759332933841,
+          "z": 4.72242741676505
+        },
+        {
+          "domain": "effect",
+          "id": 210,
+          "kind": "plague_vial",
+          "phase": "active",
+          "refId": 101,
+          "sourceId": 37,
+          "time": 1.483333333333333,
+          "x": 4.326591812627485,
+          "z": -0.5879084797673225
+        },
+        {
+          "domain": "effect",
+          "id": 211,
+          "kind": "plague_vial",
+          "phase": "active",
+          "refId": 98,
+          "sourceId": 36,
+          "time": 1.483333333333333,
+          "x": 5.932641343474618,
+          "z": -6.375622915253633
+        },
+        {
+          "domain": "buff",
+          "id": 213,
+          "kind": "poison",
+          "phase": "apply",
+          "refId": 212,
+          "sourceId": 36,
+          "targetId": 7,
+          "time": 1.4999999999999996,
+          "x": 5.549108157399143,
+          "z": -8.090508923242407
+        },
+        {
+          "domain": "buff",
+          "id": 215,
+          "kind": "poison",
+          "phase": "apply",
+          "refId": 214,
+          "sourceId": 36,
+          "targetId": 34,
+          "time": 1.4999999999999996,
+          "x": 5.50268729513466,
+          "z": -5.838632859825799
+        },
+        {
+          "domain": "buff",
+          "id": 216,
+          "kind": "burn",
+          "phase": "active",
+          "refId": 179,
+          "sourceId": 38,
+          "targetId": 27,
+          "time": 1.4999999999999996,
+          "x": -5.279255481388139,
+          "z": 4.690853866266556
+        },
+        {
+          "domain": "cast",
+          "id": 217,
+          "kind": "plague_vial",
+          "phase": "release",
+          "refId": 190,
+          "sourceId": 36,
+          "time": 1.5166666666666662,
+          "x": 9.127140528422482,
+          "z": -8.622118591917484
+        },
+        {
+          "domain": "effect",
+          "id": 219,
+          "kind": "plague_vial",
+          "phase": "spawn",
+          "refId": 218,
+          "sourceId": 36,
+          "time": 1.5166666666666662,
+          "x": 9.127140528422482,
+          "z": -8.622118591917484
+        },
+        {
+          "domain": "cast",
+          "id": 220,
+          "kind": "plague_vial",
+          "phase": "release",
+          "refId": 188,
+          "sourceId": 37,
+          "time": 1.5166666666666662,
+          "x": 7.691718778004419,
+          "z": -10.534059519586352
+        },
+        {
+          "domain": "effect",
+          "id": 222,
+          "kind": "plague_vial",
+          "phase": "spawn",
+          "refId": 221,
+          "sourceId": 37,
+          "time": 1.5166666666666662,
+          "x": 7.691718778004419,
+          "z": -10.534059519586352
+        },
+        {
+          "domain": "cast",
+          "id": 223,
+          "kind": "plague_vial",
+          "phase": "release",
+          "refId": 186,
+          "sourceId": 38,
+          "time": 1.5166666666666662,
+          "x": -1.3909822399041227,
+          "z": -5.746174199763885
+        },
+        {
+          "domain": "effect",
+          "id": 225,
+          "kind": "plague_vial",
+          "phase": "spawn",
+          "refId": 224,
+          "sourceId": 38,
+          "time": 1.5166666666666662,
+          "x": -1.3909822399041227,
+          "z": -5.746174199763885
+        },
+        {
+          "domain": "cast",
+          "id": 226,
+          "kind": "plague_vial",
+          "phase": "release",
+          "refId": 184,
+          "sourceId": 39,
+          "time": 1.5166666666666662,
+          "x": -0.4938970759527184,
+          "z": 0.2101682381125486
+        },
+        {
+          "domain": "effect",
+          "id": 228,
+          "kind": "plague_vial",
+          "phase": "spawn",
+          "refId": 227,
+          "sourceId": 39,
+          "time": 1.5166666666666662,
+          "x": -0.4938970759527184,
+          "z": 0.2101682381125486
+        },
+        {
+          "domain": "cast",
+          "id": 229,
+          "kind": "plague_vial",
+          "phase": "release",
+          "refId": 182,
+          "sourceId": 41,
+          "time": 1.5166666666666662,
+          "x": -0.04496782620782936,
+          "z": 6.200168511149157
+        },
+        {
+          "domain": "effect",
+          "id": 231,
+          "kind": "plague_vial",
+          "phase": "spawn",
+          "refId": 230,
+          "sourceId": 41,
+          "time": 1.5166666666666662,
+          "x": -0.04496782620782936,
+          "z": 6.200168511149157
+        },
+        {
+          "domain": "cast",
+          "id": 232,
+          "kind": "flame_cloak",
+          "phase": "channel",
+          "refId": 132,
+          "sourceId": 41,
+          "time": 1.5166666666666662,
+          "x": -0.06595281177148306,
+          "z": 3.400247149685428
+        },
+        {
+          "domain": "effect",
+          "id": 233,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "refId": 230,
+          "sourceId": 41,
+          "time": 1.5166666666666662,
+          "x": -0.04496782620782936,
+          "z": 6.200168511149157
+        },
+        {
+          "domain": "effect",
+          "id": 234,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "refId": 227,
+          "sourceId": 39,
+          "time": 1.5166666666666662,
+          "x": -0.4938970759527184,
+          "z": 0.2101682381125486
+        },
+        {
+          "domain": "effect",
+          "id": 235,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "refId": 224,
+          "sourceId": 38,
+          "time": 1.5166666666666662,
+          "x": -1.3909822399041227,
+          "z": -5.746174199763885
+        },
+        {
+          "domain": "effect",
+          "id": 236,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "refId": 221,
+          "sourceId": 37,
+          "time": 1.5166666666666662,
+          "x": 7.691718778004419,
+          "z": -10.534059519586352
+        },
+        {
+          "domain": "effect",
+          "id": 237,
+          "kind": "plague_vial",
+          "phase": "flight",
+          "refId": 218,
+          "sourceId": 36,
+          "time": 1.5166666666666662,
+          "x": 9.127140528422482,
+          "z": -8.622118591917484
+        },
+        {
+          "domain": "cast",
+          "id": 238,
+          "kind": "phoenix_fire",
+          "phase": "channel",
+          "refId": 134,
+          "sourceId": 41,
+          "time": 1.5333333333333328,
+          "x": -0.06895066685200502,
+          "z": 3.0002583837620382
+        },
+        {
+          "domain": "cast",
+          "id": 239,
+          "kind": "plague_vial",
+          "phase": "end",
+          "refId": 190,
+          "sourceId": 36,
+          "time": 1.5833333333333326,
+          "x": 9.127140528422482,
+          "z": -8.622118591917484
+        },
+        {
+          "domain": "cast",
+          "id": 240,
+          "kind": "plague_vial",
+          "phase": "end",
+          "refId": 188,
+          "sourceId": 37,
+          "time": 1.5833333333333326,
+          "x": 7.691718778004419,
+          "z": -10.534059519586352
+        },
+        {
+          "domain": "cast",
+          "id": 241,
+          "kind": "plague_vial",
+          "phase": "end",
+          "refId": 186,
+          "sourceId": 38,
+          "time": 1.5833333333333326,
+          "x": -1.3909822399041227,
+          "z": -5.746174199763885
+        },
+        {
+          "domain": "cast",
+          "id": 242,
+          "kind": "plague_vial",
+          "phase": "end",
+          "refId": 184,
+          "sourceId": 39,
+          "time": 1.5833333333333326,
+          "x": -0.4938970759527184,
+          "z": 0.2101682381125486
+        },
+        {
+          "domain": "cast",
+          "id": 243,
+          "kind": "plague_vial",
+          "phase": "end",
+          "refId": 182,
+          "sourceId": 41,
+          "time": 1.5833333333333326,
+          "x": -0.04496782620782936,
+          "z": 6.200168511149157
+        },
+        {
+          "domain": "effect",
+          "id": 244,
+          "kind": "phoenix_fire",
+          "phase": "death",
+          "reason": "impact",
+          "refId": 143,
+          "sourceId": 39,
+          "targetId": 27,
+          "time": 1.5833333333333326,
+          "x": -5.348041996419169,
+          "z": 4.601833276794876
+        },
+        {
+          "domain": "buff",
+          "id": 246,
+          "kind": "burn",
+          "phase": "apply",
+          "refId": 245,
+          "sourceId": 39,
+          "targetId": 20,
+          "time": 1.5833333333333326,
+          "x": 0.4662518813794394,
+          "z": -0.2300140733588367
+        },
+        {
+          "domain": "effect",
+          "id": 247,
+          "kind": "phoenix_fire",
+          "phase": "death",
+          "reason": "impact",
+          "refId": 141,
+          "sourceId": 39,
+          "targetId": 20,
+          "time": 1.5833333333333326,
+          "x": 0.4662518813794394,
+          "z": -0.23001407335883695
+        },
+        {
+          "domain": "buff",
+          "id": 248,
+          "kind": "burn",
+          "phase": "tick",
+          "refId": 65,
+          "sourceId": 36,
+          "targetId": 22,
+          "time": 1.5833333333333326,
+          "x": 5.047016707731676,
+          "z": -0.4511707216839262
+        },
+        {
+          "domain": "buff",
+          "id": 249,
+          "kind": "burn",
+          "phase": "tick",
+          "refId": 68,
+          "sourceId": 36,
+          "targetId": 31,
+          "time": 1.5833333333333326,
+          "x": 7.711747795068256,
+          "z": 4.413539809525724
+        },
+        {
+          "domain": "cast",
+          "id": 251,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 250,
+          "sourceId": 42,
+          "time": 1.6333333333333324,
+          "x": 4.78287518554089,
+          "z": 8.577279342878173
+        },
+        {
+          "domain": "cast",
+          "id": 253,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 252,
+          "sourceId": 41,
+          "time": 1.6333333333333324,
+          "x": -0.08993565241565869,
+          "z": 0.20033702229831413
+        },
+        {
+          "domain": "cast",
+          "id": 255,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 254,
+          "sourceId": 39,
+          "time": 1.6333333333333324,
+          "x": -0.7408456139290771,
+          "z": -5.784747642831183
+        },
+        {
+          "domain": "cast",
+          "id": 257,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 256,
+          "sourceId": 38,
+          "time": 1.6333333333333324,
+          "x": -1.8546429865388314,
+          "z": -11.728232266351844
+        },
+        {
+          "domain": "cast",
+          "id": 259,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 258,
+          "sourceId": 37,
+          "time": 1.6333333333333324,
+          "x": 9.614648472505523,
+          "z": -8.782425600517056
+        },
+        {
+          "domain": "cast",
+          "id": 261,
+          "kind": "plague_vial",
+          "phase": "windup",
+          "refId": 260,
+          "sourceId": 36,
+          "time": 1.6333333333333324,
+          "x": 10.952568634106978,
+          "z": -2.90654231030098
+        },
+        {
+          "domain": "cast",
+          "id": 263,
+          "kind": "flame_cloak",
+          "phase": "windup",
+          "refId": 262,
+          "sourceId": 43,
+          "time": 1.649999999999999,
+          "x": 0.33081248330616386,
+          "z": 11.975137595652788
+        },
+        {
+          "domain": "cast",
+          "id": 265,
+          "kind": "phoenix_fire",
+          "phase": "windup",
+          "refId": 264,
+          "sourceId": 43,
+          "time": 1.6666666666666656,
+          "x": 0.33081248330616386,
+          "z": 11.975137595652788
+        },
+        {
+          "domain": "buff",
+          "id": 266,
+          "kind": "poison",
+          "phase": "active",
+          "refId": 212,
+          "sourceId": 36,
+          "targetId": 7,
+          "time": 1.6666666666666656,
+          "x": 5.359526612726064,
+          "z": -7.969332036339961
+        },
+        {
+          "domain": "buff",
+          "id": 267,
+          "kind": "poison",
+          "phase": "active",
+          "refId": 214,
+          "sourceId": 36,
+          "targetId": 34,
+          "time": 1.6666666666666656,
+          "x": 5.4474303279274,
+          "z": -5.931814288695332
+        },
+        {
+          "domain": "cast",
+          "id": 269,
+          "kind": "flame_cloak",
+          "phase": "release",
+          "refId": 192,
+          "sourceId": 42,
+          "time": 1.6833333333333322,
+          "x": 5.420591876946349,
+          "z": 8.09424992192859
+        },
+        {
+          "domain": "cast",
+          "id": 270,
+          "kind": "phoenix_fire",
+          "phase": "release",
+          "refId": 194,
+          "sourceId": 42,
+          "time": 1.6999999999999988,
+          "x": 5.739450222649076,
+          "z": 7.852735211453802
+        },
+        {
+          "domain": "effect",
+          "id": 272,
+          "kind": "phoenix_fire",
+          "phase": "spawn",
+          "refId": 271,
+          "sourceId": 42,
+          "targetId": 31,
+          "time": 1.6999999999999988,
+          "x": 5.739450222649076,
+          "z": 7.852735211453802
+        },
+        {
+          "domain": "effect",
+          "id": 274,
+          "kind": "phoenix_fire",
+          "phase": "spawn",
+          "refId": 273,
+          "sourceId": 42,
+          "targetId": 30,
+          "time": 1.6999999999999988,
+          "x": 5.739450222649076,
+          "z": 7.852735211453802
+        },
+        {
+          "domain": "effect",
+          "id": 276,
+          "kind": "phoenix_fire",
+          "phase": "spawn",
+          "refId": 275,
+          "sourceId": 42,
+          "targetId": 32,
+          "time": 1.6999999999999988,
+          "x": 5.739450222649076,
+          "z": 7.852735211453802
+        },
+        {
+          "domain": "effect",
+          "id": 277,
+          "kind": "phoenix_fire",
+          "phase": "flight",
+          "refId": 275,
+          "sourceId": 42,
+          "targetId": 32,
+          "time": 1.6999999999999988,
+          "x": 5.739450222649076,
+          "z": 7.852735211453802
+        },
+        {
+          "domain": "effect",
+          "id": 278,
+          "kind": "phoenix_fire",
+          "phase": "flight",
+          "refId": 273,
+          "sourceId": 42,
+          "targetId": 30,
+          "time": 1.6999999999999988,
+          "x": 5.739450222649076,
+          "z": 7.852735211453802
+        },
+        {
+          "domain": "effect",
+          "id": 279,
+          "kind": "phoenix_fire",
+          "phase": "flight",
+          "refId": 271,
+          "sourceId": 42,
+          "targetId": 31,
+          "time": 1.6999999999999988,
+          "x": 5.739450222649076,
+          "z": 7.852735211453802
+        }
+      ]
+    },
+    "metrics": {
+      "instances": 47,
+      "instance_cells": 8,
+      "submitted_instance_cells": 8,
+      "submitted_instances": 47,
+      "culled_instances": 0,
+      "draw_calls": 449,
+      "triangles": 199409,
+      "textures": 110,
+      "particles": 0,
+      "effects": 0,
+      "bloom": true,
+      "ao": true,
+      "ao_method": "depth-ssao-12",
+      "bloom_resolution": [
+        360,
+        203
+      ],
+      "hdr": true,
+      "gpu_timer_available": true,
+      "gpu_on": {
+        "samples": 214,
+        "median_ms": 2.82624,
+        "p95_ms": 16.793984
+      },
+      "gpu_off": null,
+      "walls": {
+        "halfExtent": 12.5,
+        "innerFace": 12.5,
+        "height": 0.66,
+        "segments": 136
+      },
+      "lighting": {
+        "mode": "cycle",
+        "side": "both",
+        "nightMix": 0.007748410012781648,
+        "shadowMap": 2048,
+        "primaryLights": 2,
+        "left": {
+          "color": "#ffd49a",
+          "intensity": 2.0907019079846623
+        },
+        "right": {
+          "color": "#aaa2df",
+          "intensity": 1.1484503179974437
+        },
+        "eventLights": 1,
+        "litArena": true
+      },
+      "camera": {
+        "projection": "perspective",
+        "fan": false
+      },
+      "actors": {
+        "actors": 42,
+        "animator": {
+          "lod": {
+            "budget_hz": 2400,
+            "assigned": [
+              {
+                "id": "m1",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m10",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m11",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m12",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m13",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m14",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m15",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m16",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m17",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m18",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m19",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m2",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m20",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m21",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m22",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m23",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m24",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m25",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m26",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m27",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m28",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m29",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m3",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m30",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m31",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m32",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m33",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m34",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m35",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m4",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m40",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m5",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m6",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m7",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m8",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "m9",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              {
+                "id": "t36",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "t36-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "t37",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "t37-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "t38",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "t38-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "t39",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "t39-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "t41",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "t41-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "t42",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "t42-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "t43",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "t43-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "tmenu1",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "tmenu2",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "tmenu3",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              {
+                "id": "tmenu3-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              }
+            ],
+            "counts": {
+              "full": 18,
+              "reduced": 36
+            }
+          },
+          "instances": [
+            {
+              "id": "m1",
+              "distance": 14,
+              "lod": {
+                "id": "m1",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m10",
+              "distance": 14,
+              "lod": {
+                "id": "m10",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m11",
+              "distance": 14,
+              "lod": {
+                "id": "m11",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m12",
+              "distance": 14,
+              "lod": {
+                "id": "m12",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m13",
+              "distance": 14,
+              "lod": {
+                "id": "m13",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "death",
+                "clip": "death",
+                "time": 0.13339999999850988,
+                "duration": 0.8333333134651184,
+                "normalizedTime": 0.16008000381481655,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m14",
+              "distance": 14,
+              "lod": {
+                "id": "m14",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.5833999999985099,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.47302702092968746,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m15",
+              "distance": 14,
+              "lod": {
+                "id": "m15",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m16",
+              "distance": 14,
+              "lod": {
+                "id": "m16",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "hit",
+                "clip": "hit",
+                "time": 0.13339999999850988,
+                "duration": 0.3333333432674408,
+                "normalizedTime": 0.40019998806864054,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m17",
+              "distance": 14,
+              "lod": {
+                "id": "m17",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m18",
+              "distance": 14,
+              "lod": {
+                "id": "m18",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m19",
+              "distance": 14,
+              "lod": {
+                "id": "m19",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m2",
+              "distance": 14,
+              "lod": {
+                "id": "m2",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m20",
+              "distance": 14,
+              "lod": {
+                "id": "m20",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "hit",
+                "clip": "hit",
+                "time": 0,
+                "duration": 0.3333333432674408,
+                "normalizedTime": 0,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m21",
+              "distance": 14,
+              "lod": {
+                "id": "m21",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "death",
+                "clip": "death",
+                "time": 0.6666999999992549,
+                "duration": 0.8333333134651184,
+                "normalizedTime": 0.8000400190735463,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m22",
+              "distance": 14,
+              "lod": {
+                "id": "m22",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "hit",
+                "clip": "hit",
+                "time": 0.13339999999850988,
+                "duration": 0.3333333432674408,
+                "normalizedTime": 0.40019998806864054,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m23",
+              "distance": 14,
+              "lod": {
+                "id": "m23",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m24",
+              "distance": 14,
+              "lod": {
+                "id": "m24",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m25",
+              "distance": 14,
+              "lod": {
+                "id": "m25",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m26",
+              "distance": 14,
+              "lod": {
+                "id": "m26",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m27",
+              "distance": 14,
+              "lod": {
+                "id": "m27",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m28",
+              "distance": 14,
+              "lod": {
+                "id": "m28",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "death",
+                "clip": "death",
+                "time": 0.5,
+                "duration": 0.8333333134651184,
+                "normalizedTime": 0.6000000143051151,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m3",
+              "distance": 14,
+              "lod": {
+                "id": "m3",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.06669999999925495,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.05408108038350756,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": {
+                  "source": "hit",
+                  "target": "walk",
+                  "progress": 0.5558333333271246,
+                  "duration": 0.12
+                },
+                "active_action_count": 2
+              }
+            },
+            {
+              "id": "m30",
+              "distance": 14,
+              "lod": {
+                "id": "m30",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "hit",
+                "clip": "hit",
+                "time": 0.06669999999925495,
+                "duration": 0.3333333432674408,
+                "normalizedTime": 0.20009999403432033,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m31",
+              "distance": 14,
+              "lod": {
+                "id": "m31",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "hit",
+                "clip": "hit",
+                "time": 0.13339999999850988,
+                "duration": 0.3333333432674408,
+                "normalizedTime": 0.40019998806864054,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m32",
+              "distance": 14,
+              "lod": {
+                "id": "m32",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m33",
+              "distance": 14,
+              "lod": {
+                "id": "m33",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m34",
+              "distance": 14,
+              "lod": {
+                "id": "m34",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.41679999999888245,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.33794594158976465,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m35",
+              "distance": 14,
+              "lod": {
+                "id": "m35",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.06669999999925495,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.05408108038350756,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": {
+                  "source": "hit",
+                  "target": "walk",
+                  "progress": 0.5558333333271246,
+                  "duration": 0.12
+                },
+                "active_action_count": 2
+              }
+            },
+            {
+              "id": "m4",
+              "distance": 14,
+              "lod": {
+                "id": "m4",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m40",
+              "distance": 14,
+              "lod": {
+                "id": "m40",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.2833999999985099,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.22978378082123924,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m5",
+              "distance": 14,
+              "lod": {
+                "id": "m5",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m6",
+              "distance": 14,
+              "lod": {
+                "id": "m6",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m7",
+              "distance": 14,
+              "lod": {
+                "id": "m7",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.5,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.40540540018074706,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m8",
+              "distance": 14,
+              "lod": {
+                "id": "m8",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "m9",
+              "distance": 14,
+              "lod": {
+                "id": "m9",
+                "level": "reduced",
+                "distance": 14,
+                "updateHz": 15,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "walk",
+                "clip": "walk",
+                "time": 0.25006665077060464,
+                "duration": 1.2333333492279053,
+                "normalizedTime": 0.20275674125503218,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "t36",
+              "distance": 2,
+              "lod": {
+                "id": "t36",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {
+                "head": 0,
+                "body": 1,
+                "feet": 0,
+                "hands": 3,
+                "weapon": 2
+              },
+              "animation": {
+                "state": "pierce",
+                "clip": "pierce",
+                "time": 0.13880000000074505,
+                "duration": 0.18,
+                "normalizedTime": 0.7711111111152503,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "t36-horse",
+              "distance": 2,
+              "lod": {
+                "id": "t36-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "run",
+                "clip": "run",
+                "time": 0.565481493740998,
+                "duration": 0.7333333492279053,
+                "normalizedTime": 0.7711111111152504,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "t37",
+              "distance": 2,
+              "lod": {
+                "id": "t37",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {
+                "head": 0,
+                "body": 1,
+                "feet": 0,
+                "hands": 3,
+                "weapon": 2
+              },
+              "animation": {
+                "state": "stretch",
+                "clip": "stretch",
+                "time": 0.03880000000074506,
+                "duration": 3.625,
+                "normalizedTime": 0.010703448276067602,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": {
+                  "source": "bounce",
+                  "target": "stretch",
+                  "progress": 0.3233333333395422,
+                  "duration": 0.12
+                },
+                "active_action_count": 2
+              }
+            },
+            {
+              "id": "t37-horse",
+              "distance": 2,
+              "lod": {
+                "id": "t37-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "run",
+                "clip": "run",
+                "time": 0.007849195572576304,
+                "duration": 0.7333333492279053,
+                "normalizedTime": 0.010703448276067602,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "t38",
+              "distance": 2,
+              "lod": {
+                "id": "t38",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {
+                "head": 0,
+                "body": 1,
+                "feet": 0,
+                "hands": 3,
+                "weapon": 2
+              },
+              "animation": {
+                "state": "bounce",
+                "clip": "bounce",
+                "time": 0.03880000000074506,
+                "duration": 0.18,
+                "normalizedTime": 0.21555555555969477,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": {
+                  "source": "pierce",
+                  "target": "bounce",
+                  "progress": 0.7760000000149011,
+                  "duration": 0.05
+                },
+                "active_action_count": 2
+              }
+            },
+            {
+              "id": "t38-horse",
+              "distance": 2,
+              "lod": {
+                "id": "t38-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "run",
+                "clip": "run",
+                "time": 0.1580740775032728,
+                "duration": 0.7333333492279053,
+                "normalizedTime": 0.21555555555969477,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "t39",
+              "distance": 2,
+              "lod": {
+                "id": "t39",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {
+                "head": 0,
+                "body": 1,
+                "feet": 0,
+                "hands": 3,
+                "weapon": 2
+              },
+              "animation": {
+                "state": "pierce",
+                "clip": "pierce",
+                "time": 0,
+                "duration": 0.18,
+                "normalizedTime": 0,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "t39-horse",
+              "distance": 2,
+              "lod": {
+                "id": "t39-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "run",
+                "clip": "run",
+                "time": 0,
+                "duration": 0.7333333492279053,
+                "normalizedTime": 0,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "t41",
+              "distance": 2,
+              "lod": {
+                "id": "t41",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {
+                "head": 0,
+                "body": 1,
+                "feet": 0,
+                "hands": 3,
+                "weapon": 2
+              },
+              "animation": {
+                "state": "pierce",
+                "clip": "pierce",
+                "time": 0.08890000000037253,
+                "duration": 0.18,
+                "normalizedTime": 0.4938888888909585,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "t41-horse",
+              "distance": 2,
+              "lod": {
+                "id": "t41-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "run",
+                "clip": "run",
+                "time": 0.36218519303685537,
+                "duration": 0.7333333492279053,
+                "normalizedTime": 0.4938888888909585,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "t42",
+              "distance": 2,
+              "lod": {
+                "id": "t42",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {
+                "head": 0,
+                "body": 1,
+                "feet": 0,
+                "hands": 3,
+                "weapon": 2
+              },
+              "animation": {
+                "state": "pierce",
+                "clip": "pierce",
+                "time": 0.08330000000074507,
+                "duration": 0.18,
+                "normalizedTime": 0.4627777777819171,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "t42-horse",
+              "distance": 2,
+              "lod": {
+                "id": "t42-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "run",
+                "clip": "run",
+                "time": 0.33937037772906054,
+                "duration": 0.7333333492279053,
+                "normalizedTime": 0.4627777777819171,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "t43",
+              "distance": 2,
+              "lod": {
+                "id": "t43",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {
+                "head": 0,
+                "body": 1,
+                "feet": 0,
+                "hands": 3,
+                "weapon": 2
+              },
+              "animation": {
+                "state": "spawn",
+                "clip": "spawn",
+                "time": 0.016600000001490117,
+                "duration": 1.8333333730697632,
+                "normalizedTime": 0.009054545259106263,
+                "speed": 1,
+                "loop": false,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            },
+            {
+              "id": "t43-horse",
+              "distance": 2,
+              "lod": {
+                "id": "t43-horse",
+                "level": "full",
+                "distance": 2,
+                "updateHz": 30,
+                "culled": false
+              },
+              "equipment": {},
+              "animation": {
+                "state": "run",
+                "clip": "run",
+                "time": 0.006640000000596048,
+                "duration": 0.7333333492279053,
+                "normalizedTime": 0.009054545259106263,
+                "speed": 1,
+                "loop": true,
+                "playing": true,
+                "finished": false,
+                "paused": false,
+                "transition": null,
+                "active_action_count": 1
+              }
+            }
+          ],
+          "semantics": "presentation-only; instances3d/gameplay tick/collision/root motion are unchanged"
+        },
+        "creatures": 11,
+        "equipment": 48,
+        "livery": "sculpted-storybook-v2",
+        "art": {
+          "style": "olive-crimson-ink",
+          "materials": 16,
+          "outlinePixels": 1.3,
+          "lightingBands": 3
+        },
+        "combatFX": {
+          "style": "storybook-faceted-v1",
+          "activeEvents": 36,
+          "eventBudget": 36,
+          "skippedEvents": 35,
+          "kinds": {
+            "effect:plague_vial": 10,
+            "effect:phoenix_fire": 2,
+            "cast:flame_cloak": 5,
+            "cast:phoenix_fire": 1,
+            "cast:plague_vial": 2,
+            "buff:burn": 4,
+            "buff:poison": 4,
+            "hit": 6,
+            "wall": 1,
+            "summon": 1
+          },
+          "fieldFootprints": 6,
+          "trailSegments": 29,
+          "trailSlots": 7,
+          "ink": {
+            "vertices": 2148,
+            "capacity": 42000,
+            "droppedTriangles": 0
+          },
+          "core": {
+            "vertices": 1764,
+            "capacity": 36000,
+            "droppedTriangles": 0
+          },
+          "reducedMotion": false,
+          "clock": 3.3666666666666596,
+          "drawCalls": 2,
+          "debug": "final"
+        }
+      },
+      "lottie": {
+        "ok": true,
+        "value": {
+          "componentBounds": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "h": 100
+          },
+          "clipped": false,
+          "assetReady": true,
+          "currentFrame": 0,
+          "state": "ready",
+          "generation": 1,
+          "backend": "canvas-2d",
+          "error": null
+        },
+        "celebrationVisible": false,
+        "fullscreen": false,
+        "ultimate": null,
+        "activeTier": 0,
+        "activeAsset": null,
+        "stage": "idle",
+        "rolledAmount": 0,
+        "targetAmount": 0,
+        "eventIds": [],
+        "completedAmounts": [],
+        "dockRect": null,
+        "visualRect": null,
+        "usesMultiplier": false,
+        "pointerEvents": "none",
+        "diagnostics": [],
+        "impact": {
+          "impulses": 0,
+          "liveImpulses": 0,
+          "offset": {
+            "x": 0,
+            "y": 0
+          },
+          "peak": 0,
+          "reducedMotion": false,
+          "hudShakes": false,
+          "particleBudget": 160,
+          "diagnostics": []
+        },
+        "audio": {
+          "pendingCues": 0,
+          "muted": false
+        }
+      },
+      "labels": {
+        "labels": 1,
+        "payouts": 4,
+        "damage": 8,
+        "criticals": 0,
+        "items": [
+          {
+            "id": 4,
+            "kind": "gold",
+            "text": "+16",
+            "amount": 16,
+            "rect": {
+              "x": 677.5102047418239,
+              "y": 265.2349687519565,
+              "width": 71.875,
+              "height": 34.5
+            }
+          },
+          {
+            "id": 3,
+            "kind": "gold",
+            "text": "+28",
+            "amount": 28,
+            "rect": {
+              "x": 686.8129200667119,
+              "y": 418.54774179332657,
+              "width": 76.05681818181819,
+              "height": 34.5
+            }
+          },
+          {
+            "id": 2,
+            "kind": "gold",
+            "text": "+16",
+            "amount": 16,
+            "rect": {
+              "x": 675.984995630256,
+              "y": 335.94041449324226,
+              "width": 71.875,
+              "height": 34.5
+            }
+          },
+          {
+            "id": 1,
+            "kind": "gold",
+            "text": "+16",
+            "amount": 16,
+            "rect": {
+              "x": 732.6924922757435,
+              "y": 466.97241026395193,
+              "width": 71.875,
+              "height": 34.5
+            }
+          },
+          {
+            "id": 21,
+            "kind": "damage",
+            "text": "90",
+            "amount": 90,
+            "rect": {
+              "x": 710.3544049560415,
+              "y": 228.85203301002582,
+              "width": 45.47727272727272,
+              "height": 33.349999999999994
+            }
+          },
+          {
+            "id": 20,
+            "kind": "damage",
+            "text": "90",
+            "amount": 90,
+            "rect": {
+              "x": 866.8480589999629,
+              "y": 532.1508332216398,
+              "width": 45.47727272727272,
+              "height": 33.349999999999994
+            }
+          },
+          {
+            "id": 18,
+            "kind": "damage",
+            "text": "14",
+            "amount": 14.4,
+            "rect": {
+              "x": 845.0737300851177,
+              "y": 330.8152386359542,
+              "width": 33.55212121212121,
+              "height": 27.680499999999995
+            }
+          },
+          {
+            "id": 19,
+            "kind": "damage",
+            "text": "14",
+            "amount": 14.4,
+            "rect": {
+              "x": 944.4946740140768,
+              "y": 428.52000638305367,
+              "width": 33.55212121212121,
+              "height": 27.680499999999995
+            }
+          },
+          {
+            "id": 17,
+            "kind": "damage",
+            "text": "90",
+            "amount": 90,
+            "rect": {
+              "x": 945.7854832601276,
+              "y": 254.27612901844688,
+              "width": 45.47727272727272,
+              "height": 33.349999999999994
+            }
+          },
+          {
+            "id": 15,
+            "kind": "damage",
+            "text": "90",
+            "amount": 90,
+            "rect": {
+              "x": 632.8775399789725,
+              "y": 218.70000000000002,
+              "width": 45.47727272727272,
+              "height": 33.349999999999994
+            }
+          },
+          {
+            "id": 10,
+            "kind": "damage",
+            "text": "90",
+            "amount": 90,
+            "rect": {
+              "x": 826.5195727951113,
+              "y": 218.70000000000002,
+              "width": 45.47727272727272,
+              "height": 33.349999999999994
+            }
+          },
+          {
+            "id": 7,
+            "kind": "damage",
+            "text": "90",
+            "amount": 90,
+            "rect": {
+              "x": 817.9304074449284,
+              "y": 268.30843098826494,
+              "width": 45.47727272727272,
+              "height": 33.349999999999994
+            }
+          }
+        ],
+        "guards": [
+          {
+            "id": 30,
+            "progress": 0,
+            "near": false,
+            "recentMiss": true,
+            "kind": "miss",
+            "label": "未開獎",
+            "percent": 0,
+            "rect": {
+              "x": 815.2773933139981,
+              "y": 482.294,
+              "width": 162.24324324324323,
+              "height": 33.349999999999994
+            }
+          }
+        ],
+        "usesMultiplier": false,
+        "cacheSize": 34,
+        "diagnostics": []
+      },
+      "ui": {
+        "backend": "canvas2d",
+        "nodes": 43,
+        "assets": [
+          {
+            "id": "texture://ui_hud-heading",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_crest",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_hud-objective",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_hud-target",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_hud-gold",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_symbol-coin",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_hud-crystal",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_symbol-crystal",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_hud-key",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_symbol-sword",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_symbol-spear",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_hud-active",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_symbol-cavalry",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_symbol-pause",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_symbol-lock",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_symbol-auto",
+            "state": "ready"
+          }
+        ],
+        "diagnostics": [],
+        "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+        "limitations": [
+          "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+          "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+        ]
+      },
+      "motion": {
+        "reducedMotion": false,
+        "active": true,
+        "frameCount": 214,
+        "key": "battle:home:false:1",
+        "backend": "official-canvas-ui",
+        "sharedHitTree": true
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 810,
+        "portrait": false,
+        "safeInsets": {
+          "left": 0,
+          "right": 0,
+          "top": 0,
+          "bottom": 0
+        }
+      }
+    },
+    "fired": 7,
+    "procHits": 2
+  },
+  "errors": []
+}

@@ -27,7 +27,7 @@ function rewardFX(s){
  }
  if(performance.now()>winUntil)wins.classList.remove('show');
 }
-function tone(freq,duration=.12,type='sine',volume=.025){if(muted)return;try{audio??=new AudioContext();if(audio.state==='suspended')audio.resume();const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.setValueAtTime(freq,audio.currentTime);o.frequency.exponentialRampToValueAtTime(freq*.5,audio.currentTime+duration);g.gain.setValueAtTime(volume,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+duration)}catch{}}
+function tone(freq,duration=.12,type='sine',volume=.025){if(muted)return;try{const sfx=Math.max(0,Math.min(1,Number(state?.settings?.sfx??1)));if(sfx<=.001)return;volume*=sfx;audio??=new AudioContext();if(audio.state==='suspended')audio.resume();const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.setValueAtTime(freq,audio.currentTime);o.frequency.exponentialRampToValueAtTime(freq*.5,audio.currentTime+duration);g.gain.setValueAtTime(volume,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+duration)}catch{}}
 document.addEventListener('click',e=>{const a=e.target.closest('[data-action]');if(a&&!a.disabled){window.ashen.action(a.dataset.action);tone(420,.07,'triangle',.018)}});
 $('.brand').onclick=e=>{e.preventDefault();if(state?.phase==='menu')return;openDialog($('#guide'))};
 $('#sound-button').onclick=()=>{muted=!muted;$('#sound-button').textContent='音效 '+(muted?'關':'開');if(!muted)tone(520)};

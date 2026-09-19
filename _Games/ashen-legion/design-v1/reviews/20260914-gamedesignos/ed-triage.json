@@ -1,0 +1,106 @@
+{
+  "output_mode": "quick_ed_triage",
+  "case_boundary": {
+    "sample_type": "screenshot",
+    "supported_judgment_scope": [
+      "靜態資訊層級",
+      "手機尺寸中的場地與控制配置",
+      "刀光在有／無 Bloom 時的可見性",
+      "來源碼所定義的標籤顯示規則"
+    ],
+    "unsupported_judgment_scope": [
+      "主觀爽感或操作手感",
+      "真人辨識率與疲勞",
+      "20 分鐘節奏、養成通關難度",
+      "留存、付費與真實四人競爭體驗"
+    ],
+    "key_unknowns": [
+      "實體手機可點擊性",
+      "怪物潮峰值下文字辨識率",
+      "新人是否理解破防不等於中獎",
+      "技能組合來源能否被玩家辨認"
+    ]
+  },
+  "evidence_gate": {
+    "evidence_level": "L1_static_assets",
+    "evidence_status": "partial_evidence",
+    "confidence": "medium",
+    "available_evidence": [
+      "E001",
+      "來源碼 world-labels.mjs / guard-feedback.mjs 作為技術補證"
+    ],
+    "allowed_claims": [
+      "靜態層級可改善"
+    ],
+    "forbidden_claims": [
+      "已證實更爽",
+      "留存提升",
+      "新人心理已知"
+    ],
+    "missing_evidence": [
+      "真人對照辨識與實體手機"
+    ],
+    "confounder_risks": [
+      "樣本為 AUTO 槍兵，不代表全部流派"
+    ]
+  },
+  "metric_horizon": {
+    "game_metric_model": "unknown",
+    "current_play_mode": "single_run prototype",
+    "primary_outcome": "核心動作與獎賞理解、單局繼續／重試意願",
+    "excluded": [
+      "D1/D7 商業指標承諾"
+    ]
+  },
+  "theory_status": "design_hypothesis",
+  "optimal_stimulation_fit": {
+    "risk": "over_stimulation",
+    "status": "hypothesis",
+    "window": "同時命中多個小怪後的 0.85 秒",
+    "player_resources": "unknown",
+    "desired": "獎額與當前目標先讀到，未中獎回饋仍真實"
+  },
+  "primary_formula_item": "CLP",
+  "primary_lever": "非目標未開獎資訊層級",
+  "two_minimal_changes": [
+    "非目標小怪取消完整名字＋未開獎條，其他未開獎提示最多 1 條。",
+    "保留目標破防、真正獎額與爆擊優先；不改機率、價錢、生命與傷害。"
+  ],
+  "variant_contract": {
+    "A": "當前版本；桌面最多 4／手機最多 3 怪物標籤，recentMiss 為 detailed。",
+    "B": "只改上述非目標未開獎訊息；候選，未寫入正式版。",
+    "owner": "YesSir 呈現層",
+    "config_switch": "候選測試參數 feedbackVariant=quiet-miss，尚未實作",
+    "scope": "本機 review 候選；沒有真玩家分流或外部上傳"
+  },
+  "verification_metrics": [
+    {
+      "name": "non_target_miss_label_peak",
+      "definition": "每個渲染影格中非目標完整未開獎姓名條數；B 目標 0，其他未開獎提示 <=1",
+      "capture": "新增 labels.inspect() 的非目標 miss counters；按 build/seed/viewport/variant 分組",
+      "status": "planned"
+    },
+    {
+      "name": "critical_feedback_integrity",
+      "definition": "對照同輸入的實際獎額與目標狀態；0 次誤報中獎、0 次關鍵狀態遺漏",
+      "capture": "s.rewards / s.lotteryResults / s.targetId 對照 labels.inspect()",
+      "status": "existing observations, new comparison planned"
+    },
+    {
+      "name": "two_second_readback",
+      "definition": "至少 5 位未參與製作的試玩者，10 組平衡 A/B 圖；辨識命中／未開獎／開獎與當前目標，記錄逐人正確率與耗時",
+      "capture": "本機匿名表，不收姓名；小樣本只決定迭代方向",
+      "status": "not_collected"
+    }
+  ],
+  "decision_rules": {
+    "pass": "技術門全過，且至少 4/5 試玩者的關鍵辨識正確率不下降；只能標為方向性候選。",
+    "observe": "資料不足或主觀偏好相反時保留 A，補一輪樣本。",
+    "rollback": "任何真獎額／目標狀態遺失、假中獎誤解或輸入命中失配即回到 A。",
+    "kill": "B 降低正確率且無可定位修正原因，停止此變體。"
+  },
+  "rollback_condition": "任何關鍵獎額／目標狀態遺漏或誤導都回退到 A；移除候選參數即可恢復原規則。",
+  "unsupported_claims": [
+    "未取得真人數據，不聲稱提升爽感、留存或通關率。"
+  ]
+}

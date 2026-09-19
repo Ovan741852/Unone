@@ -1,0 +1,15 @@
+{
+  "assertions": 670,
+  "seedSamples": 30,
+  "roundsPerSeed": 7,
+  "firstRoundVariants": 25,
+  "shopTypes": [
+    "enchant",
+    "curse",
+    "rune",
+    "tech",
+    "potion",
+    "market"
+  ],
+  "scope": "Real exported Luau runtime; prepared fixture inventory for rare economy cases; production input handlers and conservation checked every tick."
+}

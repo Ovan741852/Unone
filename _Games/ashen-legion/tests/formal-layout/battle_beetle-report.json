@@ -1,187 +1,61 @@
 {
-  "ok": true,
+  "ok": false,
   "value": {
     "screen": "forest_lord",
     "cols": 96,
     "rows": 48,
-    "ascii": "+------------------------------------------------------------------------------------------------+\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                               |\n|@@#####@####################@@@@@ @@##########################@@@                @######@  #### |\n|@@#####@####################@@@@@ @@@########################@@@@                @######@  #### |\n|@@#####@#################@@@@@@@@ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                @@@@@@@@  #### |\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                                                               |\n|@@#############################@@                                                               |\n|@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                                                               |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                                                |\n|                                                                          @###################  |\n|                                                                          @###################  |\n|                                                                          @@@@@@@@@@@@@@@@@@@@  |\n|                                                                          @@@@@@@@@@@@@@@@@@@@  |\n|  ########################                                                ####################  |\n|  ########################                                                ####################  |\n|  ########################                                                                      |\n|  ########################                                                ####################  |\n|  ########################                                                ####################  |\n|  ########################                                                ####################  |\n|  ########################        @@@############@@ @@@##########@        ####################  |\n|  @@@@@@@@@@@@@@@@@@@@@@@@        @##############@@ @############@        @@@@@@@@@@@@@@@@@@@@  |\n|                                                                                                |\n+------------------------------------------------------------------------------------------------+",
+    "ascii": "+------------------------------------------------------------------------------------------------+\n|                                                                                                |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@################################################################@@################@@@@   |\n|   @@@@################################################################@@################@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@################@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@##############################################################################@@@@@@   |\n|   @@@@@@##############################################################################@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|                                                                                                |\n+------------------------------------------------------------------------------------------------+",
     "nodes": [
       {
-        "id": "chapter_back",
+        "id": "screen_back",
         "kind": "image",
         "rect": {
-          "x": 0,
-          "y": 86,
-          "width": 34,
-          "height": 14
+          "x": 3,
+          "y": 3,
+          "width": 94,
+          "height": 94
         },
         "text": "",
         "action": null,
-        "asset": "texture://ui_hud-heading",
+        "asset": "texture://ui_panel",
         "text_fit": 0
       },
       {
-        "id": "chapter_crest",
-        "kind": "image",
-        "rect": {
-          "x": 2,
-          "y": 91,
-          "width": 5,
-          "height": 7
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_crest",
-        "text_fit": 0
-      },
-      {
-        "id": "chapter",
+        "id": "screen_title",
         "kind": "text",
         "rect": {
-          "x": 8,
-          "y": 94,
-          "width": 21,
-          "height": 4
+          "x": 7,
+          "y": 89,
+          "width": 67,
+          "height": 5
         },
-        "text": "苔光林口",
+        "text": "讀取進度",
         "action": null,
         "asset": null,
-        "text_fit": 0.21
+        "text_fit": 0.08
       },
       {
-        "id": "round",
+        "id": "screen_gold",
         "kind": "text",
         "rect": {
-          "x": 8,
-          "y": 90.80000000000001,
-          "width": 18,
-          "height": 2.6
-        },
-        "text": "遠征  1 / 7",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.37
-      },
-      {
-        "id": "objective_back",
-        "kind": "image",
-        "rect": {
-          "x": 35,
-          "y": 91,
-          "width": 33,
-          "height": 9
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_hud-objective",
-        "text_fit": 0
-      },
-      {
-        "id": "objective",
-        "kind": "text",
-        "rect": {
-          "x": 38,
-          "y": 95.3,
-          "width": 27,
-          "height": 2.7
-        },
-        "text": "積蓄軍力 · 準備迎戰大王",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.37
-      },
-      {
-        "id": "boss_timing",
-        "kind": "text",
-        "rect": {
-          "x": 39,
-          "y": 92.8,
-          "width": 25,
-          "height": 2.2
-        },
-        "text": "大王於最後 30 秒登場",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.3
-      },
-      {
-        "id": "timer_plate",
-        "kind": "image",
-        "rect": {
-          "x": 84,
-          "y": 91,
-          "width": 9,
-          "height": 7.5
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_hud-target",
-        "text_fit": 0
-      },
-      {
-        "id": "time",
-        "kind": "text",
-        "rect": {
-          "x": 85,
-          "y": 93.3,
-          "width": 7,
-          "height": 4
-        },
-        "text": "02:13",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.8
-      },
-      {
-        "id": "coins_plate",
-        "kind": "image",
-        "rect": {
-          "x": 35,
-          "y": 1.2000000000000002,
-          "width": 18,
-          "height": 4.8
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_hud-gold",
-        "text_fit": 0
-      },
-      {
-        "id": "coins_icon",
-        "kind": "image",
-        "rect": {
-          "x": 36.2,
-          "y": 2.200000000000003,
-          "width": 2.1,
-          "height": 3
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_symbol-coin",
-        "text_fit": 0
-      },
-      {
-        "id": "coins",
-        "kind": "text",
-        "rect": {
-          "x": 38.5,
-          "y": 2.099999999999997,
-          "width": 12.5,
-          "height": 3.2
+          "x": 76,
+          "y": 89.5,
+          "width": 17,
+          "height": 3.5
         },
         "text": "金幣 320",
         "action": null,
         "asset": null,
-        "text_fit": 0.43
+        "text_fit": 0.35
       },
       {
-        "id": "crystals_plate",
+        "id": "screen_crystals_plate",
         "kind": "image",
         "rect": {
-          "x": 54,
-          "y": 1.2000000000000002,
-          "width": 15,
-          "height": 4.8
+          "x": 76,
+          "y": 84.5,
+          "width": 17,
+          "height": 3.5
         },
         "text": "",
         "action": null,
@@ -189,759 +63,1481 @@
         "text_fit": 0
       },
       {
-        "id": "crystals_icon",
-        "kind": "image",
-        "rect": {
-          "x": 55.2,
-          "y": 2.200000000000003,
-          "width": 2,
-          "height": 3
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_symbol-crystal",
-        "text_fit": 0
-      },
-      {
-        "id": "crystals",
+        "id": "screen_crystals",
         "kind": "text",
         "rect": {
-          "x": 57.5,
-          "y": 2.099999999999997,
-          "width": 10,
-          "height": 3.2
+          "x": 76,
+          "y": 84.5,
+          "width": 17,
+          "height": 3.5
         },
-        "text": "結晶 18",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.45
-      },
-      {
-        "id": "hud_unit_plate_1",
-        "kind": "image",
-        "rect": {
-          "x": 2,
-          "y": 3,
-          "width": 8,
-          "height": 15
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_hud-active",
-        "text_fit": 0
-      },
-      {
-        "id": "hud_unit_icon_1",
-        "kind": "image",
-        "rect": {
-          "x": 3.4,
-          "y": 10.2,
-          "width": 5.2,
-          "height": 6.8
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_symbol-sword",
-        "text_fit": 0
-      },
-      {
-        "id": "hud_unit_1",
-        "kind": "button",
-        "rect": {
-          "x": 2,
-          "y": 10,
-          "width": 8,
-          "height": 8
-        },
-        "text": "",
-        "action": "Unit1",
-        "asset": null,
-        "text_fit": 0
-      },
-      {
-        "id": "hud_unit_caption_1",
-        "kind": "button",
-        "rect": {
-          "x": 2,
-          "y": 5,
-          "width": 8,
-          "height": 5
-        },
-        "text": "劍兵\n4",
-        "action": "Unit1",
-        "asset": null,
-        "text_fit": 0.7
-      },
-      {
-        "id": "hud_unit_plate_2",
-        "kind": "image",
-        "rect": {
-          "x": 10.6,
-          "y": 3,
-          "width": 8,
-          "height": 15
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_hud-key",
-        "text_fit": 0
-      },
-      {
-        "id": "hud_unit_icon_2",
-        "kind": "image",
-        "rect": {
-          "x": 12,
-          "y": 10.2,
-          "width": 5.2,
-          "height": 6.8
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_symbol-spear",
-        "text_fit": 0
-      },
-      {
-        "id": "hud_unit_2",
-        "kind": "button",
-        "rect": {
-          "x": 10.6,
-          "y": 10,
-          "width": 8,
-          "height": 8
-        },
-        "text": "",
-        "action": "Unit2",
-        "asset": null,
-        "text_fit": 0
-      },
-      {
-        "id": "hud_unit_caption_2",
-        "kind": "button",
-        "rect": {
-          "x": 10.6,
-          "y": 5,
-          "width": 8,
-          "height": 5
-        },
-        "text": "槍兵\n10",
-        "action": "Unit2",
-        "asset": null,
-        "text_fit": 0.88
-      },
-      {
-        "id": "hud_unit_plate_3",
-        "kind": "image",
-        "rect": {
-          "x": 19.2,
-          "y": 3,
-          "width": 8,
-          "height": 15
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_hud-key",
-        "text_fit": 0
-      },
-      {
-        "id": "hud_unit_icon_3",
-        "kind": "image",
-        "rect": {
-          "x": 20.599999999999998,
-          "y": 10.2,
-          "width": 5.2,
-          "height": 6.8
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_symbol-cavalry",
-        "text_fit": 0
-      },
-      {
-        "id": "hud_unit_3",
-        "kind": "button",
-        "rect": {
-          "x": 19.2,
-          "y": 10,
-          "width": 8,
-          "height": 8
-        },
-        "text": "",
-        "action": "Unit3",
-        "asset": null,
-        "text_fit": 0
-      },
-      {
-        "id": "hud_unit_caption_3",
-        "kind": "button",
-        "rect": {
-          "x": 19.2,
-          "y": 5,
-          "width": 8,
-          "height": 5
-        },
-        "text": "騎兵\n20",
-        "action": "Unit3",
-        "asset": null,
-        "text_fit": 0.88
-      },
-      {
-        "id": "pause_plate",
-        "kind": "image",
-        "rect": {
-          "x": 94.5,
-          "y": 91,
-          "width": 4,
-          "height": 7.5
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_hud-key",
-        "text_fit": 0
-      },
-      {
-        "id": "pause_icon",
-        "kind": "image",
-        "rect": {
-          "x": 95.2,
-          "y": 93.2,
-          "width": 2.6,
-          "height": 4.3
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_symbol-pause",
-        "text_fit": 0
-      },
-      {
-        "id": "pause",
-        "kind": "button",
-        "rect": {
-          "x": 94.5,
-          "y": 91,
-          "width": 4,
-          "height": 7.5
-        },
-        "text": "",
-        "action": "Pause",
-        "asset": null,
-        "text_fit": 0
-      },
-      {
-        "id": "mode_plate_lock",
-        "kind": "image",
-        "rect": {
-          "x": 77,
-          "y": 3,
-          "width": 10.4,
-          "height": 10
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_hud-key",
-        "text_fit": 0
-      },
-      {
-        "id": "mode_icon_lock",
-        "kind": "image",
-        "rect": {
-          "x": 80.5,
-          "y": 7.4,
-          "width": 3.4,
-          "height": 4.6
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_symbol-lock",
-        "text_fit": 0
-      },
-      {
-        "id": "mode_lock",
-        "kind": "button",
-        "rect": {
-          "x": 77,
-          "y": 6.8,
-          "width": 10.4,
-          "height": 6.2
-        },
-        "text": "",
-        "action": "Mode_lock",
-        "asset": null,
-        "text_fit": 0
-      },
-      {
-        "id": "mode_label_lock",
-        "kind": "button",
-        "rect": {
-          "x": 77,
-          "y": 4.1999999999999975,
-          "width": 10.4,
-          "height": 2.6
-        },
-        "text": "LOCK · 關",
-        "action": "Mode_lock",
-        "asset": null,
-        "text_fit": 0.56
-      },
-      {
-        "id": "mode_plate_auto",
-        "kind": "image",
-        "rect": {
-          "x": 88,
-          "y": 3,
-          "width": 10.4,
-          "height": 10
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_hud-key",
-        "text_fit": 0
-      },
-      {
-        "id": "mode_icon_auto",
-        "kind": "image",
-        "rect": {
-          "x": 91.5,
-          "y": 7.4,
-          "width": 3.4,
-          "height": 4.6
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_symbol-auto",
-        "text_fit": 0
-      },
-      {
-        "id": "mode_auto",
-        "kind": "button",
-        "rect": {
-          "x": 88,
-          "y": 6.8,
-          "width": 10.4,
-          "height": 6.2
-        },
-        "text": "",
-        "action": "Mode_auto",
-        "asset": null,
-        "text_fit": 0
-      },
-      {
-        "id": "mode_label_auto",
-        "kind": "button",
-        "rect": {
-          "x": 88,
-          "y": 4.1999999999999975,
-          "width": 10.4,
-          "height": 2.6
-        },
-        "text": "AUTO · 關",
-        "action": "Mode_auto",
-        "asset": null,
-        "text_fit": 0.56
-      },
-      {
-        "id": "auto_settings_plate",
-        "kind": "image",
-        "rect": {
-          "x": 77,
-          "y": 14,
-          "width": 21.4,
-          "height": 4.5
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_hud-key",
-        "text_fit": 0
-      },
-      {
-        "id": "auto_settings",
-        "kind": "button",
-        "rect": {
-          "x": 77,
-          "y": 14,
-          "width": 21.4,
-          "height": 4.5
-        },
-        "text": "選擇目標 · 10 種",
-        "action": "Auto_settings",
-        "asset": null,
-        "text_fit": 0.65
-      },
-      {
-        "id": "target_plate",
-        "kind": "image",
-        "rect": {
-          "x": 77,
-          "y": 19.5,
-          "width": 21.4,
-          "height": 7.5
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_hud-target",
-        "text_fit": 0
-      },
-      {
-        "id": "target",
-        "kind": "text",
-        "rect": {
-          "x": 78,
-          "y": 23.9,
-          "width": 19.4,
-          "height": 2.6
-        },
-        "text": "按住戰場 · 派遣部隊",
+        "text": "◆ 結晶 18",
         "action": null,
         "asset": null,
         "text_fit": 0.41
       },
       {
-        "id": "shared_pool",
+        "id": "profiles_hint",
         "kind": "text",
         "rect": {
-          "x": 2,
-          "y": 87.3,
-          "width": 30,
-          "height": 2.7
+          "x": 9,
+          "y": 79,
+          "width": 82,
+          "height": 4
         },
-        "text": "聚寶甲蟲 · 共用獎池 80",
+        "text": "選擇一個札記繼續；空白欄位可建立新進度。",
         "action": null,
         "asset": null,
-        "text_fit": 0.35
+        "text_fit": 0.27
+      },
+      {
+        "id": "profile_card_1",
+        "kind": "image",
+        "rect": {
+          "x": 8,
+          "y": 30,
+          "width": 26,
+          "height": 43
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_card",
+        "text_fit": 0
+      },
+      {
+        "id": "profile_slot_1",
+        "kind": "text",
+        "rect": {
+          "x": 10,
+          "y": 67,
+          "width": 22,
+          "height": 4
+        },
+        "text": "札記 1",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.2
+      },
+      {
+        "id": "profile_name_1",
+        "kind": "text",
+        "rect": {
+          "x": 10,
+          "y": 59,
+          "width": 22,
+          "height": 5
+        },
+        "text": "尚未建立",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.26
+      },
+      {
+        "id": "profile_detail_1",
+        "kind": "text",
+        "rect": {
+          "x": 10,
+          "y": 48,
+          "width": 22,
+          "height": 8
+        },
+        "text": "沒有遠征紀錄\n建立後從第一站開始",
+        "action": null,
+        "asset": null,
+        "text_fit": 1.64
+      },
+      {
+        "id": "profile_create_1_plate",
+        "kind": "image",
+        "rect": {
+          "x": 10,
+          "y": 39,
+          "width": 24,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "profile_create_1",
+        "kind": "button",
+        "rect": {
+          "x": 10,
+          "y": 40.5,
+          "width": 24,
+          "height": 3
+        },
+        "text": "建立新檔",
+        "action": "Profile1",
+        "asset": null,
+        "text_fit": 0.14
+      },
+      {
+        "id": "profile_create_1_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 10,
+          "y": 43.5,
+          "width": 24,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Profile1",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "profile_create_1_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 10,
+          "y": 39,
+          "width": 24,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Profile1",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "profile_card_2",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 30,
+          "width": 26,
+          "height": 43
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_card",
+        "text_fit": 0
+      },
+      {
+        "id": "profile_slot_2",
+        "kind": "text",
+        "rect": {
+          "x": 39,
+          "y": 67,
+          "width": 22,
+          "height": 4
+        },
+        "text": "札記 2",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.2
+      },
+      {
+        "id": "profile_name_2",
+        "kind": "text",
+        "rect": {
+          "x": 39,
+          "y": 59,
+          "width": 22,
+          "height": 5
+        },
+        "text": "尚未建立",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.26
+      },
+      {
+        "id": "profile_detail_2",
+        "kind": "text",
+        "rect": {
+          "x": 39,
+          "y": 48,
+          "width": 22,
+          "height": 8
+        },
+        "text": "沒有遠征紀錄\n建立後從第一站開始",
+        "action": null,
+        "asset": null,
+        "text_fit": 1.64
+      },
+      {
+        "id": "profile_create_2_plate",
+        "kind": "image",
+        "rect": {
+          "x": 39,
+          "y": 39,
+          "width": 24,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "profile_create_2",
+        "kind": "button",
+        "rect": {
+          "x": 39,
+          "y": 40.5,
+          "width": 24,
+          "height": 3
+        },
+        "text": "建立新檔",
+        "action": "Profile2",
+        "asset": null,
+        "text_fit": 0.14
+      },
+      {
+        "id": "profile_create_2_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 39,
+          "y": 43.5,
+          "width": 24,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Profile2",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "profile_create_2_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 39,
+          "y": 39,
+          "width": 24,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Profile2",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "profile_card_3",
+        "kind": "image",
+        "rect": {
+          "x": 66,
+          "y": 30,
+          "width": 26,
+          "height": 43
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_card",
+        "text_fit": 0
+      },
+      {
+        "id": "profile_slot_3",
+        "kind": "text",
+        "rect": {
+          "x": 68,
+          "y": 67,
+          "width": 22,
+          "height": 4
+        },
+        "text": "札記 3",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.2
+      },
+      {
+        "id": "profile_name_3",
+        "kind": "text",
+        "rect": {
+          "x": 68,
+          "y": 59,
+          "width": 22,
+          "height": 5
+        },
+        "text": "尚未建立",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.26
+      },
+      {
+        "id": "profile_detail_3",
+        "kind": "text",
+        "rect": {
+          "x": 68,
+          "y": 48,
+          "width": 22,
+          "height": 8
+        },
+        "text": "沒有遠征紀錄\n建立後從第一站開始",
+        "action": null,
+        "asset": null,
+        "text_fit": 1.64
+      },
+      {
+        "id": "profile_create_3_plate",
+        "kind": "image",
+        "rect": {
+          "x": 68,
+          "y": 39,
+          "width": 24,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "profile_create_3",
+        "kind": "button",
+        "rect": {
+          "x": 68,
+          "y": 40.5,
+          "width": 24,
+          "height": 3
+        },
+        "text": "建立新檔",
+        "action": "Profile3",
+        "asset": null,
+        "text_fit": 0.14
+      },
+      {
+        "id": "profile_create_3_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 68,
+          "y": 43.5,
+          "width": 24,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Profile3",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "profile_create_3_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 68,
+          "y": 39,
+          "width": 24,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Profile3",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "profiles_back_plate",
+        "kind": "image",
+        "rect": {
+          "x": 32,
+          "y": 7,
+          "width": 36,
+          "height": 7
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "profiles_back",
+        "kind": "button",
+        "rect": {
+          "x": 32,
+          "y": 9,
+          "width": 36,
+          "height": 3
+        },
+        "text": "返回主選單",
+        "action": "UI_home",
+        "asset": null,
+        "text_fit": 0.12
+      },
+      {
+        "id": "profiles_back_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 32,
+          "y": 12,
+          "width": 36,
+          "height": 2
+        },
+        "text": "",
+        "action": "UI_home",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "profiles_back_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 32,
+          "y": 7,
+          "width": 36,
+          "height": 2
+        },
+        "text": "",
+        "action": "UI_home",
+        "asset": null,
+        "text_fit": 0
       }
     ],
-    "findings": [],
+    "findings": [
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_slot_1' overlap by 22.0 x 4.0 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_slot_1"
+        ],
+        "resolution": "Increase 'profile_slot_1' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_name_1' overlap by 22.0 x 5.0 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_name_1"
+        ],
+        "resolution": "Increase 'profile_name_1' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_detail_1' overlap by 22.0 x 8.0 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_detail_1"
+        ],
+        "resolution": "Increase 'profile_detail_1' y by 8.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_create_1_plate' overlap by 24.0 x 6.0 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1_plate"
+        ],
+        "resolution": "Increase 'profile_create_1_plate' y by 6.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_create_1' overlap by 24.0 x 3.0 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1"
+        ],
+        "resolution": "Increase 'profile_create_1' y by 3.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_create_1_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1_hit_top"
+        ],
+        "resolution": "Increase 'profile_create_1_hit_top' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_create_1_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1_hit_bottom"
+        ],
+        "resolution": "Increase 'profile_create_1_hit_bottom' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_slot_2' overlap by 22.0 x 4.0 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_slot_2"
+        ],
+        "resolution": "Increase 'profile_slot_2' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_name_2' overlap by 22.0 x 5.0 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_name_2"
+        ],
+        "resolution": "Increase 'profile_name_2' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_detail_2' overlap by 22.0 x 8.0 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_detail_2"
+        ],
+        "resolution": "Increase 'profile_detail_2' y by 8.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_create_2_plate' overlap by 24.0 x 6.0 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2_plate"
+        ],
+        "resolution": "Increase 'profile_create_2_plate' y by 6.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_create_2' overlap by 24.0 x 3.0 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2"
+        ],
+        "resolution": "Increase 'profile_create_2' y by 3.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_create_2_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2_hit_top"
+        ],
+        "resolution": "Increase 'profile_create_2_hit_top' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_create_2_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2_hit_bottom"
+        ],
+        "resolution": "Increase 'profile_create_2_hit_bottom' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_slot_3' overlap by 22.0 x 4.0 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_slot_3"
+        ],
+        "resolution": "Increase 'profile_slot_3' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_name_3' overlap by 22.0 x 5.0 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_name_3"
+        ],
+        "resolution": "Increase 'profile_name_3' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_detail_3' overlap by 22.0 x 8.0 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_detail_3"
+        ],
+        "resolution": "Increase 'profile_detail_3' y by 8.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_create_3_plate' overlap by 24.0 x 6.0 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3_plate"
+        ],
+        "resolution": "Increase 'profile_create_3_plate' y by 6.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_create_3' overlap by 24.0 x 3.0 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3"
+        ],
+        "resolution": "Increase 'profile_create_3' y by 3.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_create_3_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3_hit_top"
+        ],
+        "resolution": "Increase 'profile_create_3_hit_top' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_create_3_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3_hit_bottom"
+        ],
+        "resolution": "Increase 'profile_create_3_hit_bottom' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights."
+      }
+    ],
     "allowed_overlaps": [
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'chapter_back' and 'chapter_crest' overlap by 5.0 x 7.0 (design-space units).",
+        "detail": "'screen_back' and 'screen_title' overlap by 67.0 x 5.0 (design-space units).",
         "nodes": [
-          "chapter_back",
-          "chapter_crest"
+          "screen_back",
+          "screen_title"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'chapter_back' and 'chapter' overlap by 21.0 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'screen_gold' overlap by 17.0 x 3.5 (design-space units).",
         "nodes": [
-          "chapter_back",
-          "chapter"
+          "screen_back",
+          "screen_gold"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'chapter_back' and 'round' overlap by 18.0 x 2.6 (design-space units).",
+        "detail": "'screen_back' and 'screen_crystals_plate' overlap by 17.0 x 3.5 (design-space units).",
         "nodes": [
-          "chapter_back",
-          "round"
+          "screen_back",
+          "screen_crystals_plate"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'chapter_back' and 'shared_pool' overlap by 30.0 x 2.7 (design-space units).",
+        "detail": "'screen_back' and 'screen_crystals' overlap by 17.0 x 3.5 (design-space units).",
         "nodes": [
-          "chapter_back",
-          "shared_pool"
+          "screen_back",
+          "screen_crystals"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'objective_back' and 'objective' overlap by 27.0 x 2.7 (design-space units).",
+        "detail": "'screen_back' and 'profiles_hint' overlap by 82.0 x 4.0 (design-space units).",
         "nodes": [
-          "objective_back",
-          "objective"
+          "screen_back",
+          "profiles_hint"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'objective_back' and 'boss_timing' overlap by 25.0 x 2.2 (design-space units).",
+        "detail": "'screen_back' and 'profile_card_1' overlap by 26.0 x 43.0 (design-space units).",
         "nodes": [
-          "objective_back",
-          "boss_timing"
+          "screen_back",
+          "profile_card_1"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'timer_plate' and 'time' overlap by 7.0 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_slot_1' overlap by 22.0 x 4.0 (design-space units).",
         "nodes": [
-          "timer_plate",
-          "time"
+          "screen_back",
+          "profile_slot_1"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'coins_plate' and 'coins_icon' overlap by 2.1 x 3.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_name_1' overlap by 22.0 x 5.0 (design-space units).",
         "nodes": [
-          "coins_plate",
-          "coins_icon"
+          "screen_back",
+          "profile_name_1"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'coins_plate' and 'coins' overlap by 12.5 x 3.2 (design-space units).",
+        "detail": "'screen_back' and 'profile_detail_1' overlap by 22.0 x 8.0 (design-space units).",
         "nodes": [
-          "coins_plate",
-          "coins"
+          "screen_back",
+          "profile_detail_1"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'crystals_plate' and 'crystals_icon' overlap by 2.0 x 3.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_1_plate' overlap by 24.0 x 6.0 (design-space units).",
         "nodes": [
-          "crystals_plate",
-          "crystals_icon"
+          "screen_back",
+          "profile_create_1_plate"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'crystals_plate' and 'crystals' overlap by 10.0 x 3.2 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_1' overlap by 24.0 x 3.0 (design-space units).",
         "nodes": [
-          "crystals_plate",
-          "crystals"
+          "screen_back",
+          "profile_create_1"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'hud_unit_plate_1' and 'hud_unit_icon_1' overlap by 5.2 x 6.8 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_1_hit_top' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
-          "hud_unit_plate_1",
-          "hud_unit_icon_1"
+          "screen_back",
+          "profile_create_1_hit_top"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'hud_unit_plate_1' and 'hud_unit_1' overlap by 8.0 x 8.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_1_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
-          "hud_unit_plate_1",
-          "hud_unit_1"
+          "screen_back",
+          "profile_create_1_hit_bottom"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'hud_unit_plate_1' and 'hud_unit_caption_1' overlap by 8.0 x 5.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_card_2' overlap by 26.0 x 43.0 (design-space units).",
         "nodes": [
-          "hud_unit_plate_1",
-          "hud_unit_caption_1"
+          "screen_back",
+          "profile_card_2"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'hud_unit_icon_1' and 'hud_unit_1' overlap by 5.2 x 6.8 (design-space units).",
+        "detail": "'screen_back' and 'profile_slot_2' overlap by 22.0 x 4.0 (design-space units).",
         "nodes": [
-          "hud_unit_icon_1",
-          "hud_unit_1"
+          "screen_back",
+          "profile_slot_2"
         ],
-        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'hud_unit_plate_2' and 'hud_unit_icon_2' overlap by 5.2 x 6.8 (design-space units).",
+        "detail": "'screen_back' and 'profile_name_2' overlap by 22.0 x 5.0 (design-space units).",
         "nodes": [
-          "hud_unit_plate_2",
-          "hud_unit_icon_2"
+          "screen_back",
+          "profile_name_2"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'hud_unit_plate_2' and 'hud_unit_2' overlap by 8.0 x 8.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_detail_2' overlap by 22.0 x 8.0 (design-space units).",
         "nodes": [
-          "hud_unit_plate_2",
-          "hud_unit_2"
+          "screen_back",
+          "profile_detail_2"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'hud_unit_plate_2' and 'hud_unit_caption_2' overlap by 8.0 x 5.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_2_plate' overlap by 24.0 x 6.0 (design-space units).",
         "nodes": [
-          "hud_unit_plate_2",
-          "hud_unit_caption_2"
+          "screen_back",
+          "profile_create_2_plate"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'hud_unit_icon_2' and 'hud_unit_2' overlap by 5.2 x 6.8 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_2' overlap by 24.0 x 3.0 (design-space units).",
         "nodes": [
-          "hud_unit_icon_2",
-          "hud_unit_2"
+          "screen_back",
+          "profile_create_2"
         ],
-        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'hud_unit_plate_3' and 'hud_unit_icon_3' overlap by 5.2 x 6.8 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_2_hit_top' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
-          "hud_unit_plate_3",
-          "hud_unit_icon_3"
+          "screen_back",
+          "profile_create_2_hit_top"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'hud_unit_plate_3' and 'hud_unit_3' overlap by 8.0 x 8.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_2_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
-          "hud_unit_plate_3",
-          "hud_unit_3"
+          "screen_back",
+          "profile_create_2_hit_bottom"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'hud_unit_plate_3' and 'hud_unit_caption_3' overlap by 8.0 x 5.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_card_3' overlap by 26.0 x 43.0 (design-space units).",
         "nodes": [
-          "hud_unit_plate_3",
-          "hud_unit_caption_3"
+          "screen_back",
+          "profile_card_3"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'hud_unit_icon_3' and 'hud_unit_3' overlap by 5.2 x 6.8 (design-space units).",
+        "detail": "'screen_back' and 'profile_slot_3' overlap by 22.0 x 4.0 (design-space units).",
         "nodes": [
-          "hud_unit_icon_3",
-          "hud_unit_3"
+          "screen_back",
+          "profile_slot_3"
         ],
-        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'pause_plate' and 'pause_icon' overlap by 2.6 x 4.3 (design-space units).",
+        "detail": "'screen_back' and 'profile_name_3' overlap by 22.0 x 5.0 (design-space units).",
         "nodes": [
-          "pause_plate",
-          "pause_icon"
+          "screen_back",
+          "profile_name_3"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'pause_plate' and 'pause' overlap by 4.0 x 7.5 (design-space units).",
+        "detail": "'screen_back' and 'profile_detail_3' overlap by 22.0 x 8.0 (design-space units).",
         "nodes": [
-          "pause_plate",
-          "pause"
+          "screen_back",
+          "profile_detail_3"
         ],
-        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'pause_icon' and 'pause' overlap by 2.6 x 4.3 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_3_plate' overlap by 24.0 x 6.0 (design-space units).",
         "nodes": [
-          "pause_icon",
-          "pause"
+          "screen_back",
+          "profile_create_3_plate"
         ],
-        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'mode_plate_lock' and 'mode_icon_lock' overlap by 3.4 x 4.6 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_3' overlap by 24.0 x 3.0 (design-space units).",
         "nodes": [
-          "mode_plate_lock",
-          "mode_icon_lock"
+          "screen_back",
+          "profile_create_3"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'mode_plate_lock' and 'mode_lock' overlap by 10.4 x 6.2 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_3_hit_top' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
-          "mode_plate_lock",
-          "mode_lock"
+          "screen_back",
+          "profile_create_3_hit_top"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'mode_plate_lock' and 'mode_label_lock' overlap by 10.4 x 2.6 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_3_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
-          "mode_plate_lock",
-          "mode_label_lock"
+          "screen_back",
+          "profile_create_3_hit_bottom"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'mode_icon_lock' and 'mode_lock' overlap by 3.4 x 4.6 (design-space units).",
+        "detail": "'screen_back' and 'profiles_back_plate' overlap by 36.0 x 7.0 (design-space units).",
         "nodes": [
-          "mode_icon_lock",
-          "mode_lock"
+          "screen_back",
+          "profiles_back_plate"
         ],
-        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'mode_plate_auto' and 'mode_icon_auto' overlap by 3.4 x 4.6 (design-space units).",
+        "detail": "'screen_back' and 'profiles_back' overlap by 36.0 x 3.0 (design-space units).",
         "nodes": [
-          "mode_plate_auto",
-          "mode_icon_auto"
+          "screen_back",
+          "profiles_back"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'mode_plate_auto' and 'mode_auto' overlap by 10.4 x 6.2 (design-space units).",
+        "detail": "'screen_back' and 'profiles_back_hit_top' overlap by 36.0 x 2.0 (design-space units).",
         "nodes": [
-          "mode_plate_auto",
-          "mode_auto"
+          "screen_back",
+          "profiles_back_hit_top"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'mode_plate_auto' and 'mode_label_auto' overlap by 10.4 x 2.6 (design-space units).",
+        "detail": "'screen_back' and 'profiles_back_hit_bottom' overlap by 36.0 x 2.0 (design-space units).",
         "nodes": [
-          "mode_plate_auto",
-          "mode_label_auto"
+          "screen_back",
+          "profiles_back_hit_bottom"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'mode_icon_auto' and 'mode_auto' overlap by 3.4 x 4.6 (design-space units).",
+        "detail": "'screen_crystals_plate' and 'screen_crystals' overlap by 17.0 x 3.5 (design-space units).",
         "nodes": [
-          "mode_icon_auto",
-          "mode_auto"
-        ],
-        "resolution": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'auto_settings_plate' and 'auto_settings' overlap by 21.4 x 4.5 (design-space units).",
-        "nodes": [
-          "auto_settings_plate",
-          "auto_settings"
+          "screen_crystals_plate",
+          "screen_crystals"
         ],
         "resolution": "Button artwork beneath its semantic control and caption"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'target_plate' and 'target' overlap by 19.4 x 2.6 (design-space units).",
+        "detail": "'profile_create_1_plate' and 'profile_create_1' overlap by 24.0 x 3.0 (design-space units).",
         "nodes": [
-          "target_plate",
-          "target"
+          "profile_create_1_plate",
+          "profile_create_1"
         ],
-        "resolution": "Explicit HUD artwork under its own contained icon and text"
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_1_plate' and 'profile_create_1_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_create_1_plate",
+          "profile_create_1_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_1_plate' and 'profile_create_1_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_create_1_plate",
+          "profile_create_1_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_2_plate' and 'profile_create_2' overlap by 24.0 x 3.0 (design-space units).",
+        "nodes": [
+          "profile_create_2_plate",
+          "profile_create_2"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_2_plate' and 'profile_create_2_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_create_2_plate",
+          "profile_create_2_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_2_plate' and 'profile_create_2_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_create_2_plate",
+          "profile_create_2_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_3_plate' and 'profile_create_3' overlap by 24.0 x 3.0 (design-space units).",
+        "nodes": [
+          "profile_create_3_plate",
+          "profile_create_3"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_3_plate' and 'profile_create_3_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_create_3_plate",
+          "profile_create_3_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_3_plate' and 'profile_create_3_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_create_3_plate",
+          "profile_create_3_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profiles_back_plate' and 'profiles_back' overlap by 36.0 x 3.0 (design-space units).",
+        "nodes": [
+          "profiles_back_plate",
+          "profiles_back"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profiles_back_plate' and 'profiles_back_hit_top' overlap by 36.0 x 2.0 (design-space units).",
+        "nodes": [
+          "profiles_back_plate",
+          "profiles_back_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profiles_back_plate' and 'profiles_back_hit_bottom' overlap by 36.0 x 2.0 (design-space units).",
+        "nodes": [
+          "profiles_back_plate",
+          "profiles_back_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
       }
     ],
-    "readable": true,
+    "readable": false,
     "assumptions": [
       "text_fit assumes a 16:9 viewport and a 0.5 character advance, so it is a              measurement to read, never a pass/fail",
       "structure only: this says nothing about whether the screen looks good"
     ]
   },
-  "diagnostics": [],
+  "diagnostics": [
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_slot_1' overlap by 22.0 x 4.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_slot_1"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_slot_1' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_name_1' overlap by 22.0 x 5.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_name_1"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_name_1' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_detail_1' overlap by 22.0 x 8.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_detail_1"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_detail_1' y by 8.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_create_1_plate' overlap by 24.0 x 6.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_1_plate' y by 6.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_create_1' overlap by 24.0 x 3.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_1' y by 3.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_create_1_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1_hit_top"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_1_hit_top' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_create_1_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1_hit_bottom"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_1_hit_bottom' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_slot_2' overlap by 22.0 x 4.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_slot_2"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_slot_2' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_name_2' overlap by 22.0 x 5.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_name_2"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_name_2' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_detail_2' overlap by 22.0 x 8.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_detail_2"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_detail_2' y by 8.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_create_2_plate' overlap by 24.0 x 6.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_2_plate' y by 6.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_create_2' overlap by 24.0 x 3.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_2' y by 3.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_create_2_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2_hit_top"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_2_hit_top' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_create_2_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2_hit_bottom"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_2_hit_bottom' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_slot_3' overlap by 22.0 x 4.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_slot_3"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_slot_3' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_name_3' overlap by 22.0 x 5.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_name_3"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_name_3' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_detail_3' overlap by 22.0 x 8.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_detail_3"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_detail_3' y by 8.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_create_3_plate' overlap by 24.0 x 6.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_3_plate' y by 6.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_create_3' overlap by 24.0 x 3.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_3' y by 3.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_create_3_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3_hit_top"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_3_hit_top' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_create_3_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3_hit_bottom"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_3_hit_bottom' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    }
+  ],
   "effects": []
 }

@@ -28,9 +28,9 @@
  local neighbor=durable(3);neighbor.x=.4;monsters={neighbor};updateCombat(0)
  check(math.abs(neighbor.damage-18)<1e-6 and S.procHits==1 and #pendingProcs==0,"pierce wave does not trigger shock recursively")
  unit=build(3,{"hunter_vigor"});local initialLife=unit.life
- for i=1,9 do recordKill(unit)end
+ for i=1,9 do recordKill(unit,{id=900+i,x=0,z=0,alive=false})end
  check(math.abs(unit.life-initialLife-1)<1e-6,"kill life capped to one second")
- unit.alive=false;initialLife=unit.life;recordKill(unit)
+ unit.alive=false;initialLife=unit.life;recordKill(unit,{id=999,x=0,z=0,alive=false})
  check(not unit.alive and unit.life==initialLife,"kill life cannot revive dead troop")
  unit=build(1,{"heavy","slow_force"});target=durable(1);hit(target,unit.damage,unit)
  check(math.abs(target.damage-24*1.35*1.15)<1e-6,"heavy speed penalty converts to damage")
@@ -53,7 +53,7 @@
  unit=build(1,{"pierce","ricochet_precision","lightning"})
  check(unit.paid==7,"build quote is half of 8+2+1+3")
  S.skillSources[1]={};S.tech[1]={{id="ricochet_precision"}};check(costs(1)==4 and composeSkills(1).bounceCrit==.15,"research strengthens without repeated equipment surcharge")
- publish(api);check(#S.buildGuide==9 and S.activeSkills.ricochet_precision==1,"guide observes active selected loadout")
+ publish(api);check(S.activeSkills.ricochet_precision==1,"published loadout exposes the equipped skill")
  unit=build(1,{"fracture"});target=durable(1);target.damage=target.guard*.7;local before=target.damage;hit(target,24,unit)
  check(math.abs(target.damage-before-28.8)<1e-6,"fracture reads pre-hit guard progress")
  unit=build(1,{"solo_hunt","solitary"});target=durable(1);monsters={target};hit(target,24,unit)

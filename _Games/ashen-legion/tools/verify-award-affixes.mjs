@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {module,payload,loadProject,readObservation,tick} from './runtime-harness.mjs';
+const fixture=readFileSync(new URL('award-affix-fixtures.luau',import.meta.url),'utf8').replace(/^\uFEFF/,'');
+loadProject(module,{...payload,script:payload.script.replace('return Game',fixture+'\nreturn Game')},42n);
+const checks=readObservation(module).world.observations.award_affix_checks;assert.ok(checks>=200);
+const press=a=>{tick({actions:{[a]:true}});return tick({});};
+const setup='function Game.start(api:any) apiRef=api;reset();S.phase="shop";S.location="rune";S.stock={{kind="rune",value=8,name=runeNames[8],price=runePrices[8],currency="crystal"}};publish(api)end\n';
+loadProject(module,{...payload,script:payload.script.replace('return Game',setup+'return Game')},42n);
+let s=press('Buy1');assert.equal(s.runeBag[7],1);assert.equal(s.runes[0],0);s=press('LeaveShop');s=press('Rune8');assert.equal(s.runes[0],8);assert.equal(s.awardPreview[2].shift,.12);s=press('Deploy');s=press('Unit1');for(let i=0;i<4;i++)s=tick({pointer:{position:{x:0,y:0},down:true}});assert.ok(s.fired>0);
+const out=new URL('../tests/award-affixes/',import.meta.url);mkdirSync(out,{recursive:true});writeFileSync(new URL('runtime-report.json',out),JSON.stringify({checks,skills:6,conditionalStep:.12,maxShift:.24,gateUnchanged:true,legendaryUnchanged:true,drawsPerEffect:10000,actualRunePurchaseAndDeploy:true},null,2));
+console.log('PASS',checks,'award distribution/source/lifecycle checks plus native rune purchase -> assign -> deploy');

@@ -1,0 +1,342 @@
+{
+  "checks": 59,
+  "scope": "Actual WASM fixtures and 3-seed short production simulations per build. Test loadouts injected at beginBattle; unmodified combat/lottery. Short samples are not full-run balance proof.",
+  "results": [
+    {
+      "skills": [],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 59,
+          "spent": 1180,
+          "earned": 1486,
+          "plunder": 0,
+          "coins": 626,
+          "kills": 53,
+          "triggers": {},
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 59,
+          "spent": 1180,
+          "earned": 1948,
+          "plunder": 0,
+          "coins": 1088,
+          "kills": 55,
+          "triggers": {},
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 60,
+          "spent": 1200,
+          "earned": 1552,
+          "plunder": 0,
+          "coins": 672,
+          "kills": 51,
+          "triggers": {},
+          "phase": "battle"
+        }
+      ]
+    },
+    {
+      "skills": [
+        "plunder"
+      ],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 60,
+          "spent": 1260,
+          "earned": 1635,
+          "plunder": 181,
+          "coins": 695,
+          "kills": 52,
+          "triggers": {
+            "plunder": 181
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 60,
+          "spent": 1260,
+          "earned": 1894,
+          "plunder": 204,
+          "coins": 954,
+          "kills": 52,
+          "triggers": {
+            "plunder": 204
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 60,
+          "spent": 1260,
+          "earned": 1419,
+          "plunder": 185,
+          "coins": 479,
+          "kills": 51,
+          "triggers": {
+            "plunder": 185
+          },
+          "phase": "battle"
+        }
+      ]
+    },
+    {
+      "skills": [
+        "plunder",
+        "firstborn"
+      ],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 60,
+          "spent": 1320,
+          "earned": 2024,
+          "plunder": 226,
+          "coins": 1024,
+          "kills": 52,
+          "triggers": {
+            "firstborn": 60,
+            "plunder": 226
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 60,
+          "spent": 1320,
+          "earned": 2046,
+          "plunder": 260,
+          "coins": 1046,
+          "kills": 53,
+          "triggers": {
+            "firstborn": 60,
+            "plunder": 260
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 60,
+          "spent": 1320,
+          "earned": 1861,
+          "plunder": 257,
+          "coins": 861,
+          "kills": 50,
+          "triggers": {
+            "firstborn": 60,
+            "plunder": 257
+          },
+          "phase": "battle"
+        }
+      ]
+    },
+    {
+      "skills": [
+        "plunder",
+        "firstborn",
+        "momentum"
+      ],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 57,
+          "spent": 1311,
+          "earned": 1824,
+          "plunder": 180,
+          "coins": 833,
+          "kills": 56,
+          "triggers": {
+            "firstborn": 57,
+            "plunder": 180
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 59,
+          "spent": 1357,
+          "earned": 2084,
+          "plunder": 224,
+          "coins": 1047,
+          "kills": 54,
+          "triggers": {
+            "firstborn": 59,
+            "plunder": 224
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 60,
+          "spent": 1380,
+          "earned": 1866,
+          "plunder": 216,
+          "coins": 806,
+          "kills": 52,
+          "triggers": {
+            "firstborn": 60,
+            "plunder": 216
+          },
+          "phase": "battle"
+        }
+      ]
+    },
+    {
+      "skills": [
+        "march_capacitor",
+        "third_pulse"
+      ],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 60,
+          "spent": 1380,
+          "earned": 1620,
+          "plunder": 0,
+          "coins": 560,
+          "kills": 50,
+          "triggers": {
+            "march_capacitor": 1027,
+            "third_pulse": 37
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 59,
+          "spent": 1357,
+          "earned": 1692,
+          "plunder": 0,
+          "coins": 655,
+          "kills": 52,
+          "triggers": {
+            "march_capacitor": 1020,
+            "third_pulse": 43
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 58,
+          "spent": 1334,
+          "earned": 1952,
+          "plunder": 0,
+          "coins": 938,
+          "kills": 53,
+          "triggers": {
+            "march_capacitor": 993,
+            "third_pulse": 40
+          },
+          "phase": "battle"
+        }
+      ]
+    },
+    {
+      "skills": [
+        "battle_elegy",
+        "grave_bloom",
+        "delayed_bloom"
+      ],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 60,
+          "spent": 1500,
+          "earned": 1616,
+          "plunder": 0,
+          "coins": 436,
+          "kills": 52,
+          "triggers": {
+            "battle_elegy": 56,
+            "delayed_bloom": 52,
+            "grave_bloom": 49
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 60,
+          "spent": 1500,
+          "earned": 1538,
+          "plunder": 0,
+          "coins": 358,
+          "kills": 52,
+          "triggers": {
+            "battle_elegy": 54,
+            "delayed_bloom": 52,
+            "grave_bloom": 45
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 60,
+          "spent": 1500,
+          "earned": 1650,
+          "plunder": 0,
+          "coins": 470,
+          "kills": 53,
+          "triggers": {
+            "battle_elegy": 54,
+            "delayed_bloom": 52,
+            "grave_bloom": 47
+          },
+          "phase": "battle"
+        }
+      ]
+    },
+    {
+      "skills": [
+        "last_echo",
+        "longlife"
+      ],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 56,
+          "spent": 1232,
+          "earned": 1552,
+          "plunder": 0,
+          "coins": 640,
+          "kills": 54,
+          "triggers": {
+            "last_echo": 33
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 60,
+          "spent": 1320,
+          "earned": 1782,
+          "plunder": 0,
+          "coins": 782,
+          "kills": 53,
+          "triggers": {
+            "last_echo": 33
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 60,
+          "spent": 1320,
+          "earned": 1712,
+          "plunder": 0,
+          "coins": 712,
+          "kills": 52,
+          "triggers": {
+            "last_echo": 33
+          },
+          "phase": "battle"
+        }
+      ]
+    }
+  ]
+}

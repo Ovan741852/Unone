@@ -1,0 +1,47 @@
+{
+  "handoff_id": "EDH-20260914-01",
+  "source_skill": "game-experience-analyzer",
+  "target_skill": "game-experience-density-optimizer",
+  "case_boundary": {
+    "sample_type": "screenshot",
+    "supported_judgment_scope": [
+      "靜態資訊層級",
+      "手機尺寸中的場地與控制配置",
+      "刀光在有／無 Bloom 時的可見性",
+      "來源碼所定義的標籤顯示規則"
+    ],
+    "unsupported_judgment_scope": [
+      "主觀爽感或操作手感",
+      "真人辨識率與疲勞",
+      "20 分鐘節奏、養成通關難度",
+      "留存、付費與真實四人競爭體驗"
+    ],
+    "key_unknowns": [
+      "實體手機可點擊性",
+      "怪物潮峰值下文字辨識率",
+      "新人是否理解破防不等於中獎",
+      "技能組合來源能否被玩家辨認"
+    ]
+  },
+  "issue_cards_for_ed": [
+    {
+      "issue_id": "I001",
+      "evidence_refs": [
+        "E001"
+      ],
+      "symptom": "非目標小怪的「名字 · 未開獎」重複佔用戰鬥焦點。",
+      "ed_terms": [
+        "CLP"
+      ],
+      "suggested_primary_lever": "非目標未開獎標籤的資訊優先級",
+      "secondary_noise": "刀光、伤害字與怪物動作",
+      "confounder_risk": "改鏡頭、機率或出怪量會讓歸因失效",
+      "confidence": 0.8,
+      "unknowns": [
+        "是否減少新人誤解或疲勞"
+      ],
+      "unsupported_by_sample": false
+    }
+  ],
+  "recommended_next_step": "quick_ed_triage；先做本機對照，不宣稱留存改善。"
+}

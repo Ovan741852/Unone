@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 810
+      },
+      "errors": [],
+      "clickFlow": "random location -> specialized purchase -> loadout -> transfer -> return preserved shop -> resale -> deploy"
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "errors": [],
+      "clickFlow": "random location -> specialized purchase -> loadout -> transfer -> return preserved shop -> resale -> deploy"
+    }
+  ]
+}

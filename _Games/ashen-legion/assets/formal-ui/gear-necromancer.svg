@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 100 100" role="img" aria-label="招魂骨冠" data-art-style="hazel-faceted-v1">
+ <g stroke="#30251f" stroke-width="3.2" stroke-linejoin="bevel">
+  <path d="M18 70L11 31L29 45L40 17L51 42L70 20L71 48L91 34L83 76L73 87L28 88Z" fill="#57443a"/>
+  <path d="M18 70L11 31L29 45L40 17L51 42L70 20L71 48L91 34L83 76L73 87L28 88Z" fill="#d1af72" opacity=".72"/>
+  <path d="M15 52L27 56L39 23L47 52L30 72L21 70ZM53 53L70 27L71 60L58 74L47 64Z" fill="#97744b" stroke="none"/>
+  <path d="M23 65L78 65L73 81L63 89L37 87L27 79Z" fill="#34463b"/>
+  <path d="M33 62L36 49L48 43L62 49L67 62L61 75L50 81L39 74Z" fill="#a5c5a0"/>
+  <path d="M37 55L46 51L45 61L37 62ZM55 51L63 55L62 62L54 61Z" fill="#23342e"/>
+  <path d="M45 69L50 66L55 69L52 75L48 75Z" fill="#d0aa67"/>
+  <path d="M30 68L40 75L35 82L27 76ZM70 68L61 76L67 82L75 76Z" fill="#744b3a"/>
+  <path d="M18 67L27 70M82 69L74 72M39 18L42 33M70 22L68 38" fill="none" stroke="#f1d28c" stroke-width="2"/>
+ </g>
+ <path d="M47 39L50 31L53 39M30 81L36 84M64 84L70 81" fill="none" stroke="#e6ca87" stroke-width="2.4" stroke-linecap="round"/>
+</svg>

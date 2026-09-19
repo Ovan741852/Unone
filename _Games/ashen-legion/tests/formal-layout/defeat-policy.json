@@ -3,303 +3,233 @@
   "screens": {
     "forest_lord": [
       {
-        "behind": "interior_shade",
-        "front": "screen_back",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_crest",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_title",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_reason",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_route",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_stat_label_1",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_stat_value_1",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_stat_label_2",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_stat_value_2",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_stat_label_3",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_stat_value_3",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_stat_label_4",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_stat_value_4",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_stat_label_5",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_stat_value_5",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_stat_label_6",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_stat_value_6",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_town_reward",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_town_plate",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_town",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_town_hit_top",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_town_hit_bottom",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_retry_plate",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_retry",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_retry_hit_top",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "defeat_retry_hit_bottom",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "story_portrait",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "story_speaker",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "interior_shade",
-        "front": "story_quote",
+        "behind": "screen_back",
+        "front": "screen_title",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_crest",
+        "front": "screen_gold",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_title",
+        "front": "screen_crystals_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_reason",
+        "front": "screen_crystals",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_route",
+        "front": "profiles_hint",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_stat_label_1",
+        "front": "profile_card_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_stat_value_1",
+        "front": "profile_slot_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_stat_label_2",
+        "front": "profile_name_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_stat_value_2",
+        "front": "profile_detail_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_stat_label_3",
+        "front": "profile_create_1_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_stat_value_3",
+        "front": "profile_create_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_stat_label_4",
+        "front": "profile_create_1_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_stat_value_4",
+        "front": "profile_create_1_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_stat_label_5",
+        "front": "profile_card_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_stat_value_5",
+        "front": "profile_slot_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_stat_label_6",
+        "front": "profile_name_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_stat_value_6",
+        "front": "profile_detail_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_town_reward",
+        "front": "profile_create_2_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_town_plate",
+        "front": "profile_create_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_town",
+        "front": "profile_create_2_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_town_hit_top",
+        "front": "profile_create_2_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_town_hit_bottom",
+        "front": "profile_card_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_retry_plate",
+        "front": "profile_slot_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_retry",
+        "front": "profile_name_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_retry_hit_top",
+        "front": "profile_detail_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "defeat_retry_hit_bottom",
+        "front": "profile_create_3_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "defeat_town_plate",
-        "front": "defeat_town",
+        "behind": "screen_back",
+        "front": "profile_create_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profile_create_3_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profile_create_3_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profiles_back_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profiles_back",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profiles_back_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profiles_back_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_crystals_plate",
+        "front": "screen_crystals",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "defeat_town_plate",
-        "front": "defeat_town_hit_top",
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "defeat_town_plate",
-        "front": "defeat_town_hit_bottom",
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1_hit_top",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "defeat_retry_plate",
-        "front": "defeat_retry",
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "defeat_retry_plate",
-        "front": "defeat_retry_hit_top",
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "defeat_retry_plate",
-        "front": "defeat_retry_hit_bottom",
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profiles_back_plate",
+        "front": "profiles_back",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profiles_back_plate",
+        "front": "profiles_back_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profiles_back_plate",
+        "front": "profiles_back_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       }
     ]

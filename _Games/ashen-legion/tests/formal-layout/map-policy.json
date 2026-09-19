@@ -24,127 +24,147 @@
       },
       {
         "behind": "screen_back",
-        "front": "map_back",
+        "front": "profiles_hint",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_journal",
+        "front": "profile_card_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_node_1",
+        "front": "profile_slot_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_number_1",
+        "front": "profile_name_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_name_1",
+        "front": "profile_detail_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_node_2",
+        "front": "profile_create_1_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_number_2",
+        "front": "profile_create_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_name_2",
+        "front": "profile_create_1_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_node_3",
+        "front": "profile_create_1_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_number_3",
+        "front": "profile_card_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_name_3",
+        "front": "profile_slot_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_node_4",
+        "front": "profile_name_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_number_4",
+        "front": "profile_detail_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_name_4",
+        "front": "profile_create_2_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_node_5",
+        "front": "profile_create_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_number_5",
+        "front": "profile_create_2_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_name_5",
+        "front": "profile_create_2_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_node_6",
+        "front": "profile_card_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_number_6",
+        "front": "profile_slot_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_name_6",
+        "front": "profile_name_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_node_7",
+        "front": "profile_detail_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_number_7",
+        "front": "profile_create_3_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_name_7",
+        "front": "profile_create_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_lord",
+        "front": "profile_create_3_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "map_progress",
+        "front": "profile_create_3_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profiles_back_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profiles_back",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profiles_back_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profiles_back_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
@@ -153,154 +173,64 @@
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "map_back",
-        "front": "map_journal",
-        "reason": "Authored screen backdrop beneath foreground content"
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1",
+        "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "map_back",
-        "front": "map_node_1",
-        "reason": "Authored screen backdrop beneath foreground content"
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "map_back",
-        "front": "map_number_1",
-        "reason": "Authored screen backdrop beneath foreground content"
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "map_back",
-        "front": "map_name_1",
-        "reason": "Authored screen backdrop beneath foreground content"
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2",
+        "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "map_back",
-        "front": "map_node_2",
-        "reason": "Authored screen backdrop beneath foreground content"
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "map_back",
-        "front": "map_number_2",
-        "reason": "Authored screen backdrop beneath foreground content"
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "map_back",
-        "front": "map_name_2",
-        "reason": "Authored screen backdrop beneath foreground content"
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3",
+        "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "map_back",
-        "front": "map_node_3",
-        "reason": "Authored screen backdrop beneath foreground content"
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "map_back",
-        "front": "map_number_3",
-        "reason": "Authored screen backdrop beneath foreground content"
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "map_back",
-        "front": "map_name_3",
-        "reason": "Authored screen backdrop beneath foreground content"
+        "behind": "profiles_back_plate",
+        "front": "profiles_back",
+        "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "map_back",
-        "front": "map_node_4",
-        "reason": "Authored screen backdrop beneath foreground content"
+        "behind": "profiles_back_plate",
+        "front": "profiles_back_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "map_back",
-        "front": "map_number_4",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "map_back",
-        "front": "map_name_4",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "map_back",
-        "front": "map_node_5",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "map_back",
-        "front": "map_number_5",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "map_back",
-        "front": "map_name_5",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "map_back",
-        "front": "map_node_6",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "map_back",
-        "front": "map_number_6",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "map_back",
-        "front": "map_name_6",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "map_back",
-        "front": "map_node_7",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "map_back",
-        "front": "map_number_7",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "map_back",
-        "front": "map_name_7",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "map_back",
-        "front": "map_lord",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "map_node_1",
-        "front": "map_number_1",
-        "reason": "Map number inside its authored marker"
-      },
-      {
-        "behind": "map_node_2",
-        "front": "map_number_2",
-        "reason": "Map number inside its authored marker"
-      },
-      {
-        "behind": "map_node_3",
-        "front": "map_number_3",
-        "reason": "Map number inside its authored marker"
-      },
-      {
-        "behind": "map_node_4",
-        "front": "map_number_4",
-        "reason": "Map number inside its authored marker"
-      },
-      {
-        "behind": "map_node_5",
-        "front": "map_number_5",
-        "reason": "Map number inside its authored marker"
-      },
-      {
-        "behind": "map_node_6",
-        "front": "map_number_6",
-        "reason": "Map number inside its authored marker"
-      },
-      {
-        "behind": "map_node_7",
-        "front": "map_number_7",
-        "reason": "Map number inside its authored marker"
+        "behind": "profiles_back_plate",
+        "front": "profiles_back_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
       }
     ]
   }

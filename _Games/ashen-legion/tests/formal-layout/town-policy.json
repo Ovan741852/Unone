@@ -3,153 +3,348 @@
   "screens": {
     "forest_lord": [
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
         "front": "screen_back",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
         "front": "screen_title",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "back_plate",
+        "behind": "town_scene",
+        "front": "town_back_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "back",
+        "behind": "town_scene",
+        "front": "town_back",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "back_hit_top",
+        "behind": "town_scene",
+        "front": "town_back_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "back_hit_bottom",
+        "behind": "town_scene",
+        "front": "town_back_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
+        "front": "launch_expedition_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "launch_expedition",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "launch_expedition_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "launch_expedition_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_keep",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_lord",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_heading",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_subheading",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_material_icon",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
         "front": "town_gold",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
+        "front": "town_record",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_constellation",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_constellation_title",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_core",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
         "front": "town_icon_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
+        "front": "town_building_1",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
         "front": "town_1_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
         "front": "town_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "town_cost_1",
+        "behind": "town_scene",
+        "front": "town_1_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "town_effect_1",
+        "behind": "town_scene",
+        "front": "town_1_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
         "front": "town_icon_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
+        "front": "town_building_2",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
         "front": "town_2_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
         "front": "town_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "town_cost_2",
+        "behind": "town_scene",
+        "front": "town_2_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "town_effect_2",
+        "behind": "town_scene",
+        "front": "town_2_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
         "front": "town_icon_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
+        "front": "town_building_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
         "front": "town_3_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
         "front": "town_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "town_cost_3",
+        "behind": "town_scene",
+        "front": "town_3_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "town_effect_3",
+        "behind": "town_scene",
+        "front": "town_3_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
         "front": "town_icon_4",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
+        "front": "town_building_4",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
         "front": "town_4_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
+        "behind": "town_scene",
         "front": "town_4",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "town_cost_4",
+        "behind": "town_scene",
+        "front": "town_4_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "town_effect_4",
+        "behind": "town_scene",
+        "front": "town_4_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "story_portrait",
+        "behind": "town_scene",
+        "front": "town_icon_5",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "story_speaker",
+        "behind": "town_scene",
+        "front": "town_building_5",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "interior_shade",
-        "front": "story_quote",
+        "behind": "town_scene",
+        "front": "town_5_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_5",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_5_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_5_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_icon_6",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_building_6",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_6_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_6",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_6_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_6_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_icon_7",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_building_7",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_7_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_7",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_7_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_7_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_icon_8",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_building_8",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_8_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_8",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_8_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_8_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_scene",
+        "front": "town_scope",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
@@ -159,22 +354,67 @@
       },
       {
         "behind": "screen_back",
-        "front": "back_plate",
+        "front": "town_back_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "back",
+        "front": "town_back",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "back_hit_top",
+        "front": "town_back_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "back_hit_bottom",
+        "front": "town_back_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "launch_expedition_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "launch_expedition",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "launch_expedition_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "launch_expedition_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_keep",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_lord",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_heading",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_subheading",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_material_icon",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
@@ -184,7 +424,32 @@
       },
       {
         "behind": "screen_back",
+        "front": "town_record",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_constellation",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_constellation_title",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_core",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
         "front": "town_icon_1",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_building_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
@@ -199,17 +464,22 @@
       },
       {
         "behind": "screen_back",
-        "front": "town_cost_1",
+        "front": "town_1_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "town_effect_1",
+        "front": "town_1_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
         "front": "town_icon_2",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_building_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
@@ -224,17 +494,22 @@
       },
       {
         "behind": "screen_back",
-        "front": "town_cost_2",
+        "front": "town_2_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "town_effect_2",
+        "front": "town_2_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
         "front": "town_icon_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_building_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
@@ -249,17 +524,22 @@
       },
       {
         "behind": "screen_back",
-        "front": "town_cost_3",
+        "front": "town_3_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "town_effect_3",
+        "front": "town_3_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
         "front": "town_icon_4",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_building_4",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
@@ -274,27 +554,167 @@
       },
       {
         "behind": "screen_back",
-        "front": "town_cost_4",
+        "front": "town_4_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "town_effect_4",
+        "front": "town_4_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "back_plate",
-        "front": "back",
+        "behind": "screen_back",
+        "front": "town_icon_5",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_building_5",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_5_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_5",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_5_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_5_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_icon_6",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_building_6",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_6_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_6",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_6_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_6_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_icon_7",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_building_7",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_7_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_7",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_7_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_7_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_icon_8",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_building_8",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_8_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_8",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_8_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_8_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "town_scope",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "town_back_plate",
+        "front": "town_back",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "back_plate",
-        "front": "back_hit_top",
+        "behind": "town_back_plate",
+        "front": "town_back_hit_top",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "back_plate",
-        "front": "back_hit_bottom",
+        "behind": "town_back_plate",
+        "front": "town_back_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "launch_expedition_plate",
+        "front": "launch_expedition",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "launch_expedition_plate",
+        "front": "launch_expedition_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "launch_expedition_plate",
+        "front": "launch_expedition_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
@@ -303,8 +723,28 @@
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
+        "behind": "town_1_plate",
+        "front": "town_1_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_1_plate",
+        "front": "town_1_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
         "behind": "town_2_plate",
         "front": "town_2",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_2_plate",
+        "front": "town_2_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_2_plate",
+        "front": "town_2_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
@@ -313,8 +753,88 @@
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
+        "behind": "town_3_plate",
+        "front": "town_3_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_3_plate",
+        "front": "town_3_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
         "behind": "town_4_plate",
         "front": "town_4",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_4_plate",
+        "front": "town_4_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_4_plate",
+        "front": "town_4_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_5_plate",
+        "front": "town_5",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_5_plate",
+        "front": "town_5_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_5_plate",
+        "front": "town_5_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_6_plate",
+        "front": "town_6",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_6_plate",
+        "front": "town_6_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_6_plate",
+        "front": "town_6_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_7_plate",
+        "front": "town_7",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_7_plate",
+        "front": "town_7_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_7_plate",
+        "front": "town_7_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_8_plate",
+        "front": "town_8",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_8_plate",
+        "front": "town_8_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "town_8_plate",
+        "front": "town_8_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       }
     ]

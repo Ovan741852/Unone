@@ -1,10 +1,10 @@
 {
-  "ok": true,
+  "ok": false,
   "value": {
     "screen": "forest_lord",
     "cols": 96,
     "rows": 48,
-    "ascii": "+------------------------------------------------------------------------------------------------+\n|                                                                                                |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@################################################################@@################@@@@   |\n|   @@@@################################################################@@################@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@################@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@##################################################################################@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@########################################################################@@@@@@@@@   |\n|   @@@@@@@@@########################################################################@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|                                                                                                |\n+------------------------------------------------------------------------------------------------+",
+    "ascii": "+------------------------------------------------------------------------------------------------+\n|                                                                                                |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@################################################################@@################@@@@   |\n|   @@@@################################################################@@################@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@################@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@##############################################################################@@@@@@   |\n|   @@@@@@##############################################################################@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@#########################@@@########################@@@#########################@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@##################################@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@   |\n|                                                                                                |\n+------------------------------------------------------------------------------------------------+",
     "nodes": [
       {
         "id": "screen_back",
@@ -29,10 +29,10 @@
           "width": 67,
           "height": 5
         },
-        "text": "遠征地圖 · 森林王冠之路",
+        "text": "讀取進度",
         "action": null,
         "asset": null,
-        "text_fit": 0.27
+        "text_fit": 0.08
       },
       {
         "id": "screen_gold",
@@ -77,363 +77,83 @@
         "text_fit": 0.41
       },
       {
-        "id": "map_back",
-        "kind": "image",
-        "rect": {
-          "x": 7,
-          "y": 17,
-          "width": 86,
-          "height": 64
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_route-map",
-        "text_fit": 0
-      },
-      {
-        "id": "map_journal",
+        "id": "profiles_hint",
         "kind": "text",
         "rect": {
-          "x": 12,
-          "y": 75,
-          "width": 68,
-          "height": 5
-        },
-        "text": "苔光照亮了舊路。領主，先讓每一枚金幣帶人回家。",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.48
-      },
-      {
-        "id": "map_node_1",
-        "kind": "image",
-        "rect": {
-          "x": 9.5,
-          "y": 28,
-          "width": 5,
-          "height": 6
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_route-current",
-        "text_fit": 0
-      },
-      {
-        "id": "map_number_1",
-        "kind": "text",
-        "rect": {
-          "x": 10.3,
-          "y": 29,
-          "width": 3.4,
+          "x": 9,
+          "y": 79,
+          "width": 82,
           "height": 4
         },
-        "text": "1",
+        "text": "選擇一個札記繼續；空白欄位可建立新進度。",
         "action": null,
         "asset": null,
-        "text_fit": 0.33
+        "text_fit": 0.27
       },
       {
-        "id": "map_name_1",
-        "kind": "text",
+        "id": "profile_card_1",
+        "kind": "image",
         "rect": {
           "x": 8,
-          "y": 23,
-          "width": 12,
-          "height": 4
-        },
-        "text": "苔光林口",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.38
-      },
-      {
-        "id": "map_node_2",
-        "kind": "image",
-        "rect": {
-          "x": 22.5,
-          "y": 44,
-          "width": 5,
-          "height": 6
+          "y": 30,
+          "width": 26,
+          "height": 43
         },
         "text": "",
         "action": null,
-        "asset": "texture://ui_route-future",
+        "asset": "texture://ui_card",
         "text_fit": 0
       },
       {
-        "id": "map_number_2",
+        "id": "profile_slot_1",
         "kind": "text",
         "rect": {
-          "x": 23.3,
-          "y": 45,
-          "width": 3.4,
+          "x": 10,
+          "y": 67,
+          "width": 22,
           "height": 4
         },
-        "text": "2",
+        "text": "札記 1",
         "action": null,
         "asset": null,
-        "text_fit": 0.33
+        "text_fit": 0.2
       },
       {
-        "id": "map_name_2",
+        "id": "profile_name_1",
         "kind": "text",
         "rect": {
-          "x": 19,
-          "y": 39,
-          "width": 12,
-          "height": 4
-        },
-        "text": "菇冠小徑",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.38
-      },
-      {
-        "id": "map_node_3",
-        "kind": "image",
-        "rect": {
-          "x": 35.5,
-          "y": 31,
-          "width": 5,
-          "height": 6
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_route-future",
-        "text_fit": 0
-      },
-      {
-        "id": "map_number_3",
-        "kind": "text",
-        "rect": {
-          "x": 36.3,
-          "y": 32,
-          "width": 3.4,
-          "height": 4
-        },
-        "text": "3",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.33
-      },
-      {
-        "id": "map_name_3",
-        "kind": "text",
-        "rect": {
-          "x": 32,
-          "y": 26,
-          "width": 12,
-          "height": 4
-        },
-        "text": "橡木渡溪",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.38
-      },
-      {
-        "id": "map_node_4",
-        "kind": "image",
-        "rect": {
-          "x": 48.5,
-          "y": 52,
-          "width": 5,
-          "height": 6
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_route-future",
-        "text_fit": 0
-      },
-      {
-        "id": "map_number_4",
-        "kind": "text",
-        "rect": {
-          "x": 49.3,
-          "y": 53,
-          "width": 3.4,
-          "height": 4
-        },
-        "text": "4",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.33
-      },
-      {
-        "id": "map_name_4",
-        "kind": "text",
-        "rect": {
-          "x": 45,
-          "y": 47,
-          "width": 12,
-          "height": 4
-        },
-        "text": "古榕回廊",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.38
-      },
-      {
-        "id": "map_node_5",
-        "kind": "image",
-        "rect": {
-          "x": 62.5,
-          "y": 41,
-          "width": 5,
-          "height": 6
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_route-future",
-        "text_fit": 0
-      },
-      {
-        "id": "map_number_5",
-        "kind": "text",
-        "rect": {
-          "x": 63.3,
-          "y": 42,
-          "width": 3.4,
-          "height": 4
-        },
-        "text": "5",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.33
-      },
-      {
-        "id": "map_name_5",
-        "kind": "text",
-        "rect": {
-          "x": 59,
-          "y": 36,
-          "width": 12,
-          "height": 4
-        },
-        "text": "琥珀石庭",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.38
-      },
-      {
-        "id": "map_node_6",
-        "kind": "image",
-        "rect": {
-          "x": 74.5,
-          "y": 58,
-          "width": 5,
-          "height": 6
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_route-future",
-        "text_fit": 0
-      },
-      {
-        "id": "map_number_6",
-        "kind": "text",
-        "rect": {
-          "x": 75.3,
+          "x": 10,
           "y": 59,
-          "width": 3.4,
-          "height": 4
+          "width": 22,
+          "height": 5
         },
-        "text": "6",
+        "text": "尚未建立",
         "action": null,
         "asset": null,
-        "text_fit": 0.33
+        "text_fit": 0.26
       },
       {
-        "id": "map_name_6",
+        "id": "profile_detail_1",
         "kind": "text",
         "rect": {
-          "x": 71,
-          "y": 53,
-          "width": 12,
-          "height": 4
-        },
-        "text": "冠角聖林",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.38
-      },
-      {
-        "id": "map_node_7",
-        "kind": "image",
-        "rect": {
-          "x": 85.5,
-          "y": 68,
-          "width": 5,
-          "height": 6
-        },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_route-future",
-        "text_fit": 0
-      },
-      {
-        "id": "map_number_7",
-        "kind": "text",
-        "rect": {
-          "x": 86.3,
-          "y": 69,
-          "width": 3.4,
-          "height": 4
-        },
-        "text": "7",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.33
-      },
-      {
-        "id": "map_name_7",
-        "kind": "text",
-        "rect": {
-          "x": 81,
-          "y": 63,
-          "width": 12,
-          "height": 4
-        },
-        "text": "森林王座",
-        "action": null,
-        "asset": null,
-        "text_fit": 0.38
-      },
-      {
-        "id": "map_lord",
-        "kind": "image",
-        "rect": {
-          "x": 8.5,
-          "y": 41,
-          "width": 7,
+          "x": 10,
+          "y": 48,
+          "width": 22,
           "height": 8
         },
-        "text": "",
-        "action": null,
-        "asset": "texture://ui_portrait-lord-v2",
-        "text_fit": 0
-      },
-      {
-        "id": "map_progress",
-        "kind": "text",
-        "rect": {
-          "x": 12,
-          "y": 10,
-          "width": 76,
-          "height": 5
-        },
-        "text": "第 1 / 7 站 · 紮營 苔光林口 · 挑一處景點整備",
+        "text": "沒有遠征紀錄\n建立後從第一站開始",
         "action": null,
         "asset": null,
-        "text_fit": 0.54
+        "text_fit": 1.64
       },
       {
-        "id": "visit_location_plate",
+        "id": "profile_create_1_plate",
         "kind": "image",
         "rect": {
-          "x": 32,
-          "y": 4,
-          "width": 36,
-          "height": 5
+          "x": 10,
+          "y": 39,
+          "width": 24,
+          "height": 6
         },
         "text": "",
         "action": null,
@@ -441,49 +161,519 @@
         "text_fit": 0
       },
       {
-        "id": "visit_location",
+        "id": "profile_create_1",
         "kind": "button",
         "rect": {
-          "x": 32,
-          "y": 5,
-          "width": 36,
+          "x": 10,
+          "y": 40.5,
+          "width": 24,
           "height": 3
         },
-        "text": "查看景點建築",
-        "action": "VisitLocation",
+        "text": "建立新檔",
+        "action": "Profile1",
         "asset": null,
         "text_fit": 0.14
       },
       {
-        "id": "visit_location_hit_top",
+        "id": "profile_create_1_hit_top",
         "kind": "button",
         "rect": {
-          "x": 32,
-          "y": 8,
-          "width": 36,
-          "height": 1
+          "x": 10,
+          "y": 43.5,
+          "width": 24,
+          "height": 1.5
         },
         "text": "",
-        "action": "VisitLocation",
+        "action": "Profile1",
         "asset": null,
         "text_fit": 0
       },
       {
-        "id": "visit_location_hit_bottom",
+        "id": "profile_create_1_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 10,
+          "y": 39,
+          "width": 24,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Profile1",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "profile_card_2",
+        "kind": "image",
+        "rect": {
+          "x": 37,
+          "y": 30,
+          "width": 26,
+          "height": 43
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_card",
+        "text_fit": 0
+      },
+      {
+        "id": "profile_slot_2",
+        "kind": "text",
+        "rect": {
+          "x": 39,
+          "y": 67,
+          "width": 22,
+          "height": 4
+        },
+        "text": "札記 2",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.2
+      },
+      {
+        "id": "profile_name_2",
+        "kind": "text",
+        "rect": {
+          "x": 39,
+          "y": 59,
+          "width": 22,
+          "height": 5
+        },
+        "text": "尚未建立",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.26
+      },
+      {
+        "id": "profile_detail_2",
+        "kind": "text",
+        "rect": {
+          "x": 39,
+          "y": 48,
+          "width": 22,
+          "height": 8
+        },
+        "text": "沒有遠征紀錄\n建立後從第一站開始",
+        "action": null,
+        "asset": null,
+        "text_fit": 1.64
+      },
+      {
+        "id": "profile_create_2_plate",
+        "kind": "image",
+        "rect": {
+          "x": 39,
+          "y": 39,
+          "width": 24,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "profile_create_2",
+        "kind": "button",
+        "rect": {
+          "x": 39,
+          "y": 40.5,
+          "width": 24,
+          "height": 3
+        },
+        "text": "建立新檔",
+        "action": "Profile2",
+        "asset": null,
+        "text_fit": 0.14
+      },
+      {
+        "id": "profile_create_2_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 39,
+          "y": 43.5,
+          "width": 24,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Profile2",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "profile_create_2_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 39,
+          "y": 39,
+          "width": 24,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Profile2",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "profile_card_3",
+        "kind": "image",
+        "rect": {
+          "x": 66,
+          "y": 30,
+          "width": 26,
+          "height": 43
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_card",
+        "text_fit": 0
+      },
+      {
+        "id": "profile_slot_3",
+        "kind": "text",
+        "rect": {
+          "x": 68,
+          "y": 67,
+          "width": 22,
+          "height": 4
+        },
+        "text": "札記 3",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.2
+      },
+      {
+        "id": "profile_name_3",
+        "kind": "text",
+        "rect": {
+          "x": 68,
+          "y": 59,
+          "width": 22,
+          "height": 5
+        },
+        "text": "尚未建立",
+        "action": null,
+        "asset": null,
+        "text_fit": 0.26
+      },
+      {
+        "id": "profile_detail_3",
+        "kind": "text",
+        "rect": {
+          "x": 68,
+          "y": 48,
+          "width": 22,
+          "height": 8
+        },
+        "text": "沒有遠征紀錄\n建立後從第一站開始",
+        "action": null,
+        "asset": null,
+        "text_fit": 1.64
+      },
+      {
+        "id": "profile_create_3_plate",
+        "kind": "image",
+        "rect": {
+          "x": 68,
+          "y": 39,
+          "width": 24,
+          "height": 6
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "profile_create_3",
+        "kind": "button",
+        "rect": {
+          "x": 68,
+          "y": 40.5,
+          "width": 24,
+          "height": 3
+        },
+        "text": "建立新檔",
+        "action": "Profile3",
+        "asset": null,
+        "text_fit": 0.14
+      },
+      {
+        "id": "profile_create_3_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 68,
+          "y": 43.5,
+          "width": 24,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Profile3",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "profile_create_3_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 68,
+          "y": 39,
+          "width": 24,
+          "height": 1.5
+        },
+        "text": "",
+        "action": "Profile3",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "profiles_back_plate",
+        "kind": "image",
+        "rect": {
+          "x": 32,
+          "y": 7,
+          "width": 36,
+          "height": 7
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "profiles_back",
         "kind": "button",
         "rect": {
           "x": 32,
-          "y": 4,
+          "y": 9,
           "width": 36,
-          "height": 1
+          "height": 3
+        },
+        "text": "返回主選單",
+        "action": "UI_home",
+        "asset": null,
+        "text_fit": 0.12
+      },
+      {
+        "id": "profiles_back_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 32,
+          "y": 12,
+          "width": 36,
+          "height": 2
         },
         "text": "",
-        "action": "VisitLocation",
+        "action": "UI_home",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "profiles_back_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 32,
+          "y": 7,
+          "width": 36,
+          "height": 2
+        },
+        "text": "",
+        "action": "UI_home",
         "asset": null,
         "text_fit": 0
       }
     ],
-    "findings": [],
+    "findings": [
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_slot_1' overlap by 22.0 x 4.0 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_slot_1"
+        ],
+        "resolution": "Increase 'profile_slot_1' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_name_1' overlap by 22.0 x 5.0 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_name_1"
+        ],
+        "resolution": "Increase 'profile_name_1' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_detail_1' overlap by 22.0 x 8.0 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_detail_1"
+        ],
+        "resolution": "Increase 'profile_detail_1' y by 8.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_create_1_plate' overlap by 24.0 x 6.0 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1_plate"
+        ],
+        "resolution": "Increase 'profile_create_1_plate' y by 6.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_create_1' overlap by 24.0 x 3.0 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1"
+        ],
+        "resolution": "Increase 'profile_create_1' y by 3.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_create_1_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1_hit_top"
+        ],
+        "resolution": "Increase 'profile_create_1_hit_top' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_1' and 'profile_create_1_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1_hit_bottom"
+        ],
+        "resolution": "Increase 'profile_create_1_hit_bottom' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_slot_2' overlap by 22.0 x 4.0 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_slot_2"
+        ],
+        "resolution": "Increase 'profile_slot_2' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_name_2' overlap by 22.0 x 5.0 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_name_2"
+        ],
+        "resolution": "Increase 'profile_name_2' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_detail_2' overlap by 22.0 x 8.0 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_detail_2"
+        ],
+        "resolution": "Increase 'profile_detail_2' y by 8.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_create_2_plate' overlap by 24.0 x 6.0 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2_plate"
+        ],
+        "resolution": "Increase 'profile_create_2_plate' y by 6.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_create_2' overlap by 24.0 x 3.0 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2"
+        ],
+        "resolution": "Increase 'profile_create_2' y by 3.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_create_2_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2_hit_top"
+        ],
+        "resolution": "Increase 'profile_create_2_hit_top' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_2' and 'profile_create_2_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2_hit_bottom"
+        ],
+        "resolution": "Increase 'profile_create_2_hit_bottom' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_slot_3' overlap by 22.0 x 4.0 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_slot_3"
+        ],
+        "resolution": "Increase 'profile_slot_3' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_name_3' overlap by 22.0 x 5.0 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_name_3"
+        ],
+        "resolution": "Increase 'profile_name_3' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_detail_3' overlap by 22.0 x 8.0 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_detail_3"
+        ],
+        "resolution": "Increase 'profile_detail_3' y by 8.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_create_3_plate' overlap by 24.0 x 6.0 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3_plate"
+        ],
+        "resolution": "Increase 'profile_create_3_plate' y by 6.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_create_3' overlap by 24.0 x 3.0 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3"
+        ],
+        "resolution": "Increase 'profile_create_3' y by 3.0 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_create_3_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3_hit_top"
+        ],
+        "resolution": "Increase 'profile_create_3_hit_top' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights."
+      },
+      {
+        "code": "UI_NODES_OVERLAP",
+        "detail": "'profile_card_3' and 'profile_create_3_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3_hit_bottom"
+        ],
+        "resolution": "Increase 'profile_create_3_hit_bottom' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights."
+      }
+    ],
     "allowed_overlaps": [
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
@@ -523,262 +713,262 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_back' overlap by 86.0 x 64.0 (design-space units).",
+        "detail": "'screen_back' and 'profiles_hint' overlap by 82.0 x 4.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_back"
+          "profiles_hint"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_journal' overlap by 68.0 x 5.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_card_1' overlap by 26.0 x 43.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_journal"
+          "profile_card_1"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_node_1' overlap by 5.0 x 6.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_slot_1' overlap by 22.0 x 4.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_node_1"
+          "profile_slot_1"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_number_1' overlap by 3.4 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_name_1' overlap by 22.0 x 5.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_number_1"
+          "profile_name_1"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_name_1' overlap by 12.0 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_detail_1' overlap by 22.0 x 8.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_name_1"
+          "profile_detail_1"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_node_2' overlap by 5.0 x 6.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_1_plate' overlap by 24.0 x 6.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_node_2"
+          "profile_create_1_plate"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_number_2' overlap by 3.4 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_1' overlap by 24.0 x 3.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_number_2"
+          "profile_create_1"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_name_2' overlap by 12.0 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_1_hit_top' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_name_2"
+          "profile_create_1_hit_top"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_node_3' overlap by 5.0 x 6.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_1_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_node_3"
+          "profile_create_1_hit_bottom"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_number_3' overlap by 3.4 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_card_2' overlap by 26.0 x 43.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_number_3"
+          "profile_card_2"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_name_3' overlap by 12.0 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_slot_2' overlap by 22.0 x 4.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_name_3"
+          "profile_slot_2"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_node_4' overlap by 5.0 x 6.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_name_2' overlap by 22.0 x 5.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_node_4"
+          "profile_name_2"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_number_4' overlap by 3.4 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_detail_2' overlap by 22.0 x 8.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_number_4"
+          "profile_detail_2"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_name_4' overlap by 12.0 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_2_plate' overlap by 24.0 x 6.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_name_4"
+          "profile_create_2_plate"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_node_5' overlap by 5.0 x 6.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_2' overlap by 24.0 x 3.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_node_5"
+          "profile_create_2"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_number_5' overlap by 3.4 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_2_hit_top' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_number_5"
+          "profile_create_2_hit_top"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_name_5' overlap by 12.0 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_2_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_name_5"
+          "profile_create_2_hit_bottom"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_node_6' overlap by 5.0 x 6.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_card_3' overlap by 26.0 x 43.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_node_6"
+          "profile_card_3"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_number_6' overlap by 3.4 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_slot_3' overlap by 22.0 x 4.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_number_6"
+          "profile_slot_3"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_name_6' overlap by 12.0 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_name_3' overlap by 22.0 x 5.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_name_6"
+          "profile_name_3"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_node_7' overlap by 5.0 x 6.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_detail_3' overlap by 22.0 x 8.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_node_7"
+          "profile_detail_3"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_number_7' overlap by 3.4 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_3_plate' overlap by 24.0 x 6.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_number_7"
+          "profile_create_3_plate"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_name_7' overlap by 12.0 x 4.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_3' overlap by 24.0 x 3.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_name_7"
+          "profile_create_3"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_lord' overlap by 7.0 x 8.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_3_hit_top' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_lord"
+          "profile_create_3_hit_top"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'map_progress' overlap by 76.0 x 5.0 (design-space units).",
+        "detail": "'screen_back' and 'profile_create_3_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
           "screen_back",
-          "map_progress"
+          "profile_create_3_hit_bottom"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'visit_location_plate' overlap by 36.0 x 5.0 (design-space units).",
+        "detail": "'screen_back' and 'profiles_back_plate' overlap by 36.0 x 7.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "visit_location_plate"
+          "profiles_back_plate"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'visit_location' overlap by 36.0 x 3.0 (design-space units).",
+        "detail": "'screen_back' and 'profiles_back' overlap by 36.0 x 3.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "visit_location"
+          "profiles_back"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'visit_location_hit_top' overlap by 36.0 x 1.0 (design-space units).",
+        "detail": "'screen_back' and 'profiles_back_hit_top' overlap by 36.0 x 2.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "visit_location_hit_top"
+          "profiles_back_hit_top"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'screen_back' and 'visit_location_hit_bottom' overlap by 36.0 x 1.0 (design-space units).",
+        "detail": "'screen_back' and 'profiles_back_hit_bottom' overlap by 36.0 x 2.0 (design-space units).",
         "nodes": [
           "screen_back",
-          "visit_location_hit_bottom"
+          "profiles_back_hit_bottom"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
@@ -793,308 +983,561 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_journal' overlap by 68.0 x 5.0 (design-space units).",
+        "detail": "'profile_create_1_plate' and 'profile_create_1' overlap by 24.0 x 3.0 (design-space units).",
         "nodes": [
-          "map_back",
-          "map_journal"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_node_1' overlap by 5.0 x 6.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_node_1"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_number_1' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_number_1"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_name_1' overlap by 12.0 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_name_1"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_node_2' overlap by 5.0 x 6.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_node_2"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_number_2' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_number_2"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_name_2' overlap by 12.0 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_name_2"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_node_3' overlap by 5.0 x 6.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_node_3"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_number_3' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_number_3"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_name_3' overlap by 12.0 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_name_3"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_node_4' overlap by 5.0 x 6.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_node_4"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_number_4' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_number_4"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_name_4' overlap by 12.0 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_name_4"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_node_5' overlap by 5.0 x 6.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_node_5"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_number_5' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_number_5"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_name_5' overlap by 12.0 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_name_5"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_node_6' overlap by 5.0 x 6.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_node_6"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_number_6' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_number_6"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_name_6' overlap by 12.0 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_name_6"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_node_7' overlap by 5.0 x 6.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_node_7"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_number_7' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_number_7"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_name_7' overlap by 12.0 x 4.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_name_7"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_back' and 'map_lord' overlap by 7.0 x 8.0 (design-space units).",
-        "nodes": [
-          "map_back",
-          "map_lord"
-        ],
-        "resolution": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_node_1' and 'map_number_1' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_node_1",
-          "map_number_1"
-        ],
-        "resolution": "Map number inside its authored marker"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_node_2' and 'map_number_2' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_node_2",
-          "map_number_2"
-        ],
-        "resolution": "Map number inside its authored marker"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_node_3' and 'map_number_3' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_node_3",
-          "map_number_3"
-        ],
-        "resolution": "Map number inside its authored marker"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_node_4' and 'map_number_4' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_node_4",
-          "map_number_4"
-        ],
-        "resolution": "Map number inside its authored marker"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_node_5' and 'map_number_5' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_node_5",
-          "map_number_5"
-        ],
-        "resolution": "Map number inside its authored marker"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_node_6' and 'map_number_6' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_node_6",
-          "map_number_6"
-        ],
-        "resolution": "Map number inside its authored marker"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'map_node_7' and 'map_number_7' overlap by 3.4 x 4.0 (design-space units).",
-        "nodes": [
-          "map_node_7",
-          "map_number_7"
-        ],
-        "resolution": "Map number inside its authored marker"
-      },
-      {
-        "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'visit_location_plate' and 'visit_location' overlap by 36.0 x 3.0 (design-space units).",
-        "nodes": [
-          "visit_location_plate",
-          "visit_location"
+          "profile_create_1_plate",
+          "profile_create_1"
         ],
         "resolution": "Button artwork beneath its semantic control and caption"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'visit_location_plate' and 'visit_location_hit_top' overlap by 36.0 x 1.0 (design-space units).",
+        "detail": "'profile_create_1_plate' and 'profile_create_1_hit_top' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
-          "visit_location_plate",
-          "visit_location_hit_top"
+          "profile_create_1_plate",
+          "profile_create_1_hit_top"
         ],
         "resolution": "Button artwork beneath its semantic control and caption"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'visit_location_plate' and 'visit_location_hit_bottom' overlap by 36.0 x 1.0 (design-space units).",
+        "detail": "'profile_create_1_plate' and 'profile_create_1_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
         "nodes": [
-          "visit_location_plate",
-          "visit_location_hit_bottom"
+          "profile_create_1_plate",
+          "profile_create_1_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_2_plate' and 'profile_create_2' overlap by 24.0 x 3.0 (design-space units).",
+        "nodes": [
+          "profile_create_2_plate",
+          "profile_create_2"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_2_plate' and 'profile_create_2_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_create_2_plate",
+          "profile_create_2_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_2_plate' and 'profile_create_2_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_create_2_plate",
+          "profile_create_2_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_3_plate' and 'profile_create_3' overlap by 24.0 x 3.0 (design-space units).",
+        "nodes": [
+          "profile_create_3_plate",
+          "profile_create_3"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_3_plate' and 'profile_create_3_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_create_3_plate",
+          "profile_create_3_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profile_create_3_plate' and 'profile_create_3_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+        "nodes": [
+          "profile_create_3_plate",
+          "profile_create_3_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profiles_back_plate' and 'profiles_back' overlap by 36.0 x 3.0 (design-space units).",
+        "nodes": [
+          "profiles_back_plate",
+          "profiles_back"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profiles_back_plate' and 'profiles_back_hit_top' overlap by 36.0 x 2.0 (design-space units).",
+        "nodes": [
+          "profiles_back_plate",
+          "profiles_back_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'profiles_back_plate' and 'profiles_back_hit_bottom' overlap by 36.0 x 2.0 (design-space units).",
+        "nodes": [
+          "profiles_back_plate",
+          "profiles_back_hit_bottom"
         ],
         "resolution": "Button artwork beneath its semantic control and caption"
       }
     ],
-    "readable": true,
+    "readable": false,
     "assumptions": [
       "text_fit assumes a 16:9 viewport and a 0.5 character advance, so it is a              measurement to read, never a pass/fail",
       "structure only: this says nothing about whether the screen looks good"
     ]
   },
-  "diagnostics": [],
+  "diagnostics": [
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_slot_1' overlap by 22.0 x 4.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_slot_1"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_slot_1' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_name_1' overlap by 22.0 x 5.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_name_1"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_name_1' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_detail_1' overlap by 22.0 x 8.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_detail_1"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_detail_1' y by 8.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_create_1_plate' overlap by 24.0 x 6.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_1_plate' y by 6.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_create_1' overlap by 24.0 x 3.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_1' y by 3.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_create_1_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1_hit_top"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_1_hit_top' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_1' and 'profile_create_1_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_1",
+          "profile_create_1_hit_bottom"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_1_hit_bottom' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_slot_2' overlap by 22.0 x 4.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_slot_2"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_slot_2' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_name_2' overlap by 22.0 x 5.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_name_2"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_name_2' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_detail_2' overlap by 22.0 x 8.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_detail_2"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_detail_2' y by 8.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_create_2_plate' overlap by 24.0 x 6.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_2_plate' y by 6.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_create_2' overlap by 24.0 x 3.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_2' y by 3.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_create_2_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2_hit_top"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_2_hit_top' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_2' and 'profile_create_2_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_2",
+          "profile_create_2_hit_bottom"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_2_hit_bottom' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_slot_3' overlap by 22.0 x 4.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_slot_3"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_slot_3' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_name_3' overlap by 22.0 x 5.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_name_3"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_name_3' y by 5.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_detail_3' overlap by 22.0 x 8.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_detail_3"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_detail_3' y by 8.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_create_3_plate' overlap by 24.0 x 6.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3_plate"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_3_plate' y by 6.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_create_3' overlap by 24.0 x 3.0 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_3' y by 3.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_create_3_hit_top' overlap by 24.0 x 1.5 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3_hit_top"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_3_hit_top' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    },
+    {
+      "code": "UI_NODES_OVERLAP",
+      "severity": "ERROR",
+      "summary": "UI layout 有結構問題",
+      "explanation": "'profile_card_3' and 'profile_create_3_hit_bottom' overlap by 24.0 x 1.5 (design-space units).",
+      "facts": {
+        "nodes": [
+          "profile_card_3",
+          "profile_create_3_hit_bottom"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "resolve_layout_finding",
+          "description": "Increase 'profile_create_3_hit_bottom' y by 1.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+          "command": "game ui preview --strict"
+        }
+      ],
+      "source": null
+    }
+  ],
   "effects": []
 }

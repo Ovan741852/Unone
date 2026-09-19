@@ -1,0 +1,227 @@
+{
+  "portrait": {
+    "viewport": {
+      "width": 844,
+      "height": 390,
+      "portrait": false,
+      "rotationDegrees": 90,
+      "safeInsets": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0
+      }
+    },
+    "gate": false,
+    "layers": [
+      {
+        "id": "game",
+        "parent": "stage",
+        "width": 844,
+        "height": 390
+      },
+      {
+        "id": "world-labels",
+        "parent": "stage",
+        "width": 844,
+        "height": 390
+      },
+      {
+        "id": "formal-ui",
+        "parent": "stage",
+        "width": 844,
+        "height": 390
+      },
+      {
+        "id": "official-lottie",
+        "parent": "stage",
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "reward-impact",
+        "parent": "stage",
+        "width": 0,
+        "height": 0
+      },
+      {
+        "id": "special-reward",
+        "parent": "stage",
+        "width": 0,
+        "height": 0
+      }
+    ],
+    "overflow": false
+  },
+  "aim": {
+    "x": 2.9999991610625303,
+    "z": 2.0000004890095227,
+    "fired": 2
+  },
+  "wide": {
+    "time": 177.2499999999978,
+    "paused": false
+  },
+  "prizes": {
+    "big": {
+      "ok": true,
+      "value": {
+        "componentBounds": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        "clipped": false,
+        "assetReady": true,
+        "currentFrame": 33.6,
+        "state": "ready",
+        "generation": 2,
+        "backend": "canvas-2d",
+        "error": null
+      },
+      "celebrationVisible": true,
+      "fullscreen": false,
+      "ultimate": null,
+      "activeTier": 3,
+      "activeAsset": "big-win",
+      "stage": "count",
+      "rolledAmount": 0,
+      "targetAmount": 180,
+      "eventIds": [
+        1
+      ],
+      "completedAmounts": [],
+      "dockRect": {
+        "x": 326.1690909090909,
+        "y": 58.5,
+        "width": 216.98181818181817,
+        "height": 49.725
+      },
+      "visualRect": {
+        "x": 326.1690909090909,
+        "y": 58.5,
+        "width": 216.98181818181817,
+        "height": 49.725
+      },
+      "usesMultiplier": false,
+      "pointerEvents": "none",
+      "diagnostics": [],
+      "impact": {
+        "impulses": 1,
+        "liveImpulses": 1,
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "peak": 0,
+        "reducedMotion": false,
+        "hudShakes": false,
+        "particleBudget": 160,
+        "diagnostics": []
+      },
+      "audio": {
+        "pendingCues": 0
+      }
+    },
+    "ultimate": {
+      "ok": true,
+      "value": {
+        "componentBounds": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        "clipped": false,
+        "assetReady": true,
+        "currentFrame": 0,
+        "state": "ready",
+        "generation": 3,
+        "backend": "canvas-2d",
+        "error": null
+      },
+      "celebrationVisible": true,
+      "fullscreen": true,
+      "ultimate": {
+        "age": 0.8800000000000003,
+        "fullscreen": true,
+        "particleBudget": 104,
+        "reducedMotion": false,
+        "lottie": {
+          "ok": true,
+          "value": {
+            "componentBounds": {
+              "x": 0,
+              "y": 0,
+              "w": 100,
+              "h": 100
+            },
+            "clipped": false,
+            "assetReady": true,
+            "currentFrame": 52.80000000000002,
+            "state": "ready",
+            "generation": 1,
+            "backend": "canvas-2d",
+            "error": null
+          }
+        },
+        "safeRect": {
+          "x": 0,
+          "y": 0,
+          "width": 844,
+          "height": 390
+        }
+      },
+      "activeTier": 4,
+      "activeAsset": "legendary-win",
+      "stage": "count",
+      "rolledAmount": 79,
+      "targetAmount": 1980,
+      "eventIds": [
+        1,
+        2
+      ],
+      "completedAmounts": [],
+      "dockRect": null,
+      "visualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      },
+      "usesMultiplier": false,
+      "pointerEvents": "none",
+      "diagnostics": [],
+      "impact": {
+        "impulses": 2,
+        "liveImpulses": 1,
+        "offset": {
+          "x": -0.05301212646299155,
+          "y": -0.004235776212630587
+        },
+        "peak": 0.05536332179930785,
+        "reducedMotion": false,
+        "hudShakes": false,
+        "particleBudget": 160,
+        "diagnostics": []
+      },
+      "audio": {
+        "pendingCues": 3
+      }
+    },
+    "size": {
+      "width": 844,
+      "height": 390,
+      "physicalWidth": 390,
+      "physicalHeight": 844
+    },
+    "special": {
+      "width": 150,
+      "height": 183,
+      "physicalWidth": 183.328125,
+      "physicalHeight": 150
+    }
+  },
+  "errors": []
+}

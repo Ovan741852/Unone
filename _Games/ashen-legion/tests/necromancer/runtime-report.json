@@ -1,0 +1,37 @@
+{
+  "checks": 24,
+  "scope": "Actual Unone WASM death/expiry fixtures, real production troop contact and normal break/award route, Lock targeting, caps, pending settlement, anti-recursion and VFX geometry.",
+  "rules": {
+    "chance": 0.38,
+    "range": 5.8,
+    "dashSeconds": 0.34,
+    "directDamage": 0.34,
+    "splashDamage": 0.16,
+    "radius": 1.25,
+    "targetCap": 3,
+    "ghostCapPerPlayer": 6
+  },
+  "vfx": {
+    "birth": {
+      "events": 2,
+      "buffs": 0,
+      "ghosts": 1,
+      "kinds": {
+        "soul_wraith": 1,
+        "necromancer": 1
+      }
+    },
+    "arrival": {
+      "events": 1,
+      "buffs": 0,
+      "ghosts": 0,
+      "kinds": {
+        "necromancer_burst": 1
+      }
+    },
+    "primitiveCalls": {
+      "ink": 16,
+      "core": 20
+    }
+  }
+}

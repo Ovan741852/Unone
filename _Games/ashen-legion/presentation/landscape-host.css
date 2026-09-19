@@ -1,0 +1,19 @@
+:root{--safe-top:env(safe-area-inset-top,0px);--safe-right:env(safe-area-inset-right,0px);--safe-bottom:env(safe-area-inset-bottom,0px);--safe-left:env(safe-area-inset-left,0px);color-scheme:dark}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:#0a1712}
+#stage{position:fixed;left:0;top:0;width:100vw;height:100vh;height:100dvh;isolation:isolate}
+#game,#formal-ui{position:absolute;inset:0;width:100%;height:100%;display:block}
+#game{touch-action:none;user-select:none;-webkit-user-select:none}#formal-ui{pointer-events:none}
+/* Rotate the complete landscape surface, including canvas UI and VFX. */
+@media(orientation:portrait){#stage{left:50%;top:50%;width:100vh;height:100vw;width:100dvh;height:100dvw;transform:translate(-50%,-50%) rotate(90deg);transform-origin:center}}
+#loading{position:absolute;inset:0;z-index:99;display:grid;place-items:center;background:#102520;color:#eddfb4;text-align:center;font:16px/1.5 "Microsoft JhengHei",sans-serif}
+.loading-card{width:min(520px,80%);border-block:1px solid #8d794f;padding:20px 28px;background:linear-gradient(125deg,#1e372d,#122720)}
+.loading-crest{color:#d5ae60;font-size:36px}.loading-card h1{margin:0 0 14px;font-size:30px;letter-spacing:.16em}
+#loading-phase{margin:8px 0}#loading-assets,#loading-elapsed{font-size:13px;color:#b2b999;margin:4px 0}
+.loading-meter{height:12px;margin:18px 0 12px;overflow:hidden;border:1px solid #8d794f;background:#0b1c18;box-shadow:inset 0 1px 3px #0008}
+.loading-meter span{height:100%;display:block;background:linear-gradient(90deg,#987445,#efd094);width:0}
+.loading-meter[data-state=indeterminate] span{width:32%;animation:loading-sweep 1.3s ease-in-out infinite alternate}
+@keyframes loading-sweep{from{transform:translateX(-105%)}to{transform:translateX(320%)}}
+@media(prefers-reduced-motion:reduce){.loading-meter[data-state=indeterminate] span{animation:none;width:100%;opacity:.55}}
+#loading-retry{border:1px solid #b79c63;background:#843c30;color:#fff0ce;font:inherit;padding:10px 24px;cursor:pointer}
+#error{color:#ffceb8;font:13px/1.4 sans-serif;white-space:pre-wrap;overflow-wrap:anywhere;overflow:auto;max-height:90px}
+[hidden]{display:none!important}

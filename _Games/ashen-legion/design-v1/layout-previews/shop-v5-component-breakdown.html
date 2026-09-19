@@ -1,0 +1,48 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Shop v5 · 榛姨風格元件拆解</title>
+<style>
+:root{--ink:#101f20;--cloth:#223831;--card:#3a4636;--card2:#233c35;--moss:#718065;--gold:#c3ac77;--gold2:#a58857;--paper:#eadbb8;--red:#a9523b;--red2:#743b30;--teal:#274c4a;--line:rgba(195,172,119,.38)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#33483d,#101f20 70%);color:var(--paper);font:14px/1.5 system-ui,"Microsoft JhengHei",sans-serif;padding:32px}
+.shell{max-width:1480px;margin:auto;background:linear-gradient(135deg,#26392f,#122627);border:1px solid var(--gold2);box-shadow:0 24px 80px #0008;padding:28px}
+.eyebrow{color:#bca977;letter-spacing:.16em;font-size:11px;text-transform:uppercase}.title{display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:22px}.title h1{font:34px Georgia,serif;margin:0;color:#f0dfb7}.title p{margin:0;color:#acaa8a}
+.master{display:grid;grid-template-columns:230px 1fr;gap:22px;margin-bottom:28px}.portrait{background:#1b2b29;border:1px solid var(--gold2);padding:13px;text-align:center;min-height:300px}.portrait img{width:100%;height:224px;object-fit:contain;object-position:center bottom;background:#26372f}.portrait strong{display:block;font:24px Georgia,serif;color:#efcf88;margin-top:8px}.portrait small{color:#a8b39a}.tokens{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.token{border:1px solid #71806599;background:#1b2b29;padding:12px;min-height:94px}.token i{display:block;height:20px;margin-bottom:10px;border:1px solid #e8d29d88}.token b{font-size:12px}.token code{display:block;color:#a8b39a;font-size:11px;margin-top:2px}
+.section{border-top:1px solid var(--line);padding-top:18px;margin-top:20px}.section h2{font:21px Georgia,serif;font-weight:normal;margin:0 0 5px}.section p{margin:0 0 15px;color:#b5b79d}.inventory{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.part{min-width:0}.part h3{font-size:13px;margin:0 0 7px;color:#efcf88}.part .art{height:120px;display:grid;place-items:center;background:#172827;border:1px solid #71806588;overflow:hidden;padding:8px}.part img{max-width:100%;max-height:100%;object-fit:contain}.part .note{font-size:11px;color:#aeb49c;margin-top:7px}
+.anatomy{display:grid;grid-template-columns:210px 1fr;gap:20px;align-items:stretch}.anatomy-copy{background:#1b2b29;border:1px solid var(--gold2);padding:18px}.anatomy-copy h3{font:20px Georgia,serif;margin:0 0 14px;color:#efcf88}.anatomy-copy ol{padding-left:20px;margin:0;color:#c9c7a7}.anatomy-copy li{margin:9px 0}.rail{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;min-width:0}.item{height:435px;display:grid;grid-template-rows:122px 34px 92px 66px 46px;gap:9px;padding:13px 11px 11px;background:linear-gradient(160deg,#405443,#233832);border:2px solid #718166;position:relative;overflow:hidden}.item:nth-child(2){border-color:#b78b70;background:linear-gradient(160deg,#453d3a,#263a36)}.item:nth-child(3){border-color:#c3a66c;background:linear-gradient(160deg,#4a4935,#293831)}.item:nth-child(4){border-color:#718166}.item .icon{display:grid;place-items:center;background:#122321;border:1px solid #a5885766}.item .icon img{width:80%;height:80%;object-fit:contain}.item h4{margin:0;text-align:center;align-self:center;font:16px Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#f0dfb7}.desc{border-top:1px solid var(--line);padding:10px 4px;color:#d2ceb1;font-size:12px;overflow:hidden}.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;border-top:1px solid var(--line);padding-top:10px;font-size:10px;color:#b8b797}.stats strong{display:block;color:#f0dfb7;font-size:16px;margin-top:4px}.item button{border:2px solid #c3a66c;background:linear-gradient(#405443,#233832);color:#f0dfb7;font:13px Georgia,serif;letter-spacing:.08em}.fixed{margin-top:13px;color:#aeb49c;font-size:12px}.fixed b{color:#efcf88}.legend{display:flex;gap:18px;justify-content:flex-end;margin-bottom:12px;color:#bfc3aa;font-size:12px}.legend span{display:inline-flex;align-items:center;gap:5px}.dot{width:10px;height:10px;border-radius:50%;display:inline-block}.rare{background:#587f91}.epic{background:#9d6b78}.legendary{background:#b18e4d}
+.next{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.next div{border:1px solid #71806588;background:#1b2b29;padding:12px}.next b{display:block;color:#efcf88;margin-bottom:4px}.next span{font-size:12px;color:#b6b89f}.footer{border-top:1px solid var(--line);margin-top:24px;padding-top:14px;color:#9ea88e;font-size:12px;display:flex;justify-content:space-between}
+@media(max-width:980px){body{padding:12px}.shell{padding:18px}.master,.anatomy{grid-template-columns:1fr}.inventory{grid-template-columns:repeat(3,1fr)}.rail{overflow:auto;grid-template-columns:repeat(4,220px);padding-bottom:10px}.tokens{grid-template-columns:repeat(3,1fr)}}
+</style>
+<main class="shell">
+  <header class="title"><div><div class="eyebrow">SHOP V5 · COMPONENT BREAKDOWN</div><h1>榛姨風格元件拆解</h1></div><p>先確認元件，再逐件接回正式 UI</p></header>
+
+  <section class="master">
+    <div class="portrait"><img src="../../assets/formal-ui/quartermaster-v1.png" alt="榛姨風格主參考"><strong>榛姨</strong><small>色彩與線條 master reference</small></div>
+    <div><div class="eyebrow">STYLE TOKENS · 從現有素材抽取</div><div class="tokens">
+      <div class="token"><i style="background:#223831"></i><b>墨綠底</b><code>#223831 / #233C35</code></div>
+      <div class="token"><i style="background:#274c4a"></i><b>青綠陰影</b><code>#274C4A</code></div>
+      <div class="token"><i style="background:#a9523b"></i><b>磚紅動作</b><code>#A9523B / #743B30</code></div>
+      <div class="token"><i style="background:#c3ac77"></i><b>舊金描邊</b><code>#C3AC77 / #A58857</code></div>
+      <div class="token"><i style="background:#3a4636"></i><b>卡片布面</b><code>#3A4636 / #718065</code></div>
+    </div><div class="section"><h2>目前辨識出的共通語彙</h2><p>粗顆粒、低飽和墨綠、斜切角、舊金細線、磚紅主動作、局部半透明光斑。新排版保留結構，但不使用冷藍紫主導，也不重新生成商人。</p><div class="next"><div><b>保留</b><span>墨綠 panel、卡片材質、舊金線、榛姨肖像</span></div><div><b>重做</b><span>等高商品卡、固定資訊槽、稀有度底板</span></div><div><b>避免</b><span>不同卡片高度、長文撐高、底部資訊互壓</span></div><div><b>最後才做</b><span>詳情 modal、進場動畫、手機縮放</span></div></div></div></div>
+  </section>
+
+  <section class="section"><h2>01 · 現有小元件辨識</h2><p>這些是目前正式 UI 的母元件；商品卡不再另外發明一套線條。</p><div class="inventory">
+    <div class="part"><h3>Window Panel</h3><div class="art"><img src="../../assets/formal-ui/panel.png" alt="panel"></div><div class="note">主視窗／大容器</div></div>
+    <div class="part"><h3>Card Surface</h3><div class="art"><img src="../../assets/formal-ui/card.png" alt="card"></div><div class="note">商品卡／內容區</div></div>
+    <div class="part"><h3>Primary Button</h3><div class="art"><img src="../../assets/formal-ui/button.png" alt="button"></div><div class="note">買入／出戰</div></div>
+    <div class="part"><h3>Secondary Button</h3><div class="art"><img src="../../assets/formal-ui/secondary.png" alt="secondary"></div><div class="note">查看／取消</div></div>
+    <div class="part"><h3>Rare Base</h3><div class="art"><img src="../../assets/formal-ui/shop-card-rare.png" alt="rare"></div><div class="note">只換色，不換線條</div></div>
+    <div class="part"><h3>Merchant</h3><div class="art"><img src="../../assets/formal-ui/quartermaster-v1.png" alt="merchant"></div><div class="note">角色比例與剪影</div></div>
+  </div></section>
+
+  <section class="section"><div class="legend"><span><i class="dot rare"></i>稀有</span><span><i class="dot epic"></i>史詩</span><span><i class="dot legendary"></i>傳奇</span></div><h2>02 · 新排版商品卡 anatomy</h2><p>四張卡片固定同一個高度；內容再短或再長，都只使用自己的槽位。</p><div class="anatomy">
+    <aside class="anatomy-copy"><h3>固定槽位</h3><ol><li>圖示區：等高</li><li>名稱列：單行</li><li>摘要區：固定三行</li><li>數值列：價格／派兵費</li><li>操作列：同一底線</li></ol></aside>
+    <div class="rail">
+      <article class="item"><div class="icon"><img src="../../assets/formal-ui/gear-haste.png" alt="gear"></div><h4>疾行短靴</h4><div class="desc">腳部位 · 地面移動後，下一擊獲得加成。</div><div class="stats"><div>售價<strong>◆ 9</strong></div><div>派兵費<strong>+1</strong></div></div><button>查看詳情</button></article>
+      <article class="item"><div class="icon"><img src="../../assets/formal-ui/gear-lightning.png" alt="gear"></div><h4>雷枝戰槍</h4><div class="desc">武器部位 · 爆擊時引發雷鏈，最多兩次。</div><div class="stats"><div>售價<strong>◆ 18</strong></div><div>派兵費<strong>+3</strong></div></div><button>查看詳情</button></article>
+      <article class="item"><div class="icon"><img src="../../assets/formal-ui/gear-crowd_ring.png" alt="gear"></div><h4>孤獵冠</h4><div class="desc">頭部位 · 目標單一時，主要傷害提高。</div><div class="stats"><div>售價<strong>◆ 10</strong></div><div>派兵費<strong>+1</strong></div></div><button>查看詳情</button></article>
+      <article class="item"><div class="icon"><img src="../../assets/formal-ui/gear-heavy.png" alt="gear"></div><h4>震盪護手</h4><div class="desc">手部位 · 主要命中時，造成範圍傷害。</div><div class="stats"><div>售價<strong>◆ 14</strong></div><div>派兵費<strong>+4</strong></div></div><button>查看詳情</button></article>
+    </div>
+  </div><div class="fixed"><b>固定規則：</b>卡片寬高一致、按鈕共用同一 y、描述不會把卡片撐高、任何底部文字不跨越卡片邊界。</div></section>
+  <footer class="footer"><span>STATUS · 待確認元件風格</span><span>下一步：先定 panel／card／button，再接商品內容</span></footer>
+</main>

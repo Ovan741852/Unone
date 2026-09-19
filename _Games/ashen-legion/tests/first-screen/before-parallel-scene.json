@@ -1,0 +1,2151 @@
+{
+  "scope": "Local fresh browser contexts; 80 ms simulated delay per request, no bandwidth throttle. First-screen images decoded at ready; full roster prepared before play. Simulated missing image plus successful retry.",
+  "reports": [
+    {
+      "delayMs": 0,
+      "at": 847.8000000007451,
+      "ui": {
+        "backend": "canvas2d",
+        "nodes": 26,
+        "assets": [
+          {
+            "id": "texture://ui_panel",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_expedition-keyart-v2",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_mote",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_crest",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_button",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_secondary",
+            "state": "ready"
+          }
+        ],
+        "diagnostics": [],
+        "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+        "limitations": [
+          "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+          "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+        ]
+      },
+      "models": 77,
+      "creatures": 11,
+      "loading": {
+        "host": 61.69999999925494,
+        "runtime": 177.40000000037253,
+        "firstImages": 221.7999999988824,
+        "models": 444,
+        "firstFrame": 818.9000000003725,
+        "elapsedMs": 819.4000000003725,
+        "finished": true,
+        "failed": false,
+        "groups": {
+          "部隊與裝備": {
+            "done": 89,
+            "total": 89
+          },
+          "首屏圖片": {
+            "done": 6,
+            "total": 6
+          }
+        }
+      },
+      "requests": [
+        {
+          "url": "/presentation/landscape-host.css",
+          "start": 11.400000000372529,
+          "end": 16.800000000745058,
+          "bytes": 2202
+        },
+        {
+          "url": "/host.mjs",
+          "start": 11.700000001117587,
+          "end": 16.90000000037253,
+          "bytes": 12830
+        },
+        {
+          "url": "/presentation/scene-lighting.mjs",
+          "start": 29.300000000745058,
+          "end": 33.30000000074506,
+          "bytes": 3719
+        },
+        {
+          "url": "/presentation/arena-walls.mjs",
+          "start": 29.300000000745058,
+          "end": 34.90000000037253,
+          "bytes": 1455
+        },
+        {
+          "url": "/web/shared/canvas-ui.mjs",
+          "start": 29.300000000745058,
+          "end": 34.30000000074506,
+          "bytes": 7076
+        },
+        {
+          "url": "/presentation/world-labels.mjs",
+          "start": 29.40000000037253,
+          "end": 35.40000000037253,
+          "bytes": 8355
+        },
+        {
+          "url": "/presentation/first-screen.mjs",
+          "start": 29.40000000037253,
+          "end": 36.30000000074506,
+          "bytes": 994
+        },
+        {
+          "url": "/presentation/actors.mjs",
+          "start": 29.40000000037253,
+          "end": 35.59999999962747,
+          "bytes": 10333
+        },
+        {
+          "url": "/presentation/adaptive-ui.mjs",
+          "start": 29.40000000037253,
+          "end": 36.90000000037253,
+          "bytes": 4960
+        },
+        {
+          "url": "/presentation/rewards.mjs",
+          "start": 29.40000000037253,
+          "end": 36.5,
+          "bytes": 6806
+        },
+        {
+          "url": "/presentation/ui-motion.mjs",
+          "start": 29.5,
+          "end": 38.90000000037253,
+          "bytes": 5303
+        },
+        {
+          "url": "/web/renderer/three.js",
+          "start": 29.5,
+          "end": 38.59999999962747,
+          "bytes": 14027
+        },
+        {
+          "url": "/web/shared/runtime-backend.mjs",
+          "start": 29.59999999962747,
+          "end": 38.5,
+          "bytes": 2506
+        },
+        {
+          "url": "/web/shared/host-input.js",
+          "start": 29.59999999962747,
+          "end": 40,
+          "bytes": 3644
+        },
+        {
+          "url": "/web/shared/async-scheduler.mjs",
+          "start": 29.59999999962747,
+          "end": 40.20000000111759,
+          "bytes": 1902
+        },
+        {
+          "url": "/presentation/landscape-host.mjs",
+          "start": 29.700000001117587,
+          "end": 41,
+          "bytes": 1189
+        },
+        {
+          "url": "/presentation/ink-style.mjs",
+          "start": 40.5,
+          "end": 43.5,
+          "bytes": 2841
+        },
+        {
+          "url": "/presentation/combat-feedback-layout.mjs",
+          "start": 42.70000000111759,
+          "end": 45.5,
+          "bytes": 1098
+        },
+        {
+          "url": "/presentation/guard-feedback.mjs",
+          "start": 42.80000000074506,
+          "end": 46.80000000074506,
+          "bytes": 667
+        },
+        {
+          "url": "/presentation/storybook-actors.mjs",
+          "start": 43.30000000074506,
+          "end": 48.5,
+          "bytes": 4139
+        },
+        {
+          "url": "/presentation/combat-fx.mjs",
+          "start": 43.30000000074506,
+          "end": 47.20000000111759,
+          "bytes": 19938
+        },
+        {
+          "url": "/presentation/asset-loading.mjs",
+          "start": 43.30000000074506,
+          "end": 48.80000000074506,
+          "bytes": 904
+        },
+        {
+          "url": "/presentation/vendor/build/three.module.js",
+          "start": 43.30000000074506,
+          "end": 50.30000000074506,
+          "bytes": 603380
+        },
+        {
+          "url": "/presentation/vendor/addons/utils/SkeletonUtils.js",
+          "start": 43.40000000037253,
+          "end": 49.40000000037253,
+          "bytes": 11062
+        },
+        {
+          "url": "/presentation/vendor/addons/loaders/GLTFLoader.js",
+          "start": 43.40000000037253,
+          "end": 49.70000000111759,
+          "bytes": 114649
+        },
+        {
+          "url": "/presentation/animator/index.mjs",
+          "start": 43.59999999962747,
+          "end": 53.80000000074506,
+          "bytes": 335
+        },
+        {
+          "url": "/presentation/vendor/addons/utils/BufferGeometryUtils.js",
+          "start": 43.59999999962747,
+          "end": 50.20000000111759,
+          "bytes": 35538
+        },
+        {
+          "url": "/web/renderer/mesh.js",
+          "start": 44,
+          "end": 55.59999999962747,
+          "bytes": 1348
+        },
+        {
+          "url": "/presentation/win-dock.mjs",
+          "start": 44,
+          "end": 54.40000000037253,
+          "bytes": 7129
+        },
+        {
+          "url": "/presentation/reward-impact.mjs",
+          "start": 44,
+          "end": 54.80000000074506,
+          "bytes": 4216
+        },
+        {
+          "url": "/web/renderer/particles.js",
+          "start": 44,
+          "end": 56.20000000111759,
+          "bytes": 1562
+        },
+        {
+          "url": "/web/renderer/instances3d.js",
+          "start": 44.09999999962747,
+          "end": 56.59999999962747,
+          "bytes": 5464
+        },
+        {
+          "url": "/web/renderer/bloom.js",
+          "start": 44.20000000111759,
+          "end": 56.90000000037253,
+          "bytes": 5664
+        },
+        {
+          "url": "/web/renderer/effekseer.js",
+          "start": 44.30000000074506,
+          "end": 58,
+          "bytes": 2496
+        },
+        {
+          "url": "/web/shared/webgpu-snapshot.js",
+          "start": 44.30000000074506,
+          "end": 58.90000000037253,
+          "bytes": 19886
+        },
+        {
+          "url": "/web/shared/runtime-core.mjs",
+          "start": 44.40000000037253,
+          "end": 58.5,
+          "bytes": 4210
+        },
+        {
+          "url": "/web/shared/instance-transfer.mjs",
+          "start": 44.40000000037253,
+          "end": 59.20000000111759,
+          "bytes": 3147
+        },
+        {
+          "url": "/presentation/composition-fx.mjs",
+          "start": 59.90000000037253,
+          "end": 62.90000000037253,
+          "bytes": 5243
+        },
+        {
+          "url": "/presentation/resonance-fx.mjs",
+          "start": 59.90000000037253,
+          "end": 64.40000000037253,
+          "bytes": 4813
+        },
+        {
+          "url": "/presentation/trigger-fx.mjs",
+          "start": 59.90000000037253,
+          "end": 66.09999999962747,
+          "bytes": 3418
+        },
+        {
+          "url": "/presentation/element-fx.mjs",
+          "start": 60,
+          "end": 65.30000000074506,
+          "bytes": 4027
+        },
+        {
+          "url": "/presentation/animator/animator.mjs",
+          "start": 61.20000000111759,
+          "end": 66.80000000074506,
+          "bytes": 12376
+        },
+        {
+          "url": "/presentation/animator/sync.mjs",
+          "start": 61.30000000074506,
+          "end": 67,
+          "bytes": 2545
+        },
+        {
+          "url": "/presentation/animator/lod.mjs",
+          "start": 61.30000000074506,
+          "end": 66.70000000111759,
+          "bytes": 3481
+        },
+        {
+          "url": "/presentation/animator/host.mjs",
+          "start": 61.30000000074506,
+          "end": 68.30000000074506,
+          "bytes": 5325
+        },
+        {
+          "url": "/presentation/animator/contract.mjs",
+          "start": 61.40000000037253,
+          "end": 68.20000000111759,
+          "bytes": 2842
+        },
+        {
+          "url": "/presentation/lottie/runtime/lottie.mjs",
+          "start": 62.5,
+          "end": 69.59999999962747,
+          "bytes": 27027
+        },
+        {
+          "url": "/web/shared/asset-encoding.js",
+          "start": 62.59999999962747,
+          "end": 71.09999999962747,
+          "bytes": 1026
+        },
+        {
+          "url": "/presentation/ultimate-win.mjs",
+          "start": 62.59999999962747,
+          "end": 71.40000000037253,
+          "bytes": 6301
+        },
+        {
+          "url": "/web/shared/job-binary.mjs",
+          "start": 62.59999999962747,
+          "end": 72.70000000111759,
+          "bytes": 6407
+        },
+        {
+          "url": "/web/shared/load-project.js",
+          "start": 62.70000000111759,
+          "end": 73.30000000074506,
+          "bytes": 1220
+        },
+        {
+          "url": "/web/shared/job-pool.mjs",
+          "start": 62.70000000111759,
+          "end": 73.40000000037253,
+          "bytes": 6787
+        },
+        {
+          "url": "/presentation/vendor/build/three.core.js",
+          "start": 64.40000000037253,
+          "end": 76.80000000074506,
+          "bytes": 1401321
+        },
+        {
+          "url": "/assets/creatures/manifest.json",
+          "start": 91.5,
+          "end": 95.90000000037253,
+          "bytes": 4647
+        },
+        {
+          "url": "/assets/equipment/manifest.json",
+          "start": 91.59999999962747,
+          "end": 97.70000000111759,
+          "bytes": 10656
+        },
+        {
+          "url": "/content/project.json",
+          "start": 91.70000000111759,
+          "end": 97.30000000074506,
+          "bytes": 199963
+        },
+        {
+          "url": "/content/assets.json",
+          "start": 91.70000000111759,
+          "end": 97.90000000037253,
+          "bytes": 33895
+        },
+        {
+          "url": "/runtime/runtime.json",
+          "start": 91.80000000074506,
+          "end": 98.40000000037253,
+          "bytes": 1032
+        },
+        {
+          "url": "/environments.json",
+          "start": 91.90000000037253,
+          "end": 98.59999999962747,
+          "bytes": 234
+        },
+        {
+          "url": "/presentation/soldier-v2.glb",
+          "start": 103,
+          "end": 106.80000000074506,
+          "bytes": 569176
+        },
+        {
+          "url": "/assets/creatures/art-v2/piglet.glb",
+          "start": 103.20000000111759,
+          "end": 107.80000000074506,
+          "bytes": 277872
+        },
+        {
+          "url": "/assets/creatures/art-v2/acorn.glb",
+          "start": 103.20000000111759,
+          "end": 109.40000000037253,
+          "bytes": 225924
+        },
+        {
+          "url": "/assets/creatures/art-v2/moth.glb",
+          "start": 103.20000000111759,
+          "end": 110,
+          "bytes": 300944
+        },
+        {
+          "url": "/assets/creatures/art-v2/turtle.glb",
+          "start": 103.30000000074506,
+          "end": 109.80000000074506,
+          "bytes": 257220
+        },
+        {
+          "url": "/assets/creatures/art-v2/boar.glb",
+          "start": 103.30000000074506,
+          "end": 110.30000000074506,
+          "bytes": 246068
+        },
+        {
+          "url": "/runtime/fc7734055aed41f566d8a556ce3fffd3b9a37df3baf2e00dafbdfa39b4c9fd39-4f6ddb1170dcb426f060aad4b6773e738a56e990a1feb54dc8f1b38fc31d2d1e/unone-player.js",
+          "start": 103.90000000037253,
+          "end": 110.09999999962747,
+          "bytes": 101000
+        },
+        {
+          "url": "/runtime/fc7734055aed41f566d8a556ce3fffd3b9a37df3baf2e00dafbdfa39b4c9fd39-4f6ddb1170dcb426f060aad4b6773e738a56e990a1feb54dc8f1b38fc31d2d1e/unone_player.wasm",
+          "start": 134.7000000011176,
+          "end": 139.7000000011176,
+          "bytes": 1545679
+        },
+        {
+          "url": "/content/assets/formal-ui/panel.png",
+          "start": 209.09999999962747,
+          "end": 214.09999999962747,
+          "bytes": 627229
+        },
+        {
+          "url": "/content/assets/formal-ui/expedition-keyart-v2.png",
+          "start": 209.09999999962747,
+          "end": 224.2000000011176,
+          "bytes": 2463860
+        },
+        {
+          "url": "/content/assets/formal-ui/mote.png",
+          "start": 209.2000000011176,
+          "end": 215.5,
+          "bytes": 6994
+        },
+        {
+          "url": "/content/assets/formal-ui/crest.png",
+          "start": 209.30000000074506,
+          "end": 215.90000000037253,
+          "bytes": 13787
+        },
+        {
+          "url": "/content/assets/formal-ui/button.png",
+          "start": 209.30000000074506,
+          "end": 216.59999999962747,
+          "bytes": 50026
+        },
+        {
+          "url": "/content/assets/formal-ui/secondary.png",
+          "start": 209.30000000074506,
+          "end": 216.90000000037253,
+          "bytes": 49219
+        },
+        {
+          "url": "/assets/creatures/art-v2/elder.glb",
+          "start": 217.09999999962747,
+          "end": 220.40000000037253,
+          "bytes": 279792
+        },
+        {
+          "url": "/assets/creatures/art-v2/treant.glb",
+          "start": 222.7000000011176,
+          "end": 227.09999999962747,
+          "bytes": 345708
+        },
+        {
+          "url": "/assets/creatures/art-v2/stag.glb",
+          "start": 228.90000000037253,
+          "end": 231.90000000037253,
+          "bytes": 244156
+        },
+        {
+          "url": "/assets/creatures/art-v2/beetle.glb",
+          "start": 240.5,
+          "end": 244.30000000074506,
+          "bytes": 250476
+        },
+        {
+          "url": "/assets/creatures/art-v2/wheel.glb",
+          "start": 244.90000000037253,
+          "end": 247.90000000037253,
+          "bytes": 307792
+        },
+        {
+          "url": "/assets/creatures/art-v2/horse.glb",
+          "start": 248.40000000037253,
+          "end": 251,
+          "bytes": 239056
+        },
+        {
+          "url": "/presentation/lottie/big-win-dock.json",
+          "start": 261.30000000074506,
+          "end": 265.30000000074506,
+          "bytes": 38751
+        },
+        {
+          "url": "/presentation/lottie/mega-win-dock.json",
+          "start": 261.5,
+          "end": 266.2000000011176,
+          "bytes": 29097
+        },
+        {
+          "url": "/presentation/lottie/legendary-win-dock.json",
+          "start": 261.5,
+          "end": 266.7000000011176,
+          "bytes": 46159
+        },
+        {
+          "url": "/presentation/lottie/ultimate-crown.json",
+          "start": 278.30000000074506,
+          "end": 281.30000000074506,
+          "bytes": 58606
+        },
+        {
+          "url": "/assets/equipment/pierce.glb",
+          "start": 296.40000000037253,
+          "end": 300,
+          "bytes": 10664
+        },
+        {
+          "url": "/assets/equipment/landing_spin.glb",
+          "start": 299.7000000011176,
+          "end": 302.59999999962747,
+          "bytes": 11840
+        },
+        {
+          "url": "/assets/equipment/lightning.glb",
+          "start": 302.90000000037253,
+          "end": 304.7000000011176,
+          "bytes": 12228
+        },
+        {
+          "url": "/assets/equipment/critical.glb",
+          "start": 306.90000000037253,
+          "end": 309.09999999962747,
+          "bytes": 10304
+        },
+        {
+          "url": "/assets/equipment/third_crit.glb",
+          "start": 310.59999999962747,
+          "end": 312.40000000037253,
+          "bytes": 10792
+        },
+        {
+          "url": "/assets/equipment/king_hunter.glb",
+          "start": 315.40000000037253,
+          "end": 317.40000000037253,
+          "bytes": 12256
+        },
+        {
+          "url": "/assets/equipment/ember_burst.glb",
+          "start": 322.90000000037253,
+          "end": 327.09999999962747,
+          "bytes": 9632
+        },
+        {
+          "url": "/assets/equipment/longlife.glb",
+          "start": 323.2000000011176,
+          "end": 327.30000000074506,
+          "bytes": 10304
+        },
+        {
+          "url": "/assets/equipment/expire_burst.glb",
+          "start": 323.90000000037253,
+          "end": 328.30000000074506,
+          "bytes": 9540
+        },
+        {
+          "url": "/assets/equipment/rebound_charge.glb",
+          "start": 324.30000000074506,
+          "end": 329,
+          "bytes": 10616
+        },
+        {
+          "url": "/assets/equipment/haste.glb",
+          "start": 324.59999999962747,
+          "end": 329.2000000011176,
+          "bytes": 10692
+        },
+        {
+          "url": "/assets/equipment/bounce_life.glb",
+          "start": 326.2000000011176,
+          "end": 329.40000000037253,
+          "bytes": 10360
+        },
+        {
+          "url": "/assets/equipment/crit_power.glb",
+          "start": 336.2000000011176,
+          "end": 338.59999999962747,
+          "bytes": 9556
+        },
+        {
+          "url": "/assets/equipment/finisher.glb",
+          "start": 336.40000000037253,
+          "end": 342.30000000074506,
+          "bytes": 9864
+        },
+        {
+          "url": "/assets/equipment/frost_touch.glb",
+          "start": 336.7000000011176,
+          "end": 341.30000000074506,
+          "bytes": 9968
+        },
+        {
+          "url": "/assets/equipment/frenzy.glb",
+          "start": 336.80000000074506,
+          "end": 342.7000000011176,
+          "bytes": 10408
+        },
+        {
+          "url": "/assets/equipment/momentum.glb",
+          "start": 336.90000000037253,
+          "end": 343.2000000011176,
+          "bytes": 11580
+        },
+        {
+          "url": "/assets/equipment/shock.glb",
+          "start": 337.30000000074506,
+          "end": 342.90000000037253,
+          "bytes": 9340
+        },
+        {
+          "url": "/assets/equipment/shatter.glb",
+          "start": 342.59999999962747,
+          "end": 345.59999999962747,
+          "bytes": 12152
+        },
+        {
+          "url": "/assets/equipment/ricochet_precision.glb",
+          "start": 351.7000000011176,
+          "end": 354.7000000011176,
+          "bytes": 12132
+        },
+        {
+          "url": "/assets/equipment/hunter_vigor.glb",
+          "start": 351.90000000037253,
+          "end": 356.30000000074506,
+          "bytes": 9580
+        },
+        {
+          "url": "/assets/equipment/piercing_wave.glb",
+          "start": 352.09999999962747,
+          "end": 357,
+          "bytes": 9932
+        },
+        {
+          "url": "/assets/equipment/slow_force.glb",
+          "start": 352.30000000074506,
+          "end": 356.7000000011176,
+          "bytes": 10480
+        },
+        {
+          "url": "/assets/equipment/spin_master.glb",
+          "start": 352.5,
+          "end": 358.09999999962747,
+          "bytes": 13448
+        },
+        {
+          "url": "/assets/equipment/last_stand.glb",
+          "start": 352.7000000011176,
+          "end": 357.90000000037253,
+          "bytes": 9740
+        },
+        {
+          "url": "/assets/equipment/heat.glb",
+          "start": 363.90000000037253,
+          "end": 367.09999999962747,
+          "bytes": 9748
+        },
+        {
+          "url": "/assets/equipment/distance.glb",
+          "start": 364.80000000074506,
+          "end": 367.7000000011176,
+          "bytes": 10664
+        },
+        {
+          "url": "/assets/equipment/heavy.glb",
+          "start": 365.09999999962747,
+          "end": 367.80000000074506,
+          "bytes": 10220
+        },
+        {
+          "url": "/assets/equipment/bounce_power.glb",
+          "start": 365.30000000074506,
+          "end": 368.7000000011176,
+          "bytes": 10428
+        },
+        {
+          "url": "/assets/equipment/wall_quake.glb",
+          "start": 365.7000000011176,
+          "end": 369,
+          "bytes": 10580
+        },
+        {
+          "url": "/assets/equipment/short_fuse.glb",
+          "start": 365.80000000074506,
+          "end": 369.7000000011176,
+          "bytes": 10160
+        },
+        {
+          "url": "/assets/equipment/wide_blade.glb",
+          "start": 376.2000000011176,
+          "end": 379.90000000037253,
+          "bytes": 12224
+        },
+        {
+          "url": "/assets/equipment/hit_echo.glb",
+          "start": 376.40000000037253,
+          "end": 381.40000000037253,
+          "bytes": 9652
+        },
+        {
+          "url": "/assets/equipment/fracture.glb",
+          "start": 376.59999999962747,
+          "end": 381.09999999962747,
+          "bytes": 9768
+        },
+        {
+          "url": "/assets/equipment/solo_hunt.glb",
+          "start": 376.7000000011176,
+          "end": 381.80000000074506,
+          "bytes": 11076
+        },
+        {
+          "url": "/assets/equipment/recruit.glb",
+          "start": 377,
+          "end": 381.90000000037253,
+          "bytes": 9604
+        },
+        {
+          "url": "/assets/equipment/crowd_ring.glb",
+          "start": 377,
+          "end": 382.2000000011176,
+          "bytes": 12308
+        },
+        {
+          "url": "/assets/equipment/rally.glb",
+          "start": 412.40000000037253,
+          "end": 415.30000000074506,
+          "bytes": 9820
+        },
+        {
+          "url": "/assets/equipment/rapid.glb",
+          "start": 412.7000000011176,
+          "end": 416.90000000037253,
+          "bytes": 10016
+        },
+        {
+          "url": "/assets/equipment/solitary.glb",
+          "start": 412.90000000037253,
+          "end": 417.80000000074506,
+          "bytes": 10072
+        },
+        {
+          "url": "/assets/equipment/showdown.glb",
+          "start": 413.09999999962747,
+          "end": 417.5,
+          "bytes": 10576
+        },
+        {
+          "url": "/assets/equipment/sharp.glb",
+          "start": 413.2000000011176,
+          "end": 418.30000000074506,
+          "bytes": 12064
+        },
+        {
+          "url": "/assets/equipment/giant.glb",
+          "start": 413.40000000037253,
+          "end": 418.40000000037253,
+          "bytes": 9972
+        },
+        {
+          "url": "/assets/equipment/double_pierce.glb",
+          "start": 418.5,
+          "end": 420.2000000011176,
+          "bytes": 12344
+        },
+        {
+          "url": "/assets/equipment/deadly.glb",
+          "start": 423.30000000074506,
+          "end": 426.7000000011176,
+          "bytes": 11792
+        },
+        {
+          "url": "/assets/equipment/flame_cloak.glb",
+          "start": 423.5,
+          "end": 427.09999999962747,
+          "bytes": 18008
+        },
+        {
+          "url": "/assets/equipment/phoenix_fire.glb",
+          "start": 423.7000000011176,
+          "end": 427.30000000074506,
+          "bytes": 17144
+        },
+        {
+          "url": "/assets/equipment/plague_vial.glb",
+          "start": 423.80000000074506,
+          "end": 427.90000000037253,
+          "bytes": 16808
+        },
+        {
+          "url": "/assets/equipment/ember_trail.glb",
+          "start": 423.90000000037253,
+          "end": 428,
+          "bytes": 12800
+        },
+        {
+          "url": "/assets/equipment/slick_oil.glb",
+          "start": 425.30000000074506,
+          "end": 429.59999999962747,
+          "bytes": 13344
+        },
+        {
+          "url": "/assets/equipment/rain_strike.glb",
+          "start": 433.80000000074506,
+          "end": 436.09999999962747,
+          "bytes": 12136
+        },
+        {
+          "url": "/assets/equipment/storm_touch.glb",
+          "start": 434,
+          "end": 437.2000000011176,
+          "bytes": 13704
+        },
+        {
+          "url": "/assets/equipment/oil_legacy.glb",
+          "start": 434.2000000011176,
+          "end": 437.59999999962747,
+          "bytes": 14356
+        },
+        {
+          "url": "/assets/equipment/plunder.glb",
+          "start": 434.30000000074506,
+          "end": 438.09999999962747,
+          "bytes": 16604
+        },
+        {
+          "url": "/assets/equipment/firstborn.glb",
+          "start": 434.5,
+          "end": 438.5,
+          "bytes": 15048
+        },
+        {
+          "url": "/assets/equipment/march_capacitor.glb",
+          "start": 434.80000000074506,
+          "end": 438.59999999962747,
+          "bytes": 12288
+        },
+        {
+          "url": "/assets/equipment/delayed_bloom.glb",
+          "start": 442.09999999962747,
+          "end": 444.5,
+          "bytes": 9700
+        },
+        {
+          "url": "/assets/equipment/third_pulse.glb",
+          "start": 442.7000000011176,
+          "end": 445.30000000074506,
+          "bytes": 16996
+        },
+        {
+          "url": "/assets/equipment/battle_elegy.glb",
+          "start": 443,
+          "end": 446.7000000011176,
+          "bytes": 12236
+        },
+        {
+          "url": "/assets/equipment/grave_bloom.glb",
+          "start": 443.30000000074506,
+          "end": 446.40000000037253,
+          "bytes": 13600
+        },
+        {
+          "url": "/assets/equipment/last_echo.glb",
+          "start": 443.5,
+          "end": 447,
+          "bytes": 11984
+        },
+        {
+          "url": "/assets/equipment/cinder_seal.glb",
+          "start": 443.59999999962747,
+          "end": 447.2000000011176,
+          "bytes": 11848
+        },
+        {
+          "url": "/assets/equipment/chain_fuse.glb",
+          "start": 447.80000000074506,
+          "end": 449.2000000011176,
+          "bytes": 19068
+        },
+        {
+          "url": "/assets/equipment/thunder_fan.glb",
+          "start": 450.7000000011176,
+          "end": 452.5,
+          "bytes": 17432
+        },
+        {
+          "url": "/assets/equipment/echo_blade.glb",
+          "start": 451.5,
+          "end": 453.90000000037253,
+          "bytes": 12616
+        },
+        {
+          "url": "/assets/equipment/starfall.glb",
+          "start": 451.90000000037253,
+          "end": 454.30000000074506,
+          "bytes": 15472
+        },
+        {
+          "url": "/assets/equipment/soul_return.glb",
+          "start": 452.09999999962747,
+          "end": 454.59999999962747,
+          "bytes": 15184
+        },
+        {
+          "url": "/assets/equipment/comrade_oath.glb",
+          "start": 452.40000000037253,
+          "end": 455.30000000074506,
+          "bytes": 13784
+        },
+        {
+          "url": "/assets/equipment/resonant_debt.glb",
+          "start": 452.80000000074506,
+          "end": 455.40000000037253,
+          "bytes": 14092
+        },
+        {
+          "url": "/assets/equipment/contact_mine.glb",
+          "start": 460.30000000074506,
+          "end": 463.40000000037253,
+          "bytes": 18656
+        },
+        {
+          "url": "/assets/equipment/step_orb.glb",
+          "start": 460.7000000011176,
+          "end": 463.7000000011176,
+          "bytes": 12916
+        },
+        {
+          "url": "/assets/equipment/gravity_law.glb",
+          "start": 460.90000000037253,
+          "end": 464.90000000037253,
+          "bytes": 14196
+        },
+        {
+          "url": "/assets/equipment/quick_chant.glb",
+          "start": 461.30000000074506,
+          "end": 465.2000000011176,
+          "bytes": 13896
+        },
+        {
+          "url": "/assets/equipment/overload_script.glb",
+          "start": 461.40000000037253,
+          "end": 465.5,
+          "bytes": 11064
+        },
+        {
+          "url": "/assets/equipment/storm_payload.glb",
+          "start": 461.59999999962747,
+          "end": 465.59999999962747,
+          "bytes": 10240
+        },
+        {
+          "url": "/assets/equipment/legacy_gift.glb",
+          "start": 466.09999999962747,
+          "end": 467.90000000037253,
+          "bytes": 20876
+        },
+        {
+          "url": "/assets/equipment/guard_bequest.glb",
+          "start": 467.40000000037253,
+          "end": 468.80000000074506,
+          "bytes": 14784
+        },
+        {
+          "url": "/content/assets/arena.mesh.json",
+          "start": 745.3000000007451,
+          "end": 752.2000000011176,
+          "bytes": 1873886
+        },
+        {
+          "url": "/content/assets/cannon.mesh.json",
+          "start": 745.4000000003725,
+          "end": 750.9000000003725,
+          "bytes": 26656
+        },
+        {
+          "url": "/content/assets/sky_forest.mesh.json",
+          "start": 745.4000000003725,
+          "end": 751.3000000007451,
+          "bytes": 2062
+        },
+        {
+          "url": "/content/assets/coin.mesh.json",
+          "start": 745.5,
+          "end": 751.5999999996275,
+          "bytes": 8400
+        },
+        {
+          "url": "/content/assets/trail.mesh.json",
+          "start": 745.5,
+          "end": 751.8000000007451,
+          "bytes": 1922
+        },
+        {
+          "url": "/content/assets/target.mesh.json",
+          "start": 745.5,
+          "end": 752.0999999996275,
+          "bytes": 10776
+        },
+        {
+          "url": "/content/assets/palette.png",
+          "start": 760.5,
+          "end": 762.9000000003725,
+          "bytes": 3405
+        },
+        {
+          "url": "/content/assets/sky_forest.png",
+          "start": 761.2000000011176,
+          "end": 763.2000000011176,
+          "bytes": 35056
+        }
+      ],
+      "gateVisible": false
+    },
+    {
+      "delayMs": 80,
+      "at": 2362.0999999996275,
+      "ui": {
+        "backend": "canvas2d",
+        "nodes": 26,
+        "assets": [
+          {
+            "id": "texture://ui_panel",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_expedition-keyart-v2",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_mote",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_crest",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_button",
+            "state": "ready"
+          },
+          {
+            "id": "texture://ui_secondary",
+            "state": "ready"
+          }
+        ],
+        "diagnostics": [],
+        "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+        "limitations": [
+          "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+          "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+        ]
+      },
+      "models": 77,
+      "creatures": 11,
+      "loading": {
+        "host": 306.2000000011176,
+        "runtime": 639.3000000007451,
+        "firstImages": 749.5,
+        "models": 1869.300000000745,
+        "firstFrame": 2179.4000000003725,
+        "elapsedMs": 2180,
+        "finished": true,
+        "failed": false,
+        "groups": {
+          "部隊與裝備": {
+            "done": 89,
+            "total": 89
+          },
+          "首屏圖片": {
+            "done": 6,
+            "total": 6
+          }
+        }
+      },
+      "requests": [
+        {
+          "url": "/presentation/landscape-host.css",
+          "start": 92.09999999962747,
+          "end": 181.40000000037253,
+          "bytes": 2202
+        },
+        {
+          "url": "/host.mjs",
+          "start": 92.19999999925494,
+          "end": 181.90000000037253,
+          "bytes": 12830
+        },
+        {
+          "url": "/presentation/scene-lighting.mjs",
+          "start": 186.30000000074506,
+          "end": 274.30000000074506,
+          "bytes": 3719
+        },
+        {
+          "url": "/presentation/arena-walls.mjs",
+          "start": 186.40000000037253,
+          "end": 275.40000000037253,
+          "bytes": 1455
+        },
+        {
+          "url": "/presentation/world-labels.mjs",
+          "start": 186.40000000037253,
+          "end": 276.69999999925494,
+          "bytes": 8355
+        },
+        {
+          "url": "/web/shared/canvas-ui.mjs",
+          "start": 186.40000000037253,
+          "end": 277.09999999962747,
+          "bytes": 7076
+        },
+        {
+          "url": "/presentation/actors.mjs",
+          "start": 186.40000000037253,
+          "end": 277.59999999962747,
+          "bytes": 10333
+        },
+        {
+          "url": "/presentation/first-screen.mjs",
+          "start": 186.40000000037253,
+          "end": 279,
+          "bytes": 994
+        },
+        {
+          "url": "/presentation/rewards.mjs",
+          "start": 186.40000000037253,
+          "end": 280,
+          "bytes": 6806
+        },
+        {
+          "url": "/presentation/adaptive-ui.mjs",
+          "start": 186.5,
+          "end": 279.80000000074506,
+          "bytes": 4960
+        },
+        {
+          "url": "/presentation/ui-motion.mjs",
+          "start": 186.5,
+          "end": 280.90000000037253,
+          "bytes": 5303
+        },
+        {
+          "url": "/web/shared/runtime-backend.mjs",
+          "start": 186.59999999962747,
+          "end": 281.59999999962747,
+          "bytes": 2506
+        },
+        {
+          "url": "/web/shared/host-input.js",
+          "start": 186.59999999962747,
+          "end": 281.90000000037253,
+          "bytes": 3644
+        },
+        {
+          "url": "/web/renderer/three.js",
+          "start": 186.59999999962747,
+          "end": 281.80000000074506,
+          "bytes": 14027
+        },
+        {
+          "url": "/web/shared/async-scheduler.mjs",
+          "start": 186.59999999962747,
+          "end": 283,
+          "bytes": 1902
+        },
+        {
+          "url": "/presentation/landscape-host.mjs",
+          "start": 186.69999999925494,
+          "end": 282.5,
+          "bytes": 1189
+        },
+        {
+          "url": "/presentation/ink-style.mjs",
+          "start": 275.19999999925494,
+          "end": 362.80000000074506,
+          "bytes": 2841
+        },
+        {
+          "url": "/presentation/combat-feedback-layout.mjs",
+          "start": 280.59999999962747,
+          "end": 369,
+          "bytes": 1098
+        },
+        {
+          "url": "/presentation/guard-feedback.mjs",
+          "start": 280.69999999925494,
+          "end": 369.59999999962747,
+          "bytes": 667
+        },
+        {
+          "url": "/presentation/combat-fx.mjs",
+          "start": 280.69999999925494,
+          "end": 370.59999999962747,
+          "bytes": 19938
+        },
+        {
+          "url": "/presentation/storybook-actors.mjs",
+          "start": 280.80000000074506,
+          "end": 371.40000000037253,
+          "bytes": 4139
+        },
+        {
+          "url": "/presentation/asset-loading.mjs",
+          "start": 280.80000000074506,
+          "end": 372.40000000037253,
+          "bytes": 904
+        },
+        {
+          "url": "/presentation/vendor/addons/loaders/GLTFLoader.js",
+          "start": 280.80000000074506,
+          "end": 374.09999999962747,
+          "bytes": 114649
+        },
+        {
+          "url": "/presentation/vendor/addons/utils/SkeletonUtils.js",
+          "start": 280.80000000074506,
+          "end": 374.59999999962747,
+          "bytes": 11062
+        },
+        {
+          "url": "/presentation/animator/index.mjs",
+          "start": 280.80000000074506,
+          "end": 376.19999999925494,
+          "bytes": 335
+        },
+        {
+          "url": "/presentation/vendor/addons/utils/BufferGeometryUtils.js",
+          "start": 280.80000000074506,
+          "end": 375.5,
+          "bytes": 35538
+        },
+        {
+          "url": "/presentation/vendor/build/three.module.js",
+          "start": 280.80000000074506,
+          "end": 373.40000000037253,
+          "bytes": 603380
+        },
+        {
+          "url": "/presentation/win-dock.mjs",
+          "start": 282.80000000074506,
+          "end": 377,
+          "bytes": 7129
+        },
+        {
+          "url": "/presentation/reward-impact.mjs",
+          "start": 282.90000000037253,
+          "end": 377.30000000074506,
+          "bytes": 4216
+        },
+        {
+          "url": "/web/shared/runtime-core.mjs",
+          "start": 284.09999999962747,
+          "end": 378.40000000037253,
+          "bytes": 4210
+        },
+        {
+          "url": "/web/shared/instance-transfer.mjs",
+          "start": 284.19999999925494,
+          "end": 379.09999999962747,
+          "bytes": 3147
+        },
+        {
+          "url": "/web/renderer/particles.js",
+          "start": 284.5,
+          "end": 379.90000000037253,
+          "bytes": 1562
+        },
+        {
+          "url": "/web/renderer/mesh.js",
+          "start": 284.5,
+          "end": 380.30000000074506,
+          "bytes": 1348
+        },
+        {
+          "url": "/web/renderer/instances3d.js",
+          "start": 284.5,
+          "end": 380.5,
+          "bytes": 5464
+        },
+        {
+          "url": "/web/renderer/bloom.js",
+          "start": 284.5,
+          "end": 380.69999999925494,
+          "bytes": 5664
+        },
+        {
+          "url": "/web/renderer/effekseer.js",
+          "start": 284.5,
+          "end": 381.40000000037253,
+          "bytes": 2496
+        },
+        {
+          "url": "/web/shared/webgpu-snapshot.js",
+          "start": 284.5,
+          "end": 381.90000000037253,
+          "bytes": 19886
+        },
+        {
+          "url": "/presentation/composition-fx.mjs",
+          "start": 373.90000000037253,
+          "end": 466.40000000037253,
+          "bytes": 5243
+        },
+        {
+          "url": "/presentation/resonance-fx.mjs",
+          "start": 373.90000000037253,
+          "end": 467,
+          "bytes": 4813
+        },
+        {
+          "url": "/presentation/trigger-fx.mjs",
+          "start": 374,
+          "end": 467.80000000074506,
+          "bytes": 3418
+        },
+        {
+          "url": "/presentation/element-fx.mjs",
+          "start": 374,
+          "end": 468.19999999925494,
+          "bytes": 4027
+        },
+        {
+          "url": "/presentation/animator/animator.mjs",
+          "start": 380.19999999925494,
+          "end": 469.5,
+          "bytes": 12376
+        },
+        {
+          "url": "/presentation/animator/sync.mjs",
+          "start": 380.30000000074506,
+          "end": 470.09999999962747,
+          "bytes": 2545
+        },
+        {
+          "url": "/presentation/animator/host.mjs",
+          "start": 380.30000000074506,
+          "end": 470.5,
+          "bytes": 5325
+        },
+        {
+          "url": "/presentation/animator/lod.mjs",
+          "start": 380.30000000074506,
+          "end": 471.69999999925494,
+          "bytes": 3481
+        },
+        {
+          "url": "/presentation/animator/contract.mjs",
+          "start": 380.30000000074506,
+          "end": 472.09999999962747,
+          "bytes": 2842
+        },
+        {
+          "url": "/presentation/lottie/runtime/lottie.mjs",
+          "start": 380.40000000037253,
+          "end": 472.40000000037253,
+          "bytes": 27027
+        },
+        {
+          "url": "/presentation/ultimate-win.mjs",
+          "start": 380.40000000037253,
+          "end": 473.19999999925494,
+          "bytes": 6301
+        },
+        {
+          "url": "/presentation/vendor/build/three.core.js",
+          "start": 382.40000000037253,
+          "end": 475.19999999925494,
+          "bytes": 1401321
+        },
+        {
+          "url": "/web/shared/job-binary.mjs",
+          "start": 382.59999999962747,
+          "end": 474.30000000074506,
+          "bytes": 6407
+        },
+        {
+          "url": "/web/shared/job-pool.mjs",
+          "start": 382.59999999962747,
+          "end": 475.59999999962747,
+          "bytes": 6787
+        },
+        {
+          "url": "/web/shared/load-project.js",
+          "start": 382.69999999925494,
+          "end": 476.09999999962747,
+          "bytes": 1220
+        },
+        {
+          "url": "/web/shared/asset-encoding.js",
+          "start": 383.30000000074506,
+          "end": 476.30000000074506,
+          "bytes": 1026
+        },
+        {
+          "url": "/assets/creatures/manifest.json",
+          "start": 489.59999999962747,
+          "end": 575.4000000003725,
+          "bytes": 4647
+        },
+        {
+          "url": "/assets/equipment/manifest.json",
+          "start": 489.59999999962747,
+          "end": 575.5999999996275,
+          "bytes": 10656
+        },
+        {
+          "url": "/content/project.json",
+          "start": 489.69999999925494,
+          "end": 576.0999999996275,
+          "bytes": 199963
+        },
+        {
+          "url": "/content/assets.json",
+          "start": 489.80000000074506,
+          "end": 576.5,
+          "bytes": 33895
+        },
+        {
+          "url": "/runtime/runtime.json",
+          "start": 489.80000000074506,
+          "end": 577.3000000007451,
+          "bytes": 1032
+        },
+        {
+          "url": "/environments.json",
+          "start": 489.80000000074506,
+          "end": 577.3000000007451,
+          "bytes": 234
+        },
+        {
+          "url": "/presentation/soldier-v2.glb",
+          "start": 579.0999999996275,
+          "end": 664.6999999992549,
+          "bytes": 569176
+        },
+        {
+          "url": "/assets/creatures/art-v2/acorn.glb",
+          "start": 579.3000000007451,
+          "end": 665.6999999992549,
+          "bytes": 225924
+        },
+        {
+          "url": "/assets/creatures/art-v2/piglet.glb",
+          "start": 579.4000000003725,
+          "end": 666.3000000007451,
+          "bytes": 277872
+        },
+        {
+          "url": "/assets/creatures/art-v2/moth.glb",
+          "start": 579.4000000003725,
+          "end": 666.8000000007451,
+          "bytes": 300944
+        },
+        {
+          "url": "/assets/creatures/art-v2/turtle.glb",
+          "start": 579.5999999996275,
+          "end": 667.1999999992549,
+          "bytes": 257220
+        },
+        {
+          "url": "/assets/creatures/art-v2/boar.glb",
+          "start": 579.5999999996275,
+          "end": 667.6999999992549,
+          "bytes": 246068
+        },
+        {
+          "url": "/runtime/fc7734055aed41f566d8a556ce3fffd3b9a37df3baf2e00dafbdfa39b4c9fd39-4f6ddb1170dcb426f060aad4b6773e738a56e990a1feb54dc8f1b38fc31d2d1e/unone-player.js",
+          "start": 581.6999999992549,
+          "end": 667.5999999996275,
+          "bytes": 101000
+        },
+        {
+          "url": "/runtime/fc7734055aed41f566d8a556ce3fffd3b9a37df3baf2e00dafbdfa39b4c9fd39-4f6ddb1170dcb426f060aad4b6773e738a56e990a1feb54dc8f1b38fc31d2d1e/unone_player.wasm",
+          "start": 682.5,
+          "end": 767.4000000003725,
+          "bytes": 1545679
+        },
+        {
+          "url": "/assets/creatures/art-v2/elder.glb",
+          "start": 704.6999999992549,
+          "end": 792.1999999992549,
+          "bytes": 279792
+        },
+        {
+          "url": "/assets/creatures/art-v2/treant.glb",
+          "start": 708.3000000007451,
+          "end": 793,
+          "bytes": 345708
+        },
+        {
+          "url": "/assets/creatures/art-v2/stag.glb",
+          "start": 711.6999999992549,
+          "end": 795.6999999992549,
+          "bytes": 244156
+        },
+        {
+          "url": "/assets/creatures/art-v2/beetle.glb",
+          "start": 715,
+          "end": 799.0999999996275,
+          "bytes": 250476
+        },
+        {
+          "url": "/assets/creatures/art-v2/wheel.glb",
+          "start": 719.0999999996275,
+          "end": 803.5,
+          "bytes": 307792
+        },
+        {
+          "url": "/assets/creatures/art-v2/horse.glb",
+          "start": 722.3000000007451,
+          "end": 805.5,
+          "bytes": 239056
+        },
+        {
+          "url": "/content/assets/formal-ui/panel.png",
+          "start": 824.3000000007451,
+          "end": 911.0999999996275,
+          "bytes": 627229
+        },
+        {
+          "url": "/content/assets/formal-ui/mote.png",
+          "start": 824.4000000003725,
+          "end": 912.4000000003725,
+          "bytes": 6994
+        },
+        {
+          "url": "/content/assets/formal-ui/crest.png",
+          "start": 824.4000000003725,
+          "end": 913.6999999992549,
+          "bytes": 13787
+        },
+        {
+          "url": "/content/assets/formal-ui/button.png",
+          "start": 824.4000000003725,
+          "end": 914.3000000007451,
+          "bytes": 50026
+        },
+        {
+          "url": "/content/assets/formal-ui/expedition-keyart-v2.png",
+          "start": 824.4000000003725,
+          "end": 914,
+          "bytes": 2463860
+        },
+        {
+          "url": "/content/assets/formal-ui/secondary.png",
+          "start": 824.5,
+          "end": 914.5,
+          "bytes": 49219
+        },
+        {
+          "url": "/presentation/lottie/big-win-dock.json",
+          "start": 839.4000000003725,
+          "end": 923,
+          "bytes": 38751
+        },
+        {
+          "url": "/presentation/lottie/mega-win-dock.json",
+          "start": 839.5999999996275,
+          "end": 923.8000000007451,
+          "bytes": 29097
+        },
+        {
+          "url": "/presentation/lottie/legendary-win-dock.json",
+          "start": 839.5999999996275,
+          "end": 924.0999999996275,
+          "bytes": 46159
+        },
+        {
+          "url": "/assets/equipment/pierce.glb",
+          "start": 863.1999999992549,
+          "end": 946.4000000003725,
+          "bytes": 10664
+        },
+        {
+          "url": "/assets/equipment/landing_spin.glb",
+          "start": 866.5,
+          "end": 949.5,
+          "bytes": 11840
+        },
+        {
+          "url": "/assets/equipment/lightning.glb",
+          "start": 870.0999999996275,
+          "end": 952.5999999996275,
+          "bytes": 12228
+        },
+        {
+          "url": "/assets/equipment/critical.glb",
+          "start": 873.5999999996275,
+          "end": 955.3000000007451,
+          "bytes": 10304
+        },
+        {
+          "url": "/assets/equipment/third_crit.glb",
+          "start": 876.6999999992549,
+          "end": 958.9000000003725,
+          "bytes": 10792
+        },
+        {
+          "url": "/assets/equipment/king_hunter.glb",
+          "start": 880.5,
+          "end": 962.9000000003725,
+          "bytes": 12256
+        },
+        {
+          "url": "/presentation/lottie/ultimate-crown.json",
+          "start": 927.1999999992549,
+          "end": 1011.6999999992549,
+          "bytes": 58606
+        },
+        {
+          "url": "/assets/equipment/ember_burst.glb",
+          "start": 949.1999999992549,
+          "end": 1032.300000000745,
+          "bytes": 9632
+        },
+        {
+          "url": "/assets/equipment/longlife.glb",
+          "start": 951.4000000003725,
+          "end": 1034.300000000745,
+          "bytes": 10304
+        },
+        {
+          "url": "/assets/equipment/expire_burst.glb",
+          "start": 954.1999999992549,
+          "end": 1037.199999999255,
+          "bytes": 9540
+        },
+        {
+          "url": "/assets/equipment/rebound_charge.glb",
+          "start": 956.8000000007451,
+          "end": 1038.800000000745,
+          "bytes": 10616
+        },
+        {
+          "url": "/assets/equipment/haste.glb",
+          "start": 961.0999999996275,
+          "end": 1044.5,
+          "bytes": 10692
+        },
+        {
+          "url": "/assets/equipment/bounce_life.glb",
+          "start": 964.5,
+          "end": 1047.5999999996275,
+          "bytes": 10360
+        },
+        {
+          "url": "/assets/equipment/crit_power.glb",
+          "start": 1034.800000000745,
+          "end": 1121.5999999996275,
+          "bytes": 9556
+        },
+        {
+          "url": "/assets/equipment/finisher.glb",
+          "start": 1036.300000000745,
+          "end": 1122.5999999996275,
+          "bytes": 9864
+        },
+        {
+          "url": "/assets/equipment/frost_touch.glb",
+          "start": 1039.0999999996275,
+          "end": 1122.800000000745,
+          "bytes": 9968
+        },
+        {
+          "url": "/assets/equipment/frenzy.glb",
+          "start": 1040.699999999255,
+          "end": 1123.4000000003725,
+          "bytes": 10408
+        },
+        {
+          "url": "/assets/equipment/momentum.glb",
+          "start": 1046.9000000003725,
+          "end": 1131.0999999996275,
+          "bytes": 11580
+        },
+        {
+          "url": "/assets/equipment/shock.glb",
+          "start": 1049.199999999255,
+          "end": 1132.5,
+          "bytes": 9340
+        },
+        {
+          "url": "/assets/equipment/shatter.glb",
+          "start": 1127.0999999996275,
+          "end": 1212.0999999996275,
+          "bytes": 12152
+        },
+        {
+          "url": "/assets/equipment/ricochet_precision.glb",
+          "start": 1128.199999999255,
+          "end": 1212.5999999996275,
+          "bytes": 12132
+        },
+        {
+          "url": "/assets/equipment/hunter_vigor.glb",
+          "start": 1128.4000000003725,
+          "end": 1213.5,
+          "bytes": 9580
+        },
+        {
+          "url": "/assets/equipment/piercing_wave.glb",
+          "start": 1128.5999999996275,
+          "end": 1213.800000000745,
+          "bytes": 9932
+        },
+        {
+          "url": "/assets/equipment/slow_force.glb",
+          "start": 1134,
+          "end": 1216.800000000745,
+          "bytes": 10480
+        },
+        {
+          "url": "/assets/equipment/spin_master.glb",
+          "start": 1134.300000000745,
+          "end": 1217.199999999255,
+          "bytes": 13448
+        },
+        {
+          "url": "/assets/equipment/last_stand.glb",
+          "start": 1217.699999999255,
+          "end": 1304.0999999996275,
+          "bytes": 9740
+        },
+        {
+          "url": "/assets/equipment/heat.glb",
+          "start": 1218.800000000745,
+          "end": 1304.5999999996275,
+          "bytes": 9748
+        },
+        {
+          "url": "/assets/equipment/distance.glb",
+          "start": 1219.699999999255,
+          "end": 1305.0999999996275,
+          "bytes": 10664
+        },
+        {
+          "url": "/assets/equipment/heavy.glb",
+          "start": 1219.800000000745,
+          "end": 1305.5999999996275,
+          "bytes": 10220
+        },
+        {
+          "url": "/assets/equipment/bounce_power.glb",
+          "start": 1221,
+          "end": 1305.699999999255,
+          "bytes": 10428
+        },
+        {
+          "url": "/assets/equipment/wall_quake.glb",
+          "start": 1221.199999999255,
+          "end": 1306.199999999255,
+          "bytes": 10580
+        },
+        {
+          "url": "/assets/equipment/short_fuse.glb",
+          "start": 1309.800000000745,
+          "end": 1397.4000000003725,
+          "bytes": 10160
+        },
+        {
+          "url": "/assets/equipment/wide_blade.glb",
+          "start": 1310.199999999255,
+          "end": 1397.0999999996275,
+          "bytes": 12224
+        },
+        {
+          "url": "/assets/equipment/hit_echo.glb",
+          "start": 1311.5999999996275,
+          "end": 1398,
+          "bytes": 9652
+        },
+        {
+          "url": "/assets/equipment/fracture.glb",
+          "start": 1311.9000000003725,
+          "end": 1398.4000000003725,
+          "bytes": 9768
+        },
+        {
+          "url": "/assets/equipment/solo_hunt.glb",
+          "start": 1312.199999999255,
+          "end": 1398.800000000745,
+          "bytes": 11076
+        },
+        {
+          "url": "/assets/equipment/crowd_ring.glb",
+          "start": 1312.9000000003725,
+          "end": 1399.199999999255,
+          "bytes": 12308
+        },
+        {
+          "url": "/assets/equipment/recruit.glb",
+          "start": 1402.5999999996275,
+          "end": 1490.0999999996275,
+          "bytes": 9604
+        },
+        {
+          "url": "/assets/equipment/rally.glb",
+          "start": 1403.5,
+          "end": 1490.300000000745,
+          "bytes": 9820
+        },
+        {
+          "url": "/assets/equipment/rapid.glb",
+          "start": 1403.699999999255,
+          "end": 1491.0999999996275,
+          "bytes": 10016
+        },
+        {
+          "url": "/assets/equipment/solitary.glb",
+          "start": 1404,
+          "end": 1492,
+          "bytes": 10072
+        },
+        {
+          "url": "/assets/equipment/showdown.glb",
+          "start": 1404.199999999255,
+          "end": 1492.199999999255,
+          "bytes": 10576
+        },
+        {
+          "url": "/assets/equipment/sharp.glb",
+          "start": 1404.5,
+          "end": 1492.699999999255,
+          "bytes": 12064
+        },
+        {
+          "url": "/assets/equipment/giant.glb",
+          "start": 1496.199999999255,
+          "end": 1582.0999999996275,
+          "bytes": 9972
+        },
+        {
+          "url": "/assets/equipment/double_pierce.glb",
+          "start": 1496.5,
+          "end": 1582.5,
+          "bytes": 12344
+        },
+        {
+          "url": "/assets/equipment/deadly.glb",
+          "start": 1496.800000000745,
+          "end": 1583.5999999996275,
+          "bytes": 11792
+        },
+        {
+          "url": "/assets/equipment/flame_cloak.glb",
+          "start": 1497.0999999996275,
+          "end": 1583.0999999996275,
+          "bytes": 18008
+        },
+        {
+          "url": "/assets/equipment/phoenix_fire.glb",
+          "start": 1497.199999999255,
+          "end": 1584.300000000745,
+          "bytes": 17144
+        },
+        {
+          "url": "/assets/equipment/plague_vial.glb",
+          "start": 1497.4000000003725,
+          "end": 1584.4000000003725,
+          "bytes": 16808
+        },
+        {
+          "url": "/assets/equipment/ember_trail.glb",
+          "start": 1587.9000000003725,
+          "end": 1674.300000000745,
+          "bytes": 12800
+        },
+        {
+          "url": "/assets/equipment/slick_oil.glb",
+          "start": 1588,
+          "end": 1675.300000000745,
+          "bytes": 13344
+        },
+        {
+          "url": "/assets/equipment/rain_strike.glb",
+          "start": 1589.0999999996275,
+          "end": 1676,
+          "bytes": 12136
+        },
+        {
+          "url": "/assets/equipment/storm_touch.glb",
+          "start": 1589.199999999255,
+          "end": 1675.4000000003725,
+          "bytes": 13704
+        },
+        {
+          "url": "/assets/equipment/oil_legacy.glb",
+          "start": 1589.4000000003725,
+          "end": 1676.5999999996275,
+          "bytes": 14356
+        },
+        {
+          "url": "/assets/equipment/plunder.glb",
+          "start": 1589.9000000003725,
+          "end": 1676.699999999255,
+          "bytes": 16604
+        },
+        {
+          "url": "/assets/equipment/firstborn.glb",
+          "start": 1681.300000000745,
+          "end": 1765.9000000003725,
+          "bytes": 15048
+        },
+        {
+          "url": "/assets/equipment/march_capacitor.glb",
+          "start": 1682.199999999255,
+          "end": 1767.0999999996275,
+          "bytes": 12288
+        },
+        {
+          "url": "/assets/equipment/delayed_bloom.glb",
+          "start": 1682.4000000003725,
+          "end": 1768.5,
+          "bytes": 9700
+        },
+        {
+          "url": "/assets/equipment/third_pulse.glb",
+          "start": 1682.5,
+          "end": 1767.5,
+          "bytes": 16996
+        },
+        {
+          "url": "/assets/equipment/battle_elegy.glb",
+          "start": 1682.800000000745,
+          "end": 1768.699999999255,
+          "bytes": 12236
+        },
+        {
+          "url": "/assets/equipment/grave_bloom.glb",
+          "start": 1682.9000000003725,
+          "end": 1768.9000000003725,
+          "bytes": 13600
+        },
+        {
+          "url": "/assets/equipment/last_echo.glb",
+          "start": 1770.4000000003725,
+          "end": 1855.5,
+          "bytes": 11984
+        },
+        {
+          "url": "/assets/equipment/cinder_seal.glb",
+          "start": 1771.4000000003725,
+          "end": 1856.300000000745,
+          "bytes": 11848
+        },
+        {
+          "url": "/assets/equipment/chain_fuse.glb",
+          "start": 1773.9000000003725,
+          "end": 1856.9000000003725,
+          "bytes": 19068
+        },
+        {
+          "url": "/assets/equipment/thunder_fan.glb",
+          "start": 1774.199999999255,
+          "end": 1860.199999999255,
+          "bytes": 17432
+        },
+        {
+          "url": "/assets/equipment/echo_blade.glb",
+          "start": 1774.4000000003725,
+          "end": 1861.0999999996275,
+          "bytes": 12616
+        },
+        {
+          "url": "/assets/equipment/starfall.glb",
+          "start": 1774.5,
+          "end": 1861,
+          "bytes": 15472
+        },
+        {
+          "url": "/assets/equipment/soul_return.glb",
+          "start": 1861.9000000003725,
+          "end": 1950.5,
+          "bytes": 15184
+        },
+        {
+          "url": "/assets/equipment/comrade_oath.glb",
+          "start": 1865.199999999255,
+          "end": 1951.199999999255,
+          "bytes": 13784
+        },
+        {
+          "url": "/assets/equipment/resonant_debt.glb",
+          "start": 1865.300000000745,
+          "end": 1951.9000000003725,
+          "bytes": 14092
+        },
+        {
+          "url": "/assets/equipment/contact_mine.glb",
+          "start": 1865.699999999255,
+          "end": 1952.4000000003725,
+          "bytes": 18656
+        },
+        {
+          "url": "/assets/equipment/step_orb.glb",
+          "start": 1866,
+          "end": 1952.300000000745,
+          "bytes": 12916
+        },
+        {
+          "url": "/assets/equipment/gravity_law.glb",
+          "start": 1866.199999999255,
+          "end": 1953.199999999255,
+          "bytes": 14196
+        },
+        {
+          "url": "/assets/equipment/quick_chant.glb",
+          "start": 1957.9000000003725,
+          "end": 2044,
+          "bytes": 13896
+        },
+        {
+          "url": "/assets/equipment/overload_script.glb",
+          "start": 1958.0999999996275,
+          "end": 2044.5,
+          "bytes": 11064
+        },
+        {
+          "url": "/assets/equipment/storm_payload.glb",
+          "start": 1958.300000000745,
+          "end": 2045.199999999255,
+          "bytes": 10240
+        },
+        {
+          "url": "/assets/equipment/legacy_gift.glb",
+          "start": 1958.300000000745,
+          "end": 2045.5999999996275,
+          "bytes": 20876
+        },
+        {
+          "url": "/assets/equipment/guard_bequest.glb",
+          "start": 1958.699999999255,
+          "end": 2046.0999999996275,
+          "bytes": 14784
+        },
+        {
+          "url": "/content/assets/arena.mesh.json",
+          "start": 2123.699999999255,
+          "end": 2211.699999999255,
+          "bytes": 1873886
+        },
+        {
+          "url": "/content/assets/sky_forest.mesh.json",
+          "start": 2123.699999999255,
+          "end": 2212.300000000745,
+          "bytes": 2062
+        },
+        {
+          "url": "/content/assets/cannon.mesh.json",
+          "start": 2123.699999999255,
+          "end": 2213.199999999255,
+          "bytes": 26656
+        },
+        {
+          "url": "/content/assets/coin.mesh.json",
+          "start": 2123.699999999255,
+          "end": 2213.699999999255,
+          "bytes": 8400
+        },
+        {
+          "url": "/content/assets/target.mesh.json",
+          "start": 2123.800000000745,
+          "end": 2214.300000000745,
+          "bytes": 10776
+        },
+        {
+          "url": "/content/assets/trail.mesh.json",
+          "start": 2123.800000000745,
+          "end": 2214.5999999996275,
+          "bytes": 1922
+        },
+        {
+          "url": "/content/assets/palette.png",
+          "start": 2222.0999999996275,
+          "end": 2307.0999999996275,
+          "bytes": 3405
+        },
+        {
+          "url": "/content/assets/sky_forest.png",
+          "start": 2222.699999999255,
+          "end": 2307.800000000745,
+          "bytes": 35056
+        }
+      ],
+      "gateVisible": false
+    }
+  ]
+}

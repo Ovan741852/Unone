@@ -1,0 +1,49 @@
+{
+  "source_items": [
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\vfx-polish\\production-spear.png",
+      "url": null,
+      "label": "IMG_01",
+      "accessed_at": "2026-09-14",
+      "access_notes": "正式版本無作弊自動化操作截圖；mobile 為桌面瀏覽器模擬尺寸。"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\vfx-polish\\production-mobile.png",
+      "url": null,
+      "label": "IMG_02",
+      "accessed_at": "2026-09-14",
+      "access_notes": "正式版本無作弊自動化操作截圖；mobile 為桌面瀏覽器模擬尺寸。"
+    },
+    {
+      "type": "screenshot",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\vfx-polish\\production-no-bloom.png",
+      "url": null,
+      "label": "IMG_03",
+      "accessed_at": "2026-09-14",
+      "access_notes": "正式版本無作弊自動化操作截圖；mobile 為桌面瀏覽器模擬尺寸。"
+    }
+  ],
+  "game_name": "YesSir / 森林領主",
+  "platform": "local WebGL / Edge",
+  "build_or_version": "skill-vfx-v1",
+  "analysis_goal": "gameplay_feedback_readability",
+  "analysis_mode": "ux_ui",
+  "session_scope": "early_battle_slice",
+  "is_new_account": "unknown",
+  "known_context": [
+    "固定玩家位置、正方形場地",
+    "約 20 分鐘目標，7 次 build 選擇",
+    "金幣派兵、結晶強化；破防不保證中獎"
+  ],
+  "tool_readiness": {
+    "browser_access": "available",
+    "ffmpeg": "not_applicable",
+    "yt_dlp": "not_applicable",
+    "ocr": "not_applicable",
+    "asr": "not_applicable",
+    "access_notes": "截圖已人工檢視；機器 QA 只補充技術正確性，不冒充真人資料。",
+    "degradation": "動態手感、20 分鐘流程與玩家心理保留 unknown。"
+  }
+}

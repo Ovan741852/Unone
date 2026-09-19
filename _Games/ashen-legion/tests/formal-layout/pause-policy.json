@@ -9,142 +9,227 @@
       },
       {
         "behind": "screen_back",
-        "front": "resume_plate",
+        "front": "screen_gold",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "resume",
+        "front": "screen_crystals_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "resume_hit_top",
+        "front": "screen_crystals",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "resume_hit_bottom",
+        "front": "profiles_hint",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "guide_plate",
+        "front": "profile_card_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "guide",
+        "front": "profile_slot_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "guide_hit_top",
+        "front": "profile_name_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "guide_hit_bottom",
+        "front": "profile_detail_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "quit_plate",
+        "front": "profile_create_1_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "quit",
+        "front": "profile_create_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "quit_hit_top",
+        "front": "profile_create_1_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "quit_hit_bottom",
+        "front": "profile_create_1_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "mute_plate",
+        "front": "profile_card_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "mute",
+        "front": "profile_slot_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "mute_hit_top",
+        "front": "profile_name_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "mute_hit_bottom",
+        "front": "profile_detail_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "resume_plate",
-        "front": "resume",
+        "behind": "screen_back",
+        "front": "profile_create_2_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profile_create_2",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profile_create_2_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profile_create_2_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profile_card_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profile_slot_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profile_name_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profile_detail_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profile_create_3_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profile_create_3",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profile_create_3_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profile_create_3_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profiles_back_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profiles_back",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profiles_back_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_back",
+        "front": "profiles_back_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "screen_crystals_plate",
+        "front": "screen_crystals",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "resume_plate",
-        "front": "resume_hit_top",
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "resume_plate",
-        "front": "resume_hit_bottom",
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1_hit_top",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "guide_plate",
-        "front": "guide",
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "guide_plate",
-        "front": "guide_hit_top",
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "guide_plate",
-        "front": "guide_hit_bottom",
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2_hit_top",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "quit_plate",
-        "front": "quit",
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "quit_plate",
-        "front": "quit_hit_top",
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "quit_plate",
-        "front": "quit_hit_bottom",
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3_hit_top",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "mute_plate",
-        "front": "mute",
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "mute_plate",
-        "front": "mute_hit_top",
+        "behind": "profiles_back_plate",
+        "front": "profiles_back",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "mute_plate",
-        "front": "mute_hit_bottom",
+        "behind": "profiles_back_plate",
+        "front": "profiles_back_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profiles_back_plate",
+        "front": "profiles_back_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       }
     ]

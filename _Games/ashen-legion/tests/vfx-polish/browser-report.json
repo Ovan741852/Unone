@@ -1,0 +1,479 @@
+{
+  "ok": true,
+  "tests": {
+    "first": {
+      "style": "storybook-faceted-v1",
+      "activeEvents": 7,
+      "eventBudget": 36,
+      "skippedEvents": 0,
+      "kinds": {
+        "buff:frost": 1,
+        "shock": 1,
+        "cleave": 1,
+        "leaf": 1,
+        "ember": 1,
+        "frost": 1,
+        "lightning": 1
+      },
+      "fieldFootprints": 0,
+      "elements": {
+        "surfaces": 0,
+        "events": 0,
+        "kinds": {},
+        "skippedSurfaces": 0
+      },
+      "triggers": {
+        "events": 0,
+        "buffs": 0,
+        "ghosts": 0,
+        "kinds": {}
+      },
+      "resonance": {
+        "events": 0,
+        "markers": 0,
+        "ghosts": 0,
+        "kinds": {},
+        "skippedMarkers": 0
+      },
+      "composition": {
+        "nodes": 0,
+        "marks": 0,
+        "wells": 0,
+        "buffs": 0,
+        "events": 0,
+        "kinds": {}
+      },
+      "skillAttunements": 0,
+      "boostedTrails": 0,
+      "trailSegments": 0,
+      "trailSlots": 0,
+      "ink": {
+        "vertices": 1788,
+        "capacity": 54000,
+        "droppedTriangles": 0
+      },
+      "core": {
+        "vertices": 2466,
+        "capacity": 96000,
+        "droppedTriangles": 0
+      },
+      "reducedMotion": false,
+      "clock": 1.15,
+      "drawCalls": 2,
+      "debug": "final"
+    },
+    "paused": true,
+    "unchangedBuffers": true,
+    "budget": {
+      "style": "storybook-faceted-v1",
+      "activeEvents": 36,
+      "eventBudget": 36,
+      "skippedEvents": 265,
+      "kinds": {
+        "buff:frost": 1,
+        "shock": 6,
+        "cleave": 6,
+        "leaf": 6,
+        "ember": 6,
+        "frost": 6,
+        "lightning": 5
+      },
+      "fieldFootprints": 0,
+      "elements": {
+        "surfaces": 0,
+        "events": 0,
+        "kinds": {},
+        "skippedSurfaces": 0
+      },
+      "triggers": {
+        "events": 0,
+        "buffs": 0,
+        "ghosts": 0,
+        "kinds": {}
+      },
+      "resonance": {
+        "events": 0,
+        "markers": 0,
+        "ghosts": 0,
+        "kinds": {},
+        "skippedMarkers": 0
+      },
+      "composition": {
+        "nodes": 0,
+        "marks": 0,
+        "wells": 0,
+        "buffs": 0,
+        "events": 0,
+        "kinds": {}
+      },
+      "skillAttunements": 0,
+      "boostedTrails": 0,
+      "trailSegments": 48,
+      "trailSlots": 48,
+      "ink": {
+        "vertices": 8784,
+        "capacity": 54000,
+        "droppedTriangles": 0
+      },
+      "core": {
+        "vertices": 12012,
+        "capacity": 96000,
+        "droppedTriangles": 0
+      },
+      "reducedMotion": false,
+      "clock": 1.2,
+      "drawCalls": 2,
+      "debug": "final"
+    },
+    "bounce": {
+      "style": "storybook-faceted-v1",
+      "activeEvents": 36,
+      "eventBudget": 36,
+      "skippedEvents": 265,
+      "kinds": {
+        "buff:frost": 1,
+        "shock": 6,
+        "cleave": 6,
+        "leaf": 6,
+        "ember": 6,
+        "frost": 6,
+        "lightning": 5
+      },
+      "fieldFootprints": 0,
+      "elements": {
+        "surfaces": 0,
+        "events": 0,
+        "kinds": {},
+        "skippedSurfaces": 0
+      },
+      "triggers": {
+        "events": 0,
+        "buffs": 0,
+        "ghosts": 0,
+        "kinds": {}
+      },
+      "resonance": {
+        "events": 0,
+        "markers": 0,
+        "ghosts": 0,
+        "kinds": {},
+        "skippedMarkers": 0
+      },
+      "composition": {
+        "nodes": 0,
+        "marks": 0,
+        "wells": 0,
+        "buffs": 0,
+        "events": 0,
+        "kinds": {}
+      },
+      "skillAttunements": 0,
+      "boostedTrails": 0,
+      "trailSegments": 0,
+      "trailSlots": 48,
+      "ink": {
+        "vertices": 8784,
+        "capacity": 54000,
+        "droppedTriangles": 0
+      },
+      "core": {
+        "vertices": 11724,
+        "capacity": 96000,
+        "droppedTriangles": 0
+      },
+      "reducedMotion": false,
+      "clock": 1.22,
+      "drawCalls": 2,
+      "debug": "final"
+    },
+    "expired": {
+      "style": "storybook-faceted-v1",
+      "activeEvents": 0,
+      "eventBudget": 36,
+      "skippedEvents": 0,
+      "kinds": {},
+      "fieldFootprints": 0,
+      "elements": {
+        "surfaces": 0,
+        "events": 0,
+        "kinds": {},
+        "skippedSurfaces": 0
+      },
+      "triggers": {
+        "events": 0,
+        "buffs": 0,
+        "ghosts": 0,
+        "kinds": {}
+      },
+      "resonance": {
+        "events": 0,
+        "markers": 0,
+        "ghosts": 0,
+        "kinds": {},
+        "skippedMarkers": 0
+      },
+      "composition": {
+        "nodes": 0,
+        "marks": 0,
+        "wells": 0,
+        "buffs": 0,
+        "events": 0,
+        "kinds": {}
+      },
+      "skillAttunements": 0,
+      "boostedTrails": 0,
+      "trailSegments": 0,
+      "trailSlots": 0,
+      "ink": {
+        "vertices": 0,
+        "capacity": 54000,
+        "droppedTriangles": 0
+      },
+      "core": {
+        "vertices": 0,
+        "capacity": 96000,
+        "droppedTriangles": 0
+      },
+      "reducedMotion": false,
+      "clock": 4,
+      "drawCalls": 0,
+      "debug": "final"
+    },
+    "reset": {
+      "style": "storybook-faceted-v1",
+      "activeEvents": 0,
+      "eventBudget": 36,
+      "skippedEvents": 0,
+      "kinds": {},
+      "fieldFootprints": 0,
+      "elements": {
+        "surfaces": 0,
+        "events": 0,
+        "kinds": {},
+        "skippedSurfaces": 0
+      },
+      "triggers": {
+        "events": 0,
+        "buffs": 0,
+        "kinds": {}
+      },
+      "resonance": {
+        "events": 0,
+        "markers": 0,
+        "ghosts": 0,
+        "kinds": {}
+      },
+      "composition": {
+        "events": 0
+      },
+      "skillAttunements": 0,
+      "boostedTrails": 0,
+      "trailSegments": 0,
+      "trailSlots": 0,
+      "ink": {
+        "vertices": 0,
+        "capacity": 54000,
+        "droppedTriangles": 0
+      },
+      "core": {
+        "vertices": 0,
+        "capacity": 96000,
+        "droppedTriangles": 0
+      },
+      "reducedMotion": false,
+      "clock": 0,
+      "drawCalls": 0,
+      "debug": "final"
+    },
+    "dispose": [
+      "geometry",
+      "material",
+      "geometry",
+      "material"
+    ],
+    "childrenAfterDispose": 0,
+    "reduced": {
+      "style": "storybook-faceted-v1",
+      "activeEvents": 7,
+      "eventBudget": 36,
+      "skippedEvents": 0,
+      "kinds": {
+        "buff:frost": 1,
+        "shock": 1,
+        "cleave": 1,
+        "leaf": 1,
+        "ember": 1,
+        "frost": 1,
+        "lightning": 1
+      },
+      "fieldFootprints": 0,
+      "elements": {
+        "surfaces": 0,
+        "events": 0,
+        "kinds": {},
+        "skippedSurfaces": 0
+      },
+      "triggers": {
+        "events": 0,
+        "buffs": 0,
+        "ghosts": 0,
+        "kinds": {}
+      },
+      "resonance": {
+        "events": 0,
+        "markers": 0,
+        "ghosts": 0,
+        "kinds": {},
+        "skippedMarkers": 0
+      },
+      "composition": {
+        "nodes": 0,
+        "marks": 0,
+        "wells": 0,
+        "buffs": 0,
+        "events": 0,
+        "kinds": {}
+      },
+      "skillAttunements": 0,
+      "boostedTrails": 0,
+      "trailSegments": 0,
+      "trailSlots": 0,
+      "ink": {
+        "vertices": 1644,
+        "capacity": 54000,
+        "droppedTriangles": 0
+      },
+      "core": {
+        "vertices": 2424,
+        "capacity": 96000,
+        "droppedTriangles": 0
+      },
+      "reducedMotion": true,
+      "clock": 1.15,
+      "drawCalls": 2,
+      "debug": "final"
+    }
+  },
+  "live": {
+    "phase": "battle",
+    "fired": 3,
+    "spinHits": 4,
+    "fx": {
+      "style": "storybook-faceted-v1",
+      "activeEvents": 7,
+      "eventBudget": 36,
+      "skippedEvents": 0,
+      "kinds": {
+        "spin": 2,
+        "hit": 2,
+        "jackpot": 1,
+        "summon": 2
+      },
+      "fieldFootprints": 0,
+      "elements": {
+        "surfaces": 0,
+        "events": 0,
+        "kinds": {},
+        "skippedSurfaces": 0
+      },
+      "triggers": {
+        "events": 0,
+        "buffs": 0,
+        "ghosts": 0,
+        "kinds": {}
+      },
+      "resonance": {
+        "events": 0,
+        "markers": 0,
+        "ghosts": 0,
+        "kinds": {},
+        "skippedMarkers": 0
+      },
+      "composition": {
+        "nodes": 0,
+        "marks": 0,
+        "wells": 0,
+        "buffs": 0,
+        "events": 0,
+        "kinds": {}
+      },
+      "skillAttunements": 3,
+      "boostedTrails": 0,
+      "trailSegments": 7,
+      "trailSlots": 2,
+      "ink": {
+        "vertices": 816,
+        "capacity": 54000,
+        "droppedTriangles": 0
+      },
+      "core": {
+        "vertices": 1290,
+        "capacity": 96000,
+        "droppedTriangles": 0
+      },
+      "reducedMotion": false,
+      "clock": 2.799999999999995,
+      "drawCalls": 2,
+      "debug": "final"
+    }
+  },
+  "mobileFx": {
+    "style": "storybook-faceted-v1",
+    "activeEvents": 6,
+    "eventBudget": 36,
+    "skippedEvents": 0,
+    "kinds": {
+      "spin": 2,
+      "hit": 1,
+      "summon": 2,
+      "jackpot": 1
+    },
+    "fieldFootprints": 0,
+    "elements": {
+      "surfaces": 0,
+      "events": 0,
+      "kinds": {},
+      "skippedSurfaces": 0
+    },
+    "triggers": {
+      "events": 0,
+      "buffs": 0,
+      "ghosts": 0,
+      "kinds": {}
+    },
+    "resonance": {
+      "events": 0,
+      "markers": 0,
+      "ghosts": 0,
+      "kinds": {},
+      "skippedMarkers": 0
+    },
+    "composition": {
+      "nodes": 0,
+      "marks": 0,
+      "wells": 0,
+      "buffs": 0,
+      "events": 0,
+      "kinds": {}
+    },
+    "skillAttunements": 5,
+    "boostedTrails": 0,
+    "trailSegments": 4,
+    "trailSlots": 4,
+    "ink": {
+      "vertices": 744,
+      "capacity": 54000,
+      "droppedTriangles": 0
+    },
+    "core": {
+      "vertices": 1056,
+      "capacity": 96000,
+      "droppedTriangles": 0
+    },
+    "reducedMotion": true,
+    "clock": 3.2333333333333267,
+    "drawCalls": 2,
+    "debug": "final"
+  },
+  "errors": []
+}

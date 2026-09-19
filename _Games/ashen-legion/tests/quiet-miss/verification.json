@@ -1,0 +1,539 @@
+{
+  "scope": "Landscape. Frozen simultaneous-miss fixture plus real production spear/AUTO play.",
+  "checks": {
+    "focused": {
+      "labels": 3,
+      "payouts": 1,
+      "damage": 1,
+      "criticals": 1,
+      "items": [
+        {
+          "id": 90,
+          "kind": "critical",
+          "text": "150",
+          "amount": 150,
+          "rect": {
+            "x": 88.49466904857114,
+            "y": 490.5526018420068,
+            "width": 90.30284297281653,
+            "height": 71.59144307754825
+          }
+        },
+        {
+          "id": 91,
+          "kind": "gold",
+          "text": "+80",
+          "amount": 80,
+          "rect": {
+            "x": 787.8798634493079,
+            "y": 529.090144,
+            "width": 77.88636363636364,
+            "height": 34.5
+          }
+        }
+      ],
+      "guards": [
+        {
+          "id": 1,
+          "progress": 0,
+          "near": false,
+          "recentMiss": true,
+          "kind": "miss",
+          "label": "未開獎",
+          "percent": 0,
+          "rect": {
+            "x": 58.878378378378386,
+            "y": 218.70000000000002,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 7,
+          "progress": 0.75,
+          "near": true,
+          "recentMiss": true,
+          "kind": "near",
+          "label": "即將破防",
+          "percent": 75,
+          "rect": {
+            "x": 288.8783783783784,
+            "y": 376.65,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        }
+      ],
+      "nameplates": [
+        {
+          "id": 1,
+          "text": "◆ 測試怪物1 · 未開獎",
+          "targeted": true,
+          "kind": "miss",
+          "rect": {
+            "x": 58.878378378378386,
+            "y": 218.70000000000002,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 7,
+          "text": "測試怪物7 · 即將破防 75%",
+          "targeted": false,
+          "kind": "near",
+          "rect": {
+            "x": 288.8783783783784,
+            "y": 376.65,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 9,
+          "text": "♛ 測試怪物9",
+          "targeted": false,
+          "kind": "elite",
+          "rect": {
+            "x": 782.4459459459459,
+            "y": 390.45,
+            "width": 95.1081081081081,
+            "height": 19.549999999999997
+          }
+        }
+      ],
+      "missLabels": 1,
+      "usesMultiplier": false,
+      "cacheSize": 5,
+      "diagnostics": []
+    },
+    "noTarget": {
+      "labels": 2,
+      "payouts": 1,
+      "damage": 1,
+      "criticals": 1,
+      "items": [
+        {
+          "id": 90,
+          "kind": "critical",
+          "text": "150",
+          "amount": 150,
+          "rect": {
+            "x": 88.49466904857114,
+            "y": 490.5526018420068,
+            "width": 90.30284297281653,
+            "height": 71.59144307754825
+          }
+        },
+        {
+          "id": 91,
+          "kind": "gold",
+          "text": "+80",
+          "amount": 80,
+          "rect": {
+            "x": 787.8798634493079,
+            "y": 529.090144,
+            "width": 77.88636363636364,
+            "height": 34.5
+          }
+        }
+      ],
+      "guards": [
+        {
+          "id": 7,
+          "progress": 0.75,
+          "near": true,
+          "recentMiss": true,
+          "kind": "near",
+          "label": "即將破防",
+          "percent": 75,
+          "rect": {
+            "x": 288.8783783783784,
+            "y": 376.65,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        }
+      ],
+      "nameplates": [
+        {
+          "id": 7,
+          "text": "測試怪物7 · 即將破防 75%",
+          "targeted": false,
+          "kind": "near",
+          "rect": {
+            "x": 288.8783783783784,
+            "y": 376.65,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 9,
+          "text": "♛ 測試怪物9",
+          "targeted": false,
+          "kind": "elite",
+          "rect": {
+            "x": 782.4459459459459,
+            "y": 390.45,
+            "width": 95.1081081081081,
+            "height": 19.549999999999997
+          }
+        }
+      ],
+      "missLabels": 0,
+      "usesMultiplier": false,
+      "cacheSize": 5,
+      "diagnostics": []
+    },
+    "switched": {
+      "labels": 3,
+      "payouts": 1,
+      "damage": 1,
+      "criticals": 1,
+      "items": [
+        {
+          "id": 90,
+          "kind": "critical",
+          "text": "150",
+          "amount": 150,
+          "rect": {
+            "x": 88.49466904857114,
+            "y": 490.5526018420068,
+            "width": 90.30284297281653,
+            "height": 71.59144307754825
+          }
+        },
+        {
+          "id": 91,
+          "kind": "gold",
+          "text": "+80",
+          "amount": 80,
+          "rect": {
+            "x": 787.8798634493079,
+            "y": 529.090144,
+            "width": 77.88636363636364,
+            "height": 34.5
+          }
+        }
+      ],
+      "guards": [
+        {
+          "id": 2,
+          "progress": 0,
+          "near": false,
+          "recentMiss": true,
+          "kind": "miss",
+          "label": "未開獎",
+          "percent": 0,
+          "rect": {
+            "x": 288.8783783783784,
+            "y": 218.70000000000002,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 7,
+          "progress": 0.75,
+          "near": true,
+          "recentMiss": true,
+          "kind": "near",
+          "label": "即將破防",
+          "percent": 75,
+          "rect": {
+            "x": 288.8783783783784,
+            "y": 376.65,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        }
+      ],
+      "nameplates": [
+        {
+          "id": 2,
+          "text": "◆ 測試怪物2 · 未開獎",
+          "targeted": true,
+          "kind": "miss",
+          "rect": {
+            "x": 288.8783783783784,
+            "y": 218.70000000000002,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 7,
+          "text": "測試怪物7 · 即將破防 75%",
+          "targeted": false,
+          "kind": "near",
+          "rect": {
+            "x": 288.8783783783784,
+            "y": 376.65,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 9,
+          "text": "♛ 測試怪物9",
+          "targeted": false,
+          "kind": "elite",
+          "rect": {
+            "x": 782.4459459459459,
+            "y": 390.45,
+            "width": 95.1081081081081,
+            "height": 19.549999999999997
+          }
+        }
+      ],
+      "missLabels": 1,
+      "usesMultiplier": false,
+      "cacheSize": 5,
+      "diagnostics": []
+    },
+    "expired": {
+      "labels": 3,
+      "payouts": 1,
+      "damage": 1,
+      "criticals": 1,
+      "items": [
+        {
+          "id": 90,
+          "kind": "critical",
+          "text": "150",
+          "amount": 150,
+          "rect": {
+            "x": 93.18636363636364,
+            "y": 478.8041032285931,
+            "width": 69.62727272727273,
+            "height": 55.199999999999996
+          }
+        },
+        {
+          "id": 91,
+          "kind": "gold",
+          "text": "+80",
+          "amount": 80,
+          "rect": {
+            "x": 785.0568181818181,
+            "y": 499.804,
+            "width": 77.88636363636364,
+            "height": 34.5
+          }
+        }
+      ],
+      "guards": [
+        {
+          "id": 1,
+          "progress": 0,
+          "near": false,
+          "recentMiss": false,
+          "kind": "normal",
+          "label": "破防",
+          "percent": 0,
+          "rect": {
+            "x": 58.878378378378386,
+            "y": 218.70000000000002,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 7,
+          "progress": 0.75,
+          "near": true,
+          "recentMiss": false,
+          "kind": "near",
+          "label": "即將破防",
+          "percent": 75,
+          "rect": {
+            "x": 288.8783783783784,
+            "y": 376.65,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        }
+      ],
+      "nameplates": [
+        {
+          "id": 1,
+          "text": "◆ 測試怪物1 · 破防 0%",
+          "targeted": true,
+          "kind": "normal",
+          "rect": {
+            "x": 58.878378378378386,
+            "y": 218.70000000000002,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 7,
+          "text": "測試怪物7 · 即將破防 75%",
+          "targeted": false,
+          "kind": "near",
+          "rect": {
+            "x": 288.8783783783784,
+            "y": 376.65,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 9,
+          "text": "♛ 測試怪物9",
+          "targeted": false,
+          "kind": "elite",
+          "rect": {
+            "x": 782.4459459459459,
+            "y": 390.45,
+            "width": 95.1081081081081,
+            "height": 19.549999999999997
+          }
+        }
+      ],
+      "missLabels": 0,
+      "usesMultiplier": false,
+      "cacheSize": 8,
+      "diagnostics": []
+    },
+    "paused": {
+      "labels": 0,
+      "payouts": 0,
+      "damage": 0,
+      "criticals": 0,
+      "items": [],
+      "guards": [],
+      "nameplates": [],
+      "missLabels": 0,
+      "usesMultiplier": false,
+      "cacheSize": 8,
+      "diagnostics": []
+    },
+    "unchanged": true
+  },
+  "live": {
+    "labels": {
+      "labels": 4,
+      "payouts": 0,
+      "damage": 3,
+      "criticals": 0,
+      "items": [
+        {
+          "id": 1,
+          "kind": "damage",
+          "text": "48",
+          "amount": 48,
+          "rect": {
+            "x": 751.2577884039736,
+            "y": 511.4282504510604,
+            "width": 44.971969696969694,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 2,
+          "kind": "damage",
+          "text": "48",
+          "amount": 48,
+          "rect": {
+            "x": 682.6965395609443,
+            "y": 459.6083493613918,
+            "width": 44.971969696969694,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 3,
+          "kind": "damage",
+          "text": "48",
+          "amount": 48,
+          "rect": {
+            "x": 854.2318069197826,
+            "y": 506.39937314196504,
+            "width": 44.971969696969694,
+            "height": 33.349999999999994
+          }
+        }
+      ],
+      "guards": [
+        {
+          "id": 29,
+          "progress": 0,
+          "near": false,
+          "recentMiss": true,
+          "kind": "miss",
+          "label": "未開獎",
+          "percent": 0,
+          "rect": {
+            "x": 693.5065036438295,
+            "y": 414.83548673570533,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        }
+      ],
+      "nameplates": [
+        {
+          "id": 29,
+          "text": "◆ 苔羽蛾 · 未開獎",
+          "targeted": true,
+          "kind": "miss",
+          "rect": {
+            "x": 693.5065036438295,
+            "y": 414.83548673570533,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 35,
+          "text": "♛ 古榕守衛",
+          "targeted": false,
+          "kind": "elite",
+          "rect": {
+            "x": 664.2116186642277,
+            "y": 218.70000000000002,
+            "width": 95.1081081081081,
+            "height": 19.549999999999997
+          }
+        },
+        {
+          "id": 33,
+          "text": "花冠樹靈",
+          "targeted": false,
+          "kind": "elite",
+          "rect": {
+            "x": 524.354094366897,
+            "y": 268.4426631875458,
+            "width": 95.1081081081081,
+            "height": 19.549999999999997
+          }
+        },
+        {
+          "id": 34,
+          "text": "獠牙搬木王",
+          "targeted": false,
+          "kind": "elite",
+          "rect": {
+            "x": 820.6598669898061,
+            "y": 244.48679169769343,
+            "width": 95.1081081081081,
+            "height": 19.549999999999997
+          }
+        }
+      ],
+      "missLabels": 1,
+      "usesMultiplier": false,
+      "cacheSize": 4,
+      "diagnostics": []
+    },
+    "targetId": 29,
+    "fired": 2,
+    "lotteryMisses": 3
+  },
+  "sampledFrames": 30,
+  "maxMissLabels": 1,
+  "errors": []
+}

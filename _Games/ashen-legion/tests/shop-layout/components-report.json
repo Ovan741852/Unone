@@ -1,0 +1,162 @@
+{
+  "ok": true,
+  "checks": [
+    {
+      "name": "components-1440",
+      "failures": [],
+      "glyphCount": 48,
+      "minFont": 16
+    },
+    {
+      "name": "components-detail1-1440",
+      "failures": [],
+      "glyphCount": 56,
+      "minFont": 16
+    },
+    {
+      "name": "components-detail2-1440",
+      "failures": [],
+      "glyphCount": 56,
+      "minFont": 16
+    },
+    {
+      "name": "components-detail3-1440",
+      "failures": [],
+      "glyphCount": 56,
+      "minFont": 16
+    },
+    {
+      "name": "components-detail4-1440",
+      "failures": [],
+      "glyphCount": 56,
+      "minFont": 16
+    },
+    {
+      "name": "components-1280",
+      "failures": [],
+      "glyphCount": 48,
+      "minFont": 14.2222
+    },
+    {
+      "name": "components-detail1-1280",
+      "failures": [],
+      "glyphCount": 56,
+      "minFont": 14.2222
+    },
+    {
+      "name": "components-detail2-1280",
+      "failures": [],
+      "glyphCount": 56,
+      "minFont": 14.2222
+    },
+    {
+      "name": "components-detail3-1280",
+      "failures": [],
+      "glyphCount": 56,
+      "minFont": 14.2222
+    },
+    {
+      "name": "components-detail4-1280",
+      "failures": [],
+      "glyphCount": 56,
+      "minFont": 14.2222
+    },
+    {
+      "name": "components-900",
+      "failures": [],
+      "glyphCount": 48,
+      "minFont": 10.24
+    },
+    {
+      "name": "components-detail1-900",
+      "failures": [],
+      "glyphCount": 56,
+      "minFont": 10.24
+    },
+    {
+      "name": "components-detail2-900",
+      "failures": [],
+      "glyphCount": 56,
+      "minFont": 10.24
+    },
+    {
+      "name": "components-detail3-900",
+      "failures": [],
+      "glyphCount": 56,
+      "minFont": 10.24
+    },
+    {
+      "name": "components-detail4-900",
+      "failures": [],
+      "glyphCount": 56,
+      "minFont": 10.24
+    },
+    {
+      "name": "components-844",
+      "failures": [],
+      "glyphCount": 44,
+      "minFont": 10.24
+    },
+    {
+      "name": "components-detail1-844",
+      "failures": [],
+      "glyphCount": 52,
+      "minFont": 10.24
+    },
+    {
+      "name": "components-detail2-844",
+      "failures": [],
+      "glyphCount": 52,
+      "minFont": 10.24
+    },
+    {
+      "name": "components-detail3-844",
+      "failures": [],
+      "glyphCount": 52,
+      "minFont": 10.24
+    },
+    {
+      "name": "components-detail4-844",
+      "failures": [],
+      "glyphCount": 52,
+      "minFont": 10.24
+    },
+    {
+      "name": "components-purchased-844",
+      "failures": [],
+      "glyphCount": 52,
+      "minFont": 10.24
+    },
+    {
+      "name": "components-receipt-844",
+      "failures": [],
+      "glyphCount": 44,
+      "minFont": 10.24
+    },
+    {
+      "name": "animation-long-copy-0",
+      "failures": []
+    },
+    {
+      "name": "animation-long-copy-1",
+      "failures": []
+    },
+    {
+      "name": "animation-long-copy-2",
+      "failures": []
+    },
+    {
+      "name": "animation-long-copy-3",
+      "failures": []
+    },
+    {
+      "name": "animation-long-copy-4",
+      "failures": []
+    },
+    {
+      "name": "animation-long-copy-5",
+      "failures": []
+    }
+  ],
+  "errors": []
+}

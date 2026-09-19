@@ -3,179 +3,234 @@
   "screens": {
     "forest_lord": [
       {
-        "behind": "chapter_back",
-        "front": "chapter_crest",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "screen_title",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "chapter_back",
-        "front": "chapter",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "screen_gold",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "chapter_back",
-        "front": "round",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "screen_crystals_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "objective_back",
-        "front": "objective",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "screen_crystals",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "objective_back",
-        "front": "boss_timing",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profiles_hint",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "timer_plate",
-        "front": "time",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_card_1",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "coins_plate",
-        "front": "coins_icon",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_slot_1",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "coins_plate",
-        "front": "coins",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_name_1",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "crystals_plate",
-        "front": "crystals_icon",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_detail_1",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "crystals_plate",
-        "front": "crystals",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_create_1_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "hud_unit_plate_1",
-        "front": "hud_unit_icon_1",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_create_1",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "hud_unit_plate_1",
-        "front": "hud_unit_1",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_create_1_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "hud_unit_plate_1",
-        "front": "hud_unit_caption_1",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_create_1_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "hud_unit_icon_1",
-        "front": "hud_unit_1",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+        "behind": "screen_back",
+        "front": "profile_card_2",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "hud_unit_plate_2",
-        "front": "hud_unit_icon_2",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_slot_2",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "hud_unit_plate_2",
-        "front": "hud_unit_2",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_name_2",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "hud_unit_plate_2",
-        "front": "hud_unit_caption_2",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_detail_2",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "hud_unit_icon_2",
-        "front": "hud_unit_2",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+        "behind": "screen_back",
+        "front": "profile_create_2_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "hud_unit_plate_3",
-        "front": "hud_unit_icon_3",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_create_2",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "hud_unit_plate_3",
-        "front": "hud_unit_3",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_create_2_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "hud_unit_plate_3",
-        "front": "hud_unit_caption_3",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_create_2_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "hud_unit_icon_3",
-        "front": "hud_unit_3",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+        "behind": "screen_back",
+        "front": "profile_card_3",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "pause_plate",
-        "front": "pause_icon",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_slot_3",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "pause_plate",
-        "front": "pause",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+        "behind": "screen_back",
+        "front": "profile_name_3",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "pause_icon",
-        "front": "pause",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+        "behind": "screen_back",
+        "front": "profile_detail_3",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "mode_plate_lock",
-        "front": "mode_icon_lock",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_create_3_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "mode_plate_lock",
-        "front": "mode_lock",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_create_3",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "mode_plate_lock",
-        "front": "mode_label_lock",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profile_create_3_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "mode_icon_lock",
-        "front": "mode_lock",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+        "behind": "screen_back",
+        "front": "profile_create_3_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "mode_plate_auto",
-        "front": "mode_icon_auto",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profiles_back_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "mode_plate_auto",
-        "front": "mode_auto",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profiles_back",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "mode_plate_auto",
-        "front": "mode_label_auto",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "screen_back",
+        "front": "profiles_back_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "mode_icon_auto",
-        "front": "mode_auto",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
+        "behind": "screen_back",
+        "front": "profiles_back_hit_bottom",
+        "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "auto_settings_plate",
-        "front": "auto_settings",
+        "behind": "screen_crystals_plate",
+        "front": "screen_crystals",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "target_plate",
-        "front": "target",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profiles_back_plate",
+        "front": "profiles_back",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profiles_back_plate",
+        "front": "profiles_back_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "profiles_back_plate",
+        "front": "profiles_back_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
       }
     ]
   }

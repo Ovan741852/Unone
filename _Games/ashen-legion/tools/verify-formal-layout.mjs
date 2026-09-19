@@ -31,7 +31,7 @@ for(const [name,actions] of Object.entries(cases)){
    allowed.push({behind:a.id,front:b.id,reason:'Explicit HUD artwork under its own contained icon and text'});continue;
   }
   // Only authored full backdrops, card frames and a button's own plate may underlay content.
-  const reason=['menu_art','menu_ground','menu_banner','screen_back','interior_shade','hud_bottom','map_back'].includes(a.id)?'Authored screen backdrop beneath foreground content':/^(stock_panel_|choice_plate_)/.test(a.id)||(a.id==='story_plate'&&/^story_/.test(b.id))?'Authored card frame beneath its contained content':a.id===b.id+'_plate'||a.id===b.id.replace(/_hit_(top|bottom)$/, '')+'_plate'?'Button artwork beneath its semantic control and caption':a.id.replace('map_node_','map_number_')===b.id?'Map number inside its authored marker':null;
+  const reason=['menu_art','menu_ground','menu_banner','screen_back','interior_shade','hud_bottom','map_back','town_scene'].includes(a.id)?'Authored screen backdrop beneath foreground content':/^(stock_panel_|choice_plate_)/.test(a.id)||(a.id==='story_plate'&&/^story_/.test(b.id))?'Authored card frame beneath its contained content':a.id===b.id+'_plate'||a.id===b.id.replace(/_hit_(top|bottom)$/, '')+'_plate'?'Button artwork beneath its semantic control and caption':a.id.replace('map_node_','map_number_')===b.id?'Map number inside its authored marker':null;
   if(reason)allowed.push({behind:a.id,front:b.id,reason});
  }
  const policy=join(out,name+'-policy.json');writeFileSync(policy,JSON.stringify({version:1,screens:{forest_lord:allowed}},null,2));

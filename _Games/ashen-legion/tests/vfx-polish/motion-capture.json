@@ -1,0 +1,1461 @@
+{
+  "mode": "motion",
+  "scope": "Actual game host / fixed browser-only receipts for six procs, spin, critical",
+  "errors": [],
+  "metrics": {
+    "instances": 15,
+    "instance_cells": 5,
+    "submitted_instance_cells": 5,
+    "submitted_instances": 15,
+    "culled_instances": 0,
+    "draw_calls": 277,
+    "triangles": 150250,
+    "textures": 50,
+    "particles": 0,
+    "effects": 0,
+    "bloom": true,
+    "ao": true,
+    "ao_method": "depth-ssao-12",
+    "bloom_resolution": [
+      360,
+      225
+    ],
+    "hdr": true,
+    "gpu_timer_available": true,
+    "gpu_on": {
+      "samples": 95,
+      "median_ms": 1.333568,
+      "p95_ms": 16.635712
+    },
+    "gpu_off": null,
+    "walls": {
+      "halfExtent": 12.5,
+      "innerFace": 12.5,
+      "height": 0.66,
+      "segments": 136
+    },
+    "lighting": {
+      "mode": "cycle",
+      "side": "both",
+      "nightMix": 0.0884318157327802,
+      "shadowMap": 2048,
+      "primaryLights": 2,
+      "left": {
+        "color": "#fcd29a",
+        "intensity": 1.993881821120664
+      },
+      "right": {
+        "color": "#a7a1df",
+        "intensity": 1.1323136368534439
+      },
+      "eventLights": 1,
+      "litArena": true
+    },
+    "camera": {
+      "projection": "perspective",
+      "fan": false
+    },
+    "actors": {
+      "actors": 36,
+      "animator": {
+        "lod": {
+          "budget_hz": 2400,
+          "assigned": [
+            {
+              "id": "m1",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m10",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m11",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m12",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m13",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m14",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m15",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m16",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m17",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m18",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m19",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m2",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m20",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m21",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m22",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m23",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m24",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m25",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m26",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m27",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m28",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m29",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m3",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m30",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m31",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m32",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m33",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m34",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m35",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m4",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m5",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m6",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m7",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m8",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "m9",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            {
+              "id": "t36",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            }
+          ],
+          "counts": {
+            "full": 1,
+            "reduced": 35
+          }
+        },
+        "instances": [
+          {
+            "id": "m1",
+            "distance": 14,
+            "lod": {
+              "id": "m1",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m10",
+            "distance": 14,
+            "lod": {
+              "id": "m10",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m11",
+            "distance": 14,
+            "lod": {
+              "id": "m11",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m12",
+            "distance": 14,
+            "lod": {
+              "id": "m12",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m13",
+            "distance": 14,
+            "lod": {
+              "id": "m13",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m14",
+            "distance": 14,
+            "lod": {
+              "id": "m14",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m15",
+            "distance": 14,
+            "lod": {
+              "id": "m15",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m16",
+            "distance": 14,
+            "lod": {
+              "id": "m16",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m17",
+            "distance": 14,
+            "lod": {
+              "id": "m17",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m18",
+            "distance": 14,
+            "lod": {
+              "id": "m18",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m19",
+            "distance": 14,
+            "lod": {
+              "id": "m19",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m2",
+            "distance": 14,
+            "lod": {
+              "id": "m2",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m20",
+            "distance": 14,
+            "lod": {
+              "id": "m20",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m21",
+            "distance": 14,
+            "lod": {
+              "id": "m21",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m22",
+            "distance": 14,
+            "lod": {
+              "id": "m22",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m23",
+            "distance": 14,
+            "lod": {
+              "id": "m23",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m24",
+            "distance": 14,
+            "lod": {
+              "id": "m24",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m25",
+            "distance": 14,
+            "lod": {
+              "id": "m25",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m26",
+            "distance": 14,
+            "lod": {
+              "id": "m26",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m27",
+            "distance": 14,
+            "lod": {
+              "id": "m27",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m28",
+            "distance": 14,
+            "lod": {
+              "id": "m28",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m29",
+            "distance": 14,
+            "lod": {
+              "id": "m29",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m3",
+            "distance": 14,
+            "lod": {
+              "id": "m3",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m30",
+            "distance": 14,
+            "lod": {
+              "id": "m30",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m31",
+            "distance": 14,
+            "lod": {
+              "id": "m31",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m32",
+            "distance": 14,
+            "lod": {
+              "id": "m32",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m33",
+            "distance": 14,
+            "lod": {
+              "id": "m33",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m34",
+            "distance": 14,
+            "lod": {
+              "id": "m34",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m35",
+            "distance": 14,
+            "lod": {
+              "id": "m35",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m4",
+            "distance": 14,
+            "lod": {
+              "id": "m4",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m5",
+            "distance": 14,
+            "lod": {
+              "id": "m5",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m6",
+            "distance": 14,
+            "lod": {
+              "id": "m6",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m7",
+            "distance": 14,
+            "lod": {
+              "id": "m7",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m8",
+            "distance": 14,
+            "lod": {
+              "id": "m8",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "m9",
+            "distance": 14,
+            "lod": {
+              "id": "m9",
+              "level": "reduced",
+              "distance": 14,
+              "updateHz": 15,
+              "culled": false
+            },
+            "equipment": {},
+            "animation": {
+              "state": "walk",
+              "clip": "walk",
+              "time": 0.30836665077321235,
+              "duration": 1.2333333492279053,
+              "normalizedTime": 0.25002701091822166,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          },
+          {
+            "id": "t36",
+            "distance": 2,
+            "lod": {
+              "id": "t36",
+              "level": "full",
+              "distance": 2,
+              "updateHz": 30,
+              "culled": false
+            },
+            "equipment": {
+              "head": 0,
+              "body": 0,
+              "feet": 0,
+              "hands": 0,
+              "weapon": 0
+            },
+            "animation": {
+              "state": "spin",
+              "clip": "spin",
+              "time": 0.3984000000003725,
+              "duration": 0.55,
+              "normalizedTime": 0.7243636363643136,
+              "speed": 1,
+              "loop": true,
+              "playing": true,
+              "finished": false,
+              "paused": false,
+              "transition": null,
+              "active_action_count": 1
+            }
+          }
+        ],
+        "semantics": "presentation-only; instances3d/gameplay tick/collision/root motion are unchanged"
+      },
+      "creatures": 11,
+      "equipment": 45,
+      "livery": "sculpted-storybook-v2",
+      "art": {
+        "style": "olive-crimson-ink",
+        "materials": 10,
+        "outlinePixels": 1.3,
+        "lightingBands": 3
+      },
+      "combatFX": {
+        "style": "storybook-faceted-v1",
+        "activeEvents": 2,
+        "eventBudget": 36,
+        "skippedEvents": 0,
+        "kinds": {
+          "lightning": 1,
+          "spin": 1
+        },
+        "trailSegments": 0,
+        "trailSlots": 0,
+        "ink": {
+          "vertices": 270,
+          "capacity": 42000,
+          "droppedTriangles": 0
+        },
+        "core": {
+          "vertices": 504,
+          "capacity": 36000,
+          "droppedTriangles": 0
+        },
+        "reducedMotion": false,
+        "clock": 11.53333333333341,
+        "drawCalls": 2,
+        "debug": "final"
+      }
+    },
+    "lottie": {
+      "ok": true,
+      "value": {
+        "componentBounds": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        "clipped": false,
+        "assetReady": true,
+        "currentFrame": 0,
+        "state": "ready",
+        "generation": 1,
+        "backend": "canvas-2d",
+        "error": null
+      },
+      "celebrationVisible": false,
+      "fullscreen": false,
+      "ultimate": null,
+      "activeTier": 0,
+      "activeAsset": null,
+      "stage": "idle",
+      "rolledAmount": 0,
+      "targetAmount": 0,
+      "eventIds": [],
+      "completedAmounts": [],
+      "dockRect": null,
+      "visualRect": null,
+      "usesMultiplier": false,
+      "pointerEvents": "none",
+      "diagnostics": [],
+      "impact": {
+        "impulses": 0,
+        "liveImpulses": 0,
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "peak": 0,
+        "reducedMotion": false,
+        "hudShakes": false,
+        "particleBudget": 160,
+        "diagnostics": []
+      },
+      "audio": {
+        "pendingCues": 0,
+        "muted": false
+      }
+    },
+    "labels": {
+      "labels": 3,
+      "payouts": 0,
+      "damage": 0,
+      "criticals": 0,
+      "items": [],
+      "guards": [],
+      "usesMultiplier": false,
+      "cacheSize": 21,
+      "diagnostics": []
+    },
+    "ui": {
+      "backend": "canvas2d",
+      "nodes": 42,
+      "assets": [
+        {
+          "id": "texture://ui_hud-heading",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_crest",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-objective",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-target",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-gold",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-coin",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-crystal",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-crystal",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-key",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-sword",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_hud-active",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-spear",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-cavalry",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-pause",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-lock",
+          "state": "ready"
+        },
+        {
+          "id": "texture://ui_symbol-auto",
+          "state": "ready"
+        }
+      ],
+      "diagnostics": [],
+      "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+      "limitations": [
+        "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+        "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+      ]
+    },
+    "motion": {
+      "reducedMotion": false,
+      "active": false,
+      "frameCount": 95,
+      "key": "battle:home:false:1",
+      "backend": "official-canvas-ui",
+      "sharedHitTree": true
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "portrait": false,
+      "safeInsets": {
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "bottom": 0
+      }
+    }
+  }
+}

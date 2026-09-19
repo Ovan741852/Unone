@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 100 100" role="img" aria-label="死靈法師" data-art-style="hazel-faceted-v1">
+ <path d="M49 5L56 20L73 11L70 29L92 30L78 45L94 57L73 62L78 84L58 76L49 96L41 76L21 85L25 64L6 58L22 45L8 30L29 29L25 11L42 20Z" fill="#26362f" stroke="#21312a" stroke-width="3" stroke-linejoin="bevel"/>
+ <path d="M49 12L55 28L72 19L67 36L84 37L71 49L86 58L65 61L71 77L55 70L49 88L42 70L27 78L31 61L14 57L29 48L17 37L34 35L31 20L44 28Z" fill="#3c725d" stroke="#b4b274" stroke-width="2" stroke-linejoin="bevel"/>
+ <path d="M49 16L57 31L70 21L65 40L82 40L67 51L83 57L62 62L68 75L52 69L48 85L42 68L29 76L34 59L18 55L34 47L23 38L39 36L36 23L48 31Z" fill="#70a07a" opacity=".72"/>
+ <path d="M36 40L43 34L57 36L64 44L62 59L54 67L42 66L35 57Z" fill="#d4c18b" stroke="#2b392f" stroke-width="3" stroke-linejoin="bevel"/>
+ <path d="M38 47L47 44L46 51L38 53ZM54 44L62 48L60 53L53 51Z" fill="#28352e"/>
+ <path d="M44 59L50 56L56 59L52 64L47 64Z" fill="#a35c42" stroke="#574135" stroke-width="1.8"/>
+ <path d="M50 24L47 34M73 49L64 50M29 53L37 50M50 75L50 67" stroke="#e3cc8c" stroke-width="2.5" stroke-linecap="round"/>
+ <path d="M22 26L29 29M71 73L77 77M23 73L28 69M73 28L78 23" stroke="#dbb86d" stroke-width="2.8" stroke-linecap="round"/>
+</svg>

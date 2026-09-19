@@ -1,0 +1,150 @@
+{
+  "checks": 83,
+  "scope": "Actual WASM assertions plus 9 short 20-second production simulations with in-memory starting loadouts. Not a full-run balance conclusion.",
+  "results": [
+    {
+      "skills": [
+        "cinder_seal",
+        "chain_fuse",
+        "pierce"
+      ],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 80,
+          "spent": 2000,
+          "earned": 2294,
+          "coins": 614,
+          "kills": 60,
+          "counts": {
+            "chain_fuse": 82,
+            "cinder_seal": 86
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 79,
+          "spent": 1975,
+          "earned": 2164,
+          "coins": 509,
+          "kills": 60,
+          "counts": {
+            "chain_fuse": 74,
+            "cinder_seal": 81
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 80,
+          "spent": 2000,
+          "earned": 2154,
+          "coins": 474,
+          "kills": 58,
+          "counts": {
+            "chain_fuse": 87,
+            "cinder_seal": 95
+          },
+          "phase": "battle"
+        }
+      ]
+    },
+    {
+      "skills": [
+        "thunder_fan",
+        "rain_strike",
+        "starfall"
+      ],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 76,
+          "spent": 1976,
+          "earned": 2144,
+          "coins": 488,
+          "kills": 62,
+          "counts": {
+            "starfall": 128,
+            "thunder_fan": 35
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 74,
+          "spent": 1924,
+          "earned": 2522,
+          "coins": 918,
+          "kills": 62,
+          "counts": {
+            "starfall": 130,
+            "thunder_fan": 47
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 80,
+          "spent": 2080,
+          "earned": 2072,
+          "coins": 312,
+          "kills": 61,
+          "counts": {
+            "starfall": 155,
+            "thunder_fan": 25
+          },
+          "phase": "battle"
+        }
+      ]
+    },
+    {
+      "skills": [
+        "echo_blade",
+        "soul_return",
+        "firstborn"
+      ],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 78,
+          "spent": 1872,
+          "earned": 1940,
+          "coins": 388,
+          "kills": 61,
+          "counts": {
+            "echo_blade": 72,
+            "soul_return": 48
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 73,
+          "spent": 1752,
+          "earned": 1916,
+          "coins": 484,
+          "kills": 60,
+          "counts": {
+            "echo_blade": 69,
+            "soul_return": 49
+          },
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 80,
+          "spent": 1920,
+          "earned": 2700,
+          "coins": 1100,
+          "kills": 62,
+          "counts": {
+            "echo_blade": 80,
+            "soul_return": 49
+          },
+          "phase": "battle"
+        }
+      ]
+    }
+  ]
+}

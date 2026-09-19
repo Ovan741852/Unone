@@ -9,962 +9,227 @@
       },
       {
         "behind": "screen_back",
-        "front": "auto_help",
+        "front": "screen_gold",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_all_plate",
+        "front": "screen_crystals_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_all",
+        "front": "screen_crystals",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_all_hit_top",
+        "front": "profiles_hint",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_all_hit_bottom",
+        "front": "profile_card_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_none_plate",
+        "front": "profile_slot_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_none",
+        "front": "profile_name_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_none_hit_top",
+        "front": "profile_detail_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_none_hit_bottom",
+        "front": "profile_create_1_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_small_plate",
+        "front": "profile_create_1",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_small",
+        "front": "profile_create_1_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_small_hit_top",
+        "front": "profile_create_1_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_small_hit_bottom",
+        "front": "profile_card_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_boss_plate",
+        "front": "profile_slot_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_boss",
+        "front": "profile_name_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_boss_hit_top",
+        "front": "profile_detail_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_boss_hit_bottom",
+        "front": "profile_create_2_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_special_plate",
+        "front": "profile_create_2",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_special",
+        "front": "profile_create_2_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_special_hit_top",
+        "front": "profile_create_2_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_preset_special_hit_bottom",
+        "front": "profile_card_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_card_1",
+        "front": "profile_slot_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_icon_1",
+        "front": "profile_name_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_tick_1",
+        "front": "profile_detail_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_pick_1",
+        "front": "profile_create_3_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_name_1",
+        "front": "profile_create_3",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_info_1",
+        "front": "profile_create_3_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_card_2",
+        "front": "profile_create_3_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_icon_2",
+        "front": "profiles_back_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_tick_2",
+        "front": "profiles_back",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_pick_2",
+        "front": "profiles_back_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "screen_back",
-        "front": "auto_name_2",
+        "front": "profiles_back_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
-        "behind": "screen_back",
-        "front": "auto_info_2",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_card_3",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_icon_3",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_tick_3",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_pick_3",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_name_3",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_info_3",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_card_4",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_icon_4",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_tick_4",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_pick_4",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_name_4",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_info_4",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_card_5",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_icon_5",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_tick_5",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_pick_5",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_name_5",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_info_5",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_card_6",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_icon_6",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_tick_6",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_pick_6",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_name_6",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_info_6",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_card_7",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_icon_7",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_tick_7",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_pick_7",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_name_7",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_info_7",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_card_8",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_icon_8",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_tick_8",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_pick_8",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_name_8",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_info_8",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_card_9",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_icon_9",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_tick_9",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_pick_9",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_name_9",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_info_9",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_card_10",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_icon_10",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_tick_10",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_pick_10",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_name_10",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_info_10",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_summary",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_note",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_cancel_plate",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_cancel",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_cancel_hit_top",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_cancel_hit_bottom",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_apply_plate",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_apply",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_apply_hit_top",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "screen_back",
-        "front": "auto_apply_hit_bottom",
-        "reason": "Authored screen backdrop beneath foreground content"
-      },
-      {
-        "behind": "auto_preset_all_plate",
-        "front": "auto_preset_all",
+        "behind": "screen_crystals_plate",
+        "front": "screen_crystals",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "auto_preset_all_plate",
-        "front": "auto_preset_all_hit_top",
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "auto_preset_all_plate",
-        "front": "auto_preset_all_hit_bottom",
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1_hit_top",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "auto_preset_none_plate",
-        "front": "auto_preset_none",
+        "behind": "profile_create_1_plate",
+        "front": "profile_create_1_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "auto_preset_none_plate",
-        "front": "auto_preset_none_hit_top",
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "auto_preset_none_plate",
-        "front": "auto_preset_none_hit_bottom",
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2_hit_top",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "auto_preset_small_plate",
-        "front": "auto_preset_small",
+        "behind": "profile_create_2_plate",
+        "front": "profile_create_2_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "auto_preset_small_plate",
-        "front": "auto_preset_small_hit_top",
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "auto_preset_small_plate",
-        "front": "auto_preset_small_hit_bottom",
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3_hit_top",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "auto_preset_boss_plate",
-        "front": "auto_preset_boss",
+        "behind": "profile_create_3_plate",
+        "front": "profile_create_3_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "auto_preset_boss_plate",
-        "front": "auto_preset_boss_hit_top",
+        "behind": "profiles_back_plate",
+        "front": "profiles_back",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "auto_preset_boss_plate",
-        "front": "auto_preset_boss_hit_bottom",
+        "behind": "profiles_back_plate",
+        "front": "profiles_back_hit_top",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "auto_preset_special_plate",
-        "front": "auto_preset_special",
-        "reason": "Button artwork beneath its semantic control and caption"
-      },
-      {
-        "behind": "auto_preset_special_plate",
-        "front": "auto_preset_special_hit_top",
-        "reason": "Button artwork beneath its semantic control and caption"
-      },
-      {
-        "behind": "auto_preset_special_plate",
-        "front": "auto_preset_special_hit_bottom",
-        "reason": "Button artwork beneath its semantic control and caption"
-      },
-      {
-        "behind": "auto_card_1",
-        "front": "auto_icon_1",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_1",
-        "front": "auto_tick_1",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_1",
-        "front": "auto_pick_1",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_1",
-        "front": "auto_name_1",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_1",
-        "front": "auto_info_1",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_1",
-        "front": "auto_tick_1",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_1",
-        "front": "auto_pick_1",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_tick_1",
-        "front": "auto_pick_1",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_card_2",
-        "front": "auto_icon_2",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_2",
-        "front": "auto_tick_2",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_2",
-        "front": "auto_pick_2",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_2",
-        "front": "auto_name_2",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_2",
-        "front": "auto_info_2",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_2",
-        "front": "auto_tick_2",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_2",
-        "front": "auto_pick_2",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_tick_2",
-        "front": "auto_pick_2",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_card_3",
-        "front": "auto_icon_3",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_3",
-        "front": "auto_tick_3",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_3",
-        "front": "auto_pick_3",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_3",
-        "front": "auto_name_3",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_3",
-        "front": "auto_info_3",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_3",
-        "front": "auto_tick_3",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_3",
-        "front": "auto_pick_3",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_tick_3",
-        "front": "auto_pick_3",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_card_4",
-        "front": "auto_icon_4",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_4",
-        "front": "auto_tick_4",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_4",
-        "front": "auto_pick_4",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_4",
-        "front": "auto_name_4",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_4",
-        "front": "auto_info_4",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_4",
-        "front": "auto_tick_4",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_4",
-        "front": "auto_pick_4",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_tick_4",
-        "front": "auto_pick_4",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_card_5",
-        "front": "auto_icon_5",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_5",
-        "front": "auto_tick_5",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_5",
-        "front": "auto_pick_5",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_5",
-        "front": "auto_name_5",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_5",
-        "front": "auto_info_5",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_5",
-        "front": "auto_tick_5",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_5",
-        "front": "auto_pick_5",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_tick_5",
-        "front": "auto_pick_5",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_card_6",
-        "front": "auto_icon_6",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_6",
-        "front": "auto_tick_6",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_6",
-        "front": "auto_pick_6",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_6",
-        "front": "auto_name_6",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_6",
-        "front": "auto_info_6",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_6",
-        "front": "auto_tick_6",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_6",
-        "front": "auto_pick_6",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_tick_6",
-        "front": "auto_pick_6",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_card_7",
-        "front": "auto_icon_7",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_7",
-        "front": "auto_tick_7",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_7",
-        "front": "auto_pick_7",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_7",
-        "front": "auto_name_7",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_7",
-        "front": "auto_info_7",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_7",
-        "front": "auto_tick_7",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_7",
-        "front": "auto_pick_7",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_tick_7",
-        "front": "auto_pick_7",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_card_8",
-        "front": "auto_icon_8",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_8",
-        "front": "auto_tick_8",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_8",
-        "front": "auto_pick_8",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_8",
-        "front": "auto_name_8",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_8",
-        "front": "auto_info_8",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_8",
-        "front": "auto_tick_8",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_8",
-        "front": "auto_pick_8",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_tick_8",
-        "front": "auto_pick_8",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_card_9",
-        "front": "auto_icon_9",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_9",
-        "front": "auto_tick_9",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_9",
-        "front": "auto_pick_9",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_9",
-        "front": "auto_name_9",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_9",
-        "front": "auto_info_9",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_9",
-        "front": "auto_tick_9",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_9",
-        "front": "auto_pick_9",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_tick_9",
-        "front": "auto_pick_9",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_card_10",
-        "front": "auto_icon_10",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_10",
-        "front": "auto_tick_10",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_10",
-        "front": "auto_pick_10",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_10",
-        "front": "auto_name_10",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_card_10",
-        "front": "auto_info_10",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_10",
-        "front": "auto_tick_10",
-        "reason": "Explicit HUD artwork under its own contained icon and text"
-      },
-      {
-        "behind": "auto_icon_10",
-        "front": "auto_pick_10",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_tick_10",
-        "front": "auto_pick_10",
-        "reason": "Explicit transparent semantic hit area over its own authored icon and caption"
-      },
-      {
-        "behind": "auto_cancel_plate",
-        "front": "auto_cancel",
-        "reason": "Button artwork beneath its semantic control and caption"
-      },
-      {
-        "behind": "auto_cancel_plate",
-        "front": "auto_cancel_hit_top",
-        "reason": "Button artwork beneath its semantic control and caption"
-      },
-      {
-        "behind": "auto_cancel_plate",
-        "front": "auto_cancel_hit_bottom",
-        "reason": "Button artwork beneath its semantic control and caption"
-      },
-      {
-        "behind": "auto_apply_plate",
-        "front": "auto_apply",
-        "reason": "Button artwork beneath its semantic control and caption"
-      },
-      {
-        "behind": "auto_apply_plate",
-        "front": "auto_apply_hit_top",
-        "reason": "Button artwork beneath its semantic control and caption"
-      },
-      {
-        "behind": "auto_apply_plate",
-        "front": "auto_apply_hit_bottom",
+        "behind": "profiles_back_plate",
+        "front": "profiles_back_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       }
     ]

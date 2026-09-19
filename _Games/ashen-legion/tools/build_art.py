@@ -102,6 +102,22 @@ for name,col in [('spark_gold',(255,241,160)),('spark_jade',(134,255,225)),('spa
     m=Mesh();m.cone(0,-.5,0,.4,.8,col,4);m.cone(0,.3,0,.25,.5,col,4);m.save(name)
 from forest_art import build_forest
 m,cannon=build_forest(Mesh);m.save('arena');cannon.save('cannon')
+# Persistent frost proc shards use their own compact faceted mesh and palette.
+# Generate last so the existing palette indices and every other mesh stay stable.
+m=Mesh();sides=5;bottom=(0,-.56,0);tip=(0,.57,0)
+deep_ice=(29,82,132);shadow_ice=(45,116,174);mid_ice=(77,172,220);bright_ice=(167,236,250);white_ice=(226,250,255)
+base=[];shoulder=[]
+for i in range(sides):
+    a=i*math.tau/sides;wobble=1+(.09 if i%2==0 else -.06)
+    base.append((.15*wobble*math.cos(a),-.27,.15*wobble*math.sin(a)))
+    shoulder.append((.105*wobble*math.cos(a),.08,.105*wobble*math.sin(a)))
+for i in range(sides):
+    j=(i+1)%sides
+    m.tri(bottom,base[j],base[i],deep_ice)
+    m.quad(base[i],shoulder[i],shoulder[j],base[j],shadow_ice if i%2 else mid_ice)
+    m.tri(shoulder[i],tip,shoulder[j],bright_ice if i%2 else mid_ice)
+    if i==0:m.tri(base[i],tip,shoulder[i],white_ice)
+m.save('spark_ice')
 width=max(2048,2**math.ceil(math.log2(max(1,len(COLORS)))))
 if len(COLORS)>width:raise ValueError('palette full')
 im=Image.new('RGB',(width,4));pix=im.load()

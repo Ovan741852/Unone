@@ -1,0 +1,48 @@
+{
+  "checks": 35,
+  "scope": "Actual WASM fixtures and three 20-second mixed-army trials. Starting skills injected in memory only; normal lotteries and economy. Not full-run balance evidence.",
+  "results": [
+    {
+      "seed": 11,
+      "fired": 80,
+      "spent": 1216,
+      "earned": 1758,
+      "coins": 862,
+      "kills": 57,
+      "counts": {
+        "guard_bequest": 32,
+        "legacy_gift": 32
+      },
+      "peakStacks": 3,
+      "burstHits": 22
+    },
+    {
+      "seed": 42,
+      "fired": 80,
+      "spent": 1216,
+      "earned": 2224,
+      "coins": 1328,
+      "kills": 59,
+      "counts": {
+        "guard_bequest": 32,
+        "legacy_gift": 32
+      },
+      "peakStacks": 3,
+      "burstHits": 15
+    },
+    {
+      "seed": 83,
+      "fired": 80,
+      "spent": 1216,
+      "earned": 1632,
+      "coins": 736,
+      "kills": 59,
+      "counts": {
+        "guard_bequest": 32,
+        "legacy_gift": 32
+      },
+      "peakStacks": 2,
+      "burstHits": 16
+    }
+  ]
+}

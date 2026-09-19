@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {module,payload,loadProject,readObservation} from './runtime-harness.mjs';
+const root=new URL('../',import.meta.url);
+const manifest=JSON.parse(readFileSync(new URL('assets.json',root),'utf8'));
+const ice=manifest.assets.find(asset=>asset.id==='mesh://spark_ice');
+assert.ok(ice,'ice shard mesh is registered');
+const mesh=JSON.parse(readFileSync(new URL(ice.source.replace(/^assets\//,'assets/'),root),'utf8'));
+assert.ok(mesh.positions.length>=90&&mesh.uvs.length===mesh.positions.length/3*2,'ice shard is a textured low-poly mesh');
+const fixture=readFileSync(new URL('ice-shard-fixtures.luau',import.meta.url),'utf8');
+loadProject(module,{...payload,script:payload.script.replace('return Game',fixture+'\nreturn Game')},42n);
+const checks=readObservation(module).world.observations.ice_shard_checks;
+assert.ok(checks>=128,`expected particle and publication checks; got ${checks}`);
+writeFileSync(new URL('../tests/ice-shards-runtime.json',import.meta.url),JSON.stringify({ok:true,checks,mesh:'mesh://spark_ice',count:40,scope:'Production effect pool and presentation updater under deterministic WASM fixture'},null,2));
+console.log('PASS '+checks+' ice shard mesh, particle count, motion, lift, rotation and expiry checks in actual WASM');

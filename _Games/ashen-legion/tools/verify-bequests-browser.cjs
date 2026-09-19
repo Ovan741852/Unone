@@ -1,0 +1,50 @@
+const {chromium}=require('C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),out=path.join(root,'tests/bequests');fs.mkdirSync(out,{recursive:true});
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});try{
+ const page=await browser.newPage({viewport:{width:1440,height:810}}),errors=[];
+ page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+ const action=async name=>{await page.evaluate(n=>ashen.action(n),name);await page.waitForTimeout(160)};
+ await page.goto('http://127.0.0.1:8190/?build=bequests-v1&seed=42');await page.waitForSelector('body[data-ready=true]',{timeout:45000});
+ await action('UI_builds');for(let i=0;i<8;i++)await action('UI_page_next');
+ assert.ok((await page.evaluate(()=>JSON.stringify(ashen.uiTree()))).includes('英魂破陣'));
+ await page.screenshot({path:path.join(out,'build-guide.png')});await action('Build25');await action('UI_home');await action('Start');
+ await page.waitForFunction(()=>ashen.state().phase==='choice');await action('Choice1');await action('Unit1');
+ assert.equal(await page.evaluate(()=>ashen.state().stock[0].skill),'legacy_gift');await action('Buy1');await action('Equip1');await action('RefreshShop');
+ assert.equal(await page.evaluate(()=>ashen.state().stock[0].skill),'guard_bequest');await page.screenshot({path:path.join(out,'shop.png')});await action('Buy1');
+ const purchased=await page.evaluate(()=>({items:ashen.state().items,worn:ashen.state().worn,costs:ashen.state().costs,crystals:ashen.state().crystals}));
+ assert.ok(purchased.items.some(i=>i.skill==='legacy_gift')&&!purchased.items.some(i=>i.skill==='guard_bequest'));assert.equal(purchased.crystals,4); // Insufficient funds must not buy the second item.
+ await action('UI_gear');assert.deepEqual(await page.evaluate(()=>ashen.metrics().ui.diagnostics),[]);await page.screenshot({path:path.join(out,'equipment.png')});
+ await action('UI_home');await action('LeaveShop');await action('Unit3');await action('Mode_auto');await action('Auto_apply');
+ await page.waitForFunction(()=>ashen.state().fired>=10,null,{timeout:10000});await action('Unit1');
+ await page.waitForFunction(()=>ashen.state().skillRuntime.triggers.counts.legacy_gift>=3&&ashen.metrics().actors.combatFX.triggers.kinds.legacy_gift>0,null,{timeout:20000});
+ await page.screenshot({path:path.join(out,'legacy-gift.png')});
+ const nativeCounts=await page.evaluate(()=>ashen.state().skillRuntime.triggers.counts);
+ // Starting equipment fixture for combined combat; neither prices nor lotteries change.
+ await page.route('**/content/project.json',async route=>{const response=await route.fetch(),payload=await response.json();
+  payload.script=payload.script.replace('local function beginBattle()',`local function beginBattle()\nS.skillSources[1]={{id="legacy_gift"},{id="guard_bequest"},{id="short_fuse"}};for _,def in ipairs(gearCatalog)do if def.skill=="legacy_gift"or def.skill=="guard_bequest"then addItem(def,0);S.worn[1][def.slot]=S.items[#S.items].id end end`);
+  payload.script=payload.script.replace('if item then table.insert(list,{id=item.skill});','if item and false then table.insert(list,{id=item.skill});');await route.fulfill({response,json:payload});
+ });
+ await page.goto('http://127.0.0.1:8190/?build=bequests-v1&seed=42');await page.waitForSelector('body[data-ready=true]',{timeout:45000});
+ await action('Start');await page.waitForFunction(()=>ashen.state().phase==='choice');await action('Choice1');await action('LeaveShop');await action('Unit3');await action('Mode_auto');await action('Auto_apply');
+ await page.waitForFunction(()=>ashen.state().fired>=10,null,{timeout:10000});await action('Unit1');
+ await page.waitForFunction(()=>ashen.metrics().actors.combatFX.triggers.kinds.guard_bequest>0,null,{timeout:15000});
+ await page.screenshot({path:path.join(out,'guard-bequest.png')});
+ const capture=await page.evaluate(()=>({counts:ashen.state().skillRuntime.triggers.counts,buffs:ashen.state().skillRuntime.triggers.buffs,metrics:ashen.metrics()}));
+ assert.equal(capture.metrics.actors.equipment,77);assert.deepEqual(capture.metrics.ui.diagnostics,[]);
+ assert.equal(capture.metrics.actors.combatFX.ink.droppedTriangles+capture.metrics.actors.combatFX.core.droppedTriangles,0);
+ assert.ok(Object.values(capture.buffs).some(b=>b.kind==='legacy_gift'));
+ await page.evaluate(()=>ashen.setBloom(false));await page.waitForTimeout(250);await page.screenshot({path:path.join(out,'no-bloom.png')});
+ await action('Pause');const paused=await page.evaluate(()=>JSON.stringify(ashen.state().skillRuntime));await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>JSON.stringify(ashen.state().skillRuntime)),paused);
+ const render=await page.evaluate(async()=>{
+  const T=await import('/presentation/vendor/build/three.module.js'),{createCombatFX}=await import('/presentation/combat-fx.mjs');const scene=new T.Scene(),fx=createCombatFX(scene,{reducedMotion:()=>false,compact:()=>false});
+  const state={phase:'battle',round:1,rewardClock:1,skillRuntime:{clock:1,triggers:{events:Array.from({length:100},(_,i)=>({id:i,kind:i%2?'legacy_gift':'guard_bequest',time:.8,x:i%10,z:0,tx:4,tz:4,radius:2.8,stacks:3})),buffs:Array.from({length:100},(_,i)=>({kind:'legacy_gift',sourceId:i,x:i%10,z:2,stacks:3,remaining:4}))}}};
+  const freeze=o=>{Object.freeze(o);for(const v of Object.values(o))if(v&&typeof v==='object')freeze(v)};freeze(state);fx.update(state);
+  const dense=fx.inspect(),geometry=()=>JSON.stringify(scene.children.map(m=>Array.from(m.geometry.attributes.position.array.slice(0,m.geometry.drawRange.count*3))));const before=geometry();fx.update(state);const stable=before===geometry();
+  fx.update({phase:'clear',round:1,rewardClock:2,skillRuntime:{}});const clear=fx.inspect();fx.dispose();return{dense,stable,clear,remainingMeshes:scene.children.length};
+ });
+ assert.ok(render.dense.triggers.kinds.legacy_gift>0&&render.dense.triggers.kinds.guard_bequest>0);assert.equal(render.dense.drawCalls,2);
+ assert.equal(render.dense.ink.droppedTriangles+render.dense.core.droppedTriangles,0);assert.ok(render.stable);assert.equal(render.clear.drawCalls,0);assert.equal(render.remainingMeshes,0);assert.deepEqual(errors,[]);
+ fs.writeFileSync(path.join(out,'browser-report.json'),JSON.stringify({scope:'1440x810 native build/shop/refresh/equip/AUTO death support and insufficient-funds rejection. Combined combat uses in-memory starting equipment only, no production cheats. Separate frozen renderer fixture.',purchased,nativeCounts,capture,render,errors},null,2));
+ console.log('PASS native gift purchase and unaffordable guard-item rejection, mixed-army death support/burst, 77 models, pause and bounded VFX');
+ }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

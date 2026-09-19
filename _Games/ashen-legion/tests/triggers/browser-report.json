@@ -1,0 +1,4664 @@
+{
+  "scope": "Landscape 1440x810. First test buys real plunder gear through normal UI. Captures then use disclosed in-memory build grants; last test uses frozen render receipts only.",
+  "actual": {
+    "plunder": 1,
+    "lives": [
+      4
+    ]
+  },
+  "reports": [
+    {
+      "name": "plunder-rush",
+      "capture": {
+        "counts": {
+          "firstborn": 3,
+          "plunder": 10
+        },
+        "plunder": 10,
+        "metrics": {
+          "instances": 33,
+          "instance_cells": 7,
+          "submitted_instance_cells": 7,
+          "submitted_instances": 33,
+          "culled_instances": 0,
+          "draw_calls": 346,
+          "triangles": 169649,
+          "textures": 85,
+          "particles": 0,
+          "effects": 0,
+          "bloom": true,
+          "ao": true,
+          "ao_method": "depth-ssao-12",
+          "bloom_resolution": [
+            360,
+            203
+          ],
+          "hdr": true,
+          "gpu_timer_available": true,
+          "gpu_on": {
+            "samples": 140,
+            "median_ms": 2.674976,
+            "p95_ms": 18.900064
+          },
+          "gpu_off": null,
+          "walls": {
+            "halfExtent": 12.5,
+            "innerFace": 12.5,
+            "height": 0.66,
+            "segments": 136
+          },
+          "lighting": {
+            "mode": "cycle",
+            "side": "both",
+            "nightMix": 0.00410840993521111,
+            "shadowMap": 2048,
+            "primaryLights": 2,
+            "left": {
+              "color": "#ffd49a",
+              "intensity": 2.095069908077747
+            },
+            "right": {
+              "color": "#aaa2df",
+              "intensity": 1.1491783180129578
+            },
+            "eventLights": 1,
+            "litArena": true
+          },
+          "camera": {
+            "projection": "perspective",
+            "fan": false
+          },
+          "actors": {
+            "actors": 38,
+            "animator": {
+              "lod": {
+                "budget_hz": 2400,
+                "assigned": [
+                  {
+                    "id": "m1",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m10",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m11",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m12",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m13",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m14",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m15",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m16",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m17",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m18",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m19",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m2",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m20",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m21",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m22",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m23",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m24",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m25",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m26",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m27",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m28",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m29",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m3",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m30",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m31",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m32",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m33",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m34",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m35",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m4",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m5",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m6",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m7",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m8",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m9",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "t36",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t36-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t37",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t37-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t38",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t38-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "tmenu1",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "tmenu2",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "tmenu3",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "tmenu3-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  }
+                ],
+                "counts": {
+                  "full": 10,
+                  "reduced": 35
+                }
+              },
+              "instances": [
+                {
+                  "id": "m1",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m1",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m10",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m10",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m11",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m11",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m12",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m12",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m13",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m13",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m14",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m14",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": {
+                      "source": "hit",
+                      "target": "walk",
+                      "progress": 0,
+                      "duration": 0.12
+                    },
+                    "active_action_count": 2
+                  }
+                },
+                {
+                  "id": "m15",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m15",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m16",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m16",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "hit",
+                    "clip": "hit",
+                    "time": 0.072,
+                    "duration": 0.3333333432674408,
+                    "normalizedTime": 0.21599999356269853,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m17",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m17",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m18",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m18",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m19",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m19",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m2",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m2",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m20",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m20",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m21",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m21",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m22",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m22",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.072,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.05837837762602757,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": {
+                      "source": "hit",
+                      "target": "walk",
+                      "progress": 0.6,
+                      "duration": 0.12
+                    },
+                    "active_action_count": 2
+                  }
+                },
+                {
+                  "id": "m23",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m23",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m24",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m24",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m25",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m25",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m26",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m26",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m27",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m27",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m28",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m28",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m29",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m29",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "hit",
+                    "clip": "hit",
+                    "time": 0,
+                    "duration": 0.3333333432674408,
+                    "normalizedTime": 0,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m3",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m3",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m30",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m30",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m31",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m31",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m32",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m32",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m33",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m33",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m34",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m34",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "hit",
+                    "clip": "hit",
+                    "time": 0.072,
+                    "duration": 0.3333333432674408,
+                    "normalizedTime": 0.21599999356269853,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m35",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m35",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m4",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m4",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m5",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m5",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m6",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m6",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m7",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m7",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "death",
+                    "clip": "death",
+                    "time": 0.2864000000003725,
+                    "duration": 0.8333333134651184,
+                    "normalizedTime": 0.34368000819441696,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m8",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m8",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m9",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m9",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.5337999999988824,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.4328108052320594,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t36",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t36",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 0,
+                    "body": 0,
+                    "feet": 3,
+                    "hands": 2,
+                    "weapon": 1
+                  },
+                  "animation": {
+                    "state": "pierce",
+                    "clip": "pierce",
+                    "time": 0.072,
+                    "duration": 0.18,
+                    "normalizedTime": 0.39999999999999997,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t36-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t36-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.2933333396911621,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.39999999999999997,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t37",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t37",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 0,
+                    "body": 0,
+                    "feet": 3,
+                    "hands": 2,
+                    "weapon": 1
+                  },
+                  "animation": {
+                    "state": "pierce",
+                    "clip": "pierce",
+                    "time": 0.18,
+                    "duration": 0.18,
+                    "normalizedTime": 1,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": false,
+                    "finished": true,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t37-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t37-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.7333333492279053,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 1,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t38",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t38",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 0,
+                    "body": 0,
+                    "feet": 3,
+                    "hands": 2,
+                    "weapon": 1
+                  },
+                  "animation": {
+                    "state": "pierce",
+                    "clip": "pierce",
+                    "time": 0.10799999999999998,
+                    "duration": 0.18,
+                    "normalizedTime": 0.6,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t38-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t38-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.4400000095367432,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.6,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                }
+              ],
+              "semantics": "presentation-only; instances3d/gameplay tick/collision/root motion are unchanged"
+            },
+            "creatures": 11,
+            "equipment": 61,
+            "livery": "sculpted-storybook-v2",
+            "art": {
+              "style": "olive-crimson-ink",
+              "materials": 16,
+              "outlinePixels": 1.3,
+              "lightingBands": 3
+            },
+            "combatFX": {
+              "style": "storybook-faceted-v1",
+              "activeEvents": 15,
+              "eventBudget": 36,
+              "skippedEvents": 0,
+              "kinds": {
+                "buff:pierce": 3,
+                "hit": 5,
+                "summon": 2,
+                "wall": 1,
+                "jackpot": 1
+              },
+              "fieldFootprints": 0,
+              "elements": {
+                "surfaces": 0,
+                "events": 0,
+                "kinds": {},
+                "skippedSurfaces": 0
+              },
+              "triggers": {
+                "events": 3,
+                "buffs": 0,
+                "kinds": {
+                  "firstborn": 3
+                }
+              },
+              "boostedTrails": 3,
+              "trailSegments": 15,
+              "trailSlots": 3,
+              "ink": {
+                "vertices": 534,
+                "capacity": 42000,
+                "droppedTriangles": 0
+              },
+              "core": {
+                "vertices": 1578,
+                "capacity": 36000,
+                "droppedTriangles": 0
+              },
+              "reducedMotion": false,
+              "clock": 2.449999999999996,
+              "drawCalls": 2,
+              "debug": "final"
+            }
+          },
+          "lottie": {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 0,
+              "state": "ready",
+              "generation": 1,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": false,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 0,
+            "activeAsset": null,
+            "stage": "idle",
+            "rolledAmount": 0,
+            "targetAmount": 0,
+            "eventIds": [],
+            "completedAmounts": [],
+            "dockRect": null,
+            "visualRect": null,
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": [],
+            "impact": {
+              "impulses": 0,
+              "liveImpulses": 0,
+              "offset": {
+                "x": 0,
+                "y": 0
+              },
+              "peak": 0,
+              "reducedMotion": false,
+              "hudShakes": false,
+              "particleBudget": 160,
+              "diagnostics": []
+            },
+            "audio": {
+              "pendingCues": 0,
+              "muted": false
+            }
+          },
+          "labels": {
+            "labels": 3,
+            "payouts": 4,
+            "damage": 5,
+            "criticals": 0,
+            "items": [
+              {
+                "id": 1000010,
+                "kind": "gold",
+                "text": "+1",
+                "amount": 1,
+                "rect": {
+                  "x": 749.6345554312904,
+                  "y": 512.8049661969133,
+                  "width": 38.96931818181818,
+                  "height": 24.15
+                }
+              },
+              {
+                "id": 1000009,
+                "kind": "gold",
+                "text": "+1",
+                "amount": 1,
+                "rect": {
+                  "x": 985.4352991141211,
+                  "y": 277.3598008530962,
+                  "width": 38.96931818181818,
+                  "height": 24.15
+                }
+              },
+              {
+                "id": 1000008,
+                "kind": "gold",
+                "text": "+1",
+                "amount": 1,
+                "rect": {
+                  "x": 849.0314552014414,
+                  "y": 252.23947550204846,
+                  "width": 38.96931818181818,
+                  "height": 24.15
+                }
+              },
+              {
+                "id": 1000007,
+                "kind": "gold",
+                "text": "+1",
+                "amount": 1,
+                "rect": {
+                  "x": 817.705678355896,
+                  "y": 289.53905133256916,
+                  "width": 38.96931818181818,
+                  "height": 24.15
+                }
+              },
+              {
+                "id": 10,
+                "kind": "damage",
+                "text": "144",
+                "amount": 144,
+                "rect": {
+                  "x": 740.83255075926,
+                  "y": 453.05606071544287,
+                  "width": 56.088636363636354,
+                  "height": 33.349999999999994
+                }
+              },
+              {
+                "id": 9,
+                "kind": "damage",
+                "text": "144",
+                "amount": 144,
+                "rect": {
+                  "x": 976.875640023212,
+                  "y": 238.61571773439505,
+                  "width": 56.088636363636354,
+                  "height": 33.349999999999994
+                }
+              },
+              {
+                "id": 6,
+                "kind": "damage",
+                "text": "144",
+                "amount": 144,
+                "rect": {
+                  "x": 817.1946343975528,
+                  "y": 340.0430486842773,
+                  "width": 56.088636363636354,
+                  "height": 33.349999999999994
+                }
+              },
+              {
+                "id": 4,
+                "kind": "damage",
+                "text": "144",
+                "amount": 144,
+                "rect": {
+                  "x": 758.1382806640247,
+                  "y": 399.11997728490735,
+                  "width": 56.088636363636354,
+                  "height": 33.349999999999994
+                }
+              },
+              {
+                "id": 1,
+                "kind": "damage",
+                "text": "144",
+                "amount": 144,
+                "rect": {
+                  "x": 740.3534031522518,
+                  "y": 358.66943994786413,
+                  "width": 56.088636363636354,
+                  "height": 33.349999999999994
+                }
+              }
+            ],
+            "guards": [],
+            "nameplates": [
+              {
+                "id": 35,
+                "text": "♛ 古榕守衛",
+                "targeted": false,
+                "kind": "elite",
+                "rect": {
+                  "x": 663.0138495482654,
+                  "y": 218.70000000000002,
+                  "width": 95.1081081081081,
+                  "height": 19.549999999999997
+                }
+              },
+              {
+                "id": 33,
+                "text": "花冠樹靈",
+                "targeted": false,
+                "kind": "elite",
+                "rect": {
+                  "x": 525.8302865935005,
+                  "y": 268.8786468962228,
+                  "width": 95.1081081081081,
+                  "height": 19.549999999999997
+                }
+              },
+              {
+                "id": 34,
+                "text": "獠牙搬木王",
+                "targeted": false,
+                "kind": "elite",
+                "rect": {
+                  "x": 819.6540894655558,
+                  "y": 227.36661961514778,
+                  "width": 95.1081081081081,
+                  "height": 19.549999999999997
+                }
+              }
+            ],
+            "missLabels": 0,
+            "usesMultiplier": false,
+            "cacheSize": 8,
+            "diagnostics": []
+          },
+          "ui": {
+            "backend": "canvas2d",
+            "nodes": 43,
+            "assets": [
+              {
+                "id": "texture://ui_hud-heading",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_crest",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_hud-objective",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_hud-target",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_hud-gold",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-coin",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_hud-crystal",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-crystal",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_hud-key",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-sword",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-spear",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_hud-active",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-cavalry",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-pause",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-lock",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-auto",
+                "state": "ready"
+              }
+            ],
+            "diagnostics": [],
+            "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+            "limitations": [
+              "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+              "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+            ]
+          },
+          "motion": {
+            "reducedMotion": false,
+            "active": true,
+            "frameCount": 141,
+            "key": "battle:home:false:1",
+            "backend": "official-canvas-ui",
+            "sharedHitTree": true
+          },
+          "viewport": {
+            "width": 1440,
+            "height": 810,
+            "portrait": false,
+            "safeInsets": {
+              "left": 0,
+              "right": 0,
+              "top": 0,
+              "bottom": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "trigger-chain",
+      "capture": {
+        "counts": {
+          "delayed_bloom": 17,
+          "grave_bloom": 22,
+          "last_echo": 1,
+          "march_capacitor": 222,
+          "third_pulse": 29
+        },
+        "plunder": 0,
+        "metrics": {
+          "instances": 183,
+          "instance_cells": 10,
+          "submitted_instance_cells": 10,
+          "submitted_instances": 183,
+          "culled_instances": 0,
+          "draw_calls": 797,
+          "triangles": 237559,
+          "textures": 223,
+          "particles": 0,
+          "effects": 0,
+          "bloom": true,
+          "ao": true,
+          "ao_method": "depth-ssao-12",
+          "bloom_resolution": [
+            360,
+            203
+          ],
+          "hdr": true,
+          "gpu_timer_available": true,
+          "gpu_on": {
+            "samples": 240,
+            "median_ms": 7.80832,
+            "p95_ms": 16.410688
+          },
+          "gpu_off": null,
+          "walls": {
+            "halfExtent": 12.5,
+            "innerFace": 12.5,
+            "height": 0.66,
+            "segments": 136
+          },
+          "lighting": {
+            "mode": "cycle",
+            "side": "both",
+            "nightMix": 0.043049972787121804,
+            "shadowMap": 2048,
+            "primaryLights": 2,
+            "left": {
+              "color": "#fed39a",
+              "intensity": 2.048340032655454
+            },
+            "right": {
+              "color": "#a9a2df",
+              "intensity": 1.1413900054425756
+            },
+            "eventLights": 2,
+            "litArena": true
+          },
+          "camera": {
+            "projection": "perspective",
+            "fan": false
+          },
+          "actors": {
+            "actors": 30,
+            "animator": {
+              "lod": {
+                "budget_hz": 2400,
+                "assigned": [
+                  {
+                    "id": "m1",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m10",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m11",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m12",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m13",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m14",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m15",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m16",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m17",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m18",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m19",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m2",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m20",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m21",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m22",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m23",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m24",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m25",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m26",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m27",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m28",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m29",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m3",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m30",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m31",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m32",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m33",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m34",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m35",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m4",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m43",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m47",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m5",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m51",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m55",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m59",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m6",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m63",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m7",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m8",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "m9",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  {
+                    "id": "t36",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t36-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t37",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t37-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t38",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t38-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t39",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t39-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t40",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t40-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t41",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t41-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t42",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t42-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t44",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t44-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t45",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t45-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t46",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t46-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t48",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t48-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t49",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t49-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t50",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t50-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t52",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t52-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t53",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t53-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t54",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t54-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t56",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t56-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t57",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t57-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t58",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t58-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t60",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t60-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t61",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t61-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t62",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t62-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t64",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t64-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t65",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t65-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t66",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "t66-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "tmenu1",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "tmenu2",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "tmenu3",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  {
+                    "id": "tmenu3-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  }
+                ],
+                "counts": {
+                  "full": 54,
+                  "reduced": 41
+                }
+              },
+              "instances": [
+                {
+                  "id": "m32",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m32",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "death",
+                    "clip": "death",
+                    "time": 0.0772999999988824,
+                    "duration": 0.8333333134651184,
+                    "normalizedTime": 0.09276000221022968,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": {
+                      "source": "walk",
+                      "target": "death",
+                      "progress": 0.6441666666573533,
+                      "duration": 0.12
+                    },
+                    "active_action_count": 3
+                  }
+                },
+                {
+                  "id": "m33",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m33",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "hit",
+                    "clip": "hit",
+                    "time": 0,
+                    "duration": 0.3333333432674408,
+                    "normalizedTime": 0,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": {
+                      "source": "walk",
+                      "target": "hit",
+                      "progress": 0,
+                      "duration": 0.05
+                    },
+                    "active_action_count": 2
+                  }
+                },
+                {
+                  "id": "m35",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m35",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "walk",
+                    "clip": "walk",
+                    "time": 0.36569999999925495,
+                    "duration": 1.2333333492279053,
+                    "normalizedTime": 0.2965135096915943,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "m63",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m63",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "death",
+                    "clip": "death",
+                    "time": 0.07240000000037253,
+                    "duration": 0.8333333134651184,
+                    "normalizedTime": 0.0868800020718277,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": {
+                      "source": "walk",
+                      "target": "death",
+                      "progress": 0.6033333333364378,
+                      "duration": 0.12
+                    },
+                    "active_action_count": 2
+                  }
+                },
+                {
+                  "id": "m7",
+                  "distance": 14,
+                  "lod": {
+                    "id": "m7",
+                    "level": "reduced",
+                    "distance": 14,
+                    "updateHz": 15,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "death",
+                    "clip": "death",
+                    "time": 0.36569999999925495,
+                    "duration": 0.8333333134651184,
+                    "normalizedTime": 0.4388400104618671,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t36",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t36",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.5220999999996273,
+                    "duration": 0.875,
+                    "normalizedTime": 0.5966857142852884,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t36-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t36-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.43756953329327547,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.5966857142852884,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t37",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t37",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.2655,
+                    "duration": 0.875,
+                    "normalizedTime": 0.30342857142857144,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t37-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t37-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.22251429053715296,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.30342857142857144,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t38",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t38",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "bounce",
+                    "clip": "bounce",
+                    "time": 0.12609999999962745,
+                    "duration": 0.18,
+                    "normalizedTime": 0.7005555555534859,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t38-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t38-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.5137407518742537,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.7005555555534859,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t39",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t39",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.7748000000007449,
+                    "duration": 0.875,
+                    "normalizedTime": 0.8854857142865656,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t39-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t39-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.6493562045512312,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.8854857142865656,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t40",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t40",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "pierce",
+                    "clip": "pierce",
+                    "time": 0.04880000000074506,
+                    "duration": 0.18,
+                    "normalizedTime": 0.2711111111152503,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": {
+                      "source": "run",
+                      "target": "pierce",
+                      "progress": 0.9760000000149012,
+                      "duration": 0.05
+                    },
+                    "active_action_count": 2
+                  }
+                },
+                {
+                  "id": "t40-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t40-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.1988148191270453,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.2711111111152503,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t41",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t41",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.16230000000074504,
+                    "duration": 0.875,
+                    "normalizedTime": 0.18548571428656577,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t41-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t41-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.1360228600916976,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.18548571428656577,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t42",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t42",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "bounce",
+                    "clip": "bounce",
+                    "time": 0.04880000000074506,
+                    "duration": 0.18,
+                    "normalizedTime": 0.2711111111152503,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": {
+                      "source": "run",
+                      "target": "bounce",
+                      "progress": 0.9760000000149012,
+                      "duration": 0.05
+                    },
+                    "active_action_count": 2
+                  }
+                },
+                {
+                  "id": "t42-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t42-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.1988148191270453,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.2711111111152503,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t44",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t44",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "bounce",
+                    "clip": "bounce",
+                    "time": 0.12609999999962745,
+                    "duration": 0.18,
+                    "normalizedTime": 0.7005555555534859,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t44-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t44-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.5137407518742537,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.7005555555534859,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t45",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t45",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.11209999999962733,
+                    "duration": 0.875,
+                    "normalizedTime": 0.1281142857138598,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t45-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t45-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.09395047822648558,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.1281142857138598,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t46",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t46",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.5555999999996274,
+                    "duration": 0.875,
+                    "normalizedTime": 0.6349714285710027,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t46-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t46-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.46564572437800106,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.6349714285710027,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t48",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t48",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.16230000000074504,
+                    "duration": 0.875,
+                    "normalizedTime": 0.18548571428656577,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t48-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t48-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.1360228600916976,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.18548571428656577,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t49",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t49",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.4144999999999999,
+                    "duration": 0.875,
+                    "normalizedTime": 0.47371428571428564,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t49-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t49-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.34739048371996195,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.47371428571428564,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t50",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t50",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.09030000000074506,
+                    "duration": 0.875,
+                    "normalizedTime": 0.1032000000008515,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": {
+                      "source": "bounce",
+                      "target": "run",
+                      "progress": 0.7525000000062089,
+                      "duration": 0.12
+                    },
+                    "active_action_count": 2
+                  }
+                },
+                {
+                  "id": "t50-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t50-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.07568000164094425,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.1032000000008515,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t52",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t52",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "bounce",
+                    "clip": "bounce",
+                    "time": 0.04880000000074506,
+                    "duration": 0.18,
+                    "normalizedTime": 0.2711111111152503,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": {
+                      "source": "run",
+                      "target": "bounce",
+                      "progress": 0.9760000000149012,
+                      "duration": 0.05
+                    },
+                    "active_action_count": 2
+                  }
+                },
+                {
+                  "id": "t52-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t52-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.1988148191270453,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.2711111111152503,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t53",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t53",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.09030000000074506,
+                    "duration": 0.875,
+                    "normalizedTime": 0.1032000000008515,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": {
+                      "source": "bounce",
+                      "target": "run",
+                      "progress": 0.7525000000062089,
+                      "duration": 0.12
+                    },
+                    "active_action_count": 2
+                  }
+                },
+                {
+                  "id": "t53-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t53-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.07568000164094425,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.1032000000008515,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t54",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t54",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.3420999999996275,
+                    "duration": 0.875,
+                    "normalizedTime": 0.3909714285710028,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t54-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t54-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.28671238716639225,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.39097142857100287,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t56",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t56",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.04880000000074506,
+                    "duration": 0.875,
+                    "normalizedTime": 0.05577142857228007,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": {
+                      "source": "bounce",
+                      "target": "run",
+                      "progress": 0.4066666666728755,
+                      "duration": 0.12
+                    },
+                    "active_action_count": 2
+                  }
+                },
+                {
+                  "id": "t56-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t56-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.04089904850613504,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.055771428572280075,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t57",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t57",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "bounce",
+                    "clip": "bounce",
+                    "time": 0.09030000000074506,
+                    "duration": 0.18,
+                    "normalizedTime": 0.501666666670806,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t57-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t57-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.3678888968657013,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.501666666670806,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t58",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t58",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.21169999999925493,
+                    "duration": 0.875,
+                    "normalizedTime": 0.24194285714200564,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t58-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t58-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.1774247657497156,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.2419428571420056,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t60",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t60",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.16230000000074504,
+                    "duration": 0.875,
+                    "normalizedTime": 0.18548571428656577,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t60-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t60-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.1360228600916976,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.18548571428656577,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t61",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t61",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.12609999999962745,
+                    "duration": 0.875,
+                    "normalizedTime": 0.14411428571385995,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t61-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t61-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.10568381181413218,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.14411428571385995,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t62",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t62",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "bounce",
+                    "clip": "bounce",
+                    "time": 0.04880000000074506,
+                    "duration": 0.18,
+                    "normalizedTime": 0.2711111111152503,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": {
+                      "source": "run",
+                      "target": "bounce",
+                      "progress": 0.9760000000149012,
+                      "duration": 0.05
+                    },
+                    "active_action_count": 3
+                  }
+                },
+                {
+                  "id": "t62-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t62-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.1988148191270453,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.2711111111152503,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t64",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t64",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "pierce",
+                    "clip": "pierce",
+                    "time": 0.09030000000074506,
+                    "duration": 0.18,
+                    "normalizedTime": 0.501666666670806,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t64-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t64-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.3678888968657013,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.501666666670806,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t65",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t65",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.16230000000074504,
+                    "duration": 0.875,
+                    "normalizedTime": 0.18548571428656577,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t65-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t65-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.1360228600916976,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.18548571428656577,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t66",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t66",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {
+                    "head": 6,
+                    "body": 4,
+                    "feet": 0,
+                    "hands": 0,
+                    "weapon": 5
+                  },
+                  "animation": {
+                    "state": "spawn",
+                    "clip": "spawn",
+                    "time": 0.16230000000074504,
+                    "duration": 1.8333333730697632,
+                    "normalizedTime": 0.0885272708089022,
+                    "speed": 1,
+                    "loop": false,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                },
+                {
+                  "id": "t66-horse",
+                  "distance": 2,
+                  "lod": {
+                    "id": "t66-horse",
+                    "level": "full",
+                    "distance": 2,
+                    "updateHz": 30,
+                    "culled": false
+                  },
+                  "equipment": {},
+                  "animation": {
+                    "state": "run",
+                    "clip": "run",
+                    "time": 0.06492000000029802,
+                    "duration": 0.7333333492279053,
+                    "normalizedTime": 0.0885272708089022,
+                    "speed": 1,
+                    "loop": true,
+                    "playing": true,
+                    "finished": false,
+                    "paused": false,
+                    "transition": null,
+                    "active_action_count": 1
+                  }
+                }
+              ],
+              "semantics": "presentation-only; instances3d/gameplay tick/collision/root motion are unchanged"
+            },
+            "creatures": 11,
+            "equipment": 61,
+            "livery": "sculpted-storybook-v2",
+            "art": {
+              "style": "olive-crimson-ink",
+              "materials": 17,
+              "outlinePixels": 1.3,
+              "lightingBands": 3
+            },
+            "combatFX": {
+              "style": "storybook-faceted-v1",
+              "activeEvents": 36,
+              "eventBudget": 36,
+              "skippedEvents": 18,
+              "kinds": {
+                "buff:pierce": 8,
+                "hit": 2,
+                "wall": 16,
+                "jackpot": 4,
+                "summon": 2
+              },
+              "fieldFootprints": 0,
+              "elements": {
+                "surfaces": 0,
+                "events": 0,
+                "kinds": {},
+                "skippedSurfaces": 0
+              },
+              "triggers": {
+                "events": 4,
+                "buffs": 12,
+                "kinds": {
+                  "march_capacitor": 2,
+                  "grave_bloom": 1,
+                  "delayed_bloom": 1
+                }
+              },
+              "boostedTrails": 0,
+              "trailSegments": 120,
+              "trailSlots": 25,
+              "ink": {
+                "vertices": 2082,
+                "capacity": 42000,
+                "droppedTriangles": 0
+              },
+              "core": {
+                "vertices": 3900,
+                "capacity": 36000,
+                "droppedTriangles": 0
+              },
+              "reducedMotion": false,
+              "clock": 7.98333333333331,
+              "drawCalls": 2,
+              "debug": "final"
+            }
+          },
+          "lottie": {
+            "ok": true,
+            "value": {
+              "componentBounds": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 100
+              },
+              "clipped": false,
+              "assetReady": true,
+              "currentFrame": 67.01400000002235,
+              "state": "ready",
+              "generation": 2,
+              "backend": "canvas-2d",
+              "error": null
+            },
+            "celebrationVisible": true,
+            "fullscreen": false,
+            "ultimate": null,
+            "activeTier": 3,
+            "activeAsset": "big-win",
+            "stage": "count",
+            "rolledAmount": 87,
+            "targetAmount": 110,
+            "eventIds": [
+              37
+            ],
+            "completedAmounts": [],
+            "dockRect": {
+              "x": 591.3818181818181,
+              "y": 81,
+              "width": 300.4363636363637,
+              "height": 68.85000000000001
+            },
+            "visualRect": {
+              "x": 591.3818181818181,
+              "y": 81,
+              "width": 300.4363636363637,
+              "height": 68.85000000000001
+            },
+            "usesMultiplier": false,
+            "pointerEvents": "none",
+            "diagnostics": [],
+            "impact": {
+              "impulses": 1,
+              "liveImpulses": 0,
+              "offset": {
+                "x": 0,
+                "y": 0
+              },
+              "peak": 0,
+              "reducedMotion": false,
+              "hudShakes": false,
+              "particleBudget": 160,
+              "diagnostics": []
+            },
+            "audio": {
+              "pendingCues": 0,
+              "muted": false
+            }
+          },
+          "labels": {
+            "labels": 0,
+            "payouts": 4,
+            "damage": 6,
+            "criticals": 0,
+            "items": [
+              {
+                "id": 42,
+                "kind": "gold",
+                "text": "+28",
+                "amount": 28,
+                "rect": {
+                  "x": 896.4067448674476,
+                  "y": 337.55625418198883,
+                  "width": 76.05681818181819,
+                  "height": 34.5
+                }
+              },
+              {
+                "id": 40,
+                "kind": "gold",
+                "text": "+28",
+                "amount": 28,
+                "rect": {
+                  "x": 607.027315916866,
+                  "y": 265.1356718857303,
+                  "width": 76.05681818181819,
+                  "height": 34.5
+                }
+              },
+              {
+                "id": 37,
+                "kind": "gold",
+                "text": "+110",
+                "amount": 110,
+                "rect": {
+                  "x": 785.3897102795662,
+                  "y": 218.70000000000002,
+                  "width": 85.4659090909091,
+                  "height": 34.5
+                }
+              },
+              {
+                "id": 36,
+                "kind": "gold",
+                "text": "+28",
+                "amount": 28,
+                "rect": {
+                  "x": 650.5355361055283,
+                  "y": 447.5174299763648,
+                  "width": 76.05681818181819,
+                  "height": 34.5
+                }
+              },
+              {
+                "id": 151,
+                "kind": "damage",
+                "text": "117",
+                "amount": 117,
+                "rect": {
+                  "x": 906.2456992258465,
+                  "y": 283.4841710632877,
+                  "width": 50.02499999999999,
+                  "height": 33.349999999999994
+                }
+              },
+              {
+                "id": 150,
+                "kind": "damage",
+                "text": "117",
+                "amount": 117,
+                "rect": {
+                  "x": 906.4719760604777,
+                  "y": 240.3188150742061,
+                  "width": 50.02499999999999,
+                  "height": 33.349999999999994
+                }
+              },
+              {
+                "id": 148,
+                "kind": "damage",
+                "text": "144",
+                "amount": 144,
+                "rect": {
+                  "x": 754.8153949124412,
+                  "y": 258.48030303951373,
+                  "width": 56.088636363636354,
+                  "height": 33.349999999999994
+                }
+              },
+              {
+                "id": 147,
+                "kind": "damage",
+                "text": "144",
+                "amount": 144,
+                "rect": {
+                  "x": 628.430992634143,
+                  "y": 223.4294835221722,
+                  "width": 56.088636363636354,
+                  "height": 33.349999999999994
+                }
+              },
+              {
+                "id": 142,
+                "kind": "damage",
+                "text": "144",
+                "amount": 144,
+                "rect": {
+                  "x": 457.2993600522908,
+                  "y": 295.410492846519,
+                  "width": 56.088636363636354,
+                  "height": 33.349999999999994
+                }
+              },
+              {
+                "id": 140,
+                "kind": "damage",
+                "text": "36",
+                "amount": 36,
+                "rect": {
+                  "x": 587.6467299770692,
+                  "y": 218.70000000000002,
+                  "width": 36.27823106060605,
+                  "height": 27.680499999999995
+                }
+              }
+            ],
+            "guards": [],
+            "nameplates": [],
+            "missLabels": 0,
+            "usesMultiplier": false,
+            "cacheSize": 128,
+            "diagnostics": []
+          },
+          "ui": {
+            "backend": "canvas2d",
+            "nodes": 43,
+            "assets": [
+              {
+                "id": "texture://ui_hud-heading",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_crest",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_hud-objective",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_hud-target",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_hud-gold",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-coin",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_hud-crystal",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-crystal",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_hud-key",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-sword",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-spear",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_hud-active",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-cavalry",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-pause",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-lock",
+                "state": "ready"
+              },
+              {
+                "id": "texture://ui_symbol-auto",
+                "state": "ready"
+              }
+            ],
+            "diagnostics": [],
+            "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+            "limitations": [
+              "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+              "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+            ]
+          },
+          "motion": {
+            "reducedMotion": false,
+            "active": true,
+            "frameCount": 451,
+            "key": "battle:home:false:1",
+            "backend": "official-canvas-ui",
+            "sharedHitTree": true
+          },
+          "viewport": {
+            "width": 1440,
+            "height": 810,
+            "portrait": false,
+            "safeInsets": {
+              "left": 0,
+              "right": 0,
+              "top": 0,
+              "bottom": 0
+            }
+          }
+        }
+      }
+    }
+  ],
+  "render": {
+    "dense": {
+      "style": "storybook-faceted-v1",
+      "activeEvents": 4,
+      "eventBudget": 36,
+      "skippedEvents": 0,
+      "kinds": {},
+      "fieldFootprints": 0,
+      "elements": {
+        "surfaces": 0,
+        "events": 0,
+        "kinds": {},
+        "skippedSurfaces": 0
+      },
+      "triggers": {
+        "events": 4,
+        "buffs": 12,
+        "kinds": {
+          "last_echo": 1,
+          "grave_bloom": 1,
+          "third_pulse": 1,
+          "delayed_bloom": 1
+        }
+      },
+      "boostedTrails": 48,
+      "trailSegments": 528,
+      "trailSlots": 48,
+      "ink": {
+        "vertices": 7824,
+        "capacity": 42000,
+        "droppedTriangles": 0
+      },
+      "core": {
+        "vertices": 10992,
+        "capacity": 36000,
+        "droppedTriangles": 0
+      },
+      "reducedMotion": false,
+      "clock": 0.18333333333333332,
+      "drawCalls": 2,
+      "debug": "final"
+    },
+    "stable": true,
+    "cleared": {
+      "style": "storybook-faceted-v1",
+      "activeEvents": 0,
+      "eventBudget": 36,
+      "skippedEvents": 0,
+      "kinds": {},
+      "fieldFootprints": 0,
+      "elements": {
+        "surfaces": 0,
+        "events": 0,
+        "kinds": {},
+        "skippedSurfaces": 0
+      },
+      "triggers": {
+        "events": 0,
+        "buffs": 0,
+        "kinds": {}
+      },
+      "boostedTrails": 0,
+      "trailSegments": 0,
+      "trailSlots": 0,
+      "ink": {
+        "vertices": 0,
+        "capacity": 42000,
+        "droppedTriangles": 0
+      },
+      "core": {
+        "vertices": 0,
+        "capacity": 36000,
+        "droppedTriangles": 0
+      },
+      "reducedMotion": false,
+      "clock": 2,
+      "drawCalls": 0,
+      "debug": "final"
+    }
+  },
+  "errors": []
+}

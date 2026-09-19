@@ -2,7 +2,8 @@
 // inspection and input share one tree. Nothing here changes gameplay or RNG.
 const ease=t=>1-Math.pow(1-Math.max(0,Math.min(1,t)),3);
 const group=raw=>{
- const id=raw.replace(/_hit_(top|bottom)$/, '');
+ const id=raw.replace(/_hit_(top|bottom)$/, '').replace(/_(tl|t|tr|l|c|r|bl|b|br)$/,'');
+ const shopCard=id.match(/^stock_(?:panel|icon|name|desc|cost|deploy|detail|empty)_(\d+)(?:_plate)?$/);if(shopCard)return 'stock'+shopCard[1];
  const card=id.match(/^auto_(?:card|icon|tick|pick|name|info)_(\d+)$/);if(card)return 'autoCard'+card[1];
  let m=id.match(/^(?:choice_(?:plate_|icon_|name_|desc_)?|stock_(?:panel_|icon_|name_|desc_)|buy_)(\d+)(?:_plate)?$/);
  if(m)return (id.startsWith('choice')?'choice':'stock')+m[1];
@@ -36,7 +37,8 @@ export function createUiMotion({reducedMotion=()=>false,now=()=>performance.now(
     copy.set(n.id,n.text);
     if(reduced)return n;
     let dx=0,dy=0,scale=1;
-    const fixed=/^(menu_art|menu_ground|screen_back|interior_shade|map_back)$/.test(n.id);
+    const fixed=/^(menu_art|menu_ground|screen_back(?:_|$)|shop_backdrop|shop_window_fill|shop_modal_scrim|shop_detail_shade|shop_detail_fill|shop_detail_modal|interior_shade|map_back)/.test(n.id);
+    if(fixed)return n;
     if(!battle&&!fixed){const order=Number(g.match(/(?:choice|stock|gear|autoCard)(\d+)/)?.[1]??0),delay=Math.min(order,5)*20;
      const t=ease((age-delay)/220);dy=-(1-t)*1;
      if(/^(title|subtitle|crest|start|town|menu_prologue)/.test(n.id)){dx=-(1-t)*2;dy=0;}

@@ -1,0 +1,12 @@
+{
+  "date": "2026-09-14",
+  "upstream_head": "ada4bf9e60c2c90a4c84866e4bfd191e3767d164",
+  "installed_commit": "ada4bf9e60c2c90a4c84866e4bfd191e3767d164",
+  "selected_files_checked": 82,
+  "hash_mismatches": [],
+  "scope": "two previously reviewed Markdown skill packages",
+  "runtime_installed": false,
+  "external_model_host_used": false,
+  "project_upload": false,
+  "prior_report": "D:\\Projects\\YesSir\\docs\\reviews\\2026-09-11-gamedesignos\\SECURITY.zh-TW.md"
+}

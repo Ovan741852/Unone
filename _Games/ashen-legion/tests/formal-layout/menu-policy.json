@@ -44,27 +44,42 @@
       },
       {
         "behind": "menu_ground",
-        "front": "town_plate",
+        "front": "settings_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "menu_ground",
-        "front": "town",
+        "front": "settings",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "menu_ground",
-        "front": "town_hit_top",
+        "front": "settings_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "menu_ground",
-        "front": "town_hit_bottom",
+        "front": "settings_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "menu_ground",
-        "front": "menu_prologue",
+        "front": "exit_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "menu_ground",
+        "front": "exit",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "menu_ground",
+        "front": "exit_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "menu_ground",
+        "front": "exit_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
@@ -104,27 +119,42 @@
       },
       {
         "behind": "menu_art",
-        "front": "town_plate",
+        "front": "settings_plate",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "menu_art",
-        "front": "town",
+        "front": "settings",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "menu_art",
-        "front": "town_hit_top",
+        "front": "settings_hit_top",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "menu_art",
-        "front": "town_hit_bottom",
+        "front": "settings_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
         "behind": "menu_art",
-        "front": "menu_prologue",
+        "front": "exit_plate",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "menu_art",
+        "front": "exit",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "menu_art",
+        "front": "exit_hit_top",
+        "reason": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "behind": "menu_art",
+        "front": "exit_hit_bottom",
         "reason": "Authored screen backdrop beneath foreground content"
       },
       {
@@ -143,18 +173,33 @@
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "town_plate",
-        "front": "town",
+        "behind": "settings_plate",
+        "front": "settings",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "town_plate",
-        "front": "town_hit_top",
+        "behind": "settings_plate",
+        "front": "settings_hit_top",
         "reason": "Button artwork beneath its semantic control and caption"
       },
       {
-        "behind": "town_plate",
-        "front": "town_hit_bottom",
+        "behind": "settings_plate",
+        "front": "settings_hit_bottom",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "exit_plate",
+        "front": "exit",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "exit_plate",
+        "front": "exit_hit_top",
+        "reason": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "behind": "exit_plate",
+        "front": "exit_hit_bottom",
         "reason": "Button artwork beneath its semantic control and caption"
       }
     ]

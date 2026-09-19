@@ -81,8 +81,8 @@
         "kind": "image",
         "rect": {
           "x": 9,
-          "y": 32,
-          "width": 30,
+          "y": 30,
+          "width": 34,
           "height": 9
         },
         "text": "",
@@ -95,22 +95,22 @@
         "kind": "button",
         "rect": {
           "x": 9,
-          "y": 35,
-          "width": 30,
+          "y": 33,
+          "width": 34,
           "height": 3
         },
-        "text": "出征",
+        "text": "讀取進度",
         "action": "Start",
         "asset": null,
-        "text_fit": 0.06
+        "text_fit": 0.1
       },
       {
         "id": "start_hit_top",
         "kind": "button",
         "rect": {
           "x": 9,
-          "y": 38,
-          "width": 30,
+          "y": 36,
+          "width": 34,
           "height": 3
         },
         "text": "",
@@ -123,8 +123,8 @@
         "kind": "button",
         "rect": {
           "x": 9,
-          "y": 32,
-          "width": 30,
+          "y": 30,
+          "width": 34,
           "height": 3
         },
         "text": "",
@@ -133,12 +133,12 @@
         "text_fit": 0
       },
       {
-        "id": "town_plate",
+        "id": "settings_plate",
         "kind": "image",
         "rect": {
           "x": 9,
-          "y": 22,
-          "width": 30,
+          "y": 21,
+          "width": 34,
           "height": 7
         },
         "text": "",
@@ -147,60 +147,102 @@
         "text_fit": 0
       },
       {
-        "id": "town",
+        "id": "settings",
         "kind": "button",
         "rect": {
           "x": 9,
-          "y": 24,
-          "width": 30,
+          "y": 23,
+          "width": 34,
           "height": 3
         },
-        "text": "領地與城鎮",
-        "action": "UI_town",
+        "text": "系統設定",
+        "action": "UI_settings",
         "asset": null,
-        "text_fit": 0.14
+        "text_fit": 0.1
       },
       {
-        "id": "town_hit_top",
+        "id": "settings_hit_top",
         "kind": "button",
         "rect": {
           "x": 9,
-          "y": 27,
-          "width": 30,
-          "height": 2
-        },
-        "text": "",
-        "action": "UI_town",
-        "asset": null,
-        "text_fit": 0
-      },
-      {
-        "id": "town_hit_bottom",
-        "kind": "button",
-        "rect": {
-          "x": 9,
-          "y": 22,
-          "width": 30,
-          "height": 2
-        },
-        "text": "",
-        "action": "UI_town",
-        "asset": null,
-        "text_fit": 0
-      },
-      {
-        "id": "menu_prologue",
-        "kind": "text",
-        "rect": {
-          "x": 7,
-          "y": 15,
+          "y": 26,
           "width": 34,
-          "height": 4
+          "height": 2
         },
-        "text": "沿著七座營火，找回森林的王冠。",
-        "action": null,
+        "text": "",
+        "action": "UI_settings",
         "asset": null,
-        "text_fit": 0.5
+        "text_fit": 0
+      },
+      {
+        "id": "settings_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 9,
+          "y": 21,
+          "width": 34,
+          "height": 2
+        },
+        "text": "",
+        "action": "UI_settings",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "exit_plate",
+        "kind": "image",
+        "rect": {
+          "x": 9,
+          "y": 12,
+          "width": 34,
+          "height": 7
+        },
+        "text": "",
+        "action": null,
+        "asset": "texture://ui_secondary",
+        "text_fit": 0
+      },
+      {
+        "id": "exit",
+        "kind": "button",
+        "rect": {
+          "x": 9,
+          "y": 14,
+          "width": 34,
+          "height": 3
+        },
+        "text": "離開",
+        "action": "ExitGame",
+        "asset": null,
+        "text_fit": 0.05
+      },
+      {
+        "id": "exit_hit_top",
+        "kind": "button",
+        "rect": {
+          "x": 9,
+          "y": 17,
+          "width": 34,
+          "height": 2
+        },
+        "text": "",
+        "action": "ExitGame",
+        "asset": null,
+        "text_fit": 0
+      },
+      {
+        "id": "exit_hit_bottom",
+        "kind": "button",
+        "rect": {
+          "x": 9,
+          "y": 12,
+          "width": 34,
+          "height": 2
+        },
+        "text": "",
+        "action": "ExitGame",
+        "asset": null,
+        "text_fit": 0
       }
     ],
     "findings": [],
@@ -243,7 +285,7 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_ground' and 'start_plate' overlap by 30.0 x 9.0 (design-space units).",
+        "detail": "'menu_ground' and 'start_plate' overlap by 34.0 x 9.0 (design-space units).",
         "nodes": [
           "menu_ground",
           "start_plate"
@@ -252,7 +294,7 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_ground' and 'start' overlap by 30.0 x 3.0 (design-space units).",
+        "detail": "'menu_ground' and 'start' overlap by 34.0 x 3.0 (design-space units).",
         "nodes": [
           "menu_ground",
           "start"
@@ -261,7 +303,7 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_ground' and 'start_hit_top' overlap by 30.0 x 3.0 (design-space units).",
+        "detail": "'menu_ground' and 'start_hit_top' overlap by 34.0 x 3.0 (design-space units).",
         "nodes": [
           "menu_ground",
           "start_hit_top"
@@ -270,7 +312,7 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_ground' and 'start_hit_bottom' overlap by 30.0 x 3.0 (design-space units).",
+        "detail": "'menu_ground' and 'start_hit_bottom' overlap by 34.0 x 3.0 (design-space units).",
         "nodes": [
           "menu_ground",
           "start_hit_bottom"
@@ -279,46 +321,73 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_ground' and 'town_plate' overlap by 30.0 x 7.0 (design-space units).",
+        "detail": "'menu_ground' and 'settings_plate' overlap by 34.0 x 7.0 (design-space units).",
         "nodes": [
           "menu_ground",
-          "town_plate"
+          "settings_plate"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_ground' and 'town' overlap by 30.0 x 3.0 (design-space units).",
+        "detail": "'menu_ground' and 'settings' overlap by 34.0 x 3.0 (design-space units).",
         "nodes": [
           "menu_ground",
-          "town"
+          "settings"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_ground' and 'town_hit_top' overlap by 30.0 x 2.0 (design-space units).",
+        "detail": "'menu_ground' and 'settings_hit_top' overlap by 34.0 x 2.0 (design-space units).",
         "nodes": [
           "menu_ground",
-          "town_hit_top"
+          "settings_hit_top"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_ground' and 'town_hit_bottom' overlap by 30.0 x 2.0 (design-space units).",
+        "detail": "'menu_ground' and 'settings_hit_bottom' overlap by 34.0 x 2.0 (design-space units).",
         "nodes": [
           "menu_ground",
-          "town_hit_bottom"
+          "settings_hit_bottom"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_ground' and 'menu_prologue' overlap by 34.0 x 4.0 (design-space units).",
+        "detail": "'menu_ground' and 'exit_plate' overlap by 34.0 x 7.0 (design-space units).",
         "nodes": [
           "menu_ground",
-          "menu_prologue"
+          "exit_plate"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'menu_ground' and 'exit' overlap by 34.0 x 3.0 (design-space units).",
+        "nodes": [
+          "menu_ground",
+          "exit"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'menu_ground' and 'exit_hit_top' overlap by 34.0 x 2.0 (design-space units).",
+        "nodes": [
+          "menu_ground",
+          "exit_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'menu_ground' and 'exit_hit_bottom' overlap by 34.0 x 2.0 (design-space units).",
+        "nodes": [
+          "menu_ground",
+          "exit_hit_bottom"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
@@ -351,7 +420,7 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_art' and 'start_plate' overlap by 30.0 x 9.0 (design-space units).",
+        "detail": "'menu_art' and 'start_plate' overlap by 34.0 x 9.0 (design-space units).",
         "nodes": [
           "menu_art",
           "start_plate"
@@ -360,7 +429,7 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_art' and 'start' overlap by 30.0 x 3.0 (design-space units).",
+        "detail": "'menu_art' and 'start' overlap by 34.0 x 3.0 (design-space units).",
         "nodes": [
           "menu_art",
           "start"
@@ -369,7 +438,7 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_art' and 'start_hit_top' overlap by 30.0 x 3.0 (design-space units).",
+        "detail": "'menu_art' and 'start_hit_top' overlap by 34.0 x 3.0 (design-space units).",
         "nodes": [
           "menu_art",
           "start_hit_top"
@@ -378,7 +447,7 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_art' and 'start_hit_bottom' overlap by 30.0 x 3.0 (design-space units).",
+        "detail": "'menu_art' and 'start_hit_bottom' overlap by 34.0 x 3.0 (design-space units).",
         "nodes": [
           "menu_art",
           "start_hit_bottom"
@@ -387,52 +456,79 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_art' and 'town_plate' overlap by 30.0 x 7.0 (design-space units).",
+        "detail": "'menu_art' and 'settings_plate' overlap by 34.0 x 7.0 (design-space units).",
         "nodes": [
           "menu_art",
-          "town_plate"
+          "settings_plate"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_art' and 'town' overlap by 30.0 x 3.0 (design-space units).",
+        "detail": "'menu_art' and 'settings' overlap by 34.0 x 3.0 (design-space units).",
         "nodes": [
           "menu_art",
-          "town"
+          "settings"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_art' and 'town_hit_top' overlap by 30.0 x 2.0 (design-space units).",
+        "detail": "'menu_art' and 'settings_hit_top' overlap by 34.0 x 2.0 (design-space units).",
         "nodes": [
           "menu_art",
-          "town_hit_top"
+          "settings_hit_top"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_art' and 'town_hit_bottom' overlap by 30.0 x 2.0 (design-space units).",
+        "detail": "'menu_art' and 'settings_hit_bottom' overlap by 34.0 x 2.0 (design-space units).",
         "nodes": [
           "menu_art",
-          "town_hit_bottom"
+          "settings_hit_bottom"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'menu_art' and 'menu_prologue' overlap by 34.0 x 4.0 (design-space units).",
+        "detail": "'menu_art' and 'exit_plate' overlap by 34.0 x 7.0 (design-space units).",
         "nodes": [
           "menu_art",
-          "menu_prologue"
+          "exit_plate"
         ],
         "resolution": "Authored screen backdrop beneath foreground content"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'start_plate' and 'start' overlap by 30.0 x 3.0 (design-space units).",
+        "detail": "'menu_art' and 'exit' overlap by 34.0 x 3.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "exit"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'menu_art' and 'exit_hit_top' overlap by 34.0 x 2.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "exit_hit_top"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'menu_art' and 'exit_hit_bottom' overlap by 34.0 x 2.0 (design-space units).",
+        "nodes": [
+          "menu_art",
+          "exit_hit_bottom"
+        ],
+        "resolution": "Authored screen backdrop beneath foreground content"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'start_plate' and 'start' overlap by 34.0 x 3.0 (design-space units).",
         "nodes": [
           "start_plate",
           "start"
@@ -441,7 +537,7 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'start_plate' and 'start_hit_top' overlap by 30.0 x 3.0 (design-space units).",
+        "detail": "'start_plate' and 'start_hit_top' overlap by 34.0 x 3.0 (design-space units).",
         "nodes": [
           "start_plate",
           "start_hit_top"
@@ -450,7 +546,7 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'start_plate' and 'start_hit_bottom' overlap by 30.0 x 3.0 (design-space units).",
+        "detail": "'start_plate' and 'start_hit_bottom' overlap by 34.0 x 3.0 (design-space units).",
         "nodes": [
           "start_plate",
           "start_hit_bottom"
@@ -459,28 +555,55 @@
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'town_plate' and 'town' overlap by 30.0 x 3.0 (design-space units).",
+        "detail": "'settings_plate' and 'settings' overlap by 34.0 x 3.0 (design-space units).",
         "nodes": [
-          "town_plate",
-          "town"
+          "settings_plate",
+          "settings"
         ],
         "resolution": "Button artwork beneath its semantic control and caption"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'town_plate' and 'town_hit_top' overlap by 30.0 x 2.0 (design-space units).",
+        "detail": "'settings_plate' and 'settings_hit_top' overlap by 34.0 x 2.0 (design-space units).",
         "nodes": [
-          "town_plate",
-          "town_hit_top"
+          "settings_plate",
+          "settings_hit_top"
         ],
         "resolution": "Button artwork beneath its semantic control and caption"
       },
       {
         "code": "UI_INTENTIONAL_ART_OVERLAP",
-        "detail": "'town_plate' and 'town_hit_bottom' overlap by 30.0 x 2.0 (design-space units).",
+        "detail": "'settings_plate' and 'settings_hit_bottom' overlap by 34.0 x 2.0 (design-space units).",
         "nodes": [
-          "town_plate",
-          "town_hit_bottom"
+          "settings_plate",
+          "settings_hit_bottom"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'exit_plate' and 'exit' overlap by 34.0 x 3.0 (design-space units).",
+        "nodes": [
+          "exit_plate",
+          "exit"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'exit_plate' and 'exit_hit_top' overlap by 34.0 x 2.0 (design-space units).",
+        "nodes": [
+          "exit_plate",
+          "exit_hit_top"
+        ],
+        "resolution": "Button artwork beneath its semantic control and caption"
+      },
+      {
+        "code": "UI_INTENTIONAL_ART_OVERLAP",
+        "detail": "'exit_plate' and 'exit_hit_bottom' overlap by 34.0 x 2.0 (design-space units).",
+        "nodes": [
+          "exit_plate",
+          "exit_hit_bottom"
         ],
         "resolution": "Button artwork beneath its semantic control and caption"
       }

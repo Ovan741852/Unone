@@ -1,0 +1,188 @@
+[
+  {
+    "fieldKind": "fire",
+    "style": "storybook-faceted-v1",
+    "activeEvents": 20,
+    "eventBudget": 36,
+    "skippedEvents": 188,
+    "kinds": {
+      "effect:plague_vial": 4
+    },
+    "fieldFootprints": 200,
+    "elements": {
+      "surfaces": 200,
+      "events": 0,
+      "kinds": {
+        "fire": 200
+      },
+      "skippedSurfaces": 200
+    },
+    "triggers": {
+      "events": 4,
+      "buffs": 12,
+      "kinds": {
+        "third_pulse": 4
+      }
+    },
+    "resonance": {
+      "events": 6,
+      "markers": 24,
+      "ghosts": 16,
+      "kinds": {
+        "chain_fuse": 6
+      },
+      "skippedMarkers": 56
+    },
+    "composition": {
+      "nodes": 128,
+      "marks": 12,
+      "wells": 6,
+      "buffs": 16,
+      "events": 6,
+      "kinds": {
+        "step_orb": 6
+      }
+    },
+    "boostedTrails": 48,
+    "trailSegments": 528,
+    "trailSlots": 48,
+    "ink": {
+      "vertices": 34668,
+      "capacity": 54000,
+      "droppedTriangles": 0
+    },
+    "core": {
+      "vertices": 76314,
+      "capacity": 96000,
+      "droppedTriangles": 0
+    },
+    "reducedMotion": false,
+    "clock": 0.21666666666666667,
+    "drawCalls": 2,
+    "debug": "final"
+  },
+  {
+    "fieldKind": "oil",
+    "style": "storybook-faceted-v1",
+    "activeEvents": 20,
+    "eventBudget": 36,
+    "skippedEvents": 188,
+    "kinds": {
+      "effect:plague_vial": 4
+    },
+    "fieldFootprints": 200,
+    "elements": {
+      "surfaces": 200,
+      "events": 0,
+      "kinds": {
+        "oil": 200
+      },
+      "skippedSurfaces": 200
+    },
+    "triggers": {
+      "events": 4,
+      "buffs": 12,
+      "kinds": {
+        "third_pulse": 4
+      }
+    },
+    "resonance": {
+      "events": 6,
+      "markers": 24,
+      "ghosts": 16,
+      "kinds": {
+        "chain_fuse": 6
+      },
+      "skippedMarkers": 56
+    },
+    "composition": {
+      "nodes": 128,
+      "marks": 12,
+      "wells": 6,
+      "buffs": 16,
+      "events": 6,
+      "kinds": {
+        "step_orb": 6
+      }
+    },
+    "boostedTrails": 48,
+    "trailSegments": 528,
+    "trailSlots": 48,
+    "ink": {
+      "vertices": 43020,
+      "capacity": 54000,
+      "droppedTriangles": 0
+    },
+    "core": {
+      "vertices": 78816,
+      "capacity": 96000,
+      "droppedTriangles": 0
+    },
+    "reducedMotion": false,
+    "clock": 0.21666666666666667,
+    "drawCalls": 2,
+    "debug": "final"
+  },
+  {
+    "fieldKind": "wet",
+    "style": "storybook-faceted-v1",
+    "activeEvents": 20,
+    "eventBudget": 36,
+    "skippedEvents": 188,
+    "kinds": {
+      "effect:plague_vial": 4
+    },
+    "fieldFootprints": 200,
+    "elements": {
+      "surfaces": 200,
+      "events": 0,
+      "kinds": {
+        "wet": 200
+      },
+      "skippedSurfaces": 200
+    },
+    "triggers": {
+      "events": 4,
+      "buffs": 12,
+      "kinds": {
+        "third_pulse": 4
+      }
+    },
+    "resonance": {
+      "events": 6,
+      "markers": 24,
+      "ghosts": 16,
+      "kinds": {
+        "chain_fuse": 6
+      },
+      "skippedMarkers": 56
+    },
+    "composition": {
+      "nodes": 128,
+      "marks": 12,
+      "wells": 6,
+      "buffs": 16,
+      "events": 6,
+      "kinds": {
+        "step_orb": 6
+      }
+    },
+    "boostedTrails": 48,
+    "trailSegments": 528,
+    "trailSlots": 48,
+    "ink": {
+      "vertices": 43020,
+      "capacity": 54000,
+      "droppedTriangles": 0
+    },
+    "core": {
+      "vertices": 78816,
+      "capacity": 96000,
+      "droppedTriangles": 0
+    },
+    "reducedMotion": false,
+    "clock": 0.21666666666666667,
+    "drawCalls": 2,
+    "debug": "final"
+  }
+]

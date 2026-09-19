@@ -1,0 +1,9 @@
+{
+  "checks": 6,
+  "chargeSeconds": 0.8,
+  "surgeSeconds": 1.25,
+  "surgeSpeedMultiplier": 1.7,
+  "mainDamageMultiplier": 1.45,
+  "heading": "random angle constrained inward at collided wall",
+  "runtime": "Unone WASM Luau"
+}

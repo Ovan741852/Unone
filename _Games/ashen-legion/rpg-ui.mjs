@@ -1,7 +1,44 @@
 // Game presentation only. Purchases, dice, modifiers and gold are handled by Luau.
 const panel=document.createElement('section');panel.id='rpg-panel';panel.hidden=true;document.body.append(panel);
 const bar=document.createElement('aside');bar.id='rpg-bar';document.body.append(bar);
-const style=document.createElement('style');style.textContent=`#rpg-panel{position:fixed;inset:6vh 8vw;z-index:55;overflow:auto;background:#142c2ef7;color:#efe4bc;padding:32px;border:2px solid #caaa68;box-shadow:0 20px 70px #000a}#rpg-panel[hidden]{display:none}#rpg-panel h2{font-size:28px;margin:0 0 12px}#rpg-panel p{line-height:1.7}#rpg-panel .rpg-row{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0}#rpg-panel button,#rpg-bar button{background:#25483d;color:#f1dfad;border:1px solid #729276;padding:10px;min-height:42px;cursor:pointer;font:inherit}#rpg-panel button:disabled{opacity:.4;cursor:default}#rpg-panel .rpg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}#rpg-panel article{background:#203b38;border-top:3px solid #d3ae63;padding:16px}#rpg-panel small{display:block;color:#acc5b0;margin:10px 0}#rpg-bar{position:fixed;left:14px;right:auto;top:180px;width:190px;max-width:190px;max-height:65vh;overflow:auto;z-index:45;background:#102829da;padding:10px;font-size:11px;color:#f1dfad}#rpg-bar button{font-size:11px;padding:7px;margin:2px}#rpg-bar p{margin:6px 0;line-height:1.6}#rpg-panel .primary{background:#d5ad63;color:#152a2b}#rpg-panel button:focus-visible,#rpg-bar button:focus-visible{outline:3px solid #f3dfa3}#rpg-panel progress{width:200px}@media(max-width:760px){#rpg-panel{inset:3vh 3vw;padding:18px}#rpg-bar{top:65px;max-width:170px;font-size:10px}}`;
+const style=document.createElement('style');style.textContent=`
+:root{--rpg-ink:#eef2df;--rpg-muted:#b8c8b7;--rpg-bg:#0a1717eF;--rpg-panel:#122525F2;--rpg-card:#193432;--rpg-card-hover:#244943;--rpg-line:#4b7263;--rpg-gold:#eac36e;--rpg-mint:#92d3b0;--rpg-danger:#ef9271;--rpg-shadow:0 24px 70px rgba(0,0,0,.42)}
+#rpg-panel{position:fixed;inset:clamp(18px,5vh,54px) clamp(18px,7vw,110px);z-index:55;overflow:auto;overscroll-behavior:contain;background:linear-gradient(145deg,rgba(19,42,40,.98),rgba(9,24,27,.97));color:var(--rpg-ink);padding:clamp(22px,3vw,40px);border:1px solid rgba(234,195,110,.7);border-radius:24px;box-shadow:var(--rpg-shadow),inset 0 1px rgba(255,255,255,.08);scrollbar-color:var(--rpg-line) transparent;scrollbar-width:thin}
+#rpg-panel[hidden]{display:none}
+#rpg-panel:before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:radial-gradient(circle at 14% 0%,rgba(146,211,176,.12),transparent 34%),linear-gradient(110deg,transparent 0 72%,rgba(234,195,110,.06));}
+#rpg-panel>*{position:relative}
+#rpg-panel h2{font-size:clamp(24px,2.6vw,36px);line-height:1.1;letter-spacing:.02em;margin:0 0 9px;color:#fff3c8}
+#rpg-panel h3{font-size:16px;line-height:1.35;margin:22px 0 9px;color:#f1d991}
+#rpg-panel p{max-width:72ch;line-height:1.65;color:var(--rpg-muted);margin:9px 0}
+#rpg-panel .rpg-row{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:16px 0}
+#rpg-panel button,#rpg-bar button{appearance:none;background:linear-gradient(180deg,#285248,#1d3c39);color:var(--rpg-ink);border:1px solid #638d78;border-radius:11px;padding:10px 13px;min-height:42px;cursor:pointer;font:inherit;line-height:1.2;transition:background-color .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+#rpg-panel button:hover,#rpg-bar button:hover{background:linear-gradient(180deg,#356558,#254a45);border-color:#b4d3a9;transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.2)}
+#rpg-panel button:active,#rpg-bar button:active{transform:translateY(0)}
+#rpg-panel button:disabled{opacity:.42;cursor:not-allowed;transform:none;box-shadow:none}
+#rpg-panel button:focus-visible,#rpg-bar button:focus-visible,#rpg-panel summary:focus-visible{outline:3px solid #f3dfa3;outline-offset:3px}
+#rpg-panel .rpg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;margin-top:14px}
+#rpg-panel article{display:flex;flex-direction:column;align-items:flex-start;min-height:128px;background:linear-gradient(160deg,rgba(32,66,61,.92),rgba(21,47,46,.96));border:1px solid rgba(132,179,148,.28);border-top:3px solid var(--rpg-gold);border-radius:14px;padding:16px;box-shadow:0 10px 24px rgba(0,0,0,.16)}
+#rpg-panel article>b{color:#fff3c8;font-size:15px;line-height:1.35}
+#rpg-panel article small{display:block;color:var(--rpg-muted);margin:9px 0 13px;line-height:1.55}
+#rpg-panel article img{object-fit:contain;align-self:flex-start;max-width:100%;filter:drop-shadow(0 5px 10px rgba(0,0,0,.35))}
+#rpg-panel article button{margin-top:auto}
+#rpg-panel .primary{background:linear-gradient(180deg,#e8c56f,#be8d45);color:#192a29;border-color:#f7e0a2;font-weight:750;box-shadow:0 8px 20px rgba(209,157,73,.22)}
+#rpg-panel .primary:hover{background:linear-gradient(180deg,#f2d788,#ce9b4d)}
+#rpg-panel details{border:1px solid rgba(132,179,148,.25);border-radius:14px;background:rgba(10,28,29,.32);margin:14px 0;padding:0 15px}
+#rpg-panel details[open]{background:rgba(10,28,29,.5)}
+#rpg-panel summary{cursor:pointer;list-style:none;padding:15px 2px;color:#f1d991;font-weight:700}
+#rpg-panel summary::-webkit-details-marker{display:none}
+#rpg-panel summary:before{content:'▸';display:inline-block;width:20px;color:var(--rpg-mint);transition:transform .18s ease}
+#rpg-panel details[open] summary:before{transform:rotate(90deg)}
+#rpg-panel progress{width:min(260px,100%);accent-color:var(--rpg-mint)}
+#rpg-bar{position:fixed;left:clamp(14px,2.5vw,42px);top:clamp(14px,4vh,38px);width:min(224px,24vw);max-height:min(60vh,470px);overflow:auto;overscroll-behavior:contain;z-index:45;background:linear-gradient(160deg,rgba(13,37,37,.94),rgba(8,24,27,.9));border:1px solid rgba(132,179,148,.38);border-radius:16px;padding:12px;color:var(--rpg-ink);font-size:12px;box-shadow:0 16px 34px rgba(0,0,0,.26);scrollbar-color:var(--rpg-line) transparent;scrollbar-width:thin}
+#rpg-bar p{margin:7px 2px;line-height:1.5;color:var(--rpg-muted)}
+#rpg-bar p:first-child{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#f1d991}
+#rpg-bar button{font-size:12px;padding:8px 10px;min-height:34px;margin:3px 2px}
+@media(max-width:1000px){#rpg-panel{inset:3vh 3vw;padding:24px}#rpg-bar{width:min(205px,30vw)}}
+@media(max-width:720px){#rpg-panel{inset:12px 10px;padding:18px;border-radius:18px}#rpg-bar{left:10px;right:10px;top:10px;width:auto;max-width:none;max-height:25vh;display:flex;align-items:center;flex-wrap:wrap;gap:2px 4px;padding:8px}#rpg-bar p{margin:4px 6px}#rpg-bar p:first-child{flex-basis:100%}}
+@media(prefers-reduced-motion:reduce){#rpg-panel button,#rpg-bar button,#rpg-panel summary:before{transition:none}}
+`;
 document.head.append(style);
 const units=['劍兵','槍兵','騎兵'],slots=['頭','身','腳','手','武器'],locations={market:'買賣商店',potion:'藥水攤',tech:'科技研究',enchant:'裝備附魔',curse:'詛咒契約'};
 const skillNames={pierce:'穿透 +1',critical:'爆擊率 +10%',landing_spin:'落地旋轉斬',longlife:'壽命 +15%',haste:'移速 +15%',heavy:'移速 -20%／傷害 +35%',bounce_power:'反彈增傷',bounce_life:'反彈延命',momentum:'速度轉穿透傷害',shock:'命中震盪',crit_power:'爆擊倍率 +0.25',finisher:'穿透蓄終結',ember_burst:'終結爆炸',king_hunter:'對王傷害 +20%',frost_touch:'命中緩速',frenzy:'連殺增傷',last_stand:'最後一搏',heat:'熱機',distance:'遠征',lightning:'爆擊雷鏈',third_crit:'第三擊必爆',expire_burst:'到期衝擊',rebound_charge:'反彈蓄下次命中'};

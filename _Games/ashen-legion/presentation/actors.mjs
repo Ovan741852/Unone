@@ -36,14 +36,21 @@ function troopClips(clips,rider=false){
 function controller(clips,initial='idle'){
  return {initial,states:Object.fromEntries(Object.keys(clips).map(id=>[id,{clip:id,loop:['idle','walk','run','airborne','spin'].includes(id),transition:['hit','bounce','pierce'].includes(id)?.05:.12,clamp:true}]))};
 }
-export async function createActors({THREE,scene,assetBase=new URL('.',location.href)}){
- if(THREE.AnimationMixer!==T.AnimationMixer)throw Error('Actors require the same Three namespace as Unone renderer');
- const loader=new GLTFLoader();const roster=await (await fetch(new URL('assets/creatures/manifest.json',assetBase))).json();
+export async function prepareActorAssets({assetBase=new URL('.',location.href),onProgress=()=>{}}={}){
+ const loader=new GLTFLoader();
+ const manifest=async path=>{const r=await fetch(new URL(path,assetBase));if(!r.ok)throw Error(`Actor manifest ${path}: ${r.status}`);return r.json()};
+ const [roster,equipment]=await Promise.all([manifest('assets/creatures/manifest.json'),manifest('assets/equipment/manifest.json')]);
  const loadModel=path=>retryDownload(()=>loader.loadAsync(new URL(path,assetBase).href),{onRetry:info=>console.warn('Retrying model download',path,info)});
- const assets=new Map(await mapDownloads(roster,async entry=>[entry.id,await loadModel('assets/creatures/'+entry.model)]));
- const equipment=await (await fetch(new URL('assets/equipment/manifest.json',assetBase))).json();
- const equipmentAssets=new Map(await mapDownloads(equipment,async e=>[e.id,await loadModel('assets/equipment/'+e.id+'.glb')]));
- const soldier=await loadModel('presentation/soldier-v2.glb');mergeParts(soldier.scene);assets.set('soldier',soldier);
+ const jobs=[{id:'soldier',path:'presentation/soldier-v2.glb'},...roster.map(e=>({id:e.id,path:'assets/creatures/'+e.model})),...equipment.map(e=>({id:e.id,path:'assets/equipment/'+e.id+'.glb',equipment:true}))];
+ let completed=0;onProgress(completed,jobs.length);
+ // One bounded pool, prepared alongside the runtime and first-screen UI.
+ const models=await mapDownloads(jobs,async job=>{const asset=await loadModel(job.path);onProgress(++completed,jobs.length);return {...job,asset}},6);
+ return {assets:new Map(models.filter(m=>!m.equipment).map(m=>[m.id,m.asset])),equipmentAssets:new Map(models.filter(m=>m.equipment).map(m=>[m.id,m.asset]))};
+}
+export async function createActors({THREE,scene,assetBase=new URL('.',location.href),preparedAssets}){
+ if(THREE.AnimationMixer!==T.AnimationMixer)throw Error('Actors require the same Three namespace as Unone renderer');
+ const {assets,equipmentAssets}=await(preparedAssets??prepareActorAssets({assetBase}));
+ mergeParts(assets.get('soldier').scene);
  // The v2 cast shares one authored atlas. Reuse its GPU texture rather than
  // retaining twelve identical embedded 2048px images after glTF decoding.
  let castAtlas;const redundant=new Set();
@@ -96,6 +103,8 @@ export async function createActors({THREE,scene,assetBase=new URL('.',location.h
    entry.root.position.set(data.x,data.y??0,data.z);entry.root.rotation.y=data.yaw??0;
    const scale=data.skin==='soldier'?(s.phase==='menu'?1.15:.82):data.scale*.9;entry.root.scale.setScalar(scale);
    let state=data.state==='run'?'run':data.state==='spin'?'spin':data.state==='airborne'?'airborne':data.state??'walk';
+   const cast=Object.values(s.skillRuntime?.casts??{}).find(c=>data.skin==='soldier'&&c.sourceId===data.id&&['windup','release'].includes(c.phase));
+   if(cast)state=cast.phase==='windup'?'stretch':'attack';
    if(clock-entry.born<.25)state='spawn';
    if(data.bounces>entry.last.bounces){entry.flashUntil=clock+.18;entry.flashState='bounce'}
    if(data.pierce<entry.last.pierce){entry.flashUntil=clock+.18;entry.flashState='pierce'}
@@ -112,5 +121,5 @@ export async function createActors({THREE,scene,assetBase=new URL('.',location.h
   // Rider and mount share normalized presentation phase; neither controls game movement.
   for(const entry of entries.values())if(entry.horse&&!entry.death){const phase=entry.handle.player.getState().normalizedTime;entry.horse.player.seekNormalized(phase)}
  }
- return {update,inspect:()=>({actors:entries.size,animator:animator.snapshot(),creatures:roster.length,equipment:equipmentAssets.size,livery:'sculpted-storybook-v2',art:ink.inspect()}),dispose(){for(const id of [...entries.keys()])remove(id);animator.dispose();combatFX.dispose();art.dispose();ink.dispose();}};
+ return {update,inspect:()=>({actors:entries.size,animator:animator.snapshot(),creatures:assets.size-1,equipment:equipmentAssets.size,livery:'sculpted-storybook-v2',art:ink.inspect(),combatFX:combatFX.inspect()}),dispose(){for(const id of [...entries.keys()])remove(id);animator.dispose();combatFX.dispose();art.dispose();ink.dispose();}};
 }

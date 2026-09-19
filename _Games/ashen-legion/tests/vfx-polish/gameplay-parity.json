@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "scope": "3 classes × 700 unchanged production ticks; 60 sampled complete gameplay outcomes equal before/after; actual Luau visual receipt assertions",
+  "units": 3,
+  "ticksPerUnit": 700
+}

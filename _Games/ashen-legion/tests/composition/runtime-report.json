@@ -1,0 +1,252 @@
+{
+  "checks": 63,
+  "scope": "Actual WASM fixtures; 12 short production trials with in-memory starting loadouts and unmodified economy/lotteries. Not proof of full-run balance.",
+  "results": [
+    {
+      "skills": [
+        "gravity_law",
+        "contact_mine",
+        "quick_chant"
+      ],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 98,
+          "spent": 2548,
+          "earned": 2660,
+          "coins": 432,
+          "kills": 68,
+          "counts": {
+            "contact_mine": 282,
+            "contact_mine_detonate": 26,
+            "contact_mine_hits": 30,
+            "gravity_law": 326
+          },
+          "peakNodes": 64,
+          "peakMarks": 0,
+          "tickP95ms": 4.699100000000271,
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 100,
+          "spent": 2600,
+          "earned": 2342,
+          "coins": 62,
+          "kills": 68,
+          "counts": {
+            "contact_mine": 280,
+            "contact_mine_detonate": 15,
+            "contact_mine_hits": 16,
+            "gravity_law": 330
+          },
+          "peakNodes": 64,
+          "peakMarks": 0,
+          "tickP95ms": 5.091700000000856,
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 94,
+          "spent": 2444,
+          "earned": 2228,
+          "coins": 104,
+          "kills": 67,
+          "counts": {
+            "contact_mine": 285,
+            "contact_mine_detonate": 28,
+            "contact_mine_hits": 28,
+            "gravity_law": 307
+          },
+          "peakNodes": 64,
+          "peakMarks": 0,
+          "tickP95ms": 5.065500000000611,
+          "phase": "battle"
+        }
+      ]
+    },
+    {
+      "skills": [
+        "step_orb",
+        "overload_script",
+        "firstborn"
+      ],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 87,
+          "spent": 2262,
+          "earned": 2432,
+          "coins": 490,
+          "kills": 71,
+          "counts": {
+            "step_orb": 3184,
+            "step_orb_detonate": 2981,
+            "step_orb_hits": 83
+          },
+          "peakNodes": 217,
+          "peakMarks": 0,
+          "tickP95ms": 6.6656999999977415,
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 84,
+          "spent": 2184,
+          "earned": 2750,
+          "coins": 886,
+          "kills": 69,
+          "counts": {
+            "step_orb": 3104,
+            "step_orb_detonate": 2919,
+            "step_orb_hits": 87
+          },
+          "peakNodes": 243,
+          "peakMarks": 0,
+          "tickP95ms": 6.959900000001653,
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 91,
+          "spent": 2366,
+          "earned": 2810,
+          "coins": 764,
+          "kills": 70,
+          "counts": {
+            "step_orb": 3366,
+            "step_orb_detonate": 3157,
+            "step_orb_hits": 103
+          },
+          "peakNodes": 243,
+          "peakMarks": 0,
+          "tickP95ms": 7.1037000000033,
+          "phase": "battle"
+        }
+      ]
+    },
+    {
+      "skills": [
+        "comrade_oath",
+        "resonant_debt",
+        "phoenix_fire"
+      ],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 94,
+          "spent": 2444,
+          "earned": 2836,
+          "coins": 712,
+          "kills": 70,
+          "counts": {
+            "comrade_oath": 485,
+            "resonant_debt": 24,
+            "resonant_debt_detonate": 24,
+            "resonant_debt_hits": 21
+          },
+          "peakNodes": 0,
+          "peakMarks": 17,
+          "tickP95ms": 8.23530000000028,
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 86,
+          "spent": 2236,
+          "earned": 1916,
+          "coins": 0,
+          "kills": 66,
+          "counts": {
+            "comrade_oath": 457,
+            "resonant_debt": 17,
+            "resonant_debt_detonate": 17,
+            "resonant_debt_hits": 17
+          },
+          "peakNodes": 0,
+          "peakMarks": 15,
+          "tickP95ms": 8.196299999995972,
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 92,
+          "spent": 2392,
+          "earned": 2784,
+          "coins": 712,
+          "kills": 71,
+          "counts": {
+            "comrade_oath": 545,
+            "resonant_debt": 25,
+            "resonant_debt_detonate": 25,
+            "resonant_debt_hits": 27
+          },
+          "peakNodes": 0,
+          "peakMarks": 17,
+          "tickP95ms": 8.658199999998033,
+          "phase": "battle"
+        }
+      ]
+    },
+    {
+      "skills": [
+        "storm_payload",
+        "step_orb",
+        "rain_strike"
+      ],
+      "trials": [
+        {
+          "seed": 11,
+          "fired": 100,
+          "spent": 2500,
+          "earned": 2800,
+          "coins": 620,
+          "kills": 68,
+          "counts": {
+            "step_orb": 2635,
+            "step_orb_detonate": 2449,
+            "step_orb_hits": 100
+          },
+          "peakNodes": 186,
+          "peakMarks": 0,
+          "tickP95ms": 9.314800000000105,
+          "phase": "battle"
+        },
+        {
+          "seed": 42,
+          "fired": 92,
+          "spent": 2300,
+          "earned": 2490,
+          "coins": 510,
+          "kills": 68,
+          "counts": {
+            "step_orb": 2454,
+            "step_orb_detonate": 2320,
+            "step_orb_hits": 77
+          },
+          "peakNodes": 186,
+          "peakMarks": 0,
+          "tickP95ms": 9.222399999998743,
+          "phase": "battle"
+        },
+        {
+          "seed": 83,
+          "fired": 95,
+          "spent": 2375,
+          "earned": 2418,
+          "coins": 363,
+          "kills": 67,
+          "counts": {
+            "step_orb": 2451,
+            "step_orb_detonate": 2305,
+            "step_orb_hits": 85
+          },
+          "peakNodes": 184,
+          "peakMarks": 0,
+          "tickP95ms": 9.18279999999504,
+          "phase": "battle"
+        }
+      ]
+    }
+  ]
+}

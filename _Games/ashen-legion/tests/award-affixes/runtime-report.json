@@ -1,0 +1,10 @@
+{
+  "checks": 212,
+  "skills": 6,
+  "conditionalStep": 0.12,
+  "maxShift": 0.24,
+  "gateUnchanged": true,
+  "legendaryUnchanged": true,
+  "drawsPerEffect": 10000,
+  "actualRunePurchaseAndDeploy": true
+}

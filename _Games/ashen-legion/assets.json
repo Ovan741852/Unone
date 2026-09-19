@@ -182,6 +182,17 @@
       }
     },
     {
+      "id": "mesh://spark_ice",
+      "kind": "mesh3d",
+      "source": "assets/spark_ice.mesh.json",
+      "encoding": {
+        "mime": "application/json",
+        "companions": [],
+        "decoder": "mesh",
+        "format": "unone-mesh-json"
+      }
+    },
+    {
       "id": "texture://sky_forest",
       "kind": "texture2d",
       "source": "assets/sky_forest.png"
@@ -232,6 +243,11 @@
       "id": "texture://ui_crest",
       "kind": "texture2d",
       "source": "assets/formal-ui/crest.png"
+    },
+    {
+      "id": "texture://ui_shop-surface",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-surface.png"
     },
     {
       "id": "texture://ui_target-card",
@@ -319,299 +335,564 @@
       "source": "assets/formal-ui/keyart.png"
     },
     {
+      "id": "texture://ui_scene-town",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/scene-town.png"
+    },
+    {
+      "id": "texture://ui_shop-backdrop",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-backdrop.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare.png"
+    },
+    {
+      "id": "texture://ui_symbol-material",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/symbol-material.png"
+    },
+    {
+      "id": "texture://ui_town-constellation",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/town-constellation.png"
+    },
+    {
+      "id": "texture://ui_timeline-track",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/timeline-track.png"
+    },
+    {
+      "id": "texture://ui_timeline-fill",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/timeline-fill.png"
+    },
+    {
+      "id": "texture://ui_building-watchtower",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/building-watchtower.png"
+    },
+    {
+      "id": "texture://ui_building-training",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/building-training.png"
+    },
+    {
+      "id": "texture://ui_building-campfire",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/building-campfire.png"
+    },
+    {
       "id": "texture://ui_building-market",
       "kind": "texture2d",
-      "source": "assets/formal-ui/building-market.png"
+      "source": "assets/formal-ui/transparent-v2/building-market.png"
     },
     {
       "id": "texture://ui_building-alchemy",
       "kind": "texture2d",
-      "source": "assets/formal-ui/building-alchemy.png"
+      "source": "assets/formal-ui/transparent-v2/building-alchemy.png"
     },
     {
       "id": "texture://ui_building-forge",
       "kind": "texture2d",
-      "source": "assets/formal-ui/building-forge.png"
+      "source": "assets/formal-ui/transparent-v2/building-forge.png"
     },
     {
       "id": "texture://ui_building-barracks",
       "kind": "texture2d",
-      "source": "assets/formal-ui/building-barracks.png"
+      "source": "assets/formal-ui/transparent-v2/building-barracks.png"
     },
     {
       "id": "texture://ui_icon-curse-debt",
       "kind": "texture2d",
-      "source": "assets/formal-ui/icon-curse-debt.png"
+      "source": "assets/formal-ui/transparent-v2/icon-curse-debt.png"
+    },
+    {
+      "id": "texture://ui_gear-battle_elegy",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-battle_elegy.png"
     },
     {
       "id": "texture://ui_gear-bounce_life",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-bounce_life.png"
+      "source": "assets/formal-ui/transparent-v2/gear-bounce_life.png"
     },
     {
       "id": "texture://ui_gear-bounce_power",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-bounce_power.png"
+      "source": "assets/formal-ui/transparent-v2/gear-bounce_power.png"
+    },
+    {
+      "id": "texture://ui_gear-chain_fuse",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-chain_fuse.png"
+    },
+    {
+      "id": "texture://ui_gear-cinder_seal",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-cinder_seal.png"
+    },
+    {
+      "id": "texture://ui_gear-comrade_oath",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-comrade_oath.png"
+    },
+    {
+      "id": "texture://ui_gear-contact_mine",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-contact_mine.png"
     },
     {
       "id": "texture://ui_gear-critical",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-critical.png"
+      "source": "assets/formal-ui/transparent-v2/gear-critical.png"
     },
     {
       "id": "texture://ui_gear-crit_power",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-crit_power.png"
+      "source": "assets/formal-ui/transparent-v2/gear-crit_power.png"
     },
     {
       "id": "texture://ui_gear-crowd_ring",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-crowd_ring.png"
+      "source": "assets/formal-ui/transparent-v2/gear-crowd_ring.png"
     },
     {
       "id": "texture://ui_gear-deadly",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-deadly.png"
+      "source": "assets/formal-ui/transparent-v2/gear-deadly.png"
+    },
+    {
+      "id": "texture://ui_gear-delayed_bloom",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-delayed_bloom.png"
     },
     {
       "id": "texture://ui_gear-distance",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-distance.png"
+      "source": "assets/formal-ui/transparent-v2/gear-distance.png"
     },
     {
       "id": "texture://ui_gear-double_pierce",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-double_pierce.png"
+      "source": "assets/formal-ui/transparent-v2/gear-double_pierce.png"
+    },
+    {
+      "id": "texture://ui_gear-echo_blade",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-echo_blade.png"
     },
     {
       "id": "texture://ui_gear-ember_burst",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-ember_burst.png"
+      "source": "assets/formal-ui/transparent-v2/gear-ember_burst.png"
+    },
+    {
+      "id": "texture://ui_gear-ember_trail",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-ember_trail.png"
     },
     {
       "id": "texture://ui_gear-expire_burst",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-expire_burst.png"
+      "source": "assets/formal-ui/transparent-v2/gear-expire_burst.png"
     },
     {
       "id": "texture://ui_gear-finisher",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-finisher.png"
+      "source": "assets/formal-ui/transparent-v2/gear-finisher.png"
+    },
+    {
+      "id": "texture://ui_gear-firstborn",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-firstborn.png"
+    },
+    {
+      "id": "texture://ui_gear-flame_cloak",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-flame_cloak.png"
     },
     {
       "id": "texture://ui_gear-fracture",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-fracture.png"
+      "source": "assets/formal-ui/transparent-v2/gear-fracture.png"
     },
     {
       "id": "texture://ui_gear-frenzy",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-frenzy.png"
+      "source": "assets/formal-ui/transparent-v2/gear-frenzy.png"
     },
     {
       "id": "texture://ui_gear-frost_touch",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-frost_touch.png"
+      "source": "assets/formal-ui/transparent-v2/gear-frost_touch.png"
     },
     {
       "id": "texture://ui_gear-giant",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-giant.png"
+      "source": "assets/formal-ui/transparent-v2/gear-giant.png"
+    },
+    {
+      "id": "texture://ui_gear-grave_bloom",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-grave_bloom.png"
+    },
+    {
+      "id": "texture://ui_gear-gravity_law",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-gravity_law.png"
+    },
+    {
+      "id": "texture://ui_gear-guard_bequest",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-guard_bequest.png"
     },
     {
       "id": "texture://ui_gear-haste",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-haste.png"
+      "source": "assets/formal-ui/transparent-v2/gear-haste.png"
     },
     {
       "id": "texture://ui_gear-heat",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-heat.png"
+      "source": "assets/formal-ui/transparent-v2/gear-heat.png"
     },
     {
       "id": "texture://ui_gear-heavy",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-heavy.png"
+      "source": "assets/formal-ui/transparent-v2/gear-heavy.png"
     },
     {
       "id": "texture://ui_gear-hit_echo",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-hit_echo.png"
+      "source": "assets/formal-ui/transparent-v2/gear-hit_echo.png"
     },
     {
       "id": "texture://ui_gear-hunter_vigor",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-hunter_vigor.png"
+      "source": "assets/formal-ui/transparent-v2/gear-hunter_vigor.png"
     },
     {
       "id": "texture://ui_gear-king_hunter",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-king_hunter.png"
+      "source": "assets/formal-ui/transparent-v2/gear-king_hunter.png"
     },
     {
       "id": "texture://ui_gear-landing_spin",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-landing_spin.png"
+      "source": "assets/formal-ui/transparent-v2/gear-landing_spin.png"
+    },
+    {
+      "id": "texture://ui_gear-last_echo",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-last_echo.png"
     },
     {
       "id": "texture://ui_gear-last_stand",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-last_stand.png"
+      "source": "assets/formal-ui/transparent-v2/gear-last_stand.png"
+    },
+    {
+      "id": "texture://ui_gear-legacy_gift",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-legacy_gift.png"
     },
     {
       "id": "texture://ui_gear-lightning",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-lightning.png"
+      "source": "assets/formal-ui/transparent-v2/gear-lightning.png"
     },
     {
       "id": "texture://ui_gear-longlife",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-longlife.png"
+      "source": "assets/formal-ui/transparent-v2/gear-longlife.png"
+    },
+    {
+      "id": "texture://ui_gear-march_capacitor",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-march_capacitor.png"
     },
     {
       "id": "texture://ui_gear-momentum",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-momentum.png"
+      "source": "assets/formal-ui/transparent-v2/gear-momentum.png"
+    },
+    {
+      "id": "texture://ui_gear-necromancer",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/gear-necromancer.png"
+    },
+    {
+      "id": "texture://ui_gear-oil_legacy",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-oil_legacy.png"
+    },
+    {
+      "id": "texture://ui_gear-overload_script",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-overload_script.png"
+    },
+    {
+      "id": "texture://ui_gear-phoenix_fire",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-phoenix_fire.png"
     },
     {
       "id": "texture://ui_gear-pierce",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-pierce.png"
+      "source": "assets/formal-ui/transparent-v2/gear-pierce.png"
     },
     {
       "id": "texture://ui_gear-piercing_wave",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-piercing_wave.png"
+      "source": "assets/formal-ui/transparent-v2/gear-piercing_wave.png"
+    },
+    {
+      "id": "texture://ui_gear-plague_vial",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-plague_vial.png"
+    },
+    {
+      "id": "texture://ui_gear-plunder",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-plunder.png"
+    },
+    {
+      "id": "texture://ui_gear-quick_chant",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-quick_chant.png"
+    },
+    {
+      "id": "texture://ui_gear-rain_strike",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-rain_strike.png"
     },
     {
       "id": "texture://ui_gear-rally",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-rally.png"
+      "source": "assets/formal-ui/transparent-v2/gear-rally.png"
     },
     {
       "id": "texture://ui_gear-rapid",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-rapid.png"
+      "source": "assets/formal-ui/transparent-v2/gear-rapid.png"
     },
     {
       "id": "texture://ui_gear-rebound_charge",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-rebound_charge.png"
+      "source": "assets/formal-ui/transparent-v2/gear-rebound_charge.png"
     },
     {
       "id": "texture://ui_gear-recruit",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-recruit.png"
+      "source": "assets/formal-ui/transparent-v2/gear-recruit.png"
+    },
+    {
+      "id": "texture://ui_gear-resonant_debt",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-resonant_debt.png"
     },
     {
       "id": "texture://ui_gear-ricochet_precision",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-ricochet_precision.png"
+      "source": "assets/formal-ui/transparent-v2/gear-ricochet_precision.png"
     },
     {
       "id": "texture://ui_gear-sharp",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-sharp.png"
+      "source": "assets/formal-ui/transparent-v2/gear-sharp.png"
     },
     {
       "id": "texture://ui_gear-shatter",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-shatter.png"
+      "source": "assets/formal-ui/transparent-v2/gear-shatter.png"
     },
     {
       "id": "texture://ui_gear-shock",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-shock.png"
+      "source": "assets/formal-ui/transparent-v2/gear-shock.png"
     },
     {
       "id": "texture://ui_gear-short_fuse",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-short_fuse.png"
+      "source": "assets/formal-ui/transparent-v2/gear-short_fuse.png"
     },
     {
       "id": "texture://ui_gear-showdown",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-showdown.png"
+      "source": "assets/formal-ui/transparent-v2/gear-showdown.png"
+    },
+    {
+      "id": "texture://ui_gear-slick_oil",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-slick_oil.png"
     },
     {
       "id": "texture://ui_gear-slow_force",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-slow_force.png"
+      "source": "assets/formal-ui/transparent-v2/gear-slow_force.png"
     },
     {
       "id": "texture://ui_gear-solitary",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-solitary.png"
+      "source": "assets/formal-ui/transparent-v2/gear-solitary.png"
     },
     {
       "id": "texture://ui_gear-solo_hunt",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-solo_hunt.png"
+      "source": "assets/formal-ui/transparent-v2/gear-solo_hunt.png"
+    },
+    {
+      "id": "texture://ui_gear-soul_return",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-soul_return.png"
     },
     {
       "id": "texture://ui_gear-spin_master",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-spin_master.png"
+      "source": "assets/formal-ui/transparent-v2/gear-spin_master.png"
+    },
+    {
+      "id": "texture://ui_gear-starfall",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-starfall.png"
+    },
+    {
+      "id": "texture://ui_gear-step_orb",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-step_orb.png"
+    },
+    {
+      "id": "texture://ui_gear-storm_payload",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-storm_payload.png"
+    },
+    {
+      "id": "texture://ui_gear-storm_touch",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-storm_touch.png"
     },
     {
       "id": "texture://ui_gear-third_crit",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-third_crit.png"
+      "source": "assets/formal-ui/transparent-v2/gear-third_crit.png"
+    },
+    {
+      "id": "texture://ui_gear-third_pulse",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-third_pulse.png"
+    },
+    {
+      "id": "texture://ui_gear-thunder_fan",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-thunder_fan.png"
     },
     {
       "id": "texture://ui_gear-wall_quake",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-wall_quake.png"
+      "source": "assets/formal-ui/transparent-v2/gear-wall_quake.png"
     },
     {
       "id": "texture://ui_gear-wide_blade",
       "kind": "texture2d",
-      "source": "assets/formal-ui/gear-wide_blade.png"
+      "source": "assets/formal-ui/transparent-v2/gear-wide_blade.png"
+    },
+    {
+      "id": "texture://ui_portrait-alchemist",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/portrait-alchemist.png"
+    },
+    {
+      "id": "texture://ui_portrait-cavalry",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/portrait-cavalry.png"
+    },
+    {
+      "id": "texture://ui_portrait-merchant",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/portrait-merchant.png"
+    },
+    {
+      "id": "texture://ui_portrait-scholar",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/portrait-scholar.png"
+    },
+    {
+      "id": "texture://ui_portrait-smith",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/portrait-smith.png"
+    },
+    {
+      "id": "texture://ui_portrait-spear",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/portrait-spear.png"
+    },
+    {
+      "id": "texture://ui_portrait-sword",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/portrait-sword.png"
+    },
+    {
+      "id": "texture://ui_portrait-witch",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/portrait-witch.png"
     },
     {
       "id": "texture://ui_symbol-sword",
       "kind": "texture2d",
-      "source": "assets/formal-ui/symbol-sword.png"
+      "source": "assets/formal-ui/transparent-v2/gear-sharp.png"
     },
     {
       "id": "texture://ui_symbol-spear",
       "kind": "texture2d",
-      "source": "assets/formal-ui/symbol-spear.png"
+      "source": "assets/formal-ui/transparent-v2/gear-momentum.png"
     },
     {
       "id": "texture://ui_symbol-cavalry",
       "kind": "texture2d",
-      "source": "assets/formal-ui/symbol-cavalry.png"
+      "source": "assets/formal-ui/transparent-v2/icon-cavalry.png"
     },
     {
       "id": "texture://ui_symbol-manual",
       "kind": "texture2d",
-      "source": "assets/formal-ui/symbol-manual.png"
+      "source": "assets/formal-ui/transparent-v2/symbol-manual.png"
     },
     {
       "id": "texture://ui_symbol-lock",
       "kind": "texture2d",
-      "source": "assets/formal-ui/symbol-lock.png"
+      "source": "assets/formal-ui/transparent-v2/icon-lock.png"
     },
     {
       "id": "texture://ui_symbol-auto",
       "kind": "texture2d",
-      "source": "assets/formal-ui/symbol-auto.png"
+      "source": "assets/formal-ui/transparent-v2/icon-auto.png"
     },
     {
       "id": "texture://ui_symbol-pause",
       "kind": "texture2d",
-      "source": "assets/formal-ui/symbol-pause.png"
+      "source": "assets/formal-ui/transparent-v2/icon-pause.png"
     },
     {
       "id": "texture://ui_symbol-coin",
       "kind": "texture2d",
-      "source": "assets/formal-ui/symbol-coin.png"
+      "source": "assets/formal-ui/transparent-v2/icon-coin.png"
     },
     {
       "id": "texture://ui_symbol-crystal",
       "kind": "texture2d",
-      "source": "assets/formal-ui/symbol-crystal.png"
+      "source": "assets/formal-ui/transparent-v2/icon-crystal.png"
     },
     {
       "id": "texture://ui_hud-heading",
@@ -649,6 +930,561 @@
       "source": "assets/formal-ui/scene-shade.png"
     },
     {
+      "id": "texture://ui_building-curse",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/building-curse.png"
+    },
+    {
+      "id": "texture://ui_building-keep",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/building-keep.png"
+    },
+    {
+      "id": "texture://ui_icon-attack",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-sharp.png"
+    },
+    {
+      "id": "texture://ui_icon-auto",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-auto.png"
+    },
+    {
+      "id": "texture://ui_icon-body",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-longlife.png"
+    },
+    {
+      "id": "texture://ui_icon-boots",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-haste.png"
+    },
+    {
+      "id": "texture://ui_icon-cavalry",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-cavalry.png"
+    },
+    {
+      "id": "texture://ui_icon-close",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-close.png"
+    },
+    {
+      "id": "texture://ui_icon-coin",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-coin.png"
+    },
+    {
+      "id": "texture://ui_icon-crit",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-crit.png"
+    },
+    {
+      "id": "texture://ui_icon-crown",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-showdown.png"
+    },
+    {
+      "id": "texture://ui_icon-crystal",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-crystal.png"
+    },
+    {
+      "id": "texture://ui_icon-curse-frail",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-curse-frail.png"
+    },
+    {
+      "id": "texture://ui_icon-curse-slow",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-curse-slow.png"
+    },
+    {
+      "id": "texture://ui_icon-gloves",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-giant.png"
+    },
+    {
+      "id": "texture://ui_icon-helmet",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-critical.png"
+    },
+    {
+      "id": "texture://ui_icon-life",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-life.png"
+    },
+    {
+      "id": "texture://ui_icon-lock",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-lock.png"
+    },
+    {
+      "id": "texture://ui_icon-map",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-map.png"
+    },
+    {
+      "id": "texture://ui_icon-pause",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-pause.png"
+    },
+    {
+      "id": "texture://ui_icon-pierce",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-double_pierce.png"
+    },
+    {
+      "id": "texture://ui_icon-potion-haste",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-potion-haste.png"
+    },
+    {
+      "id": "texture://ui_icon-potion-life",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-potion-life.png"
+    },
+    {
+      "id": "texture://ui_icon-potion-recall",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-potion-recall.png"
+    },
+    {
+      "id": "texture://ui_icon-refresh",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-refresh.png"
+    },
+    {
+      "id": "texture://ui_icon-rune",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-rune.png"
+    },
+    {
+      "id": "texture://ui_icon-sell",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-sell.png"
+    },
+    {
+      "id": "texture://ui_icon-sound",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/icon-sound.png"
+    },
+    {
+      "id": "texture://ui_icon-spear",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-momentum.png"
+    },
+    {
+      "id": "texture://ui_icon-speed",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-haste.png"
+    },
+    {
+      "id": "texture://ui_icon-spin",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-landing_spin.png"
+    },
+    {
+      "id": "texture://ui_icon-sword",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-sharp.png"
+    },
+    {
+      "id": "texture://ui_icon-weapon",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/gear-sharp.png"
+    },
+    {
+      "id": "texture://ui_skill-battle_elegy",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-battle_elegy.png"
+    },
+    {
+      "id": "texture://ui_skill-bounce_life",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-bounce_life.png"
+    },
+    {
+      "id": "texture://ui_skill-bounce_power",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-bounce_power.png"
+    },
+    {
+      "id": "texture://ui_skill-chain_fuse",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-chain_fuse.png"
+    },
+    {
+      "id": "texture://ui_skill-cinder_seal",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-cinder_seal.png"
+    },
+    {
+      "id": "texture://ui_skill-comrade_oath",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-comrade_oath.png"
+    },
+    {
+      "id": "texture://ui_skill-contact_mine",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-contact_mine.png"
+    },
+    {
+      "id": "texture://ui_skill-critical",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-critical.png"
+    },
+    {
+      "id": "texture://ui_skill-crit_power",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-crit_power.png"
+    },
+    {
+      "id": "texture://ui_skill-crowd_ring",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-crowd_ring.png"
+    },
+    {
+      "id": "texture://ui_skill-deadly",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-deadly.png"
+    },
+    {
+      "id": "texture://ui_skill-delayed_bloom",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-delayed_bloom.png"
+    },
+    {
+      "id": "texture://ui_skill-distance",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-distance.png"
+    },
+    {
+      "id": "texture://ui_skill-double_pierce",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-double_pierce.png"
+    },
+    {
+      "id": "texture://ui_skill-echo_blade",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-echo_blade.png"
+    },
+    {
+      "id": "texture://ui_skill-ember_burst",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-ember_burst.png"
+    },
+    {
+      "id": "texture://ui_skill-ember_trail",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-ember_trail.png"
+    },
+    {
+      "id": "texture://ui_skill-expire_burst",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-expire_burst.png"
+    },
+    {
+      "id": "texture://ui_skill-finisher",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-finisher.png"
+    },
+    {
+      "id": "texture://ui_skill-firstborn",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-firstborn.png"
+    },
+    {
+      "id": "texture://ui_skill-flame_cloak",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-flame_cloak.png"
+    },
+    {
+      "id": "texture://ui_skill-fracture",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-fracture.png"
+    },
+    {
+      "id": "texture://ui_skill-frenzy",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-frenzy.png"
+    },
+    {
+      "id": "texture://ui_skill-frost_touch",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-frost_touch.png"
+    },
+    {
+      "id": "texture://ui_skill-giant",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-giant.png"
+    },
+    {
+      "id": "texture://ui_skill-grave_bloom",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-grave_bloom.png"
+    },
+    {
+      "id": "texture://ui_skill-gravity_law",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-gravity_law.png"
+    },
+    {
+      "id": "texture://ui_skill-guard_bequest",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-guard_bequest.png"
+    },
+    {
+      "id": "texture://ui_skill-haste",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-haste.png"
+    },
+    {
+      "id": "texture://ui_skill-heat",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-heat.png"
+    },
+    {
+      "id": "texture://ui_skill-heavy",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-heavy.png"
+    },
+    {
+      "id": "texture://ui_skill-hit_echo",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-hit_echo.png"
+    },
+    {
+      "id": "texture://ui_skill-hunter_vigor",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-hunter_vigor.png"
+    },
+    {
+      "id": "texture://ui_skill-king_hunter",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-king_hunter.png"
+    },
+    {
+      "id": "texture://ui_skill-landing_spin",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-landing_spin.png"
+    },
+    {
+      "id": "texture://ui_skill-last_echo",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-last_echo.png"
+    },
+    {
+      "id": "texture://ui_skill-last_stand",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-last_stand.png"
+    },
+    {
+      "id": "texture://ui_skill-legacy_gift",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-legacy_gift.png"
+    },
+    {
+      "id": "texture://ui_skill-lightning",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-lightning.png"
+    },
+    {
+      "id": "texture://ui_skill-longlife",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-longlife.png"
+    },
+    {
+      "id": "texture://ui_skill-march_capacitor",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-march_capacitor.png"
+    },
+    {
+      "id": "texture://ui_skill-momentum",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-momentum.png"
+    },
+    {
+      "id": "texture://ui_skill-necromancer",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/skill-necromancer.png"
+    },
+    {
+      "id": "texture://ui_skill-oil_legacy",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-oil_legacy.png"
+    },
+    {
+      "id": "texture://ui_skill-overload_script",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-overload_script.png"
+    },
+    {
+      "id": "texture://ui_skill-phoenix_fire",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-phoenix_fire.png"
+    },
+    {
+      "id": "texture://ui_skill-pierce",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-pierce.png"
+    },
+    {
+      "id": "texture://ui_skill-piercing_wave",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-piercing_wave.png"
+    },
+    {
+      "id": "texture://ui_skill-plague_vial",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-plague_vial.png"
+    },
+    {
+      "id": "texture://ui_skill-plunder",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-plunder.png"
+    },
+    {
+      "id": "texture://ui_skill-quick_chant",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-quick_chant.png"
+    },
+    {
+      "id": "texture://ui_skill-rain_strike",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-rain_strike.png"
+    },
+    {
+      "id": "texture://ui_skill-rally",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-rally.png"
+    },
+    {
+      "id": "texture://ui_skill-rapid",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-rapid.png"
+    },
+    {
+      "id": "texture://ui_skill-rebound_charge",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-rebound_charge.png"
+    },
+    {
+      "id": "texture://ui_skill-recruit",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-recruit.png"
+    },
+    {
+      "id": "texture://ui_skill-resonant_debt",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-resonant_debt.png"
+    },
+    {
+      "id": "texture://ui_skill-ricochet_precision",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-ricochet_precision.png"
+    },
+    {
+      "id": "texture://ui_skill-sharp",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-sharp.png"
+    },
+    {
+      "id": "texture://ui_skill-shatter",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-shatter.png"
+    },
+    {
+      "id": "texture://ui_skill-shock",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-shock.png"
+    },
+    {
+      "id": "texture://ui_skill-short_fuse",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-short_fuse.png"
+    },
+    {
+      "id": "texture://ui_skill-showdown",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-showdown.png"
+    },
+    {
+      "id": "texture://ui_skill-slick_oil",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-slick_oil.png"
+    },
+    {
+      "id": "texture://ui_skill-slow_force",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-slow_force.png"
+    },
+    {
+      "id": "texture://ui_skill-solitary",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-solitary.png"
+    },
+    {
+      "id": "texture://ui_skill-solo_hunt",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-solo_hunt.png"
+    },
+    {
+      "id": "texture://ui_skill-soul_return",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-soul_return.png"
+    },
+    {
+      "id": "texture://ui_skill-spin_master",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-spin_master.png"
+    },
+    {
+      "id": "texture://ui_skill-starfall",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-starfall.png"
+    },
+    {
+      "id": "texture://ui_skill-step_orb",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-step_orb.png"
+    },
+    {
+      "id": "texture://ui_skill-storm_payload",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-storm_payload.png"
+    },
+    {
+      "id": "texture://ui_skill-storm_touch",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-storm_touch.png"
+    },
+    {
+      "id": "texture://ui_skill-third_crit",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-third_crit.png"
+    },
+    {
+      "id": "texture://ui_skill-third_pulse",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-third_pulse.png"
+    },
+    {
+      "id": "texture://ui_skill-thunder_fan",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-thunder_fan.png"
+    },
+    {
+      "id": "texture://ui_skill-wall_quake",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-wall_quake.png"
+    },
+    {
+      "id": "texture://ui_skill-wide_blade",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/transparent-v2/skill-wide_blade.png"
+    },
+    {
       "id": "texture://ui_expedition-keyart-v1",
       "kind": "texture2d",
       "source": "assets/formal-ui/expedition-keyart-v1.png"
@@ -667,6 +1503,306 @@
       "id": "texture://ui_portrait-lord-v2",
       "kind": "texture2d",
       "source": "assets/formal-ui/portrait-lord-v2.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-tl.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-t.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-tr.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-l.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-c.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-r.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-bl.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-b.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-br.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-tl.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-t.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-tr.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-l.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-c.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-r.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-bl.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-b.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-br.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-tl.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-t.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-tr.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-l.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-c.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-r.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-bl.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-b.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-br.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-tl.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-t.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-tr.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-l.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-c.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-r.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-bl.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-b.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-br.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-tl.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-t.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-tr.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-l.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-c.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-r.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-bl.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-b.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-br.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-tl.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-t.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-tr.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-l.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-c.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-r.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-bl.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-b.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-br.png"
     },
     {
       "id": "texture://ui_target-acorn",

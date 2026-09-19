@@ -9,7 +9,7 @@ const equipment=JSON.parse(readFileSync(new URL('design-v1/equipment-manifest.js
 const cast=JSON.parse(readFileSync(new URL('assets/creatures/manifest.json',root)));
 const sourceHash=createHash('sha256').update(payload.script).digest('hex');
 write('design-v1/runtime-catalog.json',JSON.stringify({version:s.balanceVersion,sourceHash,economyTuning:s.economyTuning,awardChances:s.awardChances,beetleAwardChance:s.beetleAwardChance,skills:s.skillBook,builds:s.buildGuide,equipment,creatures:cast},null,2));
-let text=`# 九流派與 45 技能：可玩規格\n\n版本 ${s.balanceVersion}。本文件由正式 Luau observation 產生；遊戲規則以 main.luau 為準。\n\n`;
+let text=`# ${s.buildGuide.length} 流派與 ${Object.keys(s.skillBook).length} 技能：可玩規格\n\n版本 ${s.balanceVersion}。本文件由正式 Luau observation 產生；遊戲規則以 main.luau 為準。\n\n`;
 text+='投射型部隊以發射當下的瞄準地面座標作為固定落點，無舊版 5.4 單位射程上限；落地旋轉後再前進。滑鼠或目標移動不改變已發射部隊的空中落點。LOCK 的指定目標傷害限制保留，地面前進階段可追蹤該目標。飛行仍消耗壽命。\n\n';
 text+='破防只是一次抽獎機會，所有怪物都能落空；未開獎留場並重置破防，小怪開獎後才死亡。劍兵先天 10% 爆擊、1.5 倍爆傷；槍兵落地旋轉造成 100% 基礎傷害，之後繼續前進；騎兵初始穿透 20 次後，第 21 次接觸傷害結算並死亡，基礎壽命 8 秒、地面移速 24（原本的 2 倍）。AUTO 先開啟目標圖卡選單，複選種類並確認後，自動選擇最近的指定種類；缺少指定目標時等待，允許穿透沿途怪物；LOCK 只傷害指定目標。\n\n';
 text+='## 流派\n\n|流派|核心技能|玩法|限制|\n|---|---|---|---|\n';
@@ -18,7 +18,7 @@ text+='\n五個部位各只能穿一件；同部位衝突可用附魔或科技�
 text+='## 完整技能與成本\n\n半價試玩：每支派兵基礎價為劍兵 4／槍兵 10／騎兵 20。下表列裝備／附魔的標準加價，整筆原價報價計算完成後乘 0.5、向上取整；科技只付研究費。先天技能不另加價。同能力可依定義疊加，落地旋轉只解鎖一次。\n\n|技能|實作說明|裝備／附魔派兵加價|\n|---|---|---|\n';
 for(const [id,k] of Object.entries(s.skillBook))text+=`|${k.name} (${id})|${k.desc.replace(/；每支派兵 \+\d+$/,'')}|+${k.deployExtra}|\n`;
 text+='\n例：劍兵＋穿軍刃每支 5，另附魔震盪每支 7；卸裝恢復價格。每支兵保留發射時的技能與實付快照，結算退款依原 paid。召回不觸發死亡爆炸，次級傷害不連鎖觸發自身。\n\n';
-text+='## 取得與演出\n\n45 件裝備各有 SVG 圖示、Blender 模組與繪本色貼圖，清單見 equipment-manifest.json。頭／身／腳／手／武器在正式盤面與紙娃娃展示器同步。雷鏈、旋斬、碎冰、震地與餘燼由 Luau 的實際事件觸發粒子；特效掉幀不影響結算。\n\n完整數值試跑與限制見 ../../../_Tools/fishing-quicktest/evidence/BALANCE-REPORT-V2.md。\n';
+text+='## 取得與演出\n\n'+equipment.length+' 件裝備各有 SVG 圖示、Blender 模組與繪本色貼圖，清單見 equipment-manifest.json。頭／身／腳／手／武器在正式盤面與紙娃娃展示器同步。雷鏈、旋斬、碎冰、震地與餘燼由 Luau 的實際事件觸發粒子；特效掉幀不影響結算。\n\n完整數值試跑與限制見 ../../../_Tools/fishing-quicktest/evidence/BALANCE-REPORT-V2.md。\n';
 write('design-v1/BUILDS-V2.md',text);
-write('design-v1/delivery-manifest.json',JSON.stringify({version:s.balanceVersion,sourceHash,skills:45,gear:equipment.map(x=>({...x,svg:'design-v1/svg/gear-'+x.id+'.svg',model:'assets/equipment/'+x.id+'.glb',texture:'assets/equipment/'+x.id+'.png'})),creatures:cast,lottie:['big-win-dock','mega-win-dock','legendary-win-dock','ultimate-crown','coin-burst'].map(id=>'presentation/lottie/'+id+'.json'),baseArtManifest:'design-v1/manifest.json',soldier:'presentation/soldier.glb'},null,2));
+write('design-v1/delivery-manifest.json',JSON.stringify({version:s.balanceVersion,sourceHash,skills:Object.keys(s.skillBook).length,gear:equipment.map(x=>({...x,svg:'design-v1/svg/gear-'+x.id+'.svg',model:'assets/equipment/'+x.id+'.glb',texture:'assets/equipment/'+x.id+'.png'})),creatures:cast,lottie:['big-win-dock','mega-win-dock','legendary-win-dock','ultimate-crown','coin-burst'].map(id=>'presentation/lottie/'+id+'.json'),baseArtManifest:'design-v1/manifest.json',soldier:'presentation/soldier.glb'},null,2));
 console.log(`Published ${Object.keys(s.skillBook).length} skills, ${equipment.length} equipment, ${cast.length} creatures; ${sourceHash}`);

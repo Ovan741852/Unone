@@ -3,7 +3,7 @@ import {createRewardImpact} from './reward-impact.mjs';
 export async function createRewardPresentation({assetBase='',container=document.body,getInsets=()=>({})}={}){
  const dock=await createWinDock({assetBase,container,getInsets});
  const impact=createRewardImpact({container});
- const special=document.createElement('canvas');special.width=360;special.height=440;special.id='special-reward';special.style.cssText='position:fixed;left:50%;top:14%;transform:translateX(-50%);width:180px;height:220px;pointer-events:none;z-index:48';container.append(special);const paint=special.getContext('2d');
+ const special=document.createElement('canvas');special.width=360;special.height=440;special.id='special-reward';special.style.cssText='position:fixed;left:50%;top:14%;transform:translateX(-50%);width:180px;height:220px;pointer-events:none;z-index:48';special.style.position=container===document.body?'fixed':'absolute';container.append(special);const paint=special.getContext('2d');
 
  let lastEvent=0,lastFired=0,lastCrit=0,lastHorde=false,audio,muted=false,clock=0,cues=[],lastRoll=-1,rollTick=0,lastPhase='';
  const unlock=()=>{audio??=new AudioContext();if(audio.state==='suspended')audio.resume().catch(()=>{})};
@@ -66,10 +66,10 @@ export async function createRewardPresentation({assetBase='',container=document.
   }
   paint.restore();special.style.display=key&&!s.paused?'block':'none';
   // Leave the earned/refund/crystal rows clear. The chest is a small ornament
-  // beside the open button (below it on portrait), with no duplicate caption.
-  const portrait=innerWidth/innerHeight<1.05;
-  special.style.left=key==='wheel'?'84%':portrait?'50%':'88%';special.style.top=key==='wheel'?'24%':portrait?'74%':'59%';
-  special.style.width=key==='wheel'?'min(20vw,150px)':portrait?'min(18vw,70px)':'min(14vw,16vh,120px)';special.style.height='auto';
+  // beside the open button, with no duplicate caption.
+  const width=container.clientWidth,height=container.clientHeight;
+  special.style.left=key==='wheel'?'84%':'88%';special.style.top=key==='wheel'?'24%':'59%';
+  special.style.width=(key==='wheel'?Math.min(width*.2,150):Math.min(width*.14,height*.16,120))+'px';special.style.height='auto';
  }
  return {update,applyCamera:impact.applyCamera,inspect:()=>({...dock.inspect(),impact:impact.inspect(),audio:{pendingCues:cues.length,muted}}),dispose(){document.removeEventListener('pointerdown',unlock);audio?.close();impact.dispose();dock.dispose();special.remove()}};
 }

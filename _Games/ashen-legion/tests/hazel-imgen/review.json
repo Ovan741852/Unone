@@ -1,0 +1,813 @@
+{
+  "artworks": 104,
+  "total": 201,
+  "imgen": 201,
+  "unconverted": [],
+  "ui": {
+    "tree": {
+      "children": [
+        {
+          "asset": "texture://ui_hud-heading",
+          "fit": "stretch",
+          "id": "chapter_back",
+          "kind": "image",
+          "rect": {
+            "x": 0,
+            "y": 86,
+            "width": 34,
+            "height": 14
+          }
+        },
+        {
+          "asset": "texture://ui_crest",
+          "fit": "contain",
+          "id": "chapter_crest",
+          "kind": "image",
+          "rect": {
+            "x": 2,
+            "y": 91,
+            "width": 5,
+            "height": 7
+          }
+        },
+        {
+          "id": "chapter",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 94.4567901234568,
+            "width": 21,
+            "height": 3.0864197530864197
+          },
+          "text": "苔光林口"
+        },
+        {
+          "id": "round",
+          "kind": "text",
+          "rect": {
+            "x": 8,
+            "y": 90.80000000000001,
+            "width": 18,
+            "height": 2.6
+          },
+          "text": "遠征  1 / 7"
+        },
+        {
+          "asset": "texture://ui_hud-objective",
+          "fit": "stretch",
+          "id": "objective_back",
+          "kind": "image",
+          "rect": {
+            "x": 35,
+            "y": 91,
+            "width": 33,
+            "height": 9
+          }
+        },
+        {
+          "id": "objective",
+          "kind": "text",
+          "rect": {
+            "x": 38,
+            "y": 95.3,
+            "width": 27,
+            "height": 2.7
+          },
+          "text": "積蓄軍力 · 準備迎戰大王"
+        },
+        {
+          "id": "boss_timing",
+          "kind": "text",
+          "rect": {
+            "x": 39,
+            "y": 92.8,
+            "width": 25,
+            "height": 2.2
+          },
+          "text": "大王於最後 30 秒登場"
+        },
+        {
+          "asset": "texture://ui_hud-target",
+          "fit": "stretch",
+          "id": "timer_plate",
+          "kind": "image",
+          "rect": {
+            "x": 84,
+            "y": 91,
+            "width": 9,
+            "height": 7.5
+          }
+        },
+        {
+          "id": "time",
+          "kind": "text",
+          "rect": {
+            "x": 85,
+            "y": 93.32812071330589,
+            "width": 7,
+            "height": 3.9437585733882035
+          },
+          "text": "02:56"
+        },
+        {
+          "asset": "texture://ui_hud-gold",
+          "fit": "stretch",
+          "id": "coins_plate",
+          "kind": "image",
+          "rect": {
+            "x": 34.92364542814822,
+            "y": 1.1796387808395243,
+            "width": 18.152709143703568,
+            "height": 4.8407224383209515
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-coin",
+          "fit": "contain",
+          "id": "coins_icon",
+          "kind": "image",
+          "rect": {
+            "x": 36.2,
+            "y": 2.200000000000003,
+            "width": 2.1,
+            "height": 3
+          }
+        },
+        {
+          "id": "coins",
+          "kind": "text",
+          "rect": {
+            "x": 38.45333887275724,
+            "y": 2.0872742380246994,
+            "width": 12.60604801646081,
+            "height": 3.227148292213968
+          },
+          "text": "金幣 304"
+        },
+        {
+          "asset": "texture://ui_hud-crystal",
+          "fit": "stretch",
+          "id": "crystals_plate",
+          "kind": "image",
+          "rect": {
+            "x": 53.848237213947094,
+            "y": 1.1514359084630712,
+            "width": 15.303525572105807,
+            "height": 4.897128183073858
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-crystal",
+          "fit": "contain",
+          "id": "crystals_icon",
+          "kind": "image",
+          "rect": {
+            "x": 55.2,
+            "y": 2.200000000000003,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "id": "crystals",
+          "kind": "text",
+          "rect": {
+            "x": 57.419059847438454,
+            "y": 2.0696474427894165,
+            "width": 10.202350381403871,
+            "height": 3.264752122049239
+          },
+          "text": "結晶 9"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "hud_unit_plate_1",
+          "kind": "image",
+          "rect": {
+            "x": 2,
+            "y": 3,
+            "width": 8,
+            "height": 15
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-sword",
+          "fit": "contain",
+          "id": "hud_unit_icon_1",
+          "kind": "image",
+          "rect": {
+            "x": 3.4,
+            "y": 10.2,
+            "width": 5.2,
+            "height": 6.8
+          }
+        },
+        {
+          "action": "Unit1",
+          "id": "hud_unit_1",
+          "kind": "button",
+          "rect": {
+            "x": 2,
+            "y": 10,
+            "width": 8,
+            "height": 8
+          },
+          "text": ""
+        },
+        {
+          "action": "Unit1",
+          "id": "hud_unit_caption_1",
+          "kind": "button",
+          "rect": {
+            "x": 2,
+            "y": 5,
+            "width": 8,
+            "height": 5
+          },
+          "text": "劍兵\n4"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "hud_unit_plate_2",
+          "kind": "image",
+          "rect": {
+            "x": 10.6,
+            "y": 3,
+            "width": 8,
+            "height": 15
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-spear",
+          "fit": "contain",
+          "id": "hud_unit_icon_2",
+          "kind": "image",
+          "rect": {
+            "x": 12,
+            "y": 10.2,
+            "width": 5.2,
+            "height": 6.8
+          }
+        },
+        {
+          "action": "Unit2",
+          "id": "hud_unit_2",
+          "kind": "button",
+          "rect": {
+            "x": 10.6,
+            "y": 10,
+            "width": 8,
+            "height": 8
+          },
+          "text": ""
+        },
+        {
+          "action": "Unit2",
+          "id": "hud_unit_caption_2",
+          "kind": "button",
+          "rect": {
+            "x": 10.6,
+            "y": 5,
+            "width": 8,
+            "height": 5
+          },
+          "text": "槍兵\n10"
+        },
+        {
+          "asset": "texture://ui_hud-active",
+          "fit": "stretch",
+          "id": "hud_unit_plate_3",
+          "kind": "image",
+          "rect": {
+            "x": 19.2,
+            "y": 3,
+            "width": 8,
+            "height": 15
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-cavalry",
+          "fit": "contain",
+          "id": "hud_unit_icon_3",
+          "kind": "image",
+          "rect": {
+            "x": 20.599999999999998,
+            "y": 10.2,
+            "width": 5.2,
+            "height": 6.8
+          }
+        },
+        {
+          "action": "Unit3",
+          "id": "hud_unit_3",
+          "kind": "button",
+          "rect": {
+            "x": 19.2,
+            "y": 10,
+            "width": 8,
+            "height": 8
+          },
+          "text": ""
+        },
+        {
+          "action": "Unit3",
+          "id": "hud_unit_caption_3",
+          "kind": "button",
+          "rect": {
+            "x": 19.2,
+            "y": 5,
+            "width": 8,
+            "height": 5
+          },
+          "text": "騎兵\n20"
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "pause_plate",
+          "kind": "image",
+          "rect": {
+            "x": 94.5,
+            "y": 91,
+            "width": 4,
+            "height": 7.5
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-pause",
+          "fit": "contain",
+          "id": "pause_icon",
+          "kind": "image",
+          "rect": {
+            "x": 95.2,
+            "y": 93.2,
+            "width": 2.6,
+            "height": 4.3
+          }
+        },
+        {
+          "action": "Pause",
+          "id": "pause",
+          "kind": "button",
+          "rect": {
+            "x": 94.5,
+            "y": 91,
+            "width": 4,
+            "height": 7.5
+          },
+          "text": ""
+        },
+        {
+          "asset": "texture://ui_hud-key",
+          "fit": "stretch",
+          "id": "mode_plate_lock",
+          "kind": "image",
+          "rect": {
+            "x": 77,
+            "y": 3,
+            "width": 10.4,
+            "height": 10
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-lock",
+          "fit": "contain",
+          "id": "mode_icon_lock",
+          "kind": "image",
+          "rect": {
+            "x": 80.5,
+            "y": 7.4,
+            "width": 3.4,
+            "height": 4.6
+          }
+        },
+        {
+          "action": "Mode_lock",
+          "id": "mode_lock",
+          "kind": "button",
+          "rect": {
+            "x": 77,
+            "y": 6.8,
+            "width": 10.4,
+            "height": 6.2
+          },
+          "text": ""
+        },
+        {
+          "action": "Mode_lock",
+          "id": "mode_label_lock",
+          "kind": "button",
+          "rect": {
+            "x": 77,
+            "y": 4.1999999999999975,
+            "width": 10.4,
+            "height": 2.6
+          },
+          "text": "LOCK · 關"
+        },
+        {
+          "asset": "texture://ui_hud-active",
+          "fit": "stretch",
+          "id": "mode_plate_auto",
+          "kind": "image",
+          "rect": {
+            "x": 88,
+            "y": 3,
+            "width": 10.4,
+            "height": 10
+          }
+        },
+        {
+          "asset": "texture://ui_symbol-auto",
+          "fit": "contain",
+          "id": "mode_icon_auto",
+          "kind": "image",
+          "rect": {
+            "x": 91.5,
+            "y": 7.4,
+            "width": 3.4,
+            "height": 4.6
+          }
+        },
+        {
+          "action": "Mode_auto",
+          "id": "mode_auto",
+          "kind": "button",
+          "rect": {
+            "x": 88,
+            "y": 6.8,
+            "width": 10.4,
+            "height": 6.2
+          },
+          "text": ""
+        },
+        {
+          "action": "Mode_auto",
+          "id": "mode_label_auto",
+          "kind": "button",
+          "rect": {
+            "x": 88,
+            "y": 4.1999999999999975,
+            "width": 10.4,
+            "height": 2.6
+          },
+          "text": "AUTO · 開"
+        },
+        {
+          "asset": "texture://ui_hud-active",
+          "fit": "stretch",
+          "id": "auto_settings_plate",
+          "kind": "image",
+          "rect": {
+            "x": 77,
+            "y": 14,
+            "width": 21.4,
+            "height": 4.5
+          }
+        },
+        {
+          "action": "Auto_settings",
+          "id": "auto_settings",
+          "kind": "button",
+          "rect": {
+            "x": 77,
+            "y": 14,
+            "width": 21.4,
+            "height": 4.5
+          },
+          "text": "選擇目標 · 10 種"
+        },
+        {
+          "asset": "texture://ui_hud-target",
+          "fit": "stretch",
+          "id": "target_plate",
+          "kind": "image",
+          "rect": {
+            "x": 77,
+            "y": 19.5,
+            "width": 21.4,
+            "height": 7.5
+          }
+        },
+        {
+          "id": "target",
+          "kind": "text",
+          "rect": {
+            "x": 78,
+            "y": 23.9,
+            "width": 19.4,
+            "height": 2.6
+          },
+          "text": "苔羽蛾"
+        },
+        {
+          "id": "target_guard",
+          "kind": "text",
+          "rect": {
+            "x": 78,
+            "y": 20.900000000000013,
+            "width": 19.4,
+            "height": 2.4
+          },
+          "text": "破防 0 / 22"
+        }
+      ],
+      "id": "forest_lord",
+      "kind": "screen",
+      "node": "battle:home"
+    },
+    "labels": {
+      "labels": 2,
+      "payouts": 3,
+      "damage": 6,
+      "criticals": 0,
+      "items": [
+        {
+          "id": 10,
+          "kind": "gold",
+          "text": "+28",
+          "amount": 28,
+          "rect": {
+            "x": 747.342082717389,
+            "y": 395.822413985708,
+            "width": 76.05681818181819,
+            "height": 34.5
+          }
+        },
+        {
+          "id": 11,
+          "kind": "gold",
+          "text": "+16",
+          "amount": 16,
+          "rect": {
+            "x": 493.6147810228973,
+            "y": 218.70000000000002,
+            "width": 71.875,
+            "height": 34.5
+          }
+        },
+        {
+          "id": 9,
+          "kind": "gold",
+          "text": "+16",
+          "amount": 16,
+          "rect": {
+            "x": 775.8130833576711,
+            "y": 218.70000000000002,
+            "width": 71.875,
+            "height": 34.5
+          }
+        },
+        {
+          "id": 44,
+          "kind": "damage",
+          "text": "90",
+          "amount": 90,
+          "rect": {
+            "x": 830.1352930912374,
+            "y": 370.22974195355425,
+            "width": 45.47727272727272,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 40,
+          "kind": "damage",
+          "text": "90",
+          "amount": 90,
+          "rect": {
+            "x": 762.6318554446617,
+            "y": 338.9238206397031,
+            "width": 45.47727272727272,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 39,
+          "kind": "damage",
+          "text": "90",
+          "amount": 90,
+          "rect": {
+            "x": 784.1002503021206,
+            "y": 286.53082980269073,
+            "width": 45.47727272727272,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 31,
+          "kind": "damage",
+          "text": "90",
+          "amount": 90,
+          "rect": {
+            "x": 918.6317163377663,
+            "y": 349.26078530521374,
+            "width": 45.47727272727272,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 30,
+          "kind": "damage",
+          "text": "90",
+          "amount": 90,
+          "rect": {
+            "x": 660.6431229600831,
+            "y": 265.4561981935975,
+            "width": 45.47727272727272,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 29,
+          "kind": "damage",
+          "text": "90",
+          "amount": 90,
+          "rect": {
+            "x": 928.1271077139704,
+            "y": 310.95334325052875,
+            "width": 45.47727272727272,
+            "height": 33.349999999999994
+          }
+        }
+      ],
+      "guards": [
+        {
+          "id": 25,
+          "progress": 0,
+          "near": false,
+          "recentMiss": false,
+          "kind": "normal",
+          "label": "破防",
+          "percent": 0,
+          "rect": {
+            "x": 404.1362929348559,
+            "y": 532.8339705054108,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        }
+      ],
+      "nameplates": [
+        {
+          "id": 25,
+          "text": "◆ 苔羽蛾 · 破防 0%",
+          "targeted": true,
+          "kind": "normal",
+          "rect": {
+            "x": 404.1362929348559,
+            "y": 532.8339705054108,
+            "width": 162.24324324324323,
+            "height": 33.349999999999994
+          }
+        },
+        {
+          "id": 35,
+          "text": "♛ 古榕守衛",
+          "targeted": false,
+          "kind": "elite",
+          "rect": {
+            "x": 619.7313159616821,
+            "y": 218.70000000000002,
+            "width": 95.1081081081081,
+            "height": 19.549999999999997
+          }
+        }
+      ],
+      "missLabels": 0,
+      "usesMultiplier": false,
+      "cacheSize": 49,
+      "diagnostics": []
+    },
+    "diagnostics": []
+  },
+  "phone": {
+    "diagnostics": [],
+    "assets": [
+      {
+        "id": "texture://ui_hud-heading",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_crest",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-objective",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-target",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-gold",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-coin",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-crystal",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-crystal",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-key",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-sword",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-spear",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-active",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-cavalry",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-pause",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-lock",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-auto",
+        "state": "ready"
+      }
+    ]
+  },
+  "nearBreak": {
+    "unselected": {
+      "labels": 0,
+      "payouts": 0,
+      "damage": 0,
+      "criticals": 0,
+      "items": [],
+      "guards": [],
+      "nameplates": [],
+      "missLabels": 0,
+      "usesMultiplier": false,
+      "cacheSize": 0,
+      "diagnostics": []
+    },
+    "selected": {
+      "labels": 1,
+      "payouts": 0,
+      "damage": 0,
+      "criticals": 0,
+      "items": [],
+      "guards": [
+        {
+          "id": 901,
+          "progress": 0.9,
+          "near": true,
+          "recentMiss": false,
+          "kind": "near",
+          "label": "破防",
+          "percent": 90,
+          "rect": {
+            "x": 369.0945945945946,
+            "y": 163.44463334594684,
+            "width": 105.8108108108108,
+            "height": 21.75
+          }
+        }
+      ],
+      "nameplates": [
+        {
+          "id": 901,
+          "text": "◆ 接近破防測試怪 · 破防 90%",
+          "targeted": true,
+          "kind": "near",
+          "rect": {
+            "x": 369.0945945945946,
+            "y": 163.44463334594684,
+            "width": 105.8108108108108,
+            "height": 21.75
+          }
+        }
+      ],
+      "missLabels": 0,
+      "usesMultiplier": false,
+      "cacheSize": 1,
+      "diagnostics": []
+    }
+  },
+  "errors": []
+}

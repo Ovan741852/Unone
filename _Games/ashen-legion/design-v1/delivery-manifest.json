@@ -1,7 +1,7 @@
 {
   "version": "2026-09-12-nearwin-v1",
-  "sourceHash": "6cfc128157331e3d430158e1d533428190ca2ce6d8c0eebe253d2bd6ea4ca814",
-  "skills": 45,
+  "sourceHash": "383eaea04b637cfeee1d7c44f4d6063d3b1bea395d9c3471b5c9dd1b084f74a7",
+  "skills": 77,
   "gear": [
     {
       "id": "pierce",
@@ -452,6 +452,326 @@
       "svg": "design-v1/svg/gear-deadly.svg",
       "model": "assets/equipment/deadly.glb",
       "texture": "assets/equipment/deadly.png"
+    },
+    {
+      "id": "flame_cloak",
+      "name": "火焰斗篷",
+      "slot": 2,
+      "price": 112,
+      "image": "svg/gear-flame_cloak.svg",
+      "svg": "design-v1/svg/gear-flame_cloak.svg",
+      "model": "assets/equipment/flame_cloak.glb",
+      "texture": "assets/equipment/flame_cloak.png"
+    },
+    {
+      "id": "phoenix_fire",
+      "name": "鳳凰法杖",
+      "slot": 5,
+      "price": 136,
+      "image": "svg/gear-phoenix_fire.svg",
+      "svg": "design-v1/svg/gear-phoenix_fire.svg",
+      "model": "assets/equipment/phoenix_fire.glb",
+      "texture": "assets/equipment/phoenix_fire.png"
+    },
+    {
+      "id": "plague_vial",
+      "name": "鍊金藥匣",
+      "slot": 4,
+      "price": 104,
+      "image": "svg/gear-plague_vial.svg",
+      "svg": "design-v1/svg/gear-plague_vial.svg",
+      "model": "assets/equipment/plague_vial.glb",
+      "texture": "assets/equipment/plague_vial.png"
+    },
+    {
+      "id": "ember_trail",
+      "name": "燎原戰靴",
+      "slot": 3,
+      "price": 112,
+      "image": "svg/gear-ember_trail.svg",
+      "svg": "design-v1/svg/gear-ember_trail.svg",
+      "model": "assets/equipment/ember_trail.glb",
+      "texture": "assets/equipment/ember_trail.png"
+    },
+    {
+      "id": "slick_oil",
+      "name": "黑油刃",
+      "slot": 5,
+      "price": 88,
+      "image": "svg/gear-slick_oil.svg",
+      "svg": "design-v1/svg/gear-slick_oil.svg",
+      "model": "assets/equipment/slick_oil.glb",
+      "texture": "assets/equipment/slick_oil.png"
+    },
+    {
+      "id": "rain_strike",
+      "name": "喚雨手環",
+      "slot": 4,
+      "price": 96,
+      "image": "svg/gear-rain_strike.svg",
+      "svg": "design-v1/svg/gear-rain_strike.svg",
+      "model": "assets/equipment/rain_strike.glb",
+      "texture": "assets/equipment/rain_strike.png"
+    },
+    {
+      "id": "storm_touch",
+      "name": "雷核冠",
+      "slot": 1,
+      "price": 128,
+      "image": "svg/gear-storm_touch.svg",
+      "svg": "design-v1/svg/gear-storm_touch.svg",
+      "model": "assets/equipment/storm_touch.glb",
+      "texture": "assets/equipment/storm_touch.png"
+    },
+    {
+      "id": "oil_legacy",
+      "name": "油甕背甲",
+      "slot": 2,
+      "price": 88,
+      "image": "svg/gear-oil_legacy.svg",
+      "svg": "design-v1/svg/gear-oil_legacy.svg",
+      "model": "assets/equipment/oil_legacy.glb",
+      "texture": "assets/equipment/oil_legacy.png"
+    },
+    {
+      "id": "plunder",
+      "name": "掠奪護手",
+      "slot": 4,
+      "price": 80,
+      "image": "svg/gear-plunder.svg",
+      "svg": "design-v1/svg/gear-plunder.svg",
+      "model": "assets/equipment/plunder.glb",
+      "texture": "assets/equipment/plunder.png"
+    },
+    {
+      "id": "firstborn",
+      "name": "犢角疾行靴",
+      "slot": 3,
+      "price": 96,
+      "image": "svg/gear-firstborn.svg",
+      "svg": "design-v1/svg/gear-firstborn.svg",
+      "model": "assets/equipment/firstborn.glb",
+      "texture": "assets/equipment/firstborn.png"
+    },
+    {
+      "id": "march_capacitor",
+      "name": "蓄步雷匣",
+      "slot": 2,
+      "price": 96,
+      "image": "svg/gear-march_capacitor.svg",
+      "svg": "design-v1/svg/gear-march_capacitor.svg",
+      "model": "assets/equipment/march_capacitor.glb",
+      "texture": "assets/equipment/march_capacitor.png"
+    },
+    {
+      "id": "delayed_bloom",
+      "name": "遲放焰心冠",
+      "slot": 1,
+      "price": 112,
+      "image": "svg/gear-delayed_bloom.svg",
+      "svg": "design-v1/svg/gear-delayed_bloom.svg",
+      "model": "assets/equipment/delayed_bloom.glb",
+      "texture": "assets/equipment/delayed_bloom.png"
+    },
+    {
+      "id": "third_pulse",
+      "name": "三拍戰錘",
+      "slot": 5,
+      "price": 112,
+      "image": "svg/gear-third_pulse.svg",
+      "svg": "design-v1/svg/gear-third_pulse.svg",
+      "model": "assets/equipment/third_pulse.glb",
+      "texture": "assets/equipment/third_pulse.png"
+    },
+    {
+      "id": "battle_elegy",
+      "name": "薪火戰旗",
+      "slot": 2,
+      "price": 88,
+      "image": "svg/gear-battle_elegy.svg",
+      "svg": "design-v1/svg/gear-battle_elegy.svg",
+      "model": "assets/equipment/battle_elegy.glb",
+      "texture": "assets/equipment/battle_elegy.png"
+    },
+    {
+      "id": "grave_bloom",
+      "name": "送葬火刃",
+      "slot": 5,
+      "price": 120,
+      "image": "svg/gear-grave_bloom.svg",
+      "svg": "design-v1/svg/gear-grave_bloom.svg",
+      "model": "assets/equipment/grave_bloom.glb",
+      "texture": "assets/equipment/grave_bloom.png"
+    },
+    {
+      "id": "last_echo",
+      "name": "暮霜面甲",
+      "slot": 1,
+      "price": 96,
+      "image": "svg/gear-last_echo.svg",
+      "svg": "design-v1/svg/gear-last_echo.svg",
+      "model": "assets/equipment/last_echo.glb",
+      "texture": "assets/equipment/last_echo.png"
+    },
+    {
+      "id": "cinder_seal",
+      "name": "燼刻指環",
+      "slot": 4,
+      "price": 104,
+      "image": "svg/gear-cinder_seal.svg",
+      "svg": "design-v1/svg/gear-cinder_seal.svg",
+      "model": "assets/equipment/cinder_seal.glb",
+      "texture": "assets/equipment/cinder_seal.png"
+    },
+    {
+      "id": "chain_fuse",
+      "name": "紅蓮火種匣",
+      "slot": 2,
+      "price": 120,
+      "image": "svg/gear-chain_fuse.svg",
+      "svg": "design-v1/svg/gear-chain_fuse.svg",
+      "model": "assets/equipment/chain_fuse.glb",
+      "texture": "assets/equipment/chain_fuse.png"
+    },
+    {
+      "id": "thunder_fan",
+      "name": "雷羽王冠",
+      "slot": 1,
+      "price": 120,
+      "image": "svg/gear-thunder_fan.svg",
+      "svg": "design-v1/svg/gear-thunder_fan.svg",
+      "model": "assets/equipment/thunder_fan.glb",
+      "texture": "assets/equipment/thunder_fan.png"
+    },
+    {
+      "id": "echo_blade",
+      "name": "斷界雙刃",
+      "slot": 5,
+      "price": 112,
+      "image": "svg/gear-echo_blade.svg",
+      "svg": "design-v1/svg/gear-echo_blade.svg",
+      "model": "assets/equipment/echo_blade.glb",
+      "texture": "assets/equipment/echo_blade.png"
+    },
+    {
+      "id": "starfall",
+      "name": "星隕肩甲",
+      "slot": 2,
+      "price": 120,
+      "image": "svg/gear-starfall.svg",
+      "svg": "design-v1/svg/gear-starfall.svg",
+      "model": "assets/equipment/starfall.glb",
+      "texture": "assets/equipment/starfall.png"
+    },
+    {
+      "id": "soul_return",
+      "name": "英魂戰靴",
+      "slot": 3,
+      "price": 104,
+      "image": "svg/gear-soul_return.svg",
+      "svg": "design-v1/svg/gear-soul_return.svg",
+      "model": "assets/equipment/soul_return.glb",
+      "texture": "assets/equipment/soul_return.png"
+    },
+    {
+      "id": "comrade_oath",
+      "name": "交鋒誓旗",
+      "slot": 2,
+      "price": 88,
+      "image": "svg/gear-comrade_oath.svg",
+      "svg": "design-v1/svg/gear-comrade_oath.svg",
+      "model": "assets/equipment/comrade_oath.glb",
+      "texture": "assets/equipment/comrade_oath.png"
+    },
+    {
+      "id": "resonant_debt",
+      "name": "共鳴契印",
+      "slot": 4,
+      "price": 112,
+      "image": "svg/gear-resonant_debt.svg",
+      "svg": "design-v1/svg/gear-resonant_debt.svg",
+      "model": "assets/equipment/resonant_debt.glb",
+      "texture": "assets/equipment/resonant_debt.png"
+    },
+    {
+      "id": "contact_mine",
+      "name": "伏雷腰匣",
+      "slot": 2,
+      "price": 112,
+      "image": "svg/gear-contact_mine.svg",
+      "svg": "design-v1/svg/gear-contact_mine.svg",
+      "model": "assets/equipment/contact_mine.glb",
+      "texture": "assets/equipment/contact_mine.png"
+    },
+    {
+      "id": "step_orb",
+      "name": "流明行靴",
+      "slot": 3,
+      "price": 104,
+      "image": "svg/gear-step_orb.svg",
+      "svg": "design-v1/svg/gear-step_orb.svg",
+      "model": "assets/equipment/step_orb.glb",
+      "texture": "assets/equipment/step_orb.png"
+    },
+    {
+      "id": "gravity_law",
+      "name": "引力星冠",
+      "slot": 1,
+      "price": 120,
+      "image": "svg/gear-gravity_law.svg",
+      "svg": "design-v1/svg/gear-gravity_law.svg",
+      "model": "assets/equipment/gravity_law.glb",
+      "texture": "assets/equipment/gravity_law.png"
+    },
+    {
+      "id": "quick_chant",
+      "name": "迅咒指環",
+      "slot": 4,
+      "price": 96,
+      "image": "svg/gear-quick_chant.svg",
+      "svg": "design-v1/svg/gear-quick_chant.svg",
+      "model": "assets/equipment/quick_chant.glb",
+      "texture": "assets/equipment/quick_chant.png"
+    },
+    {
+      "id": "overload_script",
+      "name": "過載法典",
+      "slot": 5,
+      "price": 128,
+      "image": "svg/gear-overload_script.svg",
+      "svg": "design-v1/svg/gear-overload_script.svg",
+      "model": "assets/equipment/overload_script.glb",
+      "texture": "assets/equipment/overload_script.png"
+    },
+    {
+      "id": "storm_payload",
+      "name": "雷紋護符",
+      "slot": 1,
+      "price": 80,
+      "image": "svg/gear-storm_payload.svg",
+      "svg": "design-v1/svg/gear-storm_payload.svg",
+      "model": "assets/equipment/storm_payload.glb",
+      "texture": "assets/equipment/storm_payload.png"
+    },
+    {
+      "id": "legacy_gift",
+      "name": "傳承魂燈",
+      "slot": 4,
+      "price": 96,
+      "image": "svg/gear-legacy_gift.svg",
+      "svg": "design-v1/svg/gear-legacy_gift.svg",
+      "model": "assets/equipment/legacy_gift.glb",
+      "texture": "assets/equipment/legacy_gift.png"
+    },
+    {
+      "id": "guard_bequest",
+      "name": "遺願裂甲盔",
+      "slot": 1,
+      "price": 104,
+      "image": "svg/gear-guard_bequest.svg",
+      "svg": "design-v1/svg/gear-guard_bequest.svg",
+      "model": "assets/equipment/guard_bequest.glb",
+      "texture": "assets/equipment/guard_bequest.png"
     }
   ],
   "creatures": [

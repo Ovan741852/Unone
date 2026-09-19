@@ -313,5 +313,236 @@
     "slot": 1,
     "price": 120,
     "image": "svg/gear-deadly.svg"
+  },
+  {
+    "id": "flame_cloak",
+    "name": "火焰斗篷",
+    "slot": 2,
+    "price": 112,
+    "image": "svg/gear-flame_cloak.svg"
+  },
+  {
+    "id": "phoenix_fire",
+    "name": "鳳凰法杖",
+    "slot": 5,
+    "price": 136,
+    "image": "svg/gear-phoenix_fire.svg"
+  },
+  {
+    "id": "plague_vial",
+    "name": "鍊金藥匣",
+    "slot": 4,
+    "price": 104,
+    "image": "svg/gear-plague_vial.svg"
+  },
+  {
+    "id": "ember_trail",
+    "name": "燎原戰靴",
+    "slot": 3,
+    "price": 112,
+    "image": "svg/gear-ember_trail.svg"
+  },
+  {
+    "id": "slick_oil",
+    "name": "黑油刃",
+    "slot": 5,
+    "price": 88,
+    "image": "svg/gear-slick_oil.svg"
+  },
+  {
+    "id": "rain_strike",
+    "name": "喚雨手環",
+    "slot": 4,
+    "price": 96,
+    "image": "svg/gear-rain_strike.svg"
+  },
+  {
+    "id": "storm_touch",
+    "name": "雷核冠",
+    "slot": 1,
+    "price": 128,
+    "image": "svg/gear-storm_touch.svg"
+  },
+  {
+    "id": "oil_legacy",
+    "name": "油甕背甲",
+    "slot": 2,
+    "price": 88,
+    "image": "svg/gear-oil_legacy.svg"
+  },
+  {
+    "id": "plunder",
+    "name": "掠奪護手",
+    "slot": 4,
+    "price": 80,
+    "image": "svg/gear-plunder.svg"
+  },
+  {
+    "id": "firstborn",
+    "name": "犢角疾行靴",
+    "slot": 3,
+    "price": 96,
+    "image": "svg/gear-firstborn.svg"
+  },
+  {
+    "id": "march_capacitor",
+    "name": "蓄步雷匣",
+    "slot": 2,
+    "price": 96,
+    "image": "svg/gear-march_capacitor.svg"
+  },
+  {
+    "id": "delayed_bloom",
+    "name": "遲放焰心冠",
+    "slot": 1,
+    "price": 112,
+    "image": "svg/gear-delayed_bloom.svg"
+  },
+  {
+    "id": "third_pulse",
+    "name": "三拍戰錘",
+    "slot": 5,
+    "price": 112,
+    "image": "svg/gear-third_pulse.svg"
+  },
+  {
+    "id": "battle_elegy",
+    "name": "薪火戰旗",
+    "slot": 2,
+    "price": 88,
+    "image": "svg/gear-battle_elegy.svg"
+  },
+  {
+    "id": "grave_bloom",
+    "name": "送葬火刃",
+    "slot": 5,
+    "price": 120,
+    "image": "svg/gear-grave_bloom.svg"
+  },
+  {
+    "id": "last_echo",
+    "name": "暮霜面甲",
+    "slot": 1,
+    "price": 96,
+    "image": "svg/gear-last_echo.svg"
+  },
+  {
+    "id": "cinder_seal",
+    "name": "燼刻指環",
+    "slot": 4,
+    "price": 104,
+    "image": "svg/gear-cinder_seal.svg"
+  },
+  {
+    "id": "chain_fuse",
+    "name": "紅蓮火種匣",
+    "slot": 2,
+    "price": 120,
+    "image": "svg/gear-chain_fuse.svg"
+  },
+  {
+    "id": "thunder_fan",
+    "name": "雷羽王冠",
+    "slot": 1,
+    "price": 120,
+    "image": "svg/gear-thunder_fan.svg"
+  },
+  {
+    "id": "echo_blade",
+    "name": "斷界雙刃",
+    "slot": 5,
+    "price": 112,
+    "image": "svg/gear-echo_blade.svg"
+  },
+  {
+    "id": "starfall",
+    "name": "星隕肩甲",
+    "slot": 2,
+    "price": 120,
+    "image": "svg/gear-starfall.svg"
+  },
+  {
+    "id": "soul_return",
+    "name": "英魂戰靴",
+    "slot": 3,
+    "price": 104,
+    "image": "svg/gear-soul_return.svg"
+  },
+  {
+    "id": "comrade_oath",
+    "name": "交鋒誓旗",
+    "slot": 2,
+    "price": 88,
+    "image": "svg/gear-comrade_oath.svg"
+  },
+  {
+    "id": "resonant_debt",
+    "name": "共鳴契印",
+    "slot": 4,
+    "price": 112,
+    "image": "svg/gear-resonant_debt.svg"
+  },
+  {
+    "id": "contact_mine",
+    "name": "伏雷腰匣",
+    "slot": 2,
+    "price": 112,
+    "image": "svg/gear-contact_mine.svg"
+  },
+  {
+    "id": "step_orb",
+    "name": "流明行靴",
+    "slot": 3,
+    "price": 104,
+    "image": "svg/gear-step_orb.svg"
+  },
+  {
+    "id": "gravity_law",
+    "name": "引力星冠",
+    "slot": 1,
+    "price": 120,
+    "image": "svg/gear-gravity_law.svg"
+  },
+  {
+    "id": "quick_chant",
+    "name": "迅咒指環",
+    "slot": 4,
+    "price": 96,
+    "image": "svg/gear-quick_chant.svg"
+  },
+  {
+    "id": "overload_script",
+    "name": "過載法典",
+    "slot": 5,
+    "price": 128,
+    "image": "svg/gear-overload_script.svg"
+  },
+  {
+    "id": "storm_payload",
+    "name": "雷紋護符",
+    "slot": 1,
+    "price": 80,
+    "image": "svg/gear-storm_payload.svg"
+  },
+  {
+    "id": "legacy_gift",
+    "name": "傳承魂燈",
+    "slot": 4,
+    "price": 96,
+    "image": "svg/gear-legacy_gift.svg"
+  },
+  {
+    "id": "guard_bequest",
+    "name": "遺願裂甲盔",
+    "slot": 1,
+    "price": 104,
+    "image": "svg/gear-guard_bequest.svg"
+  },
+  {
+    "id": "necromancer",
+    "name": "招魂骨冠",
+    "slot": 1,
+    "price": 116,
+    "image": "svg/gear-necromancer.svg"
   }
 ]

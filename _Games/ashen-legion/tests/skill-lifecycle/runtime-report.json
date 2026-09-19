@@ -1,0 +1,26 @@
+{
+  "checks": 40,
+  "results": [
+    {
+      "unit": 1,
+      "fired": 60,
+      "secondaryHits": 175,
+      "peakEntities": 38,
+      "phase": "battle"
+    },
+    {
+      "unit": 2,
+      "fired": 60,
+      "secondaryHits": 217,
+      "peakEntities": 52,
+      "phase": "battle"
+    },
+    {
+      "unit": 3,
+      "fired": 60,
+      "secondaryHits": 189,
+      "peakEntities": 285,
+      "phase": "battle"
+    }
+  ]
+}

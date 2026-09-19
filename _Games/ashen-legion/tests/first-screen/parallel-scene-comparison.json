@@ -1,0 +1,338 @@
+{
+  "scope": "One paired local cold-start sample at 0 ms and 80 ms per-request delay, without bandwidth throttling. Not a measurement of WAN load time.",
+  "verified": "Same six scene mesh requests and two textures; no legacy prototype meshes; scene complete before roster; all assets ready before first visible frame.",
+  "comparisons": [
+    {
+      "delayMs": 0,
+      "before": {
+        "readyMs": 847.8000000007451,
+        "modelsReadyMs": 472.40000000037253,
+        "sceneFirstRequestMs": 745.3000000007451,
+        "sceneLastResponseMs": 763.2000000011176,
+        "afterModelsToReadyMs": 375.40000000037253,
+        "sceneRequests": [
+          {
+            "url": "/content/assets/arena.mesh.json",
+            "start": 745.3000000007451,
+            "end": 752.2000000011176,
+            "bytes": 1873886
+          },
+          {
+            "url": "/content/assets/cannon.mesh.json",
+            "start": 745.4000000003725,
+            "end": 750.9000000003725,
+            "bytes": 26656
+          },
+          {
+            "url": "/content/assets/sky_forest.mesh.json",
+            "start": 745.4000000003725,
+            "end": 751.3000000007451,
+            "bytes": 2062
+          },
+          {
+            "url": "/content/assets/coin.mesh.json",
+            "start": 745.5,
+            "end": 751.5999999996275,
+            "bytes": 8400
+          },
+          {
+            "url": "/content/assets/trail.mesh.json",
+            "start": 745.5,
+            "end": 751.8000000007451,
+            "bytes": 1922
+          },
+          {
+            "url": "/content/assets/target.mesh.json",
+            "start": 745.5,
+            "end": 752.0999999996275,
+            "bytes": 10776
+          },
+          {
+            "url": "/content/assets/palette.png",
+            "start": 760.5,
+            "end": 762.9000000003725,
+            "bytes": 3405
+          },
+          {
+            "url": "/content/assets/sky_forest.png",
+            "start": 761.2000000011176,
+            "end": 763.2000000011176,
+            "bytes": 35056
+          }
+        ],
+        "sceneBytes": 1962163,
+        "timingMarks": {
+          "host": 61.69999999925494,
+          "runtime": 177.40000000037253,
+          "firstImages": 221.7999999988824,
+          "models": 444,
+          "firstFrame": 818.9000000003725,
+          "elapsedMs": 819.4000000003725,
+          "finished": true,
+          "failed": false,
+          "groups": {
+            "部隊與裝備": {
+              "done": 89,
+              "total": 89
+            },
+            "首屏圖片": {
+              "done": 6,
+              "total": 6
+            }
+          }
+        }
+      },
+      "after": {
+        "readyMs": 840.7000000011176,
+        "modelsReadyMs": 508.7000000011176,
+        "sceneFirstRequestMs": 313.40000000037253,
+        "sceneLastResponseMs": 346.09999999962747,
+        "afterModelsToReadyMs": 332,
+        "sceneRequests": [
+          {
+            "url": "/content/assets/arena.mesh.json",
+            "start": 313.40000000037253,
+            "end": 320.80000000074506,
+            "bytes": 1873886
+          },
+          {
+            "url": "/content/assets/cannon.mesh.json",
+            "start": 313.59999999962747,
+            "end": 319,
+            "bytes": 26656
+          },
+          {
+            "url": "/content/assets/sky_forest.mesh.json",
+            "start": 313.59999999962747,
+            "end": 319.5,
+            "bytes": 2062
+          },
+          {
+            "url": "/content/assets/coin.mesh.json",
+            "start": 313.59999999962747,
+            "end": 319.90000000037253,
+            "bytes": 8400
+          },
+          {
+            "url": "/content/assets/target.mesh.json",
+            "start": 313.59999999962747,
+            "end": 320.30000000074506,
+            "bytes": 10776
+          },
+          {
+            "url": "/content/assets/trail.mesh.json",
+            "start": 313.59999999962747,
+            "end": 320.59999999962747,
+            "bytes": 1922
+          },
+          {
+            "url": "/content/assets/palette.png",
+            "start": 341.59999999962747,
+            "end": 345.7000000011176,
+            "bytes": 3405
+          },
+          {
+            "url": "/content/assets/sky_forest.png",
+            "start": 341.90000000037253,
+            "end": 346.09999999962747,
+            "bytes": 35056
+          }
+        ],
+        "sceneBytes": 1962163,
+        "timingMarks": {
+          "host": 71,
+          "runtime": 195.5,
+          "sceneStart": 250.59999999962747,
+          "firstImages": 286.7999999988824,
+          "sceneReady": 328,
+          "rewardsReady": 358.8999999985099,
+          "actorsReady": 482,
+          "models": 482,
+          "firstDrawStart": 482.2999999988824,
+          "firstDraw": 787.5,
+          "firstFrame": 813.3999999985099,
+          "elapsedMs": 814,
+          "finished": true,
+          "failed": false,
+          "groups": {
+            "部隊與裝備": {
+              "done": 89,
+              "total": 89
+            },
+            "首屏圖片": {
+              "done": 6,
+              "total": 6
+            }
+          }
+        }
+      },
+      "readyReductionMs": 7.099999999627471
+    },
+    {
+      "delayMs": 80,
+      "before": {
+        "readyMs": 2362.0999999996275,
+        "modelsReadyMs": 2051.4000000003725,
+        "sceneFirstRequestMs": 2123.699999999255,
+        "sceneLastResponseMs": 2307.800000000745,
+        "afterModelsToReadyMs": 310.69999999925494,
+        "sceneRequests": [
+          {
+            "url": "/content/assets/arena.mesh.json",
+            "start": 2123.699999999255,
+            "end": 2211.699999999255,
+            "bytes": 1873886
+          },
+          {
+            "url": "/content/assets/sky_forest.mesh.json",
+            "start": 2123.699999999255,
+            "end": 2212.300000000745,
+            "bytes": 2062
+          },
+          {
+            "url": "/content/assets/cannon.mesh.json",
+            "start": 2123.699999999255,
+            "end": 2213.199999999255,
+            "bytes": 26656
+          },
+          {
+            "url": "/content/assets/coin.mesh.json",
+            "start": 2123.699999999255,
+            "end": 2213.699999999255,
+            "bytes": 8400
+          },
+          {
+            "url": "/content/assets/target.mesh.json",
+            "start": 2123.800000000745,
+            "end": 2214.300000000745,
+            "bytes": 10776
+          },
+          {
+            "url": "/content/assets/trail.mesh.json",
+            "start": 2123.800000000745,
+            "end": 2214.5999999996275,
+            "bytes": 1922
+          },
+          {
+            "url": "/content/assets/palette.png",
+            "start": 2222.0999999996275,
+            "end": 2307.0999999996275,
+            "bytes": 3405
+          },
+          {
+            "url": "/content/assets/sky_forest.png",
+            "start": 2222.699999999255,
+            "end": 2307.800000000745,
+            "bytes": 35056
+          }
+        ],
+        "sceneBytes": 1962163,
+        "timingMarks": {
+          "host": 306.2000000011176,
+          "runtime": 639.3000000007451,
+          "firstImages": 749.5,
+          "models": 1869.300000000745,
+          "firstFrame": 2179.4000000003725,
+          "elapsedMs": 2180,
+          "finished": true,
+          "failed": false,
+          "groups": {
+            "部隊與裝備": {
+              "done": 89,
+              "total": 89
+            },
+            "首屏圖片": {
+              "done": 6,
+              "total": 6
+            }
+          }
+        }
+      },
+      "after": {
+        "readyMs": 2151.9000000003725,
+        "modelsReadyMs": 2046.7000000011176,
+        "sceneFirstRequestMs": 855.9000000003725,
+        "sceneLastResponseMs": 1040.9000000003725,
+        "afterModelsToReadyMs": 105.19999999925494,
+        "sceneRequests": [
+          {
+            "url": "/content/assets/arena.mesh.json",
+            "start": 855.9000000003725,
+            "end": 945.9000000003725,
+            "bytes": 1873886
+          },
+          {
+            "url": "/content/assets/sky_forest.mesh.json",
+            "start": 856,
+            "end": 944.6000000014901,
+            "bytes": 2062
+          },
+          {
+            "url": "/content/assets/cannon.mesh.json",
+            "start": 856,
+            "end": 945.5,
+            "bytes": 26656
+          },
+          {
+            "url": "/content/assets/coin.mesh.json",
+            "start": 856,
+            "end": 946.5,
+            "bytes": 8400
+          },
+          {
+            "url": "/content/assets/target.mesh.json",
+            "start": 856.1000000014901,
+            "end": 946.8000000007451,
+            "bytes": 10776
+          },
+          {
+            "url": "/content/assets/trail.mesh.json",
+            "start": 856.1000000014901,
+            "end": 947.1000000014901,
+            "bytes": 1922
+          },
+          {
+            "url": "/content/assets/palette.png",
+            "start": 956,
+            "end": 1040.4000000003725,
+            "bytes": 3405
+          },
+          {
+            "url": "/content/assets/sky_forest.png",
+            "start": 956.2000000011176,
+            "end": 1040.9000000003725,
+            "bytes": 35056
+          }
+        ],
+        "sceneBytes": 1962163,
+        "timingMarks": {
+          "host": 309.2999999988824,
+          "runtime": 643.4000000003725,
+          "sceneStart": 661.9000000003725,
+          "firstImages": 756.1999999992549,
+          "rewardsReady": 852.9000000003725,
+          "sceneReady": 867.6999999992549,
+          "actorsReady": 1866.0999999996275,
+          "models": 1866.0999999996275,
+          "firstDrawStart": 1866.4000000003725,
+          "firstDraw": 1946.699999999255,
+          "firstFrame": 1970.5999999996275,
+          "elapsedMs": 1971.2999999988824,
+          "finished": true,
+          "failed": false,
+          "groups": {
+            "部隊與裝備": {
+              "done": 89,
+              "total": 89
+            },
+            "首屏圖片": {
+              "done": 6,
+              "total": 6
+            }
+          }
+        }
+      },
+      "readyReductionMs": 210.19999999925494
+    }
+  ]
+}

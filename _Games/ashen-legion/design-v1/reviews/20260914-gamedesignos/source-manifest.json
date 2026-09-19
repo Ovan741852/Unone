@@ -1,0 +1,47 @@
+{
+  "game_source_hash": "8dc0c7cd451e7031590f6a589544c10984d701dce5d36a3e2c21684f5b8279d2",
+  "sources": [
+    {
+      "source_id": "IMG_01",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\vfx-polish\\production-spear.png",
+      "sha256": "e1a301f44b45ee5c7571bc4f7bbd3ea9b923dcfc86ccd904bf2284534be1346c"
+    },
+    {
+      "source_id": "IMG_02",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\vfx-polish\\production-mobile.png",
+      "sha256": "2d68e46446f6126c13b2aa0fecec2f1f0e400c0992c179007ec56e4a05dfb09f"
+    },
+    {
+      "source_id": "IMG_03",
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\vfx-polish\\production-no-bloom.png",
+      "sha256": "68e171d0434c429bcc1e7e2397559b3aadad3e28239ec2734334dff0b03a92aa"
+    }
+  ],
+  "technical_supplements": [
+    {
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\presentation\\world-labels.mjs",
+      "sha256": "9998c0738a4e510d0c4df7f63ef4e0e3f51291ade04facc3d9b590c44c5ff9c4",
+      "source_type": "code_or_machine_qa_not_player_telemetry"
+    },
+    {
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\presentation\\guard-feedback.mjs",
+      "sha256": "743aa405afb0d406cde02e1d0447af8c76f0ed36a2cbcf7a370ff10d8d5f196e",
+      "source_type": "code_or_machine_qa_not_player_telemetry"
+    },
+    {
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\vfx-polish\\browser-report.json",
+      "sha256": "a8a6b2e92b3c39fa88085aef570da8669536ff7969cbf9900077267c6179346c",
+      "source_type": "code_or_machine_qa_not_player_telemetry"
+    },
+    {
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\tests\\vfx-polish\\gameplay-parity.json",
+      "sha256": "f490f021ef8c5a8a57e9cdb955236bde3ea5089785cee5c24cc3d421cd275181",
+      "source_type": "code_or_machine_qa_not_player_telemetry"
+    },
+    {
+      "path": "D:\\Projects\\YesSir\\_Games\\ashen-legion\\main.luau",
+      "sha256": "8dc0c7cd451e7031590f6a589544c10984d701dce5d36a3e2c21684f5b8279d2",
+      "source_type": "code_or_machine_qa_not_player_telemetry"
+    }
+  ]
+}

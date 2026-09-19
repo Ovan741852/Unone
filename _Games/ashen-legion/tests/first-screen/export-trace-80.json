@@ -1,0 +1,2580 @@
+{
+  "kind": "read-only localhost export trace; simulated per-request delay only; not actual WAN or phone measurement",
+  "delayMs": 80,
+  "errors": [],
+  "elapsedMs": 3732.0129,
+  "audit": {
+    "pageLoad": 939.734999999404,
+    "ready": 3193.4900000002235
+  },
+  "time": 3712.8449999997392,
+  "phase": "menu",
+  "ui": {
+    "backend": "canvas2d",
+    "nodes": 26,
+    "assets": [
+      {
+        "id": "texture://ui_panel",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_expedition-keyart-v2",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_mote",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_crest",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_button",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_secondary",
+        "state": "ready"
+      }
+    ],
+    "diagnostics": [],
+    "fontFamily": "\"Microsoft JhengHei\",sans-serif",
+    "limitations": [
+      "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
+      "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
+    ]
+  },
+  "resources": [
+    {
+      "name": "/presentation/landscape-host.css",
+      "startTime": 97.25499999988824,
+      "responseEnd": 182.0699999993667,
+      "duration": 84.81499999947846,
+      "transferSize": 1926,
+      "decodedBodySize": 1626,
+      "initiatorType": "link"
+    },
+    {
+      "name": "/host.mjs",
+      "startTime": 97.43999999947846,
+      "responseEnd": 183.37000000011176,
+      "duration": 85.9300000006333,
+      "transferSize": 12728,
+      "decodedBodySize": 12428,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/scene-lighting.mjs",
+      "startTime": 186.21999999973923,
+      "responseEnd": 270.70999999996275,
+      "duration": 84.49000000022352,
+      "transferSize": 4019,
+      "decodedBodySize": 3719,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/arena-walls.mjs",
+      "startTime": 186.25999999977648,
+      "responseEnd": 271.21999999973923,
+      "duration": 84.95999999996275,
+      "transferSize": 1755,
+      "decodedBodySize": 1455,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/shared/canvas-ui.mjs",
+      "startTime": 186.2749999994412,
+      "responseEnd": 271.28000000026077,
+      "duration": 85.00500000081956,
+      "transferSize": 7376,
+      "decodedBodySize": 7076,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/world-labels.mjs",
+      "startTime": 186.29999999981374,
+      "responseEnd": 271.5,
+      "duration": 85.20000000018626,
+      "transferSize": 8834,
+      "decodedBodySize": 8534,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/actors.mjs",
+      "startTime": 186.32500000018626,
+      "responseEnd": 271.554999999702,
+      "duration": 85.22999999951571,
+      "transferSize": 10633,
+      "decodedBodySize": 10333,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/first-screen.mjs",
+      "startTime": 186.339999999851,
+      "responseEnd": 271.45000000018626,
+      "duration": 85.11000000033528,
+      "transferSize": 1203,
+      "decodedBodySize": 903,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/rewards.mjs",
+      "startTime": 186.36500000022352,
+      "responseEnd": 354.04999999981374,
+      "duration": 167.68499999959022,
+      "transferSize": 7106,
+      "decodedBodySize": 6806,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/adaptive-ui.mjs",
+      "startTime": 186.37999999988824,
+      "responseEnd": 354.65500000026077,
+      "duration": 168.27500000037253,
+      "transferSize": 5260,
+      "decodedBodySize": 4960,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/ui-motion.mjs",
+      "startTime": 186.4199999999255,
+      "responseEnd": 354.59499999973923,
+      "duration": 168.17499999981374,
+      "transferSize": 5603,
+      "decodedBodySize": 5303,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/renderer/three.js",
+      "startTime": 186.4449999993667,
+      "responseEnd": 354.3300000000745,
+      "duration": 167.8850000007078,
+      "transferSize": 14327,
+      "decodedBodySize": 14027,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/shared/runtime-backend.mjs",
+      "startTime": 186.464999999851,
+      "responseEnd": 353.964999999851,
+      "duration": 167.5,
+      "transferSize": 2806,
+      "decodedBodySize": 2506,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/shared/host-input.js",
+      "startTime": 186.48499999940395,
+      "responseEnd": 354.49500000011176,
+      "duration": 168.0100000007078,
+      "transferSize": 3944,
+      "decodedBodySize": 3644,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/shared/async-scheduler.mjs",
+      "startTime": 186.5249999994412,
+      "responseEnd": 435.71999999973923,
+      "duration": 249.19500000029802,
+      "transferSize": 2202,
+      "decodedBodySize": 1902,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/landscape-host.mjs",
+      "startTime": 186.55999999959022,
+      "responseEnd": 435.929999999702,
+      "duration": 249.37000000011176,
+      "transferSize": 1489,
+      "decodedBodySize": 1189,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/ink-style.mjs",
+      "startTime": 273.32500000018626,
+      "responseEnd": 436.1349999997765,
+      "duration": 162.80999999959022,
+      "transferSize": 3141,
+      "decodedBodySize": 2841,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/combat-fx.mjs",
+      "startTime": 273.39499999955297,
+      "responseEnd": 436.20999999996275,
+      "duration": 162.81500000040978,
+      "transferSize": 20238,
+      "decodedBodySize": 19938,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/storybook-actors.mjs",
+      "startTime": 273.41500000003725,
+      "responseEnd": 436.46999999973923,
+      "duration": 163.05499999970198,
+      "transferSize": 4439,
+      "decodedBodySize": 4139,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/asset-loading.mjs",
+      "startTime": 273.4349999995902,
+      "responseEnd": 436.3650000002235,
+      "duration": 162.9300000006333,
+      "transferSize": 1204,
+      "decodedBodySize": 904,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/vendor/build/three.module.js",
+      "startTime": 273.4550000000745,
+      "responseEnd": 519.589999999851,
+      "duration": 246.13499999977648,
+      "transferSize": 603680,
+      "decodedBodySize": 603380,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/vendor/addons/loaders/GLTFLoader.js",
+      "startTime": 273.47499999962747,
+      "responseEnd": 518.75,
+      "duration": 245.27500000037253,
+      "transferSize": 114949,
+      "decodedBodySize": 114649,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/vendor/addons/utils/SkeletonUtils.js",
+      "startTime": 273.4900000002235,
+      "responseEnd": 518.875,
+      "duration": 245.38499999977648,
+      "transferSize": 11362,
+      "decodedBodySize": 11062,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/vendor/addons/utils/BufferGeometryUtils.js",
+      "startTime": 273.5,
+      "responseEnd": 518.9199999999255,
+      "duration": 245.4199999999255,
+      "transferSize": 35838,
+      "decodedBodySize": 35538,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/animator/index.mjs",
+      "startTime": 273.5249999994412,
+      "responseEnd": 518.464999999851,
+      "duration": 244.94000000040978,
+      "transferSize": 635,
+      "decodedBodySize": 335,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/combat-feedback-layout.mjs",
+      "startTime": 273.58499999996275,
+      "responseEnd": 518.8300000000745,
+      "duration": 245.24500000011176,
+      "transferSize": 1398,
+      "decodedBodySize": 1098,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/guard-feedback.mjs",
+      "startTime": 273.6049999995157,
+      "responseEnd": 599.9249999998137,
+      "duration": 326.320000000298,
+      "transferSize": 987,
+      "decodedBodySize": 687,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/win-dock.mjs",
+      "startTime": 356.179999999702,
+      "responseEnd": 600.2749999994412,
+      "duration": 244.09499999973923,
+      "transferSize": 7429,
+      "decodedBodySize": 7129,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/reward-impact.mjs",
+      "startTime": 356.21999999973923,
+      "responseEnd": 600.0300000002608,
+      "duration": 243.81000000052154,
+      "transferSize": 4516,
+      "decodedBodySize": 4216,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/shared/runtime-core.mjs",
+      "startTime": 356.2599999997765,
+      "responseEnd": 600.234999999404,
+      "duration": 243.97499999962747,
+      "transferSize": 4510,
+      "decodedBodySize": 4210,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/shared/instance-transfer.mjs",
+      "startTime": 356.28000000026077,
+      "responseEnd": 600.1650000000373,
+      "duration": 243.88499999977648,
+      "transferSize": 3447,
+      "decodedBodySize": 3147,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/renderer/particles.js",
+      "startTime": 356.32500000018626,
+      "responseEnd": 600.3250000001863,
+      "duration": 244,
+      "transferSize": 1862,
+      "decodedBodySize": 1562,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/renderer/mesh.js",
+      "startTime": 356.34499999973923,
+      "responseEnd": 682.7549999998882,
+      "duration": 326.410000000149,
+      "transferSize": 1648,
+      "decodedBodySize": 1348,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/renderer/instances3d.js",
+      "startTime": 356.37000000011176,
+      "responseEnd": 682.8999999994412,
+      "duration": 326.52999999932945,
+      "transferSize": 5764,
+      "decodedBodySize": 5464,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/renderer/bloom.js",
+      "startTime": 356.37999999988824,
+      "responseEnd": 682.9699999997392,
+      "duration": 326.589999999851,
+      "transferSize": 5964,
+      "decodedBodySize": 5664,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/renderer/effekseer.js",
+      "startTime": 356.3999999994412,
+      "responseEnd": 682.839999999851,
+      "duration": 326.4400000004098,
+      "transferSize": 2796,
+      "decodedBodySize": 2496,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/shared/webgpu-snapshot.js",
+      "startTime": 356.41500000003725,
+      "responseEnd": 683.0649999994785,
+      "duration": 326.6499999994412,
+      "transferSize": 20186,
+      "decodedBodySize": 19886,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/composition-fx.mjs",
+      "startTime": 437.79000000003725,
+      "responseEnd": 683.0099999997765,
+      "duration": 245.21999999973923,
+      "transferSize": 5543,
+      "decodedBodySize": 5243,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/resonance-fx.mjs",
+      "startTime": 437.8300000000745,
+      "responseEnd": 767.7549999998882,
+      "duration": 329.92499999981374,
+      "transferSize": 5113,
+      "decodedBodySize": 4813,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/trigger-fx.mjs",
+      "startTime": 437.84999999962747,
+      "responseEnd": 767.25,
+      "duration": 329.40000000037253,
+      "transferSize": 3718,
+      "decodedBodySize": 3418,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/element-fx.mjs",
+      "startTime": 437.87000000011176,
+      "responseEnd": 767.679999999702,
+      "duration": 329.8099999995902,
+      "transferSize": 4327,
+      "decodedBodySize": 4027,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/animator/animator.mjs",
+      "startTime": 520.7299999995157,
+      "responseEnd": 767.8099999995902,
+      "duration": 247.0800000000745,
+      "transferSize": 12676,
+      "decodedBodySize": 12376,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/animator/lod.mjs",
+      "startTime": 520.9050000002608,
+      "responseEnd": 767.3300000000745,
+      "duration": 246.42499999981374,
+      "transferSize": 3781,
+      "decodedBodySize": 3481,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/animator/sync.mjs",
+      "startTime": 520.9500000001863,
+      "responseEnd": 767.6049999995157,
+      "duration": 246.65499999932945,
+      "transferSize": 2845,
+      "decodedBodySize": 2545,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/animator/host.mjs",
+      "startTime": 520.9699999997392,
+      "responseEnd": 851.054999999702,
+      "duration": 330.08499999996275,
+      "transferSize": 5625,
+      "decodedBodySize": 5325,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/animator/contract.mjs",
+      "startTime": 520.9900000002235,
+      "responseEnd": 850.8899999996647,
+      "duration": 329.8999999994412,
+      "transferSize": 3142,
+      "decodedBodySize": 2842,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/vendor/build/three.core.js",
+      "startTime": 525.5,
+      "responseEnd": 852.109999999404,
+      "duration": 326.60999999940395,
+      "transferSize": 1401621,
+      "decodedBodySize": 1401321,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/shared/job-binary.mjs",
+      "startTime": 601.8250000001863,
+      "responseEnd": 851.1899999994785,
+      "duration": 249.3649999992922,
+      "transferSize": 6707,
+      "decodedBodySize": 6407,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/shared/job-pool.mjs",
+      "startTime": 601.859999999404,
+      "responseEnd": 851.2649999996647,
+      "duration": 249.40500000026077,
+      "transferSize": 7087,
+      "decodedBodySize": 6787,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/shared/load-project.js",
+      "startTime": 601.875,
+      "responseEnd": 851.0049999998882,
+      "duration": 249.12999999988824,
+      "transferSize": 1520,
+      "decodedBodySize": 1220,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/lottie/runtime/lottie.mjs",
+      "startTime": 601.910000000149,
+      "responseEnd": 933.5,
+      "duration": 331.589999999851,
+      "transferSize": 27327,
+      "decodedBodySize": 27027,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/presentation/ultimate-win.mjs",
+      "startTime": 601.929999999702,
+      "responseEnd": 933.4349999995902,
+      "duration": 331.50499999988824,
+      "transferSize": 6601,
+      "decodedBodySize": 6301,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/web/shared/asset-encoding.js",
+      "startTime": 684.679999999702,
+      "responseEnd": 933.3250000001863,
+      "duration": 248.6450000004843,
+      "transferSize": 1326,
+      "decodedBodySize": 1026,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/assets/creatures/manifest.json",
+      "startTime": 939.0649999994785,
+      "responseEnd": 1024.875,
+      "duration": 85.81000000052154,
+      "transferSize": 4947,
+      "decodedBodySize": 4647,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/manifest.json",
+      "startTime": 939.1399999996647,
+      "responseEnd": 1025.0300000002608,
+      "duration": 85.89000000059605,
+      "transferSize": 10956,
+      "decodedBodySize": 10656,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/content/project.json",
+      "startTime": 939.214999999851,
+      "responseEnd": 1025.214999999851,
+      "duration": 86,
+      "transferSize": 200337,
+      "decodedBodySize": 200037,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/content/assets.json",
+      "startTime": 939.25,
+      "responseEnd": 1025.1399999996647,
+      "duration": 85.88999999966472,
+      "transferSize": 33587,
+      "decodedBodySize": 33287,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/runtime/runtime.json",
+      "startTime": 939.269999999553,
+      "responseEnd": 1025.0750000001863,
+      "duration": 85.8050000006333,
+      "transferSize": 1332,
+      "decodedBodySize": 1032,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/environments.json",
+      "startTime": 939.2949999999255,
+      "responseEnd": 1024.984999999404,
+      "duration": 85.68999999947846,
+      "transferSize": 534,
+      "decodedBodySize": 234,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/presentation/soldier-v2.glb",
+      "startTime": 1029.1049999995157,
+      "responseEnd": 1112.75,
+      "duration": 83.64500000048429,
+      "transferSize": 569476,
+      "decodedBodySize": 569176,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/creatures/art-v2/acorn.glb",
+      "startTime": 1029.2749999994412,
+      "responseEnd": 1111.7949999999255,
+      "duration": 82.52000000048429,
+      "transferSize": 226224,
+      "decodedBodySize": 225924,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/creatures/art-v2/piglet.glb",
+      "startTime": 1029.3449999997392,
+      "responseEnd": 1112.6699999999255,
+      "duration": 83.32500000018626,
+      "transferSize": 278172,
+      "decodedBodySize": 277872,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/creatures/art-v2/moth.glb",
+      "startTime": 1029.3899999996647,
+      "responseEnd": 1112.535000000149,
+      "duration": 83.14500000048429,
+      "transferSize": 301244,
+      "decodedBodySize": 300944,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/creatures/art-v2/turtle.glb",
+      "startTime": 1029.4399999994785,
+      "responseEnd": 1112.429999999702,
+      "duration": 82.99000000022352,
+      "transferSize": 257520,
+      "decodedBodySize": 257220,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/creatures/art-v2/boar.glb",
+      "startTime": 1029.484999999404,
+      "responseEnd": 1113.6650000000373,
+      "duration": 84.1800000006333,
+      "transferSize": 246368,
+      "decodedBodySize": 246068,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/runtime/fc7734055aed41f566d8a556ce3fffd3b9a37df3baf2e00dafbdfa39b4c9fd39-4f6ddb1170dcb426f060aad4b6773e738a56e990a1feb54dc8f1b38fc31d2d1e/unone-player.js",
+      "startTime": 1030.109999999404,
+      "responseEnd": 1196.5699999993667,
+      "duration": 166.45999999996275,
+      "transferSize": 101300,
+      "decodedBodySize": 101000,
+      "initiatorType": "script"
+    },
+    {
+      "name": "/assets/creatures/art-v2/elder.glb",
+      "startTime": 1150.7199999997392,
+      "responseEnd": 1233.3700000001118,
+      "duration": 82.65000000037253,
+      "transferSize": 280092,
+      "decodedBodySize": 279792,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/creatures/art-v2/treant.glb",
+      "startTime": 1154.9550000000745,
+      "responseEnd": 1236.9150000000373,
+      "duration": 81.95999999996275,
+      "transferSize": 346008,
+      "decodedBodySize": 345708,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/creatures/art-v2/stag.glb",
+      "startTime": 1158.644999999553,
+      "responseEnd": 1240.1849999995902,
+      "duration": 81.54000000003725,
+      "transferSize": 244456,
+      "decodedBodySize": 244156,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/creatures/art-v2/beetle.glb",
+      "startTime": 1161.9799999995157,
+      "responseEnd": 1245.019999999553,
+      "duration": 83.04000000003725,
+      "transferSize": 250776,
+      "decodedBodySize": 250476,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/creatures/art-v2/wheel.glb",
+      "startTime": 1165.734999999404,
+      "responseEnd": 1246.8849999997765,
+      "duration": 81.15000000037253,
+      "transferSize": 308092,
+      "decodedBodySize": 307792,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/creatures/art-v2/horse.glb",
+      "startTime": 1169.234999999404,
+      "responseEnd": 1278.1550000002608,
+      "duration": 108.92000000085682,
+      "transferSize": 239356,
+      "decodedBodySize": 239056,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/runtime/fc7734055aed41f566d8a556ce3fffd3b9a37df3baf2e00dafbdfa39b4c9fd39-4f6ddb1170dcb426f060aad4b6773e738a56e990a1feb54dc8f1b38fc31d2d1e/unone_player.wasm",
+      "startTime": 1201.464999999851,
+      "responseEnd": 1317.304999999702,
+      "duration": 115.83999999985099,
+      "transferSize": 1545979,
+      "decodedBodySize": 1545679,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/pierce.glb",
+      "startTime": 1247.5249999994412,
+      "responseEnd": 1328.734999999404,
+      "duration": 81.20999999996275,
+      "transferSize": 10964,
+      "decodedBodySize": 10664,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/landing_spin.glb",
+      "startTime": 1251.0699999993667,
+      "responseEnd": 1332.6849999995902,
+      "duration": 81.61500000022352,
+      "transferSize": 12140,
+      "decodedBodySize": 11840,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/lightning.glb",
+      "startTime": 1255.1899999994785,
+      "responseEnd": 1336.3849999997765,
+      "duration": 81.19500000029802,
+      "transferSize": 12528,
+      "decodedBodySize": 12228,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/critical.glb",
+      "startTime": 1268.8349999999627,
+      "responseEnd": 1351.3849999997765,
+      "duration": 82.54999999981374,
+      "transferSize": 10604,
+      "decodedBodySize": 10304,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/third_crit.glb",
+      "startTime": 1271.9399999994785,
+      "responseEnd": 1359.9799999995157,
+      "duration": 88.04000000003725,
+      "transferSize": 11092,
+      "decodedBodySize": 10792,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/king_hunter.glb",
+      "startTime": 1290.9500000001863,
+      "responseEnd": 1398.7649999996647,
+      "duration": 107.81499999947846,
+      "transferSize": 12556,
+      "decodedBodySize": 12256,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/content/assets/formal-ui/panel.png",
+      "startTime": 1368.4500000001863,
+      "responseEnd": 1452.019999999553,
+      "duration": 83.5699999993667,
+      "transferSize": 627529,
+      "decodedBodySize": 627229,
+      "initiatorType": "img"
+    },
+    {
+      "name": "/content/assets/formal-ui/expedition-keyart-v2.png",
+      "startTime": 1368.5149999996647,
+      "responseEnd": 1454.7599999997765,
+      "duration": 86.24500000011176,
+      "transferSize": 2464160,
+      "decodedBodySize": 2463860,
+      "initiatorType": "img"
+    },
+    {
+      "name": "/content/assets/formal-ui/crest.png",
+      "startTime": 1368.5400000000373,
+      "responseEnd": 1450.734999999404,
+      "duration": 82.1949999993667,
+      "transferSize": 14087,
+      "decodedBodySize": 13787,
+      "initiatorType": "img"
+    },
+    {
+      "name": "/content/assets/formal-ui/button.png",
+      "startTime": 1368.554999999702,
+      "responseEnd": 1450.9900000002235,
+      "duration": 82.43500000052154,
+      "transferSize": 50326,
+      "decodedBodySize": 50026,
+      "initiatorType": "img"
+    },
+    {
+      "name": "/content/assets/formal-ui/secondary.png",
+      "startTime": 1368.5699999993667,
+      "responseEnd": 1451.3899999996647,
+      "duration": 82.82000000029802,
+      "transferSize": 49519,
+      "decodedBodySize": 49219,
+      "initiatorType": "img"
+    },
+    {
+      "name": "/presentation/lottie/big-win-dock.json",
+      "startTime": 1384.2549999998882,
+      "responseEnd": 1480.410000000149,
+      "duration": 96.15500000026077,
+      "transferSize": 39051,
+      "decodedBodySize": 38751,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/presentation/lottie/mega-win-dock.json",
+      "startTime": 1384.3250000001863,
+      "responseEnd": 1533.609999999404,
+      "duration": 149.2849999992177,
+      "transferSize": 29397,
+      "decodedBodySize": 29097,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/presentation/lottie/legendary-win-dock.json",
+      "startTime": 1384.3499999996275,
+      "responseEnd": 1533.5049999998882,
+      "duration": 149.15500000026077,
+      "transferSize": 46459,
+      "decodedBodySize": 46159,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/ember_burst.glb",
+      "startTime": 1389.0599999995902,
+      "responseEnd": 1533.6650000000373,
+      "duration": 144.60500000044703,
+      "transferSize": 9932,
+      "decodedBodySize": 9632,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/longlife.glb",
+      "startTime": 1389.3300000000745,
+      "responseEnd": 1533.7249999996275,
+      "duration": 144.39499999955297,
+      "transferSize": 10604,
+      "decodedBodySize": 10304,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/expire_burst.glb",
+      "startTime": 1389.5249999994412,
+      "responseEnd": 1535.3549999995157,
+      "duration": 145.8300000000745,
+      "transferSize": 9840,
+      "decodedBodySize": 9540,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/rebound_charge.glb",
+      "startTime": 1389.6650000000373,
+      "responseEnd": 1561.3700000001118,
+      "duration": 171.7050000000745,
+      "transferSize": 10916,
+      "decodedBodySize": 10616,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/haste.glb",
+      "startTime": 1389.7949999999255,
+      "responseEnd": 1614.984999999404,
+      "duration": 225.18999999947846,
+      "transferSize": 10992,
+      "decodedBodySize": 10692,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/bounce_life.glb",
+      "startTime": 1401.3349999999627,
+      "responseEnd": 1614.8700000001118,
+      "duration": 213.535000000149,
+      "transferSize": 10660,
+      "decodedBodySize": 10360,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/presentation/lottie/ultimate-crown.json",
+      "startTime": 1537.2599999997765,
+      "responseEnd": 1618.1650000000373,
+      "duration": 80.90500000026077,
+      "transferSize": 58906,
+      "decodedBodySize": 58606,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/crit_power.glb",
+      "startTime": 1540.2000000001863,
+      "responseEnd": 1622.25,
+      "duration": 82.04999999981374,
+      "transferSize": 9856,
+      "decodedBodySize": 9556,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/finisher.glb",
+      "startTime": 1540.5599999995902,
+      "responseEnd": 1622.3099999995902,
+      "duration": 81.75,
+      "transferSize": 10164,
+      "decodedBodySize": 9864,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/frost_touch.glb",
+      "startTime": 1540.8799999998882,
+      "responseEnd": 1642.8099999995902,
+      "duration": 101.92999999970198,
+      "transferSize": 10268,
+      "decodedBodySize": 9968,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/frenzy.glb",
+      "startTime": 1563.644999999553,
+      "responseEnd": 1697.3349999999627,
+      "duration": 133.69000000040978,
+      "transferSize": 10708,
+      "decodedBodySize": 10408,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/momentum.glb",
+      "startTime": 1618.8099999995902,
+      "responseEnd": 1699.4150000000373,
+      "duration": 80.60500000044703,
+      "transferSize": 11880,
+      "decodedBodySize": 11580,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/shock.glb",
+      "startTime": 1619.019999999553,
+      "responseEnd": 1699.5,
+      "duration": 80.48000000044703,
+      "transferSize": 9640,
+      "decodedBodySize": 9340,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/shatter.glb",
+      "startTime": 1624.7649999996647,
+      "responseEnd": 1706.8300000000745,
+      "duration": 82.06500000040978,
+      "transferSize": 12452,
+      "decodedBodySize": 12152,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/ricochet_precision.glb",
+      "startTime": 1624.9249999998137,
+      "responseEnd": 1706.8899999996647,
+      "duration": 81.96499999985099,
+      "transferSize": 12432,
+      "decodedBodySize": 12132,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/hunter_vigor.glb",
+      "startTime": 1644.6949999993667,
+      "responseEnd": 1725.4050000002608,
+      "duration": 80.71000000089407,
+      "transferSize": 9880,
+      "decodedBodySize": 9580,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/piercing_wave.glb",
+      "startTime": 1699.9699999997392,
+      "responseEnd": 1783.9900000002235,
+      "duration": 84.02000000048429,
+      "transferSize": 10232,
+      "decodedBodySize": 9932,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/slow_force.glb",
+      "startTime": 1702.429999999702,
+      "responseEnd": 1784.0800000000745,
+      "duration": 81.65000000037253,
+      "transferSize": 10780,
+      "decodedBodySize": 10480,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/spin_master.glb",
+      "startTime": 1702.6299999998882,
+      "responseEnd": 1784.1349999997765,
+      "duration": 81.50499999988824,
+      "transferSize": 13748,
+      "decodedBodySize": 13448,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/last_stand.glb",
+      "startTime": 1708.9799999995157,
+      "responseEnd": 1791.3799999998882,
+      "duration": 82.40000000037253,
+      "transferSize": 10040,
+      "decodedBodySize": 9740,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/heat.glb",
+      "startTime": 1709.1399999996647,
+      "responseEnd": 1791.4449999993667,
+      "duration": 82.30499999970198,
+      "transferSize": 10048,
+      "decodedBodySize": 9748,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/distance.glb",
+      "startTime": 1727.1150000002235,
+      "responseEnd": 1808.8799999998882,
+      "duration": 81.76499999966472,
+      "transferSize": 10964,
+      "decodedBodySize": 10664,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/heavy.glb",
+      "startTime": 1787.9799999995157,
+      "responseEnd": 1870.8799999998882,
+      "duration": 82.90000000037253,
+      "transferSize": 10520,
+      "decodedBodySize": 10220,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/bounce_power.glb",
+      "startTime": 1788.269999999553,
+      "responseEnd": 1870.964999999851,
+      "duration": 82.69500000029802,
+      "transferSize": 10728,
+      "decodedBodySize": 10428,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/wall_quake.glb",
+      "startTime": 1788.4399999994785,
+      "responseEnd": 1871.019999999553,
+      "duration": 82.5800000000745,
+      "transferSize": 10880,
+      "decodedBodySize": 10580,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/short_fuse.glb",
+      "startTime": 1793.714999999851,
+      "responseEnd": 1874.1899999994785,
+      "duration": 80.47499999962747,
+      "transferSize": 10460,
+      "decodedBodySize": 10160,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/wide_blade.glb",
+      "startTime": 1793.8700000001118,
+      "responseEnd": 1874.269999999553,
+      "duration": 80.3999999994412,
+      "transferSize": 12524,
+      "decodedBodySize": 12224,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/hit_echo.glb",
+      "startTime": 1810.5649999994785,
+      "responseEnd": 1893.5699999993667,
+      "duration": 83.00499999988824,
+      "transferSize": 9952,
+      "decodedBodySize": 9652,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/fracture.glb",
+      "startTime": 1874.4249999998137,
+      "responseEnd": 1956.3999999994412,
+      "duration": 81.97499999962747,
+      "transferSize": 10068,
+      "decodedBodySize": 9768,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/solo_hunt.glb",
+      "startTime": 1874.625,
+      "responseEnd": 1956.4900000002235,
+      "duration": 81.86500000022352,
+      "transferSize": 11376,
+      "decodedBodySize": 11076,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/crowd_ring.glb",
+      "startTime": 1874.769999999553,
+      "responseEnd": 1956.5400000000373,
+      "duration": 81.77000000048429,
+      "transferSize": 12608,
+      "decodedBodySize": 12308,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/recruit.glb",
+      "startTime": 1876.679999999702,
+      "responseEnd": 1957.1349999997765,
+      "duration": 80.4550000000745,
+      "transferSize": 9904,
+      "decodedBodySize": 9604,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/rally.glb",
+      "startTime": 1876.8650000002235,
+      "responseEnd": 1957.214999999851,
+      "duration": 80.34999999962747,
+      "transferSize": 10120,
+      "decodedBodySize": 9820,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/rapid.glb",
+      "startTime": 1895.5999999996275,
+      "responseEnd": 1976.4699999997392,
+      "duration": 80.87000000011176,
+      "transferSize": 10316,
+      "decodedBodySize": 10016,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/solitary.glb",
+      "startTime": 1962.3250000001863,
+      "responseEnd": 2043.8549999995157,
+      "duration": 81.52999999932945,
+      "transferSize": 10372,
+      "decodedBodySize": 10072,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/showdown.glb",
+      "startTime": 1962.5649999994785,
+      "responseEnd": 2043.9449999993667,
+      "duration": 81.37999999988824,
+      "transferSize": 10876,
+      "decodedBodySize": 10576,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/sharp.glb",
+      "startTime": 1962.734999999404,
+      "responseEnd": 2043.9950000001118,
+      "duration": 81.2600000007078,
+      "transferSize": 12364,
+      "decodedBodySize": 12064,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/giant.glb",
+      "startTime": 1962.8999999994412,
+      "responseEnd": 2044.1499999994412,
+      "duration": 81.25,
+      "transferSize": 10272,
+      "decodedBodySize": 9972,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/double_pierce.glb",
+      "startTime": 1963.2299999995157,
+      "responseEnd": 2044.2249999996275,
+      "duration": 80.99500000011176,
+      "transferSize": 12644,
+      "decodedBodySize": 12344,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/deadly.glb",
+      "startTime": 1978.5699999993667,
+      "responseEnd": 2060.1399999996647,
+      "duration": 81.57000000029802,
+      "transferSize": 12092,
+      "decodedBodySize": 11792,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/flame_cloak.glb",
+      "startTime": 2049.535000000149,
+      "responseEnd": 2131.3700000001118,
+      "duration": 81.83499999996275,
+      "transferSize": 18308,
+      "decodedBodySize": 18008,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/phoenix_fire.glb",
+      "startTime": 2049.7450000001118,
+      "responseEnd": 2131.4900000002235,
+      "duration": 81.74500000011176,
+      "transferSize": 17444,
+      "decodedBodySize": 17144,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/plague_vial.glb",
+      "startTime": 2049.894999999553,
+      "responseEnd": 2132.274999999441,
+      "duration": 82.37999999988824,
+      "transferSize": 17108,
+      "decodedBodySize": 16808,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/ember_trail.glb",
+      "startTime": 2050.035000000149,
+      "responseEnd": 2132.3549999995157,
+      "duration": 82.3199999993667,
+      "transferSize": 13100,
+      "decodedBodySize": 12800,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/slick_oil.glb",
+      "startTime": 2050.2000000001863,
+      "responseEnd": 2132.4150000000373,
+      "duration": 82.21499999985099,
+      "transferSize": 13644,
+      "decodedBodySize": 13344,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/rain_strike.glb",
+      "startTime": 2062.410000000149,
+      "responseEnd": 2143.394999999553,
+      "duration": 80.98499999940395,
+      "transferSize": 12436,
+      "decodedBodySize": 12136,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/storm_touch.glb",
+      "startTime": 2136.5849999999627,
+      "responseEnd": 2218.9599999999627,
+      "duration": 82.375,
+      "transferSize": 14004,
+      "decodedBodySize": 13704,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/oil_legacy.glb",
+      "startTime": 2136.8849999997765,
+      "responseEnd": 2219.054999999702,
+      "duration": 82.1699999999255,
+      "transferSize": 14656,
+      "decodedBodySize": 14356,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/plunder.glb",
+      "startTime": 2137.0999999996275,
+      "responseEnd": 2219.0999999996275,
+      "duration": 82,
+      "transferSize": 16904,
+      "decodedBodySize": 16604,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/firstborn.glb",
+      "startTime": 2137.2999999998137,
+      "responseEnd": 2219.149999999441,
+      "duration": 81.84999999962747,
+      "transferSize": 15348,
+      "decodedBodySize": 15048,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/march_capacitor.glb",
+      "startTime": 2137.4399999994785,
+      "responseEnd": 2219.1899999994785,
+      "duration": 81.75,
+      "transferSize": 12588,
+      "decodedBodySize": 12288,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/delayed_bloom.glb",
+      "startTime": 2144.9699999997392,
+      "responseEnd": 2225.5750000001863,
+      "duration": 80.60500000044703,
+      "transferSize": 10000,
+      "decodedBodySize": 9700,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/third_pulse.glb",
+      "startTime": 2224.8449999997392,
+      "responseEnd": 2307.1899999994785,
+      "duration": 82.34499999973923,
+      "transferSize": 17296,
+      "decodedBodySize": 16996,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/battle_elegy.glb",
+      "startTime": 2225.0400000000373,
+      "responseEnd": 2307.2800000002608,
+      "duration": 82.24000000022352,
+      "transferSize": 12536,
+      "decodedBodySize": 12236,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/grave_bloom.glb",
+      "startTime": 2225.1650000000373,
+      "responseEnd": 2307.3300000000745,
+      "duration": 82.16500000003725,
+      "transferSize": 13900,
+      "decodedBodySize": 13600,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/last_echo.glb",
+      "startTime": 2225.285000000149,
+      "responseEnd": 2307.375,
+      "duration": 82.08999999985099,
+      "transferSize": 12284,
+      "decodedBodySize": 11984,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/cinder_seal.glb",
+      "startTime": 2225.399999999441,
+      "responseEnd": 2307.4199999999255,
+      "duration": 82.02000000048429,
+      "transferSize": 12148,
+      "decodedBodySize": 11848,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/chain_fuse.glb",
+      "startTime": 2227.6749999998137,
+      "responseEnd": 2307.9599999999627,
+      "duration": 80.28500000014901,
+      "transferSize": 19368,
+      "decodedBodySize": 19068,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/thunder_fan.glb",
+      "startTime": 2312.8349999999627,
+      "responseEnd": 2395.5949999997392,
+      "duration": 82.75999999977648,
+      "transferSize": 17732,
+      "decodedBodySize": 17432,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/echo_blade.glb",
+      "startTime": 2313.0099999997765,
+      "responseEnd": 2395.6949999993667,
+      "duration": 82.68499999959022,
+      "transferSize": 12916,
+      "decodedBodySize": 12616,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/starfall.glb",
+      "startTime": 2313.144999999553,
+      "responseEnd": 2395.7400000002235,
+      "duration": 82.59500000067055,
+      "transferSize": 15772,
+      "decodedBodySize": 15472,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/soul_return.glb",
+      "startTime": 2313.269999999553,
+      "responseEnd": 2395.839999999851,
+      "duration": 82.57000000029802,
+      "transferSize": 15484,
+      "decodedBodySize": 15184,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/comrade_oath.glb",
+      "startTime": 2313.394999999553,
+      "responseEnd": 2395.7900000000373,
+      "duration": 82.39500000048429,
+      "transferSize": 14084,
+      "decodedBodySize": 13784,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/resonant_debt.glb",
+      "startTime": 2313.6749999998137,
+      "responseEnd": 2395.8849999997765,
+      "duration": 82.20999999996275,
+      "transferSize": 14392,
+      "decodedBodySize": 14092,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/contact_mine.glb",
+      "startTime": 2401.3899999996647,
+      "responseEnd": 2483.1200000001118,
+      "duration": 81.73000000044703,
+      "transferSize": 18956,
+      "decodedBodySize": 18656,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/step_orb.glb",
+      "startTime": 2401.7549999998882,
+      "responseEnd": 2483.2900000000373,
+      "duration": 81.53500000014901,
+      "transferSize": 13216,
+      "decodedBodySize": 12916,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/gravity_law.glb",
+      "startTime": 2401.9050000002608,
+      "responseEnd": 2483.3499999996275,
+      "duration": 81.4449999993667,
+      "transferSize": 14496,
+      "decodedBodySize": 14196,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/quick_chant.glb",
+      "startTime": 2402.0400000000373,
+      "responseEnd": 2483.399999999441,
+      "duration": 81.35999999940395,
+      "transferSize": 14196,
+      "decodedBodySize": 13896,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/overload_script.glb",
+      "startTime": 2402.1550000002608,
+      "responseEnd": 2483.4449999993667,
+      "duration": 81.28999999910593,
+      "transferSize": 11364,
+      "decodedBodySize": 11064,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/storm_payload.glb",
+      "startTime": 2402.2800000002608,
+      "responseEnd": 2483.4900000002235,
+      "duration": 81.20999999996275,
+      "transferSize": 10540,
+      "decodedBodySize": 10240,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/legacy_gift.glb",
+      "startTime": 2488.8799999998882,
+      "responseEnd": 2573.1699999999255,
+      "duration": 84.29000000003725,
+      "transferSize": 21176,
+      "decodedBodySize": 20876,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/assets/equipment/guard_bequest.glb",
+      "startTime": 2489.0649999994785,
+      "responseEnd": 2573.25,
+      "duration": 84.18500000052154,
+      "transferSize": 15084,
+      "decodedBodySize": 14784,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/content/assets/arena.mesh.json",
+      "startTime": 2843.609999999404,
+      "responseEnd": 2928.214999999851,
+      "duration": 84.60500000044703,
+      "transferSize": 1874186,
+      "decodedBodySize": 1873886,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/content/assets/sky_forest.mesh.json",
+      "startTime": 2843.6650000000373,
+      "responseEnd": 2926.8650000002235,
+      "duration": 83.20000000018626,
+      "transferSize": 2362,
+      "decodedBodySize": 2062,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/content/assets/cannon.mesh.json",
+      "startTime": 2843.6899999994785,
+      "responseEnd": 2927.1399999996647,
+      "duration": 83.45000000018626,
+      "transferSize": 26956,
+      "decodedBodySize": 26656,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/content/assets/coin.mesh.json",
+      "startTime": 2843.714999999851,
+      "responseEnd": 2927.214999999851,
+      "duration": 83.5,
+      "transferSize": 8700,
+      "decodedBodySize": 8400,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/content/assets/target.mesh.json",
+      "startTime": 2843.734999999404,
+      "responseEnd": 2927.2649999996647,
+      "duration": 83.53000000026077,
+      "transferSize": 11076,
+      "decodedBodySize": 10776,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/content/assets/trail.mesh.json",
+      "startTime": 2843.7599999997765,
+      "responseEnd": 2927.0800000000745,
+      "duration": 83.32000000029802,
+      "transferSize": 2222,
+      "decodedBodySize": 1922,
+      "initiatorType": "fetch"
+    },
+    {
+      "name": "/content/assets/sky_forest.png",
+      "startTime": 2934.8700000001118,
+      "responseEnd": 3017.1200000001118,
+      "duration": 82.25,
+      "transferSize": 35356,
+      "decodedBodySize": 35056,
+      "initiatorType": "img"
+    },
+    {
+      "name": "/content/assets/palette.png",
+      "startTime": 2935.019999999553,
+      "responseEnd": 3017.035000000149,
+      "duration": 82.01500000059605,
+      "transferSize": 3705,
+      "decodedBodySize": 3405,
+      "initiatorType": "img"
+    },
+    {
+      "name": "/content/assets/formal-ui/mote.png",
+      "startTime": 3079.554999999702,
+      "responseEnd": 3164.1049999995157,
+      "duration": 84.54999999981374,
+      "transferSize": 7294,
+      "decodedBodySize": 6994,
+      "initiatorType": "img"
+    }
+  ],
+  "requests": [
+    {
+      "path": "index.html",
+      "received": 9.2894,
+      "bytes": 2590,
+      "sent": 91.59140000000002
+    },
+    {
+      "path": "presentation/landscape-host.css",
+      "received": 106.74390000000005,
+      "bytes": 1626,
+      "sent": 187.55550000000005
+    },
+    {
+      "path": "host.mjs",
+      "received": 108.22680000000003,
+      "bytes": 12428,
+      "sent": 188.89509999999996
+    },
+    {
+      "path": "presentation/scene-lighting.mjs",
+      "received": 192.7224,
+      "bytes": 3719,
+      "sent": 276.24570000000006
+    },
+    {
+      "path": "web/shared/canvas-ui.mjs",
+      "received": 193.63940000000002,
+      "bytes": 7076,
+      "sent": 276.4367
+    },
+    {
+      "path": "presentation/arena-walls.mjs",
+      "received": 194.00430000000006,
+      "bytes": 1455,
+      "sent": 276.5259
+    },
+    {
+      "path": "presentation/world-labels.mjs",
+      "received": 194.44860000000006,
+      "bytes": 8534,
+      "sent": 276.6273
+    },
+    {
+      "path": "presentation/actors.mjs",
+      "received": 194.51369999999997,
+      "bytes": 10333,
+      "sent": 276.7178
+    },
+    {
+      "path": "presentation/first-screen.mjs",
+      "received": 195.15430000000003,
+      "bytes": 903,
+      "sent": 276.8201
+    },
+    {
+      "path": "presentation/rewards.mjs",
+      "received": 277.082,
+      "bytes": 6806,
+      "sent": 359.2492
+    },
+    {
+      "path": "presentation/adaptive-ui.mjs",
+      "received": 277.44950000000006,
+      "bytes": 4960,
+      "sent": 359.6711
+    },
+    {
+      "path": "presentation/ui-motion.mjs",
+      "received": 277.6363,
+      "bytes": 5303,
+      "sent": 359.6172
+    },
+    {
+      "path": "web/renderer/three.js",
+      "received": 277.69090000000006,
+      "bytes": 14027,
+      "sent": 359.50790000000006
+    },
+    {
+      "path": "web/shared/runtime-backend.mjs",
+      "received": 277.72530000000006,
+      "bytes": 2506,
+      "sent": 359.4276
+    },
+    {
+      "path": "web/shared/host-input.js",
+      "received": 277.7962,
+      "bytes": 3644,
+      "sent": 359.76300000000003
+    },
+    {
+      "path": "web/shared/async-scheduler.mjs",
+      "received": 360.29999999999995,
+      "bytes": 1902,
+      "sent": 440.92050000000006
+    },
+    {
+      "path": "presentation/landscape-host.mjs",
+      "received": 360.3876,
+      "bytes": 1189,
+      "sent": 441.0621
+    },
+    {
+      "path": "presentation/ink-style.mjs",
+      "received": 360.499,
+      "bytes": 2841,
+      "sent": 441.3292
+    },
+    {
+      "path": "presentation/combat-fx.mjs",
+      "received": 360.5575,
+      "bytes": 19938,
+      "sent": 441.1423
+    },
+    {
+      "path": "presentation/storybook-actors.mjs",
+      "received": 360.58439999999996,
+      "bytes": 4139,
+      "sent": 441.41409999999996
+    },
+    {
+      "path": "presentation/asset-loading.mjs",
+      "received": 360.66330000000005,
+      "bytes": 904,
+      "sent": 441.48710000000005
+    },
+    {
+      "path": "presentation/vendor/build/three.module.js",
+      "received": 442.18039999999996,
+      "bytes": 603380,
+      "sent": 524.2472
+    },
+    {
+      "path": "presentation/vendor/addons/loaders/GLTFLoader.js",
+      "received": 442.27520000000004,
+      "bytes": 114649,
+      "sent": 523.521
+    },
+    {
+      "path": "presentation/vendor/addons/utils/SkeletonUtils.js",
+      "received": 442.3142,
+      "bytes": 11062,
+      "sent": 523.8502
+    },
+    {
+      "path": "presentation/vendor/addons/utils/BufferGeometryUtils.js",
+      "received": 442.34929999999997,
+      "bytes": 35538,
+      "sent": 523.9472
+    },
+    {
+      "path": "presentation/animator/index.mjs",
+      "received": 442.37570000000005,
+      "bytes": 335,
+      "sent": 523.704
+    },
+    {
+      "path": "presentation/combat-feedback-layout.mjs",
+      "received": 442.4365,
+      "bytes": 1098,
+      "sent": 524.0184
+    },
+    {
+      "path": "presentation/guard-feedback.mjs",
+      "received": 524.9545,
+      "bytes": 687,
+      "sent": 605.1044
+    },
+    {
+      "path": "presentation/win-dock.mjs",
+      "received": 525.072,
+      "bytes": 7129,
+      "sent": 605.3041000000001
+    },
+    {
+      "path": "presentation/reward-impact.mjs",
+      "received": 525.1092,
+      "bytes": 4216,
+      "sent": 604.9737
+    },
+    {
+      "path": "web/shared/runtime-core.mjs",
+      "received": 525.151,
+      "bytes": 4210,
+      "sent": 605.2295
+    },
+    {
+      "path": "web/shared/instance-transfer.mjs",
+      "received": 525.1809,
+      "bytes": 3147,
+      "sent": 605.4045
+    },
+    {
+      "path": "web/renderer/particles.js",
+      "received": 525.503,
+      "bytes": 1562,
+      "sent": 605.5988
+    },
+    {
+      "path": "web/renderer/mesh.js",
+      "received": 606.2916,
+      "bytes": 1348,
+      "sent": 687.7720999999999
+    },
+    {
+      "path": "web/renderer/instances3d.js",
+      "received": 606.3923,
+      "bytes": 5464,
+      "sent": 687.6042
+    },
+    {
+      "path": "web/renderer/bloom.js",
+      "received": 606.4278,
+      "bytes": 5664,
+      "sent": 687.9254000000001
+    },
+    {
+      "path": "web/renderer/effekseer.js",
+      "received": 606.4545,
+      "bytes": 2496,
+      "sent": 687.8552999999999
+    },
+    {
+      "path": "web/shared/webgpu-snapshot.js",
+      "received": 606.4936,
+      "bytes": 19886,
+      "sent": 688.0835999999999
+    },
+    {
+      "path": "presentation/composition-fx.mjs",
+      "received": 606.5225,
+      "bytes": 5243,
+      "sent": 687.9915000000001
+    },
+    {
+      "path": "presentation/resonance-fx.mjs",
+      "received": 689.0373999999999,
+      "bytes": 4813,
+      "sent": 772.5887
+    },
+    {
+      "path": "presentation/trigger-fx.mjs",
+      "received": 689.1201000000001,
+      "bytes": 3418,
+      "sent": 772.3604
+    },
+    {
+      "path": "presentation/element-fx.mjs",
+      "received": 689.1509000000001,
+      "bytes": 4027,
+      "sent": 772.5324
+    },
+    {
+      "path": "presentation/animator/animator.mjs",
+      "received": 689.1759,
+      "bytes": 12376,
+      "sent": 772.6365000000001
+    },
+    {
+      "path": "presentation/animator/lod.mjs",
+      "received": 689.1985,
+      "bytes": 3481,
+      "sent": 772.4775
+    },
+    {
+      "path": "presentation/animator/sync.mjs",
+      "received": 689.2228,
+      "bytes": 2545,
+      "sent": 772.7673
+    },
+    {
+      "path": "presentation/animator/host.mjs",
+      "received": 773.7942,
+      "bytes": 5325,
+      "sent": 855.8833999999999
+    },
+    {
+      "path": "presentation/animator/contract.mjs",
+      "received": 773.8915999999999,
+      "bytes": 2842,
+      "sent": 856.0925
+    },
+    {
+      "path": "presentation/vendor/build/three.core.js",
+      "received": 773.9289000000001,
+      "bytes": 1401321,
+      "sent": 856.3694
+    },
+    {
+      "path": "web/shared/job-binary.mjs",
+      "received": 773.9702,
+      "bytes": 6407,
+      "sent": 855.9948999999999
+    },
+    {
+      "path": "web/shared/job-pool.mjs",
+      "received": 773.9934000000001,
+      "bytes": 6787,
+      "sent": 856.0453
+    },
+    {
+      "path": "web/shared/load-project.js",
+      "received": 774.0163,
+      "bytes": 1220,
+      "sent": 856.1304
+    },
+    {
+      "path": "presentation/lottie/runtime/lottie.mjs",
+      "received": 857.2618,
+      "bytes": 27027,
+      "sent": 938.6255000000001
+    },
+    {
+      "path": "presentation/ultimate-win.mjs",
+      "received": 857.3447000000001,
+      "bytes": 6301,
+      "sent": 938.4883
+    },
+    {
+      "path": "web/shared/asset-encoding.js",
+      "received": 857.3758,
+      "bytes": 1026,
+      "sent": 938.7063
+    },
+    {
+      "path": "assets/creatures/manifest.json",
+      "received": 945.6608000000001,
+      "bytes": 4647,
+      "sent": 1029.8216
+    },
+    {
+      "path": "assets/equipment/manifest.json",
+      "received": 946.5154,
+      "bytes": 10656,
+      "sent": 1029.9415
+    },
+    {
+      "path": "content/project.json",
+      "received": 946.6605999999999,
+      "bytes": 200037,
+      "sent": 1030.1182000000001
+    },
+    {
+      "path": "content/assets.json",
+      "received": 946.722,
+      "bytes": 33287,
+      "sent": 1030.2082
+    },
+    {
+      "path": "runtime/runtime.json",
+      "received": 946.8643,
+      "bytes": 1032,
+      "sent": 1030.3395
+    },
+    {
+      "path": "environments.json",
+      "received": 946.9114,
+      "bytes": 234,
+      "sent": 1030.2788
+    },
+    {
+      "path": "presentation/soldier-v2.glb",
+      "received": 1035.4206,
+      "bytes": 569176,
+      "sent": 1116.6642
+    },
+    {
+      "path": "assets/creatures/art-v2/acorn.glb",
+      "received": 1035.8178,
+      "bytes": 225924,
+      "sent": 1116.3472
+    },
+    {
+      "path": "assets/creatures/art-v2/piglet.glb",
+      "received": 1035.8642,
+      "bytes": 277872,
+      "sent": 1117.1473
+    },
+    {
+      "path": "assets/creatures/art-v2/moth.glb",
+      "received": 1035.8924,
+      "bytes": 300944,
+      "sent": 1116.8718
+    },
+    {
+      "path": "assets/creatures/art-v2/turtle.glb",
+      "received": 1036.0617,
+      "bytes": 257220,
+      "sent": 1117.0104000000001
+    },
+    {
+      "path": "assets/creatures/art-v2/boar.glb",
+      "received": 1036.1125,
+      "bytes": 246068,
+      "sent": 1119.1969
+    },
+    {
+      "path": "runtime/fc7734055aed41f566d8a556ce3fffd3b9a37df3baf2e00dafbdfa39b4c9fd39-4f6ddb1170dcb426f060aad4b6773e738a56e990a1feb54dc8f1b38fc31d2d1e/unone-player.js",
+      "received": 1119.3418,
+      "bytes": 101000,
+      "sent": 1201.9263
+    },
+    {
+      "path": "assets/creatures/art-v2/elder.glb",
+      "received": 1157.5822,
+      "bytes": 279792,
+      "sent": 1238.7071
+    },
+    {
+      "path": "assets/creatures/art-v2/treant.glb",
+      "received": 1161.4613,
+      "bytes": 345708,
+      "sent": 1242.2655
+    },
+    {
+      "path": "assets/creatures/art-v2/stag.glb",
+      "received": 1165.1117,
+      "bytes": 244156,
+      "sent": 1245.6413
+    },
+    {
+      "path": "assets/creatures/art-v2/beetle.glb",
+      "received": 1168.3386,
+      "bytes": 250476,
+      "sent": 1250.299
+    },
+    {
+      "path": "assets/creatures/art-v2/wheel.glb",
+      "received": 1171.945,
+      "bytes": 307792,
+      "sent": 1252.21
+    },
+    {
+      "path": "assets/creatures/art-v2/horse.glb",
+      "received": 1202.6541,
+      "bytes": 239056,
+      "sent": 1283.5451
+    },
+    {
+      "path": "runtime/fc7734055aed41f566d8a556ce3fffd3b9a37df3baf2e00dafbdfa39b4c9fd39-4f6ddb1170dcb426f060aad4b6773e738a56e990a1feb54dc8f1b38fc31d2d1e/unone_player.wasm",
+      "received": 1239.4019,
+      "bytes": 1545679,
+      "sent": 1321.7658
+    },
+    {
+      "path": "assets/equipment/pierce.glb",
+      "received": 1253.9788,
+      "bytes": 10664,
+      "sent": 1334.1773
+    },
+    {
+      "path": "assets/equipment/landing_spin.glb",
+      "received": 1257.2949,
+      "bytes": 11840,
+      "sent": 1338.0959
+    },
+    {
+      "path": "assets/equipment/lightning.glb",
+      "received": 1261.5409,
+      "bytes": 12228,
+      "sent": 1341.9213
+    },
+    {
+      "path": "assets/equipment/critical.glb",
+      "received": 1275.3394,
+      "bytes": 10304,
+      "sent": 1356.6654
+    },
+    {
+      "path": "assets/equipment/third_crit.glb",
+      "received": 1284.1548,
+      "bytes": 10792,
+      "sent": 1365.4666
+    },
+    {
+      "path": "assets/equipment/king_hunter.glb",
+      "received": 1323.472,
+      "bytes": 12256,
+      "sent": 1404.1298
+    },
+    {
+      "path": "content/assets/formal-ui/panel.png",
+      "received": 1375.0513,
+      "bytes": 627229,
+      "sent": 1456.2786
+    },
+    {
+      "path": "content/assets/formal-ui/expedition-keyart-v2.png",
+      "received": 1375.2871,
+      "bytes": 2463860,
+      "sent": 1456.7916
+    },
+    {
+      "path": "content/assets/formal-ui/crest.png",
+      "received": 1375.3372,
+      "bytes": 13787,
+      "sent": 1455.8812
+    },
+    {
+      "path": "content/assets/formal-ui/button.png",
+      "received": 1375.4123,
+      "bytes": 50026,
+      "sent": 1456.0583
+    },
+    {
+      "path": "content/assets/formal-ui/secondary.png",
+      "received": 1375.599,
+      "bytes": 49219,
+      "sent": 1456.3488
+    },
+    {
+      "path": "presentation/lottie/big-win-dock.json",
+      "received": 1404.8272,
+      "bytes": 38751,
+      "sent": 1485.6829
+    },
+    {
+      "path": "presentation/lottie/mega-win-dock.json",
+      "received": 1457.2056,
+      "bytes": 29097,
+      "sent": 1538.6692
+    },
+    {
+      "path": "presentation/lottie/legendary-win-dock.json",
+      "received": 1457.2930000000001,
+      "bytes": 46159,
+      "sent": 1538.497
+    },
+    {
+      "path": "assets/equipment/ember_burst.glb",
+      "received": 1457.4071,
+      "bytes": 9632,
+      "sent": 1538.7555
+    },
+    {
+      "path": "assets/equipment/longlife.glb",
+      "received": 1458.0125,
+      "bytes": 10304,
+      "sent": 1538.8343
+    },
+    {
+      "path": "assets/equipment/expire_burst.glb",
+      "received": 1460.7588,
+      "bytes": 9540,
+      "sent": 1540.6278
+    },
+    {
+      "path": "assets/equipment/rebound_charge.glb",
+      "received": 1486.5374,
+      "bytes": 10616,
+      "sent": 1566.6811
+    },
+    {
+      "path": "assets/equipment/haste.glb",
+      "received": 1539.7061,
+      "bytes": 10692,
+      "sent": 1620.1208
+    },
+    {
+      "path": "assets/equipment/bounce_life.glb",
+      "received": 1539.7829,
+      "bytes": 10360,
+      "sent": 1620.0048
+    },
+    {
+      "path": "presentation/lottie/ultimate-crown.json",
+      "received": 1543.5889,
+      "bytes": 58606,
+      "sent": 1623.6749
+    },
+    {
+      "path": "assets/equipment/crit_power.glb",
+      "received": 1546.3478,
+      "bytes": 9556,
+      "sent": 1627.7126
+    },
+    {
+      "path": "assets/equipment/finisher.glb",
+      "received": 1546.6557,
+      "bytes": 9864,
+      "sent": 1627.7918
+    },
+    {
+      "path": "assets/equipment/frost_touch.glb",
+      "received": 1567.3437,
+      "bytes": 9968,
+      "sent": 1648.2609000000002
+    },
+    {
+      "path": "assets/equipment/frenzy.glb",
+      "received": 1621.0578,
+      "bytes": 10408,
+      "sent": 1702.5864000000001
+    },
+    {
+      "path": "assets/equipment/momentum.glb",
+      "received": 1625.0268,
+      "bytes": 11580,
+      "sent": 1704.8566
+    },
+    {
+      "path": "assets/equipment/shock.glb",
+      "received": 1625.0884,
+      "bytes": 9340,
+      "sent": 1704.9476
+    },
+    {
+      "path": "assets/equipment/shatter.glb",
+      "received": 1631.1747,
+      "bytes": 12152,
+      "sent": 1712.3069
+    },
+    {
+      "path": "assets/equipment/ricochet_precision.glb",
+      "received": 1631.3477,
+      "bytes": 12132,
+      "sent": 1712.4366
+    },
+    {
+      "path": "assets/equipment/hunter_vigor.glb",
+      "received": 1650.8372,
+      "bytes": 9580,
+      "sent": 1730.8989000000001
+    },
+    {
+      "path": "assets/equipment/piercing_wave.glb",
+      "received": 1706.2325999999998,
+      "bytes": 9932,
+      "sent": 1789.1039999999998
+    },
+    {
+      "path": "assets/equipment/slow_force.glb",
+      "received": 1708.5991,
+      "bytes": 10480,
+      "sent": 1789.2577
+    },
+    {
+      "path": "assets/equipment/spin_master.glb",
+      "received": 1708.6796,
+      "bytes": 13448,
+      "sent": 1789.3537000000001
+    },
+    {
+      "path": "assets/equipment/last_stand.glb",
+      "received": 1715.0529000000001,
+      "bytes": 9740,
+      "sent": 1796.841
+    },
+    {
+      "path": "assets/equipment/heat.glb",
+      "received": 1715.266,
+      "bytes": 9748,
+      "sent": 1796.9731000000002
+    },
+    {
+      "path": "assets/equipment/distance.glb",
+      "received": 1733.2663000000002,
+      "bytes": 10664,
+      "sent": 1814.3548
+    },
+    {
+      "path": "assets/equipment/heavy.glb",
+      "received": 1794.31,
+      "bytes": 10220,
+      "sent": 1876.0924
+    },
+    {
+      "path": "assets/equipment/bounce_power.glb",
+      "received": 1794.4666000000002,
+      "bytes": 10428,
+      "sent": 1876.2505
+    },
+    {
+      "path": "assets/equipment/wall_quake.glb",
+      "received": 1794.6162,
+      "bytes": 10580,
+      "sent": 1876.4024
+    },
+    {
+      "path": "assets/equipment/short_fuse.glb",
+      "received": 1799.8343,
+      "bytes": 10160,
+      "sent": 1879.6840000000002
+    },
+    {
+      "path": "assets/equipment/wide_blade.glb",
+      "received": 1799.9738000000002,
+      "bytes": 12224,
+      "sent": 1879.7710000000002
+    },
+    {
+      "path": "assets/equipment/hit_echo.glb",
+      "received": 1816.681,
+      "bytes": 9652,
+      "sent": 1898.9234000000001
+    },
+    {
+      "path": "assets/equipment/fracture.glb",
+      "received": 1880.6221999999998,
+      "bytes": 9768,
+      "sent": 1961.5185999999999
+    },
+    {
+      "path": "assets/equipment/solo_hunt.glb",
+      "received": 1880.8154,
+      "bytes": 11076,
+      "sent": 1961.638
+    },
+    {
+      "path": "assets/equipment/crowd_ring.glb",
+      "received": 1880.9375,
+      "bytes": 12308,
+      "sent": 1961.6967
+    },
+    {
+      "path": "assets/equipment/recruit.glb",
+      "received": 1882.7149,
+      "bytes": 9604,
+      "sent": 1962.5818
+    },
+    {
+      "path": "assets/equipment/rally.glb",
+      "received": 1882.8472000000002,
+      "bytes": 9820,
+      "sent": 1962.647
+    },
+    {
+      "path": "assets/equipment/rapid.glb",
+      "received": 1901.7169,
+      "bytes": 10016,
+      "sent": 1981.9654
+    },
+    {
+      "path": "assets/equipment/solitary.glb",
+      "received": 1968.6133,
+      "bytes": 10072,
+      "sent": 2048.9397
+    },
+    {
+      "path": "assets/equipment/showdown.glb",
+      "received": 1968.7736,
+      "bytes": 10576,
+      "sent": 2049.0698
+    },
+    {
+      "path": "assets/equipment/sharp.glb",
+      "received": 1968.9113000000002,
+      "bytes": 12064,
+      "sent": 2049.1263
+    },
+    {
+      "path": "assets/equipment/giant.glb",
+      "received": 1968.9822,
+      "bytes": 9972,
+      "sent": 2049.1844
+    },
+    {
+      "path": "assets/equipment/double_pierce.glb",
+      "received": 1969.3201,
+      "bytes": 12344,
+      "sent": 2049.5568
+    },
+    {
+      "path": "assets/equipment/deadly.glb",
+      "received": 1984.6835,
+      "bytes": 11792,
+      "sent": 2065.4923
+    },
+    {
+      "path": "assets/equipment/flame_cloak.glb",
+      "received": 2055.8811,
+      "bytes": 18008,
+      "sent": 2136.4293
+    },
+    {
+      "path": "assets/equipment/phoenix_fire.glb",
+      "received": 2056.0071,
+      "bytes": 17144,
+      "sent": 2136.6084
+    },
+    {
+      "path": "assets/equipment/plague_vial.glb",
+      "received": 2056.23,
+      "bytes": 16808,
+      "sent": 2137.6591
+    },
+    {
+      "path": "assets/equipment/ember_trail.glb",
+      "received": 2056.506,
+      "bytes": 12800,
+      "sent": 2137.7854
+    },
+    {
+      "path": "assets/equipment/slick_oil.glb",
+      "received": 2056.5877,
+      "bytes": 13344,
+      "sent": 2137.8457
+    },
+    {
+      "path": "assets/equipment/rain_strike.glb",
+      "received": 2068.7097,
+      "bytes": 12136,
+      "sent": 2148.9387
+    },
+    {
+      "path": "assets/equipment/storm_touch.glb",
+      "received": 2142.7964,
+      "bytes": 13704,
+      "sent": 2223.8226
+    },
+    {
+      "path": "assets/equipment/oil_legacy.glb",
+      "received": 2142.9504,
+      "bytes": 14356,
+      "sent": 2223.9446
+    },
+    {
+      "path": "assets/equipment/plunder.glb",
+      "received": 2143.0571,
+      "bytes": 16604,
+      "sent": 2224.0002
+    },
+    {
+      "path": "assets/equipment/firstborn.glb",
+      "received": 2143.35,
+      "bytes": 15048,
+      "sent": 2224.0638
+    },
+    {
+      "path": "assets/equipment/march_capacitor.glb",
+      "received": 2143.4669,
+      "bytes": 12288,
+      "sent": 2224.1204
+    },
+    {
+      "path": "assets/equipment/delayed_bloom.glb",
+      "received": 2150.9634,
+      "bytes": 9700,
+      "sent": 2231.0114
+    },
+    {
+      "path": "assets/equipment/third_pulse.glb",
+      "received": 2231.1783,
+      "bytes": 16996,
+      "sent": 2312.2171
+    },
+    {
+      "path": "assets/equipment/battle_elegy.glb",
+      "received": 2231.7208,
+      "bytes": 12236,
+      "sent": 2312.3336
+    },
+    {
+      "path": "assets/equipment/grave_bloom.glb",
+      "received": 2231.7775,
+      "bytes": 13600,
+      "sent": 2312.3847
+    },
+    {
+      "path": "assets/equipment/last_echo.glb",
+      "received": 2231.9709,
+      "bytes": 11984,
+      "sent": 2312.4336
+    },
+    {
+      "path": "assets/equipment/cinder_seal.glb",
+      "received": 2232.0391,
+      "bytes": 11848,
+      "sent": 2312.5182
+    },
+    {
+      "path": "assets/equipment/chain_fuse.glb",
+      "received": 2233.7184,
+      "bytes": 19068,
+      "sent": 2313.4936
+    },
+    {
+      "path": "assets/equipment/thunder_fan.glb",
+      "received": 2319.1222,
+      "bytes": 17432,
+      "sent": 2400.631
+    },
+    {
+      "path": "assets/equipment/echo_blade.glb",
+      "received": 2319.2843,
+      "bytes": 12616,
+      "sent": 2400.7463
+    },
+    {
+      "path": "assets/equipment/starfall.glb",
+      "received": 2319.5568,
+      "bytes": 15472,
+      "sent": 2400.7979
+    },
+    {
+      "path": "assets/equipment/soul_return.glb",
+      "received": 2319.6555,
+      "bytes": 15184,
+      "sent": 2400.8899
+    },
+    {
+      "path": "assets/equipment/comrade_oath.glb",
+      "received": 2319.7495,
+      "bytes": 13784,
+      "sent": 2400.8421
+    },
+    {
+      "path": "assets/equipment/resonant_debt.glb",
+      "received": 2319.814,
+      "bytes": 14092,
+      "sent": 2400.9839
+    },
+    {
+      "path": "assets/equipment/contact_mine.glb",
+      "received": 2407.6551,
+      "bytes": 18656,
+      "sent": 2488.2113
+    },
+    {
+      "path": "assets/equipment/step_orb.glb",
+      "received": 2407.8291,
+      "bytes": 12916,
+      "sent": 2488.3746
+    },
+    {
+      "path": "assets/equipment/gravity_law.glb",
+      "received": 2407.9435,
+      "bytes": 14196,
+      "sent": 2488.4612
+    },
+    {
+      "path": "assets/equipment/quick_chant.glb",
+      "received": 2408.0529,
+      "bytes": 13896,
+      "sent": 2488.5791
+    },
+    {
+      "path": "assets/equipment/overload_script.glb",
+      "received": 2408.1682,
+      "bytes": 11064,
+      "sent": 2488.6512
+    },
+    {
+      "path": "assets/equipment/storm_payload.glb",
+      "received": 2408.3337,
+      "bytes": 10240,
+      "sent": 2488.7191
+    },
+    {
+      "path": "assets/equipment/legacy_gift.glb",
+      "received": 2495.1851,
+      "bytes": 20876,
+      "sent": 2578.4316
+    },
+    {
+      "path": "assets/equipment/guard_bequest.glb",
+      "received": 2495.31,
+      "bytes": 14784,
+      "sent": 2578.553
+    },
+    {
+      "path": "content/assets/arena.mesh.json",
+      "received": 2850.2082,
+      "bytes": 1873886,
+      "sent": 2932.4815
+    },
+    {
+      "path": "content/assets/sky_forest.mesh.json",
+      "received": 2850.7571,
+      "bytes": 2062,
+      "sent": 2931.9242
+    },
+    {
+      "path": "content/assets/cannon.mesh.json",
+      "received": 2850.8884,
+      "bytes": 26656,
+      "sent": 2932.0379
+    },
+    {
+      "path": "content/assets/coin.mesh.json",
+      "received": 2850.9318,
+      "bytes": 8400,
+      "sent": 2932.0922
+    },
+    {
+      "path": "content/assets/target.mesh.json",
+      "received": 2851.1867,
+      "bytes": 10776,
+      "sent": 2932.1347
+    },
+    {
+      "path": "content/assets/trail.mesh.json",
+      "received": 2851.3178,
+      "bytes": 1922,
+      "sent": 2932.1716
+    },
+    {
+      "path": "content/assets/sky_forest.png",
+      "received": 2941.3502,
+      "bytes": 35056,
+      "sent": 3022.2973
+    },
+    {
+      "path": "content/assets/palette.png",
+      "received": 2941.5638,
+      "bytes": 3405,
+      "sent": 3022.4389
+    },
+    {
+      "path": "content/assets/formal-ui/mote.png",
+      "received": 3086.2244,
+      "bytes": 6994,
+      "sent": 3169.361
+    }
+  ],
+  "totalRequests": 169,
+  "totalBytes": 14162876
+}

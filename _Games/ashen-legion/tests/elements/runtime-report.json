@@ -1,0 +1,38 @@
+{
+  "checks": 55,
+  "reports": [
+    {
+      "build": [
+        "ember_trail",
+        "slick_oil",
+        "oil_legacy"
+      ],
+      "fired": 60,
+      "reactions": 59,
+      "triggers": {
+        "damage": 155,
+        "death": 29,
+        "distance": 8495
+      },
+      "peakFields": 547,
+      "tickP95ms": 12.930999999999585
+    },
+    {
+      "build": [
+        "rain_strike",
+        "storm_touch",
+        "pierce"
+      ],
+      "fired": 58,
+      "reactions": 68,
+      "triggers": {
+        "damage": 314,
+        "death": 0,
+        "distance": 0
+      },
+      "peakFields": 71,
+      "tickP95ms": 7.570499999999811
+    }
+  ],
+  "scope": "Actual WASM with disclosed in-memory fixtures/loadouts. Timing includes observation serialization; not a device frame-rate guarantee."
+}

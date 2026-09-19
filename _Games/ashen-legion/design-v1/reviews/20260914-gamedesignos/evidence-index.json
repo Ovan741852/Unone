@@ -1,0 +1,114 @@
+{
+  "sample_scope_gate": {
+    "sample_boundary": "3 張 skill-vfx-v1 正式遊戲截圖（桌面、有／無 Bloom、390×844 模擬手機），輔以來源碼與自動化 QA；沒有真人試玩紀錄，也未走完 20 分鐘。",
+    "supported_judgment_scope": [
+      "靜態資訊層級",
+      "手機尺寸中的場地與控制配置",
+      "刀光在有／無 Bloom 時的可見性",
+      "來源碼所定義的標籤顯示規則"
+    ],
+    "unsupported_judgment_scope": [
+      "主觀爽感或操作手感",
+      "真人辨識率與疲勞",
+      "20 分鐘節奏、養成通關難度",
+      "留存、付費與真實四人競爭體驗"
+    ],
+    "key_unknowns": [
+      "實體手機可點擊性",
+      "怪物潮峰值下文字辨識率",
+      "新人是否理解破防不等於中獎",
+      "技能組合來源能否被玩家辨認"
+    ]
+  },
+  "evidence_index": [
+    {
+      "evidence_id": "E001",
+      "source_id": "IMG_01",
+      "source_type": "screenshot",
+      "timestamp": null,
+      "image_id": "IMG_01",
+      "region": "場內中央至下方",
+      "visible_text": "未開獎、48、AUTO：開",
+      "observed_fact": "三條帶怪物名字的「未開獎」標籤與傷害字、旋轉刀光同時出現在戰鬥區。",
+      "event_type": "feature_exposure",
+      "supports_judgment": "I001：非目標的重複失敗狀態有降低資訊層級的空間。",
+      "confidence": 0.94,
+      "uncertainty_note": "靜態畫面不能推定真人注意力或操作結果。",
+      "extraction_method": "direct_observation"
+    },
+    {
+      "evidence_id": "E002",
+      "source_id": "IMG_02",
+      "source_type": "screenshot",
+      "timestamp": null,
+      "image_id": "IMG_02",
+      "region": "全幅及底部控制區",
+      "visible_text": "槍兵、10、LOCK：關、AUTO：開",
+      "observed_fact": "390×844 畫面中場地集中在中央小區域；上下存在大塊非戰鬥區域，兵種名與價格靠近按鈕下缘。",
+      "event_type": "feature_exposure",
+      "supports_judgment": "I002：直向構圖與底部文字需要獨立驗收，不應只縮放桌面。",
+      "confidence": 0.94,
+      "uncertainty_note": "靜態畫面不能推定真人注意力或操作結果。",
+      "extraction_method": "direct_observation"
+    },
+    {
+      "evidence_id": "E003",
+      "source_id": "IMG_03",
+      "source_type": "screenshot",
+      "timestamp": null,
+      "image_id": "IMG_03",
+      "region": "下半部旋轉命中",
+      "visible_text": "48、+28",
+      "observed_fact": "關閉 Bloom 的畫面仍有清晰的青白旋轉弧，傷害值與金幣數字同時可見。",
+      "event_type": "feature_exposure",
+      "supports_judgment": "J003：保留無 Bloom 的形狀可讀性作為後續美術驗收基準。",
+      "confidence": 0.94,
+      "uncertainty_note": "靜態畫面不能推定真人注意力或操作結果。",
+      "extraction_method": "direct_observation"
+    }
+  ],
+  "important_judgments": [
+    {
+      "judgment_id": "J001",
+      "claim": "非目標小怪的「名字 · 未開獎」重複佔用戰鬥焦點。",
+      "judgment_type": "finding",
+      "evidence_refs": [
+        "E001"
+      ],
+      "confidence": 0.86,
+      "unsupported_by_sample": false,
+      "unknowns": [
+        "實際注意力成本"
+      ],
+      "recommended_action": "建立本機 B 樣式：未鎖定且非即將破防的小怪不顯示完整未開獎姓名條；其他未開獎提示最多一條。保留實際未中獎狀態、目標狀態與獎額。"
+    },
+    {
+      "judgment_id": "J002",
+      "claim": "手機尺寸中場地偏小，底部兵種價格較擁擠。",
+      "judgment_type": "finding",
+      "evidence_refs": [
+        "E002"
+      ],
+      "confidence": 0.85,
+      "unsupported_by_sample": false,
+      "unknowns": [
+        "實體手機體驗"
+      ],
+      "recommended_action": "獨立做直向構圖版本，縮減上方說明區留白並增加戰鬥區；維持正方形碰撞與固定玩家位置，重新驗證四面牆可見及點選投射落點。"
+    },
+    {
+      "judgment_id": "J003",
+      "claim": "旋轉刀光不依賴 Bloom 才能看見，應保留這個形狀基準。",
+      "judgment_type": "finding",
+      "evidence_refs": [
+        "E003"
+      ],
+      "confidence": 0.92,
+      "unsupported_by_sample": false,
+      "unknowns": [
+        "其他技能混戰時的辨識率"
+      ],
+      "recommended_action": "所有新技能同時保存開／關 Bloom 與怪潮畫面。"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "version": "2026-09-12-nearwin-v1",
-  "sourceHash": "6cfc128157331e3d430158e1d533428190ca2ce6d8c0eebe253d2bd6ea4ca814",
+  "sourceHash": "383eaea04b637cfeee1d7c44f4d6063d3b1bea395d9c3471b5c9dd1b084f74a7",
   "economyTuning": {
     "awardScale": 0.5,
     "deployScale": 0.5,
@@ -16,6 +16,11 @@
   ],
   "beetleAwardChance": 0.125,
   "skills": {
+    "battle_elegy": {
+      "deployExtra": 2,
+      "desc": "4單位內同玩家部隊真正死亡時，自身主要傷害+25%持續2秒；刷新不疊加；每支派兵 +2",
+      "name": "薪火相傳"
+    },
     "bounce_life": {
       "deployExtra": 1,
       "desc": "反彈延命 0.2 秒，每兵上限 1 秒；每支派兵 +1",
@@ -25,6 +30,26 @@
       "deployExtra": 1,
       "desc": "每反彈傷害 +12%，上限 +60%；每支派兵 +1",
       "name": "越彈越猛"
+    },
+    "chain_fuse": {
+      "deployExtra": 4,
+      "desc": "主要命中埋下1.8秒火種，半徑2.1爆炸造成50%基礎傷害；鄰近己方火種每隔0.12秒接力，最多六顆；每支派兵 +4",
+      "name": "紅蓮導火"
+    },
+    "cinder_seal": {
+      "deployExtra": 3,
+      "desc": "主要命中留下1.2秒時印，爆炸半徑1.8、60%基礎傷害、最多4怪；重複命中不延後；每支派兵 +3",
+      "name": "燼刻時印"
+    },
+    "comrade_oath": {
+      "deployExtra": 3,
+      "desc": "己方士兵接觸互授2.5秒主要傷害+25%；需離開再碰觸，同對冷卻1.2秒，出生0.35秒內不觸發；每支派兵 +3",
+      "name": "交鋒戰誓"
+    },
+    "contact_mine": {
+      "deployExtra": 4,
+      "desc": "每2秒擺雷，0.35秒武裝後感應0.9內敵人；爆炸半徑2、50%基傷、最多5怪；5秒熄滅；每支派兵 +4",
+      "name": "獵星伏雷"
     },
     "crit_power": {
       "deployExtra": 1,
@@ -46,6 +71,11 @@
       "desc": "爆擊倍率+0.5；每支派兵 +2",
       "name": "致命"
     },
+    "delayed_bloom": {
+      "deployExtra": 3,
+      "desc": "出生2秒後釋放一次半徑2.2的火爆，最多4怪、50%基礎傷害；提前死亡取消；每支派兵 +3",
+      "name": "遲放焰心"
+    },
     "distance": {
       "deployExtra": 1,
       "desc": "地面移動12單位後下一撞 +30%；每支派兵 +1",
@@ -56,10 +86,20 @@
       "desc": "穿透+2；每支派兵 +4",
       "name": "雙重貫穿"
     },
+    "echo_blade": {
+      "deployExtra": 3,
+      "desc": "首次主要命中留下固定4.4單位斬線，0.55秒後返斬；寬1.1、55%基礎傷害、最多4怪；每支派兵 +3",
+      "name": "斷界回斬"
+    },
     "ember_burst": {
       "deployExtra": 4,
       "desc": "終結接觸後範圍爆炸；每支派兵 +4",
       "name": "餘燼"
+    },
+    "ember_trail": {
+      "deployExtra": 4,
+      "desc": "地面每走1單位留下3秒火路；經過的怪物灼燒2秒，每0.6秒12%基礎傷害；每支派兵 +4",
+      "name": "燎原步"
     },
     "expire_burst": {
       "deployExtra": 2,
@@ -70,6 +110,16 @@
       "deployExtra": 2,
       "desc": "穿透累積最後一撞傷害；每支派兵 +2",
       "name": "破陣"
+    },
+    "firstborn": {
+      "deployExtra": 2,
+      "desc": "出生時移速+180%，3秒內線性衰退至0；重複來源增加衝刺強度，最多+270%；每支派兵 +2",
+      "name": "初生之犢"
+    },
+    "flame_cloak": {
+      "deployExtra": 4,
+      "desc": "詠唱0.28秒後，半徑2內每0.8秒造成18%基礎傷害；死亡停止；每支派兵 +4",
+      "name": "火焰斗篷"
     },
     "fracture": {
       "deployExtra": 1,
@@ -90,6 +140,21 @@
       "deployExtra": 2,
       "desc": "基礎傷害+25%；每支派兵 +2",
       "name": "巨力"
+    },
+    "grave_bloom": {
+      "deployExtra": 4,
+      "desc": "造成敵人真正死亡時，在屍體半徑2.4內爆燃，最多4怪、40%基礎傷害；觸發爆發不再連鎖；每支派兵 +4",
+      "name": "焰葬"
+    },
+    "gravity_law": {
+      "deployExtra": 4,
+      "desc": "每2.4秒蓄力0.25秒，將4.2內最多8隻小怪拉向自己，最多拉2單位；小王與大王免疫；每支派兵 +4",
+      "name": "引力法則"
+    },
+    "guard_bequest": {
+      "deployExtra": 3,
+      "desc": "真正死亡時，半徑2.8內最近3怪各受其破防值20%的追加傷害，單怪最多自身基傷；破防仍要抽獎，召回不觸發；每支派兵 +3",
+      "name": "碎甲遺願"
     },
     "haste": {
       "deployExtra": 1,
@@ -126,10 +191,20 @@
       "desc": "目前兵種獲得落地旋轉斬，之後繼續前進；不消耗穿透次數；每支派兵 +6",
       "name": "旋風戰技"
     },
+    "last_echo": {
+      "deployExtra": 2,
+      "desc": "存活到剩25%壽命時釋放一次半徑2.3寒霜，最多4怪、35%基礎傷害並緩速1.5秒；每支派兵 +2",
+      "name": "暮霜迴響"
+    },
     "last_stand": {
       "deployExtra": 1,
       "desc": "剩餘壽命低於25%時下一撞 +40%；每支派兵 +1",
       "name": "最後一搏"
+    },
+    "legacy_gift": {
+      "deployExtra": 3,
+      "desc": "真正死亡時，隨機一名未滿層的己方活兵獲主要傷害+20%，直到其死亡；最多3層，召回不觸發；每支派兵 +3",
+      "name": "英魂託付"
     },
     "lightning": {
       "deployExtra": 3,
@@ -141,10 +216,30 @@
       "desc": "壽命 +15%；每支派兵 +1",
       "name": "長征"
     },
+    "march_capacitor": {
+      "deployExtra": 2,
+      "desc": "地面每走8單位蓄1層，最多2層；下次主要命中每層+30%傷害，並消耗蓄力；每支派兵 +2",
+      "name": "蓄步雷匣"
+    },
     "momentum": {
       "deployExtra": 2,
       "desc": "正向速度加成轉穿透傷害；每支派兵 +2",
       "name": "勢能穿刺"
+    },
+    "oil_legacy": {
+      "deployExtra": 3,
+      "desc": "接觸死亡或壽命結束留下半徑2.2油池4秒；沾油減速、遇火燃燒，召回不觸發；每支派兵 +3",
+      "name": "油甕遺贈"
+    },
+    "overload_script": {
+      "deployExtra": 5,
+      "desc": "追加技能傷害×2，週期技能冷卻×1.5；不翻倍主要撞擊、BUFF或獎金；重複不疊加；每支派兵 +5",
+      "name": "過載秘法"
+    },
+    "phoenix_fire": {
+      "deployExtra": 5,
+      "desc": "每1.8秒詠唱，向6範圍內隨機三怪噴火；灼燒3秒、每0.75秒16%基礎傷害；每支派兵 +5",
+      "name": "鳳凰之火"
     },
     "pierce": {
       "deployExtra": 2,
@@ -155,6 +250,26 @@
       "deployExtra": 3,
       "desc": "每第二次成功穿透，對其他最多四怪造成20%範圍傷害；每支派兵 +3",
       "name": "穿陣旋斬"
+    },
+    "plague_vial": {
+      "deployExtra": 4,
+      "desc": "地面每走6單位投毒瓶；半徑1.8毒霧3秒，沾染中毒2秒、每0.5秒10%基礎傷害；不疊加；每支派兵 +4",
+      "name": "魔藥瓶"
+    },
+    "plunder": {
+      "deployExtra": 2,
+      "desc": "每次主要命中必得1金幣，總壽命與延命效果減半；持續傷害與追加傷害不領錢；每支派兵 +2",
+      "name": "掠奪"
+    },
+    "quick_chant": {
+      "deployExtra": 3,
+      "desc": "週期技能冷卻-25%，同能力疊加上限-50%；不改引信、持續時間、出生門檻或步數；每支派兵 +3",
+      "name": "迅咒齒輪"
+    },
+    "rain_strike": {
+      "deployExtra": 3,
+      "desc": "主要傷害使目標潮濕3秒，留下半徑1.2的3秒水池；遇雷傳導；每支派兵 +3",
+      "name": "喚雨擊"
     },
     "rally": {
       "deployExtra": 1,
@@ -175,6 +290,11 @@
       "deployExtra": 1,
       "desc": "少於80金幣時派兵半價，每玩家每輪最多三次；每支派兵 +1",
       "name": "徵募"
+    },
+    "resonant_debt": {
+      "deployExtra": 4,
+      "desc": "主要命中埋印；4秒內再受己方5次傷害，半徑1.8爆發70%基傷、最多4怪；同種爆發不自連鎖；每支派兵 +4",
+      "name": "共鳴債印"
     },
     "ricochet_precision": {
       "deployExtra": 1,
@@ -206,6 +326,11 @@
       "desc": "最後30秒主要傷害+25%；每支派兵 +2",
       "name": "決戰"
     },
+    "slick_oil": {
+      "deployExtra": 3,
+      "desc": "主要傷害沾油3秒、移速-25%；遇火消耗黑油，爆燃並強化灼燒；每支派兵 +3",
+      "name": "滑溜黑油"
+    },
     "slow_force": {
       "deployExtra": 1,
       "desc": "負向移速加成的75%轉為主要傷害，上限30%；每支派兵 +1",
@@ -221,15 +346,50 @@
       "desc": "目標2單位內無其他活怪，主要傷害+25%；每支派兵 +1",
       "name": "孤獵"
     },
+    "soul_return": {
+      "deployExtra": 3,
+      "desc": "真正死亡後，英魂沿最後12單位地面路徑以20速度返斬；40%基礎傷害、最多4個不同敵人，召回不觸發；每支派兵 +3",
+      "name": "英魂返刃"
+    },
     "spin_master": {
       "deployExtra": 2,
       "desc": "旋轉半徑 +0.4、旋轉傷害 +20%；需要落地旋轉斬；每支派兵 +2",
       "name": "旋風擴張"
     },
+    "starfall": {
+      "deployExtra": 4,
+      "desc": "出生2.8秒後鎖定最近三怪的位置；0.65秒起依序落星，半徑1.5、40%基礎傷害、每星最多3怪；每支派兵 +4",
+      "name": "星隕追獵"
+    },
+    "step_orb": {
+      "deployExtra": 4,
+      "desc": "每走6單位留下光球，1.4秒後半徑1.8爆炸、45%基傷、最多4怪；每兵最多16顆；每支派兵 +4",
+      "name": "流明步雷"
+    },
+    "storm_payload": {
+      "deployExtra": 2,
+      "desc": "伏雷、步雷與債印爆發轉成雷傷，可接現有潮濕感電；不增加引爆次數；每支派兵 +2",
+      "name": "雷紋接枝"
+    },
+    "storm_touch": {
+      "deployExtra": 5,
+      "desc": "主要傷害追加20%基礎雷傷；潮濕可引發感電與最多四怪的連鎖；每支派兵 +5",
+      "name": "掌心雷"
+    },
     "third_crit": {
       "deployExtra": 2,
       "desc": "每第三次主要命中必定爆擊；每支派兵 +2",
       "name": "決勝"
+    },
+    "third_pulse": {
+      "deployExtra": 3,
+      "desc": "每第3次主要命中釋放半徑1.8震波，最多4怪、40%基礎傷害；次級傷害不計次；每支派兵 +3",
+      "name": "三拍震擊"
+    },
+    "thunder_fan": {
+      "deployExtra": 4,
+      "desc": "每第3次主要命中，蓄雷0.18秒後向前展開100度、4.8距離的五道雷羽；每道最多1怪、45%基礎傷害；每支派兵 +4",
+      "name": "雷羽開屏"
     },
     "wall_quake": {
       "deployExtra": 2,
@@ -332,6 +492,166 @@
       "desc": "任何兵種都能裝落地旋轉斬，擴圈壓住怪群，再往前撞王。",
       "name": "落地風環",
       "tradeoff": "擴張不會自行授予旋轉技能；空中也會消耗壽命。"
+    },
+    {
+      "core": [
+        "flame_cloak",
+        "phoenix_fire",
+        "longlife"
+      ],
+      "desc": "貼身火環定時灼燒，鳳凰追逐附近三怪；延命增加施法次數。",
+      "name": "餘火巡獵",
+      "tradeoff": "火環隨士兵死亡結束；已發出的鳳凰與灼燒會繼續。"
+    },
+    {
+      "core": [
+        "plague_vial",
+        "haste",
+        "bounce_life"
+      ],
+      "desc": "每走六單位投擲毒瓶，靠速度和折返鋪出毒霧路線。",
+      "name": "疾走鍊金",
+      "tradeoff": "每兵最多四片毒霧；同種毒傷只刷新、不疊加，空中不計步。"
+    },
+    {
+      "core": [
+        "ember_trail",
+        "slick_oil",
+        "oil_legacy"
+      ],
+      "desc": "走過留下火路，命中抹油減速；油怪遇火爆燃，倒下再留油池接續燃燒。",
+      "name": "焦土油獵",
+      "tradeoff": "火路只有三秒；召回與結算不會留下死亡油池。"
+    },
+    {
+      "core": [
+        "rain_strike",
+        "storm_touch",
+        "pierce"
+      ],
+      "desc": "命中灑水，再用雷擊引發感電；沿附近潮濕怪物傳導，水池也會帶電。",
+      "name": "雨幕雷網",
+      "tradeoff": "每次最多傳導四怪；感電不再觸發命中技能，LOCK 只傷害指定目標。"
+    },
+    {
+      "core": [
+        "plunder",
+        "firstborn",
+        "momentum"
+      ],
+      "desc": "出生三秒衝刺配騎兵穿透，每次主要命中帶回一枚金幣；勢能把加速轉成傷害。",
+      "name": "疾掠騎團",
+      "tradeoff": "掠奪讓總壽命減半；持續傷害不領錢，LOCK 同一目標仍只撞一次。"
+    },
+    {
+      "core": [
+        "march_capacitor",
+        "third_pulse",
+        "pierce"
+      ],
+      "desc": "每走八單位蓄力，下一命中消耗蓄力增傷；每第三次主要命中震開周圍。",
+      "name": "蓄步三連",
+      "tradeoff": "蓄力最多兩層；震波最多四怪，不會繼續累加命中次數。"
+    },
+    {
+      "core": [
+        "battle_elegy",
+        "grave_bloom",
+        "delayed_bloom"
+      ],
+      "desc": "隊友倒下鼓舞附近持有者，擊殺留下焰葬；活過兩秒再放一次火心。",
+      "name": "薪火送葬",
+      "tradeoff": "鼓舞刷新不疊加，焰葬與其他觸發爆發不會互相無限引爆。"
+    },
+    {
+      "core": [
+        "last_echo",
+        "longlife",
+        "hunter_vigor"
+      ],
+      "desc": "延長作戰時間，剩四分之一壽命時釋放一次寒霜；擊殺再爭取存活。",
+      "name": "暮霜長征",
+      "tradeoff": "寒霜每兵只觸發一次，提早接觸死亡或召回不會補放。"
+    },
+    {
+      "core": [
+        "cinder_seal",
+        "chain_fuse",
+        "pierce"
+      ],
+      "desc": "穿過敵群埋下時印與導火種，倒數收束後一顆接一顆炸開。",
+      "name": "紅蓮時爆",
+      "tradeoff": "同玩家同種印記不疊加、不延後；一次導火鏈最多六顆。"
+    },
+    {
+      "core": [
+        "thunder_fan",
+        "rain_strike",
+        "starfall"
+      ],
+      "desc": "三次命中開屏放雷，潮濕引發感電；存活到2.8秒後再落下三枚星火。",
+      "name": "雷羽星落",
+      "tradeoff": "扇形有方向、落星有預告；敵人可以離開固定落點。"
+    },
+    {
+      "core": [
+        "echo_blade",
+        "soul_return",
+        "firstborn"
+      ],
+      "desc": "衝刺劃出回斬印，半秒後斷界；死亡後英魂沿最後十二單位路徑返斬。",
+      "name": "斷界歸魂",
+      "tradeoff": "回斬不追著敵人移動；英魂不賺掠奪金，也不再生成英魂。"
+    },
+    {
+      "core": [
+        "gravity_law",
+        "contact_mine",
+        "quick_chant"
+      ],
+      "desc": "把附近小怪聚向伏雷，再靠迅咒更快補雷；怪物潮能接成連續爆破。",
+      "name": "引力雷田",
+      "tradeoff": "王不受拉引；伏雷有武裝時間，同部位可用研究或附魔補齊。"
+    },
+    {
+      "core": [
+        "step_orb",
+        "overload_script",
+        "firstborn"
+      ],
+      "desc": "高速跑動鋪出光球，過載讓爆炸翻倍；1.4秒倒數後接連收網。",
+      "name": "流明過載",
+      "tradeoff": "過載拖慢週期技能，步雷靠距離觸發；每兵最多十六顆。"
+    },
+    {
+      "core": [
+        "comrade_oath",
+        "resonant_debt",
+        "phoenix_fire"
+      ],
+      "desc": "友軍交錯接觸互相加持，鳳凰持續傷害替債印累積五擊，再引發共鳴爆破。",
+      "name": "戰誓共鳴",
+      "tradeoff": "同種戰誓刷新不疊加；債印只算己方，四秒沒有集滿就消失。"
+    },
+    {
+      "core": [
+        "storm_payload",
+        "step_orb",
+        "rain_strike"
+      ],
+      "desc": "喚雨先把怪物打濕，再讓沿途光球轉雷傷引起感電，把地面接成雷網。",
+      "name": "雷紋織陣",
+      "tradeoff": "接枝只改伏雷、步雷與債印的爆炸；LOCK仍只影響指定怪。"
+    },
+    {
+      "core": [
+        "legacy_gift",
+        "guard_bequest",
+        "short_fuse"
+      ],
+      "desc": "短命前鋒倒下，隨機強化活著的隊友，並以遺願裂開附近敵人護甲；可混編騎兵承接增傷。",
+      "name": "英魂破陣",
+      "tradeoff": "沒有活隊友就無法傳承；每兵最多三層，不延命、不傳遞裝備，破防仍可能落空。"
     }
   ],
   "equipment": [
@@ -649,6 +969,230 @@
       "slot": 1,
       "price": 120,
       "image": "svg/gear-deadly.svg"
+    },
+    {
+      "id": "flame_cloak",
+      "name": "火焰斗篷",
+      "slot": 2,
+      "price": 112,
+      "image": "svg/gear-flame_cloak.svg"
+    },
+    {
+      "id": "phoenix_fire",
+      "name": "鳳凰法杖",
+      "slot": 5,
+      "price": 136,
+      "image": "svg/gear-phoenix_fire.svg"
+    },
+    {
+      "id": "plague_vial",
+      "name": "鍊金藥匣",
+      "slot": 4,
+      "price": 104,
+      "image": "svg/gear-plague_vial.svg"
+    },
+    {
+      "id": "ember_trail",
+      "name": "燎原戰靴",
+      "slot": 3,
+      "price": 112,
+      "image": "svg/gear-ember_trail.svg"
+    },
+    {
+      "id": "slick_oil",
+      "name": "黑油刃",
+      "slot": 5,
+      "price": 88,
+      "image": "svg/gear-slick_oil.svg"
+    },
+    {
+      "id": "rain_strike",
+      "name": "喚雨手環",
+      "slot": 4,
+      "price": 96,
+      "image": "svg/gear-rain_strike.svg"
+    },
+    {
+      "id": "storm_touch",
+      "name": "雷核冠",
+      "slot": 1,
+      "price": 128,
+      "image": "svg/gear-storm_touch.svg"
+    },
+    {
+      "id": "oil_legacy",
+      "name": "油甕背甲",
+      "slot": 2,
+      "price": 88,
+      "image": "svg/gear-oil_legacy.svg"
+    },
+    {
+      "id": "plunder",
+      "name": "掠奪護手",
+      "slot": 4,
+      "price": 80,
+      "image": "svg/gear-plunder.svg"
+    },
+    {
+      "id": "firstborn",
+      "name": "犢角疾行靴",
+      "slot": 3,
+      "price": 96,
+      "image": "svg/gear-firstborn.svg"
+    },
+    {
+      "id": "march_capacitor",
+      "name": "蓄步雷匣",
+      "slot": 2,
+      "price": 96,
+      "image": "svg/gear-march_capacitor.svg"
+    },
+    {
+      "id": "delayed_bloom",
+      "name": "遲放焰心冠",
+      "slot": 1,
+      "price": 112,
+      "image": "svg/gear-delayed_bloom.svg"
+    },
+    {
+      "id": "third_pulse",
+      "name": "三拍戰錘",
+      "slot": 5,
+      "price": 112,
+      "image": "svg/gear-third_pulse.svg"
+    },
+    {
+      "id": "battle_elegy",
+      "name": "薪火戰旗",
+      "slot": 2,
+      "price": 88,
+      "image": "svg/gear-battle_elegy.svg"
+    },
+    {
+      "id": "grave_bloom",
+      "name": "送葬火刃",
+      "slot": 5,
+      "price": 120,
+      "image": "svg/gear-grave_bloom.svg"
+    },
+    {
+      "id": "last_echo",
+      "name": "暮霜面甲",
+      "slot": 1,
+      "price": 96,
+      "image": "svg/gear-last_echo.svg"
+    },
+    {
+      "id": "cinder_seal",
+      "name": "燼刻指環",
+      "slot": 4,
+      "price": 104,
+      "image": "svg/gear-cinder_seal.svg"
+    },
+    {
+      "id": "chain_fuse",
+      "name": "紅蓮火種匣",
+      "slot": 2,
+      "price": 120,
+      "image": "svg/gear-chain_fuse.svg"
+    },
+    {
+      "id": "thunder_fan",
+      "name": "雷羽王冠",
+      "slot": 1,
+      "price": 120,
+      "image": "svg/gear-thunder_fan.svg"
+    },
+    {
+      "id": "echo_blade",
+      "name": "斷界雙刃",
+      "slot": 5,
+      "price": 112,
+      "image": "svg/gear-echo_blade.svg"
+    },
+    {
+      "id": "starfall",
+      "name": "星隕肩甲",
+      "slot": 2,
+      "price": 120,
+      "image": "svg/gear-starfall.svg"
+    },
+    {
+      "id": "soul_return",
+      "name": "英魂戰靴",
+      "slot": 3,
+      "price": 104,
+      "image": "svg/gear-soul_return.svg"
+    },
+    {
+      "id": "comrade_oath",
+      "name": "交鋒誓旗",
+      "slot": 2,
+      "price": 88,
+      "image": "svg/gear-comrade_oath.svg"
+    },
+    {
+      "id": "resonant_debt",
+      "name": "共鳴契印",
+      "slot": 4,
+      "price": 112,
+      "image": "svg/gear-resonant_debt.svg"
+    },
+    {
+      "id": "contact_mine",
+      "name": "伏雷腰匣",
+      "slot": 2,
+      "price": 112,
+      "image": "svg/gear-contact_mine.svg"
+    },
+    {
+      "id": "step_orb",
+      "name": "流明行靴",
+      "slot": 3,
+      "price": 104,
+      "image": "svg/gear-step_orb.svg"
+    },
+    {
+      "id": "gravity_law",
+      "name": "引力星冠",
+      "slot": 1,
+      "price": 120,
+      "image": "svg/gear-gravity_law.svg"
+    },
+    {
+      "id": "quick_chant",
+      "name": "迅咒指環",
+      "slot": 4,
+      "price": 96,
+      "image": "svg/gear-quick_chant.svg"
+    },
+    {
+      "id": "overload_script",
+      "name": "過載法典",
+      "slot": 5,
+      "price": 128,
+      "image": "svg/gear-overload_script.svg"
+    },
+    {
+      "id": "storm_payload",
+      "name": "雷紋護符",
+      "slot": 1,
+      "price": 80,
+      "image": "svg/gear-storm_payload.svg"
+    },
+    {
+      "id": "legacy_gift",
+      "name": "傳承魂燈",
+      "slot": 4,
+      "price": 96,
+      "image": "svg/gear-legacy_gift.svg"
+    },
+    {
+      "id": "guard_bequest",
+      "name": "遺願裂甲盔",
+      "slot": 1,
+      "price": 104,
+      "image": "svg/gear-guard_bequest.svg"
     }
   ],
   "creatures": [

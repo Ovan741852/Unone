@@ -1,0 +1,67 @@
+{
+  "sourceSha256": "94521589b9ed8e19a48180d96fe40848d7e04692278b09e128f2a2d9cfed3918",
+  "scope": "Actual WASM: controlled moving-tree/lifetime fixtures plus unmodified production semantic input runs.",
+  "checks": 43,
+  "fixtures": [
+    {
+      "bounces": 7,
+      "bystanderDamage": 90,
+      "contactAt": 0.5666666666666668,
+      "dt": 0.016666666666666666,
+      "exitAt": 0.6833333333333338,
+      "lock": false,
+      "maxDwell": 0.11666666666666665,
+      "pierces": 2,
+      "treeDamage": 90
+    },
+    {
+      "bounces": 7,
+      "bystanderDamage": 90,
+      "contactAt": 0.6,
+      "dt": 0.06666666666666667,
+      "exitAt": 0.7333333333333333,
+      "lock": false,
+      "maxDwell": 0.13333333333333333,
+      "pierces": 2,
+      "treeDamage": 90
+    },
+    {
+      "bounces": 7,
+      "bystanderDamage": 0,
+      "contactAt": 0.5666666666666668,
+      "dt": 0.016666666666666666,
+      "exitAt": 0.6833333333333338,
+      "lock": true,
+      "maxDwell": 0.11666666666666665,
+      "pierces": 1,
+      "treeDamage": 90
+    },
+    {
+      "bounces": 7,
+      "bystanderDamage": 0,
+      "contactAt": 0.6,
+      "dt": 0.06666666666666667,
+      "exitAt": 0.7333333333333333,
+      "lock": true,
+      "maxDwell": 0.13333333333333333,
+      "pierces": 1,
+      "treeDamage": 90
+    }
+  ],
+  "runs": [
+    {
+      "lock": false,
+      "fired": 9,
+      "contacts": 93,
+      "bounces": 63,
+      "expired": 9
+    },
+    {
+      "lock": true,
+      "fired": 21,
+      "contacts": 21,
+      "bounces": 161,
+      "expired": 15
+    }
+  ]
+}

@@ -1,2 +1,49 @@
 <!doctype html>
-<html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>森林領主</title><link rel="icon" href="data:,"><script type="importmap">{"imports":{"three":"./presentation/vendor/build/three.module.js","three/addons/":"./presentation/vendor/addons/"}}</script><style>:root{--safe-top:env(safe-area-inset-top,0px);--safe-right:env(safe-area-inset-right,0px);--safe-bottom:env(safe-area-inset-bottom,0px);--safe-left:env(safe-area-inset-left,0px)}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0a1712}#stage,#game,#formal-ui{position:absolute;inset:0;width:100%;height:100%}#game{touch-action:none}#formal-ui{pointer-events:none}#error{position:fixed;inset:12% 6%;background:#15271e;color:#fff0bf;padding:20px;z-index:99;font:16px/1.5 sans-serif;white-space:pre-wrap;overflow-wrap:anywhere;overflow:auto;max-height:70vh}[hidden]{display:none}</style></head><body data-phase="loading"><div id="stage"><canvas id="game" aria-label="森林領主戰場與遊戲操作"></canvas></div><canvas id="formal-ui" aria-label="Unone 遊戲介面"></canvas><pre id="error" hidden role="alert"></pre><script type="module" src="host.mjs"></script></body></html>
+<html lang="zh-Hant">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+ <meta name="theme-color" content="#0a1712">
+ <title>森林領主</title><link rel="icon" href="data:,">
+ <link rel="stylesheet" href="presentation/landscape-host.css">
+ <script type="importmap">{"imports":{"three":"./presentation/vendor/build/three.module.js","three/addons/":"./presentation/vendor/addons/"}}</script>
+</head>
+<body data-phase="loading">
+ <div id="stage"><canvas id="game" aria-label="森林領主戰場與遊戲操作"></canvas><canvas id="formal-ui" aria-label="Unone 遊戲介面"></canvas>
+ <div id="loading" role="status">
+  <div class="loading-card"><span class="loading-crest" aria-hidden="true">✦</span><h1>森林領主</h1>
+   <p id="loading-phase">正在展開遠征之書…</p>
+   <div id="loading-progress" class="loading-meter" data-state="indeterminate" role="progressbar" aria-label="遊戲資源準備中"><span></span></div>
+   <p id="loading-assets"></p><p id="loading-elapsed">0 秒</p>
+   <pre id="error" hidden role="alert"></pre><button id="loading-retry" type="button" hidden>重新載入</button>
+  </div>
+ </div></div>
+ <script>
+ // Visible before the module graph, runtime or game images have downloaded.
+ (()=>{const layer=document.querySelector('#loading'),phase=document.querySelector('#loading-phase'),elapsed=document.querySelector('#loading-elapsed'),retry=document.querySelector('#loading-retry'),error=document.querySelector('#error');
+  const started=performance.now(),timings={},groups=new Map(),meter=document.querySelector('#loading-progress');let finished=false,failed=false;
+  // Display-only protocol for the same-origin Koncrate preview shell. It owns
+  // the messagebox and navigation; the game never sends commands or tokens.
+  function previewState(state,message){if(window.parent!==window)window.parent.postMessage({type:'koncrate-preview-content',state,...(message?{message}:{})},location.origin)}
+  function progress(done,total,label='部隊與裝備'){
+   if(failed||finished||!Number.isFinite(total)||total<=0)return;
+   groups.set(label,{done:Math.max(0,Math.min(total,Math.floor(done))),total:Math.floor(total)});
+   const counts=[...groups.values()],loaded=counts.reduce((n,g)=>n+g.done,0),known=counts.reduce((n,g)=>n+g.total,0),pending=loaded<known;
+   document.querySelector('#loading-assets').textContent=[...groups].map(([label,g])=>label+' '+g.done+' / '+g.total).join(' · ');
+   meter.dataset.state=pending?'determinate':'indeterminate';
+   meter.setAttribute('aria-label',pending?'已知遊戲資源載入進度':'正在完成遊戲畫面');
+   if(pending){meter.setAttribute('aria-valuemin','0');meter.setAttribute('aria-valuemax',known);meter.setAttribute('aria-valuenow',loaded);meter.firstElementChild.style.width=(loaded/known*100)+'%'}
+   else{for(const attr of ['aria-valuemin','aria-valuemax','aria-valuenow'])meter.removeAttribute(attr);meter.firstElementChild.style.width=''}
+  }
+  const clock=setInterval(()=>{elapsed.textContent=Math.floor((performance.now()-started)/1000)+' 秒'},250);
+  retry.onclick=()=>location.reload();
+  window.ashenLoading={phase(value){if(!failed)phase.textContent=value},progress,mark(name){timings[name]=performance.now()-started},inspect(){return {...timings,elapsedMs:performance.now()-started,finished,failed,groups:Object.fromEntries(groups)}},
+   finish(){if(failed)return;finished=true;clearInterval(clock);layer.hidden=true;previewState('ready')},
+   fail(reason){const notify=!finished&&!failed;failed=true;clearInterval(clock);layer.hidden=false;meter.hidden=true;phase.textContent='遠征準備失敗';error.hidden=false;error.textContent=String(reason?.message??reason);retry.hidden=false;document.body.dataset.error=error.textContent;if(notify)previewState('error',error.textContent.replace(/https?:\/\/\S+/g,'資源').replace(/[\r\n]+/g,' ').slice(0,220))}
+  };
+  previewState('loading');
+  window.addEventListener('error',e=>{if(!finished&&((e.target instanceof HTMLScriptElement)||e.error))window.ashenLoading.fail(e.error??'遊戲程式載入失敗')},true);
+ })();
+ </script>
+ <script type="module" src="host.mjs"></script>
+</body></html>
