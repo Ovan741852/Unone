@@ -1,4 +1,4 @@
-use unone_engine::{Camera3DData, ParticleSnapshot};
+use unone_engine::{Camera3DData, ParticleSnapshot, ParticleSpriteShape};
 pub struct Particles {
     pipelines: [wgpu::RenderPipeline; 2],
     buffers: [wgpu::Buffer; 3],
@@ -34,9 +34,9 @@ impl Particles {
                     module: &shader,
                     entry_point: Some("vs"),
                     buffers: &[Some(wgpu::VertexBufferLayout {
-                        array_stride: 32,
+                        array_stride: 40,
                         step_mode: wgpu::VertexStepMode::Instance,
-                        attributes: &wgpu::vertex_attr_array![0=>Float32x4,1=>Float32x4],
+                        attributes: &wgpu::vertex_attr_array![0=>Float32x4,1=>Float32x4,2=>Float32x2],
                     })],
                     compilation_options: Default::default(),
                 },
@@ -79,13 +79,13 @@ impl Particles {
             buffers: std::array::from_fn(|_| {
                 device.create_buffer(&wgpu::BufferDescriptor {
                     label: None,
-                    size: 32,
+                    size: 40,
                     usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
                     mapped_at_creation: false,
                 })
             }),
             slot: 0,
-            capacity: 32,
+            capacity: 40,
             counts: [0; 2],
             uploaded: 0,
         }
@@ -108,7 +108,7 @@ impl Particles {
         };
         normal.sort_by(|a, b| depth(b).total_cmp(&depth(a)));
         self.counts = [normal.len() as u32, (samples.len() - normal.len()) as u32];
-        let mut data = Vec::with_capacity(samples.len() * 8);
+        let mut data = Vec::with_capacity(samples.len() * 10);
         for p in normal
             .into_iter()
             .chain(samples.iter().filter(|p| p.additive))
@@ -120,6 +120,15 @@ impl Particles {
                 p.size as f32,
             ]);
             data.extend(p.color.map(|v| v as f32));
+            data.extend([
+                p.rotation as f32,
+                match p.sprite_shape {
+                    ParticleSpriteShape::SoftCircle => 0.0,
+                    ParticleSpriteShape::Diamond => 1.0,
+                    ParticleSpriteShape::Ring => 2.0,
+                    ParticleSpriteShape::Streak => 3.0,
+                },
+            ]);
         }
         self.uploaded = data.len() * 4;
         if self.uploaded > self.capacity {
@@ -148,5 +157,21 @@ impl Particles {
             }
             start += self.counts[i];
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn particle_shader_parses_and_validates() {
+        let source = include_str!("particles.wgsl");
+        let module = naga::front::wgsl::parse_str(source)
+            .unwrap_or_else(|error| panic!("{}", error.emit_to_string(source)));
+        naga::valid::Validator::new(
+            naga::valid::ValidationFlags::all(),
+            naga::valid::Capabilities::all(),
+        )
+        .validate(&module)
+        .expect("particle WGSL should validate before pipeline creation");
     }
 }

@@ -92,10 +92,34 @@ export type QueryFilter3D = {membership:number?,filter:number?,exclude:string?,i
 export type JointKind3D = {kind:"fixed"}|{kind:"spherical"}|{kind:"revolute",axis:Vec3,limits:{number}?}
 
 export type CameraApi = {
+    -- Canonical Unity-like camera: one 3D transform plus a projection mode.
+    -- `orthographic` is the 2D-compatible projection; `perspective` is the
+    -- regular 3D projection. The old 2D calls below remain compatibility
+    -- helpers and should not be used to model a second camera.
+    getProjection: () -> ("orthographic" | "perspective"),
+    setProjection: (projection: "orthographic" | "perspective") -> (),
+    getTransform: () -> CameraTransform,
+    setTransform: (transform: CameraTransformInput) -> (),
     getPosition: () -> Vec2,
     setPosition: (position: Vec2) -> (),
     getZoom: () -> number,
     setZoom: (zoom: number) -> (),
+}
+
+export type CameraTransform = {
+    projection: "orthographic" | "perspective",
+    position: Vec3,
+    target: Vec3,
+    fovDegrees: number?,
+    orthographicSize: number?,
+}
+
+export type CameraTransformInput = {
+    projection: ("orthographic" | "perspective")?,
+    position: Vec3,
+    target: Vec3?,
+    fovDegrees: number?,
+    orthographicSize: number?,
 }
 
 export type Camera3DApi = {
@@ -195,6 +219,11 @@ export type AudioApi = {
 export type ParticleApi = {
     -- Packed f32le xyz positions, copied at submission. One stoppable batch handle.
     play_batch: (effect: string, positions: buffer, seed: number?) -> string,
+    -- Update where new births appear. Existing particles remain in world space.
+    move: (handle: string, position: Vec3) -> boolean,
+    -- End an emitter now and allow its existing particles to fade naturally.
+    finish: (handle: string) -> boolean,
+    -- Other particle fields are authored in scene particle_effects and validated against particle.schema.json.
     stats: () -> {active_handles: number, max_handles: number, reserved_particles: number, max_particles: number, live_particles: number},
     play: (effect: string, position: Vec3, seed: number?) -> string,
     stop: (handle: string) -> boolean,
@@ -230,6 +259,7 @@ export type EngineApi = {
     physics: PhysicsApi,
     physics3d: Physics3DApi,
     camera: CameraApi,
+    -- Deprecated compatibility namespace; new code uses camera.*.
     camera3d: Camera3DApi,
     observation: ObservationApi,
     ui: UiApi,

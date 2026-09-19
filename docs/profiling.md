@@ -96,3 +96,18 @@ enters Lua or canonical observations. The callback interpretation is audited
 against vendored Luau 709 (`lmem.cpp`, `lgc.cpp`); dependency upgrades must recheck
 the callback pairing and allocation semantics. Production does not compile the
 VM probe or include the host profile module. See [validation](profiler-tools-validation.md).
+
+## Native Sprite renderer measurements
+
+Native reports expose `renderer_cpu_phases.sprite_prepare` (painter ordering and
+instance packing) and `sprite_upload` (CPU buffer comparison/update and camera
+uniform update). Both are contained in `prepare`; do not add them a second time
+or interpret them as GPU duration. Unchanged packed instances skip GPU uploads.
+The final capture's draw/instance counters describe one redraw, not the sum of
+the presentation and screenshot passes.
+
+Use `scripts/benchmark-native-sprites.mjs` with before/after release executables,
+then `scripts/compare-native-sprites.mjs` to reject changed end-frame pixels or
+simulation state. `scripts/smoke-native-sprites-android.mjs` runs the same packages
+in an isolated Android test app. See [measured results, limitations and the
+cross-backend color gap](evidence/2026-09-19-native-sprite-performance.md).

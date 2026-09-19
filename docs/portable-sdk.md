@@ -75,13 +75,13 @@ shape (`family`, `exportable`, `renderer`, `presentation`, `decoders`).
 | Target | Family | Export | Notes |
 |---|---|---|---|
 | `web` | web-wasm | `export platform --target web` | WASM + JS player. `player.presentation.json` is this overlay. |
-| `windows` | native-wgpu | `export platform --target windows` | mesh/instances/particles/PNG and non-DOM UI in matching runtimes. Export rejects spine/effekseer. Audio fails at runtime if published. |
+| `windows` | native-wgpu | `export platform --target windows` | mesh/instances/particles/sprites (PNG, JPEG, WebP or static SVG), Bloom, audio and non-DOM UI in matching runtimes. Spine/Effekseer still require a dedicated host runtime. |
 | `android-x86_64` | native-wgpu | `export platform --target android-x86_64` | NativeActivity + wgpu. BlueStacks evidence only. |
 | `android-arm64` | native-wgpu | `export platform --target android-arm64` | Packager exists. No device evidence. |
 | `android-webview` | webview-wraps-web | **not** this command | `scripts/build-android-player.ps1` after a web export. System WebView, not wgpu. |
 | `ios` | native-wgpu | not implemented | ABI only. |
 
-Native export rejects enabled `spine`/`effekseer` and non-default web overlay keys in `player.presentation.json` (`runtime_backend=worker`, bloom, interpolation, show_performance, non-default `job_policy`). Audio still fails at native runtime if published. `sdk inspect --json` splits those as `export_blocked_systems` vs `runtime_blocked_systems`. Android packaging requires a platform runtime plus SDK/Java/signing tools.
+Native export rejects enabled `spine`/`effekseer` and non-default web-only overlay keys in `player.presentation.json` (`runtime_backend=worker`, interpolation, show_performance, non-default `job_policy`). `bloom` is a shared native/WGPU presentation primitive and is accepted; changing it still takes effect on the next launch. Native audio is a rodio/cpal host adapter and reports device/asset failures instead of failing silently. `sdk inspect --json` splits those as `export_blocked_systems` vs `runtime_blocked_systems`. Android packaging requires a platform runtime plus SDK/Java/signing tools.
 
 The current native host supports non-DOM UI. UI images support PNG and a
 self-contained static SVG subset when the **selected runtime** advertises
@@ -89,7 +89,7 @@ self-contained static SVG subset when the **selected runtime** advertises
 `sources.runtimes[].descriptor` records the installed bytes' declared capabilities.
 Older runtimes do not gain UI/SVG support merely by using a new CLI. Windows
 SVG/UI evidence is in the [compatibility ledger](reviews/2026-09-10-svg-sdk.md);
-Android/iOS UI device validation remains unperformed. See [UI contract](formal-ui-host.md).
+BlueStacks x86_64 UI/Bloom release evidence is tracked separately; physical arm64/iOS coverage remains device-specific. See [UI contract](formal-ui-host.md).
 See [native validation](native-battle.md).
 
 | Target | Work needed |

@@ -127,7 +127,10 @@ pub use systems::{inspect as inspect_systems, set as set_system};
 pub const DEV_TOOLS_ENABLED: bool = cfg!(feature = "dev-tools");
 
 mod particle;
-pub use particle::{ParticleDefinition, ParticleEmitter, ParticleSnapshot};
+pub use particle::{
+    ParticleDefinition, ParticleEmissionShape, ParticleEmitter, ParticleEasing,
+    ParticleSnapshot, ParticleSpriteShape, ParticleVelocityMode,
+};
 
 mod canonical_hash;
 pub use canonical_hash::{CanonicalHashWork, CanonicalHasher};

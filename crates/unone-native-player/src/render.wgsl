@@ -11,7 +11,8 @@ struct Out {@builtin(position) clip:vec4f,@location(0) uv:vec2f,@location(1) wor
  out.uv=uv;out.world=world;return out;
 }
 @fragment fn fs(v:Out)->@location(0) vec4f {
- let normal=normalize(cross(dpdx(v.world),dpdy(v.world)));
- let light=.6+.4*abs(dot(normal,normalize(vec3f(.4,.8,.3))));
- return vec4f(textureSample(texture,textureSampler,v.uv).rgb*light,1.);
+ // Web's imported mesh path uses MeshBasicMaterial. Keep native assets
+ // unlit as well so sRGB texture values and scene brightness match across
+ // WebGL/WebGPU, Windows native and Android native hosts.
+ return vec4f(textureSample(texture,textureSampler,v.uv).rgb,1.);
 }

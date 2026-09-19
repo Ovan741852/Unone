@@ -51,13 +51,13 @@ pub(super) fn build_api(
     )?;
     #[cfg(not(feature = "physics3d"))]
     api.set("physics3d", unavailable(lua, "physics3d")?)?;
-    #[cfg(feature = "camera2d")]
+    #[cfg(any(feature = "camera2d", feature = "camera3d"))]
     api.set(
         "camera",
-        disable_if_off(lua, systems, "camera2d", camera::camera(lua, state)?)?,
+        camera::camera(lua, state, systems)?,
     )?;
-    #[cfg(not(feature = "camera2d"))]
-    api.set("camera", unavailable(lua, "camera2d")?)?;
+    #[cfg(not(any(feature = "camera2d", feature = "camera3d")))]
+    api.set("camera", unavailable(lua, "camera")?)?;
     #[cfg(feature = "camera3d")]
     api.set(
         "camera3d",

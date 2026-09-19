@@ -722,6 +722,13 @@ impl EngineRuntime {
         input.pointer.screen_position = position;
     }
 
+    /// Set the host's normalized screen-space pointer without changing the
+    /// world-space pointer. Native/Web hosts should use this when their
+    /// viewport mapping can provide both coordinates.
+    pub fn set_screen_pointer_position(&mut self, position: Vec2) {
+        self.input.borrow_mut().pointer.screen_position = position;
+    }
+
     pub fn set_pointer_down(&mut self, is_down: bool) {
         self.input.borrow_mut().pointer.down = is_down;
     }
@@ -2633,6 +2640,57 @@ return Game
         assert_eq!(car.transform3d.as_ref().unwrap().position.z, -3.0);
         assert_eq!(car.transform3d.as_ref().unwrap().rotation.y, 0.25);
         assert_eq!(snapshot.camera3d.as_ref().unwrap().target.z, -3.0);
+    }
+
+    #[test]
+    fn unified_camera_api_switches_projection_without_a_second_camera_contract() {
+        let source = r#"
+local Game = {}
+function Game.start(api)
+    assert(api.camera.getProjection() == "orthographic")
+    api.camera.setTransform({
+        projection = "perspective",
+        position = { x = 0, y = 3, z = 8 },
+        target = { x = 0, y = 0, z = 0 },
+        fovDegrees = 55,
+    })
+end
+function Game.update(_api, _dt) end
+return Game
+"#;
+        let runtime = EngineRuntime::load_source("UnifiedCamera", "main.luau", source, None)
+            .unwrap();
+        let snapshot = runtime.observe();
+        let camera = snapshot.camera3d.expect("perspective projection is visible to legacy hosts");
+        assert_eq!(camera.position.z, 8.0);
+        assert_eq!(camera.fov_degrees, 55.0);
+    }
+
+    #[test]
+    fn invalid_unified_camera_transform_does_not_switch_projection() {
+        let source = r#"
+local Game = {}
+function Game.start(api)
+    local ok = pcall(function()
+        api.camera.setTransform({
+            projection = "perspective",
+            position = { x = 0, y = 3, z = 8 },
+            fovDegrees = 55,
+        })
+    end)
+    api.observation.set("camera_attempt", {
+        ok = ok,
+        projection = api.camera.getProjection(),
+    })
+end
+function Game.update(_api, _dt) end
+return Game
+"#;
+        let runtime = EngineRuntime::load_source("InvalidUnifiedCamera", "main.luau", source, None)
+            .unwrap();
+        let observation = runtime.observe().observations["camera_attempt"].clone();
+        assert_eq!(observation["ok"], false);
+        assert_eq!(observation["projection"], "orthographic");
     }
 
     #[test]

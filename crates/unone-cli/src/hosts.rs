@@ -27,10 +27,25 @@ pub struct Host {
     pub note: &'static str,
 }
 
-const NATIVE_PRESENTATION: &[&str] = &["mesh3d", "instances3d", "particle", "ui"];
-const NATIVE_DECODERS: &[&str] = &["unone-mesh-json", "png-rgb-rgba"];
+const NATIVE_PRESENTATION: &[&str] = &[
+    "mesh3d",
+    "instances3d",
+    "sprite2d",
+    "particle",
+    "ui",
+    "audio",
+    "bloom",
+];
+const NATIVE_DECODERS: &[&str] = &[
+    "unone-mesh-json",
+    "png-rgb-rgba",
+    "jpeg-rgba",
+    "webp-rgba",
+    "svg-static",
+    "audio-rodio",
+];
 const NATIVE_EXPORT_BLOCKED: &[&str] = &["spine", "effekseer"];
-const NATIVE_RUNTIME_BLOCKED: &[&str] = &["audio", "spine", "effekseer"];
+const NATIVE_RUNTIME_BLOCKED: &[&str] = &["spine", "effekseer"];
 const WEB_PRESENTATION_KEYS: &[&str] = &[
     "ui",
     "bloom",
@@ -91,7 +106,7 @@ const CATALOG: &[Host] = &[
         toolchain: "none",
         requires: &[],
         device_evidence: "windows-vulkan",
-        note: "Same Luau/assets as web. Current native host supports UI; inspect the selected runtime descriptor for UI/SVG availability. Export rejects spine/effekseer; audio fails if published at runtime.",
+        note: "Same Luau/assets as web. Native WGPU draws meshes, instances, 2D sprites, particles, non-DOM UI, Bloom and rodio/cpal audio; inspect the selected runtime descriptor for device availability. Export rejects spine/effekseer.",
     },
     Host {
         id: "android-x86_64",
@@ -108,7 +123,7 @@ const CATALOG: &[Host] = &[
         toolchain: "Android SDK, JDK",
         requires: ANDROID_NATIVE_REQUIRES,
         device_evidence: "bluestacks-x86_64",
-        note: "wgpu NativeActivity. Not the WebView APK. Native UI code exists, but Android UI device validation has not been performed. Inspect the selected runtime descriptor; arm64 evidence is separate.",
+        note: "wgpu NativeActivity. Not the WebView APK. Native WGPU draws meshes, instances, 2D sprites, particles, non-DOM UI, Bloom and rodio/cpal audio; physical arm64 evidence is separate.",
     },
     Host {
         id: "android-arm64",
@@ -125,7 +140,7 @@ const CATALOG: &[Host] = &[
         toolchain: "Android SDK, JDK",
         requires: ANDROID_NATIVE_REQUIRES,
         device_evidence: "none",
-        note: "Packager exists. No physical arm64 or Android UI device evidence. Inspect the selected runtime descriptor for UI/SVG availability.",
+        note: "Packager exists. No physical arm64 device evidence. Inspect the selected runtime descriptor for UI/SVG/audio device availability.",
     },
     Host {
         id: "android-webview",
@@ -286,7 +301,9 @@ pub fn load_presentation(project: &Path) -> Result<Option<PresentationSettings>>
     Ok(Some(serde_json::from_slice(&std::fs::read(&path)?)?))
 }
 
-/// Native wgpu shares Luau/assets and UI fonts, but rejects Web-only overlay options.
+/// Native wgpu shares Luau/assets and UI fonts. Bloom is a renderer primitive
+/// implemented by the native post-process path; the remaining overlay options
+/// are still Web-only.
 pub fn native_wgpu_export_gate(
     settings: &unone_engine::SystemSettings,
     presentation: Option<&PresentationSettings>,
@@ -302,9 +319,6 @@ pub fn native_wgpu_export_gate(
         return Ok(());
     };
     let mut keys = Vec::new();
-    if presentation.bloom {
-        keys.push("bloom");
-    }
     if presentation.show_performance {
         keys.push("show_performance");
     }
@@ -322,7 +336,7 @@ pub fn native_wgpu_export_gate(
     }
     ensure!(
         keys.is_empty(),
-        "HOST_PRESENTATION_UNSUPPORTED: player.presentation.json fields {} are web-only; native wgpu does not honor that overlay. Export --target web or remove those keys.",
+        "HOST_PRESENTATION_UNSUPPORTED: player.presentation.json fields {} are not supported by native wgpu. Export --target web or remove those keys.",
         keys.join(", ")
     );
     Ok(())
@@ -371,10 +385,7 @@ mod tests {
         let windows = rows.iter().find(|row| row["id"] == "windows").unwrap();
         assert_eq!(windows["toolchain"], "none");
         assert_eq!(windows["export_blocked_systems"], json!(["spine", "effekseer"]));
-        assert_eq!(
-            windows["runtime_blocked_systems"],
-            json!(["audio", "spine", "effekseer"])
-        );
+        assert_eq!(windows["runtime_blocked_systems"], json!(["spine", "effekseer"]));
         assert!(windows["presentation"].as_array().unwrap().iter().any(|item| item == "ui"));
         let webview = rows
             .iter()

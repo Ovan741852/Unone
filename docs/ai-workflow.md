@@ -287,9 +287,12 @@ The engine does not evaluate skeletons, blend animations, report whether an anim
 ## 3.6 Sound
 
 `audio` is on by default and has status `host_required`: the engine decides what
-should be heard and publishes it, `web/presentation` decodes and mixes it. The
-native preview and the Android host are silent, so a green Web run is not
-cross-platform audio evidence.
+should be heard and publishes it, while each host decodes and mixes it. Web
+uses Web Audio; the native player uses the verified asset bundle with
+`rodio/cpal` for Windows and NativeActivity hosts. A host report includes
+device availability, decoded asset count, live handles and failures, so a
+green simulation is not confused with audible output on a machine without an
+audio device.
 
 ```powershell
 cargo run -p unone-cli -- --json api describe audio.loop
@@ -468,7 +471,7 @@ The order above is “create the actual source/companion bytes first, declare th
 
 `asset read` retrieves one declared asset from the verified bundle in the current active generation and reports `size_bytes`, `sha256`, and `bundle_generation`. It writes a file only when `--output` is provided. It uses the same archive contract and error codes as the Web host's `readActiveAsset`: `BUNDLE_GENERATION_MISMATCH` (not installed or the manifest changed), `BUNDLE_CACHE_MISS`, `BUNDLE_CACHE_CORRUPT`, `ASSET_ID_NOT_DECLARED`, `ASSET_NOT_IN_BUNDLE`, `ASSET_ARCHIVE_INVALID`, and `ASSET_CONTENT_CORRUPT`. Both sides also validate the archive entry's own sha256, so the same asset ID must produce the same `sha256` on Web and native; a mismatch is a bundle or host problem, not a screen problem. See the [asset workflow contract](asset-workflow.md) for the complete fields and safe-path rules.
 
-The engine returns only verified bytes and facts. Decoding, texture upload, downloading, retries, cache capacity, and CDN/OPFS policy remain in the host. `game preview` resolves and decodes `sprite.asset` from the enabled generation and prints each asset's verified sha256 and decoded dimensions at startup, but it **does not draw the textures yet**; the screen remains solid-color blocks. Therefore, an `asset read` result or a preview decode record does not prove native texture rendering.
+The engine returns only verified bytes and facts. Decoding, texture upload, downloading, retries, cache capacity, and CDN/OPFS policy remain in the host. The packaged native player resolves verified `sprite.asset` bytes and renders PNG, JPEG, WebP, and bounded static SVG textures; it also provides the built-in `mesh://primitive/box` and `mesh://primitive/sphere` meshes without requiring manifest entries. `asset read` remains a data-integrity result, not a visual acceptance result: use the native report or a captured frame to prove that a specific host actually drew the asset.
 
 ## 5. Native preview
 
@@ -476,16 +479,21 @@ The engine returns only verified bytes and facts. Decoding, texture upload, down
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d preview --watch
 ```
 
-`--watch` waits for file metadata changes, then attempts to load the entry Luau script on the next waiting frame. On success it preserves Rust-owned world state and switches the script generation; on failure it prints a semantic diagnostic and continues using the last working script until the file changes again. Script generation counts reloads in that runtime; it is not the bundle active generation or another host's generation, so do not compare the numbers to decide whether content is synchronized. Arrow keys or A/D update Luau input. Escape or closing the window exits. This preview is a runtime smoke client, not an Editor.
+`--watch` waits for file metadata changes, then attempts to load the entry Luau script on the next waiting frame. On success it preserves Rust-owned world state and switches the script generation; on failure it prints a semantic diagnostic and continues using the last working script until the file changes again. Script generation counts reloads in that runtime; it is not the bundle active generation or another host's generation, so do not compare the numbers to decide whether content is synchronized. Arrow keys or A/D update Luau input. Escape or closing the window exits. This preview is a runtime smoke client, not an Editor. The packaged native player is the visual acceptance path for textured meshes, sprites, particles, Bloom and native audio; Spine/Effekseer still require their dedicated host runtimes.
 
 Without `--watch`, you can also start a one-shot native preview; use `--watch` when AI needs rapid edit-and-observe iteration.
 
-3D projects use the semantic `Transform3D`/`Camera3D` APIs; inspect the semantics before writing the script:
+Use the single semantic Camera for both 2D and 3D projects. Choose
+`orthographic` for a 2D-compatible view and `perspective` for a 3D view; the
+old `camera3d.*` calls are compatibility aliases only. Inspect the semantics
+before writing the script:
 
 ```powershell
 cargo run -p unone-cli -- --json api describe entity.getTransform3D
 cargo run -p unone-cli -- --json api describe entity.setTransform3D
-cargo run -p unone-cli -- --json api describe camera3d.setTarget
+cargo run -p unone-cli -- --json api describe camera.getTransform
+cargo run -p unone-cli -- --json api describe camera.setProjection
+cargo run -p unone-cli -- --json api describe camera.setTransform
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json test
 ```
 
