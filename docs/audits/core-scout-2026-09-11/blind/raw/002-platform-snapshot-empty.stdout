@@ -1,0 +1,602 @@
+{
+  "ok": false,
+  "value": {
+    "schema_version": 1,
+    "project_root": "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game",
+    "platform": {
+      "family": "native",
+      "os": "windows",
+      "arch": "x86_64",
+      "status": "verified",
+      "source_state": "verified_core_with_other_target_host_work",
+      "verification_scope": "current_target_core",
+      "checked_by": "platform_capabilities",
+      "limitations": [],
+      "other_target_gaps": [
+        "ios_platform_wrapper",
+        "android_3d_renderer_and_audio"
+      ],
+      "evidence": [
+        "unone_platform_capabilities"
+      ],
+      "examples": [
+        "game --project <game-root> --json platform capabilities",
+        "game --project <game-root> --json verify"
+      ]
+    },
+    "core": {
+      "compiled_systems": [
+        "jobs",
+        "world",
+        "input",
+        "observation",
+        "physics3d",
+        "physics2d",
+        "camera2d",
+        "camera3d",
+        "random",
+        "ui",
+        "save",
+        "audio",
+        "spine",
+        "particle",
+        "effekseer"
+      ],
+      "target_family": "native",
+      "target_os": "windows",
+      "target_arch": "x86_64",
+      "project_loaders": [
+        "memory_source",
+        "native_filesystem_project"
+      ],
+      "hot_reload_modes": [
+        "reload_source",
+        "filesystem_stamp"
+      ],
+      "verified_runtime": [
+        "luau_runtime",
+        "deterministic_fixed_step",
+        "semantic_observation"
+      ],
+      "pending_host_work": [
+        "ios_platform_wrapper",
+        "android_3d_renderer_and_audio"
+      ],
+      "renderer_probe": "not_probed"
+    },
+    "capabilities": [
+      {
+        "id": "luau_runtime",
+        "category": "runtime",
+        "status": "verified",
+        "source_state": "verified_runtime",
+        "verification_scope": "current_target_core",
+        "checked_by": "platform_capabilities",
+        "summary": "Core reports luau_runtime as verified for this target.",
+        "limitations": [
+          "Runtime verification does not prove a separate renderer or device host."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.verified_runtime"
+        ],
+        "examples": [
+          "game --project <game-root> --json run --frames 60",
+          "game --project <game-root> --json verify"
+        ]
+      },
+      {
+        "id": "deterministic_fixed_step",
+        "category": "runtime",
+        "status": "verified",
+        "source_state": "verified_runtime",
+        "verification_scope": "current_target_core",
+        "checked_by": "platform_capabilities",
+        "summary": "Core reports deterministic_fixed_step as verified for this target.",
+        "limitations": [
+          "Runtime verification does not prove a separate renderer or device host."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.verified_runtime"
+        ],
+        "examples": [
+          "game --project <game-root> --json platform capabilities"
+        ]
+      },
+      {
+        "id": "semantic_observation",
+        "category": "runtime",
+        "status": "verified",
+        "source_state": "verified_runtime",
+        "verification_scope": "current_target_core",
+        "checked_by": "platform_capabilities",
+        "summary": "Core reports semantic_observation as verified for this target.",
+        "limitations": [
+          "Runtime verification does not prove a separate renderer or device host."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.verified_runtime"
+        ],
+        "examples": [
+          "game --project <game-root> --json platform capabilities"
+        ]
+      },
+      {
+        "id": "ios_platform_wrapper",
+        "category": "host",
+        "status": "pending",
+        "source_state": "pending_host_work",
+        "verification_scope": "other_target_host",
+        "checked_by": "platform_capabilities",
+        "summary": "Host work ios_platform_wrapper is not verified by this Core build.",
+        "limitations": [
+          "No Core-only example can prove this host capability; use a target host probe."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.pending_host_work"
+        ],
+        "examples": [
+          "game --project <game-root> --json platform capabilities"
+        ]
+      },
+      {
+        "id": "android_3d_renderer_and_audio",
+        "category": "host",
+        "status": "pending",
+        "source_state": "pending_host_work",
+        "verification_scope": "other_target_host",
+        "checked_by": "platform_capabilities",
+        "summary": "Host work android_3d_renderer_and_audio is not verified by this Core build.",
+        "limitations": [
+          "No Core-only example can prove this host capability; use a target host probe."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.pending_host_work"
+        ],
+        "examples": [
+          "game --project <game-root> --json platform capabilities"
+        ]
+      },
+      {
+        "id": "diagnostics.scenario_replay",
+        "category": "sdk_diagnostics",
+        "status": "partial",
+        "source_state": "implemented_scope_limited",
+        "verification_scope": "compiled_sdk_not_live_project_probe",
+        "checked_by": "CLI diagnostic inventory",
+        "summary": "Versioned isolated headless start replay with independent regression verdicts",
+        "limitations": [
+          "Checkpoint, capture/trace store, schema migrations and renderer replay are not implemented."
+        ],
+        "evidence": [
+          "docs/diagnostics-replay.md"
+        ],
+        "examples": [
+          "game --project <game-root> --json replay fingerprint"
+        ]
+      },
+      {
+        "id": "diagnostics.luau_memory",
+        "category": "sdk_diagnostics",
+        "status": "partial",
+        "source_state": "implemented_scope_limited",
+        "verification_scope": "compiled_sdk_not_live_project_probe",
+        "checked_by": "CLI diagnostic inventory",
+        "summary": "Bounded Lua retained heap history and explicit full-GC wall time",
+        "limitations": [
+          "Only main Luau VM. No retaining paths, JS GC, Rust allocator or GPU bytes; growth is not proof of a leak. Web hosts require rebuilding their development runtime."
+        ],
+        "evidence": [
+          "docs/diagnostics-replay.md"
+        ],
+        "examples": [
+          "Developer API: memory.sample {label, collect:false, warmup:false}; memory.report"
+        ]
+      },
+      {
+        "id": "diagnostics.luau_profiler",
+        "category": "sdk_diagnostics",
+        "status": "partial",
+        "source_state": "implemented_scope_limited",
+        "verification_scope": "compiled_sdk_not_live_project_probe",
+        "checked_by": "CLI diagnostic inventory",
+        "summary": "Luau sampling, allocation growth and incremental GC plus Core phase timing",
+        "limitations": [
+          "Wall-clock samples are not exact CPU time or allocation callsites. Host/GPU measurements require separate host evidence."
+        ],
+        "evidence": [
+          "docs/diagnostics-replay.md"
+        ],
+        "examples": [
+          "Developer API: profile.start {sampling:true}; profile; profile.stop"
+        ]
+      },
+      {
+        "id": "jobs",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System jobs is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "world",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System world is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "input",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System input is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "observation",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System observation is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "physics3d",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System physics3d is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "physics2d",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System physics2d is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "camera2d",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System camera2d is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "camera3d",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System camera3d is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "random",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System random is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "ui",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System ui is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "save",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System save is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "audio",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System audio is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "spine",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System spine is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "particle",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System particle is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      },
+      {
+        "id": "effekseer",
+        "category": "engine_system",
+        "status": "partial",
+        "source_state": "compiled_system_without_project",
+        "verification_scope": "current_binary_without_project",
+        "checked_by": "platform_capabilities",
+        "summary": "System effekseer is compiled into this binary.",
+        "limitations": [
+          "Compile presence does not prove project enablement, host presentation, or optional dependency readiness."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.compiled_systems"
+        ],
+        "examples": [
+          "game --project <game-root> --json systems list",
+          "game --project <game-root> --json systems search <meaning>"
+        ]
+      }
+    ],
+    "project_systems": null,
+    "renderers": [
+      {
+        "id": "renderer.native.wgpu",
+        "category": "renderer",
+        "status": "partial",
+        "source_state": "host_declared_not_probed",
+        "verification_scope": "host_not_probed",
+        "checked_by": "renderer_declaration",
+        "summary": "Native preview uses the wgpu presentation path when a window and GPU adapter initialize.",
+        "limitations": [
+          "This snapshot does not open a native window or probe the GPU adapter.",
+          "Asset decoding and presentation remain host responsibilities."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.renderer_probe=not_probed",
+          "source:crates/unone-native-player/src/lib.rs"
+        ],
+        "examples": [
+          "game --project <game-root> preview --watch"
+        ]
+      },
+      {
+        "id": "renderer.web.three",
+        "category": "renderer",
+        "status": "partial",
+        "source_state": "host_declared_not_probed",
+        "verification_scope": "host_not_probed",
+        "checked_by": "renderer_declaration",
+        "summary": "The Web runner's Three.js adapter selects WebGPU when available and falls back to WebGL.",
+        "limitations": [
+          "The browser/device was not probed by this Core snapshot.",
+          "WebGPU availability does not guarantee device initialization or asset parity."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.renderer_probe=not_probed",
+          "source:web/renderer/index.js;web/renderer/three.js"
+        ],
+        "examples": [
+          "From a server root containing both Unone and the project, run `python -m http.server 8000`, then open `http://127.0.0.1:8000/Unone/web/runner/?project=/<project-relative-path>/`."
+        ]
+      },
+      {
+        "id": "renderer.webgpu_raw",
+        "category": "renderer",
+        "status": "partial",
+        "source_state": "host_declared_not_probed",
+        "verification_scope": "host_not_probed",
+        "checked_by": "renderer_declaration",
+        "summary": "The Web host includes a diagnostic raw WebGPU renderer adapter.",
+        "limitations": [
+          "It requires a browser WebGPU adapter and is not a cross-platform release guarantee."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.renderer_probe=not_probed",
+          "source:web/renderer/index.js;web/shared/webgpu-snapshot.js"
+        ],
+        "examples": [
+          "From a server root containing both Unone and the project, run `python -m http.server 8000`, then open `http://127.0.0.1:8000/Unone/web/runner/?project=/<project-relative-path>/&renderer=webgpu-raw`."
+        ]
+      },
+      {
+        "id": "renderer.web.presentation",
+        "category": "renderer",
+        "status": "partial",
+        "source_state": "host_declared_not_probed",
+        "verification_scope": "host_not_probed",
+        "checked_by": "renderer_declaration",
+        "summary": "The Web presentation sample can exercise Spine/Effekseer WebGL hooks when their host runtimes are available.",
+        "limitations": [
+          "Native preview and Android do not currently provide equivalent presentation evidence.",
+          "Spine licensing and host runtime availability remain external requirements."
+        ],
+        "evidence": [
+          "unone_platform_capabilities.renderer_probe=not_probed",
+          "source:web/presentation/main.js;web/renderer/effekseer.js;web/vendor/spine"
+        ],
+        "examples": [
+          "From the Unone repository root run `scripts/build-web-live.ps1`, serve a root containing Unone and a presentation-compatible project with `python -m http.server 8001`, then use the project URL documented in `web/presentation/README.md`."
+        ]
+      }
+    ],
+    "plugins": [],
+    "plugin_search_roots": [
+      "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game\\.unone/plugins",
+      "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game\\plugins",
+      "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\plugins",
+      "D:\\Projects\\Unone\\target\\release\\../plugins"
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "PROJECT_CONFIG_NOT_FOUND",
+      "severity": "ERROR",
+      "summary": "Unone project configuration was not found",
+      "explanation": "Could not read \\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game\\project.unone.json: 系統找不到指定的檔案。 (os error 2)",
+      "facts": {},
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": []
+}

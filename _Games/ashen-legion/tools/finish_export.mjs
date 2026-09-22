@@ -36,7 +36,7 @@ else if(typeof payload.entry_script_source==='string')payload.entry_script_sourc
 else if(typeof payload.scripts==='object')payload.scripts['main.luau']=script;
 else throw Error('Unknown HostProject source field: '+Object.keys(payload));
 writeFileSync(payloadPath,JSON.stringify(payload));
-for(const f of ['canvas-ui.mjs','host-input.js'])copyFileSync('D:/Projects/Unone/web/shared/'+f,join(out,'web/shared',f));
+for(const f of ['canvas-ui.mjs','ui-contract.mjs','ui-geometry.mjs','host-input.js'])copyFileSync('D:/Projects/Unone/web/shared/'+f,join(out,'web/shared',f));
 // Compatibility wiring for the pinned official player: its existing SSAO module
 // exposes setAO, but this renderer revision omitted forwarding it. No new effect
 // implementation or gameplay rules. Stop applying once upstream exports setAO.

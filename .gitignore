@@ -17,4 +17,5 @@ crates/unone-native-player/target/
 _Games/**/*.blend[0-9]*
 _Games/**/__pycache__/
 _Games/**/*.pyc
+scripts/__pycache__/
 _Games/**/blender/*.log

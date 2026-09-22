@@ -1,0 +1,5 @@
+{
+  "config": { "name": "ExecutionModeExpectedFailure", "entry_script": "mode-failure.luau" },
+  "script": "return {start=function(api) end,update=function(api,dt) if api.input.isDown('Right') then api.observation.set('partial',true); error('intentional failure after state mutation') end end}",
+  "scene": { "entities": [] }
+}

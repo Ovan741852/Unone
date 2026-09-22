@@ -264,7 +264,7 @@ fn tool_definitions() -> Vec<Value> {
     vec![
         tool(
             "unone_session",
-            "Control and observe a persistent developer session",
+            "Control, observe and diagnose a persistent developer session",
             "Open one headless runtime per connection. Snapshot selects stable entity/UI ids and JSON pointers. Step applies keyboard/pointer input for 1..600 deterministic ticks. Journal reads bounded history; watch polls incremental filtered changes without ticking (use next_cursor, honor lost_events). Enact previews or atomically applies transient typed edits between ticks using expected_revision; it never saves authoring files. Perf exposes measured runtime phase costs, counts and memory for AI analysis, not an automatic bottleneck verdict; rendering/transport are excluded. Recording exports inputs/edits and expected digests; replay reruns them independently and reports the first divergence. A script failure freezes mutations but preserves inspection and recording. Close releases the session. This does not attach to a separately running browser/native preview.",
             unone_engine::developer_request_schema(),
             false,
@@ -1088,11 +1088,10 @@ fn ui_preview(
         ));
     };
     let mut report = unone_engine::inspect_layout(&tree, cols, rows);
-    if let Some(policy)=overlap_policy {
-        if let Err(error)=unone_engine::apply_overlap_policy(&mut report,policy) {
+    if let Some(policy)=overlap_policy
+        && let Err(error)=unone_engine::apply_overlap_policy(&mut report,policy) {
             return EngineResult::failure(Diagnostic::error("UI_OVERLAP_POLICY_INVALID","Unsafe or stale overlap policy",error));
         }
-    }
     let findings = report.findings.clone();
     let mut result = EngineResult::success(report);
     for finding in &findings {

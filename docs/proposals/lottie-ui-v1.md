@@ -188,7 +188,9 @@ The implementation is not supported until all gates have evidence tied to a
 commit/version:
 
 1. Load all four fixtures in Unone preview **and** an exported game without a
-   CDN; capture non-empty frames 0, 15, 40, 80 and 110.
+   CDN; capture frames 0, 15, 40, 80 and 110. The supplied fixtures intentionally
+   render transparent at frame 0 (entry) and frame 120 (exit); frame 15, 40,
+   80 and 110 must contain visible pixels where the artwork specifies them.
 2. Exercise once/loop, frame/marker seek, pause/resume, stop/restart, speed,
    removal/disposal and source replacement.
 3. Prove no stale completion or double-fire after seek, restart or source swap;

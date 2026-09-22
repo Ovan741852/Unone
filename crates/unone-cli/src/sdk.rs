@@ -617,67 +617,6 @@ pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value>
     }
     result
 }
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn traversal_and_unknown_manifest_keys_fail() {
-        let root = tempfile::tempdir().unwrap();
-        for path in ["../a", "/a", "C:/a", "a\\b", "a/../b"] {
-            assert!(safe(root.path(), path).is_err());
-        }
-        assert!(serde_json::from_value::<Manifest>(json!({"typo":1})).is_err());
-    }
-    #[test]
-    fn unsupported_target_never_creates_output() {
-        let root = tempfile::tempdir().unwrap();
-        let out = root.path().join("game");
-        assert!(
-            export(root.path(), &out, None, "ios", None, false)
-                .unwrap_err()
-                .to_string()
-                .contains("SDK_TARGET_UNSUPPORTED")
-        );
-        assert!(!out.exists());
-        assert!(
-            export(root.path(), &out, None, "android-webview", None, false)
-                .unwrap_err()
-                .to_string()
-                .contains("WebView")
-        );
-        assert!(!out.exists());
-    }
-
-    #[test]
-    fn windows_prepare_requires_the_native_ready_contract() {
-        let error = native_readiness_gate(&json!({})).unwrap_err();
-        assert!(error
-            .to_string()
-            .contains("NATIVE_READY_DESCRIPTOR_UNAVAILABLE"));
-
-        let error = native_readiness_gate(&json!({
-            "readiness": {"contract": "legacy-ready-v0"}
-        }))
-        .unwrap_err();
-        assert!(error
-            .to_string()
-            .contains("NATIVE_READY_DESCRIPTOR_UNAVAILABLE"));
-    }
-
-    #[test]
-    fn windows_prepare_accepts_the_declared_native_ready_shape() {
-        native_readiness_gate(&json!({
-            "readiness": {
-                "contract": "unone.native-ready.v1",
-                "stdout_prefix": "UNONE_NATIVE_READY ",
-                "emission": "once_after_first_render_ok_true",
-                "requires_surface": true,
-                "headless": "never_emits"
-            }
-        }))
-        .unwrap();
-    }
-}
 
 fn native_export(
     project: &Path,
@@ -823,4 +762,65 @@ fn native_readiness_gate(metadata: &Value) -> Result<()> {
         "NATIVE_READY_DESCRIPTOR_INCOMPATIBLE: Windows runtime readiness declaration is not compatible with unone.native-ready.v1; rebuild or update the native runtime"
     );
     Ok(())
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn traversal_and_unknown_manifest_keys_fail() {
+        let root = tempfile::tempdir().unwrap();
+        for path in ["../a", "/a", "C:/a", "a\\b", "a/../b"] {
+            assert!(safe(root.path(), path).is_err());
+        }
+        assert!(serde_json::from_value::<Manifest>(json!({"typo":1})).is_err());
+    }
+    #[test]
+    fn unsupported_target_never_creates_output() {
+        let root = tempfile::tempdir().unwrap();
+        let out = root.path().join("game");
+        assert!(
+            export(root.path(), &out, None, "ios", None, false)
+                .unwrap_err()
+                .to_string()
+                .contains("SDK_TARGET_UNSUPPORTED")
+        );
+        assert!(!out.exists());
+        assert!(
+            export(root.path(), &out, None, "android-webview", None, false)
+                .unwrap_err()
+                .to_string()
+                .contains("WebView")
+        );
+        assert!(!out.exists());
+    }
+
+    #[test]
+    fn windows_prepare_requires_the_native_ready_contract() {
+        let error = native_readiness_gate(&json!({})).unwrap_err();
+        assert!(error
+            .to_string()
+            .contains("NATIVE_READY_DESCRIPTOR_UNAVAILABLE"));
+
+        let error = native_readiness_gate(&json!({
+            "readiness": {"contract": "legacy-ready-v0"}
+        }))
+        .unwrap_err();
+        assert!(error
+            .to_string()
+            .contains("NATIVE_READY_DESCRIPTOR_UNAVAILABLE"));
+    }
+
+    #[test]
+    fn windows_prepare_accepts_the_declared_native_ready_shape() {
+        native_readiness_gate(&json!({
+            "readiness": {
+                "contract": "unone.native-ready.v1",
+                "stdout_prefix": "UNONE_NATIVE_READY ",
+                "emission": "once_after_first_render_ok_true",
+                "requires_surface": true,
+                "headless": "never_emits"
+            }
+        }))
+        .unwrap();
+    }
 }

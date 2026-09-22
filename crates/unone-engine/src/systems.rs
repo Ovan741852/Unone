@@ -513,7 +513,7 @@ fn descriptors() -> Vec<SystemDescriptor> {
             SystemStatus::Available,
             true,
             true,
-            vec!["api.ui.setRoot"],
+            vec!["api.ui.setRoot", "api.ui.inspect"],
             vec!["ui"],
             "When disabled, api.ui reports SYSTEM_DISABLED and the host receives no UI tree.",
             "Headless simulations or games whose host builds the UI independently.",
@@ -581,6 +581,51 @@ fn descriptors() -> Vec<SystemDescriptor> {
     ]
 }
 
+pub fn build_feature(id: &str) -> Option<&'static str> {
+    match id {
+        "jobs" => Some("jobs"),
+        "physics2d" => Some("physics2d"),
+        "physics3d" => Some("physics3d"),
+        "camera2d" => Some("camera2d"),
+        "camera3d" => Some("camera3d"),
+        "random" => Some("random"),
+        "ui" => Some("ui"),
+        "save" => Some("save"),
+        "audio" => Some("audio"),
+        "spine" => Some("spine"),
+        "particle" => Some("particle"),
+        "effekseer" => Some("effekseer"),
+        _ => None,
+    }
+}
+pub fn is_compiled(id: &str) -> bool {
+    match id {
+        "jobs" => cfg!(feature = "jobs"),
+        "physics2d" => cfg!(feature = "physics2d"),
+        "physics3d" => cfg!(feature = "physics3d"),
+        "camera2d" => cfg!(feature = "camera2d"),
+        "camera3d" => cfg!(feature = "camera3d"),
+        "random" => cfg!(feature = "random"),
+        "ui" => cfg!(feature = "ui"),
+        "save" => cfg!(feature = "save"),
+        "audio" => cfg!(feature = "audio"),
+        "spine" => cfg!(feature = "spine"),
+        "particle" => cfg!(feature = "particle"),
+        "effekseer" => cfg!(feature = "effekseer"),
+        _ => matches!(id, "world" | "input" | "observation"),
+    }
+}
+pub fn compiled_systems() -> &'static [String] {
+    static IDS: std::sync::LazyLock<Vec<String>> = std::sync::LazyLock::new(|| {
+        descriptors()
+            .into_iter()
+            .filter(|d| d.compiled)
+            .map(|d| d.id)
+            .collect()
+    });
+    &IDS
+}
+
 #[cfg(test)]
 mod tests {
     use std::collections::BTreeMap;
@@ -638,49 +683,4 @@ mod tests {
         assert!(describe("PHYSICS2D").is_some());
         assert!(describe("nope").is_none());
     }
-}
-
-pub fn build_feature(id: &str) -> Option<&'static str> {
-    match id {
-        "jobs" => Some("jobs"),
-        "physics2d" => Some("physics2d"),
-        "physics3d" => Some("physics3d"),
-        "camera2d" => Some("camera2d"),
-        "camera3d" => Some("camera3d"),
-        "random" => Some("random"),
-        "ui" => Some("ui"),
-        "save" => Some("save"),
-        "audio" => Some("audio"),
-        "spine" => Some("spine"),
-        "particle" => Some("particle"),
-        "effekseer" => Some("effekseer"),
-        _ => None,
-    }
-}
-pub fn is_compiled(id: &str) -> bool {
-    match id {
-        "jobs" => cfg!(feature = "jobs"),
-        "physics2d" => cfg!(feature = "physics2d"),
-        "physics3d" => cfg!(feature = "physics3d"),
-        "camera2d" => cfg!(feature = "camera2d"),
-        "camera3d" => cfg!(feature = "camera3d"),
-        "random" => cfg!(feature = "random"),
-        "ui" => cfg!(feature = "ui"),
-        "save" => cfg!(feature = "save"),
-        "audio" => cfg!(feature = "audio"),
-        "spine" => cfg!(feature = "spine"),
-        "particle" => cfg!(feature = "particle"),
-        "effekseer" => cfg!(feature = "effekseer"),
-        _ => matches!(id, "world" | "input" | "observation"),
-    }
-}
-pub fn compiled_systems() -> &'static [String] {
-    static IDS: std::sync::LazyLock<Vec<String>> = std::sync::LazyLock::new(|| {
-        descriptors()
-            .into_iter()
-            .filter(|d| d.compiled)
-            .map(|d| d.id)
-            .collect()
-    });
-    &IDS
 }

@@ -633,13 +633,12 @@ impl EngineRuntime {
                 "JOB_MODULES_REQUIRE_JOBS_SYSTEM".into(),
             )));
         }
-        if let Some(sources) = &job_sources {
-            if sources.keys().ne(runtime.config.job_scripts.keys()) {
+        if let Some(sources) = &job_sources
+            && sources.keys().ne(runtime.config.job_scripts.keys()) {
                 return Err(Box::new(script_diagnostic(
                     &runtime.paths,
                     "JOB_MODULE_SOURCE_MISMATCH".into(),
                 )));
-            }
         }
         #[cfg(feature = "jobs")]
         for (id, path) in &runtime.config.job_scripts {
@@ -1151,6 +1150,19 @@ impl EngineRuntime {
         snapshot.observations = self.observations.borrow().clone();
         snapshot.ui = self.ui.borrow().clone();
         snapshot
+    }
+
+    /// Return only the semantic observations used by host-side agents.
+    ///
+    /// Unlike `observe`, this avoids cloning the complete world snapshot
+    /// (entities, particles, UI, and jobs) for frequent polling requests.
+    pub fn semantic_observations(&self) -> BTreeMap<String, serde_json::Value> {
+        self.observations.borrow().clone()
+    }
+
+    /// Current simulation frame without constructing a world snapshot.
+    pub fn current_frame(&self) -> u64 {
+        self.world.borrow().frame
     }
 
     /// UJB1 host transport; opaque payloads never pass through JSON values.
@@ -1666,6 +1678,17 @@ fn analyzer_path() -> PathBuf {
 }
 
 fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
+    // Only promote a location explicitly reported for this exact loaded chunk.
+    // Unknown/truncated chunk names remain unknown rather than guessing a line.
+    let script_file = paths.entry_script.display().to_string();
+    let reported_line = [format!("[string \"{script_file}\"]:"), format!("{script_file}:")]
+        .iter().find_map(|prefix| {
+            let offset = message.find(prefix)? + prefix.len();
+            let suffix = &message[offset..];
+            let digits = suffix.split_once(':')?.0;
+            if digits.is_empty() || !digits.bytes().all(|b| b.is_ascii_digit()) { return None; }
+            digits.parse::<u32>().ok().filter(|n| *n > 0)
+        });
     let mut diagnostic = Diagnostic::error(
         "LUAU_RUNTIME_ERROR",
         "Luau script could not be loaded or executed",
@@ -1678,7 +1701,7 @@ fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
     });
     diagnostic.source = Some(SourceLocation {
         file: paths.entry_script.display().to_string(),
-        line: None,
+        line: reported_line,
         column: None,
     });
     diagnostic.likely_causes = vec![

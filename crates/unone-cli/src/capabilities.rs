@@ -524,6 +524,7 @@ mod tests {
     #[test]
     fn runtime_records_keep_verified_and_pending_states_separate() {
         let platform = PlatformCapabilities {
+            execution: unone_engine::execution_mode(),
             compiled_systems: vec!["physics2d".to_string()],
             target_family: "native".to_string(),
             target_os: "windows".to_string(),
@@ -583,6 +584,7 @@ mod tests {
     #[test]
     fn platform_record_separates_current_and_other_target_host_work() {
         let platform = PlatformCapabilities {
+            execution: unone_engine::execution_mode(),
             compiled_systems: Vec::new(),
             target_family: "native".to_string(),
             target_os: "ios".to_string(),

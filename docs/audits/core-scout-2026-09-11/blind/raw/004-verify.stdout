@@ -1,0 +1,85 @@
+{
+  "ok": false,
+  "value": {
+    "project": "PublicCoreProbe",
+    "steps": [
+      {
+        "name": "types",
+        "status": "failed",
+        "summary": "the entry script did not pass the Luau contract or type check",
+        "command": "game check --types",
+        "diagnostics": [
+          {
+            "code": "LUAU_ANALYZER_NOT_FOUND",
+            "severity": "ERROR",
+            "summary": "Luau static analyzer not found",
+            "explanation": "`game check --types` requires the official luau-analyze; the runtime embeds only the Luau interpreter and does not pretend to run full type analysis.",
+            "facts": {
+              "error": "program not found",
+              "override_environment": "UNONE_LUAU_ANALYZER",
+              "requested_tool": "luau-analyze"
+            },
+            "likely_causes": [],
+            "suggested_actions": [
+              {
+                "action": "install_luau_analyzer",
+                "description": "Fetch the pinned official analyzer into .toolcache. Run it from the engine repository root; it verifies the download against a recorded hash.",
+                "command": "powershell -File scripts/install-luau-analyze.ps1"
+              },
+              {
+                "action": "use_existing_luau_analyzer",
+                "description": "Or point the engine at an analyzer you already have.",
+                "command": "$env:UNONE_LUAU_ANALYZER = 'D:/tools/luau-analyze.exe'"
+              }
+            ],
+            "source": null
+          }
+        ]
+      },
+      {
+        "name": "assets",
+        "status": "passed",
+        "summary": "0 declared, 0 scene references, ready_for_packaging true",
+        "command": "game asset inspect --strict",
+        "diagnostics": []
+      },
+      {
+        "name": "layout",
+        "status": "not_applicable",
+        "summary": "the game publishes no UI tree",
+        "command": "game ui preview --strict --frames 1 --seed 42",
+        "diagnostics": []
+      },
+      {
+        "name": "tests",
+        "status": "passed",
+        "summary": "2/2 deterministic cases passed",
+        "command": "game test",
+        "diagnostics": []
+      }
+    ],
+    "passed": 2,
+    "failed": 1,
+    "not_applicable": 1,
+    "step_source": "default"
+  },
+  "diagnostics": [
+    {
+      "code": "VERIFY_FAILED",
+      "severity": "ERROR",
+      "summary": "A verify gate failed",
+      "explanation": "1 steps failed; each step's command field can be rerun independently.",
+      "facts": {
+        "failed_steps": [
+          "types"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": [
+    "verify ran 4 gates in the default order: 2 passed, 1 failed, 1 not applicable"
+  ]
+}

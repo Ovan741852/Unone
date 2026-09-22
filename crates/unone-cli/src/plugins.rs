@@ -120,7 +120,7 @@ pub fn inspect(project: &Path, id: &str) -> EngineResult<PluginInspection> {
             manifest_path: record.manifest_path.display().to_string(),
             manifest: record.manifest,
         }),
-        Err(diagnostic) => EngineResult::failure(diagnostic),
+        Err(diagnostic) => EngineResult::failure(*diagnostic),
     }
 }
 
@@ -132,7 +132,7 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
     let project_root = fs::canonicalize(project).unwrap_or_else(|_| project.to_path_buf());
     let record = match find_record(project, id) {
         Ok(record) => record,
-        Err(diagnostic) => return EngineResult::failure(diagnostic),
+        Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
     if !record
         .manifest
@@ -201,8 +201,8 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
             ));
         }
     };
-    if let Some(mut stdin) = child.stdin.take() {
-        if let Err(error) = stdin
+    if let Some(mut stdin) = child.stdin.take()
+        && let Err(error) = stdin
             .write_all(&payload)
             .and_then(|_| stdin.write_all(b"\n"))
         {
@@ -213,7 +213,6 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
                 error.to_string(),
             ));
         }
-    }
     let output = match child.wait_with_output() {
         Ok(output) => output,
         Err(error) => {
@@ -272,13 +271,11 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
             .get("diagnostics")
             .cloned()
             .and_then(|raw| serde_json::from_value::<Vec<Diagnostic>>(raw).ok())
-        {
-            if let Some(first) = diagnostics.first().cloned() {
+            && let Some(first) = diagnostics.first().cloned() {
                 let mut result = EngineResult::failure(first);
                 result.diagnostics.extend(diagnostics.into_iter().skip(1));
                 return result;
             }
-        }
         let mut diagnostic = Diagnostic::error(
             "PLUGIN_TOOL_FAILED",
             "The plugin tool reported a failure",
@@ -311,7 +308,7 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
     result
 }
 
-fn find_record(project: &Path, id: &str) -> Result<PluginRecord, Diagnostic> {
+fn find_record(project: &Path, id: &str) -> Result<PluginRecord, Box<Diagnostic>> {
     let roots = search_roots(project);
     let (records, diagnostics) = discover_records(&roots);
     if let Some(record) = records.into_iter().find(|record| record.manifest.id == id) {
@@ -334,7 +331,7 @@ fn find_record(project: &Path, id: &str) -> Result<PluginRecord, Diagnostic> {
             description: "List the plugins discoverable for the current project and engine.".to_string(),
             command: Some("game plugin list --json".to_string()),
         });
-    Err(diagnostic)
+    Err(Box::new(diagnostic))
 }
 
 fn search_roots(project: &Path) -> Vec<PathBuf> {
@@ -345,9 +342,8 @@ fn search_roots(project: &Path) -> Vec<PathBuf> {
     if let Ok(current_dir) = env::current_dir() {
         roots.push(current_dir.join("plugins"));
     }
-    if let Ok(exe) = env::current_exe() {
-        if let Some(bin) = exe.parent() { roots.push(bin.join("../plugins")); }
-    }
+    if let Ok(exe) = env::current_exe()
+        && let Some(bin) = exe.parent() { roots.push(bin.join("../plugins")); }
     let mut unique = Vec::new();
     for root in roots {
         let absolute = if root.is_absolute() {
@@ -389,7 +385,7 @@ fn discover_records(roots: &[PathBuf]) -> (Vec<PluginRecord>, Vec<Diagnostic>) {
                 }) {
                 Ok(manifest) => {
                     if let Err(diagnostic) = validate_manifest(&manifest) {
-                        diagnostics.push(diagnostic);
+                        diagnostics.push(*diagnostic);
                     } else if records
                         .iter()
                         .any(|record: &PluginRecord| record.manifest.id == manifest.id)
@@ -419,20 +415,20 @@ fn discover_records(roots: &[PathBuf]) -> (Vec<PluginRecord>, Vec<Diagnostic>) {
     (records, diagnostics)
 }
 
-fn validate_manifest(manifest: &PluginManifest) -> Result<(), Diagnostic> {
+fn validate_manifest(manifest: &PluginManifest) -> Result<(), Box<Diagnostic>> {
     if manifest.api != PLUGIN_API {
-        return Err(Diagnostic::error(
+        return Err(Box::new(Diagnostic::error(
             "PLUGIN_API_UNSUPPORTED",
             "Unsupported plugin protocol version",
             format!("Expected {}, found {}.", PLUGIN_API, manifest.api),
-        ));
+        )));
     }
     if manifest.id.trim().is_empty() || manifest.entry.command.trim().is_empty() {
-        return Err(Diagnostic::error(
+        return Err(Box::new(Diagnostic::error(
             "PLUGIN_MANIFEST_INVALID",
             "The plugin manifest is missing a required field",
             "id and entry.command must not be empty strings.",
-        ));
+        )));
     }
     Ok(())
 }

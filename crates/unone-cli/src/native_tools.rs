@@ -12,6 +12,53 @@ use std::{
 };
 use unone_engine::{EngineRuntime, InputFrame, PreviewRequest, WorldSnapshot};
 
+fn native_process_rss_bytes() -> Value {
+    #[cfg(windows)]
+    {
+        use std::mem::size_of;
+        use windows_sys::Win32::System::{
+            ProcessStatus::{GetProcessMemoryInfo, PROCESS_MEMORY_COUNTERS},
+            Threading::GetCurrentProcess,
+        };
+
+        let mut counters = PROCESS_MEMORY_COUNTERS {
+            cb: size_of::<PROCESS_MEMORY_COUNTERS>() as u32,
+            ..Default::default()
+        };
+        // SAFETY: GetCurrentProcess returns a valid pseudo-handle and counters
+        // points to a buffer with the size advertised in cb.
+        if unsafe {
+            GetProcessMemoryInfo(
+                GetCurrentProcess(),
+                &mut counters,
+                size_of::<PROCESS_MEMORY_COUNTERS>() as u32,
+            )
+        } != 0
+        {
+            return json!(counters.WorkingSetSize as u64);
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        if let Ok(status) = std::fs::read_to_string("/proc/self/status") {
+            if let Some(kib) = status.lines().find_map(|line| {
+                line.strip_prefix("VmRSS:")
+                    .and_then(|value| value.split_whitespace().next())
+                    .and_then(|value| value.parse::<u64>().ok())
+            }) {
+                return json!(kib * 1024);
+            }
+        }
+    }
+
+    json!("unavailable")
+}
+
+fn unavailable_memory_value() -> Value {
+    json!("unavailable")
+}
+
 pub struct Pending {
     request: Value,
     reply: mpsc::SyncSender<Value>,
@@ -303,14 +350,16 @@ impl State {
             };
             Ok(match method {
                 "describe" => {
-                    json!({"version":1,"host":"native","methods":["jobs","profile.start","profile.stop","memory.sample","memory.report","memory.reset","screenshot","describe","snapshot","observations","hierarchy","console","network","profile","memory","tools.list","tools.invoke","pause","step","input","journal"],"unavailable":["instances.transport","bloom","js_heap","wasm_linear_memory","browser_network"],"semantics":"Same native runtime, between-tick commands. Lua callbacks are not transactional."})
+                    json!({"version":1,"host":"native","renderer":"cli-primitive-preview","methods":["jobs","profile.start","profile.stop","memory.sample","memory.report","memory.reset","screenshot","describe","snapshot","observations","hierarchy","console","network","profile","memory","tools.list","tools.invoke","pause","step","input","journal"],"presentation":{"bloom":"unsupported by this CLI primitive renderer; use the separate native player for configured Bloom"},"unavailable":["instances.transport","bloom","bloom.toggle","js_heap","wasm_linear_memory","browser_network"],"semantics":"Same native runtime, between-tick commands. Lua callbacks are not transactional."})
                 }
                 "jobs" => json!({"runtime":runtime.jobs_report(),"host":{"backend":"native"},"note":"Timing does not affect next-tick delivery; source paths and job IDs join runtime traces."}),
                 "snapshot" => snapshot()?,
-                "observations" => {
-                    let s = runtime.observe();
-                    json!({"frame":s.frame,"observations":s.observations,"host":"native","paused":self.paused})
-                }
+                "observations" => json!({
+                    "frame": runtime.current_frame(),
+                    "observations": runtime.semantic_observations(),
+                    "host": "native",
+                    "paused": self.paused
+                }),
                 "tools.list" => runtime
                     .preview_request(PreviewRequest::Tools {})
                     .map_err(|e| anyhow::anyhow!(e.explanation))?["tools"]
@@ -342,7 +391,15 @@ impl State {
                     json!({"host":"native","frame":data["counts_frame"],"runtime":data["performance"],"window":data["window"],"build":data["build"],"jobs":data["jobs"],"host_window":null,"publication":null,"renderer":{"render_ms":self.render_ms,"dropped_steps":self.dropped_steps},"paused":self.paused})
                 }
                 "memory" => {
-                    json!({"host":"native","luau_used_bytes":runtime.preview_request(PreviewRequest::Profile {}).map_err(|e|anyhow::anyhow!(e.explanation))?["performance"]["luau_memory_bytes"],"wasm_linear_bytes":null,"js_heap":null,"note":"Native process RSS and GPU allocations are not currently instrumented; no browser memory is reported as native memory."})
+                    json!({
+                        "host":"native",
+                        "luau_used_bytes":runtime.preview_request(PreviewRequest::Profile {}).map_err(|e|anyhow::anyhow!(e.explanation))?["performance"]["luau_memory_bytes"],
+                        "native_process_rss_bytes":native_process_rss_bytes(),
+                        "wasm_linear_bytes":unavailable_memory_value(),
+                        "js_heap":unavailable_memory_value(),
+                        "gpu_memory_bytes":unavailable_memory_value(),
+                        "note":"Native RSS is the process working set. GPU allocation bytes are unavailable because wgpu does not expose a portable live allocation counter."
+                    })
                 }
                 "memory.sample" | "memory.report" | "memory.reset" => {
                     let mut value = request.clone();
@@ -393,7 +450,7 @@ impl State {
                         .map_err(|e| anyhow::anyhow!(e.explanation))?
                 }
                 "bloom" => {
-                    anyhow::bail!("CAPABILITY_UNAVAILABLE: native preview has no Bloom renderer")
+                    anyhow::bail!("The CLI primitive preview renderer does not support Bloom. Relaunching cannot enable it. Use the separate native player with player.presentation.json for configured Bloom.")
                 }
                 _ => unreachable!(),
             })
@@ -403,7 +460,8 @@ impl State {
                 json!({"ok":true,"value":value,"diagnostics":[],"effects":if mutating {vec![json!({"kind":"developer_operation","method":method})]}else{vec![]}})
             }
             Err(error) => {
-                let mut result = failure("DEVELOPER_REQUEST_FAILED", &error.to_string());
+                let code = if method == "bloom" { "CAPABILITY_UNAVAILABLE" } else { "DEVELOPER_REQUEST_FAILED" };
+                let mut result = failure(code, &error.to_string());
                 if mutating {
                     result["effects"] = json!([{"kind":"inspect_state_before_retry","reason":"A started operation may have partially changed game state"}]);
                 }
@@ -434,6 +492,12 @@ mod tests {
         .unwrap();
         let mut state = State::default();
         let description = state.request(&mut runtime, json!({"method":"describe"}));
+        assert_eq!(description["value"]["renderer"], "cli-primitive-preview");
+        assert!(!description["value"]["methods"].as_array().unwrap().contains(&json!("bloom")));
+        assert!(description["value"]["unavailable"].as_array().unwrap().contains(&json!("bloom")));
+        let bloom = state.request(&mut runtime, json!({"method":"bloom","enabled":true}));
+        assert_eq!(bloom["ok"], false);
+        assert_eq!(bloom["diagnostics"][0]["code"], "CAPABILITY_UNAVAILABLE");
         assert!(
             description["value"]["methods"]
                 .as_array()
@@ -521,8 +585,12 @@ mod tests {
         );
         assert_eq!(
             state.request(&mut runtime, json!({"method":"memory"}))["value"]["wasm_linear_bytes"],
-            Value::Null
+            "unavailable"
         );
+        let memory = state.request(&mut runtime, json!({"method":"memory"}));
+        assert_eq!(memory["value"]["js_heap"], "unavailable");
+        assert_eq!(memory["value"]["gpu_memory_bytes"], "unavailable");
+        assert!(memory["value"].get("native_process_rss_bytes").is_some());
         let sample = state.request(&mut runtime, json!({"method":"memory.sample","label":"idle"}));
         assert_eq!(sample["ok"],true);
         assert_eq!(sample["value"]["samples"][0]["collected"],false);

@@ -1,0 +1,9 @@
+{
+  "entry_script": "scripts/main.luau",
+  "main_scene": "scenes/main.scene.json",
+  "name": "PublicCoreProbe",
+  "test_files": [
+    "tests/bootstrap-idle.test.json",
+    "tests/bootstrap-input.test.json"
+  ]
+}

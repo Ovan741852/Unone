@@ -182,7 +182,7 @@ impl PerformanceCollector {
         let sample = FrameSample { frame, timing };
         if self
             .slowest
-            .map_or(true, |slowest| timing.total >= slowest.timing.total)
+            .is_none_or(|slowest| timing.total >= slowest.timing.total)
         {
             self.slowest = Some(sample);
         }

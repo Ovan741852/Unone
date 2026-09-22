@@ -177,7 +177,7 @@ export async function createThreeRenderer(canvas, options = {}) {
       if (texture.error) throw texture.error;
       record.geometry = meshGeometry(THREE, data);
       record.material = new THREE.MeshBasicMaterial({map:texture.texture, side:THREE.DoubleSide, alphaTest:0.05});
-    }).catch(error => { record.error = error; });
+    }).catch(error => { record.error = new Error(`${error.message} [/${asset.source}]`); });
     meshAssets.set(id, record);
     return record;
   }

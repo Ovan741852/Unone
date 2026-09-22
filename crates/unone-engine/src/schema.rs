@@ -3,6 +3,7 @@
 use serde_json::Value;
 
 pub const SCHEMA_NAMES: &[&str] = &[
+    "ui",
     "project",
     "scene",
     "test",
@@ -25,6 +26,7 @@ pub const SCHEMA_NAMES: &[&str] = &[
 
 pub fn contract_schema(name: &str) -> Option<Value> {
     let schema = match name {
+        "ui" => schemars::schema_for!(crate::ui::RawUiTree),
         "project" => schemars::schema_for!(crate::ProjectConfig),
         "scene" => schemars::schema_for!(crate::SceneFile),
         "test" => schemars::schema_for!(crate::TestSpec),
@@ -48,6 +50,14 @@ pub fn contract_schema(name: &str) -> Option<Value> {
     let mut value = serde_json::to_value(schema).expect("schema serializes");
     if name == "developer" {
         value["type"] = serde_json::json!("object");
+    }
+    if name == "ui" {
+        let contract = crate::ui::ui_contract();
+        value["x-unone-ui-contract"] = serde_json::to_value(contract).unwrap();
+        value["$defs"]["UiBudget"]["properties"]["max_nodes"]["minimum"] = serde_json::json!(1);
+        value["$defs"]["UiBudget"]["properties"]["max_nodes"]["maximum"] =
+            serde_json::json!(contract.host_max_nodes);
+        value["properties"]["children"]["maxItems"] = serde_json::json!(contract.host_max_nodes);
     }
     value["$id"] = serde_json::json!(format!("https://unone.dev/schema/{name}.schema.json"));
     value["$comment"] = serde_json::json!(

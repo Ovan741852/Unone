@@ -2203,6 +2203,17 @@ local formalRoute="home"
 local formalPage=1
 local formalPreviousPhase=""
 local formalMuted=false
+-- BEGIN GENERATED UI SKINS
+local formalSkins:any={
+ ["control-quiet-v3"]={width=1940,height=412,x=76,y=161,left=80,top=80,right=80,bottom=80,scale=0.12},
+ ["shop-window-panel-v2"]={width=1285,height=1224,x=0,y=0,left=360,top=540,right=360,bottom=360,scale=0.2},
+ ["shop-card-rare-v2"]={width=940,height=1672,x=0,y=0,left=210,top=360,right=210,bottom=360,scale="width"},
+ ["shop-card-epic-v2"]={width=941,height=1672,x=0,y=0,left=210,top=360,right=210,bottom=360,scale="width"},
+ ["shop-card-legendary-v2"]={width=941,height=1672,x=0,y=0,left=210,top=360,right=210,bottom=360,scale="width"},
+ ["shop-button-primary-v2"]={width=2044,height=484,x=66,y=113,left=300,top=100,right=300,bottom=100,scale="height"},
+ ["shop-button-secondary-v2"]={width=1999,height=489,x=49,y=100,left=300,top=100,right=300,bottom=100,scale="height"}
+}
+-- END GENERATED UI SKINS
 -- Authored core-effect summaries; full conditions remain in the skill book.
 local skillSummaries:{[string]:string}={
  pierce="穿透 +1，用盡後消失",landing_spin="落地旋轉斬",critical="爆擊率 +10%",longlife="壽命 +15%",haste="移速 +15%",heavy="減速換取增傷",
@@ -2359,20 +2370,15 @@ publishFormalUI=function(api:any)
   table.insert(nodes,{kind="image",id=id,asset=asset,fit=id=="menu_art" and "cover" or (preserve and "contain" or "stretch"),rect=rect(x,y,w,h)})
  end
  nineSlice=function(id:string,prefix:string,x:number,y:number,w:number,h:number,border:number?)
-  -- Canonical 1440x900 layout; the shared presentation component preserves
-  -- these skin borders in pixels at other aspect ratios.
-  local window=string.find(prefix,"window")~=nil;local card=string.find(prefix,"card")~=nil
+  -- One texture / one logical Core node. The host owns patch rendering;
+  -- these approved art cut-lines and sizing choices remain game-owned.
+  local window=string.find(prefix,"window")~=nil
   if window then img(id.."_fill","texture://ui_shop-surface",x+.8,y+2,w-1.6,h-4)end
-  local left=min(window and 5 or card and w*210/940 or 2.1,w/2-.1);local right=left
-  local top=min(window and 12 or card and w*1440/900*360/940 or 1.1,h/2-.1)
-  local bottom=min(window and 8 or card and top or 1.1,h/2-.1)
-  local middleWidth=w-left-right;local middleHeight=h-top-bottom
-  local function tile(part:string,tx:number,ty:number,tw:number,th:number)
-   img(id.."_"..part,prefix.."-"..part,tx,ty,tw,th)
-  end
-  tile("tl",x,y,left,top);tile("t",x+left,y,middleWidth,top);tile("tr",x+w-right,y,right,top)
-  tile("l",x,y+top,left,middleHeight);tile("c",x+left,y+top,middleWidth,middleHeight);tile("r",x+w-right,y+top,right,middleHeight)
-  tile("bl",x,y+h-bottom,left,bottom);tile("b",x+left,y+h-bottom,middleWidth,bottom);tile("br",x+w-right,y+h-bottom,right,bottom)
+  local key=string.gsub(prefix,"texture://ui_","");local data=formalSkins[key]
+  assert(data,"UI_SKIN_MISSING: "..key.."; run build-formal-ui.mjs")
+  local scale=if data.scale=="width" then w*1920/100/data.width elseif data.scale=="height" then h*1080/100/data.height else data.scale*1.2
+  scale=min(scale,w*1920/100/(data.left+data.right+1),h*1080/100/(data.top+data.bottom+1))
+  table.insert(nodes,{kind="image",id=id,asset=prefix,fit="stretch",rect=rect(x,y,w,h),slice={left=data.left,top=data.top,right=data.right,bottom=data.bottom,pixels_per_unit=10.8/scale,source={x=data.x,y=data.y,width=data.width,height=data.height}}})
  end
  local function text(id:string,value:any,x:number,y:number,w:number,h:number)
   table.insert(nodes,{kind="text",id=id,text=tostring(value),rect=rect(x,y,w,h)})

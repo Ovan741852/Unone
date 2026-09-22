@@ -1,5 +1,10 @@
 # Profiling for AI-directed optimization
 
+Execution mode is now explicit in `execution` on profile reports and platform /
+developer-session metadata. Diagnostic preview builds disable Luau native codegen
+even when sampling is off. Pair diagnosis with a no-preview production-mode run;
+see [paired validation and Wasm JIT distinctions](runtime-mode-validation.md).
+
 Profiling is an engine primitive. Games keep their rules in Luau; AI chooses experiments and changes from evidence. No engine operation labels a subsystem as the bottleneck or automatically rewrites gameplay.
 
 Web development players and the native developer endpoint accept the same strict requests:
@@ -83,9 +88,11 @@ freed bytes, or Rust/JS allocation volume. Native and WASM object sizes can diff
 measure paired Luau incremental-GC interrupts, including automatic assists.
 They measure wall time within the update, with instrumentation overhead. They
 are already inside script CPU time: **do not add them again**. Luau full GC does
-not emit these pairs. `full_gc_ms`, `js_gc_ms`, `rust_allocation_bytes` are null,
-with explicit false capability flags. A RAF gap alone cannot prove GC, queue
-blocking, or actual display presentation. GPU timing remains separate.
+not emit these pairs. `full_gc_ms`, `js_gc_ms`, and `rust_allocation_bytes` remain
+null, while the report's versioned `availability` map labels each capability as
+`unsupported`, `not-applicable`, or `not-collected`; unavailable values are
+never encoded as zero. A RAF gap alone cannot prove GC, queue blocking, or actual display
+presentation. GPU timing remains separate.
 
 A supported GC step may report 0 ms when shorter than the host clock resolution;
 its step count still increases. Zero measured time does not prove zero work.

@@ -1,0 +1,97 @@
+{
+  "ok": true,
+  "value": {
+    "project": "PublicCoreProbe",
+    "root": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game",
+    "files": [
+      {
+        "path": "project.unone.json",
+        "role": "project_config"
+      },
+      {
+        "path": "scenes/main.scene.json",
+        "role": "main_scene"
+      },
+      {
+        "path": "scripts/main.luau",
+        "role": "entry_script"
+      },
+      {
+        "path": "tests/bootstrap-idle.test.json",
+        "role": "bootstrap_idle_test"
+      },
+      {
+        "path": "tests/bootstrap-input.test.json",
+        "role": "bootstrap_input_test"
+      }
+    ],
+    "workflow_scope": "new_unmodified_scaffold",
+    "suggested_next_actions": [
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game",
+          "--json",
+          "verify"
+        ],
+        "reason": "First verify the newly generated, unmodified five-file starter; this only confirms the onboarding smoke test.",
+        "prerequisites": []
+      },
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game",
+          "--json",
+          "bundle",
+          "pack"
+        ],
+        "reason": "Create the bundle only after verify; init does not implicitly pack or activate a bundle.",
+        "prerequisites": [
+          0
+        ]
+      },
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game",
+          "--json",
+          "bundle",
+          "install",
+          "--all"
+        ],
+        "reason": "Activate every bundle declared by the manifest after packing; this step remains explicit.",
+        "prerequisites": [
+          1
+        ]
+      },
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game",
+          "--json",
+          "bundle",
+          "inspect"
+        ],
+        "reason": "Inspect the active bundle after installation; after adding assets, return to the existing pack → verify/strict → install workflow.",
+        "prerequisites": [
+          2
+        ]
+      }
+    ]
+  },
+  "diagnostics": [],
+  "effects": [
+    "created_file:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game\\project.unone.json",
+    "created_directory:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game\\scenes",
+    "created_file:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game\\scenes\\main.scene.json",
+    "created_directory:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game\\scripts",
+    "created_file:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game\\scripts\\main.luau",
+    "created_directory:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game\\tests",
+    "created_file:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game\\tests\\bootstrap-idle.test.json",
+    "created_file:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game\\tests\\bootstrap-input.test.json"
+  ]
+}

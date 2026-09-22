@@ -79,7 +79,7 @@ pub(super) fn bind(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
                         mlua::Value::Number(n) => n,
                         _ => f64::NAN,
                     };
-                    if !n.is_finite() || n < 1. || n > 1_000_000_000. || n.fract() != 0. {
+                    if !n.is_finite() || !(1. ..=1_000_000_000.).contains(&n) || n.fract() != 0. {
                         return Err(mlua::Error::RuntimeError(format!(
                             "JOB_SCHEDULE_OPTIONS_INVALID: {key}"
                         )));

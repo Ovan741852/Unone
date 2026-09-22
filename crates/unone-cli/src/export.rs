@@ -8,6 +8,8 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/particles.js",
         "shared/ui-tree.js",
         "shared/canvas-ui.mjs",
+        "shared/ui-contract.mjs",
+        "shared/ui-geometry.mjs",
         "shared/host-input.js",
         "shared/webgpu-snapshot.js",
         "shared/audio-playback.js",
@@ -156,6 +158,8 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             || (path == "shared/audio-playback.js" && !settings.is_enabled("audio"))
             || (path == "shared/ui-tree.js" && !settings.is_enabled("ui"))
             || (path == "shared/canvas-ui.mjs" && !settings.is_enabled("ui"))
+            || (path == "shared/ui-contract.mjs" && !settings.is_enabled("ui"))
+            || (path == "shared/ui-geometry.mjs" && !settings.is_enabled("ui"))
             || (path == "renderer/particles.js" && !settings.is_enabled("particle"))
             || (path == "renderer/effekseer.js" && !settings.is_enabled("effekseer"))
             || (path == "vendor/rapier/LICENSE" && !compiled.iter().any(|v| v == "physics3d"))
@@ -436,7 +440,9 @@ mod content_file_tests {
     }
 }
 
-pub(crate) fn content(project:&Path)->Result<(unone_engine::ProjectConfig,unone_engine::SystemSettings,Value,Vec<(String,Vec<u8>)>)>{
+type ExportContent = (unone_engine::ProjectConfig, unone_engine::SystemSettings, Value, Vec<(String, Vec<u8>)>);
+
+pub(crate) fn content(project:&Path)->Result<ExportContent>{
     let mut files=Vec::new();
     let (config, _) = unone_engine::ProjectPaths::discover(project)
         .map_err(|e| anyhow::anyhow!(e.explanation))?;

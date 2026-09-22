@@ -1,0 +1,93 @@
+{
+  "schema": "unone.ai-native.probe.v1",
+  "startedAt": "2026-09-15T09:57:57.519Z",
+  "command": [
+    "C:\\Program Files\\nodejs\\node.exe",
+    "D:\\Projects\\Unone\\plugins\\org.unone.ai-native\\scripts\\verify-registry.mjs",
+    "--root",
+    "D:\\Projects\\Unone\\plugins\\org.unone.ai-native"
+  ],
+  "node": "v24.14.1",
+  "platform": "win32/x64",
+  "mode": "fixture",
+  "limitations": [
+    "Synthetic score fixtures and real local CLI/stdio regressions only; no product AI-native score, fresh blind agent, GUI, marketplace, credentials, network or cross-platform verification."
+  ],
+  "subject": [
+    {
+      "path": "src/api.mjs",
+      "sha256": "884f086442aef54ecfe339a8a1b504545d71d5565ae5c5a5c356d19101b4c633"
+    },
+    {
+      "path": "src/audit.mjs",
+      "sha256": "76bd503a9de45e419b94e644c7716898b9a6613fd9eed6a33dbd5e86a201c970"
+    },
+    {
+      "path": "src/contracts.mjs",
+      "sha256": "95e16ec7a76b5a88d8d48289ea2c702c10f2d4c3aae8f062731de91a8ed43267"
+    },
+    {
+      "path": "src/discovery.mjs",
+      "sha256": "c8c6f046667d9e3f372f13d530dc1e9c463221323bb6754123a443b03ad3e6d8"
+    },
+    {
+      "path": "src/files.mjs",
+      "sha256": "b0e255867bb6b5da6c41937ba50b86c7f1ff40a737efe4fbbfb2be23edf18eff"
+    },
+    {
+      "path": "src/registry.mjs",
+      "sha256": "41bf52188e22c63598438381a16f05fcf51ac0a5f42331a220e55f37954d17a0"
+    },
+    {
+      "path": "src/rubric.mjs",
+      "sha256": "224d31508c4d81854f91e42b9b7d8875d7b086077e2ca736027417ba49762147"
+    },
+    {
+      "path": "src/report-schema.mjs",
+      "sha256": "d4f3e97ae592aed92a1a750e93822660942c671c32a6260eb8bd2d1ca4de25fe"
+    },
+    {
+      "path": "cli.mjs",
+      "sha256": "d0fc98fd51a69f346a046d3e3e15c1c29450b03ac462ea93f394a2cb8e0c1e41"
+    },
+    {
+      "path": "plugin.mjs",
+      "sha256": "1aab474aba641ad7077b5eea18f6f6fe516fb47fcade6e8cb02e8400f396f154"
+    },
+    {
+      "path": "plugin.json",
+      "sha256": "5170af57fa2e5313ffe67993db9074e39b59587869b177983a1011a81d33fff0"
+    },
+    {
+      "path": "package.json",
+      "sha256": "0b39f9994c17b50c37234f2e740f292874151b648700552654f185a6f143c709"
+    },
+    {
+      "path": "test/audit.test.mjs",
+      "sha256": "c9419c387b944e2aed6debf6c4ec9d52b835a027122cf8c6557f3f9660c6168f"
+    },
+    {
+      "path": "test/registry.test.mjs",
+      "sha256": "2bdb366ebe2656a0dafdc9346b26147fd59cf514065ae0ecf8820dac449357a0"
+    },
+    {
+      "path": "scripts/record-probe.mjs",
+      "sha256": "face597b225e9c2e892ad38131a6c10cba399671e562688a671fc40f0398119a"
+    }
+  ],
+  "probe": {
+    "path": "scripts/verify-registry.mjs",
+    "sha256": "87535062bfa708bdb7a81dc5a8ea0645b9056ea556e3c8566da62baa6c7c0737"
+  },
+  "durationMs": 1543.641,
+  "exitCode": 0,
+  "signal": null,
+  "spawnError": null,
+  "timedOut": false,
+  "outputTruncated": false,
+  "sourceChanged": false,
+  "sourceCheckError": null,
+  "stdout": "TAP version 13\n# Subtest: discovery exposes CLI recovery and separates bootstrap tools from describable operations\nok 1 - discovery exposes CLI recovery and separates bootstrap tools from describable operations\n  ---\n  duration_ms: 1.0669\n  type: 'test'\n  ...\n# Subtest: fixed rubric has ten unique questions and weights totaling 100\nok 2 - fixed rubric has ten unique questions and weights totaling 100\n  ---\n  duration_ms: 0.1021\n  type: 'test'\n  ...\n# Subtest: catalog callers cannot alter internal weights or future audit denominators\nok 3 - catalog callers cannot alter internal weights or future audit denominators\n  ---\n  duration_ms: 19.0187\n  type: 'test'\n  ...\n# Subtest: complete, internally consistent synthetic evidence can reach the top bound\nok 4 - complete, internally consistent synthetic evidence can reach the top bound\n  ---\n  duration_ms: 5.2357\n  type: 'test'\n  ...\n# Subtest: missing, duplicate and placeholder answers reject instead of returning a score\nok 5 - missing, duplicate and placeholder answers reject instead of returning a score\n  ---\n  duration_ms: 2.1945\n  type: 'test'\n  ...\n# Subtest: unknown fields, unresolved references and duplicate issue IDs fail closed\nok 6 - unknown fields, unresolved references and duplicate issue IDs fail closed\n  ---\n  duration_ms: 1.8341\n  type: 'test'\n  ...\n# Subtest: source, document and source-assisted evidence have deterministic caps\nok 7 - source, document and source-assisted evidence have deterministic caps\n  ---\n  duration_ms: 8.3099\n  type: 'test'\n  ...\n# Subtest: unverified is null, never omitted from denominator or marked ready\nok 8 - unverified is null, never omitted from denominator or marked ready\n  ---\n  duration_ms: 7.6438\n  type: 'test'\n  ...\n# Subtest: stale subject and changed evidence reject; exact excerpts are checked\nok 9 - stale subject and changed evidence reject; exact excerpts are checked\n  ---\n  duration_ms: 9.9337\n  type: 'test'\n  ...\n# Subtest: a source file cannot be labeled execution, nor can a run from another target\nok 10 - a source file cannot be labeled execution, nor can a run from another target\n  ---\n  duration_ms: 13.0255\n  type: 'test'\n  ...\n# Subtest: failure, timeout or truncated execution cannot support a passing claim\nok 11 - failure, timeout or truncated execution cannot support a passing claim\n  ---\n  duration_ms: 19.9537\n  type: 'test'\n  ...\n# Subtest: absolute, traversal, cross-drive and escaping symlink evidence is refused\nok 12 - absolute, traversal, cross-drive and escaping symlink evidence is refused\n  ---\n  duration_ms: 3.8988\n  type: 'test'\n  ...\n# Subtest: regular-file byte bound, encoding and missing paths have actionable diagnostics\nok 13 - regular-file byte bound, encoding and missing paths have actionable diagnostics\n  ---\n  duration_ms: 3.7691\n  type: 'test'\n  ...\n# Subtest: comparison rejects changed scope and preserves unknown deltas\nok 14 - comparison rejects changed scope and preserves unknown deltas\n  ---\n  duration_ms: 5.8993\n  type: 'test'\n  ...\n# Subtest: recommendation is bounded, relevant, schema-free and truthful about no match\nok 15 - recommendation is bounded, relevant, schema-free and truthful about no match\n  ---\n  duration_ms: 0.3294\n  type: 'test'\n  ...\n# Subtest: selected contract is isolated, version-bound and independently availability checked\nok 16 - selected contract is isolated, version-bound and independently availability checked\n  ---\n  duration_ms: 0.8729\n  type: 'test'\n  ...\n# Subtest: selected evaluation describes the complete artifact schema without eager loading it in recommendations\nok 17 - selected evaluation describes the complete artifact schema without eager loading it in recommendations\n  ---\n  duration_ms: 0.1576\n  type: 'test'\n  ...\n# Subtest: API rejects guessed direct operations, stale contracts and missing inputs with repair details\nok 18 - API rejects guessed direct operations, stale contracts and missing inputs with repair details\n  ---\n  duration_ms: 0.4278\n  type: 'test'\n  ...\n# Subtest: protocol envelope is strict and payload project cannot redirect host root\nok 19 - protocol envelope is strict and payload project cannot redirect host root\n  ---\n  duration_ms: 3.0733\n  type: 'test'\n  ...\n# Subtest: real stdio accepts multiple requests, recovers malformed/oversized lines and emits only JSON\nok 20 - real stdio accepts multiple requests, recovers malformed/oversized lines and emits only JSON\n  ---\n  duration_ms: 78.5046\n  type: 'test'\n  ...\n# Subtest: real recorder captures an explicit fixture probe; repeat output refuses before another execution\nok 21 - real recorder captures an explicit fixture probe; repeat output refuses before another execution\n  ---\n  duration_ms: 192.4781\n  type: 'test'\n  ...\n# Subtest: real CLI reports invalid report as nonzero and supports the discovery path\nok 22 - real CLI reports invalid report as nonzero and supports the discovery path\n  ---\n  duration_ms: 138.0286\n  type: 'test'\n  ...\n# Subtest: recorder preserves execution evidence when a reviewed fixture probe deletes its own synthetic subject\nok 23 - recorder preserves execution evidence when a reviewed fixture probe deletes its own synthetic subject\n  ---\n  duration_ms: 130.2037\n  type: 'test'\n  ...\n# Subtest: registry operations are discoverable, side effects/grants and recovery are explicit\nok 24 - registry operations are discoverable, side effects/grants and recovery are explicit\n  ---\n  duration_ms: 5.5464\n  type: 'test'\n  ...\n# Subtest: registration stores score, scope, evaluator and distinct probe/evaluation times\nok 25 - registration stores score, scope, evaluator and distinct probe/evaluation times\n  ---\n  duration_ms: 51.3141\n  type: 'test'\n  ...\n# Subtest: exact retry preserves original bytes, times and single history entry even after source drift\nok 26 - exact retry preserves original bytes, times and single history entry even after source drift\n  ---\n  duration_ms: 47.6838\n  type: 'test'\n  ...\n# Subtest: changed version or selected source clears current score, retaining historical evidence and exact cause\nok 27 - changed version or selected source clears current score, retaining historical evidence and exact cause\n  ---\n  duration_ms: 53.1627\n  type: 'test'\n  ...\n# Subtest: manifest drift, evidence loss, changed probe and changed report all require revalidation\nok 28 - manifest drift, evidence loss, changed probe and changed report all require revalidation\n  ---\n  duration_ms: 172.5226\n  type: 'test'\n  ...\n# Subtest: failed and unverified assessments are retained without manufacturing a passing badge\nok 29 - failed and unverified assessments are retained without manufacturing a passing badge\n  ---\n  duration_ms: 86.6624\n  type: 'test'\n  ...\n# Subtest: manifest is required for plugins and must match captured subject, identity and version\nok 30 - manifest is required for plugins and must match captured subject, identity and version\n  ---\n  duration_ms: 10.5817\n  type: 'test'\n  ...\n# Subtest: invalid or stale report creates no record and does not accept a claimed passing result file\nok 31 - invalid or stale report creates no record and does not accept a claimed passing result file\n  ---\n  duration_ms: 15.7062\n  type: 'test'\n  ...\n# Subtest: same ID with different report conflicts, but a new ID preserves both declared scopes\nok 32 - same ID with different report conflicts, but a new ID preserves both declared scopes\n  ---\n  duration_ms: 66.7133\n  type: 'test'\n  ...\n# Subtest: concurrent duplicate registration atomically publishes only one complete receipt\nok 33 - concurrent duplicate registration atomically publishes only one complete receipt\n  ---\n  duration_ms: 84.9125\n  type: 'test'\n  ...\n# Subtest: checksum corruption fails closed; never return a trusted historical score\nok 34 - checksum corruption fails closed; never return a trusted historical score\n  ---\n  duration_ms: 43.8118\n  type: 'test'\n  ...\n# Subtest: registry denies path injection and escaping directory junctions without external writes\nok 35 - registry denies path injection and escaping directory junctions without external writes\n  ---\n  duration_ms: 6.102\n  type: 'test'\n  ...\n# Subtest: API write authority is host-only, with observable write effects and no retry effects\nok 36 - API write authority is host-only, with observable write effects and no retry effects\n  ---\n  duration_ms: 37.3359\n  type: 'test'\n  ...\n# Subtest: real CLI and stdio run discovery -> register -> status -> stale with host-root isolation\nok 37 - real CLI and stdio run discovery -> register -> status -> stale with host-root isolation\n  ---\n  duration_ms: 553.3126\n  type: 'test'\n  ...\n# Subtest: a missing assessment and an empty registry have explicit non-certified states\nok 38 - a missing assessment and an empty registry have explicit non-certified states\n  ---\n  duration_ms: 2.974\n  type: 'test'\n  ...\n# Subtest: upgrading the evaluator invalidates current badge without overwriting prior score\nok 39 - upgrading the evaluator invalidates current badge without overwriting prior score\n  ---\n  duration_ms: 107.6824\n  type: 'test'\n  ...\n# Subtest: concurrent different reports cannot both acquire the same assessment ID\nok 40 - concurrent different reports cannot both acquire the same assessment ID\n  ---\n  duration_ms: 39.4879\n  type: 'test'\n  ...\n1..40\n# tests 40\n# suites 0\n# pass 40\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1451.0045\nAI_NATIVE_REGISTRY_REGRESSIONS_PASSED: synthetic state-machine fixtures plus real CLI/stdio; not a fresh blind assessment or product score.\n",
+  "stderr": "",
+  "trust": "Local capture of an explicitly selected script. Not signed attestation or proof of semantic claims; probe code is not sandboxed."
+}

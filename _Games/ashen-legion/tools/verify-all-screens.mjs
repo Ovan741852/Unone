@@ -5,7 +5,7 @@ import {createRequire} from 'node:module';
 import {module,payload,loadProject,readObservation} from './runtime-harness.mjs';
 const require=createRequire(import.meta.url);
 const {chromium}=require('C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
-const out=new URL('../tests/all-ui/',import.meta.url);mkdirSync(out,{recursive:true});
+const out=process.env.GAME_TEST_EVIDENCE?new URL('file:///'+process.env.GAME_TEST_EVIDENCE.replaceAll('\\','/')+'/'):new URL('../tests/all-ui/',import.meta.url);mkdirSync(out,{recursive:true});
 const setup='S.phase="shop";S.location="market";stockShop();';
 const gear='for i=1,8 do addItem(gearCatalog[i],12) end;S.worn[1][5]=1;';
 const cases={menu:'',profiles:'formalRoute="profiles"',profiles_saved:'formalRoute="profiles";S.profiles[1].created=true',delete:'formalRoute="profiles";S.deleteCandidate=1',settings:'formalRoute="settings"',town:'formalRoute="town"',town_modal:'formalRoute="town";S.townUpgradePending=true;S.townUpgradeIndex=1',map:'S.phase="map";S.mapMoving=false;S.mapFrom=0',choice:'S.phase="choice";S.cards={{id="market",name="榛姨商店",desc="買入裝備，補強下一輪的軍備。"},{id="tech",name="軍團研究",desc="研究兵種專長，不增加每次派兵費。"},{id="enchant",name="附魔鐵砧",desc="替已穿戴的裝備附魔，選擇採用或保留原詞綴。"}}',market:setup,market_modal:setup+'formalShopDetail=1',market_sold:setup+'S.stock[1].sold=true',sell_empty:setup+'formalRoute="sell"',sell:setup+gear+'formalRoute="sell"',gear:setup+gear+'S.phase="loadout";S.loadoutReturn="shop";formalRoute="gear";S.equipSlot=5',gear_empty:setup+'S.phase="loadout";S.loadoutReturn="shop";formalRoute="gear"',runes:setup+'S.phase="loadout";S.loadoutReturn="shop";formalRoute="runes";S.runeBag[1]=1',enchant_empty:'S.phase="shop";S.location="enchant";stockShop()',enchant:'S.phase="shop";S.location="enchant";stockShop();'+gear+'S.equipSlot=5',enchant_offer:'S.phase="shop";S.location="enchant";stockShop();'+gear+'S.equipSlot=5;S.enchantPending={tier=2,skill="pierce"}',battle:'beginBattle()',auto:'beginBattle();S.autoConfigOpen=true;S.paused=true;S.autoDraft=autoPreset("all")',auto_empty:'beginBattle();S.autoConfigOpen=true;S.paused=true;S.autoDraft={}',pause:'beginBattle();S.paused=true',guide:'beginBattle();S.paused=true;formalRoute="guide"',abandon:'beginBattle();S.paused=true;formalRoute="abandon"',celebration:'S.phase="celebration"',celebration_pause:'S.phase="celebration";S.paused=true',clear:'S.phase="clear"',clear_chest:'S.phase="clear";S.chestCount=1',clear_reward:'S.phase="clear";S.chestResult="精良強化符文"',victory:'S.phase="victory"',defeat:'S.phase="defeat";S.resultElapsed=2;S.message="金幣用盡，軍團需要重新整備。"'};
@@ -42,7 +42,7 @@ const report={fixture:true,ok:false,cases:[],errors:[]};
 try{
  const page=await browser.newPage();page.on('pageerror',e=>report.errors.push(e.message));
  await page.route('**/all-ui-fixture',r=>r.fulfill({contentType:'text/html',body:'<!doctype html><style>body{margin:0;background:#0a1712}canvas{display:block}</style><canvas id="formal-ui"></canvas>'}));
- await page.goto('http://127.0.0.1:8190/all-ui-fixture');
+ await page.goto((process.env.GAME_TEST_URL??'http://127.0.0.1:8190/')+'all-ui-fixture');
  await page.evaluate(async assets=>{
   const {createCanvasUi}=await import('/web/shared/canvas-ui.mjs');
   window.fit=(await import('/presentation/adaptive-ui.mjs')).fitFormalUI;

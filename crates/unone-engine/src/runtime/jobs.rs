@@ -1195,10 +1195,9 @@ end,update=function(api)n+=1 end}"#;
     #[ignore = "manual release-only throughput experiment, not a timing assertion"]
     #[cfg(all(feature = "dev-tools", not(target_arch = "wasm32")))]
     fn native_pool_benchmark() {
-        assert!(
-            !cfg!(debug_assertions),
-            "Run cargo test --release -p unone-engine native_pool_benchmark -- --ignored --nocapture"
-        );
+        if std::hint::black_box(cfg!(debug_assertions)) {
+            panic!("Run cargo test --release -p unone-engine native_pool_benchmark -- --ignored --nocapture");
+        }
         let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../_Games/jobs-lab");
         let source = std::fs::read_to_string(root.join("main.luau"))
             .unwrap()

@@ -1,0 +1,10 @@
+{
+  "path": "target/release/game.exe",
+  "version": "game 0.1.0",
+  "sha256": "6af56a589c4a39d3f16e176cfb2fc817ef7fcbbe7836e160c516973e86cc8c8e",
+  "bytes": 27043840,
+  "lastWriteUtc": "2026-09-10T07:10:58Z",
+  "checkoutHeadAtAudit": "7bc124931e6a6ed47ee28b6dc3e7bc7646d37b5d",
+  "buildProvenance": "Existing executable; this audit does not attest that it was built from checkout HEAD. The executable hash, checked by the probes before and after execution, identifies the tested runtime.",
+  "preexistingDirtyPaths": ["docs/plugin-protocol.md", "docs/proposals/lottie-ui-v1.md", "packages/scout/", "plugins/org.unone.ai-native/"]
+}

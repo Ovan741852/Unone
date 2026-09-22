@@ -54,15 +54,19 @@ impl Profile {
     pub fn report(&self) -> serde_json::Value {
         serde_json::json!({"id":self.id,"active":self.active,"first_frame":self.first_frame,"last_frame":self.last_frame,
             "sampling":self.sampling,"samples":self.samples,"dropped_samples":self.dropped,"truncated_stacks":self.truncated,
-            "vm":{"scope":"Luau update call, including engine callbacks; manual tools and load/start are excluded",
+            "vm":{"schema_version":2,"scope":"Luau update call, including engine callbacks; manual tools and load/start are excluded",
                 "allocation_method":"Luau onallocate: sum(max(new_size-old_size,0)) on successful requests; excludes frees, allocator overhead and Rust/JS allocations",
                 "gc_method":"Luau paired incremental-step interrupts; includes automatic assists, excludes full collections; timing includes instrumentation overhead",
                 "capabilities":{"allocation_growth":true,"incremental_gc_wall_time":true,"full_gc_wall_time":false,"js_gc":false,"rust_allocations":false},
+                "availability":{"allocation_growth":"measured","incremental_gc_wall_time":"measured","full_gc_wall_time":"unsupported","js_gc":"not-applicable","rust_allocations":"not-collected"},
                 "tick_count":self.vm_ticks,"retained_limit":1024,"frames":self.vm_frames,
                 "allocation_growth_bytes":self.vm_total.allocation_growth_bytes,"allocation_growth_events":self.vm_total.allocation_growth_events,
                 "incremental_gc_steps":self.vm_total.incremental_gc_steps,"incremental_gc_ms":self.vm_total.incremental_gc_ms,
                 "incremental_gc_max_step_ms":self.vm_total.incremental_gc_max_step_ms,
-                "full_gc_ms":null,"js_gc_ms":null,"rust_allocation_bytes":null},
+                "full_gc_ms":null,"js_gc_ms":null,"rust_allocation_bytes":null,
+                "unavailable_values_are_null":true,
+                "measurement_overhead":"includes VM allocation and interrupt instrumentation; compare with sampling disabled",
+                "boundary_metrics":{"api_calls":{"status":"not-collected","scope":"Rust binding wrapper calls, not gameplay function calls"},"table_conversion":{"status":"not-collected","scope":"Luau/Rust value conversion object and byte counts"},"rust_allocations":{"status":"not-collected","scope":"Rust allocator traffic outside Luau onallocate"}}},
             "functions":self.functions,"stacks":self.stacks.iter().map(|(stack,count)|serde_json::json!({"leaf_first":stack,"samples":count})).collect::<Vec<_>>(),
             "limits":{"functions":1024,"stacks":4096,"depth":32,"minimum_interval_ms":1},
             "semantics":"VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled."})
@@ -93,10 +97,12 @@ pub(super) fn start(lua: &Lua, frame: u64, sampling: bool) {
     }
     lua.set_interrupt(move |lua| {
         let mut p = shared.borrow_mut();
-        if p.sampling_suspended { return Ok(mlua::VmState::Continue); }
+        if p.sampling_suspended {
+            return Ok(mlua::VmState::Continue);
+        }
         p.hooks += 1;
         // Clock checks themselves have a cost, especially through WASM.
-        if p.hooks % 64 != 0 {
+        if !p.hooks.is_multiple_of(64) {
             return Ok(mlua::VmState::Continue);
         }
         let now = Instant::now();

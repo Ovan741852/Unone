@@ -1186,9 +1186,9 @@ fn preview(project: &PathBuf, watch: bool, tools_port: u16) -> Result<ExitCode> 
 
 /// Resolve and decode the project's declared textures before the window opens.
 ///
-/// The preview does not draw these textures yet; reporting the verified digest
-/// and decoded size is what lets a native run be compared with the Web host for
-/// the same asset id, instead of comparing screenshots.
+/// Resolve the verified texture bytes before the window opens. The lightweight
+/// CLI preview currently renders deterministic mesh silhouettes; the native
+/// player owns full textured mesh presentation.
 fn report_host_assets(project: &Path) {
     let assets = assets::load_textures(project);
     for texture in assets.textures.values() {
@@ -1202,7 +1202,7 @@ fn report_host_assets(project: &Path) {
     }
     if !assets.textures.is_empty() {
         eprintln!(
-            "unone preview: {} texture(s) decoded; this preview still draws flat rectangles",
+            "unone preview: {} texture(s) decoded; CLI preview uses deterministic mesh silhouettes",
             assets.textures.len()
         );
     }
@@ -1283,6 +1283,11 @@ impl ApplicationHandler for PreviewApp {
                 };
                 let pointer = renderer.screen_to_world(position.x, position.y, &runtime.observe());
                 runtime.set_pointer_position(pointer);
+                let normalized = normalize_window_pointer(renderer.window_size, position.x, position.y);
+                runtime.set_screen_pointer_position(Vec2 {
+                    x: (normalized.x * 100.0).clamp(0.0, 100.0),
+                    y: (normalized.y * 100.0).clamp(0.0, 100.0),
+                });
             }
             WindowEvent::MouseInput {
                 state,
@@ -1404,12 +1409,25 @@ struct Renderer {
     device: wgpu::Device,
     queue: wgpu::Queue,
     config: wgpu::SurfaceConfiguration,
+    // Cursor coordinates use physical window pixels, not the bounded render target.
+    window_size: (u32, u32),
     pipeline: wgpu::RenderPipeline,
     vertex_buffer: wgpu::Buffer,
     vertex_capacity: usize,
 }
 
 impl Renderer {
+    fn clamp_surface_size(width: u32, height: u32, max: u32) -> (u32, u32) {
+        let (width, height, max) = (width.max(1), height.max(1), max.max(1));
+        let scale = (f64::from(max) / f64::from(width.max(height))).min(1.0);
+        ((f64::from(width) * scale).round().max(1.0) as u32,
+         (f64::from(height) * scale).round().max(1.0) as u32)
+    }
+
+    fn surface_size(device: &wgpu::Device, width: u32, height: u32) -> (u32, u32) {
+        Self::clamp_surface_size(width, height, device.limits().max_texture_dimension_2d)
+    }
+
     async fn new(window: Arc<Window>) -> Result<Self, String> {
         let instance = wgpu::Instance::default();
         let surface = instance
@@ -1454,12 +1472,13 @@ impl Renderer {
             .first()
             .copied()
             .ok_or_else(|| "GPU surface reported no supported alpha modes".to_string())?;
+        let (width, height) = Self::surface_size(&device, size.width, size.height);
         let config = wgpu::SurfaceConfiguration {
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
             format,
             color_space: wgpu::SurfaceColorSpace::Auto,
-            width: size.width.max(1),
-            height: size.height.max(1),
+            width,
+            height,
             present_mode,
             alpha_mode,
             view_formats: vec![],
@@ -1512,6 +1531,7 @@ impl Renderer {
             device,
             queue,
             config,
+            window_size: (size.width.max(1), size.height.max(1)),
             pipeline,
             vertex_buffer,
             vertex_capacity: 6,
@@ -1522,8 +1542,8 @@ impl Renderer {
         if width == 0 || height == 0 {
             return;
         }
-        self.config.width = width;
-        self.config.height = height;
+        (self.config.width, self.config.height) = Self::surface_size(&self.device, width, height);
+        self.window_size = (width, height);
         self.surface.configure(&self.device, &self.config);
     }
 
@@ -1535,14 +1555,15 @@ impl Renderer {
             1.0
         };
         let height = snapshot.camera.view_height / zoom;
-        let aspect = f64::from(self.config.width.max(1)) / f64::from(self.config.height.max(1));
+        let aspect = f64::from(self.window_size.0) / f64::from(self.window_size.1);
         (height * aspect, height)
     }
 
     fn screen_to_world(&self, x: f64, y: f64, snapshot: &WorldSnapshot) -> Vec2 {
         let (visible_width, visible_height) = self.visible_extent(snapshot);
-        let view_x = x / f64::from(self.config.width.max(1)) - 0.5;
-        let view_y = 0.5 - y / f64::from(self.config.height.max(1));
+        let normalized = normalize_window_pointer(self.window_size, x, y);
+        let view_x = normalized.x - 0.5;
+        let view_y = normalized.y - 0.5;
         Vec2 {
             x: snapshot.camera.position.x + view_x * visible_width,
             y: snapshot.camera.position.y + view_y * visible_height,
@@ -1650,7 +1671,7 @@ impl Renderer {
             let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("unone-preview-pass"),
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                    view: &view,
+                    view,
                     resolve_target: None,
                     depth_slice: None,
                     ops: wgpu::Operations {
@@ -1747,14 +1768,9 @@ impl Renderer {
                 [1, 5, 6, 2],
                 [0, 3, 7, 4],
             ];
-            let color = if entity.id.contains("track") {
-                [0.18, 0.2, 0.24]
-            } else if entity.id.contains("rival") {
-                [0.18, 0.45, 0.9]
-            } else {
-                [0.9, 0.18, 0.12]
-            };
-            for indices in face_indices {
+            // Debug geometry has no gameplay-specific palette or naming convention.
+            let color = [0.55, 0.65, 0.75];
+            for (face_number, indices) in face_indices.into_iter().enumerate() {
                 let a = corners[indices[0]];
                 let b = corners[indices[1]];
                 let c = corners[indices[2]];
@@ -1764,8 +1780,9 @@ impl Renderer {
                     + depth_from_camera(camera, c)
                     + depth_from_camera(camera, d))
                     * 0.25;
-                faces.push((depth, [a, b, c], color));
-                faces.push((depth, [a, c, d], color));
+                let face_color = shade_color(color, [0.72_f32, 0.86, 1.0, 0.64, 0.90, 0.78][face_number]);
+                faces.push((depth, [a, b, c], face_color));
+                faces.push((depth, [a, c, d], face_color));
             }
         }
         faces.sort_by(|left, right| {
@@ -1809,7 +1826,7 @@ impl Renderer {
             return None;
         }
         let f = 1.0 / (camera.fov_degrees.to_radians() * 0.5).tan();
-        let aspect = f64::from(self.config.width.max(1)) / f64::from(self.config.height.max(1));
+        let aspect = f64::from(self.window_size.0) / f64::from(self.window_size.1);
         Some([
             (dot(relative, right) * f / aspect / depth) as f32,
             (dot(relative, up) * f / depth) as f32,
@@ -1827,6 +1844,13 @@ impl Renderer {
             usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
             mapped_at_creation: false,
         });
+    }
+}
+
+fn normalize_window_pointer(size: (u32, u32), x: f64, y: f64) -> Vec2 {
+    Vec2 {
+        x: x / f64::from(size.0.max(1)),
+        y: 1.0 - y / f64::from(size.1.max(1)),
     }
 }
 
@@ -1869,6 +1893,14 @@ fn normalize(value: Vec3) -> Option<Vec3> {
             z: value.z / length,
         })
     }
+}
+
+fn shade_color(color: [f32; 3], factor: f32) -> [f32; 3] {
+    [
+        (color[0] * factor).min(1.0),
+        (color[1] * factor).min(1.0),
+        (color[2] * factor).min(1.0),
+    ]
 }
 
 fn rotate_euler(point: Vec3, rotation: Vec3) -> Vec3 {
@@ -1921,7 +1953,7 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4<f32> {
 
 #[cfg(test)]
 mod tests {
-    use super::{BundleCommand, Cli, Command};
+    use super::{BundleCommand, Cli, Command, Renderer, normalize_window_pointer};
     use clap::Parser;
 
     fn install_selection(args: &[&str]) -> (Option<String>, bool) {
@@ -1951,5 +1983,25 @@ mod tests {
             (None, true)
         );
         assert_eq!(install_selection(&["bundle", "install"]), (None, false));
+    }
+
+    #[test]
+    fn surface_size_clamps_large_windows_to_device_limit() {
+        assert_eq!(Renderer::clamp_surface_size(2560, 1369, 2048), (2048, 1095));
+        assert_eq!(Renderer::clamp_surface_size(1369, 2560, 2048), (1095, 2048));
+        assert_eq!(Renderer::clamp_surface_size(3840, 2160, 2048), (2048, 1152));
+        assert_eq!(Renderer::clamp_surface_size(0, 0, 2048), (1, 1));
+    }
+
+    #[test]
+    fn cursor_uses_window_pixels_even_when_render_target_is_capped() {
+        for size in [(2560, 1369), (1369, 2560), (3840, 2160), (800, 600)] {
+            let center = normalize_window_pointer(size, f64::from(size.0) / 2.0, f64::from(size.1) / 2.0);
+            assert_eq!((center.x, center.y), (0.5, 0.5));
+            let origin = normalize_window_pointer(size, 0.0, 0.0);
+            assert_eq!((origin.x, origin.y), (0.0, 1.0));
+            let corner = normalize_window_pointer(size, f64::from(size.0), f64::from(size.1));
+            assert_eq!((corner.x, corner.y), (1.0, 0.0));
+        }
     }
 }

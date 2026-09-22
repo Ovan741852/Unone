@@ -4,6 +4,12 @@ Ownership: Core supplies the reusable resolved UI tree, semantic input and layou
 
 ## Portable presentation
 
+Since UI contract v2 (2026-09-20), all three projections (Canvas, developer DOM,
+native) support one-image/one-node nine-slice. The fixed 256-node gate is replaced
+by a shared configurable budget. See [authoring, diagnostics and verification](ui-slice-and-budget.md).
+Native still CPU-rasterizes changed UI before GPU composition; a larger capacity
+is not a guarantee that thousands of changing panels redraw at 60 FPS.
+
 `web/shared/canvas-ui.mjs` renders `text`, `image`, transparent `button`, and nested `component` leaves into one Canvas2D surface. It creates no DOM game controls. The native player draws the same leaves into a CPU-rasterized texture composited by wgpu after the world. Rectangles are resolved screen coordinates, 0–100, y-up; component wrappers do not transform them again.
 
 Portable artwork includes PNG and the native static SVG subset. Native now accepts `.svg` shapes, paths, gradients, internal references, masks/clips and inline presentation attributes; it renders at the current surface resolution. Script, animation, foreignObject, nested images, stylesheet elements and external references fail with an asset/source-specific diagnostic. SVG is limited to 8 MiB and 10000 XML nodes. This is not complete browser SVG/CSS compatibility. JPEG/WebP still need PNG companions; 3D mesh textures remain PNG-only. Image fit supports contain, cover and stretch. Buttons draw text only: use a preceding image leaf for artwork. The SDK checks the selected runtime's `ui.images: ["png", "svg-static"]` declaration before allowing SVG native export.

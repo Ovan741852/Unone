@@ -1209,6 +1209,30 @@
     },
     {
       "additionalProperties": false,
+      "description": "Read a bounded evidence pack after a failed tick, without rerunning it.",
+      "properties": {
+        "command": {
+          "const": "diagnose",
+          "type": "string"
+        },
+        "limit": {
+          "default": 100,
+          "format": "uint",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "session": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "command",
+        "session"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
       "properties": {
         "command": {
           "const": "recording",

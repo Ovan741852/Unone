@@ -1,0 +1,16 @@
+{
+  "api": "unone.plugin.v1",
+  "id": "org.unone.ai-native",
+  "name": "Unone AI-native Audit",
+  "version": "0.3.0",
+  "description": "Evidence-backed AI-native scoring with in-memory report evaluation, versioned local assessment history and freshness checks. Start with ai_native.recommend. Read-only by default; registration requires explicit host write opt-in. Not signed or commercial certification.",
+  "entry": { "command": "node", "args": ["plugin.mjs"] },
+  "capabilities": ["ai-native.audit", "ai-native.evidence", "ai-native.assessment-registry", "progressive-discovery.v1"],
+  "permissions": ["project.read", "project.write_staging"],
+  "tools": [
+    { "name": "ai_native.recommend", "description": "Stage 1: describe your audit goal. Return at most five relevant operation summaries, availability and reasons; no full schemas or execution.", "input_schema": { "type":"object", "properties":{"query":{"type":"string","minLength":1,"maxLength":500},"limit":{"type":"integer","minimum":1,"maximum":5,"default":3}},"required":["query"],"additionalProperties":false } },
+    { "name": "ai_native.describe", "description": "Stage 2: retrieve one selected operation's exact schema, examples, errors, limitations and version-bound contractHash.", "input_schema": { "type":"object","properties":{"operation":{"type":"string","maxLength":100}},"required":["operation"],"additionalProperties":false } },
+    { "name": "ai_native.call", "description": "Invoke a selected contract; register is an explicit append-only write requiring host opt-in, other operations are read-only. Never execute evidence commands. Reject stale hashes.", "input_schema": {"type":"object","properties":{"operation":{"type":"string"},"contractHash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"arguments":{"type":"object"}},"required":["operation","contractHash","arguments"],"additionalProperties":false} },
+    { "name": "plugin.test", "description": "Run dependency-free rubric/discovery smoke invariants; does not certify the target or execute probes.", "input_schema":{"type":"object","properties":{},"additionalProperties":false} }
+  ]
+}

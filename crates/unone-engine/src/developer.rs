@@ -313,6 +313,12 @@ pub enum DeveloperRequest {
     Perf {
         session: String,
     },
+    /// Read a bounded evidence pack after a failed tick, without rerunning it.
+    Diagnose {
+        session: String,
+        #[serde(default = "default_limit")]
+        limit: usize,
+    },
     Recording {
         session: String,
     },
@@ -356,6 +362,7 @@ pub struct DeveloperSession {
     initial_digest: String,
     seed: u64,
     faulted: bool,
+    failure_evidence: Option<Value>,
     snapshot: Value,
 }
 
@@ -386,6 +393,7 @@ impl DeveloperSession {
             initial_digest,
             seed,
             faulted: false,
+            failure_evidence: None,
             snapshot,
         };
         session.push("session_opened", json!({"seed": seed}));
@@ -422,6 +430,7 @@ impl DeveloperSession {
             "script_generation": self.runtime.developer_generation(),
             "script_digest": self.runtime.developer_script_digest(),
             "engine_version": env!("CARGO_PKG_VERSION"),
+            "execution": crate::execution_mode(),
             "scope": "runtime", "host": "headless", "seed": self.seed,
             "mutation_policy": "temporary_debug_state_patch", "gameplay_authority": "luau_and_input",
             "supported_dimensions": ["3d", "2d"]})
@@ -596,6 +605,7 @@ impl DeveloperSession {
             | DeveloperRequest::Step { session, .. }
             | DeveloperRequest::Enact { session, .. }
             | DeveloperRequest::Perf { session }
+            | DeveloperRequest::Diagnose { session, .. }
             | DeveloperRequest::Recording { session } => session,
         };
         if session != &self.id {
@@ -696,10 +706,31 @@ impl DeveloperSession {
                         Ok(_) => self.capture("tick", &before, json!({})),
                         Err(diagnostic) => {
                             self.faulted = true;
+                            let attempted_frame = before["frame"].as_u64().unwrap_or(0) + 1;
                             self.capture(
                                 "runtime_failed",
                                 &before,
                                 json!({"diagnostic": diagnostic}),
+                            );
+                            let (changes, omitted) = differences(&before, &self.snapshot);
+                            let evidence = json!({"diagnostic":diagnostic,
+                                "attempted_frame":attempted_frame,"completed_frame":before["frame"],
+                                "command_index":self.recording.len(),"tick_index":digests.len(),
+                                "input":input,"partial_changes":changes,"omitted_changes":omitted,
+                                "after_digest":crate::observation_digest(&self.runtime.observe()).ok()});
+                            // Keep a separate bounded failure record even if journal traces rotate.
+                            self.failure_evidence = Some(
+                                if serde_json::to_vec(&evidence)
+                                    .expect("evidence serializes")
+                                    .len()
+                                    <= 64 * 1024
+                                {
+                                    evidence
+                                } else {
+                                    json!({"truncated":true,"code":diagnostic.code,"attempted_frame":attempted_frame,
+                                    "command_index":self.recording.len(),"tick_index":digests.len(),
+                                    "reason":"Failure evidence exceeds 64 KiB; export recording and inspect snapshot separately"})
+                                },
                             );
                             failure = Some(*diagnostic);
                         }
@@ -758,6 +789,28 @@ impl DeveloperSession {
                 report["measurement_scope"] = json!(
                     "runtime script/physics/observe; excludes rendering, transport and developer diff overhead"
                 );
+                Ok(report)
+            }
+            DeveloperRequest::Diagnose { limit, .. } => {
+                if !(1..=256).contains(&limit) {
+                    return Err(error("LIMIT_INVALID", "limit must be 1..256"));
+                }
+                let mut report = self.metadata();
+                report["schema_version"] = json!(1);
+                report["failure"] = json!(self.failure_evidence);
+                report["journal"] =
+                    self.journal_report(self.sequence.saturating_sub(limit as u64), limit)?;
+                report["recording"] = json!({"commands":self.recording.len(),"requested_ticks":self.recorded_ticks,
+                    "export_request":{"command":"recording","session":self.id},"automatic_replay":false,
+                    "limitation":"Recording is not a source/asset archive. Replay is an explicit independent runtime."});
+                report["next_requests"] = json!([
+                    {"command":"snapshot","session":self.id,"paths":["/observations"]},
+                    {"command":"perf","session":self.id},
+                    {"command":"recording","session":self.id}
+                ]);
+                report["capabilities"] = json!({"read_only":true,"tick_stepping":true,"post_failure_inspection":true,
+                    "line_breakpoints":false,"all_luau_locals":false,"attach_external_preview":false,
+                    "automatic_fix":false,"paired_production_validation_required":true});
                 Ok(report)
             }
             DeveloperRequest::Recording { .. } => {

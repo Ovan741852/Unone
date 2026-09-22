@@ -87,7 +87,7 @@ There is no arbitrary JavaScript/Lua eval console. Start with `describe`, then
 | `tools.list`, `tools.invoke` | Discover and invoke the exact Lua controls shown to humans. |
 | `pause`, `step` | Pause/resume; advance 1..120 exact ticks only while paused. |
 | `input` | Validate and queue one normalized input frame without advancing time. |
-| `bloom` | Web renderer toggle; native returns unavailable. |
+| `bloom` | Web renderer toggle. CLI primitive preview returns `CAPABILITY_UNAVAILABLE`; restarting cannot enable it. |
 | `journal` | Last 200 tool/control requests, frame and outcome; failed callbacks may have partial effects. |
 
 Core request/definition schemas are generated from Rust (`preview-request`,
@@ -114,12 +114,18 @@ The server binds loopback only, validates Host/Origin, accepts JSON POST command
 up to 64 KiB, and has bounded queue/deadlines. It serves only its explicit UI files.
 It does not expose filesystem reads, shell execution or game source writes.
 Native supports hierarchy, Lua log/profile/memory, registered tools, pause/step and
-normalized input. Browser network, JS heap, WASM memory and Bloom are unavailable;
-the companion browser's own heap is never reported as native game memory.
+normalized input. Browser network, JS heap and WASM memory remain unavailable;
+CLI primitive preview does not support Bloom. The companion browser's own heap is never
+reported as native game memory.
 
-This does not change native preview's renderer capabilities: its existing primitive
-renderer is still distinct from Web's textured mesh/Effekseer presentation. The
-tools inspect the real native simulation even where that renderer has a visual gap.
+The CLI `preview` renderer (`renderer: "cli-primitive-preview"` in `describe`)
+draws debug geometry, not the full game presentation. Its companion tools inspect
+the real simulation but do not establish visual parity with Web.
+
+The separate `unone-native-player` supports mesh/instance batches, sprites,
+particles, non-DOM UI and configured Bloom via `player.presentation.json`.
+It does not expose this CLI companion endpoint. Do not infer one host's supported
+tools, asset decoders or rendering capabilities from the other host.
 
 WebMCP is optional transport; the JavaScript and native HTTP APIs remain usable
 without browser support. Plain HTTP LAN pages may lack the browser's secure-context
@@ -148,8 +154,8 @@ same vertex/draw path to an offscreen target. GPU readback/PNG encoding occurs o
 on request, can stall that request, and is not part of normal frame processing.
 This adds no screenshot dependency or API to production Web exports.
 
-The native renderer still uses primitive box proxies and flat colors without
-Web's asset/material presentation. Screenshot availability does **not** establish
+The CLI native preview uses primitive debug geometry, not Web's textured
+Three/Effekseer presentation. Screenshot availability does **not** establish
 visual parity. Frame/digest identify simulation state, not pixel equality.
 
 Actual WebMCP and native HTTP captures were inspected at frame 813, 960 × 540.

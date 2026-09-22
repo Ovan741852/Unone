@@ -1,0 +1,5 @@
+{
+  "seed": 42,
+  "warmup": 10,
+  "inputs": [{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{},{"actions":{"Right":true}},{},{}]
+}

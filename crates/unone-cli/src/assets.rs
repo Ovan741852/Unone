@@ -100,13 +100,44 @@ const MAX_TEXTURE_EDGE: f32 = 512.0;
 
 /// Decode one asset source into premultiplied RGBA8.
 ///
-/// The native preview host currently understands SVG only. Any other extension
-/// is reported instead of silently skipped, because "which host decodes which
-/// source format" is an open cross-platform question, not a solved one.
+/// The native preview host accepts static SVG for UI and PNG for mesh textures.
+/// Decoding does not imply that the CLI primitive renderer samples the texture.
 fn decode_texture(source: &str, bytes: &[u8]) -> Result<(u32, u32, Vec<u8>), String> {
+    if source.to_ascii_lowercase().ends_with(".png") {
+        let mut decoder = png::Decoder::new(std::io::Cursor::new(bytes));
+        decoder.set_transformations(png::Transformations::EXPAND | png::Transformations::STRIP_16);
+        let mut reader = decoder
+            .read_info()
+            .map_err(|error| format!("PNG decoder error: {error}"))?;
+        if u64::from(reader.info().width) * u64::from(reader.info().height) > 16_777_216 {
+            return Err("PNG decoder exceeds the 64 MiB RGBA output limit".into());
+        }
+        let mut pixels = vec![0; reader.output_buffer_size().ok_or("PNG decoder buffer size unavailable")?];
+        let info = reader
+            .next_frame(&mut pixels)
+            .map_err(|error| format!("PNG decoder error: {error}"))?;
+        pixels.truncate(info.buffer_size());
+        let mut rgba = match info.color_type {
+            png::ColorType::Rgba => pixels,
+            png::ColorType::Rgb => pixels
+                .chunks_exact(3)
+                .flat_map(|value| [value[0], value[1], value[2], 255])
+                .collect(),
+            png::ColorType::Grayscale => pixels.iter().flat_map(|&gray| [gray, gray, gray, 255]).collect(),
+            png::ColorType::GrayscaleAlpha => pixels.chunks_exact(2).flat_map(|v| [v[0], v[0], v[0], v[1]]).collect(),
+            _ => return Err("PNG decoder returned an unexpanded indexed image".into()),
+        };
+        for pixel in rgba.chunks_exact_mut(4) {
+            let alpha = u16::from(pixel[3]);
+            for channel in &mut pixel[..3] {
+                *channel = ((u16::from(*channel) * alpha + 127) / 255) as u8;
+            }
+        }
+        return Ok((info.width, info.height, rgba));
+    }
     if !source.to_ascii_lowercase().ends_with(".svg") {
         return Err(format!(
-            "The native preview host currently decodes only SVG sources; '{source}' needs another decoder"
+            "The native preview host decodes only PNG or SVG sources; '{source}' needs another decoder"
         ));
     }
     let tree = resvg::usvg::Tree::from_data(bytes, &resvg::usvg::Options::default())
@@ -258,6 +289,27 @@ mod tests {
         assert_eq!((width, height), (8, 4));
         assert_eq!(rgba.len(), 8 * 4 * 4);
         assert_eq!(&rgba[0..4], &[255, 0, 0, 255]);
+    }
+
+    #[test]
+    fn png_color_modes_use_the_same_premultiplied_contract_as_svg() {
+        for (color, input, expected) in [
+            (png::ColorType::Rgba, vec![200, 100, 50, 128], vec![100, 50, 25, 128]),
+            (png::ColorType::Rgb, vec![200, 100, 50], vec![200, 100, 50, 255]),
+            (png::ColorType::Grayscale, vec![100], vec![100, 100, 100, 255]),
+            (png::ColorType::GrayscaleAlpha, vec![100, 128], vec![50, 50, 50, 128]),
+        ] {
+            let mut bytes = Vec::new();
+            {
+                let mut encoder = png::Encoder::new(&mut bytes, 1, 1);
+                encoder.set_color(color);
+                encoder.set_depth(png::BitDepth::Eight);
+                encoder.write_header().unwrap().write_image_data(&input).unwrap();
+            }
+            let (width, height, rgba) = decode_texture("test.png", &bytes).unwrap();
+            assert_eq!((width, height), (1, 1));
+            assert_eq!(rgba, expected);
+        }
     }
 
     #[test]

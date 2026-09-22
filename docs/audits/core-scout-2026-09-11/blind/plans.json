@@ -1,0 +1,11 @@
+{
+  "001-help": { "argv": ["--help"] },
+  "002-platform-snapshot-empty": { "argv": ["--project", "$GAME", "--json", "platform", "snapshot"] },
+  "003-project-init": { "argv": ["--project", "$GAME", "--json", "project", "init", "--name", "PublicCoreProbe"] },
+  "004-verify": { "argv": ["--project", "$GAME", "--json", "verify"] },
+  "005-session-schema": { "argv": ["--project", "$GAME", "session", "--schema"] },
+  "006-api-search-move": { "argv": ["--project", "$GAME", "--json", "api", "search", "move entity"] },
+  "007-project-init-retry": { "argv": ["--project", "$GAME", "--json", "project", "init", "--name", "PublicCoreProbe"] },
+  "008-platform-snapshot": { "argv": ["--project", "$GAME", "--json", "platform", "snapshot"] },
+  "009-session": { "argv": ["--project", "$GAME", "session"] }
+}

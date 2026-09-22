@@ -1,0 +1,20 @@
+{
+  "label": "004-verify",
+  "mode": "cli",
+  "start": "2026-09-11T11:40:22.224Z",
+  "end": "2026-09-11T11:40:22.328Z",
+  "executable": "D:/Projects/Unone/target/release/game.exe",
+  "argv": [
+    "--project",
+    "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game",
+    "--json",
+    "verify"
+  ],
+  "cwd": "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2",
+  "exitCode": 1,
+  "signal": null,
+  "timedOut": false,
+  "stdin": "",
+  "stdout": "{\n  \"ok\": false,\n  \"value\": {\n    \"project\": \"PublicCoreProbe\",\n    \"steps\": [\n      {\n        \"name\": \"types\",\n        \"status\": \"failed\",\n        \"summary\": \"the entry script did not pass the Luau contract or type check\",\n        \"command\": \"game check --types\",\n        \"diagnostics\": [\n          {\n            \"code\": \"LUAU_ANALYZER_NOT_FOUND\",\n            \"severity\": \"ERROR\",\n            \"summary\": \"Luau static analyzer not found\",\n            \"explanation\": \"`game check --types` requires the official luau-analyze; the runtime embeds only the Luau interpreter and does not pretend to run full type analysis.\",\n            \"facts\": {\n              \"error\": \"program not found\",\n              \"override_environment\": \"UNONE_LUAU_ANALYZER\",\n              \"requested_tool\": \"luau-analyze\"\n            },\n            \"likely_causes\": [],\n            \"suggested_actions\": [\n              {\n                \"action\": \"install_luau_analyzer\",\n                \"description\": \"Fetch the pinned official analyzer into .toolcache. Run it from the engine repository root; it verifies the download against a recorded hash.\",\n                \"command\": \"powershell -File scripts/install-luau-analyze.ps1\"\n              },\n              {\n                \"action\": \"use_existing_luau_analyzer\",\n                \"description\": \"Or point the engine at an analyzer you already have.\",\n                \"command\": \"$env:UNONE_LUAU_ANALYZER = 'D:/tools/luau-analyze.exe'\"\n              }\n            ],\n            \"source\": null\n          }\n        ]\n      },\n      {\n        \"name\": \"assets\",\n        \"status\": \"passed\",\n        \"summary\": \"0 declared, 0 scene references, ready_for_packaging true\",\n        \"command\": \"game asset inspect --strict\",\n        \"diagnostics\": []\n      },\n      {\n        \"name\": \"layout\",\n        \"status\": \"not_applicable\",\n        \"summary\": \"the game publishes no UI tree\",\n        \"command\": \"game ui preview --strict --frames 1 --seed 42\",\n        \"diagnostics\": []\n      },\n      {\n        \"name\": \"tests\",\n        \"status\": \"passed\",\n        \"summary\": \"2/2 deterministic cases passed\",\n        \"command\": \"game test\",\n        \"diagnostics\": []\n      }\n    ],\n    \"passed\": 2,\n    \"failed\": 1,\n    \"not_applicable\": 1,\n    \"step_source\": \"default\"\n  },\n  \"diagnostics\": [\n    {\n      \"code\": \"VERIFY_FAILED\",\n      \"severity\": \"ERROR\",\n      \"summary\": \"A verify gate failed\",\n      \"explanation\": \"1 steps failed; each step's command field can be rerun independently.\",\n      \"facts\": {\n        \"failed_steps\": [\n          \"types\"\n        ]\n      },\n      \"likely_causes\": [],\n      \"suggested_actions\": [],\n      \"source\": null\n    }\n  ],\n  \"effects\": [\n    \"verify ran 4 gates in the default order: 2 passed, 1 failed, 1 not applicable\"\n  ]\n}\n",
+  "stderr": ""
+}

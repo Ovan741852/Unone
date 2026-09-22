@@ -1,0 +1,1428 @@
+[
+  {
+    "request_number": 1,
+    "operation_number_including_cli_launch": 10,
+    "request": {
+      "command": "open",
+      "seed": 42
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "cursor": 1,
+        "engine_version": "0.1.0",
+        "faulted": false,
+        "frame": 0,
+        "gameplay_authority": "luau_and_input",
+        "host": "headless",
+        "mutation_policy": "temporary_debug_state_patch",
+        "observation_digest": "sha256:f851964c2dcf02d0c010c21eac19599128f3463898f6b9ef4f6456c1f179e52e",
+        "revision": 0,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d44174db7d5e14-1",
+        "snapshot": {
+          "camera": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "view_height": 10,
+            "zoom": 1
+          },
+          "entities": {
+            "example": {
+              "id": "example",
+              "mesh3d": null,
+              "name": "",
+              "rigidbody": null,
+              "rotation": 0,
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "sprite": null,
+              "transform": {
+                "x": 0,
+                "y": 0
+              },
+              "transform3d": null
+            }
+          },
+          "frame": 0,
+          "observations": {},
+          "time_seconds": 0
+        },
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 2,
+    "operation_number_including_cli_launch": 11,
+    "request": {
+      "command": "snapshot",
+      "session": "18d44174db7d5e14-1",
+      "selector": {
+        "kind": "entity",
+        "id": "example"
+      },
+      "paths": [
+        "/transform"
+      ]
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "cursor": 1,
+        "engine_version": "0.1.0",
+        "faulted": false,
+        "frame": 0,
+        "gameplay_authority": "luau_and_input",
+        "host": "headless",
+        "mutation_policy": "temporary_debug_state_patch",
+        "observation_digest": "sha256:f851964c2dcf02d0c010c21eac19599128f3463898f6b9ef4f6456c1f179e52e",
+        "revision": 0,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d44174db7d5e14-1",
+        "snapshot": {
+          "/transform": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 3,
+    "operation_number_including_cli_launch": 12,
+    "request": {
+      "command": "step",
+      "session": "18d44174db7d5e14-1",
+      "expected_revision": 0,
+      "frames": 30,
+      "framse": 30,
+      "input": {
+        "actions": {
+          "Right": true
+        }
+      }
+    },
+    "response": {
+      "ok": false,
+      "value": null,
+      "diagnostics": [
+        {
+          "code": "DEVELOPER_REQUEST_INVALID",
+          "severity": "ERROR",
+          "summary": "Developer operation rejected",
+          "explanation": "unknown field `framse`, expected one of `session`, `expected_revision`, `frames`, `input`",
+          "facts": {},
+          "likely_causes": [],
+          "suggested_actions": [],
+          "source": null
+        }
+      ],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 4,
+    "operation_number_including_cli_launch": 13,
+    "request": {
+      "command": "step",
+      "session": "18d44174db7d5e14-1",
+      "expected_revision": 0,
+      "frames": 30,
+      "input": {
+        "actions": {
+          "Right": true
+        }
+      }
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "completed_frames": 30,
+        "cursor": 31,
+        "engine_version": "0.1.0",
+        "faulted": false,
+        "frame": 30,
+        "gameplay_authority": "luau_and_input",
+        "host": "headless",
+        "mutation_policy": "temporary_debug_state_patch",
+        "observation_digest": "sha256:d97ca218588b0cf98f55f1a066f825488b6a2ce70d1659d21592890c8dab6807",
+        "revision": 30,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d44174db7d5e14-1",
+        "snapshot": {
+          "camera": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "view_height": 10,
+            "zoom": 1
+          },
+          "entities": {
+            "example": {
+              "id": "example",
+              "mesh3d": null,
+              "name": "",
+              "rigidbody": null,
+              "rotation": 0,
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "sprite": null,
+              "transform": {
+                "x": 0.5,
+                "y": 0
+              },
+              "transform3d": null
+            }
+          },
+          "frame": 30,
+          "observations": {},
+          "time_seconds": 0.5
+        },
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 5,
+    "operation_number_including_cli_launch": 14,
+    "request": {
+      "command": "step",
+      "session": "18d44174db7d5e14-1",
+      "expected_revision": 0,
+      "frames": 30,
+      "input": {
+        "actions": {
+          "Right": true
+        }
+      }
+    },
+    "response": {
+      "ok": false,
+      "value": null,
+      "diagnostics": [
+        {
+          "code": "REVISION_CONFLICT",
+          "severity": "ERROR",
+          "summary": "Developer operation rejected",
+          "explanation": "Expected 0; current revision is 30",
+          "facts": {
+            "actual_revision": 30,
+            "expected_revision": 0,
+            "session": "18d44174db7d5e14-1"
+          },
+          "likely_causes": [],
+          "suggested_actions": [],
+          "source": null
+        }
+      ],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 6,
+    "operation_number_including_cli_launch": 15,
+    "request": {
+      "command": "snapshot",
+      "session": "18d44174db7d5e14-1",
+      "selector": {
+        "kind": "entity",
+        "id": "example"
+      },
+      "paths": [
+        "/transform"
+      ]
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "cursor": 31,
+        "engine_version": "0.1.0",
+        "faulted": false,
+        "frame": 30,
+        "gameplay_authority": "luau_and_input",
+        "host": "headless",
+        "mutation_policy": "temporary_debug_state_patch",
+        "observation_digest": "sha256:d97ca218588b0cf98f55f1a066f825488b6a2ce70d1659d21592890c8dab6807",
+        "revision": 30,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d44174db7d5e14-1",
+        "snapshot": {
+          "/transform": {
+            "x": 0.5,
+            "y": 0
+          }
+        },
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 7,
+    "operation_number_including_cli_launch": 16,
+    "request": {
+      "command": "step",
+      "session": "18d44174db7d5e14-1",
+      "expected_revision": 30,
+      "frames": 1,
+      "input": {}
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "completed_frames": 1,
+        "cursor": 31,
+        "engine_version": "0.1.0",
+        "faulted": false,
+        "frame": 31,
+        "gameplay_authority": "luau_and_input",
+        "host": "headless",
+        "mutation_policy": "temporary_debug_state_patch",
+        "observation_digest": "sha256:44c9dc717d74771f0a3312d5cee4fd626a399d638c36520d0265a09c4ef262a0",
+        "revision": 31,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d44174db7d5e14-1",
+        "snapshot": {
+          "camera": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "view_height": 10,
+            "zoom": 1
+          },
+          "entities": {
+            "example": {
+              "id": "example",
+              "mesh3d": null,
+              "name": "",
+              "rigidbody": null,
+              "rotation": 0,
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "sprite": null,
+              "transform": {
+                "x": 0.5,
+                "y": 0
+              },
+              "transform3d": null
+            }
+          },
+          "frame": 31,
+          "observations": {},
+          "time_seconds": 0.5166666666666667
+        },
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 8,
+    "operation_number_including_cli_launch": 17,
+    "request": {
+      "command": "watch",
+      "session": "18d44174db7d5e14-1",
+      "after": 29,
+      "limit": 1,
+      "selector": {
+        "kind": "entity",
+        "id": "example"
+      },
+      "paths": [
+        "/transform/x"
+      ]
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "current": {
+          "cursor": 31,
+          "engine_version": "0.1.0",
+          "faulted": false,
+          "frame": 31,
+          "gameplay_authority": "luau_and_input",
+          "host": "headless",
+          "mutation_policy": "temporary_debug_state_patch",
+          "observation_digest": "sha256:44c9dc717d74771f0a3312d5cee4fd626a399d638c36520d0265a09c4ef262a0",
+          "revision": 31,
+          "scope": "runtime",
+          "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+          "script_generation": 0,
+          "seed": 42,
+          "selection_exists": true,
+          "session": "18d44174db7d5e14-1",
+          "snapshot": {
+            "/transform/x": 0.5
+          },
+          "supported_dimensions": [
+            "3d",
+            "2d"
+          ]
+        },
+        "cursor": 31,
+        "dropped_count": 0,
+        "engine_version": "0.1.0",
+        "entries": [
+          {
+            "data": {
+              "changes": [
+                {
+                  "after": 0.483333,
+                  "after_present": true,
+                  "before": 0.466667,
+                  "before_present": true,
+                  "path": "/entities/example/transform/x"
+                }
+              ],
+              "detail": {},
+              "omitted_changes": 0
+            },
+            "frame": 29,
+            "kind": "tick",
+            "revision": 29,
+            "sequence": 30
+          }
+        ],
+        "faulted": false,
+        "frame": 31,
+        "gameplay_authority": "luau_and_input",
+        "has_more": true,
+        "host": "headless",
+        "lost_events": false,
+        "mode": "poll",
+        "mutation_policy": "temporary_debug_state_patch",
+        "next_cursor": 30,
+        "oldest_cursor": 1,
+        "revision": 31,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d44174db7d5e14-1",
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 9,
+    "operation_number_including_cli_launch": 18,
+    "request": {
+      "command": "watch",
+      "session": "18d44174db7d5e14-1",
+      "after": 30,
+      "limit": 1,
+      "selector": {
+        "kind": "entity",
+        "id": "example"
+      },
+      "paths": [
+        "/transform/x"
+      ]
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "current": {
+          "cursor": 31,
+          "engine_version": "0.1.0",
+          "faulted": false,
+          "frame": 31,
+          "gameplay_authority": "luau_and_input",
+          "host": "headless",
+          "mutation_policy": "temporary_debug_state_patch",
+          "observation_digest": "sha256:44c9dc717d74771f0a3312d5cee4fd626a399d638c36520d0265a09c4ef262a0",
+          "revision": 31,
+          "scope": "runtime",
+          "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+          "script_generation": 0,
+          "seed": 42,
+          "selection_exists": true,
+          "session": "18d44174db7d5e14-1",
+          "snapshot": {
+            "/transform/x": 0.5
+          },
+          "supported_dimensions": [
+            "3d",
+            "2d"
+          ]
+        },
+        "cursor": 31,
+        "dropped_count": 0,
+        "engine_version": "0.1.0",
+        "entries": [
+          {
+            "data": {
+              "changes": [
+                {
+                  "after": 0.5,
+                  "after_present": true,
+                  "before": 0.483333,
+                  "before_present": true,
+                  "path": "/entities/example/transform/x"
+                }
+              ],
+              "detail": {},
+              "omitted_changes": 0
+            },
+            "frame": 30,
+            "kind": "tick",
+            "revision": 30,
+            "sequence": 31
+          }
+        ],
+        "faulted": false,
+        "frame": 31,
+        "gameplay_authority": "luau_and_input",
+        "has_more": false,
+        "host": "headless",
+        "lost_events": false,
+        "mode": "poll",
+        "mutation_policy": "temporary_debug_state_patch",
+        "next_cursor": 31,
+        "oldest_cursor": 1,
+        "revision": 31,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d44174db7d5e14-1",
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 10,
+    "operation_number_including_cli_launch": 19,
+    "request": {
+      "command": "enact",
+      "session": "18d44174db7d5e14-1",
+      "expected_revision": 31,
+      "dry_run": true,
+      "operations": [
+        {
+          "selector": {
+            "kind": "entity",
+            "id": "example"
+          },
+          "change": {
+            "op": "set_position",
+            "position": {
+              "x": 10,
+              "y": 0
+            }
+          }
+        }
+      ]
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "changes": [
+          {
+            "after": 10,
+            "after_present": true,
+            "before": 0.5,
+            "before_present": true,
+            "path": "/entities/example/transform/x"
+          }
+        ],
+        "cursor": 31,
+        "dry_run": true,
+        "engine_version": "0.1.0",
+        "faulted": false,
+        "frame": 31,
+        "gameplay_authority": "luau_and_input",
+        "host": "headless",
+        "mutation_policy": "temporary_debug_state_patch",
+        "omitted_changes": 0,
+        "results": [
+          {}
+        ],
+        "revision": 31,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d44174db7d5e14-1",
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 11,
+    "operation_number_including_cli_launch": 20,
+    "request": {
+      "command": "snapshot",
+      "session": "18d44174db7d5e14-1",
+      "selector": {
+        "kind": "entity",
+        "id": "example"
+      },
+      "paths": [
+        "/transform"
+      ]
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "cursor": 31,
+        "engine_version": "0.1.0",
+        "faulted": false,
+        "frame": 31,
+        "gameplay_authority": "luau_and_input",
+        "host": "headless",
+        "mutation_policy": "temporary_debug_state_patch",
+        "observation_digest": "sha256:44c9dc717d74771f0a3312d5cee4fd626a399d638c36520d0265a09c4ef262a0",
+        "revision": 31,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d44174db7d5e14-1",
+        "snapshot": {
+          "/transform": {
+            "x": 0.5,
+            "y": 0
+          }
+        },
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 12,
+    "operation_number_including_cli_launch": 21,
+    "request": {
+      "command": "enact",
+      "session": "18d44174db7d5e14-1",
+      "expected_revision": 31,
+      "dry_run": false,
+      "operations": [
+        {
+          "selector": {
+            "kind": "entity",
+            "id": "example"
+          },
+          "change": {
+            "op": "set_position",
+            "position": {
+              "x": 10,
+              "y": 0
+            }
+          }
+        }
+      ]
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "changes": [
+          {
+            "after": 10,
+            "after_present": true,
+            "before": 0.5,
+            "before_present": true,
+            "path": "/entities/example/transform/x"
+          }
+        ],
+        "cursor": 32,
+        "dry_run": false,
+        "engine_version": "0.1.0",
+        "faulted": false,
+        "frame": 31,
+        "gameplay_authority": "luau_and_input",
+        "host": "headless",
+        "mutation_policy": "temporary_debug_state_patch",
+        "omitted_changes": 0,
+        "results": [
+          {}
+        ],
+        "revision": 32,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d44174db7d5e14-1",
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 13,
+    "operation_number_including_cli_launch": 22,
+    "request": {
+      "command": "step",
+      "session": "18d44174db7d5e14-1",
+      "expected_revision": 32,
+      "frames": 1,
+      "input": {
+        "actions": {
+          "Right": true
+        }
+      }
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "completed_frames": 1,
+        "cursor": 33,
+        "engine_version": "0.1.0",
+        "faulted": false,
+        "frame": 32,
+        "gameplay_authority": "luau_and_input",
+        "host": "headless",
+        "mutation_policy": "temporary_debug_state_patch",
+        "observation_digest": "sha256:6e52462fc36b2f9a033da59dd0d44faed8d246ae01625538243135a877eb341b",
+        "revision": 33,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d44174db7d5e14-1",
+        "snapshot": {
+          "camera": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "view_height": 10,
+            "zoom": 1
+          },
+          "entities": {
+            "example": {
+              "id": "example",
+              "mesh3d": null,
+              "name": "",
+              "rigidbody": null,
+              "rotation": 0,
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "sprite": null,
+              "transform": {
+                "x": 10.016667,
+                "y": 0
+              },
+              "transform3d": null
+            }
+          },
+          "frame": 32,
+          "observations": {},
+          "time_seconds": 0.5333333333333333
+        },
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 14,
+    "operation_number_including_cli_launch": 23,
+    "request": {
+      "command": "perf",
+      "session": "18d44174db7d5e14-1"
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "cursor": 33,
+        "engine_version": "0.1.0",
+        "faulted": false,
+        "frame": 32,
+        "gameplay_authority": "luau_and_input",
+        "host": "headless",
+        "jobs": null,
+        "measurement_scope": "runtime script/physics/observe; excludes rendering, transport and developer diff overhead",
+        "mutation_policy": "temporary_debug_state_patch",
+        "performance": {
+          "counts": {
+            "effects": 0,
+            "entities": 1,
+            "instance_bytes": 0,
+            "instances": 0,
+            "observations": 0,
+            "particles": 0,
+            "rigidbodies": 0,
+            "ui_nodes": 0
+          },
+          "frame_budget_ms": 16.667,
+          "frames": 32,
+          "frames_over_budget": 0,
+          "luau_memory_bytes": 457288,
+          "luau_positive_heap_delta_bytes_per_frame": 511,
+          "mean_frame_ms": 0.009,
+          "median_frame_ms": 0.003,
+          "notes": [
+            "wall clock timings, excluded from the observation digest",
+            "serialize is an optional canonical-JSON probe, not actual Web publication or decode time; measure those separately",
+            "luau_positive_heap_delta_bytes_per_frame is positive net heap growth, not total allocated bytes or GC pause attribution",
+            "median, p95, and frames-over-budget use the most recent bounded sample window (up to 1024 frames)"
+          ],
+          "p95_frame_ms": 0.044,
+          "phases": [
+            {
+              "mean_ms": 0.005,
+              "name": "script",
+              "share": 0.667,
+              "total_ms": 0.146
+            },
+            {
+              "mean_ms": 0.001,
+              "name": "physics",
+              "share": 0.12,
+              "total_ms": 0.026
+            },
+            {
+              "mean_ms": 0.001,
+              "name": "observe",
+              "share": 0.213,
+              "total_ms": 0.047
+            }
+          ],
+          "profile": "release",
+          "slowest_frame": {
+            "frame": 1,
+            "observe_ms": 0.01,
+            "physics_ms": 0.012,
+            "script_ms": 0.058,
+            "total_ms": 0.113
+          },
+          "sustained_fps": 113675.1,
+          "total_ms": 0.282
+        },
+        "revision": 33,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d44174db7d5e14-1",
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 15,
+    "operation_number_including_cli_launch": 24,
+    "request": {
+      "command": "recording",
+      "session": "18d44174db7d5e14-1"
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "commands": [
+          {
+            "command": "step",
+            "digests": [
+              "sha256:2b2f26087c01fac52809743d824106a36667712130c1bd145feb209aa5031a85",
+              "sha256:66206a8ef8000eb8d2101cbeb0ff07ed64591f7b15e0c3b6c7ab69c6f3a0f6df",
+              "sha256:219784e361396b6c8b07f07aa9a9e353b8e61b0abb0ea1e6639438f2805a092c",
+              "sha256:00653b8655afe776708c15cb37524bde401cad2f08f56cb1e59bd7e62edd6161",
+              "sha256:dbb51e05eb2caa4913add545582724743d9e3c429392717e4d6fb87fc1ddcc11",
+              "sha256:a78d4ae3cc66214606e09295558256714c64486e0e2e761e915bd17de381d996",
+              "sha256:702f589379327a4103fe61d120234de97d35f0e10b53aa60d100eda1ad2a5552",
+              "sha256:00c69b560582a8c8ca4e519f6bca13316ab3d82f62aaa622b65d3e2ecfa33ff1",
+              "sha256:6dcc33a2306f3bcc4ea7e3333a2632000ffa78620039f3cb5bc50fde1ce9c21d",
+              "sha256:78da9b5a4f2eb1385cd17a91e259be0a5c760f5072460a44d17018dd81314fb8",
+              "sha256:ec600ac11f6d2a98a50a5bbdc953d99fc26e8957950896149397517c5839b07b",
+              "sha256:9272f79ba983c9aaf3423fb64f8d83214e0460b2a2b96034d3490cc8c59e929c",
+              "sha256:f56ccda8c7274e8a96b9f82c942ae0c430e3c50e2a3e2be0e6be9b3b01c876e3",
+              "sha256:1eee40526532ef2be2f0200ace279ce6dd2902566f176f1f9dee71043cfaee4e",
+              "sha256:f81844f75c82620da7482ee2db24f141c4e83a155c478fb079552df1b024fed1",
+              "sha256:04a26bcdf7349b3a618270166e7204f587cdaf1a352969520c56b6341e98731e",
+              "sha256:a8c8b10f61b6ab5efcf203e4e66ae865784d99e66942e911049fd8544d97d21e",
+              "sha256:b1adfa6127072b5740ff7e9750c9cb3407a17e9e090169f1a25a67907e89397b",
+              "sha256:52bd269131796917945a0b6f02a539005a3f4636e2b5ca220d91ea187d2a9a91",
+              "sha256:a241d57218002fe56a7f139b5b841957247ed933fe4227c4c80ed76d114400ee",
+              "sha256:d49e91c64547f84d88acb4b9d55894072f31428c6625dfdd0117480e6fd377b4",
+              "sha256:9539e38c6b78ce94df042aed837f0957f076da6816a93b663f916fab0d7ae465",
+              "sha256:cd5f526de9f8af797e802a77dc18465b3e1bd71cf9e6e17ea20abf4ad71004d2",
+              "sha256:f5d3bf64bf9f60ac77985230f2abb5c403b835ab23adeb19e5a12906d4f8c700",
+              "sha256:13fa64e5c3279ef0e196bfdd7e4c3370f41d4ad91d81f7210888d08c6699238e",
+              "sha256:80820a9243b2ee34aae319a978d63bdeea6283b7d3d298cbea2562270aa79169",
+              "sha256:df34130b8cd2fd36c456e7349293ef305a984f05af064b5a497504cf7cdef845",
+              "sha256:2fec9fb42d8fb3b27f42fc4da57e3de8278ad1178d7a7c8d77ff43b73f9ce8c9",
+              "sha256:73ae92a4b8e0deddbd90b0c99649d08b8e25c283fa13008e91a6cf221a9ec45c",
+              "sha256:d97ca218588b0cf98f55f1a066f825488b6a2ce70d1659d21592890c8dab6807"
+            ],
+            "failure": null,
+            "frames": 30,
+            "input": {
+              "actions": {
+                "Right": true
+              },
+              "pointer": null
+            }
+          },
+          {
+            "command": "step",
+            "digests": [
+              "sha256:44c9dc717d74771f0a3312d5cee4fd626a399d638c36520d0265a09c4ef262a0"
+            ],
+            "failure": null,
+            "frames": 1,
+            "input": {
+              "actions": {},
+              "pointer": null
+            }
+          },
+          {
+            "command": "enact",
+            "digest": "sha256:da16f06ddba0b788cf9bce7c1d2f43d2ab6a3946b0a783a98e3d6a10e84fb3b5",
+            "operations": [
+              {
+                "change": {
+                  "op": "set_position",
+                  "position": {
+                    "x": 10,
+                    "y": 0
+                  }
+                },
+                "selector": {
+                  "id": "example",
+                  "kind": "entity"
+                }
+              }
+            ]
+          },
+          {
+            "command": "step",
+            "digests": [
+              "sha256:6e52462fc36b2f9a033da59dd0d44faed8d246ae01625538243135a877eb341b"
+            ],
+            "failure": null,
+            "frames": 1,
+            "input": {
+              "actions": {
+                "Right": true
+              },
+              "pointer": null
+            }
+          }
+        ],
+        "engine_version": "0.1.0",
+        "initial_digest": "sha256:f851964c2dcf02d0c010c21eac19599128f3463898f6b9ef4f6456c1f179e52e",
+        "schema_version": 1,
+        "scope": "runtime commands; replay against the same project sources and engine version",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "seed": 42
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 16,
+    "operation_number_including_cli_launch": 25,
+    "request": {
+      "command": "replay",
+      "recording": {
+        "commands": [
+          {
+            "command": "step",
+            "digests": [
+              "sha256:2b2f26087c01fac52809743d824106a36667712130c1bd145feb209aa5031a85",
+              "sha256:66206a8ef8000eb8d2101cbeb0ff07ed64591f7b15e0c3b6c7ab69c6f3a0f6df",
+              "sha256:219784e361396b6c8b07f07aa9a9e353b8e61b0abb0ea1e6639438f2805a092c",
+              "sha256:00653b8655afe776708c15cb37524bde401cad2f08f56cb1e59bd7e62edd6161",
+              "sha256:dbb51e05eb2caa4913add545582724743d9e3c429392717e4d6fb87fc1ddcc11",
+              "sha256:a78d4ae3cc66214606e09295558256714c64486e0e2e761e915bd17de381d996",
+              "sha256:702f589379327a4103fe61d120234de97d35f0e10b53aa60d100eda1ad2a5552",
+              "sha256:00c69b560582a8c8ca4e519f6bca13316ab3d82f62aaa622b65d3e2ecfa33ff1",
+              "sha256:6dcc33a2306f3bcc4ea7e3333a2632000ffa78620039f3cb5bc50fde1ce9c21d",
+              "sha256:78da9b5a4f2eb1385cd17a91e259be0a5c760f5072460a44d17018dd81314fb8",
+              "sha256:ec600ac11f6d2a98a50a5bbdc953d99fc26e8957950896149397517c5839b07b",
+              "sha256:9272f79ba983c9aaf3423fb64f8d83214e0460b2a2b96034d3490cc8c59e929c",
+              "sha256:f56ccda8c7274e8a96b9f82c942ae0c430e3c50e2a3e2be0e6be9b3b01c876e3",
+              "sha256:1eee40526532ef2be2f0200ace279ce6dd2902566f176f1f9dee71043cfaee4e",
+              "sha256:f81844f75c82620da7482ee2db24f141c4e83a155c478fb079552df1b024fed1",
+              "sha256:04a26bcdf7349b3a618270166e7204f587cdaf1a352969520c56b6341e98731e",
+              "sha256:a8c8b10f61b6ab5efcf203e4e66ae865784d99e66942e911049fd8544d97d21e",
+              "sha256:b1adfa6127072b5740ff7e9750c9cb3407a17e9e090169f1a25a67907e89397b",
+              "sha256:52bd269131796917945a0b6f02a539005a3f4636e2b5ca220d91ea187d2a9a91",
+              "sha256:a241d57218002fe56a7f139b5b841957247ed933fe4227c4c80ed76d114400ee",
+              "sha256:d49e91c64547f84d88acb4b9d55894072f31428c6625dfdd0117480e6fd377b4",
+              "sha256:9539e38c6b78ce94df042aed837f0957f076da6816a93b663f916fab0d7ae465",
+              "sha256:cd5f526de9f8af797e802a77dc18465b3e1bd71cf9e6e17ea20abf4ad71004d2",
+              "sha256:f5d3bf64bf9f60ac77985230f2abb5c403b835ab23adeb19e5a12906d4f8c700",
+              "sha256:13fa64e5c3279ef0e196bfdd7e4c3370f41d4ad91d81f7210888d08c6699238e",
+              "sha256:80820a9243b2ee34aae319a978d63bdeea6283b7d3d298cbea2562270aa79169",
+              "sha256:df34130b8cd2fd36c456e7349293ef305a984f05af064b5a497504cf7cdef845",
+              "sha256:2fec9fb42d8fb3b27f42fc4da57e3de8278ad1178d7a7c8d77ff43b73f9ce8c9",
+              "sha256:73ae92a4b8e0deddbd90b0c99649d08b8e25c283fa13008e91a6cf221a9ec45c",
+              "sha256:d97ca218588b0cf98f55f1a066f825488b6a2ce70d1659d21592890c8dab6807"
+            ],
+            "failure": null,
+            "frames": 30,
+            "input": {
+              "actions": {
+                "Right": true
+              },
+              "pointer": null
+            }
+          },
+          {
+            "command": "step",
+            "digests": [
+              "sha256:44c9dc717d74771f0a3312d5cee4fd626a399d638c36520d0265a09c4ef262a0"
+            ],
+            "failure": null,
+            "frames": 1,
+            "input": {
+              "actions": {},
+              "pointer": null
+            }
+          },
+          {
+            "command": "enact",
+            "digest": "sha256:da16f06ddba0b788cf9bce7c1d2f43d2ab6a3946b0a783a98e3d6a10e84fb3b5",
+            "operations": [
+              {
+                "change": {
+                  "op": "set_position",
+                  "position": {
+                    "x": 10,
+                    "y": 0
+                  }
+                },
+                "selector": {
+                  "id": "example",
+                  "kind": "entity"
+                }
+              }
+            ]
+          },
+          {
+            "command": "step",
+            "digests": [
+              "sha256:6e52462fc36b2f9a033da59dd0d44faed8d246ae01625538243135a877eb341b"
+            ],
+            "failure": null,
+            "frames": 1,
+            "input": {
+              "actions": {
+                "Right": true
+              },
+              "pointer": null
+            }
+          }
+        ],
+        "engine_version": "0.1.0",
+        "initial_digest": "sha256:f851964c2dcf02d0c010c21eac19599128f3463898f6b9ef4f6456c1f179e52e",
+        "schema_version": 1,
+        "scope": "runtime commands; replay against the same project sources and engine version",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "seed": 42
+      }
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "engine_version_changed": false,
+        "identical": true,
+        "measurement_scope": "runtime only; timing is excluded from replay equality",
+        "performance": {
+          "counts": {
+            "effects": 0,
+            "entities": 1,
+            "instance_bytes": 0,
+            "instances": 0,
+            "observations": 0,
+            "particles": 0,
+            "rigidbodies": 0,
+            "ui_nodes": 0
+          },
+          "frame_budget_ms": 16.667,
+          "frames": 32,
+          "frames_over_budget": 0,
+          "luau_memory_bytes": 457288,
+          "luau_positive_heap_delta_bytes_per_frame": 511,
+          "mean_frame_ms": 0.002,
+          "median_frame_ms": 0.001,
+          "notes": [
+            "wall clock timings, excluded from the observation digest",
+            "serialize is an optional canonical-JSON probe, not actual Web publication or decode time; measure those separately",
+            "luau_positive_heap_delta_bytes_per_frame is positive net heap growth, not total allocated bytes or GC pause attribution",
+            "median, p95, and frames-over-budget use the most recent bounded sample window (up to 1024 frames)"
+          ],
+          "p95_frame_ms": 0.002,
+          "phases": [
+            {
+              "mean_ms": 0.001,
+              "name": "script",
+              "share": 0.68,
+              "total_ms": 0.033
+            },
+            {
+              "mean_ms": 0,
+              "name": "physics",
+              "share": 0.109,
+              "total_ms": 0.005
+            },
+            {
+              "mean_ms": 0,
+              "name": "observe",
+              "share": 0.21,
+              "total_ms": 0.01
+            }
+          ],
+          "profile": "release",
+          "slowest_frame": {
+            "frame": 1,
+            "observe_ms": 0.001,
+            "physics_ms": 0.002,
+            "script_ms": 0.008,
+            "total_ms": 0.016
+          },
+          "sustained_fps": 526315.8,
+          "total_ms": 0.061
+        },
+        "reproduced_failure": false,
+        "script_changed": false,
+        "world": {
+          "camera": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "view_height": 10,
+            "zoom": 1
+          },
+          "entities": {
+            "example": {
+              "id": "example",
+              "mesh3d": null,
+              "name": "",
+              "rigidbody": null,
+              "rotation": 0,
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "sprite": null,
+              "transform": {
+                "x": 10.016667,
+                "y": 0
+              },
+              "transform3d": null
+            }
+          },
+          "frame": 32,
+          "observations": {},
+          "time_seconds": 0.5333333333333333
+        }
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 17,
+    "operation_number_including_cli_launch": 26,
+    "request": {
+      "command": "snapshot",
+      "session": "18d44174db7d5e14-1",
+      "selector": {
+        "kind": "entity",
+        "id": "example"
+      },
+      "paths": [
+        "/transform"
+      ]
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "cursor": 33,
+        "engine_version": "0.1.0",
+        "faulted": false,
+        "frame": 32,
+        "gameplay_authority": "luau_and_input",
+        "host": "headless",
+        "mutation_policy": "temporary_debug_state_patch",
+        "observation_digest": "sha256:6e52462fc36b2f9a033da59dd0d44faed8d246ae01625538243135a877eb341b",
+        "revision": 33,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d44174db7d5e14-1",
+        "snapshot": {
+          "/transform": {
+            "x": 10.016667,
+            "y": 0
+          }
+        },
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 18,
+    "operation_number_including_cli_launch": 27,
+    "request": {
+      "command": "close",
+      "session": "18d44174db7d5e14-1"
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "closed": true,
+        "session": "18d44174db7d5e14-1"
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 19,
+    "operation_number_including_cli_launch": 28,
+    "request": {
+      "command": "open",
+      "seed": 42
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "cursor": 1,
+        "engine_version": "0.1.0",
+        "faulted": false,
+        "frame": 0,
+        "gameplay_authority": "luau_and_input",
+        "host": "headless",
+        "mutation_policy": "temporary_debug_state_patch",
+        "observation_digest": "sha256:f851964c2dcf02d0c010c21eac19599128f3463898f6b9ef4f6456c1f179e52e",
+        "revision": 0,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d4418f52aed174-3",
+        "snapshot": {
+          "camera": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "view_height": 10,
+            "zoom": 1
+          },
+          "entities": {
+            "example": {
+              "id": "example",
+              "mesh3d": null,
+              "name": "",
+              "rigidbody": null,
+              "rotation": 0,
+              "scale": {
+                "x": 1,
+                "y": 1
+              },
+              "sprite": null,
+              "transform": {
+                "x": 0,
+                "y": 0
+              },
+              "transform3d": null
+            }
+          },
+          "frame": 0,
+          "observations": {},
+          "time_seconds": 0
+        },
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 20,
+    "operation_number_including_cli_launch": 29,
+    "request": {
+      "command": "snapshot",
+      "session": "18d44174db7d5e14-1",
+      "selector": {
+        "kind": "entity",
+        "id": "example"
+      },
+      "paths": [
+        "/transform"
+      ]
+    },
+    "response": {
+      "ok": false,
+      "value": null,
+      "diagnostics": [
+        {
+          "code": "SESSION_MISMATCH",
+          "severity": "ERROR",
+          "summary": "Developer operation rejected",
+          "explanation": "Use the session id returned by open; cursors and revisions belong to that session",
+          "facts": {},
+          "likely_causes": [],
+          "suggested_actions": [],
+          "source": null
+        }
+      ],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 21,
+    "operation_number_including_cli_launch": 30,
+    "request": {
+      "command": "snapshot",
+      "session": "18d4418f52aed174-3",
+      "selector": {
+        "kind": "entity",
+        "id": "example"
+      },
+      "paths": [
+        "/transform"
+      ]
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "cursor": 1,
+        "engine_version": "0.1.0",
+        "faulted": false,
+        "frame": 0,
+        "gameplay_authority": "luau_and_input",
+        "host": "headless",
+        "mutation_policy": "temporary_debug_state_patch",
+        "observation_digest": "sha256:f851964c2dcf02d0c010c21eac19599128f3463898f6b9ef4f6456c1f179e52e",
+        "revision": 0,
+        "scope": "runtime",
+        "script_digest": "sha256:d36c04c2bb729f0a91804163f11e3b6c7ea1467d9bfa3591d006a8fd662c8ec2",
+        "script_generation": 0,
+        "seed": 42,
+        "session": "18d4418f52aed174-3",
+        "snapshot": {
+          "/transform": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "supported_dimensions": [
+          "3d",
+          "2d"
+        ]
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  {
+    "request_number": 22,
+    "operation_number_including_cli_launch": 31,
+    "request": {
+      "command": "close",
+      "session": "18d4418f52aed174-3"
+    },
+    "response": {
+      "ok": true,
+      "value": {
+        "closed": true,
+        "session": "18d4418f52aed174-3"
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  }
+]

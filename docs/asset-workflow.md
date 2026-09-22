@@ -469,7 +469,8 @@ are authored in the schema-backed manifest.
 
 | Host path | Actual boundary |
 | --- | --- |
-| Native texture loader | Explicit `image` / `svg` / `image/svg+xml`; resvg decode. Legacy sources use SVG extension detection. |
+| Native player texture loader | PNG, JPEG, WebP, and explicit self-contained static SVG; raster images use the native `image` decoder and SVG uses the bounded resvg route. Legacy sources use SVG extension detection. |
+| CLI asset loader | Explicit self-contained static SVG; legacy sources accept SVG or PNG. This is not the native player texture decoder. |
 | Web runner image loader | `image`: svg/png/jpeg/webp, matching MIME. Actual image decode may still fail. |
 | Web audio loader | `audio`: wav/mp3/ogg with audio/wav, audio/mpeg, audio/ogg. `decodeAudioData` decides actual device support. |
 | Web presentation Spine | `spine` / `spine-json` / application/json, JSON skeleton and atlas. Uses the external runtime, not binary skeleton loading; currently one selected rig asset. |

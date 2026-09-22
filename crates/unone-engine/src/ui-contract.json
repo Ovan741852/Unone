@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "default_max_nodes": 2048,
+  "host_max_nodes": 16384,
+  "max_component_depth": 16,
+  "max_string_bytes": 8388608,
+  "max_layout_comparisons": 1000000,
+  "max_layout_findings": 1024
+}

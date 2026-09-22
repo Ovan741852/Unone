@@ -137,6 +137,11 @@ return Game
     assert_eq!(replay["value"]["identical"], true, "{replay}");
     let perf = connection.call(json!({"command":"perf","session":session}));
     assert_eq!(perf["value"]["performance"]["frames"], 2);
+    let diagnosis = connection.call(json!({"command":"diagnose","session":session,"limit":5}));
+    assert_eq!(diagnosis["ok"], true, "{diagnosis}");
+    assert_eq!(diagnosis["value"]["capabilities"]["read_only"], true);
+    assert_eq!(diagnosis["value"]["execution"]["luau_execution"], "interpreter");
+    assert_eq!(diagnosis["value"]["revision"], 3);
     let closed = connection.call(json!({"command":"close","session":session}));
     assert_eq!(closed["value"]["closed"], true);
     let absent = connection.call(json!({"command":"snapshot","session":session}));

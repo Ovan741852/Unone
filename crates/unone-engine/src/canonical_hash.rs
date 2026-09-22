@@ -91,10 +91,9 @@ mod tests {
                 Some(BLOCK),
                 Some(len.saturating_sub(1)),
             ] {
-                if let Some(index) = index {
-                    if index < len {
+                if let Some(index) = index
+                    && index < len {
                         bytes[index] ^= 0x55;
-                    }
                 }
                 let (actual, work) = cached.hash(&bytes);
                 assert_eq!(actual, format!("sha256:{:x}", Sha256::digest(&bytes)));

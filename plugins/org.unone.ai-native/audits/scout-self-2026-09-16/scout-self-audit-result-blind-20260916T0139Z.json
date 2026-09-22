@@ -1,0 +1,223 @@
+{
+  "schema": "org.unone.ai-native-audit.bundle.v1",
+  "createdAt": "2026-09-16T01:39:09Z",
+  "audit": {
+    "target": "org.unone.ai-native",
+    "title": "Unone AI-native Audit",
+    "packageVersion": "0.3.0",
+    "revision": "HEAD 1b166704fa4b3dc2a7a757c57e3f9778d678cf4a; selected plugin files are untracked in this working tree.",
+    "mode": "blind",
+    "scope": "Documented public read-only audit workflow: recommend, describe, init, catalog, snapshot, diagnostics, and evaluate through the standalone CLI and JSON-line entry. Registry writes, remote host/MCP integration, and src/ or test/ contents are outside this scope.",
+    "sourceFallbackStep": null,
+    "wrongGuesses": 1,
+    "limitations": [
+      "No src/ or test/ file contents were inspected; conclusions cover only the public README, docs, manifest, CLI, describe output, callable operations, and their selected-file hashes.",
+      "No ai_native.register call or registry write was performed; the write authorization route is described but not runtime-tested.",
+      "No remote host, live MCP transport, GUI, external network, account, or real target was used.",
+      "Recorder probes used only local synthetic requests. Reported durations are local process wall time, not model-token, production-target, or resource-cost measurements."
+    ]
+  },
+  "environment": {
+    "os": "Windows",
+    "platform": "win32/x64",
+    "node": "v24.14.1",
+    "projectRoot": "D:\\Projects\\Unone",
+    "pluginWorkingDirectory": "D:\\Projects\\Unone\\plugins\\org.unone.ai-native",
+    "registryWritePerformed": false,
+    "srcOrTestContentsInspected": false
+  },
+  "subject": {
+    "fingerprint": "bb7ed948ce5f6712ac90358ad69fee1f9d30bbe5009c7dbe29014684ac05f08f",
+    "files": [
+      { "path": "plugins/org.unone.ai-native/README.md", "sha256": "a0e6e0c3fce233a8cd1090755e9a01525dae91bd21bc178bce0701b994be06a8" },
+      { "path": "plugins/org.unone.ai-native/docs/discovery.md", "sha256": "2729fff911604a70c0da7276fca3c13b381231981a978b54be78a9fc8a05dca2" },
+      { "path": "plugins/org.unone.ai-native/docs/report.md", "sha256": "aed7a2738c9793927a09b7ed90774993ff636744e97e266ac3cf117fae6fa959" },
+      { "path": "plugins/org.unone.ai-native/package.json", "sha256": "d07d7a8b947c682dc34e09d0f09e84fffb265afeaf4fc72a1bd7ea669e2edf16" },
+      { "path": "plugins/org.unone.ai-native/plugin.json", "sha256": "751e8b82c56d11e3dd8f7d53a472d98bc8ae06d7f00e5b5f1ea1a6d1b2163251" },
+      { "path": "plugins/org.unone.ai-native/cli.mjs", "sha256": "54db5ffe0df3a19af6da74586ab609541c2d0cdeafb61e009d2d3114133f4e1c" },
+      { "path": "plugins/org.unone.ai-native/plugin.mjs", "sha256": "1aab474aba641ad7077b5eea18f6f6fe516fb47fcade6e8cb02e8400f396f154" }
+    ]
+  },
+  "reportInput": {
+    "path": "plugins/org.unone.ai-native/audits/scout-self-2026-09-16/final-report-input-blind-20260916T0120Z.json",
+    "sha256": "c76c70a29554373be75685fa3cf876d08398b4c82f0c3d5e76e43b19d5deec83"
+  },
+  "commandSequence": [
+    {
+      "step": 1,
+      "purpose": "CLI public flow: recommend, describe init, init, describe evaluate, catalog, and snapshot.",
+      "capture": "plugins/org.unone.ai-native/audits/scout-self-2026-09-16/probe-cli-capture-blind-20260916T0120Z.json",
+      "captureSha256": "f94ecbf75b4a0b6e51c07f3a17da4e97c562455acf0e27f1371c1526aabdf6a5",
+      "recorder": { "startedAt": "2026-09-16T01:24:40Z", "durationMs": 336.255, "exitCode": 0, "timedOut": false, "outputTruncated": false, "sourceChanged": false },
+      "commandsAndExactStdout": "Preserved in capture JSON commands[0..5]; each entry includes full argv, cwd, environment, stdout, stderr, exitCode, elapsedMs, and spawnError."
+    },
+    {
+      "step": 2,
+      "purpose": "JSON-line callable flow: recommend, describe init, call init, describe evaluate, then stale-hash, incomplete-report, and out-of-root negative calls.",
+      "capture": "plugins/org.unone.ai-native/audits/scout-self-2026-09-16/probe-capture-blind-20260916T0120Z.json",
+      "captureSha256": "b9f5ea567290372261ad9c6594be83b6c35a417385308a3292ef85eb8893a52f",
+      "recorder": { "startedAt": "2026-09-16T01:21:56Z", "durationMs": 388.766, "exitCode": 0, "timedOut": false, "outputTruncated": false, "sourceChanged": false },
+      "commandsAndExactStdout": "Preserved in capture JSON stdout.operations[0..6]; each entry includes full JSON-line stdin, argv, cwd, environment, exact stdout/stderr, exitCode, elapsedMs, and spawnError."
+    },
+    {
+      "step": 3,
+      "purpose": "Describe the register contract without calling register.",
+      "capture": "plugins/org.unone.ai-native/audits/scout-self-2026-09-16/probe-register-describe-capture-blind-20260916T0120Z.json",
+      "captureSha256": "3b60879f9c6559cda3cee40829c308362756363b0075dc2a338dbecbd01eaaa8",
+      "recorder": { "startedAt": "2026-09-16T01:27:13Z", "durationMs": 93.456, "exitCode": 0, "timedOut": false, "outputTruncated": false, "sourceChanged": false },
+      "commandsAndExactStdout": "Preserved in capture JSON stdout, including the full describe response and its Explicit CLI register or trusted-host registryWrite opt-in requirement."
+    },
+    {
+      "step": 4,
+      "purpose": "Evaluate a complete report using ai_native.call; this first accepted report returned index 76.5 and gate needs_work because diagnostics was deliberately rated partial.",
+      "capture": "plugins/org.unone.ai-native/audits/scout-self-2026-09-16/probe-evaluation-capture-blind-20260916T0120Z.json",
+      "captureSha256": "b1f200b20ddf65ba530d6fe5468f8abbf7e1121e1b95a334cd5a44ffbe9e0d59",
+      "probePath": "plugins/org.unone.ai-native/audits/scout-self-2026-09-16/probe-evaluate-blind-20260916T0120Z.mjs",
+      "probeSha256": "0cbf8ae3d3f9502e8b993e5571ad0795ef2cbc623c66b0eb433f3e79cffde8ee",
+      "recorder": { "startedAt": "2026-09-16T01:31:57Z", "durationMs": 114.716, "exitCode": 0, "timedOut": false, "outputTruncated": false, "sourceChanged": false },
+      "commandsAndExactStdout": "Preserved in capture JSON stdout; it embeds the complete submitted report, JSON-line request, and full EngineResult output. The probe file was restored to this exact recorded hash before final evaluation."
+    },
+    {
+      "step": 5,
+      "purpose": "Final evaluation of the completed scoped report through standalone CLI.",
+      "command": "node cli.mjs evaluate --root \"D:\\Projects\\Unone\" --report \"plugins/org.unone.ai-native/audits/scout-self-2026-09-16/final-report-input-blind-20260916T0120Z.json\"",
+      "cwd": "D:\\Projects\\Unone\\plugins\\org.unone.ai-native",
+      "exitCode": 0,
+      "shellElapsedMs": 139,
+      "pluginElapsedMs": 19.231,
+      "stdout": "See evaluatorResult below; exact JSON fields and values are preserved there."
+    }
+  ],
+  "negativeTests": [
+    { "step": 1, "case": "stale contract hash", "code": "DISCOVERY_CONTRACT_STALE", "facts": { "expected": "43e7a378c1a6fc4b2e161e88ea94ef08936a20e30b3e50a641224467c54eb6dd", "actual": "0000000000000000000000000000000000000000000000000000000000000000" }, "exitCode": 0, "effect": "No effects; reply directs caller to describe and retry." },
+    { "step": 2, "case": "empty report object", "code": "AUDIT_INVALID", "facts": { "field": "$.schema", "expected": ["unone.ai-native.audit.v1"] }, "exitCode": 0 },
+    { "step": 3, "case": "report path traversal", "code": "AUDIT_PATH_OUTSIDE_ROOT", "facts": { "field": "path", "expected": "relative/path with no traversal, drive or backslash", "actual": "../../Cargo.lock" }, "exitCode": 0 },
+    { "step": 4, "case": "wrong working directory for documented CLI", "command": "node cli.mjs snapshot --root \"D:\\Projects\\Unone\" --path plugins/org.unone.ai-native/README.md", "cwd": "D:\\Projects\\Unone", "exitCode": 1, "elapsedMs": 41, "error": "Error: Cannot find module 'D:\\Projects\\Unone\\cli.mjs' (MODULE_NOT_FOUND). Corrected by running from D:\\Projects\\Unone\\plugins\\org.unone.ai-native; no product files changed." },
+    { "step": 5, "case": "stale-evidence self-audit mistake", "capture": "plugins/org.unone.ai-native/audits/scout-self-2026-09-16/probe-final-evaluation-capture-blind-20260916T0120Z.json", "captureSha256": "c024b1ec3b89df025b86df51a44d33c0ea68fa3302ed8840b986f7fdd87b618f", "code": "AUDIT_EVIDENCE_STALE", "facts": { "field": "$.evidence[7].probe", "expected": "0cbf8ae3d3f9502e8b993e5571ad0795ef2cbc623c66b0eb433f3e79cffde8ee", "actual": "47b438bfc34a58289764f2fb479c375d801eb48e410ea7af56da75078ae2afa4" }, "recovery": "Restored the probe to expected SHA-256; excluded this failed capture from final evidence and reran the final report." }
+  ],
+  "evaluatorResult": {
+    "ok": true,
+    "value": {
+      "schema": "unone.ai-native.result.v1",
+      "rubricVersion": "1.0.0",
+      "target": {
+        "id": "org.unone.ai-native",
+        "name": "Unone AI-native Audit",
+        "surface": "plugin",
+        "scope": "Documented public read-only audit workflow: recommend, describe, init, catalog, snapshot, diagnostics, and evaluate through the standalone CLI and JSON-line entry. Registry writes, remote host/MCP integration, and src/ or test/ contents are outside this scope.",
+        "version": "0.3.0",
+        "revision": "HEAD 1b166704fa4b3dc2a7a757c57e3f9778d678cf4a; selected plugin files are untracked in this working tree.",
+        "environment": "Windows x64; Node v24.14.1; local project root D:\\Projects\\Unone; public CLI and JSON-line calls."
+      },
+      "trial": {
+        "mode": "blind",
+        "entryPoints": [
+          "plugins/org.unone.ai-native/README.md",
+          "node cli.mjs recommend/describe/init/catalog/snapshot/evaluate",
+          "node plugin.mjs JSON-line recommend/describe/call",
+          "node scripts/record-probe.mjs with explicitly reviewed local probes"
+        ],
+        "steps": 28,
+        "firstSuccessStep": 28,
+        "sourceFallbackStep": null,
+        "wrongGuesses": 1,
+        "limitations": [
+          "No src/ or test/ file contents were inspected; conclusions cover only the public README, docs, manifest, CLI, describe output, callable operations, and their selected-file hashes.",
+          "No ai_native.register call or registry write was performed; the write authorization route is described but not runtime-tested.",
+          "No remote host, live MCP transport, GUI, external network, account, or real target was used.",
+          "Recorder probes used only local synthetic requests. Reported durations are local process wall time, not model-token, production-target, or resource-cost measurements."
+        ]
+      },
+      "subjectFingerprint": "bb7ed948ce5f6712ac90358ad69fee1f9d30bbe5009c7dbe29014684ac05f08f",
+      "index": 93.25,
+      "meaning": "固定 rubric 的證據支持分數（0–100 下限），不是普遍有效的 AI-native 認證。未驗證項未從分母移除。",
+      "possibleRange": [93.25, 93.25],
+      "coveragePercent": 100,
+      "executionCoveragePercent": 100,
+      "publicExecutionCoveragePercent": 100,
+      "gate": "supported_within_scope",
+      "blockers": [],
+      "unverifiedCritical": [],
+      "dimensions": [
+        { "id": "purpose", "weight": 10, "critical": false, "runtime": false, "title": "用途與起點", "question": "陌生 AI 從入口能否說明工具解決什麼、不解決什麼，以及下一個正確操作？", "status": "verified", "claimedStatus": "verified", "claimed": 4, "accepted": 4, "points": 10, "caps": [], "answer": "README states the tool measures whether an unfamiliar AI can find, use, understand results, and repair errors; recommend returned init and evaluate in that order.", "nextAction": "Keep the short purpose/limitation statement visible at first discovery; regression-check representative English and Chinese intents when keywords change." },
+        { "id": "capabilities", "weight": 10, "critical": false, "runtime": false, "title": "能力與限制發現", "question": "如何查到目前版本真正可用的功能、相依條件與未實作能力，而不是猜 API？", "status": "verified", "claimedStatus": "verified", "claimed": 4, "accepted": 4, "points": 10, "caps": [], "answer": "Recommend identifies available operations and next steps; catalog lists all ten criteria, weights, caps, statuses, and non-goals; describe returns one selected contract.", "nextAction": "Add a small bilingual query set for intended candidates, no-match cases, and ambiguous tasks, then verify ranking and explanations." },
+        { "id": "operation", "weight": 12, "critical": true, "runtime": true, "title": "可執行操作契約", "question": "只靠可發現的契約及最小例子能否完成代表任務？輸入欄位、回傳及副作用是否明確？", "status": "verified", "claimedStatus": "verified", "claimed": 4, "accepted": 4, "points": 12, "caps": [], "answer": "The documented recommend → describe → call sequence returned an init skeleton, then accepted a complete report in memory and returned a read-only evaluation response.", "nextAction": "Preserve the direct in-memory report path and the CLI stdin alternative; keep one end-to-end completed report in a repeatable capture." },
+        { "id": "context", "weight": 10, "critical": false, "runtime": true, "title": "上下文與需求真相", "question": "是否保留 ID、關聯、版本、來源與待決事項？AI 能否取得必要脈絡而不把推測當需求？", "status": "verified", "claimedStatus": "verified", "claimed": 3, "accepted": 3, "points": 7.5, "caps": [], "answer": "The report contract carries target identity, scope, package and operation versions, revision, environment, trial, selected subject hashes, evidence, and unresolved issues.", "nextAction": "Keep scope and environment required, and show unresolved host/write paths as limitations rather than implied coverage." },
+        { "id": "observation", "weight": 10, "critical": true, "runtime": true, "title": "結果與狀態觀察", "question": "如何查到實際變更、進度、完成、失敗與限制？是否把已送出、執行成功、人類驗收分開？", "status": "verified", "claimedStatus": "verified", "claimed": 4, "accepted": 4, "points": 10, "caps": [], "answer": "The completed evaluator response returns an evidence index, gate, coverage, issues, and per-check outcomes; command and plugin timings remain separately labeled.", "nextAction": "Keep gate, index/range, coverage, issues, and execution limitations in the same response so callers can act without inferring status." },
+        { "id": "diagnostics", "weight": 14, "critical": true, "runtime": true, "title": "具體錯因與修復", "question": "故意做錯一次：回應是否指出錯誤碼、欄位或物件、實際值與預期、具體原因及可採取的修復？修正後重跑是否成功？", "status": "verified", "claimedStatus": "verified", "claimed": 4, "accepted": 4, "points": 14, "caps": [], "answer": "A stale contract returned DISCOVERY_CONTRACT_STALE with expected/actual hashes and a describe-and-retry action; invalid report and traversal attempts returned specific codes/facts, and a complete corrected report was accepted.", "nextAction": "After future failure classes, preserve the original negative capture and add a new successful retry capture tied to the same subject." },
+        { "id": "recovery", "weight": 10, "critical": false, "runtime": true, "title": "重試、衝突與恢復", "question": "重複請求、狀態過時、失去回覆或中斷時，AI 能否判斷安全重試、續接或需人類介入，不重複副作用？", "status": "verified", "claimedStatus": "verified", "claimed": 4, "accepted": 4, "points": 10, "caps": [], "answer": "Stale-contract and validation failures provide safe correction steps; after refreshing the contract and supplying a complete report, evaluate completed without a schema error.", "nextAction": "Keep safe retries tied to refreshed hashes and preserve the report/evidence unchanged while correcting only identified fields or paths." },
+        { "id": "boundaries", "weight": 10, "critical": true, "runtime": true, "title": "權限與作用範圍", "question": "讀寫、目標專案／裝置、批准與外部副作用是否可查且實際受到限制？以一個越界操作驗證。", "status": "verified", "claimedStatus": "verified", "claimed": 3, "accepted": 3, "points": 7.5, "caps": [], "answer": "An out-of-root traversal was rejected as AUDIT_PATH_OUTSIDE_ROOT with expected and actual path details; describe register marks it non-read-only and requires explicit trusted-host opt-in.", "nextAction": "Add a read-only authorization-status query and verify register denial/allowance only in a separately authorized temporary-root test." },
+        { "id": "performance", "weight": 7, "critical": false, "runtime": true, "title": "效能與成本定位", "question": "能否觀察這類工具相關的耗時、資源或成本及瓶頸？無法量測是否明說而不回傳假零？不要求每種工具都有 GPU 指標。", "status": "verified", "claimedStatus": "verified", "claimed": 3, "accepted": 3, "points": 5.25, "caps": [], "answer": "CLI and callable outputs expose local elapsed time and explicitly report GPU time as null; recorder captures also preserve local wall durations.", "nextAction": "Retain explicit scope labels and null for unavailable measures; add host-level metrics only if heavier host-backed operations are introduced." },
+        { "id": "reproducibility", "weight": 7, "critical": false, "runtime": true, "title": "版本與可重現驗證", "question": "能否保留版本指紋、環境、輸入、輸出及可重跑步驟？如何知道修改後原失敗案例確實已修复？", "status": "verified", "claimedStatus": "verified", "claimed": 4, "accepted": 4, "points": 7, "caps": [], "answer": "Snapshot returns selected-file SHA-256 hashes; recorder captures preserve command/input/output, environment, probe hash, subject hashes, duration, exit code, truncation, and source-change state.", "nextAction": "Keep each capture immutable and rerun with a new output path after any subject/probe change; do not refresh old hashes in place." }
+      ],
+      "evidenceIntegrity": { "checkedFiles": 15, "bytesRead": 187961, "hashAndExcerptVerified": true, "semanticClaimsIndependentlyProven": false },
+      "executionScopes": ["fixture"],
+      "limitations": [
+        "No src/ or test/ file contents were inspected; conclusions cover only the public README, docs, manifest, CLI, describe output, callable operations, and their selected-file hashes.",
+        "No ai_native.register call or registry write was performed; the write authorization route is described but not runtime-tested.",
+        "No remote host, live MCP transport, GUI, external network, account, or real target was used.",
+        "Recorder probes used only local synthetic requests. Reported durations are local process wall time, not model-token, production-target, or resource-cost measurements.",
+        "Local public JSON-line calls only; no registry writes, external network, real accounts, or target fixture.",
+        "Local documented CLI discovery/init/catalog/snapshot only; no registry writes, external network, real accounts, or target fixture.",
+        "Contract description only; ai_native.register was not called, and no registry write was attempted.",
+        "Local completed-report evaluation only; no registry write or external target.",
+        "相同 rubric 可比較，但評測者判斷、任務與環境會影響分數；一次 subagent 盲測不是統計結果。"
+      ],
+      "issues": [
+        {
+          "id": "registry-write-unverified",
+          "checkId": "boundaries",
+          "severity": "P2",
+          "summary": "The write route is documented but intentionally excluded from runtime verification.",
+          "cause": "The task forbids calling register or performing registry writes. Describe shows a non-read-only operation requiring explicit CLI use or trusted-host registryWrite opt-in, while this trial verified only read-only calls and rejection of a traversal path.",
+          "fix": "Expose a read-only host capability/status query for registry-write availability, then test denial and authorized append in a separate isolated host test.",
+          "verification": "Use a temporary project root and a test host: confirm a read-only permission query reports disabled/enabled correctly, denial creates no record, and one explicitly authorized append creates exactly one record.",
+          "evidence": ["exec-register-describe", "exec-call"]
+        },
+        {
+          "id": "local-performance-only",
+          "checkId": "performance",
+          "severity": "P2",
+          "summary": "Timing is observable, but only for local plugin/process work.",
+          "cause": "Telemetry explicitly labels elapsed_ms as plugin wall time and returns null for GPU time; there is no cost or resource measurement for a real host/target in this scoped trial.",
+          "fix": "Keep unavailable measures null and, if host-backed work is added, expose host-level duration/resource fields with clear scope labels.",
+          "verification": "Run a representative host-backed operation and verify timings/resources are present only when measured, while unsupported metrics remain null rather than zero.",
+          "evidence": ["doc-report", "exec-cli"]
+        }
+      ]
+    },
+    "diagnostics": [],
+    "effects": [],
+    "telemetry": { "elapsed_ms": 19.231, "gpu_ms": null, "note": "Plugin wall time only, not target performance. No target commands or probes executed." }
+  },
+  "assessment": {
+    "index": 93.25,
+    "possibleRange": [93.25, 93.25],
+    "gate": "supported_within_scope",
+    "blockers": [],
+    "coveragePercent": 100,
+    "executionCoveragePercent": 100,
+    "publicExecutionCoveragePercent": 100,
+    "issues": [
+      "P2: Registry-write authorization was described but not runtime-tested because register calls and writes were explicitly forbidden.",
+      "P2: Timing is observable for local plugin work, but real-host resources/cost were outside the test scope."
+    ],
+    "workflowFriction": [
+      "One setup mistake used the repo root as the CLI cwd and failed with MODULE_NOT_FOUND; rerunning from the plugin directory fixed it.",
+      "Scout accepted only current contract hashes and rejected an empty report with a precise AUDIT_INVALID field; callers need to complete the full ten-check schema.",
+      "A probe changed after its first capture, and Scout correctly rejected the stale probe evidence. Restoring the recorded hash resolved it."
+    ],
+    "concreteRecommendations": [
+      "Add a read-only host capability/status query for registry-write availability, then verify denied and explicitly authorized behavior in a separate isolated test.",
+      "Add small bilingual recommend fixtures for positive, ambiguous, and no-match queries to protect keyword ranking as the catalog grows.",
+      "Retain null and explicit scope labels for unavailable performance measures; add host-level duration/resource measures only when host-backed work exists."
+    ]
+  },
+  "captures": [
+    { "path": "plugins/org.unone.ai-native/audits/scout-self-2026-09-16/probe-cli-capture-blind-20260916T0120Z.json", "sha256": "f94ecbf75b4a0b6e51c07f3a17da4e97c562455acf0e27f1371c1526aabdf6a5", "role": "Full CLI stdout/stderr/exit/timing trace." },
+    { "path": "plugins/org.unone.ai-native/audits/scout-self-2026-09-16/probe-capture-blind-20260916T0120Z.json", "sha256": "b9f5ea567290372261ad9c6594be83b6c35a417385308a3292ef85eb8893a52f", "role": "Full JSON-line callable stdout/stderr/exit/timing trace." },
+    { "path": "plugins/org.unone.ai-native/audits/scout-self-2026-09-16/probe-register-describe-capture-blind-20260916T0120Z.json", "sha256": "3b60879f9c6559cda3cee40829c308362756363b0075dc2a338dbecbd01eaaa8", "role": "Full register describe output; no register call." },
+    { "path": "plugins/org.unone.ai-native/audits/scout-self-2026-09-16/probe-evaluation-capture-blind-20260916T0120Z.json", "sha256": "b1f200b20ddf65ba530d6fe5468f8abbf7e1121e1b95a334cd5a44ffbe9e0d59", "role": "Accepted complete-report evaluation with index 76.5 and gate needs_work; cited as successful evaluation evidence." },
+    { "path": "plugins/org.unone.ai-native/audits/scout-self-2026-09-16/probe-final-evaluation-capture-blind-20260916T0120Z.json", "sha256": "c024b1ec3b89df025b86df51a44d33c0ea68fa3302ed8840b986f7fdd87b618f", "role": "Failed intermediate report after probe source changed; records AUDIT_EVIDENCE_STALE and is not cited by the final report." }
+  ]
+}

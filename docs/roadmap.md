@@ -73,7 +73,7 @@ Stable IDs are retained for existing references, not a competing priority order.
 | 5 | Scene switching | Only main_scene loads. Define runtime state ownership and save relationships first. |
 | 6 | Physics queries | Contacts exist, raycast/region queries do not. Return deterministically ordered hits. |
 | 7 | Sensors/triggers | Contact-only colliders without physical resolution are missing. |
-| 8 | Import pipeline | Convert external formats into engine contracts, not Unity/Cocos semantics in core. |
+| 8 | Import pipeline | Convert external formats into engine contracts, not Unity/Cocos semantics in core. The first concrete GLB fixture and cross-host acceptance are tracked in the [Wuxia capability audit](issues/2026-09-19-wuxia-engine-capability-gap-audit.md). |
 | 9 | Non-circle colliders | Only circles and a ground plane; add the smallest required shapes. |
 | 10 | Multiple pointers | One pointer currently. Engine owns identities; game owns gestures. |
 | 21 | Reliable authoring start | Init/scene/API changes are candidates, not finished game acceptance. See [work package](work-packages/2026-09-06-ai-authoring.md). |
@@ -95,7 +95,7 @@ Stable IDs are retained for existing references, not a competing priority order.
 | ID | Gap | Current limitation |
 |---|---|---|
 | 16 | Native UI | Current native wgpu supports non-DOM UI and static SVG with matching runtime declarations; Windows fixture/SDK evidence is [recorded](reviews/2026-09-10-svg-sdk.md). Android/iOS UI device validation and broader whole-game presentation acceptance remain open. The earlier [gap record](proposals/native-ui-host-v1.md) is historical. |
-| 17 | Native textures | Preview verifies/decodes sprite bytes but draws procedural shapes. |
+| 17 | Native textures | Preview verifies/decodes sprite bytes but draws procedural shapes. The Wuxia audit also records the required mesh/material/UI parity for native screenshots. |
 | 18 | Native/mobile Spine and Effekseer | Actual presentation is Web-only; semantic state is not playback. |
 | 19 | iOS host | ABI exists; implementation and device evidence are absent. |
 | 20 | Large asset delivery | Whole-bundle loading remains; production streaming/CDN/OPFS/quota policies are not implemented. |

@@ -1,0 +1,23 @@
+{
+  "ok": false,
+  "value": null,
+  "diagnostics": [
+    {
+      "code": "PROJECT_ALREADY_EXISTS",
+      "severity": "ERROR",
+      "summary": "project init requires a truly empty root",
+      "explanation": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game already contains \\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game\\project.unone.json; project init will not clean, merge, or overwrite existing contents.",
+      "facts": {
+        "created_directories": [],
+        "created_files": [],
+        "failed_path": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game",
+        "phase": "preflight",
+        "root": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game"
+      },
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": []
+}

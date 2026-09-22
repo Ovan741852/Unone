@@ -97,7 +97,7 @@ pub(super) fn particle(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         "play_batch",
         lua.create_function(
             move |_, (effect, positions, seed): (String, mlua::Buffer, Option<u64>)| {
-                if positions.len() == 0 || positions.len() % 12 != 0 || positions.len() > 4096 * 12
+                if positions.is_empty() || positions.len() % 12 != 0 || positions.len() > 4096 * 12
                 {
                     return Err(mlua::Error::RuntimeError(
                         "PARTICLE_BATCH_INVALID: packed f32le xyz positions required".into(),

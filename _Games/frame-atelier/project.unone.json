@@ -1,0 +1,10 @@
+{
+  "name": "Frame Atelier · Unone UI workshop",
+  "entry_script": "scripts/main.luau",
+  "systems": {
+    "physics2d": false,
+    "physics3d": false,
+    "audio": false,
+    "particle": false
+  }
+}

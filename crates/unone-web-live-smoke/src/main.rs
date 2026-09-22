@@ -138,11 +138,10 @@ fn write_snapshot(
             }
         } else {
             for (id, batch) in &snapshot.instances3d {
-                if let Some(entry) = value.get_mut("instances3d").and_then(|v| v.get_mut(id)) {
-                    if let Some(object) = entry.as_object_mut() {
+                if let Some(entry) = value.get_mut("instances3d").and_then(|v| v.get_mut(id))
+                    && let Some(object) = entry.as_object_mut() {
                         object.insert("data".into(), serde_json::Value::String(batch.data().to_string()));
                     }
-                }
             }
         }
         serde_json::value::to_raw_value(&value).map_err(|e| e.to_string())?

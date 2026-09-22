@@ -1183,10 +1183,9 @@ impl World {
             .retain(|contact| contact.a != id && contact.b != id);
         self.ground_contacts.retain(|entity| entity != id);
         #[cfg(feature = "physics3d")]
-        if let Some(p) = &mut self.physics3d {
-            if p.contains(id) {
+        if let Some(p) = &mut self.physics3d
+            && p.contains(id) {
                 p.remove(id)?;
-            }
         }
         Ok(())
     }

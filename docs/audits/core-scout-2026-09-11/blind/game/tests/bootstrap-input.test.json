@@ -1,0 +1,20 @@
+{
+  "assertions": [
+    {
+      "entity": "example",
+      "equals": 1.0,
+      "field": "transform.x"
+    },
+    {
+      "entity": "example",
+      "equals": 0.0,
+      "field": "transform.y"
+    }
+  ],
+  "frames": 60,
+  "input": {
+    "Right": true
+  },
+  "name": "bootstrap-input",
+  "seed": 42
+}

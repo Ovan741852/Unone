@@ -1,0 +1,409 @@
+{
+  "schema": "unone.ai-native.audit.v1",
+  "rubricVersion": "1.0.0",
+  "target": {
+    "id": "org.unone.ai-native",
+    "name": "Unone AI-native Audit",
+    "surface": "plugin",
+    "scope": "Same-agent retest of Scout 0.3.0 through its public standalone CLI: README/help → recommend → describe(init/evaluate) → init → complete report → evaluate. Execution evidence is supplemented by probe.capture-004; registry writes and host/MCP/UI integrations are outside this trial.",
+    "version": "0.3.0",
+    "revision": "Current reviewed working tree; selected-file hashes match probe.capture-004 and sourceChanged is false.",
+    "environment": "Windows x64, Node.js v24.14.1, standalone local CLI; no Unone host, MCP server, GUI, or external provider."
+  },
+  "trial": {
+    "mode": "retest",
+    "entryPoints": [
+      "README.md",
+      "node cli.mjs --help"
+    ],
+    "steps": 8,
+    "firstSuccessStep": 8,
+    "sourceFallbackStep": null,
+    "wrongGuesses": 0,
+    "limitations": [
+      "This is a same-agent retest with prior task context; the fresh execution began from README/help and used only public CLI/docs plus the supplied capture.",
+      "One local Windows x64 / Node.js v24.14.1 CLI environment; no host, MCP transport, GUI, other OS/device, or cross-device flow was exercised.",
+      "probe.capture-004's evaluation step uses a synthetic all-unverified report to show evaluator observability; it explicitly is not a Scout score. The completed report score is produced by this retest's stdin evaluation.",
+      "No src/ or test/ file contents were inspected. The capture's subject hashes are included to bind this report to the reviewed snapshot."
+    ]
+  },
+  "subject": [
+    {
+      "path": "README.md",
+      "sha256": "a0e6e0c3fce233a8cd1090755e9a01525dae91bd21bc178bce0701b994be06a8"
+    },
+    {
+      "path": "package.json",
+      "sha256": "d07d7a8b947c682dc34e09d0f09e84fffb265afeaf4fc72a1bd7ea669e2edf16"
+    },
+    {
+      "path": "plugin.json",
+      "sha256": "751e8b82c56d11e3dd8f7d53a472d98bc8ae06d7f00e5b5f1ea1a6d1b2163251"
+    },
+    {
+      "path": "cli.mjs",
+      "sha256": "54db5ffe0df3a19af6da74586ab609541c2d0cdeafb61e009d2d3114133f4e1c"
+    },
+    {
+      "path": "plugin.mjs",
+      "sha256": "1aab474aba641ad7077b5eea18f6f6fe516fb47fcade6e8cb02e8400f396f154"
+    },
+    {
+      "path": "src/api.mjs",
+      "sha256": "29cd6ff456b4aca7c0367273815f35cb5189334b0a91b95a767a6cce01c48373"
+    },
+    {
+      "path": "src/contracts.mjs",
+      "sha256": "11760f62e1940ab312c9b42b058c5cb6649d1c0fb9a197df5e8a6353574e0084"
+    },
+    {
+      "path": "src/discovery.mjs",
+      "sha256": "a148f19ef75fedb7cb89e7e8339afe011f3c54dba31897fe82ab131eddd7b82b"
+    },
+    {
+      "path": "src/files.mjs",
+      "sha256": "b0e255867bb6b5da6c41937ba50b86c7f1ff40a737efe4fbbfb2be23edf18eff"
+    },
+    {
+      "path": "src/audit.mjs",
+      "sha256": "76bd503a9de45e419b94e644c7716898b9a6613fd9eed6a33dbd5e86a201c970"
+    },
+    {
+      "path": "src/rubric.mjs",
+      "sha256": "224d31508c4d81854f91e42b9b7d8875d7b086077e2ca736027417ba49762147"
+    },
+    {
+      "path": "src/registry.mjs",
+      "sha256": "41bf52188e22c63598438381a16f05fcf51ac0a5f42331a220e55f37954d17a0"
+    },
+    {
+      "path": "scripts/record-probe.mjs",
+      "sha256": "face597b225e9c2e892ad38131a6c10cba399671e562688a671fc40f0398119a"
+    },
+    {
+      "path": "docs/report.md",
+      "sha256": "aed7a2738c9793927a09b7ed90774993ff636744e97e266ac3cf117fae6fa959"
+    },
+    {
+      "path": "docs/discovery.md",
+      "sha256": "2729fff911604a70c0da7276fca3c13b381231981a978b54be78a9fc8a05dca2"
+    },
+    {
+      "path": "skills/unone-ai-native-audit/SKILL.md",
+      "sha256": "99d2efbbc030ca7dbb8bfd5f1681629bb93d6ad9ccc05dbfd1fb0bfd79a086f9"
+    },
+    {
+      "path": "test/audit.test.mjs",
+      "sha256": "bb1b3bc903ed9f3799bd376a890e9a8907c2b220aa254e8d92797459caa107ad"
+    },
+    {
+      "path": "test/registry.test.mjs",
+      "sha256": "37eb5ad623978696f44fb2083b3c8e71857b1843632b41e9c8764e8b80a2765c"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "readme-purpose",
+      "kind": "document",
+      "path": "README.md",
+      "sha256": "a0e6e0c3fce233a8cd1090755e9a01525dae91bd21bc178bce0701b994be06a8",
+      "quote": "衡量「陌生 AI 是否能自己找到、用對、看懂結果、修復錯誤」的開發插件。"
+    },
+    {
+      "id": "readme-query",
+      "kind": "document",
+      "path": "README.md",
+      "sha256": "a0e6e0c3fce233a8cd1090755e9a01525dae91bd21bc178bce0701b994be06a8",
+      "quote": "Assess Scout itself for AI-native usability and give it an evidence-based score"
+    },
+    {
+      "id": "readme-init",
+      "kind": "document",
+      "path": "README.md",
+      "sha256": "a0e6e0c3fce233a8cd1090755e9a01525dae91bd21bc178bce0701b994be06a8",
+      "quote": "新評測建議先選 `ai_native.init`"
+    },
+    {
+      "id": "readme-report-input",
+      "kind": "document",
+      "path": "README.md",
+      "sha256": "a0e6e0c3fce233a8cd1090755e9a01525dae91bd21bc178bce0701b994be06a8",
+      "quote": "評分器可直接接收完整 `report` JSON，不必先建立檔案；仍可用 `report_path` 重驗專案內既有報告。"
+    },
+    {
+      "id": "readme-version-scope",
+      "kind": "document",
+      "path": "README.md",
+      "sha256": "a0e6e0c3fce233a8cd1090755e9a01525dae91bd21bc178bce0701b994be06a8",
+      "quote": "插件套件版號與個別操作契約版號分開遞增"
+    },
+    {
+      "id": "readme-contract-versions",
+      "kind": "document",
+      "path": "README.md",
+      "sha256": "a0e6e0c3fce233a8cd1090755e9a01525dae91bd21bc178bce0701b994be06a8",
+      "quote": "`ai_native.init` 與 `ai_native.evaluate` 是 0.3.0"
+    },
+    {
+      "id": "readme-stdin",
+      "kind": "document",
+      "path": "README.md",
+      "sha256": "a0e6e0c3fce233a8cd1090755e9a01525dae91bd21bc178bce0701b994be06a8",
+      "quote": "node cli.mjs evaluate --root <project> --report - < audit.json"
+    },
+    {
+      "id": "readme-registration-boundary",
+      "kind": "document",
+      "path": "README.md",
+      "sha256": "a0e6e0c3fce233a8cd1090755e9a01525dae91bd21bc178bce0701b994be06a8",
+      "quote": "`UNONE_AI_NATIVE_REGISTRY_WRITE=1` 才能追加評測檔"
+    },
+    {
+      "id": "report-version-semantics",
+      "kind": "document",
+      "path": "docs/report.md",
+      "sha256": "aed7a2738c9793927a09b7ed90774993ff636744e97e266ac3cf117fae6fa959",
+      "quote": "比較插件安裝版本時讀 manifest，不要把操作契約版號當成插件發行版號。"
+    },
+    {
+      "id": "discovery-limit",
+      "kind": "document",
+      "path": "docs/discovery.md",
+      "sha256": "2729fff911604a70c0da7276fca3c13b381231981a978b54be78a9fc8a05dca2",
+      "quote": "候選最多 5，預設 3；不回完整 schema。"
+    },
+    {
+      "id": "capture-init-path",
+      "kind": "execution",
+      "path": "audits/scout-self-2026-09-16/probe.capture-004.json",
+      "sha256": "b287828f9988cd406677405435aa66d2954bd47bb5f8b666bd3759077aa45c2f",
+      "quote": "For a new assessment, select ai_native.init first"
+    },
+    {
+      "id": "capture-in-memory",
+      "kind": "execution",
+      "path": "audits/scout-self-2026-09-16/probe.capture-004.json",
+      "sha256": "b287828f9988cd406677405435aa66d2954bd47bb5f8b666bd3759077aa45c2f",
+      "quote": "in_memory_report_evaluation"
+    },
+    {
+      "id": "capture-unverified-result",
+      "kind": "execution",
+      "path": "audits/scout-self-2026-09-16/probe.capture-004.json",
+      "sha256": "b287828f9988cd406677405435aa66d2954bd47bb5f8b666bd3759077aa45c2f",
+      "quote": "insufficient_evidence"
+    },
+    {
+      "id": "capture-synthetic-scope",
+      "kind": "execution",
+      "path": "audits/scout-self-2026-09-16/probe.capture-004.json",
+      "sha256": "b287828f9988cd406677405435aa66d2954bd47bb5f8b666bd3759077aa45c2f",
+      "quote": "Synthetic all-unverified report: this checks evaluator output observability only and is not a Scout score."
+    },
+    {
+      "id": "capture-version-scope",
+      "kind": "execution",
+      "path": "audits/scout-self-2026-09-16/probe.capture-004.json",
+      "sha256": "b287828f9988cd406677405435aa66d2954bd47bb5f8b666bd3759077aa45c2f",
+      "quote": "Per-operation input/output contract version; independent of the installed plugin/package release version."
+    },
+    {
+      "id": "capture-typo-repair",
+      "kind": "execution",
+      "path": "audits/scout-self-2026-09-16/probe.capture-004.json",
+      "sha256": "b287828f9988cd406677405435aa66d2954bd47bb5f8b666bd3759077aa45c2f",
+      "quote": "Operation ID typo likely. Did you mean ai_native.evaluate? Retry ai_native.describe with that exact ID; otherwise call ai_native.recommend with your goal."
+    },
+    {
+      "id": "capture-path-error",
+      "kind": "execution",
+      "path": "audits/scout-self-2026-09-16/probe.capture-004.json",
+      "sha256": "b287828f9988cd406677405435aa66d2954bd47bb5f8b666bd3759077aa45c2f",
+      "quote": "AUDIT_PATH_OUTSIDE_ROOT"
+    },
+    {
+      "id": "capture-path-repair",
+      "kind": "execution",
+      "path": "audits/scout-self-2026-09-16/probe.capture-004.json",
+      "sha256": "b287828f9988cd406677405435aa66d2954bd47bb5f8b666bd3759077aa45c2f",
+      "quote": "Keep the evidence inside the explicitly selected project and use a forward-slash relative path."
+    },
+    {
+      "id": "capture-stale-contract",
+      "kind": "execution",
+      "path": "audits/scout-self-2026-09-16/probe.capture-004.json",
+      "sha256": "b287828f9988cd406677405435aa66d2954bd47bb5f8b666bd3759077aa45c2f",
+      "quote": "stale_contract_rejected"
+    },
+    {
+      "id": "capture-performance",
+      "kind": "execution",
+      "path": "audits/scout-self-2026-09-16/probe.capture-004.json",
+      "sha256": "b287828f9988cd406677405435aa66d2954bd47bb5f8b666bd3759077aa45c2f",
+      "quote": "Plugin wall time only, not target performance."
+    },
+    {
+      "id": "capture-env",
+      "kind": "execution",
+      "path": "audits/scout-self-2026-09-16/probe.capture-004.json",
+      "sha256": "b287828f9988cd406677405435aa66d2954bd47bb5f8b666bd3759077aa45c2f",
+      "quote": "v24.14.1"
+    },
+    {
+      "id": "capture-boundary-repair",
+      "kind": "execution",
+      "path": "audits/scout-self-2026-09-16/probe.capture-004.json",
+      "sha256": "b287828f9988cd406677405435aa66d2954bd47bb5f8b666bd3759077aa45c2f",
+      "quote": "relative/path with no traversal, drive or backslash"
+    }
+  ],
+  "checks": [
+    {
+      "id": "purpose",
+      "status": "verified",
+      "rating": 4,
+      "access": "public",
+      "answer": "Scout is clearly identified as an audit plugin for helping unfamiliar AI discover, use, understand, and repair tools. The exact README task query now recommends ai_native.init first; its summary and nextAction both identify it as the start of a new assessment.",
+      "reason": "The public purpose and boundaries are explicit, and the fresh English query led directly to the right first operation without conflicting ranking.",
+      "nextAction": "Keep the new-assessment phrase and start instruction aligned across README examples and recommend output.",
+      "evidence": [
+        "readme-purpose",
+        "readme-query",
+        "readme-init",
+        "capture-init-path"
+      ]
+    },
+    {
+      "id": "capabilities",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "The README and public catalog/describe expose the assessment workflow, Node.js requirement, stdin/in-memory report input, deterministic keyword-search limitation, and registration write boundary. The operation descriptions are compact until selected.",
+      "reason": "The available workflow and constraints are discoverable for this task. The search is explicitly limited to supplied metadata and I did not exercise registry/history operations.",
+      "nextAction": "Continue adding representative English and Chinese paraphrases to discovery probes while preserving the declared keyword-search limitation.",
+      "evidence": [
+        "discovery-limit",
+        "readme-report-input",
+        "readme-registration-boundary",
+        "capture-in-memory"
+      ]
+    },
+    {
+      "id": "operation",
+      "status": "verified",
+      "rating": 4,
+      "access": "public",
+      "answer": "I completed the requested workflow using public entrypoints: help, recommend, describe init, init, describe evaluate, catalog, prepare the report, and evaluate it from stdin. Init returned ten checks without file-writing effects; evaluate accepts the completed report from stdin.",
+      "reason": "The chosen path works end to end from the documented discovery flow. The supplied probe also captures a successful in-memory evaluate call, while the direct retest evaluated this report.",
+      "nextAction": "Preserve the recommend → describe → init → evaluate path and keep the in-memory/stdin route visible in the selected evaluate contract.",
+      "evidence": [
+        "readme-init",
+        "readme-report-input",
+        "readme-stdin",
+        "capture-init-path",
+        "capture-in-memory"
+      ]
+    },
+    {
+      "id": "context",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "The report contract retains target ID/name/surface/scope/version/revision/environment, trial metadata, selected subject hashes, evidence references, per-check answers, and next actions/issues. The README clarifies the difference between package release and per-operation contract version.",
+      "reason": "The report schema provides the context needed for this self-audit and ties claims to the selected source/document snapshot.",
+      "nextAction": "Keep the versionScope description visible whenever a contract version appears outside the describe response.",
+      "evidence": [
+        "readme-version-scope",
+        "readme-contract-versions",
+        "report-version-semantics",
+        "capture-version-scope"
+      ]
+    },
+    {
+      "id": "observation",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "The evaluator returns an index, possible range, coverage, gate, blockers, unverified-critical checks, and per-dimension accepted scores. capture-004 demonstrates that an all-unverified report returns index null and insufficient_evidence instead of inventing a score; this retest also obtained an output for the completed report.",
+      "reason": "Results and failure/insufficient-evidence states are machine-readable. The capture's scoring case is intentionally synthetic and does not certify Scout; the final completed-report output is from this direct retest.",
+      "nextAction": "Keep evaluator output fields stable and add a reviewed capture for a fully evidenced report when a persisted scored-run artifact is needed.",
+      "evidence": [
+        "capture-unverified-result",
+        "capture-synthetic-scope",
+        "capture-in-memory"
+      ]
+    },
+    {
+      "id": "diagnostics",
+      "status": "verified",
+      "rating": 4,
+      "access": "public",
+      "answer": "A typoed operation returns DISCOVERY_OPERATION_UNKNOWN with actual/expected values and a likely-operation suggestion; the supplied capture retries the suggested ai_native.evaluate describe successfully. A traversal input returns AUDIT_PATH_OUTSIDE_ROOT and a concrete in-root path correction.",
+      "reason": "Both negative cases are specific and actionable, and the typo repair was followed by a successful public describe.",
+      "nextAction": "Retain the exact likely-operation and root-boundary diagnostics; capture completed-report field-error repair when expanding probe coverage.",
+      "evidence": [
+        "capture-typo-repair",
+        "capture-path-error",
+        "capture-path-repair"
+      ]
+    },
+    {
+      "id": "recovery",
+      "status": "partial",
+      "rating": 2,
+      "access": "public",
+      "answer": "The typo path can be repaired through the suggested describe call and the smoke checks stale-contract rejection. Lost host replies, interrupted calls, and safe retry of append-only registration were not exercised.",
+      "reason": "Read-only discovery recovery is demonstrated, but broader stateful retry/idempotency behavior remains unverified and register was out of scope.",
+      "nextAction": "Add a public stale-hash re-describe-and-retry case and document handling of an uncertain registry append without duplicating it.",
+      "evidence": [
+        "capture-typo-repair",
+        "capture-stale-contract",
+        "readme-registration-boundary"
+      ]
+    },
+    {
+      "id": "boundaries",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Init/evaluate are read-only, registration requires trusted host opt-in, and a captured traversal attempt is rejected with AUDIT_PATH_OUTSIDE_ROOT. The probe is local and uses no external provider or user project data.",
+      "reason": "The key evidence-root boundary was exercised and the write boundary is explicit. Registration itself was not called, as required by the task scope.",
+      "nextAction": "Keep the host-level test that verifies registry writes stay disabled without trusted opt-in.",
+      "evidence": [
+        "readme-registration-boundary",
+        "capture-path-error",
+        "capture-path-repair"
+      ]
+    },
+    {
+      "id": "performance",
+      "status": "partial",
+      "rating": 2,
+      "access": "public",
+      "answer": "CLI telemetry gives plugin wall time and explicitly says it is not target performance. No memory, CPU, provider cost, or target-service latency was measured, and no GPU value is fabricated.",
+      "reason": "The tool reports its own local timing honestly, but this trial only supports a narrow latency view.",
+      "nextAction": "Keep the current distinction and expose resource/cost metrics only where the host can measure them reliably.",
+      "evidence": [
+        "capture-performance",
+        "capture-env"
+      ]
+    },
+    {
+      "id": "reproducibility",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "capture-004 records the command, Node/platform, output, exit codes, probe hash, exact 18-file subject hashes, and sourceChanged=false. README and describe clearly distinguish plugin release from per-operation contract versions, and the completed report can be re-evaluated from the saved report file.",
+      "reason": "The source snapshot and environment are traceable and version semantics are no longer ambiguous. The capture's evaluate fixture is synthetic, so the completed report's score is not captured as a separate replay artifact.",
+      "nextAction": "Save a reviewed capture of a fully evidenced report if an independently replayable scored-run record is required.",
+      "evidence": [
+        "capture-env",
+        "capture-version-scope",
+        "readme-version-scope",
+        "report-version-semantics",
+        "capture-synthetic-scope"
+      ]
+    }
+  ],
+  "issues": []
+}

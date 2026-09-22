@@ -55,6 +55,7 @@ export function createUiMotion({reducedMotion=()=>false,now=()=>performance.now(
     const pressAt=press.get(g);if(g===held)scale*=.98;else if(pressAt!==undefined&&at-pressAt<280){scale*=1-.02*(1-ease((at-pressAt)/280));active=true;}
     if(g===hover&&!held&&tree.children.some(c=>group(c.id)===g&&c.kind==='button'))scale*=1.012;
     let out={...n,rect:transform(n.rect,dx,dy,scale,boxes.get(g))};
+    if(n.slice)out.slice={...n.slice,pixels_per_unit:n.slice.pixels_per_unit/scale};
     // Only flavor dialogue is typed; prices, choices and controls are complete
     // from the first frame. No wait or input lock accompanies a transition.
     if(n.id==='story_quote'&&born<650){const chars=Array.from(n.text??''),visible=Math.max(1,Math.ceil(chars.length*ease(born/650)));out.text=chars.map((c,i)=>i<visible||c==='\n'?c:/[\u0000-\u007f]/.test(c)?' ':'　').join('');active=true;}

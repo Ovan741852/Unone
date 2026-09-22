@@ -1,12 +1,12 @@
 // Official non-DOM UI projection. DOM is used only for the canvas/font host;
 // game controls, hit testing and visual layering are not DOM elements.
+import {uiUsage,slicePatches} from './ui-geometry.mjs';
 const inside=(r,x,y)=>x>=r.x&&y>=r.y&&x<r.x+r.width&&y<r.y+r.height;
 export function flattenUi(tree){
-  const leaves=[];let count=0;
+  uiUsage(tree);
+  const leaves=[];
   function walk(nodes,depth){
-    if(depth>16)throw Error('UI_DEPTH_LIMIT: maximum 16 component wrappers');
     for(const n of nodes??[]){
-      if(++count>256)throw Error('UI_NODE_LIMIT: maximum 256 nodes');
       if(n.kind==='component'){walk(n.children,depth+1);continue;}
       if(!['text','button','image'].includes(n.kind))throw Error(`UI_NODE_UNSUPPORTED: ${n.kind}`);
       if(!n.rect||!['x','y','width','height'].every(k=>Number.isFinite(n.rect[k]))||n.rect.width<=0||n.rect.height<=0)throw Error(`UI_RECT_INVALID: ${n.id}`);
@@ -42,7 +42,7 @@ export async function loadCanvasFont(family,url){
 export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff'}={}){
   const ctx=canvas.getContext('2d');if(!ctx)throw Error('UI_CANVAS_2D_UNAVAILABLE');
   const router=createUiPointerRouter({onAction}),assets=new Map();let previous=null,dirty=true,disposed=false,nodes=[],generation=0;
-  const diagnostics=new Map();
+  const diagnostics=new Map();let usage=null,renderMs=null,renderRegions=0;
   const reportError=(id,error)=>{const value={code:'UI_ASSET_FAILED',asset:id,message:String(error?.message??error)};diagnostics.set(id,value);onDiagnostic(value);};
   function ensureAsset(id){if(assets.has(id))return assets.get(id);
     const entry={image:null,state:'loading'};assets.set(id,entry);const ticket=generation;
@@ -53,7 +53,12 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
   }
   function image(node,x,y,w,h){const e=ensureAsset(node.asset);if(!e.image)return;const img=e.image,iw=img.naturalWidth??img.width,ih=img.naturalHeight??img.height;
     ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();
-    if(node.fit==='stretch')ctx.drawImage(img,x,y,w,h);else {const s=node.fit==='cover'?Math.max(w/iw,h/ih):Math.min(w/iw,h/ih);ctx.drawImage(img,x+(w-iw*s)/2,y+(h-ih*s)/2,iw*s,ih*s);}ctx.restore();
+    try {
+      if(node.slice){if(node.fit&&node.fit!=='stretch')throw Error('UI_SLICE_FIT_CONFLICT: omit fit or use stretch');for(const [s,d]of slicePatches(node.slice,iw,ih,w,h,canvas.height)){ctx.drawImage(img,s.x,s.y,s.width,s.height,x+d.x,y+d.y,d.width,d.height);renderRegions++;}}
+      else {if(node.fit==='stretch')ctx.drawImage(img,x,y,w,h);else {const s=node.fit==='cover'?Math.max(w/iw,h/ih):Math.min(w/iw,h/ih);ctx.drawImage(img,x+(w-iw*s)/2,y+(h-ih*s)/2,iw*s,ih*s);}renderRegions++;}
+      diagnostics.delete(node.id);
+    }catch(error){const value={code:String(error.message).split(':')[0],node:node.id,asset:node.asset,message:error.message};diagnostics.set(node.id,value);onDiagnostic(value);}
+    finally{ctx.restore();}
   }
   function text(node,x,y,w,h){if(!node.text)return;const lines=String(node.text).split('\n');let size=Math.max(1,Math.min(h/(lines.length*1.2),h*0.72));
     ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();ctx.fillStyle=textColor;ctx.textAlign='center';ctx.textBaseline='middle';
@@ -66,16 +71,18 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
       const bw=Math.min(8192,Math.max(1,Math.round(width*dpr))),bh=Math.min(8192,Math.max(1,Math.round(height*dpr)));
       if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;dirty=true;}
       const tree=(snapshot?.world??snapshot)?.ui??null,key=JSON.stringify(tree);
-      if(key!==previous){nodes=flattenUi(tree);router.setTree(tree);previous=key;dirty=true;
-        const used=new Set(nodes.filter(n=>n.kind==='image').map(n=>n.asset));for(const [id,e]of assets)if(!used.has(id)){e.image?.close?.();assets.delete(id);diagnostics.delete(id);}}
-      if(!dirty)return;dirty=false;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,bw,bh);
+      if(key!==previous){usage=uiUsage(tree);nodes=flattenUi(tree);router.setTree(tree);previous=key;dirty=true;
+        const used=new Set(nodes.filter(n=>n.kind==='image').map(n=>n.asset));for(const [id,e]of assets)if(!used.has(id)){e.image?.close?.();assets.delete(id);diagnostics.delete(id);}
+        for(const [id,d]of diagnostics)if(d.node)diagnostics.delete(id);}
+      if(!dirty)return;dirty=false;const started=performance.now();renderRegions=0;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,bw,bh);
       for(const node of nodes){const r=node.rect,x=r.x*bw/100,y=(100-r.y-r.height)*bh/100,w=r.width*bw/100,h=r.height*bh/100;
-        if(node.kind==='image')image(node,x,y,w,h);else text(node,x,y,w,h);}
+        if(node.kind==='image')image(node,x,y,w,h);else {text(node,x,y,w,h);renderRegions++;}}
+      renderMs=performance.now()-started;
     },
     pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,
     setFont(family){fontFamily=family;dirty=true;},
     invalidateAssets(){generation++;for(const e of assets.values())e.image?.close?.();assets.clear();diagnostics.clear();dirty=true;},
-    report(){return {backend:'canvas2d',nodes:nodes.length,assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.','Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native.']};},
+    report(){return {backend:'canvas2d',nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.','Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native.']};},
     dispose(){router.releaseAll();disposed=true;generation++;for(const e of assets.values())e.image?.close?.();assets.clear();},
   };
 }

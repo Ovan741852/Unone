@@ -525,11 +525,10 @@ fn execute(project: &Path, r: &Request) -> Result<Value> {
         }
         checks.push(c);
     }
-    if let Some(m) = &r.memory {
-        if m.sample_every_ticks == 0 || m.label.is_empty() || m.label.len() > 160 {
+    if let Some(m) = &r.memory
+        && (m.sample_every_ticks == 0 || m.label.is_empty() || m.label.len() > 160) {
             bail!("Invalid memory sampling options");
         }
-    }
     if hash(r.scenario_schema.as_bytes()) != r.reproduction["scenarioSchema"]["hash"] {
         bail!("Scenario schema hash mismatch; hash exact UTF-8 schema text, preserving whitespace");
     }
@@ -684,13 +683,12 @@ fn execute(project: &Path, r: &Request) -> Result<Value> {
         for m in &mut matchers {
             m.update(i as u64, &evidence);
         }
-        if let Some(m) = &r.memory {
-            if ticks % m.sample_every_ticks == 0 {
+        if let Some(m) = &r.memory
+            && ticks % m.sample_every_ticks == 0 {
                 runtime
                     .memory_sample(&m.label, m.collect, ticks <= m.warmup_ticks)
                     .map_err(|e| fault("execution_failed", e.explanation))?;
             }
-        }
         if matchers.iter().all(|m| m.ended) {
             break;
         }

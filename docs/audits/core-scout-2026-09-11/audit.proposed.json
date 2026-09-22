@@ -1,0 +1,411 @@
+{
+  "schema": "unone.ai-native.audit.v1",
+  "rubricVersion": "1.0.0",
+  "target": {
+    "id": "unone-core",
+    "name": "Unone Core AI development surface",
+    "surface": "mixed",
+    "scope": "Windows x64 public CLI and persistent developer protocol: create a synthetic starter; schema-led input, transient Enact edits, snapshots/watch, invalid request repair, stale revision/session boundaries, same-version recording/replay, and published headless memory/GC diagnostics. Excludes full static type-check completion, release packaging, graphical rendering, other platforms, all engine subsystems, MCP transport, optional npm SDK wrapper and commercial readiness.",
+    "version": "game 0.1.0",
+    "revision": "Executable sha256:6af56a589c4a39d3f16e176cfb2fc817ef7fcbbe7836e160c516973e86cc8c8e; checkout master 7bc124931e6a6ed47ee28b6dc3e7bc7646d37b5d with pre-existing dirty paths. Build-to-HEAD provenance not attested.",
+    "environment": "Windows x64, Node v24.14.1, existing release game.exe. New synthetic C: OS temp projects only; no network, downloads, external accounts/providers, real games or service changes."
+  },
+  "trial": {
+    "mode": "informed",
+    "entryPoints": [
+      "README.md -> docs/ai-workflow.md / docs/developer-session.md / docs/profiling.md / docs/runtime-contracts.md",
+      "Existing target/release/game.exe --help / project init / session --schema / api search / platform snapshot",
+      "docs/diagnostics-replay.md -> public docs/fixtures/diagnostics/create-request.mjs"
+    ],
+    "steps": 73,
+    "firstSuccessStep": 3,
+    "sourceFallbackStep": null,
+    "wrongGuesses": 1,
+    "limitations": [
+      "Aggregate of preserved initial 31-operation blind subtrial, 12-process-step informed memory/discovery probe (including one nested fingerprint CLI), and 30-operation reviewed session reproduction. Root's unrecorded orientation commands are not counted as trial steps or substituted for recorder evidence.",
+      "Initial subagent saw only public entries/task/boundaries, not rubric or expected scores; original first-use report was frozen before reproductions and informed semantic review. First success means project init, not help.",
+      "Only natural ordering error is capabilities query before project init. Unknown field, stale revision, old session and wrong fingerprint were deliberate negative cases, not natural wrong guesses.",
+      "Initial verify failed LUAU_ANALYZER_NOT_FOUND while assets and two tests passed. Full type checking, portable dependency repair, clean build and release pipeline are not verified; no analyzer was downloaded and the gate was not weakened.",
+      "The initial interactive transport was deliberately stopped after runtime close; its nonzero cleanup exit is not counted as a successful execution capture. The separate recorder session run closed by EOF and exited zero.",
+      "Public task completion used no product implementation. Root separately inspected the optional Node SDK source while orienting; that wrapper is outside this scope and was not used to finish CLI/protocol operations.",
+      "Exact existing executable identity is checked in probes because binary exceeds recorder 2 MiB subject-file limit. Hash descriptor plus actual before/after executable hashing is not a signed attestation to checkout HEAD.",
+      "Synthetic headless measurements are not rendered FPS, a load benchmark, proof of no leaks or a performance improvement. GPU, Rust allocator, JS GC and retaining paths remain unavailable.",
+      "No browser/native UI, macOS/iOS/Android, external plugin renderers, hostile-code OS sandbox, MCP transport, true cross-process continuation or real YesSir project verification."
+    ]
+  },
+  "subject": [
+    {
+      "path": "docs/audits/core-scout-2026-09-11/subject/binary.json",
+      "sha256": "ee6820c42728b411b2d7d122ded9509da052a3bdd1a7b0f29cc178e21e76d9a4"
+    },
+    {
+      "path": "docs/audits/core-scout-2026-09-11/subject/diagnostics/create-request.mjs",
+      "sha256": "db8458bcb8dfbd4338d50ba3ea17c391893ac0e99862799a5fad2c7c324fcc77"
+    },
+    {
+      "path": "docs/audits/core-scout-2026-09-11/subject/diagnostics/project/main.luau",
+      "sha256": "ddeb33e7fe0451da510e013c56759ed4f732e3a927d2ca70a64a5867df2d0e06"
+    },
+    {
+      "path": "docs/audits/core-scout-2026-09-11/subject/diagnostics/project/project.unone.json",
+      "sha256": "2d8884820c342f50410a8b58d3730e8276e4ed67ec10a9582141793b590c3bba"
+    },
+    {
+      "path": "docs/audits/core-scout-2026-09-11/subject/diagnostics/reproduction-start-complete.json",
+      "sha256": "32117840125a0576799bfb65b0af629c6c48fbc3796c8f2ffde6e1ea554a2795"
+    },
+    {
+      "path": "docs/audits/core-scout-2026-09-11/subject/diagnostics/scenario.schema.json",
+      "sha256": "60cc141c417ea793a467cefb35ea045d120453d6e134e90c8893402c55b78504"
+    },
+    {
+      "path": "docs/audits/core-scout-2026-09-11/subject/docs/ai-workflow.md",
+      "sha256": "4cdbb16efeaf4b18d6cd9421437b65d1e369c7e0453f304da6065456cf69b8c7"
+    },
+    {
+      "path": "docs/audits/core-scout-2026-09-11/subject/docs/developer-session.md",
+      "sha256": "f6a95972182459b52b711d3340b4093a50e1613ccfc72b8f6fc3fa24113343ff"
+    },
+    {
+      "path": "docs/audits/core-scout-2026-09-11/subject/docs/diagnostics-replay.md",
+      "sha256": "742a05133e845da30c1ee9e0650ed82d53c2af923c1cbc468834a82604791f0c"
+    },
+    {
+      "path": "docs/audits/core-scout-2026-09-11/subject/docs/profiling.md",
+      "sha256": "a8a045f474e1df24a5afcdfb32d3fae6d45b5180cd4f43ac4d74da8f99df7aa8"
+    },
+    {
+      "path": "docs/audits/core-scout-2026-09-11/subject/docs/runtime-contracts.md",
+      "sha256": "0872f36a7b04dc3cf6780e5f236eacd7dca60f35ec2f73bdcd8cbbb85b441b6a"
+    },
+    {
+      "path": "docs/audits/core-scout-2026-09-11/subject/README.md",
+      "sha256": "dfb36a551891762ff9c9dfa26b3eac4beb8af588996af2135082af159c52dbe2"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "public-overview",
+      "kind": "document",
+      "path": "docs/audits/core-scout-2026-09-11/subject/README.md",
+      "sha256": "dfb36a551891762ff9c9dfa26b3eac4beb8af588996af2135082af159c52dbe2",
+      "quote": "Unone is an AI-native **3D game engine prototype with 2D workflows**"
+    },
+    {
+      "id": "session-contract",
+      "kind": "document",
+      "path": "docs/audits/core-scout-2026-09-11/subject/docs/developer-session.md",
+      "sha256": "f6a95972182459b52b711d3340b4093a50e1613ccfc72b8f6fc3fa24113343ff",
+      "quote": "One connection owns one headless runtime."
+    },
+    {
+      "id": "replay-contract",
+      "kind": "document",
+      "path": "docs/audits/core-scout-2026-09-11/subject/docs/diagnostics-replay.md",
+      "sha256": "742a05133e845da30c1ee9e0650ed82d53c2af923c1cbc468834a82604791f0c",
+      "quote": "Retaining paths, allocation callsites"
+    },
+    {
+      "id": "first-use",
+      "kind": "observation",
+      "path": "docs/audits/core-scout-2026-09-11/blind/first-use-report.md",
+      "sha256": "2ce27e32ac9fcbda472b14fb8593fa01d3c6ec22c07bc06d319ba34d57889254",
+      "quote": "共 8 次一次性 CLI"
+    },
+    {
+      "id": "verify-limitation",
+      "kind": "observation",
+      "path": "docs/audits/core-scout-2026-09-11/blind/raw/004-verify.stdout",
+      "sha256": "e7efaad6010a7637a2c72e961c8f8fe83d664a5127b2e8a2298344549c4a8fc9",
+      "quote": "LUAU_ANALYZER_NOT_FOUND"
+    },
+    {
+      "id": "session-execution",
+      "kind": "execution",
+      "path": "docs/audits/core-scout-2026-09-11/session.capture.json",
+      "sha256": "9de51784ab963f11764ec6f8669daf0f70cd37048b295b220c815d89d9f9846b",
+      "quote": "ALL_CHECKS_PASSED"
+    },
+    {
+      "id": "memory-execution",
+      "kind": "execution",
+      "path": "docs/audits/core-scout-2026-09-11/memory-discovery.capture.json",
+      "sha256": "52b9b97ab9e0f8a0e073d6e0f22113985e884ff99c5da14f875ce6f115f6d659",
+      "quote": "ALL_CHECKS_PASSED"
+    },
+    {
+      "id": "request-repair",
+      "kind": "execution",
+      "path": "docs/audits/core-scout-2026-09-11/session.capture.json",
+      "sha256": "9de51784ab963f11764ec6f8669daf0f70cd37048b295b220c815d89d9f9846b",
+      "quote": "DEVELOPER_REQUEST_INVALID"
+    },
+    {
+      "id": "retry-recovery",
+      "kind": "execution",
+      "path": "docs/audits/core-scout-2026-09-11/session.capture.json",
+      "sha256": "9de51784ab963f11764ec6f8669daf0f70cd37048b295b220c815d89d9f9846b",
+      "quote": "REVISION_CONFLICT"
+    },
+    {
+      "id": "scope-rejection",
+      "kind": "execution",
+      "path": "docs/audits/core-scout-2026-09-11/session.capture.json",
+      "sha256": "9de51784ab963f11764ec6f8669daf0f70cd37048b295b220c815d89d9f9846b",
+      "quote": "SESSION_MISMATCH"
+    },
+    {
+      "id": "actual-replay",
+      "kind": "execution",
+      "path": "docs/audits/core-scout-2026-09-11/session.capture.json",
+      "sha256": "9de51784ab963f11764ec6f8669daf0f70cd37048b295b220c815d89d9f9846b",
+      "quote": "P16-replay"
+    },
+    {
+      "id": "memory-version-rejection",
+      "kind": "execution",
+      "path": "docs/audits/core-scout-2026-09-11/memory-discovery.capture.json",
+      "sha256": "52b9b97ab9e0f8a0e073d6e0f22113985e884ff99c5da14f875ce6f115f6d659",
+      "quote": "Exact-version game/engine/assets fingerprints differ"
+    },
+    {
+      "id": "search-cost",
+      "kind": "execution",
+      "path": "docs/audits/core-scout-2026-09-11/memory-discovery.capture.json",
+      "sha256": "52b9b97ab9e0f8a0e073d6e0f22113985e884ff99c5da14f875ce6f115f6d659",
+      "quote": "24132"
+    },
+    {
+      "id": "missing-tool-query",
+      "kind": "execution",
+      "path": "docs/audits/core-scout-2026-09-11/memory-discovery.capture.json",
+      "sha256": "52b9b97ab9e0f8a0e073d6e0f22113985e884ff99c5da14f875ce6f115f6d659",
+      "quote": "API_SEARCH_EMPTY"
+    },
+    {
+      "id": "memory-scope",
+      "kind": "execution",
+      "path": "docs/audits/core-scout-2026-09-11/memory-discovery.capture.json",
+      "sha256": "52b9b97ab9e0f8a0e073d6e0f22113985e884ff99c5da14f875ce6f115f6d659",
+      "quote": "main Luau VM only; excludes worker VMs, Rust, JS, WASM allocator and GPU"
+    }
+  ],
+  "checks": [
+    {
+      "id": "purpose",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "公開 README 清楚把工具定位為 AI-native 遊戲引擎 prototype、Rust 提供機制而 Luau 擁有玩法。文件引導到 project init、session schema 與公開開發流程，陌生 agent 第 3 次操作成功建立五檔。",
+      "reason": "first-use-report 的第 2 次先查空專案能力而收到 PROJECT_CONFIG_NOT_FOUND，init 後同入口成功；具體用途與下一步可得，但新專案的起始順序還能更直接。",
+      "nextAction": "CORE-SCOUT-003：在公開起點區分新建與既有專案；保留 scoped capability/error 語義。",
+      "evidence": [
+        "public-overview",
+        "first-use",
+        "session-execution"
+      ]
+    },
+    {
+      "id": "capabilities",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "platform snapshot 回 compiled systems、專案啟用狀態、能力限制及 core.renderer_probe=not_probed；session --schema 和 api describe 提供實際公開契約。",
+      "reason": "memory capture 的 api-search-move 有 19 個完整 descriptor／24132 bytes；中文 GC 意圖為 API_SEARCH_EMPTY，但同 capture 後面真的跑出記憶體/GC/Profiler。搜尋範圍坦白限定 public_engine_api，仍需要跨 CLI/開發介面找入口，故非滿分。",
+      "nextAction": "CORE-SCOUT-001/002：設計跨工具目的索引及小量候選，選中才載入完整既有契約；用相同 query 與真實工具回歸，不宣稱已完成。",
+      "evidence": [
+        "session-execution",
+        "memory-execution",
+        "search-cost",
+        "missing-tool-query"
+      ]
+    },
+    {
+      "id": "operation",
+      "status": "verified",
+      "rating": 4,
+      "access": "public",
+      "answer": "依生成的 session schema、公開 docs 與 starter entity ID，完成輸入、釋放輸入、暫時位置修改、觀察與重播；P03 錯欄位拒絕，P04 刪除 framse 後同 revision 成功。",
+      "reason": "盲測先獨立完成；session recorder 再重現 22 requests。dry_run 與 commit 的副作用以 snapshot/digest/revision 確認，無產品源碼協助。此代表任務不包含未過的完整 type gate 或交付匯出。",
+      "nextAction": "維持這些公開操作的可重跑負例；完整 SDK dependency/type-check/export 應另開相同範圍以外的驗收。",
+      "evidence": [
+        "session-contract",
+        "first-use",
+        "request-repair",
+        "session-execution",
+        "verify-limitation"
+      ]
+    },
+    {
+      "id": "context",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "公開回應保存穩定 example entity ID、session/revision/frame、script generation/digest；replay fingerprint 區分 engine executable、game content、script 與 assets 的實際 hash。",
+      "reason": "gameplay_authority=luau_and_input 與 temporary_debug_state_patch 把正式規則和暫時實驗分開。錯 executable capture 的 /engine/coreRevision 有 expected/actual。未測需求追蹤或全部 dependency/renderer identity；那些不能由這一個 starter 外推。",
+      "nextAction": "保留 exact-version 指紋與原 capture；跨插件/host 資產版本鏈與需求真相工具另外驗證，不把 Viewer 或玩法策略加進 Core。",
+      "evidence": [
+        "session-execution",
+        "memory-version-rejection",
+        "replay-contract"
+      ]
+    },
+    {
+      "id": "observation",
+      "status": "verified",
+      "rating": 4,
+      "access": "public",
+      "answer": "每次 step / enact / snapshot 的 revision/frame/digest 及 before/after 真變更可查。P08/09 的 watch 正確使用 next_cursor 讀完兩頁；current snapshot 比事件頁新時可辨識。",
+      "reason": "P11 證明 dry-run 無變更；P12/P13 為真 commit 與 Luau input 後狀態；P16/P17 證明 replay identical 且原 session 沒被改。所有觀察只代表 semantic/headless state，非畫面、人類驗收或 renderer loaded。",
+      "nextAction": "維持 watch 分頁及 dry-run/replay 狀態隔離回歸；renderer 可見性/遮擋需在獨立圖像觀測範圍實測。",
+      "evidence": [
+        "session-contract",
+        "session-execution",
+        "actual-replay"
+      ]
+    },
+    {
+      "id": "diagnostics",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "故意錯誤有 DEVELOPER_REQUEST_INVALID 的 unknown field/允許欄位、REVISION_CONFLICT 的 actual/expected_revision、SESSION_MISMATCH 的修復說明。移除 framse 或採用新 session ID 後成功。",
+      "reason": "錯版本 replay 有 fingerprintDifferences.path/expected/actual，回 incompatible/null metrics，原正確 capture 重跑成功。部分 facts/suggested_actions 仍空，須讀 explanation 或 result 差異與 docs；足以修復但不是統一機器可用的滿分診斷。",
+      "nextAction": "CORE-SCOUT-005：補一致 field/path/expected/actual/action 的診斷資料，再重跑原 typo/session/fingerprint 負例；不要只填通過分數。",
+      "evidence": [
+        "request-repair",
+        "retry-recovery",
+        "scope-rejection",
+        "memory-version-rejection",
+        "memory-execution"
+      ]
+    },
+    {
+      "id": "recovery",
+      "status": "verified",
+      "rating": 4,
+      "access": "public",
+      "answer": "重送相同 expected_revision=0 的已成功 step 被拒；P06 證明 frame/revision/digest 未再前進。watch 採 returned next_cursor 不漏页。close/reopen 重新開始，舊 session ID 被拒。",
+      "reason": "公開契約與真負例支持範圍內安全重试及 transient lifecycle。它不是 request-ID result cache，不能宣稱任意丟包自動續做；跨 process durable continuation 也未實作驗證。成功的 retry 邊界是拒絕重複副作用並查真狀態。",
+      "nextAction": "維持 stale-request、分頁與 reopening 回歸。不要把拒絕舊 revision 宣傳為跨程序恢復或任意網路逾時 exactly-once。",
+      "evidence": [
+        "retry-recovery",
+        "scope-rejection",
+        "session-execution",
+        "session-contract"
+      ]
+    },
+    {
+      "id": "boundaries",
+      "status": "verified",
+      "rating": 4,
+      "access": "public",
+      "answer": "第二次 project init 回 PROJECT_ALREADY_EXISTS 且無 effects；舊 session selector 被拒。Enact dry_run 不 commit、commit 僅改 transient runtime；close/reopen 還原正式場景，五份 authoring 檔 hash 完全相同。",
+      "reason": "固定 project 路徑及連線擁有的 session 邊界以實際拒絕/不變性驗證。沒有外部帳號、AI provider、裝置派工權限模型或 hostile-native-code sandbox 被納入分數。",
+      "nextAction": "維持 overwrite/session/dry-run 界線；不把這個本機 headless 範圍誤稱完整 OS 隔離或商用安全認證。",
+      "evidence": [
+        "scope-rejection",
+        "session-execution",
+        "session-contract"
+      ]
+    },
+    {
+      "id": "performance",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "session perf 有 bounded Core phase timings、frame statistics、entity counts 與 Luau heap。published replay sample 40 ticks 取得 4 次 explicit full GC、1 warmup 排除、3 個同 label retention samples 與 profile/VM metrics。",
+      "reason": "memory.unavailable 的 GPU/Rust/JS/retaining paths 是 null，不是假零；leak_proven=false。這次成功代表工具可提供定位線索，不是完整各層 memory tracer、GC workload-free baseline 或效能負載測試。",
+      "nextAction": "保留相同 seed/inputs/phase labels 分離 normal timing 與 full-GC 調查；日後以真實 workload 和已支援 host 工具測瓶頸，不重做已存在的記憶體工具。",
+      "evidence": [
+        "memory-scope",
+        "memory-execution",
+        "session-execution",
+        "replay-contract"
+      ]
+    },
+    {
+      "id": "reproducibility",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "recording 保存 4 個 accepted step/enact commands 與 tick digests，replay identical；被拒請求/dry-run/query 未被當成成功寫入。實際 executable fingerprint 和 fixture input/hash、raw輸出、命令與 36 檔初次 seal 留存。",
+      "reason": "wrong executable capture 在執行前 incompatible/ticksExecuted:null，使用未改的原正確 capture 後 reproduced/regression passed。兩 recorder 同 12 subjects，actual executable before/after hash 檢查通過；未證明 clean build provenance、跨平台 determinism、checkpoint 或 migrations。",
+      "nextAction": "使用新 capture 路徑重跑同 probes；不得只換舊 hashes。版本/平台/任務改變需另立 scope，維持原始失敗證據。",
+      "evidence": [
+        "actual-replay",
+        "memory-version-rejection",
+        "memory-execution",
+        "first-use",
+        "replay-contract"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "id": "CORE-SCOUT-001",
+      "checkId": "capabilities",
+      "severity": "P1",
+      "summary": "目的搜尋一次回大量完整 descriptor，第一個候選對 move entity 並不直接。",
+      "cause": "實際 query 回 19 matches / 24132 bytes，firstMatch instances3d.remove；未讀匹配實作，所以 substring matching 僅為假設。",
+      "fix": "以既有公開 descriptor 做 compact purpose candidates → selected contract，不複製維護第二套 runtime API。",
+      "verification": "重跑同英文 query，記錄 actual bytes / 候選相關性；另用 fresh agent 看能否更早找到 setPosition，不能發明 token savings。",
+      "evidence": [
+        "search-cost",
+        "first-use"
+      ]
+    },
+    {
+      "id": "CORE-SCOUT-002",
+      "checkId": "capabilities",
+      "severity": "P1",
+      "summary": "中文 GC/記憶體目的在 Engine API search 找不到實際存在的診斷工具。",
+      "cause": "api search 的宣告範圍為 public_engine_api，不涵蓋 CLI/developer diagnostics；回應建議 complete API index / systems，沒有導到 memory/replay。",
+      "fix": "讓目的發現層跨到既有公開 CLI/developer 能力；保持玩法 Luau 與 host diagnostics 邊界。",
+      "verification": "用原 query 能發現並依 describe 跑成功現有 40-tick memory fixture；不新增重複 leak 工具。",
+      "evidence": [
+        "missing-tool-query",
+        "memory-execution"
+      ]
+    },
+    {
+      "id": "CORE-SCOUT-003",
+      "checkId": "purpose",
+      "severity": "P2",
+      "summary": "空目錄照 capabilities-first 起手，會先遇到 project config missing。",
+      "cause": "首次 agent 第 2 操作 platform snapshot 在 init 之前，error PROJECT_CONFIG_NOT_FOUND；新建後相同入口成功。",
+      "fix": "文件起點明示 new project 先 init、existing project 先 snapshot，而非隱藏缺 project 的错误。",
+      "verification": "新 agent 從相同公開起點在空目錄不先猜不存在的配置；保留原初次紀錄。",
+      "evidence": [
+        "first-use",
+        "session-execution"
+      ]
+    },
+    {
+      "id": "CORE-SCOUT-004",
+      "checkId": "capabilities",
+      "severity": "P1",
+      "summary": "完整 verify 在 fresh temp 缺少 official luau-analyze。",
+      "cause": "原始 types gate 給 LUAU_ANALYZER_NOT_FOUND；此任務不允許下載/build，未供應 analyzer 路徑。不是已診斷的 Rust runtime crash。",
+      "fix": "在獨立 portable-SDK dependency 流程驗證工具發現／既有 analyzer override，保留具體缺檔錯誤；不 auto-download 或弱化 type gate。",
+      "verification": "在有/無 analyzer 的乾淨 cwd 分別確認 success / actionable refusal；本次未標此項已修復。",
+      "evidence": [
+        "verify-limitation",
+        "first-use"
+      ]
+    },
+    {
+      "id": "CORE-SCOUT-005",
+      "checkId": "diagnostics",
+      "severity": "P2",
+      "summary": "部分可修復錯誤仍主要靠 prose，structured facts/actions 不完整。",
+      "cause": "wrong field 和 exact-version refusal 透過 explanation 或 fingerprintDifferences 可得原因，但 diagnostics facts/suggested_actions 可空。",
+      "fix": "在通用診斷契約補 field/path/actual/expected/action；不塞遊戲規則進 runtime。",
+      "verification": "用保存的 framse 與 mismatched executable 原始負例確認結構化修復資料，然後重跑正例且原 capture 不被覆寫。",
+      "evidence": [
+        "request-repair",
+        "memory-version-rejection"
+      ]
+    }
+  ]
+}

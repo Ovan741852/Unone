@@ -3,6 +3,8 @@ import {fileURLToPath} from 'node:url';
 import {join} from 'node:path';
 import {createRequire} from 'node:module';
 import {storybookUI} from './storybook-ui.mjs';
+import {skins} from '../presentation/ui-components.mjs';
+import skinData from '../presentation/ui-skin-data.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url)),dir=join(root,'assets/formal-ui');mkdirSync(dir,{recursive:true});
 // Publish complete files atomically; Windows asset watchers can briefly hold handles.
 function writeFileSync(path,data){const pending=path+'.ui-pending';for(let attempt=0;attempt<12;attempt++){try{writeNative(pending,data);renameSync(pending,path);return;}catch(error){if(attempt===11)throw error;Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,50);}}}
@@ -71,8 +73,7 @@ for(const name of ['expedition-keyart-v1','quartermaster-v1','expedition-keyart-
 manifest.assets.push({id:'texture://ui_portrait-runesmith',kind:'texture2d',source:'assets/formal-ui/characters-v1/portrait-runesmith.png'});
 for(const name of ['forest-map-v2','map-waypoint-v2'])manifest.assets.push({id:'texture://ui_'+name,kind:'texture2d',source:'assets/formal-ui/map-v2/'+name+'.png'});
 const generatedShopAssets=['shop-window-panel-v2','shop-card-rare-v2','shop-card-epic-v2','shop-card-legendary-v2','shop-button-primary-v2','shop-button-secondary-v2','control-quiet-v3'];
-const generatedShopSlices=['tl','t','tr','l','c','r','bl','b','br'];
-for(const name of generatedShopAssets)if(existsSync(join(dir,name+'.png'))){manifest.assets.push({id:'texture://ui_'+name,kind:'texture2d',source:'assets/formal-ui/'+name+'.png'});for(const slice of generatedShopSlices)if(existsSync(join(dir,`${name}-${slice}.png`)))manifest.assets.push({id:'texture://ui_'+name+'-'+slice,kind:'texture2d',source:'assets/formal-ui/'+name+'-'+slice+'.png'});}
+for(const name of generatedShopAssets)if(existsSync(join(dir,name+'.png')))manifest.assets.push({id:'texture://ui_'+name,kind:'texture2d',source:'assets/formal-ui/'+name+'.png'});
 for(const creature of JSON.parse(readFileSync(join(root,'assets/creatures/manifest.json'),'utf8')).filter(c=>c.rank>0))manifest.assets.push({id:'texture://ui_target-'+creature.id,kind:'texture2d',source:'assets/formal-ui/target-'+creature.id+'.png'});
 // Keep approved ImageGen artwork authoritative across subsequent SVG/theme builds.
 for(const imgenPath of [join(root,'design-v1/hazel-imgen-manifest.json'),join(root,'design-v1/hazel-transparent-manifest.json'),join(root,'design-v1/hazel-character-manifest.json'),join(root,'design-v1/expedition-map-manifest.json'),join(root,'design-v1/desktop-ui-v4-manifest.json')])if(existsSync(imgenPath)){
@@ -88,6 +89,10 @@ for(const imgenPath of [join(root,'design-v1/hazel-imgen-manifest.json'),join(ro
  }
 }
 writeFileSync(join(root,'assets.json'),JSON.stringify(manifest,null,2)+'\n');
+const uiPath=join(root,'ui/formal-ui.luau');
+const luaSkins=Object.entries(skinData).map(([name,d])=>` [${JSON.stringify(name)}]={width=${d.width},height=${d.height},x=${d.trim[0]},y=${d.trim[1]},left=${d.borders[0]},top=${d.borders[1]},right=${d.borders[2]},bottom=${d.borders[3]},scale=${JSON.stringify(skins[name].scale)}}`).join(',\n');
+const uiSource=readFileSync(uiPath,'utf8').replace(/-- BEGIN GENERATED UI SKINS[\s\S]*?-- END GENERATED UI SKINS/,`-- BEGIN GENERATED UI SKINS\nlocal formalSkins:any={\n${luaSkins}\n}\n-- END GENERATED UI SKINS`);
+writeFileSync(uiPath,uiSource);
 let main=readFileSync(join(root,'main.luau'),'utf8').replace(/\r\n/g,'\n');
 if(!main.includes('local publishFormalUI:'))main=main.replace('local Game={}','local publishFormalUI:((any)->())?=nil\nlocal Game={}');
 main=main.replace(/-- BEGIN FORMAL UI[\s\S]*?-- END FORMAL UI\n/g,'');

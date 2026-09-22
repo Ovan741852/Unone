@@ -13,9 +13,9 @@ pub struct MeshAsset {
 #[serde(deny_unknown_fields)]
 pub struct MeshLod {pub distance:f32,pub positions:Vec<f32>,pub uvs:Vec<f32>,pub indices:Vec<u32>}
 pub fn validate_mesh_geometry(p:&[f32],uv:&[f32],i:&[u32])->Result<()> {
- ensure!(p.len()>=9&&p.len()<=3_000_000&&p.len()%3==0&&p.iter().all(|v|v.is_finite()),"MESH_INVALID: positions");
+ ensure!(p.len()>=9&&p.len()<=3_000_000&&p.len().is_multiple_of(3)&&p.iter().all(|v|v.is_finite()),"MESH_INVALID: positions");
  ensure!(uv.len()==p.len()/3*2&&uv.iter().all(|v|v.is_finite()),"MESH_INVALID: uvs");
- ensure!(!i.is_empty()&&i.len()<=6_000_000&&i.len()%3==0&&i.iter().all(|v|(*v as usize)<p.len()/3),"MESH_INVALID: indices");Ok(())
+ ensure!(!i.is_empty()&&i.len()<=6_000_000&&i.len().is_multiple_of(3)&&i.iter().all(|v|(*v as usize)<p.len()/3),"MESH_INVALID: indices");Ok(())
 }
 impl MeshAsset {pub fn validate(&self)->Result<()> {
  ensure!(self.version==1,"MESH_INVALID: version must be 1");ensure!(!self.texture.is_empty(),"MESH_INVALID: texture asset id");validate_mesh_geometry(&self.positions,&self.uvs,&self.indices)?;

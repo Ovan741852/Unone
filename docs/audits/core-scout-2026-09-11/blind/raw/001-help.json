@@ -1,0 +1,17 @@
+{
+  "label": "001-help",
+  "mode": "cli",
+  "start": "2026-09-11T11:39:06.559Z",
+  "end": "2026-09-11T11:39:06.655Z",
+  "executable": "D:/Projects/Unone/target/release/game.exe",
+  "argv": [
+    "--help"
+  ],
+  "cwd": "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "stdin": "",
+  "stdout": "Unone AI-native game developer CLI\n\nUsage: game.exe [OPTIONS] <COMMAND>\n\nCommands:\n  sdk       \n  export    Export one game with the separately compiled release player\n  particle  Deterministically sample a native particle definition at a frame\n  schema    Inspect/export a structural JSON Schema generated from the runtime Rust types\n  project   \n  asset     \n  api       \n  verify    Run every gate a game must pass and report one verdict\n  replay    Record a run, or replay a recording to find what changed\n  perf      Measure where a frame's time goes\n  ui        Draw the game's UI as text and report structural layout problems\n  systems   Inspect, search and switch the engine systems this project runs\n  platform  \n  check     \n  run       \n  test      \n  observe   \n  preview   \n  bundle    \n  plugin    Discover and call optional AI-facing plugins\n  mcp       Serve the existing Developer Protocol over MCP stdio\n  session   Stateful developer protocol: one JSON request and EngineResult per line on stdio\n  help      Print this message or the help of the given subcommand(s)\n\nOptions:\n      --sdk <SDK>          Portable SDK root (otherwise environment or executable-relative discovery)\n      --project <PROJECT>  [default: .]\n      --json               \n  -h, --help               Print help\n  -V, --version            Print version\n",
+  "stderr": ""
+}

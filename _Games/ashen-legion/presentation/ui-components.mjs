@@ -11,22 +11,17 @@ export const skins={
  'shop-button-secondary-v2':{borders:[300,100,300,100],trim:true,scale:'height'},
 };
 
-// Nine cells are one component. All corners retain the source aspect ratio;
-// only center/edge axes stretch. The same code serves windows and buttons.
-export function fitNineSlice(nodes,source,viewport,metadata){
- const parts=slices.map(p=>nodes.get(source+'_'+p));
- if(parts.some(p=>!p))return;
- const key=parts[0].asset.replace('texture://ui_','').replace(/-tl$/,'');
- const spec=skins[key],data=metadata[key];if(!spec||!data)return;
- const r=parts.map(p=>p.rect),x=Math.min(...r.map(q=>q.x)),y=Math.min(...r.map(q=>q.y));
- const w=Math.max(...r.map(q=>q.x+q.width))-x,h=Math.max(...r.map(q=>q.y+q.height))-y;
- const [vw,vh]=viewport,pw=w*vw/100,ph=h*vh/100;
- const scale=spec.scale==='height'?ph/data.height:spec.scale==='width'?pw/data.width:spec.scale*Math.min(vw/1440,vh/900);
- const [sl,st,sr,sb]=spec.borders;
- const s=Math.min(scale,pw/(sl+sr+1),ph/(st+sb+1));
- const l=sl*s/vw*100,t=st*s/vh*100,rr=sr*s/vw*100,b=sb*s/vh*100;
- const xs=[x,x+l,x+w-rr,x+w],ys=[y+h,y+h-t,y+b,y];
- parts.forEach((n,i)=>{const row=Math.floor(i/3),col=i%3;nodes.set(n.id,{...n,rect:{x:xs[col],y:ys[row+1],width:xs[col+1]-xs[col],height:ys[row]-ys[row+1]}});});
+// One Core image node; this function selects the game skin's sizing rule.
+// Generic crop geometry and rendering live in the official hosts.
+export function fitNineSlice(nodes,id,[vw,vh],metadata){
+ const node=nodes.get(id);if(!node?.slice)return;
+ const key=node.asset.replace('texture://ui_',''),spec=skins[key],data=metadata[key];
+ if(!spec||!data)throw Error('UI_SKIN_MISSING: '+key);
+ const pw=node.rect.width*vw/100,ph=node.rect.height*vh/100;
+ const base=spec.scale==='height'?ph/data.height:spec.scale==='width'?pw/data.width:spec.scale*Math.min(vw/1440,vh/900);
+ const [left,top,right,bottom]=spec.borders;
+ const scale=Math.min(base,pw/(left+right+1),ph/(top+bottom+1));
+ nodes.set(id,{...node,slice:{left,top,right,bottom,pixels_per_unit:vh/100/scale,source:{x:data.trim[0],y:data.trim[1],width:data.width,height:data.height}}});
 }
 
 let measureContext;

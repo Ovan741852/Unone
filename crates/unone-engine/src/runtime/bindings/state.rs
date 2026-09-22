@@ -30,6 +30,10 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let viewport_aspect = Rc::clone(&state.viewport_aspect);
     let ui_api = lua.create_table()?;
     let ui_state = Rc::clone(&ui);
+    let inspect_state = Rc::clone(&ui);
+    ui_api.set("inspect", lua.create_function(move |lua, ()| {
+        json_to_lua(lua, serde_json::json!({"contract": crate::ui::ui_contract(), "usage": inspect_state.borrow().as_ref().map(UiTree::usage)}))
+    })?)?;
     let ui_aspect = Rc::clone(&viewport_aspect);
     ui_api.set(
         "setRoot",

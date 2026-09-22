@@ -257,8 +257,8 @@ fn tests_step(project_root: &Path, paths: &ProjectPaths, required: bool) -> Veri
         None => "the test suite could not run".to_string(),
     };
     let mut diagnostics = tests.diagnostics;
-    if let Some(report) = tests.value.as_ref() {
-        if !report.passed {
+    if let Some(report) = tests.value.as_ref()
+        && !report.passed {
             let failed_cases = report
                 .cases
                 .iter()
@@ -277,7 +277,6 @@ fn tests_step(project_root: &Path, paths: &ProjectPaths, required: bool) -> Veri
             );
             diagnostic.facts = serde_json::json!({ "failed_cases": failed_cases });
             diagnostics.push(diagnostic);
-        }
     }
     step(
         "tests",

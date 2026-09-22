@@ -186,12 +186,11 @@ pub(super) fn camera(
                             ))
                         })?;
                     let size = transform.get::<Option<f64>>("orthographicSize")?;
-                    if let Some(size) = size {
-                        if !size.is_finite() || size <= 0.0 {
+                    if let Some(size) = size
+                        && (!size.is_finite() || size <= 0.0) {
                             return Err(mlua::Error::RuntimeError(
                                 "CAMERA_ORTHOGRAPHIC_SIZE_INVALID: size must be finite and greater than 0".into(),
                             ));
-                        }
                     }
                     if target.is_some()
                         || transform.get::<Option<f64>>("fovDegrees")?.is_some()
@@ -244,12 +243,11 @@ pub(super) fn camera(
                             ))
                         })?;
                     let fov = transform.get::<Option<f64>>("fovDegrees")?;
-                    if let Some(fov) = fov {
-                        if !(1.0..179.0).contains(&fov) || !fov.is_finite() {
+                    if let Some(fov) = fov
+                        && (!(1.0..179.0).contains(&fov) || !fov.is_finite()) {
                             return Err(mlua::Error::RuntimeError(
                                 "CAMERA_FOV_INVALID: fovDegrees must be finite and between 1 and 179".into(),
                             ));
-                        }
                     }
                     if transform.get::<Option<f64>>("orthographicSize")?.is_some()
                         || transform.get::<Option<f64>>("zoom")?.is_some()

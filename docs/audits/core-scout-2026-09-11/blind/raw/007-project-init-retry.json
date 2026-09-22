@@ -1,0 +1,23 @@
+{
+  "label": "007-project-init-retry",
+  "mode": "cli",
+  "start": "2026-09-11T11:41:02.720Z",
+  "end": "2026-09-11T11:41:02.815Z",
+  "executable": "D:/Projects/Unone/target/release/game.exe",
+  "argv": [
+    "--project",
+    "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2\\game",
+    "--json",
+    "project",
+    "init",
+    "--name",
+    "PublicCoreProbe"
+  ],
+  "cwd": "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-public-core-845180e493514dc38b934b3526692ee2",
+  "exitCode": 1,
+  "signal": null,
+  "timedOut": false,
+  "stdin": "",
+  "stdout": "{\n  \"ok\": false,\n  \"value\": null,\n  \"diagnostics\": [\n    {\n      \"code\": \"PROJECT_ALREADY_EXISTS\",\n      \"severity\": \"ERROR\",\n      \"summary\": \"project init requires a truly empty root\",\n      \"explanation\": \"\\\\\\\\?\\\\C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\unone-public-core-845180e493514dc38b934b3526692ee2\\\\game already contains \\\\\\\\?\\\\C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\unone-public-core-845180e493514dc38b934b3526692ee2\\\\game\\\\project.unone.json; project init will not clean, merge, or overwrite existing contents.\",\n      \"facts\": {\n        \"created_directories\": [],\n        \"created_files\": [],\n        \"failed_path\": \"\\\\\\\\?\\\\C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\unone-public-core-845180e493514dc38b934b3526692ee2\\\\game\",\n        \"phase\": \"preflight\",\n        \"root\": \"\\\\\\\\?\\\\C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\unone-public-core-845180e493514dc38b934b3526692ee2\\\\game\"\n      },\n      \"likely_causes\": [],\n      \"suggested_actions\": [],\n      \"source\": null\n    }\n  ],\n  \"effects\": []\n}\n",
+  "stderr": ""
+}

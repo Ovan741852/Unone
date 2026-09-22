@@ -70,7 +70,7 @@ fn sweep(relative: Vec3, delta: Vec3, radius: f64) -> Option<f64> {
     }
     // Stable near-entry root; avoid cancellation when starting near a surface.
     let t = c / (-b + discriminant.sqrt());
-    (t >= 0.0 && t <= 1.0).then_some(t)
+    (0.0..=1.0).contains(&t).then_some(t)
 }
 pub fn sweep_sphere(world: &World, request: SphereSweep) -> Result<Option<SweepHit>, String> {
     if !valid(request.from)

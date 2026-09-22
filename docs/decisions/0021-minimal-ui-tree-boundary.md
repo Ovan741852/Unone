@@ -12,11 +12,12 @@ MVVM 需要一個跨 Web/native 的 View 出口，但把 ViewModel、layout、wi
 引擎只提供一個必要的 presentation transport primitive：
 
 - `api.ui.setRoot(root)` 接受一個 `screen` root。
-- root 只有 `id`、目前遊戲節點 `node` 與 `children`。
+- root 有 `id`、目前遊戲節點 `node`、`children` 與可選的 `budget`。
 - child 支援 `text`、`button`、`image` 與可遞迴的 `component`；各自都有 `id`、`rect`，button 另有非空 `action`，image 以穩定 asset ID 加 `fit` 指向 texture/SVG。
 - `rect` 使用遊戲／host 約定的 logical design space；host 負責 viewport、pixel、DPI、safe area 與實際 Web/native draw。
 - 引擎驗證 schema、有限數量、唯一 id、有限數字與正尺寸，然後把 typed tree 放進 `WorldSnapshot.ui`。
-- Core 目前限制一個 screen 最多 256 個節點（包含 component wrapper），最多 16 層 component wrapper；Lua 的 portable JSON boundary 保留更高的 64 層 guard，讓 Core 能回傳精確的 UI 錯誤而不是先被通用序列化層截斷。
+- 2026-09-20 更新：移除舊的固定 256 節點上限。Core UI contract v2 預設 2048 個節點（包含 component wrapper），screen 可明確設定 `budget.max_nodes`，最高 16384；最多 16 層 wrapper。這是防失控的容量預算，不是效能保證。Core、Web、插件契約由同一來源同步，見 [九宮格與 UI 預算](../ui-slice-and-budget.md)。Lua portable JSON boundary 仍保留較高的 64 層 guard，讓 Core 能回傳精確錯誤。
+- `image.slice` 是單張圖的九宮格 primitive：邊界／裁切規格進 Core，繪製進 Web/native host；皮膚、按鈕組合、MVVM 與遊戲規則仍在 Luau/plugin。它算一個邏輯節點，不要求製作九張圖。
 - `input.getScreenPointerPosition()` 回傳 host 已正規化到同一 logical design space 的 pointer；`getPointerPosition()` 仍然只代表 world space。
 - test manifest 可以用 `ui.equals` assertion 驗證 typed tree；數值先經同一 validator，避免 `10` 與 `10.0` 的 JSON 表現差異造成假失敗。
 

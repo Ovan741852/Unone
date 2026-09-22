@@ -56,6 +56,24 @@ that partial state and diagnostic, then refuses further mutations. Inspection,
 measurement, recording and close still work. Correct the source and open a new
 session to continue.
 
+## Diagnose a failed tick
+
+`{"command":"diagnose","session":"SESSION","limit":20}` is a read-only
+failure evidence pack. It returns execution mode, fault status, the failed
+attempted frame versus last completed frame, original diagnostic/source location,
+input, bounded partial state changes, zero-based recording command/tick indices,
+recent journal entries and concrete next request objects. Missing line numbers
+are not guessed; only exact entry-chunk locations reported by Luau are promoted.
+The failure evidence is capped at 64 KiB with explicit truncation, independently
+of the rotating journal. `limit` is 1..256. Clean sessions report failure=null.
+
+Diagnose never ticks, fixes, resumes, replays or exports files automatically.
+Export `recording`, correct the source, then explicitly replay in an independent
+runtime; partial state is not rolled back. The pack declares line breakpoints,
+all-Luau-locals inspection and external-preview attachment unsupported. Paired
+diagnostic/production validation is required before inferring performance gains;
+see [runtime mode validation](runtime-mode-validation.md).
+
 ## Journal and watch
 
 Entries contain sequence, revision, frame, kind and data. They cover state deltas,

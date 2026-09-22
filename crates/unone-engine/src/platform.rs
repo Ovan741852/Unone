@@ -14,6 +14,7 @@ pub struct PlatformCapabilities {
     pub pending_host_work: Vec<String>,
     /// Core discovery never establishes what a separately running renderer can decode.
     pub renderer_probe: &'static str,
+    pub execution: crate::ExecutionMode,
 }
 
 pub fn capabilities() -> EngineResult<PlatformCapabilities> {
@@ -50,5 +51,6 @@ pub fn capabilities() -> EngineResult<PlatformCapabilities> {
         verified_runtime,
         pending_host_work,
         renderer_probe: "not_probed",
+        execution: crate::execution_mode(),
     })
 }

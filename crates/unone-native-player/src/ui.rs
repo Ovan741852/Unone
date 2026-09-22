@@ -101,6 +101,7 @@ fn escape(s: &str) -> String {
 }
 struct Rasterizer {
     images: BTreeMap<String, String>,
+    image_sizes: BTreeMap<String, (f64, f64)>,
     options: resvg::usvg::Options<'static>,
     family: String,
 }
@@ -186,6 +187,7 @@ impl Rasterizer {
         let assets: serde_json::Value = serde_json::from_slice(package.get("content/assets.json")?)
             .map_err(|e| e.to_string())?;
         let mut images = BTreeMap::new();
+        let mut image_sizes = BTreeMap::new();
         for asset in assets["assets"]
             .as_array()
             .ok_or("UI_ASSET_MANIFEST_INVALID")?
@@ -197,10 +199,23 @@ impl Rasterizer {
             let source = asset["source"].as_str().ok_or("UI_ASSET_SOURCE_MISSING")?;
             let bytes = package.get(&format!("content/{source}"))?;
             let mime = if bytes.starts_with(b"\x89PNG\r\n\x1a\n") {
+                let reader = png::Decoder::new(std::io::Cursor::new(bytes))
+                    .read_info()
+                    .map_err(|e| format!("UI_IMAGE_INVALID: asset={id}; {e}"))?;
+                image_sizes.insert(
+                    id.to_string(),
+                    (reader.info().width as f64, reader.info().height as f64),
+                );
                 "image/png"
             } else if source.to_ascii_lowercase().ends_with(".svg") {
                 validate_svg(bytes, &options)
                     .map_err(|e| format!("{e}; asset={id}; source={source}"))?;
+                let tree =
+                    resvg::usvg::Tree::from_data(bytes, &options).map_err(|e| e.to_string())?;
+                image_sizes.insert(
+                    id.to_string(),
+                    (tree.size().width() as f64, tree.size().height() as f64),
+                );
                 "image/svg+xml"
             } else {
                 continue;
@@ -215,6 +230,7 @@ impl Rasterizer {
         }
         Ok(Self {
             images,
+            image_sizes,
             options,
             family,
         })
@@ -223,6 +239,7 @@ impl Rasterizer {
         let mut svg = format!(
             "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='{width}' height='{height}'>"
         );
+        let mut defined_images = BTreeMap::new();
         for (index, node) in leaves(tree).into_iter().enumerate() {
             let r = node.rect();
             let x = r.x * width as f64 / 100.;
@@ -233,8 +250,45 @@ impl Rasterizer {
                 "<defs><clipPath id='c{index}'><rect x='{x}' y='{y}' width='{w}' height='{h}'/></clipPath></defs><g clip-path='url(#c{index})'>"
             );
             match node {
-                UiNode::Image { asset, fit, .. } => {
+                UiNode::Image {
+                    asset,
+                    fit,
+                    slice,
+                    id,
+                    ..
+                } => {
                     let uri=self.images.get(asset).ok_or_else(||format!("UI_IMAGE_UNAVAILABLE: {asset}; native UI accepts PNG or self-contained static SVG"))?;
+                    if let Some(slice) = slice {
+                        let (iw, ih) = self.image_sizes[asset];
+                        let patches = slice
+                            .patches(iw, ih, w, h, height as f64)
+                            .map_err(|e| format!("{e}; node={id}; asset={asset}"))?;
+                        let image_id = if let Some(index) = defined_images.get(asset) {
+                            *index
+                        } else {
+                            let index = defined_images.len();
+                            defined_images.insert(asset, index);
+                            svg += &format!(
+                                "<defs><image id='slice{index}' width='{iw}' height='{ih}' xlink:href='{uri}'/></defs>"
+                            );
+                            index
+                        };
+                        for (s, d) in patches {
+                            svg += &format!(
+                                "<svg x='{}' y='{}' width='{}' height='{}' viewBox='{} {} {} {}' preserveAspectRatio='none' overflow='hidden'><use xlink:href='#slice{image_id}'/></svg>",
+                                x + d.x,
+                                y + d.y,
+                                d.width,
+                                d.height,
+                                s.x,
+                                s.y,
+                                s.width,
+                                s.height
+                            );
+                        }
+                        svg += "</g>";
+                        continue;
+                    }
                     let aspect = match fit {
                         unone_engine::UiImageFit::Stretch => "none",
                         unone_engine::UiImageFit::Cover => "xMidYMid slice",
@@ -492,6 +546,99 @@ impl Surface {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn nine_slice_pixels_and_budget_benchmark() {
+        let colors = [
+            [255, 0, 0, 255],
+            [0, 255, 0, 255],
+            [0, 0, 255, 255],
+            [255, 255, 0, 255],
+            [255, 0, 255, 255],
+            [0, 255, 255, 255],
+            [128, 0, 0, 255],
+            [0, 128, 0, 255],
+            [0, 0, 128, 255],
+        ];
+        let mut pixels = Vec::new();
+        for y in 0..9 {
+            for x in 0..9 {
+                pixels.extend_from_slice(&colors[(y / 3) * 3 + x / 3]);
+            }
+        }
+        let package=Package{digest:String::new(),files:BTreeMap::from([
+            ("content/assets.json".into(),br#"{"assets":[{"kind":"texture2d","id":"texture://nine","source":"nine.png"}]}"#.to_vec()),
+            ("content/presentation.json".into(),b"{}".to_vec()),("content/nine.png".into(),png_bytes(&pixels,9,9))])};
+        let raster = Rasterizer::new(&package).unwrap();
+        let svg_colors = [
+            "red", "lime", "blue", "yellow", "magenta", "cyan", "maroon", "green", "navy",
+        ];
+        let mut svg = String::from("<svg xmlns='http://www.w3.org/2000/svg' width='9' height='9'>");
+        for (i, color) in svg_colors.iter().enumerate() {
+            svg += &format!(
+                "<rect x='{}' y='{}' width='3' height='3' fill='{color}'/>",
+                i % 3 * 3,
+                i / 3 * 3
+            );
+        }
+        svg += "</svg>";
+        let svg_package = Package { digest:String::new(), files:BTreeMap::from([
+            ("content/assets.json".into(),br#"{"assets":[{"kind":"texture2d","id":"texture://nine","source":"nine.svg"}]}"#.to_vec()),
+            ("content/presentation.json".into(),b"{}".to_vec()), ("content/nine.svg".into(),svg.into_bytes())]) };
+        let svg_raster = Rasterizer::new(&svg_package).unwrap();
+        let value = serde_json::json!({"kind":"screen","id":"s","node":"s","children":[{"kind":"image","id":"nine","asset":"texture://nine","rect":{"x":0,"y":0,"width":100,"height":100},"slice":{"left":3,"top":3,"right":3,"bottom":3,"pixels_per_unit":1}}]});
+        let tree = UiTree::from_json(value).unwrap();
+        for (format, renderer) in [("png", &raster), ("svg", &svg_raster)] {
+            for (w, h) in [(300, 100), (100, 300), (600, 200)] {
+                let result = renderer.draw(&tree, w, h).unwrap();
+                let edge = 3 * h / 100;
+                let xs = [edge / 2, w / 2, w - edge / 2 - 1];
+                let ys = [edge / 2, h / 2, h - edge / 2 - 1];
+                for (row, y) in ys.into_iter().enumerate() {
+                    for (col, x) in xs.into_iter().enumerate() {
+                        // resvg's filtered PNG sampling can round a channel by a few
+                        // levels at 2x scale; geometry is checked exactly in Core.
+                        let p = &result[((y * w + x) * 4) as usize..][..4];
+                        assert!(
+                            p.iter()
+                                .zip(colors[row * 3 + col])
+                                .all(|(a, b)| a.abs_diff(b) <= 3),
+                            "{w}x{h} at {x},{y}: {p:?}"
+                        );
+                    }
+                }
+                if let Ok(out) = std::env::var("UNONE_UI_EVIDENCE_DIR") {
+                    std::fs::create_dir_all(&out).unwrap();
+                    std::fs::write(
+                        std::path::Path::new(&out)
+                            .join(format!("native-nine-{format}-{w}x{h}.png")),
+                        png_bytes(&result, w, h),
+                    )
+                    .unwrap();
+                }
+            }
+        }
+        let mut results = Vec::new();
+        for n in [256, 2048, 4096] {
+            let mut value = serde_json::to_value(&tree).unwrap();
+            value["budget"] = serde_json::json!({"max_nodes":n});
+            value["children"]=serde_json::Value::Array((0..n).map(|i|{let mut node=value["children"][0].clone();node["id"]=format!("p{i}").into();node["rect"]=serde_json::json!({"x":(i%50)as f64*2.0,"y":(i/50%50)as f64*2.0,"width":2,"height":2});node}).collect());
+            let start = std::time::Instant::now();
+            let tree = UiTree::from_json(value).unwrap();
+            let validation_ms = start.elapsed().as_secs_f64() * 1000.0;
+            let start = std::time::Instant::now();
+            raster.draw(&tree, 300, 300).unwrap();
+            let raster_ms = start.elapsed().as_secs_f64() * 1000.0;
+            results.push(serde_json::json!({"nodes":n,"validation_ms":validation_ms,"raster_ms":raster_ms,"profile":if cfg!(debug_assertions){"debug"}else{"release"},"note":"CPU full redraw; overlapping stress fixture; not a 60fps claim"}));
+        }
+        eprintln!("UI_BENCHMARK {}", serde_json::to_string(&results).unwrap());
+        if let Ok(out) = std::env::var("UNONE_UI_EVIDENCE_DIR") {
+            std::fs::write(
+                std::path::Path::new(&out).join("native-benchmark.json"),
+                serde_json::to_vec_pretty(&results).unwrap(),
+            )
+            .unwrap();
+        }
+    }
     #[test]
     fn svg_static_validation_and_scaled_pixels() {
         let svg=br##"<svg xmlns="http://www.w3.org/2000/svg" width="20" height="10"><defs><linearGradient id="g"><stop stop-color="red"/><stop offset="1" stop-color="blue"/></linearGradient></defs><rect width="20" height="10" fill="url(#g)" opacity="0.5"/></svg>"##;

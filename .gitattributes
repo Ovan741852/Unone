@@ -1,0 +1,2 @@
+# Raw audit captures are byte-addressed evidence, not editable source text.
+docs/audits/**/raw/* -text -whitespace

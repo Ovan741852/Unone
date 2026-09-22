@@ -14,9 +14,8 @@ export function fitFormalUI(snapshot){
  const route=tree.node?.split(':')[1],phase=game.phase??tree.node?.split(':')[0];
  const map=new Map(tree.children.map(n=>[n.id,{...n,rect:{...n.rect}}]));
  const set=(id,x,y,w,h)=>{const n=map.get(id);if(n)map.set(id,put(n,x,y,w,h));};
- const sliceParts=id=>['tl','t','tr','l','c','r','bl','b','br'].map(part=>map.get(id+'_'+part)).filter(Boolean);
- const frameRect=id=>{const direct=map.get(id);if(direct)return direct.rect;const parts=sliceParts(id);if(!parts.length)return null;const x=Math.min(...parts.map(n=>n.rect.x)),y=Math.min(...parts.map(n=>n.rect.y)),right=Math.max(...parts.map(n=>n.rect.x+n.rect.width)),bottom=Math.max(...parts.map(n=>n.rect.y+n.rect.height));return {x,y,width:right-x,height:bottom-y};};
- const frame=(id,x,y,w,h)=>{if(map.has(id)){set(id,x,y,w,h);return;}const parts=sliceParts(id),source=frameRect(id);if(!source)return;const fill=map.get(id+'_fill');if(fill)parts.push(fill);const target={x,y:100-y-h,width:w,height:h},sx=w/source.width,sy=h/source.height;for(const part of parts){const q=part.rect;map.set(part.id,{...part,rect:{x:target.x+(q.x-source.x)*sx,y:target.y+(q.y-source.y)*sy,width:q.width*sx,height:q.height*sy}});}};
+ const frameRect=id=>map.get(id)?.rect??null;
+ const frame=(id,x,y,w,h)=>{const source=frameRect(id);if(!source)return;const fill=map.get(id+'_fill');set(id,x,y,w,h);if(fill){const q=fill.rect,sx=w/source.width,sy=h/source.height;map.set(fill.id,{...fill,rect:{x:x+(q.x-source.x)*sx,y:100-y-h+(q.y-source.y)*sy,width:q.width*sx,height:q.height*sy}});}};
  const plateRect=id=>frameRect(id+'_plate');
  const setPlate=(id,...args)=>frame(id+'_plate',...args);
  const control=(id,x,y,w,h,ch=Math.min(3,h-1))=>{const edge=(h-ch)/2;setPlate(id,x,y,w,h);
@@ -40,13 +39,13 @@ export function fitFormalUI(snapshot){
   set('refresh_content_hit',40,footer,14,bh);
   // Shared shop components: fixed skin borders, equal-height controls and
   // measured typography. No generic short-screen overrides move their children.
-  for(const id of [...map.keys()])if(id.endsWith('_tl'))fitNineSlice(map,id.slice(0,-3),[width,height],skinData);
+  for(const [id,n]of map)if(n.slice)fitNineSlice(map,id,[width,height],skinData);
   const scale=1;
   for(const [id,n]of map){
    if(!n.text||!['text','button'].includes(n.kind))continue;
    const p=plateRect(id),button=!!p;
    const slot=button?p:n.rect;
-   const corner=map.get(id+'_plate_tl')?.rect.width??0;
+   const slice=map.get(id+'_plate')?.slice;const corner=slice?slice.left/slice.pixels_per_unit*height/width:0;
    const padding=button?corner*width/100+3*scale:2*scale;
    const wrap=/^(stock_(name|desc)_|shopkeeper_line|shop_detail_(story|effect)|stock_hint)/.test(id);
    const primary=button||/^(stock_name_|stock_cost_|screen_gold$|screen_crystals$|shop_detail_title$|shop_detail_price$|refresh_cost$)/.test(id);
@@ -73,7 +72,7 @@ export function fitFormalUI(snapshot){
   const ui={...tree,children};return snapshot.world?{...snapshot,world:{...snapshot.world,ui}}:{...snapshot,ui};
  }
  layoutScreens({map,set,frame,control,text,plateRect,width,height,game,route,phase});
- for(const id of [...map.keys()])if(id.endsWith('_tl'))fitNineSlice(map,id.slice(0,-3),[width,height],skinData);
+ for(const [id,n]of map)if(n.slice)fitNineSlice(map,id,[width,height],skinData);
  for(const [id,n]of map){
   if(!n.text||!['text','button'].includes(n.kind))continue;
   const p=plateRect(id),button=!!p&&(n.kind==='button'||map.has(id+'_hit_top')||!id.endsWith('_icon'));
@@ -81,7 +80,7 @@ export function fitFormalUI(snapshot){
   const heading=/^(title|screen_title|defeat_title|help_title|town_upgrade_title|map_current_title)$/.test(id);
   const refined=/^(town_(name|effect|cost|gold)|profile_|profiles_|choice_(name|desc|quote|action|hint))/.test(id);
   const size=heading?(id==='title'?56:34):refined?(/^(town_(cost|gold)|profile_name_|choice_name_)/.test(id)?28:24):/^(result_earned|defeat_stat_value_)/.test(id)&&id!=='result_earned_label'?32:primary?22:18;
-  const min=refined?22:primary?16:14,padding=button?Math.min((map.get(id+'_plate_tl')?.rect.width??1)*width/100,slot.width*width/100*.18)+2:2;
+  const min=refined?22:primary?16:14,padding=button?Math.min((map.get(id+'_plate')?.slice ? map.get(id+'_plate').slice.left/map.get(id+'_plate').slice.pixels_per_unit*height/width : 1)*width/100,slot.width*width/100*.18)+2:2;
   const availableHeight=slot.height*height/100;
   const wrap=!button&&!/(_name_|_value_|^title$|_cost_|_page$|^screen_|^slot_)/.test(id);
   const maxLines=button||!wrap?1:Math.max(1,Math.floor(availableHeight/(min*1.2)));

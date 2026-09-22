@@ -30,6 +30,45 @@ fn install(lua: &Lua) -> mlua::Result<()> {
     Ok(())
 }
 
+pub(super) fn new_vm() -> Result<Lua, Box<crate::Diagnostic>> {
+    create_vm(false)
+}
+#[cfg(feature = "jobs")]
+pub(super) fn new_job_vm() -> Result<Lua, Box<crate::Diagnostic>> {
+    create_vm(true)
+}
+fn create_vm(job:bool) -> Result<Lua, Box<crate::Diagnostic>> {
+    let lua = Lua::new();
+    #[cfg(all(feature="native-codegen",not(feature="preview-tools")))]
+    lua.set_compiler(mlua::Compiler::new().set_optimization_level(2).set_type_info_level(1));
+    // Native compiled/inlined frames are not reliably attributed by the VM sampler.
+    // Diagnostic builds retain the interpreter; production native builds may use codegen.
+    #[cfg(all(feature="native-codegen",feature="preview-tools"))]
+    lua.enable_jit(false);
+    install(&lua).map_err(|error| {
+        Box::new(crate::Diagnostic::error(
+            "ENGINE_INIT_FAILED",
+            "Unable to install Luau replay guards",
+            error.to_string(),
+        ))
+    })?;
+    if job {
+        let blocked=lua.create_function(|_,_:mlua::MultiValue|Err::<Value,_>(mlua::Error::RuntimeError("JOB_SIDE_EFFECT_FORBIDDEN: print".into())))
+            .and_then(|f|lua.globals().set("print",f));
+        blocked.map_err(|e|Box::new(crate::Diagnostic::error("ENGINE_INIT_FAILED","Unable to isolate job output",e.to_string())))?;
+    }
+    // Keep standard libraries immutable and activate Luau's builtin fast paths.
+    // Script globals still write into the VM-local environment supplied by mlua.
+    lua.sandbox(true).map_err(|error| {
+        Box::new(crate::Diagnostic::error(
+            "ENGINE_INIT_FAILED",
+            "Unable to initialize the Luau environment",
+            error.to_string(),
+        ))
+    })?;
+    Ok(lua)
+}
+
 #[cfg(test)]
 mod tests {
     use crate::EngineRuntime;
@@ -71,43 +110,4 @@ end,update=function(api)counter+=1;api.observation.set('counter',counter);api.ob
             );
         }
     }
-}
-
-pub(super) fn new_vm() -> Result<Lua, Box<crate::Diagnostic>> {
-    create_vm(false)
-}
-#[cfg(feature = "jobs")]
-pub(super) fn new_job_vm() -> Result<Lua, Box<crate::Diagnostic>> {
-    create_vm(true)
-}
-fn create_vm(job:bool) -> Result<Lua, Box<crate::Diagnostic>> {
-    let lua = Lua::new();
-    #[cfg(all(feature="native-codegen",not(feature="preview-tools")))]
-    lua.set_compiler(mlua::Compiler::new().set_optimization_level(2).set_type_info_level(1));
-    // Native compiled/inlined frames are not reliably attributed by the VM sampler.
-    // Diagnostic builds retain the interpreter; production native builds may use codegen.
-    #[cfg(all(feature="native-codegen",feature="preview-tools"))]
-    lua.enable_jit(false);
-    install(&lua).map_err(|error| {
-        Box::new(crate::Diagnostic::error(
-            "ENGINE_INIT_FAILED",
-            "Unable to install Luau replay guards",
-            error.to_string(),
-        ))
-    })?;
-    if job {
-        let blocked=lua.create_function(|_,_:mlua::MultiValue|Err::<Value,_>(mlua::Error::RuntimeError("JOB_SIDE_EFFECT_FORBIDDEN: print".into())))
-            .and_then(|f|lua.globals().set("print",f));
-        blocked.map_err(|e|Box::new(crate::Diagnostic::error("ENGINE_INIT_FAILED","Unable to isolate job output",e.to_string())))?;
-    }
-    // Keep standard libraries immutable and activate Luau's builtin fast paths.
-    // Script globals still write into the VM-local environment supplied by mlua.
-    lua.sandbox(true).map_err(|error| {
-        Box::new(crate::Diagnostic::error(
-            "ENGINE_INIT_FAILED",
-            "Unable to initialize the Luau environment",
-            error.to_string(),
-        ))
-    })?;
-    Ok(lua)
 }

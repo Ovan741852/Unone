@@ -32,6 +32,53 @@ impl Serialize for InstanceBatch3D {
         state.end()
     }
 }
+fn validate_packed(asset: &str, bytes: &[u8]) -> Result<(), String> {
+    if asset.is_empty() || asset.len() > 256 {
+        return Err("INSTANCE_INVALID: asset ID required (1..256 bytes)".into());
+    }
+    if !bytes.len().is_multiple_of(40) || bytes.len() > 40 * 262_144 {
+        return Err(
+            "INSTANCE_INVALID: buffer must contain at most 262144 records of 40 bytes".into(),
+        );
+    }
+    for record in bytes.chunks_exact(40) {
+        let mut quaternion = 0.;
+        for i in 0..10 {
+            let value = f32::from_le_bytes(record[i * 4..i * 4 + 4].try_into().unwrap());
+            if !value.is_finite() || value.abs() > 100000. || (i >= 7 && value < 0.) {
+                return Err(
+                    "INSTANCE_INVALID: finite bounded transforms and nonnegative scales required"
+                        .into(),
+                );
+            }
+            if (3..7).contains(&i) {
+                quaternion += value * value;
+            }
+        }
+        if (quaternion - 1.).abs() > 0.002 {
+            return Err("INSTANCE_INVALID: quaternion must be normalized".into());
+        }
+    }
+    Ok(())
+}
+impl InstanceBatch3D {
+    pub fn new(asset: String, bytes: &[u8]) -> Result<Self, String> {
+        Self::from_vec(asset, bytes.to_vec())
+    }
+    pub fn from_vec(asset: String, bytes: Vec<u8>) -> Result<Self, String> {
+        validate_packed(&asset, &bytes)?;
+        static NEXT_REVISION: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
+        Ok(Self {
+            asset,
+            count: bytes.len() / 40,
+            format: "f32le-p3-q4-s3-v1",
+            encoded: Arc::new(OnceLock::new()),
+            packed: Arc::from(bytes),
+            revision: NEXT_REVISION.fetch_add(1, std::sync::atomic::Ordering::Relaxed),
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -133,8 +180,8 @@ return {{start=function(api)
  api.instances3d.set("units","mesh://test",b)
 end,update=function()end}}
 "#);
-        let left=crate::EngineRuntime::load_source("pose-a","main.luau",&source("0"),None).unwrap();
-        let right=crate::EngineRuntime::load_source("pose-b","main.luau",&source("3"),None).unwrap();
+        let left=crate::EngineRuntime::load_source("pose-a","main.luau",source("0"),None).unwrap();
+        let right=crate::EngineRuntime::load_source("pose-b","main.luau",source("3"),None).unwrap();
         let left_snap=left.observe();
         let right_snap=right.observe();
         assert_ne!(left_snap.instances3d["units"].packed, right_snap.instances3d["units"].packed);
@@ -142,51 +189,5 @@ end,update=function()end}}
             crate::observation_digest(&left_snap).unwrap(),
             crate::observation_digest(&right_snap).unwrap()
         );
-    }
-}
-fn validate_packed(asset: &str, bytes: &[u8]) -> Result<(), String> {
-    if asset.is_empty() || asset.len() > 256 {
-        return Err("INSTANCE_INVALID: asset ID required (1..256 bytes)".into());
-    }
-    if bytes.len() % 40 != 0 || bytes.len() > 40 * 262_144 {
-        return Err(
-            "INSTANCE_INVALID: buffer must contain at most 262144 records of 40 bytes".into(),
-        );
-    }
-    for record in bytes.chunks_exact(40) {
-        let mut quaternion = 0.;
-        for i in 0..10 {
-            let value = f32::from_le_bytes(record[i * 4..i * 4 + 4].try_into().unwrap());
-            if !value.is_finite() || value.abs() > 100000. || (i >= 7 && value < 0.) {
-                return Err(
-                    "INSTANCE_INVALID: finite bounded transforms and nonnegative scales required"
-                        .into(),
-                );
-            }
-            if (3..7).contains(&i) {
-                quaternion += value * value;
-            }
-        }
-        if (quaternion - 1.).abs() > 0.002 {
-            return Err("INSTANCE_INVALID: quaternion must be normalized".into());
-        }
-    }
-    Ok(())
-}
-impl InstanceBatch3D {
-    pub fn new(asset: String, bytes: &[u8]) -> Result<Self, String> {
-        Self::from_vec(asset, bytes.to_vec())
-    }
-    pub fn from_vec(asset: String, bytes: Vec<u8>) -> Result<Self, String> {
-        validate_packed(&asset, &bytes)?;
-        static NEXT_REVISION: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
-        Ok(Self {
-            asset,
-            count: bytes.len() / 40,
-            format: "f32le-p3-q4-s3-v1",
-            encoded: Arc::new(OnceLock::new()),
-            packed: Arc::from(bytes),
-            revision: NEXT_REVISION.fetch_add(1, std::sync::atomic::Ordering::Relaxed),
-        })
     }
 }

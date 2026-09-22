@@ -66,7 +66,7 @@ export function createDeveloperAPI(host,telemetry){
           if(input.method==='profile.stop'){host.profileWindow?.stop(host.getStats()??{});mutating=true;}
           value={frame:data.counts_frame,runtime:data.performance,window:data.window,build:data.build,jobs:data.jobs??null,host_window:host.profileWindow?.read(host.getStats()??{})??null,publication:data.publication??null,backend:host.backendReport?.()??null,renderer:host.getStats(),paused:host.getPaused(),note:'renderer counters may use a different rolling window; bridge_ms includes WASM tick, not pure bridge cost'};break;
         }
-        case 'memory':{const data=await core({method:'profile'});value={luau_used_bytes:data.performance.luau_memory_bytes,wasm_linear_bytes:host.backendReport?.().wasm_linear_bytes??host.module?.HEAPU8?.buffer.byteLength??null,js_heap:telemetry.heap(),renderer:host.getStats(),note:'WASM capacity is not live allocation; renderer counters are not GPU byte usage. Unsupported JS heap is null.'};break;}
+        case 'memory':{const data=await core({method:'profile'});const wasm=host.backendReport?.().wasm_linear_bytes??host.module?.HEAPU8?.buffer.byteLength;value={luau_used_bytes:data.performance.luau_memory_bytes,native_process_rss_bytes:'unavailable',wasm_linear_bytes:wasm??'unavailable',js_heap:telemetry.heap()??'unavailable',gpu_memory_bytes:'unavailable',renderer:host.getStats(),note:'WASM capacity is not live allocation; renderer counters are not GPU byte usage. Unavailable values are reported explicitly.'};break;}
         case 'memory.sample':case 'memory.report':case 'memory.reset':{
           const command={method:input.method.replace('.','_')};
           if(input.method==='memory.sample'){

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#141611" />
+    <title>Frame Atelier · Unone UI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css?v=4" />
+  </head>
+  <body>
+    <div class="app-shell" data-unone-app="frame-atelier">
+      <header class="topbar">
+        <a class="brand" href="../../" aria-label="回到 Unone">
+          <span class="brand-mark">/\</span>
+          <span class="brand-copy"><strong>FRAME ATELIER</strong><small>UNONE UI WORKSHOP</small></span>
+        </a>
+        <div class="topbar-center">
+          <span class="crumb">YesSir / Forest Lord / Loadout</span>
+          <span class="save-state"><i></i><span id="save-state">已儲存</span></span>
+        </div>
+        <div class="topbar-actions">
+          <button class="ghost-button" id="reset-project" type="button">重設範例</button>
+          <button class="primary-button" id="export-project" type="button">匯出 GDD <span>↗</span></button>
+        </div>
+      </header>
+
+      <div class="workbench">
+        <aside class="left-panel panel-surface">
+          <div class="panel-heading">
+            <div><span class="eyebrow">PROJECT</span><h1>森林領主</h1></div>
+            <button class="icon-button" id="add-frame" type="button" aria-label="新增 frame">＋</button>
+          </div>
+          <div class="project-meta"><span>Frame map</span><strong id="frame-count">02 frames</strong></div>
+          <div class="frame-list" id="frame-list"></div>
+          <div class="left-bottom">
+            <div class="contract-card" id="unone-contract" data-unone-contract>
+              <div class="contract-icon">◌</div>
+              <div><strong>Unone UI contract</strong><span id="contract-status">檢查中…</span></div>
+              <span class="status-dot" id="contract-dot"></span>
+            </div>
+            <p class="hint-copy">框選畫面區域，讓 AI 先補上用途。你可以隨時調整，不需要一次說對。</p>
+          </div>
+        </aside>
+
+        <main class="stage-column">
+          <div class="stage-toolbar">
+            <div class="tool-group" role="toolbar" aria-label="畫布工具">
+              <button class="tool-button is-active" id="select-tool" type="button" data-tool="select"><span>⌁</span>選取</button>
+              <button class="tool-button" id="draw-tool" type="button" data-tool="draw"><span>＋</span>畫 frame</button>
+              <button class="tool-button" id="grid-tool" type="button" data-tool="grid"><span>▦</span>九宮格</button>
+            </div>
+            <div class="profile-switch" role="toolbar" aria-label="設計版型">
+              <button class="profile-button is-active" type="button" data-profile="desktop">Desktop <span>1920 × 1080</span></button>
+              <button class="profile-button" type="button" data-profile="mobile">Mobile <span>390 × 844</span></button>
+            </div>
+            <div class="stage-info"><span id="active-tool-label">選取模式</span><span class="separator"></span><span id="stage-dimensions">1920 × 1080</span></div>
+          </div>
+
+          <section class="stage-wrap" aria-label="Frame 畫布">
+            <div class="stage-grid-lines" aria-hidden="true"></div>
+            <div class="device-board" id="device-board" data-ratio="9:16">
+              <div class="device-topbar"><span id="device-clock">9:41</span><span class="device-icons">⌁ ᯤ ▰</span></div>
+              <div class="device-content" id="device-content"></div>
+              <div class="device-home-indicator"></div>
+              <div class="draw-crosshair" id="draw-crosshair" aria-hidden="true"></div>
+            </div>
+            <div class="stage-caption"><span><b class="live-dot"></b> LIVE PREVIEW</span><span id="selection-caption">選取一個 frame 開始</span></div>
+          </section>
+
+          <section class="asset-dock">
+            <div class="dock-heading"><div><span class="eyebrow">ASSET CANDIDATES</span><h2>生成草稿</h2></div><button class="text-button" id="clear-assets" type="button">清除</button></div>
+            <div class="asset-row" id="asset-row"></div>
+          </section>
+        </main>
+
+        <aside class="right-panel panel-surface">
+          <div class="inspector-heading"><div><span class="eyebrow">INSPECTOR</span><h2>Frame 設定</h2></div><span class="frame-id" id="inspector-id">F01</span></div>
+          <section class="brief-card" aria-labelledby="brief-heading">
+            <div class="brief-card-head"><div><span class="eyebrow">HUMAN BRIEF</span><h2 id="brief-heading">先說你要做什麼</h2></div><span class="brief-step">01 → 02 → 03</span></div>
+            <label class="field-label" for="brief-title">介面名稱<input id="brief-title" type="text" autocomplete="off" /></label>
+            <label class="field-label" for="brief-goal">這個畫面要做什麼？<textarea id="brief-goal" rows="2" placeholder="例如：讓玩家查看英雄狀態、替換裝備並準備出戰"></textarea></label>
+            <label class="field-label" for="brief-emphasis">最重要的是什麼？<textarea id="brief-emphasis" rows="2" placeholder="例如：英雄身分和目前裝備要一眼看懂"></textarea></label>
+            <label class="field-label" for="brief-systems">系統／數值／必須出現<span class="optional">選填</span><textarea id="brief-systems" rows="2" placeholder="例如：生命、攻擊、防禦、裝備槽、背包、出戰按鈕"></textarea></label>
+            <button class="brief-generate" id="generate-interface" type="button"><span>✦</span><span><strong>讓 Gemma 安排介面</strong><small>先決定 panel，再逐一拆解</small></span><span>→</span></button>
+            <p class="brief-status" id="brief-status">人類只提供需求；panel、元件與版面交給 AI。</p>
+          </section>
+          <div class="field-stack">
+            <label class="field-label" for="frame-name">名稱<input id="frame-name" type="text" autocomplete="off" /></label>
+            <label class="field-label" for="frame-purpose">這個區域要做什麼？<textarea id="frame-purpose" rows="3" placeholder="例如：顯示玩家目前任務與下一步"></textarea></label>
+            <div class="field-row">
+              <label class="field-label">比例<select id="frame-ratio"><option value="auto">Auto</option><option value="1:1">1 : 1</option><option value="4:3">4 : 3</option><option value="9:16">9 : 16</option><option value="16:9">16 : 9</option></select></label>
+              <label class="field-label">狀態<select id="frame-status"><option value="draft">草稿</option><option value="approved">已確認</option><option value="needs_review">待檢查</option></select></label>
+            </div>
+            <label class="field-label" for="frame-note">備註<span class="optional">選填</span><input id="frame-note" type="text" autocomplete="off" placeholder="視覺或內容限制" /></label>
+          </div>
+
+          <div class="assistant-card" id="assistant-card">
+            <div class="assistant-head"><span class="assistant-orb">✦</span><div><strong>Gemma 3 拆解</strong><span id="assistant-status">先決定 panel，再逐一拆元件</span></div><span class="model-badge">LOCAL</span></div>
+            <div class="assistant-body" id="assistant-body"><p class="empty-assistant">按下補全，AI 會依照企畫案先辨識 label、用途、動態性與共用性，再確認 frame 大小。</p></div>
+            <div class="assistant-actions"><button class="assistant-button" id="ask-assistant" type="button">✦ 補全與拆解</button><button class="apply-button" id="apply-suggestion" type="button" disabled>套用建議</button><button class="hierarchy-button" id="analyze-hierarchy" type="button">⌘ 依粗框展開整張畫面</button></div>
+          </div>
+
+          <section class="hierarchy-card" id="hierarchy-card" hidden>
+            <div class="hierarchy-card-head"><div><span class="eyebrow">LAYOUT HIERARCHY</span><strong>畫面結構樹</strong></div><span id="hierarchy-count">0 nodes</span></div>
+            <p class="hierarchy-intro">這棵樹由人類需求開始：先有 panel 責任，再有 panel 內的元件。圖片只作為之後的參考。</p>
+            <div class="hierarchy-body" id="hierarchy-body"></div>
+          </section>
+
+          <div class="inspector-bottom">
+            <button class="generate-button" id="generate-draft" type="button"><span>✦</span><span><strong>建立生成草稿</strong><small>使用用途與 frame 大小</small></span><span class="arrow">→</span></button>
+            <div class="unone-note"><span>i</span><p>AI 依照企畫案標記固定／動態、子元素、共用元件與九宮格候選；不需要 Computer Use 就能修改 scene state。</p></div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </div>
+    <script type="module" src="./main.js?v=11"></script>
+  </body>
+</html>

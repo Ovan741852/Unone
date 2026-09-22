@@ -1,0 +1,337 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$defs": {
+    "RawOffset": {
+      "additionalProperties": false,
+      "description": "Anchored offsets and sizes are in vertical units: percent of the viewport\nheight, on both axes. One unit system means an author never has to reason\nabout the aspect, and a box keeps its shape when the aspect changes.",
+      "properties": {
+        "x": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "RawSize": {
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "format": "double",
+          "type": "number"
+        },
+        "width": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "width",
+        "height"
+      ],
+      "type": "object"
+    },
+    "RawUiNode": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "alt": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "anchor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiAnchor"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Edge-relative placement, resolved by the engine against the host's real\nviewport shape so a screen keeps its proportions on any aspect."
+        },
+        "asset": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "children": {
+          "items": {
+            "$ref": "#/$defs/RawUiNode"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "component": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiImageFit"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "offset": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RawOffset"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pivot": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiAnchor"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "rect": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiRect"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Absolute placement in the design space. Use it when the layout is not\nedge relative, such as a ring laid out with trigonometry."
+        },
+        "size": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RawSize"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "slice": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiSlice"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "text": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "type": "object"
+    },
+    "UiAnchor": {
+      "description": "Where an anchored node hangs from, and which of its own corners it hangs by.\n\nA named corner is the whole point: an author who cannot see the screen picks\na word correctly far more often than four normalized floats, which is what\nevery RectTransform-style anchor system asks for.",
+      "enum": [
+        "top_left",
+        "top",
+        "top_right",
+        "left",
+        "center",
+        "right",
+        "bottom_left",
+        "bottom",
+        "bottom_right"
+      ],
+      "type": "string"
+    },
+    "UiBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "max_nodes": {
+          "format": "uint",
+          "maximum": 16384,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "max_nodes"
+      ],
+      "type": "object"
+    },
+    "UiImageFit": {
+      "enum": [
+        "contain",
+        "cover",
+        "stretch"
+      ],
+      "type": "string"
+    },
+    "UiRect": {
+      "additionalProperties": false,
+      "description": "Logical coordinates for a host-rendered UI element.\n\nBoth axes run 0..100 and **y points up**: y = 0 is the bottom of the screen\nand a rect grows upward from its y. Most UI systems are y-down, so this is\nthe easiest thing for an author who cannot see the screen to get wrong.\n\nThe platform host maps this design space to its viewport. The engine does\nnot know about pixels, DPI, safe areas, fonts, or platform widgets.",
+      "properties": {
+        "height": {
+          "format": "double",
+          "type": "number"
+        },
+        "width": {
+          "format": "double",
+          "type": "number"
+        },
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "type": "object"
+    },
+    "UiSlice": {
+      "additionalProperties": false,
+      "description": "Source borders are pixels; pixels_per_unit converts them to vertical design\nunits (one unit = 1% of viewport height). This preserves corners across DPI\nand aspect ratios. Source is an optional atlas/trim region, in source pixels.",
+      "properties": {
+        "bottom": {
+          "format": "double",
+          "type": "number"
+        },
+        "left": {
+          "format": "double",
+          "type": "number"
+        },
+        "pixels_per_unit": {
+          "format": "double",
+          "type": "number"
+        },
+        "right": {
+          "format": "double",
+          "type": "number"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiRect"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "top": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "left",
+        "top",
+        "right",
+        "bottom",
+        "pixels_per_unit"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://unone.dev/schema/ui.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "budget": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UiBudget"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "children": {
+      "items": {
+        "$ref": "#/$defs/RawUiNode"
+      },
+      "maxItems": 16384,
+      "type": "array"
+    },
+    "id": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "node": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "id",
+    "node",
+    "children"
+  ],
+  "title": "RawUiTree",
+  "type": "object",
+  "x-unone-ui-contract": {
+    "default_max_nodes": 2048,
+    "host_max_nodes": 16384,
+    "max_component_depth": 16,
+    "max_layout_comparisons": 1000000,
+    "max_layout_findings": 1024,
+    "max_string_bytes": 8388608,
+    "version": 2
+  }
+}

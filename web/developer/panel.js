@@ -26,7 +26,7 @@ export function mountPanel(api){
   function empty(message){body.append(el('p',message,'dev-empty'));}
   function card(label,value,note){const card=el('div',null,'dev-card');card.append(el('small',label),el('strong',value));if(note)card.append(el('p',note));body.append(card);}
   const ms=value=>typeof value==='number'?value.toFixed(2)+' ms':'不可取得';
-  const bytes=value=>typeof value==='number'?(value/1048576).toFixed(2)+' MiB':'不可取得';
+  const bytes=value=>typeof value==='number'?(value/1048576).toFixed(2)+' MiB':'unavailable';
   function setOpen(value){open=value;panel.hidden=!open;root.querySelector('.dev-launch').setAttribute('aria-expanded',String(open));if(open)refresh(true);}
   root.querySelector('.dev-launch').onclick=()=>setOpen(!open);root.querySelector('.dev-close').onclick=()=>setOpen(false);
   root.querySelector('[data-method="pause"]').onclick=async()=>{const p=await api.request({method:'profile'});if(p.ok)send({method:'pause',paused:!p.value.paused});};
@@ -98,7 +98,18 @@ export function mountPanel(api){
       body.append(json({counts:value.runtime.counts,host_window:value.host_window,publication:value.publication,jobs:value.jobs,window:value.window,renderer:value.renderer}));return;
     }
     if(method==='memory'){
-      card('Luau 使用量',bytes(value.luau_used_bytes));if(value.host==='native'){empty(value.note);return;}card('WASM 線性記憶體容量',bytes(value.wasm_linear_bytes),'容量包含未使用空間，並非活躍配置量');card('JavaScript heap 使用量',bytes(value.js_heap?.used_bytes),'瀏覽器未提供時不估算');empty('貼圖／geometry 計數不是 GPU 記憶體位元組數。');return;
+      card('Luau 使用量',bytes(value.luau_used_bytes));
+      if(value.host==='native'){
+        card('Native process RSS',bytes(value.native_process_rss_bytes),'目前程序工作集；不是 GPU 記憶體');
+        card('WASM 線性記憶體容量',bytes(value.wasm_linear_bytes),'native host 不使用 WASM');
+        card('JavaScript heap 使用量',bytes(value.js_heap),'native host 不使用 JavaScript');
+        card('GPU memory',bytes(value.gpu_memory_bytes),'目前 wgpu 沒有可攜的 live allocation counter');
+        empty(value.note);return;
+      }
+      card('WASM 線性記憶體容量',bytes(value.wasm_linear_bytes),'容量包含未使用空間，並非活躍配置量');
+      card('JavaScript heap 使用量',bytes(value.js_heap?.used_bytes??value.js_heap),'瀏覽器未提供時顯示 unavailable');
+      card('Native process RSS',bytes(value.native_process_rss_bytes),'Web host 不適用');
+      card('GPU memory',bytes(value.gpu_memory_bytes),'renderer counters 不是 GPU 記憶體位元組數');return;
     }
     if(method==='journal'){if(!value.events.length)empty('操作後會記錄方法、參數、frame 與結果。');for(const event of [...value.events].reverse()){const row=el('div',null,'dev-log');row.dataset.level=event.ok?'info':'error';row.append(el('strong',`#${event.sequence} · frame ${event.frame} · ${event.ok?'成功':'失敗'}`),json(event.request));if(!event.ok)row.append(json(event.diagnostics));body.append(row);}}
   }

@@ -1,0 +1,61 @@
+{
+  "schema": "unone.ai-native.probe.v1",
+  "startedAt": "2026-09-16T01:27:13.947Z",
+  "command": [
+    "C:\\Program Files\\nodejs\\node.exe",
+    "D:\\Projects\\Unone\\plugins\\org.unone.ai-native\\audits\\scout-self-2026-09-16\\probe-register-describe-blind-20260916T0120Z.mjs",
+    "--root",
+    "D:\\Projects\\Unone"
+  ],
+  "node": "v24.14.1",
+  "platform": "win32/x64",
+  "mode": "fixture",
+  "limitations": [
+    "Contract description only; ai_native.register was not called, and no registry write was attempted."
+  ],
+  "subject": [
+    {
+      "path": "plugins/org.unone.ai-native/README.md",
+      "sha256": "a0e6e0c3fce233a8cd1090755e9a01525dae91bd21bc178bce0701b994be06a8"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/docs/discovery.md",
+      "sha256": "2729fff911604a70c0da7276fca3c13b381231981a978b54be78a9fc8a05dca2"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/docs/report.md",
+      "sha256": "aed7a2738c9793927a09b7ed90774993ff636744e97e266ac3cf117fae6fa959"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/package.json",
+      "sha256": "d07d7a8b947c682dc34e09d0f09e84fffb265afeaf4fc72a1bd7ea669e2edf16"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/plugin.json",
+      "sha256": "751e8b82c56d11e3dd8f7d53a472d98bc8ae06d7f00e5b5f1ea1a6d1b2163251"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/cli.mjs",
+      "sha256": "54db5ffe0df3a19af6da74586ab609541c2d0cdeafb61e009d2d3114133f4e1c"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/plugin.mjs",
+      "sha256": "1aab474aba641ad7077b5eea18f6f6fe516fb47fcade6e8cb02e8400f396f154"
+    }
+  ],
+  "probe": {
+    "path": "plugins/org.unone.ai-native/audits/scout-self-2026-09-16/probe-register-describe-blind-20260916T0120Z.mjs",
+    "sha256": "358798d793ec4482e98ef19f5fe5b3db3f32f8d577475c9e8fc62a0af015dcfc"
+  },
+  "durationMs": 93.456,
+  "exitCode": 0,
+  "signal": null,
+  "spawnError": null,
+  "timedOut": false,
+  "outputTruncated": false,
+  "sourceChanged": false,
+  "sourceCheckError": null,
+  "stdout": "{\"schema\":\"org.unone.ai-native-audit.readonly-contract-observation.v1\",\"projectRoot\":\"D:\\\\Projects\\\\Unone\",\"command\":[\"C:\\\\Program Files\\\\nodejs\\\\node.exe\",\"D:\\\\Projects\\\\Unone\\\\plugins\\\\org.unone.ai-native\\\\cli.mjs\",\"describe\",\"--operation\",\"ai_native.register\"],\"cwd\":\"D:\\\\Projects\\\\Unone\\\\plugins\\\\org.unone.ai-native\",\"environment\":{\"UNONE_PROJECT_ROOT\":\"D:\\\\Projects\\\\Unone\",\"node\":\"v24.14.1\",\"platform\":\"win32\",\"arch\":\"x64\"},\"stdout\":\"{\\n  \\\"ok\\\": true,\\n  \\\"value\\\": {\\n    \\\"id\\\": \\\"ai_native.register\\\",\\n    \\\"version\\\": \\\"0.2.0\\\",\\n    \\\"versionScope\\\": \\\"Per-operation input/output contract version; independent of the installed plugin/package release version.\\\",\\n    \\\"summary\\\": \\\"重新核對評測並追加版本化紀錄，保存分數與時間；不執行探針、不覆蓋歷史。\\\",\\n    \\\"keywords\\\": [\\n      \\\"register\\\",\\n      \\\"save assessment\\\",\\n      \\\"登錄\\\",\\n      \\\"登記\\\",\\n      \\\"保存評測\\\",\\n      \\\"紀錄分數\\\"\\n    ],\\n    \\\"available\\\": {\\n      \\\"status\\\": \\\"available\\\",\\n      \\\"requirements\\\": [\\n        \\\"Node.js >=20\\\",\\n        \\\"Explicit CLI register or trusted-host registryWrite opt-in\\\"\\n      ],\\n      \\\"scope\\\": \\\"Only create new .unone/ai-native/assessments/<id>.json inside the host-selected project. Local records, not marketplace publication.\\\"\\n    },\\n    \\\"readOnly\\\": false,\\n    \\\"permissions\\\": [\\n      \\\"project.read\\\",\\n      \\\"project.write_staging\\\"\\n    ],\\n    \\\"input_schema\\\": {\\n      \\\"type\\\": \\\"object\\\",\\n      \\\"properties\\\": {\\n        \\\"assessment_id\\\": {\\n          \\\"type\\\": \\\"string\\\",\\n          \\\"pattern\\\": \\\"^[a-z0-9][a-z0-9_-]{0,79}$\\\"\\n        },\\n        \\\"report_path\\\": {\\n          \\\"type\\\": \\\"string\\\",\\n          \\\"description\\\": \\\"Forward-slash project-relative UTF-8 file path. Absolute paths and escaping symlinks are rejected.\\\"\\n        },\\n        \\\"manifest_path\\\": {\\n          \\\"type\\\": \\\"string\\\",\\n          \\\"description\\\": \\\"Forward-slash project-relative UTF-8 file path. Absolute paths and escaping symlinks are rejected.\\\"\\n        }\\n      },\\n      \\\"required\\\": [\\n        \\\"assessment_id\\\",\\n        \\\"report_path\\\"\\n      ],\\n      \\\"additionalProperties\\\": false\\n    },\\n    \\\"output\\\": \\\"Immutable local assessment receipt: historicalScore/gate, target version/scope/environment, evaluatedAt/recordedAt, actual probe startedAt/durationMs, subject fingerprint, evidence references. created=false on an exact ID retry; currentChecked=false, call status for a current badge. This is not a fresh probe run or signed certification.\\\",\\n    \\\"examples\\\": [\\n      {\\n        \\\"assessment_id\\\": \\\"equipment-20260915-01\\\",\\n        \\\"report_path\\\": \\\"audits/equipment/audit.json\\\",\\n        \\\"manifest_path\\\": \\\"plugins/org.example.equipment/plugin.json\\\"\\n      }\\n    ],\\n    \\\"errors\\\": [\\n      {\\n        \\\"code\\\": \\\"AUDIT_REGISTRY_WRITE_DENIED\\\",\\n        \\\"cause\\\": \\\"Host has not opted into registry writes.\\\",\\n        \\\"fix\\\": \\\"Explicit local CLI register, or trusted host UNONE_AI_NATIVE_REGISTRY_WRITE=1. Payload flags cannot grant access.\\\"\\n      },\\n      {\\n        \\\"code\\\": \\\"AUDIT_REGISTRY_ID_CONFLICT\\\",\\n        \\\"cause\\\": \\\"Assessment ID already belongs to another report.\\\",\\n        \\\"fix\\\": \\\"Keep old record; new report uses a new ID. Retry uncertain writes with the original ID and request.\\\"\\n      },\\n      {\\n        \\\"code\\\": \\\"AUDIT_REGISTRY_MANIFEST_MISMATCH\\\",\\n        \\\"cause\\\": \\\"Manifest ID/version or captured hash does not match.\\\",\\n        \\\"fix\\\": \\\"Include the actual plugin manifest in the subject before running probes. Do not retrofit hashes into historical evidence.\\\"\\n      },\\n      {\\n        \\\"code\\\": \\\"AUDIT_REGISTRY_MANIFEST_REQUIRED\\\",\\n        \\\"cause\\\": \\\"Plugin surface lacks a manifest binding.\\\",\\n        \\\"fix\\\": \\\"Capture plugin.json as a subject and provide manifest_path.\\\"\\n      },\\n      {\\n        \\\"code\\\": \\\"AUDIT_REGISTRY_WRITE_FAILED\\\",\\n        \\\"cause\\\": \\\"Atomic publication unavailable.\\\",\\n        \\\"fix\\\": \\\"Use a writable local hard-link-capable filesystem; inspect history before retry.\\\"\\n      },\\n      {\\n        \\\"code\\\": \\\"AUDIT_EVIDENCE_STALE\\\",\\n        \\\"cause\\\": \\\"The subject or artifact changed since capture.\\\",\\n        \\\"fix\\\": \\\"Rerun the original probe and review affected answers; do not just replace hashes.\\\"\\n      },\\n      {\\n        \\\"code\\\": \\\"AUDIT_PATH_OUTSIDE_ROOT\\\",\\n        \\\"cause\\\": \\\"Absolute, traversal or escaping symlink path.\\\",\\n        \\\"fix\\\": \\\"Select the correct project root and use approved relative evidence files.\\\"\\n      },\\n      {\\n        \\\"code\\\": \\\"AUDIT_INVALID\\\",\\n        \\\"cause\\\": \\\"A required answer, field or evidence reference is missing/invalid.\\\",\\n        \\\"fix\\\": \\\"Read diagnostics.facts.field/expected/actual and supply a concrete answer.\\\"\\n      }\\n    ],\\n    \\\"sideEffects\\\": [\\n      \\\"Creates registry directories and one new assessment file; exact retries do not append or reevaluate. No target source edits, command execution, downloads or uploads.\\\"\\n    ],\\n    \\\"preparation\\\": \\\"Read ai_native.evaluate reportSchema/preparation first. For plugin targets the actual manifest must be in the captured subject. register reevaluates existing evidence; probe times remain unchanged. History is never automatically imported from old score files.\\\",\\n    \\\"standaloneCli\\\": \\\"node cli.mjs register --assessment <new-id> --report <relative-report> [--manifest <relative-plugin.json>] --root <selected-project>\\\",\\n    \\\"contractHash\\\": \\\"a0a0e2c4cc0677e07f6fe92acc64c904f434b69d579d93c35c3caf745e25d405\\\"\\n  },\\n  \\\"diagnostics\\\": [],\\n  \\\"effects\\\": [],\\n  \\\"telemetry\\\": {\\n    \\\"elapsed_ms\\\": 0.145,\\n    \\\"gpu_ms\\\": null,\\n    \\\"note\\\": \\\"Plugin wall time only, not target performance. No target commands or probes executed.\\\"\\n  }\\n}\\n\",\"stderr\":\"\",\"exitCode\":0,\"elapsedMs\":46.4121,\"spawnError\":null}\n",
+  "stderr": "",
+  "trust": "Local capture of an explicitly selected script. Not signed attestation or proof of semantic claims; probe code is not sandboxed."
+}

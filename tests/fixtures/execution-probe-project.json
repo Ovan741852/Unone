@@ -1,0 +1,5 @@
+{
+  "config": { "name": "ExecutionModeAcceptance", "entry_script": "mode-probe.luau" },
+  "script": "local n=0; return {start=function(api) api.observation.set('n',n) end,update=function(api,dt) local sum=0; for i=1,100000 do sum+=i%7 end; if api.input.isDown('Right') then n+=1 end; api.observation.set('n',n); api.observation.set('sum',sum) end}",
+  "scene": { "entities": [] }
+}

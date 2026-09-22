@@ -4,7 +4,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const uiPoint=require('./ui-test-pointer.cjs');
 (async()=>{
  const browser=await chromium.launch({channel:'msedge',headless:true});
- const report={ok:false,checks:[],errors:[]},out=path.resolve(__dirname,'../tests/shop-layout');
+ const report={ok:false,checks:[],errors:[]},out=process.env.GAME_TEST_EVIDENCE?path.resolve(process.env.GAME_TEST_EVIDENCE):path.resolve(__dirname,'../tests/shop-layout');
  try{
   const page=await browser.newPage({viewport:{width:1280,height:720},hasTouch:true});
   page.on('pageerror',e=>report.errors.push(e.message));

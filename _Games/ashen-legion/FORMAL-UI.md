@@ -30,7 +30,7 @@
 
 - `check --types`：通過。
 - `tools/verify-shop-layout.mjs`：裝備店專項 AABB 檢查，驗證四張水平卡片、卡片內容 containment、卡片／按鈕 sibling 不重疊、詳情彈窗控制項與安全邊界；報告保存在 `tests/shop-layout/report.json`。
-- `tools/slice-shop-assets.mjs`：將生成的商店框材質切成九個透明 PNG，供 Luau 的 `nineSlice` helper 組裝；不改 Unone 引擎，也不把原始素材直接拉伸到 100×100。
+- `tools/slice-shop-assets.mjs`：產生來源裁切／邊距 metadata（仍保留歷史切片輸出供比較）。2026-09-20 起 Luau `nineSlice` helper 發布單一 `image.slice` 節點、引用單張來源圖，正式 manifest 不再載入九張切片；需匹配 Core UI contract v2 的 runtime。不是把原始素材整張拉伸。
 - `tools/verify-formal-layout.mjs`：全局 Unone `ui preview --strict` 回歸。`tests/formal-layout` 保存每頁 InputFrame、重疊意圖及官方報告；其中 profile／town 的歷史基線 findings 與本次裝備店檢查分開記錄，不把卡片父子層級誤當成裝備店缺陷。
 - 2026-09-19 實跑結果：裝備店專項與兩種瀏覽器尺寸通過；全局腳本仍保留舊的 profile／town fixture findings，不能拿來取代專項商店驗收。
 - 共同間距、安全邊界、資訊層級與 AABB allowlist 規則見 [UI-DESIGN-GUIDELINES-20260919.md](design-v1/UI-DESIGN-GUIDELINES-20260919.md)。

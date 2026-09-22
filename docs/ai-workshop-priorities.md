@@ -4,6 +4,9 @@ This is a design assessment. Optional [Luau jobs](jobs.md) are now callable with
 The workshop should let AI discover capabilities, run controlled experiments,
 inspect evidence and choose changes. Human tools should consume the same APIs.
 
+For the Rust host/Luau VM boundary, execution modes, replay comparison rules
+and metric availability semantics, use the [runtime execution contract](runtime-execution-contract.md).
+
 Independent review did not approve a direct production implementation. See the
 [findings and narrowed scope](reviews/2026-09-08-worker-ecs-blind-review.md) and
 [executable contract model](../experiments/compute-contract/README.md). The model

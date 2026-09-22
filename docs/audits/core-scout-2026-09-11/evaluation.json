@@ -1,0 +1,311 @@
+{
+  "ok": true,
+  "value": {
+    "schema": "unone.ai-native.result.v1",
+    "rubricVersion": "1.0.0",
+    "target": {
+      "id": "unone-core",
+      "name": "Unone Core AI development surface",
+      "surface": "mixed",
+      "scope": "Windows x64 public CLI and persistent developer protocol: create a synthetic starter; schema-led input, transient Enact edits, snapshots/watch, invalid request repair, stale revision/session boundaries, same-version recording/replay, and published headless memory/GC diagnostics. Excludes full static type-check completion, release packaging, graphical rendering, other platforms, all engine subsystems, MCP transport, optional npm SDK wrapper and commercial readiness.",
+      "version": "game 0.1.0",
+      "revision": "Executable sha256:6af56a589c4a39d3f16e176cfb2fc817ef7fcbbe7836e160c516973e86cc8c8e; checkout master 7bc124931e6a6ed47ee28b6dc3e7bc7646d37b5d with pre-existing dirty paths. Build-to-HEAD provenance not attested.",
+      "environment": "Windows x64, Node v24.14.1, existing release game.exe. New synthetic C: OS temp projects only; no network, downloads, external accounts/providers, real games or service changes."
+    },
+    "trial": {
+      "mode": "informed",
+      "entryPoints": [
+        "README.md -> docs/ai-workflow.md / docs/developer-session.md / docs/profiling.md / docs/runtime-contracts.md",
+        "Existing target/release/game.exe --help / project init / session --schema / api search / platform snapshot",
+        "docs/diagnostics-replay.md -> public docs/fixtures/diagnostics/create-request.mjs"
+      ],
+      "steps": 73,
+      "firstSuccessStep": 3,
+      "sourceFallbackStep": null,
+      "wrongGuesses": 1,
+      "limitations": [
+        "Aggregate of preserved initial 31-operation blind subtrial, 12-process-step informed memory/discovery probe (including one nested fingerprint CLI), and 30-operation reviewed session reproduction. Root's unrecorded orientation commands are not counted as trial steps or substituted for recorder evidence.",
+        "Initial subagent saw only public entries/task/boundaries, not rubric or expected scores; original first-use report was frozen before reproductions and informed semantic review. First success means project init, not help.",
+        "Only natural ordering error is capabilities query before project init. Unknown field, stale revision, old session and wrong fingerprint were deliberate negative cases, not natural wrong guesses.",
+        "Initial verify failed LUAU_ANALYZER_NOT_FOUND while assets and two tests passed. Full type checking, portable dependency repair, clean build and release pipeline are not verified; no analyzer was downloaded and the gate was not weakened.",
+        "The initial interactive transport was deliberately stopped after runtime close; its nonzero cleanup exit is not counted as a successful execution capture. The separate recorder session run closed by EOF and exited zero.",
+        "Public task completion used no product implementation. Root separately inspected the optional Node SDK source while orienting; that wrapper is outside this scope and was not used to finish CLI/protocol operations.",
+        "Exact existing executable identity is checked in probes because binary exceeds recorder 2 MiB subject-file limit. Hash descriptor plus actual before/after executable hashing is not a signed attestation to checkout HEAD.",
+        "Synthetic headless measurements are not rendered FPS, a load benchmark, proof of no leaks or a performance improvement. GPU, Rust allocator, JS GC and retaining paths remain unavailable.",
+        "No browser/native UI, macOS/iOS/Android, external plugin renderers, hostile-code OS sandbox, MCP transport, true cross-process continuation or real YesSir project verification."
+      ]
+    },
+    "subjectFingerprint": "b75434d85e49e6fe9bf987ae54110d640835dfaa673c094fcb373b483093895d",
+    "index": 85.5,
+    "meaning": "固定 rubric 的證據支持分數（0–100 下限），不是普遍有效的 AI-native 認證。未驗證項未從分母移除。",
+    "possibleRange": [
+      85.5,
+      85.5
+    ],
+    "coveragePercent": 100,
+    "executionCoveragePercent": 100,
+    "publicExecutionCoveragePercent": 100,
+    "gate": "supported_within_scope",
+    "blockers": [],
+    "unverifiedCritical": [],
+    "dimensions": [
+      {
+        "id": "purpose",
+        "weight": 10,
+        "critical": false,
+        "runtime": false,
+        "title": "用途與起點",
+        "question": "陌生 AI 從入口能否說明工具解決什麼、不解決什麼，以及下一個正確操作？",
+        "status": "verified",
+        "claimedStatus": "verified",
+        "claimed": 3,
+        "accepted": 3,
+        "points": 7.5,
+        "caps": [],
+        "answer": "公開 README 清楚把工具定位為 AI-native 遊戲引擎 prototype、Rust 提供機制而 Luau 擁有玩法。文件引導到 project init、session schema 與公開開發流程，陌生 agent 第 3 次操作成功建立五檔。",
+        "nextAction": "CORE-SCOUT-003：在公開起點區分新建與既有專案；保留 scoped capability/error 語義。"
+      },
+      {
+        "id": "capabilities",
+        "weight": 10,
+        "critical": false,
+        "runtime": false,
+        "title": "能力與限制發現",
+        "question": "如何查到目前版本真正可用的功能、相依條件與未實作能力，而不是猜 API？",
+        "status": "verified",
+        "claimedStatus": "verified",
+        "claimed": 3,
+        "accepted": 3,
+        "points": 7.5,
+        "caps": [],
+        "answer": "platform snapshot 回 compiled systems、專案啟用狀態、能力限制及 core.renderer_probe=not_probed；session --schema 和 api describe 提供實際公開契約。",
+        "nextAction": "CORE-SCOUT-001/002：設計跨工具目的索引及小量候選，選中才載入完整既有契約；用相同 query 與真實工具回歸，不宣稱已完成。"
+      },
+      {
+        "id": "operation",
+        "weight": 12,
+        "critical": true,
+        "runtime": true,
+        "title": "可執行操作契約",
+        "question": "只靠可發現的契約及最小例子能否完成代表任務？輸入欄位、回傳及副作用是否明確？",
+        "status": "verified",
+        "claimedStatus": "verified",
+        "claimed": 4,
+        "accepted": 4,
+        "points": 12,
+        "caps": [],
+        "answer": "依生成的 session schema、公開 docs 與 starter entity ID，完成輸入、釋放輸入、暫時位置修改、觀察與重播；P03 錯欄位拒絕，P04 刪除 framse 後同 revision 成功。",
+        "nextAction": "維持這些公開操作的可重跑負例；完整 SDK dependency/type-check/export 應另開相同範圍以外的驗收。"
+      },
+      {
+        "id": "context",
+        "weight": 10,
+        "critical": false,
+        "runtime": true,
+        "title": "上下文與需求真相",
+        "question": "是否保留 ID、關聯、版本、來源與待決事項？AI 能否取得必要脈絡而不把推測當需求？",
+        "status": "verified",
+        "claimedStatus": "verified",
+        "claimed": 3,
+        "accepted": 3,
+        "points": 7.5,
+        "caps": [],
+        "answer": "公開回應保存穩定 example entity ID、session/revision/frame、script generation/digest；replay fingerprint 區分 engine executable、game content、script 與 assets 的實際 hash。",
+        "nextAction": "保留 exact-version 指紋與原 capture；跨插件/host 資產版本鏈與需求真相工具另外驗證，不把 Viewer 或玩法策略加進 Core。"
+      },
+      {
+        "id": "observation",
+        "weight": 10,
+        "critical": true,
+        "runtime": true,
+        "title": "結果與狀態觀察",
+        "question": "如何查到實際變更、進度、完成、失敗與限制？是否把已送出、執行成功、人類驗收分開？",
+        "status": "verified",
+        "claimedStatus": "verified",
+        "claimed": 4,
+        "accepted": 4,
+        "points": 10,
+        "caps": [],
+        "answer": "每次 step / enact / snapshot 的 revision/frame/digest 及 before/after 真變更可查。P08/09 的 watch 正確使用 next_cursor 讀完兩頁；current snapshot 比事件頁新時可辨識。",
+        "nextAction": "維持 watch 分頁及 dry-run/replay 狀態隔離回歸；renderer 可見性/遮擋需在獨立圖像觀測範圍實測。"
+      },
+      {
+        "id": "diagnostics",
+        "weight": 14,
+        "critical": true,
+        "runtime": true,
+        "title": "具體錯因與修復",
+        "question": "故意做錯一次：回應是否指出錯誤碼、欄位或物件、實際值與預期、具體原因及可採取的修復？修正後重跑是否成功？",
+        "status": "verified",
+        "claimedStatus": "verified",
+        "claimed": 3,
+        "accepted": 3,
+        "points": 10.5,
+        "caps": [],
+        "answer": "故意錯誤有 DEVELOPER_REQUEST_INVALID 的 unknown field/允許欄位、REVISION_CONFLICT 的 actual/expected_revision、SESSION_MISMATCH 的修復說明。移除 framse 或採用新 session ID 後成功。",
+        "nextAction": "CORE-SCOUT-005：補一致 field/path/expected/actual/action 的診斷資料，再重跑原 typo/session/fingerprint 負例；不要只填通過分數。"
+      },
+      {
+        "id": "recovery",
+        "weight": 10,
+        "critical": false,
+        "runtime": true,
+        "title": "重試、衝突與恢復",
+        "question": "重複請求、狀態過時、失去回覆或中斷時，AI 能否判斷安全重試、續接或需人類介入，不重複副作用？",
+        "status": "verified",
+        "claimedStatus": "verified",
+        "claimed": 4,
+        "accepted": 4,
+        "points": 10,
+        "caps": [],
+        "answer": "重送相同 expected_revision=0 的已成功 step 被拒；P06 證明 frame/revision/digest 未再前進。watch 採 returned next_cursor 不漏页。close/reopen 重新開始，舊 session ID 被拒。",
+        "nextAction": "維持 stale-request、分頁與 reopening 回歸。不要把拒絕舊 revision 宣傳為跨程序恢復或任意網路逾時 exactly-once。"
+      },
+      {
+        "id": "boundaries",
+        "weight": 10,
+        "critical": true,
+        "runtime": true,
+        "title": "權限與作用範圍",
+        "question": "讀寫、目標專案／裝置、批准與外部副作用是否可查且實際受到限制？以一個越界操作驗證。",
+        "status": "verified",
+        "claimedStatus": "verified",
+        "claimed": 4,
+        "accepted": 4,
+        "points": 10,
+        "caps": [],
+        "answer": "第二次 project init 回 PROJECT_ALREADY_EXISTS 且無 effects；舊 session selector 被拒。Enact dry_run 不 commit、commit 僅改 transient runtime；close/reopen 還原正式場景，五份 authoring 檔 hash 完全相同。",
+        "nextAction": "維持 overwrite/session/dry-run 界線；不把這個本機 headless 範圍誤稱完整 OS 隔離或商用安全認證。"
+      },
+      {
+        "id": "performance",
+        "weight": 7,
+        "critical": false,
+        "runtime": true,
+        "title": "效能與成本定位",
+        "question": "能否觀察這類工具相關的耗時、資源或成本及瓶頸？無法量測是否明說而不回傳假零？不要求每種工具都有 GPU 指標。",
+        "status": "verified",
+        "claimedStatus": "verified",
+        "claimed": 3,
+        "accepted": 3,
+        "points": 5.25,
+        "caps": [],
+        "answer": "session perf 有 bounded Core phase timings、frame statistics、entity counts 與 Luau heap。published replay sample 40 ticks 取得 4 次 explicit full GC，第 1 個 warmup sample 僅自 retention trend 排除，留下 3 個同 label retention samples；VM/profile report 仍含全部 40 ticks。",
+        "nextAction": "保留相同 seed/inputs/phase labels 分離 normal timing 與 full-GC 調查；日後以真實 workload 和已支援 host 工具測瓶頸，不重做已存在的記憶體工具。"
+      },
+      {
+        "id": "reproducibility",
+        "weight": 7,
+        "critical": false,
+        "runtime": true,
+        "title": "版本與可重現驗證",
+        "question": "能否保留版本指紋、環境、輸入、輸出及可重跑步驟？如何知道修改後原失敗案例確實已修复？",
+        "status": "verified",
+        "claimedStatus": "verified",
+        "claimed": 3,
+        "accepted": 3,
+        "points": 5.25,
+        "caps": [],
+        "answer": "recording 保存 4 個 accepted step/enact commands 與 tick digests，replay identical；被拒請求/dry-run/query 未被當成成功寫入。實際 executable fingerprint 和 fixture input/hash、raw輸出、命令與 36 檔初次 seal 留存。",
+        "nextAction": "使用新 capture 路徑重跑同 probes；不得只換舊 hashes。版本/平台/任務改變需另立 scope，維持原始失敗證據。"
+      }
+    ],
+    "evidenceIntegrity": {
+      "checkedFiles": 18,
+      "bytesRead": 247994,
+      "hashAndExcerptVerified": true,
+      "semanticClaimsIndependentlyProven": false
+    },
+    "executionScopes": [
+      "fixture"
+    ],
+    "limitations": [
+      "Aggregate of preserved initial 31-operation blind subtrial, 12-process-step informed memory/discovery probe (including one nested fingerprint CLI), and 30-operation reviewed session reproduction. Root's unrecorded orientation commands are not counted as trial steps or substituted for recorder evidence.",
+      "Initial subagent saw only public entries/task/boundaries, not rubric or expected scores; original first-use report was frozen before reproductions and informed semantic review. First success means project init, not help.",
+      "Only natural ordering error is capabilities query before project init. Unknown field, stale revision, old session and wrong fingerprint were deliberate negative cases, not natural wrong guesses.",
+      "Initial verify failed LUAU_ANALYZER_NOT_FOUND while assets and two tests passed. Full type checking, portable dependency repair, clean build and release pipeline are not verified; no analyzer was downloaded and the gate was not weakened.",
+      "The initial interactive transport was deliberately stopped after runtime close; its nonzero cleanup exit is not counted as a successful execution capture. The separate recorder session run closed by EOF and exited zero.",
+      "Public task completion used no product implementation. Root separately inspected the optional Node SDK source while orienting; that wrapper is outside this scope and was not used to finish CLI/protocol operations.",
+      "Exact existing executable identity is checked in probes because binary exceeds recorder 2 MiB subject-file limit. Hash descriptor plus actual before/after executable hashing is not a signed attestation to checkout HEAD.",
+      "Synthetic headless measurements are not rendered FPS, a load benchmark, proof of no leaks or a performance improvement. GPU, Rust allocator, JS GC and retaining paths remain unavailable.",
+      "No browser/native UI, macOS/iOS/Android, external plugin renderers, hostile-code OS sandbox, MCP transport, true cross-process continuation or real YesSir project verification.",
+      "Reviewed reproduction of the frozen initial blind trial, not a new blind trial. Existing exact Windows binary hash checked before/after; only isolated starter CLI/session. Original verify dependency failure preserved separately; no analyzer, GPU, other platform, real game, service, browser or release validation.",
+      "Informed public CLI replay on isolated synthetic fixtures; existing Windows binary hash checked explicitly, not a clean source build; no GPU, browser, native UI, other OS, external service or real game validation.",
+      "相同 rubric 可比較，但評測者判斷、任務與環境會影響分數；一次 subagent 盲測不是統計結果。"
+    ],
+    "issues": [
+      {
+        "id": "CORE-SCOUT-001",
+        "checkId": "capabilities",
+        "severity": "P1",
+        "summary": "目的搜尋一次回大量完整 descriptor，第一個候選對 move entity 並不直接。",
+        "cause": "實際 query 回 19 matches / 24132 bytes，firstMatch instances3d.remove；未讀匹配實作，所以 substring matching 僅為假設。",
+        "fix": "以既有公開 descriptor 做 compact purpose candidates → selected contract，不複製維護第二套 runtime API。",
+        "verification": "重跑同英文 query，記錄 actual bytes / 候選相關性；另用 fresh agent 看能否更早找到 setPosition，不能發明 token savings。",
+        "evidence": [
+          "search-cost",
+          "first-use"
+        ]
+      },
+      {
+        "id": "CORE-SCOUT-002",
+        "checkId": "capabilities",
+        "severity": "P1",
+        "summary": "中文 GC/記憶體目的在 Engine API search 找不到實際存在的診斷工具。",
+        "cause": "api search 的宣告範圍為 public_engine_api，不涵蓋 CLI/developer diagnostics；回應建議 complete API index / systems，沒有導到 memory/replay。",
+        "fix": "讓目的發現層跨到既有公開 CLI/developer 能力；保持玩法 Luau 與 host diagnostics 邊界。",
+        "verification": "用原 query 能發現並依 describe 跑成功現有 40-tick memory fixture；不新增重複 leak 工具。",
+        "evidence": [
+          "missing-tool-query",
+          "memory-execution"
+        ]
+      },
+      {
+        "id": "CORE-SCOUT-003",
+        "checkId": "purpose",
+        "severity": "P2",
+        "summary": "空目錄照 capabilities-first 起手，會先遇到 project config missing。",
+        "cause": "首次 agent 第 2 操作 platform snapshot 在 init 之前，error PROJECT_CONFIG_NOT_FOUND；新建後相同入口成功。",
+        "fix": "文件起點明示 new project 先 init、existing project 先 snapshot，而非隱藏缺 project 的错误。",
+        "verification": "新 agent 從相同公開起點在空目錄不先猜不存在的配置；保留原初次紀錄。",
+        "evidence": [
+          "first-use",
+          "session-execution"
+        ]
+      },
+      {
+        "id": "CORE-SCOUT-004",
+        "checkId": "capabilities",
+        "severity": "P1",
+        "summary": "完整 verify 在 fresh temp 缺少 official luau-analyze。",
+        "cause": "原始 types gate 給 LUAU_ANALYZER_NOT_FOUND；此任務不允許下載/build，未供應 analyzer 路徑。不是已診斷的 Rust runtime crash。",
+        "fix": "在獨立 portable-SDK dependency 流程驗證工具發現／既有 analyzer override，保留具體缺檔錯誤；不 auto-download 或弱化 type gate。",
+        "verification": "在有/無 analyzer 的乾淨 cwd 分別確認 success / actionable refusal；本次未標此項已修復。",
+        "evidence": [
+          "verify-limitation",
+          "first-use"
+        ]
+      },
+      {
+        "id": "CORE-SCOUT-005",
+        "checkId": "diagnostics",
+        "severity": "P2",
+        "summary": "部分可修復錯誤仍主要靠 prose，structured facts/actions 不完整。",
+        "cause": "wrong field 和 exact-version refusal 透過 explanation 或 fingerprintDifferences 可得原因，但 diagnostics facts/suggested_actions 可空。",
+        "fix": "在通用診斷契約補 field/path/actual/expected/action；不塞遊戲規則進 runtime。",
+        "verification": "用保存的 framse 與 mismatched executable 原始負例確認結構化修復資料，然後重跑正例且原 capture 不被覆寫。",
+        "evidence": [
+          "request-repair",
+          "memory-version-rejection"
+        ]
+      }
+    ]
+  },
+  "diagnostics": [],
+  "effects": [],
+  "telemetry": {
+    "elapsed_ms": 23.202,
+    "gpu_ms": null,
+    "note": "Plugin wall time only, not target performance. GPU measurement is not applicable to this read-only audit."
+  }
+}

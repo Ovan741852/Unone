@@ -153,7 +153,18 @@ export type UiAnchor =
 
 export type UiApi = {
     setRoot: (root: ObservationValue) -> (),
+    -- Actual host ceilings and the last valid tree's node/subtree usage.
+    inspect: () -> ObservationValue,
 }
+
+-- One source texture and one node. Border pixels / pixels_per_unit become
+-- vertical design units; optional source is a y-down pixel crop, not UI rect.
+export type UiSlice = {
+    left: number, top: number, right: number, bottom: number,
+    pixels_per_unit: number,
+    source: {x: number, y: number, width: number, height: number}?,
+}
+export type UiBudget = {max_nodes: number}
 
 export type SaveApi = {
     set: (value: ObservationValue) -> (),

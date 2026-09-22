@@ -57,6 +57,92 @@ fn position(x: f64) -> Value {
 }
 
 #[test]
+fn diagnosis_preserves_failure_context_without_advancing_or_replaying() {
+    let dir = fixture();
+    let mut protocol = DeveloperProtocol::default();
+    let opened = open(&mut protocol, dir.path());
+    let id = &opened["session"];
+    let clean = ok(
+        &mut protocol,
+        dir.path(),
+        json!({"command":"diagnose","session":id,"limit":5}),
+    );
+    assert!(clean["failure"].is_null());
+    assert_eq!(clean["capabilities"]["line_breakpoints"], false);
+    assert_eq!(clean["execution"]["luau_execution"], "interpreter");
+    let failed = protocol.execute_json(dir.path(), json!({"command":"step","session":id,"expected_revision":0,"frames":5,"input":{"actions":{"Right":true,"Crash":true}}}));
+    assert!(!failed.ok);
+    let snapshot = ok(
+        &mut protocol,
+        dir.path(),
+        json!({"command":"snapshot","session":id}),
+    );
+    let diagnosed = ok(
+        &mut protocol,
+        dir.path(),
+        json!({"command":"diagnose","session":id,"limit":5}),
+    );
+    assert_eq!(
+        diagnosed["failure"]["diagnostic"]["code"],
+        "LUAU_RUNTIME_ERROR"
+    );
+    assert_eq!(diagnosed["failure"]["attempted_frame"], 1);
+    assert_eq!(diagnosed["failure"]["completed_frame"], 0);
+    assert_eq!(diagnosed["failure"]["command_index"], 0);
+    assert_eq!(diagnosed["failure"]["tick_index"], 0);
+    assert_eq!(diagnosed["failure"]["input"]["actions"]["Crash"], true);
+    assert!(
+        diagnosed["failure"]["partial_changes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|c| c["path"] == "/entities/player/transform/x")
+    );
+    assert_eq!(
+        diagnosed["failure"]["after_digest"],
+        snapshot["observation_digest"]
+    );
+    assert_eq!(diagnosed["recording"]["commands"], 1);
+    assert_eq!(
+        snapshot,
+        ok(
+            &mut protocol,
+            dir.path(),
+            json!({"command":"snapshot","session":id})
+        )
+    );
+    assert_eq!(
+        diagnosed,
+        ok(
+            &mut protocol,
+            dir.path(),
+            json!({"command":"diagnose","session":id,"limit":5})
+        )
+    );
+    for request in [
+        json!({"command":"diagnose","session":id,"limit":0}),
+        json!({"command":"diagnose","session":id,"limit":257}),
+        json!({"command":"diagnose","session":"wrong"}),
+        json!({"command":"diagnose","session":id,"execute":true}),
+    ] {
+        assert!(!protocol.execute_json(dir.path(), request).ok);
+    }
+}
+
+#[test]
+fn exact_luau_source_line_is_reported_without_guessing_local_variables() {
+    let error = EngineRuntime::load_source(
+        "source-location",
+        "short.luau",
+        "local n = 1\nerror('located failure')\nreturn {}",
+        None,
+    )
+    .err()
+    .unwrap();
+    assert_eq!(error.source.as_ref().unwrap().line, Some(2), "{error:?}");
+}
+
+#[test]
 fn native_particle_definition_spawn_and_stop_are_atomic_and_observable() {
     let dir = fixture();
     let mut protocol = DeveloperProtocol::default();

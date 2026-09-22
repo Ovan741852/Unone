@@ -2,6 +2,160 @@ use std::collections::BTreeSet;
 
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct UiContract {
+    pub version: u32,
+    pub default_max_nodes: usize,
+    pub host_max_nodes: usize,
+    pub max_component_depth: usize,
+    pub max_string_bytes: usize,
+    pub max_layout_comparisons: usize,
+    pub max_layout_findings: usize,
+}
+
+pub fn ui_contract() -> &'static UiContract {
+    static CONTRACT: std::sync::OnceLock<UiContract> = std::sync::OnceLock::new();
+    CONTRACT.get_or_init(|| {
+        serde_json::from_str(include_str!("ui-contract.json")).expect("bundled UI contract")
+    })
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct UiBudget {
+    pub max_nodes: usize,
+}
+
+/// Source borders are pixels; pixels_per_unit converts them to vertical design
+/// units (one unit = 1% of viewport height). This preserves corners across DPI
+/// and aspect ratios. Source is an optional atlas/trim region, in source pixels.
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct UiSlice {
+    pub left: f64,
+    pub top: f64,
+    pub right: f64,
+    pub bottom: f64,
+    pub pixels_per_unit: f64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source: Option<UiRect>,
+}
+
+impl UiSlice {
+    pub fn validate(&self) -> Result<(), String> {
+        if [self.left, self.top, self.right, self.bottom]
+            .iter()
+            .any(|n| !n.is_finite() || *n < 0.0)
+            || !self.pixels_per_unit.is_finite()
+            || self.pixels_per_unit <= 0.0
+        {
+            return Err("UI_SLICE_INVALID: borders must be finite non-negative source pixels; pixels_per_unit must be positive".into());
+        }
+        if let Some(s) = self.source
+            && ([s.x, s.y, s.width, s.height].iter().any(|n| !n.is_finite())
+                || s.x < 0.0
+                || s.y < 0.0
+                || s.width <= self.left + self.right
+                || s.height <= self.top + self.bottom)
+            {
+                return Err("UI_SLICE_SOURCE_INVALID: source must be a positive pixel rectangle with room between its borders".into());
+        }
+        Ok(())
+    }
+
+    /// Returns source and destination rectangles in pixels, both y-down. Small
+    /// destinations uniformly shrink all four borders; they never overlap.
+    pub fn patches(
+        &self,
+        image_width: f64,
+        image_height: f64,
+        width: f64,
+        height: f64,
+        viewport_height: f64,
+    ) -> Result<Vec<(UiRect, UiRect)>, String> {
+        self.validate()?;
+        if [image_width, image_height, width, height, viewport_height]
+            .iter()
+            .any(|v| !v.is_finite() || *v <= 0.0)
+        {
+            return Err("UI_SLICE_SIZE_INVALID: image, destination and viewport dimensions must be positive finite pixels".into());
+        }
+        let s = self.source.unwrap_or(UiRect {
+            x: 0.0,
+            y: 0.0,
+            width: image_width,
+            height: image_height,
+        });
+        if s.x + s.width > image_width
+            || s.y + s.height > image_height
+            || self.left + self.right >= s.width
+            || self.top + self.bottom >= s.height
+        {
+            return Err(format!(
+                "UI_SLICE_BOUNDS: source/borders exceed image {image_width}x{image_height}; correct slice source pixels, do not stretch the whole image"
+            ));
+        }
+        let requested_scale = viewport_height / 100.0 / self.pixels_per_unit;
+        if !requested_scale.is_finite() {
+            return Err(
+                "UI_SLICE_SIZE_INVALID: pixels_per_unit is too small for this viewport".into(),
+            );
+        }
+        let scale = requested_scale
+            .min(if self.left + self.right > 0.0 {
+                width / (self.left + self.right)
+            } else {
+                f64::INFINITY
+            })
+            .min(if self.top + self.bottom > 0.0 {
+                height / (self.top + self.bottom)
+            } else {
+                f64::INFINITY
+            });
+        let sx = [
+            s.x,
+            s.x + self.left,
+            s.x + s.width - self.right,
+            s.x + s.width,
+        ];
+        let sy = [
+            s.y,
+            s.y + self.top,
+            s.y + s.height - self.bottom,
+            s.y + s.height,
+        ];
+        let dx = [0.0, self.left * scale, width - self.right * scale, width];
+        let dy = [0.0, self.top * scale, height - self.bottom * scale, height];
+        let mut patches = Vec::with_capacity(9);
+        for y in 0..3 {
+            for x in 0..3 {
+                let source = UiRect {
+                    x: sx[x],
+                    y: sy[y],
+                    width: sx[x + 1] - sx[x],
+                    height: sy[y + 1] - sy[y],
+                };
+                let dest = UiRect {
+                    x: dx[x],
+                    y: dy[y],
+                    width: (dx[x + 1] - dx[x]).max(0.0),
+                    height: (dy[y + 1] - dy[y]).max(0.0),
+                };
+                if source.width > 0.0
+                    && source.height > 0.0
+                    && dest.width > 0.0
+                    && dest.height > 0.0
+                {
+                    patches.push((source, dest));
+                }
+            }
+        }
+        Ok(patches)
+    }
+}
+
 /// The cross-platform UI design space. Hosts map this normalized space to
 /// their viewport, pixels, DPI and safe area.
 pub const UI_DESIGN_WIDTH: f64 = 100.0;
@@ -104,6 +258,8 @@ pub enum UiNode {
         rect: UiRect,
         asset: String,
         fit: UiImageFit,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        slice: Option<UiSlice>,
         /// Optional accessibility/inspection text. Hosts may use it as the
         /// image alt text; Core does not interpret or localize it.
         #[serde(skip_serializing_if = "Option::is_none")]
@@ -122,19 +278,14 @@ pub enum UiNode {
     },
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 pub enum UiImageFit {
+    #[default]
     Contain,
     Cover,
     Stretch,
-}
-
-impl Default for UiImageFit {
-    fn default() -> Self {
-        Self::Contain
-    }
 }
 
 impl UiNode {
@@ -211,16 +362,20 @@ pub struct UiTree {
     pub id: String,
     pub node: String,
     pub children: Vec<UiNode>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub budget: Option<UiBudget>,
 }
 
 #[derive(Debug, Deserialize)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
-struct RawUiTree {
+pub(crate) struct RawUiTree {
     kind: String,
     id: String,
     node: String,
     children: Vec<RawUiNode>,
+    #[serde(default)]
+    budget: Option<UiBudget>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -252,6 +407,8 @@ struct RawUiNode {
     #[serde(default)]
     fit: Option<UiImageFit>,
     #[serde(default)]
+    slice: Option<UiSlice>,
+    #[serde(default)]
     alt: Option<String>,
     #[serde(default)]
     component: Option<String>,
@@ -280,8 +437,17 @@ struct RawSize {
     height: f64,
 }
 
-const MAX_UI_NODES: usize = 256;
-const MAX_UI_DEPTH: usize = 16;
+/// Inspectable resource usage, not a claim about GPU draw calls or frame time.
+#[derive(Debug, Clone, Serialize)]
+pub struct UiUsage {
+    pub logical_nodes: usize,
+    pub leaf_nodes: usize,
+    pub render_regions_upper_bound: usize,
+    pub max_nodes: usize,
+    pub host_max_nodes: usize,
+    pub limit_source: &'static str,
+    pub subtrees: Vec<(String, usize)>,
+}
 
 /// Turn a node's declared placement into a design-space rect.
 ///
@@ -351,6 +517,46 @@ fn resolve_rect(node: &RawUiNode, aspect: f64) -> Result<UiRect, String> {
 }
 
 impl UiTree {
+    pub fn usage(&self) -> UiUsage {
+        fn count(node: &UiNode, out: &mut UiUsage) -> usize {
+            out.logical_nodes += 1;
+            match node {
+                UiNode::Component { children, .. } => {
+                    1 + children.iter().map(|n| count(n, out)).sum::<usize>()
+                }
+                _ => {
+                    out.leaf_nodes += 1;
+                    out.render_regions_upper_bound +=
+                        if matches!(node, UiNode::Image { slice: Some(_), .. }) {
+                            9
+                        } else {
+                            1
+                        };
+                    1
+                }
+            }
+        }
+        let mut out = UiUsage {
+            logical_nodes: 0,
+            leaf_nodes: 0,
+            render_regions_upper_bound: 0,
+            max_nodes: self
+                .budget
+                .map_or(ui_contract().default_max_nodes, |b| b.max_nodes),
+            host_max_nodes: ui_contract().host_max_nodes,
+            limit_source: if self.budget.is_some() {
+                "screen.budget"
+            } else {
+                "contract.default"
+            },
+            subtrees: Vec::new(),
+        };
+        for n in &self.children {
+            let size = count(n, &mut out);
+            out.subtrees.push((n.id().into(), size));
+        }
+        out
+    }
     /// Validate the UI representation the engine understands.
     ///
     /// Text, button, image and reusable component nodes share one deterministic
@@ -378,6 +584,63 @@ impl UiTree {
                 "viewport aspect must be a positive finite ratio, got {viewport_aspect}"
             ));
         };
+        // Guard before recursive typed deserialization. Report the first exact
+        // offending path, including its containing component, without truncation.
+        let requested = value
+            .get("budget")
+            .map(|b| serde_json::from_value::<UiBudget>(b.clone()))
+            .transpose()
+            .map_err(|e| {
+                format!("UI_BUDGET_INVALID: {e}; expected budget={{max_nodes: positive integer}}")
+            })?;
+        let limit = requested.map_or(ui_contract().default_max_nodes, |b| b.max_nodes);
+        if limit == 0 || limit > ui_contract().host_max_nodes {
+            return Err(format!(
+                "UI_BUDGET_INVALID: requested={limit}, host_max_nodes={}; set budget.max_nodes within 1..host_max_nodes",
+                ui_contract().host_max_nodes
+            ));
+        }
+        let mut stack = vec![(&value, String::from("root"), 0usize)];
+        let mut count = 0;
+        let mut bytes = 0;
+        while let Some((n, path, depth)) = stack.pop() {
+            if depth > 0 {
+                count += 1;
+            }
+            if count > limit {
+                return Err(format!(
+                    "UI_NODE_LIMIT: path={path}, node={}, used={count}, limit={limit}, host_max_nodes={}; raise screen.budget.max_nodes within the host limit or use one image with slice for each nine-slice panel",
+                    n["id"],
+                    ui_contract().host_max_nodes
+                ));
+            }
+            if depth > ui_contract().max_component_depth + 1
+                || (n["kind"] == "component" && depth > ui_contract().max_component_depth)
+            {
+                return Err(format!(
+                    "UI_DEPTH_LIMIT: {path} exceeds the maximum component nesting depth of {}",
+                    ui_contract().max_component_depth
+                ));
+            }
+            if let Some(obj) = n.as_object() {
+                for v in obj.values() {
+                    if let Some(s) = v.as_str() {
+                        bytes += s.len();
+                    }
+                }
+            }
+            if bytes > ui_contract().max_string_bytes {
+                return Err(format!(
+                    "UI_STRING_LIMIT: {path}, used={bytes}, limit={}; reduce UI text/identifiers",
+                    ui_contract().max_string_bytes
+                ));
+            }
+            if let Some(children) = n["children"].as_array() {
+                for (i, c) in children.iter().enumerate().rev() {
+                    stack.push((c, format!("{path}.children[{i}]"), depth + 1));
+                }
+            }
+        }
         let raw: RawUiTree = serde_json::from_value(value)
             .map_err(|error| format!("ui.setRoot expects a valid UI tree object: {error}"))?;
         if raw.kind != "screen" {
@@ -388,12 +651,6 @@ impl UiTree {
         }
         ensure_non_empty("root id", &raw.id)?;
         ensure_non_empty("root node", &raw.node)?;
-        if raw.children.len() > MAX_UI_NODES {
-            return Err(format!(
-                "ui.setRoot supports at most {MAX_UI_NODES} child nodes"
-            ));
-        }
-
         let mut ids = BTreeSet::new();
         let mut node_count = 0;
         let mut children = Vec::with_capacity(raw.children.len());
@@ -406,6 +663,7 @@ impl UiTree {
             id: raw.id,
             node: raw.node,
             children,
+            budget: raw.budget,
         })
     }
 }
@@ -417,10 +675,11 @@ fn parse_node(
     node_count: &mut usize,
     depth: usize,
 ) -> Result<UiNode, String> {
-    if raw_node.kind == "component" && depth > MAX_UI_DEPTH {
+    if raw_node.kind == "component" && depth > ui_contract().max_component_depth {
         return Err(format!(
-            "ui.setRoot node '{}' exceeds the maximum component nesting depth of {MAX_UI_DEPTH}",
-            raw_node.id
+            "ui.setRoot node '{}' exceeds the maximum component nesting depth of {}",
+            raw_node.id,
+            ui_contract().max_component_depth
         ));
     }
     ensure_non_empty("node id", &raw_node.id)?;
@@ -431,9 +690,10 @@ fn parse_node(
         ));
     }
     *node_count += 1;
-    if *node_count > MAX_UI_NODES {
+    if raw_node.slice.is_some() && raw_node.kind != "image" {
         return Err(format!(
-            "ui.setRoot supports at most {MAX_UI_NODES} total UI nodes"
+            "UI_SLICE_INVALID: node '{}' is not an image",
+            raw_node.id
         ));
     }
     let rect = resolve_rect(&raw_node, aspect)?;
@@ -494,11 +754,26 @@ fn parse_node(
                 .asset
                 .ok_or_else(|| format!("ui.setRoot image node '{id}' requires an asset id"))?;
             ensure_asset_id(&asset)?;
+            if let Some(slice) = raw_node.slice {
+                slice
+                    .validate()
+                    .map_err(|e| format!("{e}; node={id}; asset={asset}"))?;
+                if raw_node.fit.is_some_and(|fit| fit != UiImageFit::Stretch) {
+                    return Err(format!(
+                        "UI_SLICE_FIT_CONFLICT: node={id}; slice replaces contain/cover; omit fit or use stretch"
+                    ));
+                }
+            }
             Ok(UiNode::Image {
                 id,
                 rect,
                 asset,
-                fit: raw_node.fit.unwrap_or_default(),
+                fit: raw_node.fit.unwrap_or(if raw_node.slice.is_some() {
+                    UiImageFit::Stretch
+                } else {
+                    UiImageFit::Contain
+                }),
+                slice: raw_node.slice,
                 alt: raw_node.alt,
             })
         }
@@ -548,13 +823,19 @@ fn ensure_asset_id(value: &str) -> Result<(), String> {
         return Err("ui.setRoot image asset must be a stable id such as asset://ui/logo, not a project path or URL".to_string());
     };
     if scheme.is_empty()
-        || !scheme
-            .chars()
-            .all(|character| character.is_ascii_alphanumeric() || matches!(character, '+' | '-' | '.'))
+        || !scheme.chars().all(|character| {
+            character.is_ascii_alphanumeric() || matches!(character, '+' | '-' | '.')
+        })
         || path.trim().is_empty()
-        || matches!(scheme.to_ascii_lowercase().as_str(), "http" | "https" | "file" | "data")
+        || matches!(
+            scheme.to_ascii_lowercase().as_str(),
+            "http" | "https" | "file" | "data"
+        )
     {
-        return Err("ui.setRoot image asset must be a stable non-URL id such as asset://ui/logo".to_string());
+        return Err(
+            "ui.setRoot image asset must be a stable non-URL id such as asset://ui/logo"
+                .to_string(),
+        );
     }
     Ok(())
 }
@@ -586,6 +867,83 @@ fn validate_rect(rect: UiRect) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::{UI_REFERENCE_ASPECT, UiNode, UiRect, UiTree};
+
+    #[test]
+    fn configurable_budget_counts_wrappers_and_preserves_large_screens() {
+        let node = |i| serde_json::json!({"kind":"text","id":format!("t{i}"),"text":"x","rect":{"x":0,"y":0,"width":1,"height":1}});
+        let mut value = serde_json::json!({"kind":"screen","id":"s","node":"test","children":(0..3000).map(node).collect::<Vec<_>>()});
+        let error = UiTree::from_json(value.clone()).unwrap_err();
+        assert!(
+            error.contains("UI_NODE_LIMIT")
+                && error.contains("children[2048]")
+                && error.contains("used=2049"),
+            "{error}"
+        );
+        value["budget"] = serde_json::json!({"max_nodes":3000});
+        let tree = UiTree::from_json(value.clone()).unwrap();
+        assert_eq!(tree.usage().logical_nodes, 3000);
+        assert_eq!(tree.usage().limit_source, "screen.budget");
+        assert_eq!(
+            serde_json::to_value(tree).unwrap()["budget"]["max_nodes"],
+            3000
+        );
+        for bad in [0, 16385] {
+            value["budget"]["max_nodes"] = bad.into();
+            assert!(
+                UiTree::from_json(value.clone())
+                    .unwrap_err()
+                    .contains("UI_BUDGET_INVALID")
+            );
+        }
+        value["children"] = serde_json::json!([{"kind":"component","id":"group","component":"panel","rect":{"x":0,"y":0,"width":1,"height":1},"children":[node(0)]}]);
+        value["budget"]["max_nodes"] = 1.into();
+        assert!(
+            UiTree::from_json(value)
+                .unwrap_err()
+                .contains("children[0].children[0]")
+        );
+    }
+
+    #[test]
+    fn slice_is_one_node_and_nine_regions_with_safe_small_destinations() {
+        let mut value = serde_json::json!({"kind":"screen","id":"s","node":"test","children":[{"kind":"image","id":"panel","asset":"texture://panel","rect":{"x":0,"y":0,"width":100,"height":100},"slice":{"left":2,"top":3,"right":4,"bottom":5,"pixels_per_unit":2}}]});
+        let tree = UiTree::from_json(value.clone()).unwrap();
+        assert_eq!(tree.usage().logical_nodes, 1);
+        assert_eq!(tree.usage().render_regions_upper_bound, 9);
+        let UiNode::Image {
+            slice: Some(slice), ..
+        } = tree.children[0]
+        else {
+            panic!()
+        };
+        let patches = slice.patches(20.0, 20.0, 200.0, 100.0, 100.0).unwrap();
+        assert_eq!(patches.len(), 9);
+        assert_eq!(patches[0].1.width, 1.0);
+        assert_eq!(patches[0].1.height, 1.5);
+        let small = slice.patches(20.0, 20.0, 1.0, 1.0, 100.0).unwrap();
+        for (_, d) in small {
+            assert!(d.x + d.width <= 1.0 + 1e-9 && d.y + d.height <= 1.0 + 1e-9);
+        }
+        assert!(
+            slice
+                .patches(4.0, 4.0, 100.0, 100.0, 100.0)
+                .unwrap_err()
+                .contains("UI_SLICE_BOUNDS")
+        );
+        value["children"][0]["slice"]["pixels_per_unit"] = 0.into();
+        assert!(
+            UiTree::from_json(value.clone())
+                .unwrap_err()
+                .contains("UI_SLICE_INVALID")
+        );
+        value["children"][0]["slice"]["pixels_per_unit"] = 2.into();
+        value["children"][0]["fit"] = "cover".into();
+        assert!(
+            UiTree::from_json(value)
+                .unwrap_err()
+                .contains("UI_SLICE_FIT_CONFLICT")
+        );
+    }
 
     #[test]
     fn validates_and_serializes_the_minimal_flat_tree() {

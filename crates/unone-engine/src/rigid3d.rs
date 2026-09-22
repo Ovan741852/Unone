@@ -61,7 +61,7 @@ fn check(a: Vec3) -> Result<(), String> {
 }
 #[cfg(feature = "physics3d")]
 fn positive(x: f64) -> bool {
-    x.is_finite() && x >= 0.0001 && x <= 10000.
+    x.is_finite() && (0.0001..=10000.).contains(&x)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
