@@ -22,6 +22,8 @@ export async function simulate({seed,policy,load,tick,observe,cancelled=()=>fals
    if(lastPhase!=='choice'){choices.push({round:s.round,card:Object.values(s.cards??{})[0]?.id??null});input.actions={['Unit'+policy.unit]:true,Choice1:true};}
   }else if(s.phase==='shop'){
    if(frames%2===0)input.actions.LeaveShop=true;
+  }else if(s.phase==='loadout'){
+   if(frames%2===0)input.actions.Deploy=true;
   }else if(s.phase==='clear'){
    roundsCleared=Math.max(roundsCleared,s.round);if((s.presentationDelay??0)<=0&&frames%2===0)input.actions.Next=true;
   }else if(s.phase==='battle'){

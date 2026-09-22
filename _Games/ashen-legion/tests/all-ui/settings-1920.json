@@ -20,10 +20,10 @@
         "kind": "image",
         "id": "screen_back_fill",
         "rect": {
-          "x": 3.8,
-          "y": 5,
-          "width": 92.4,
-          "height": 90
+          "x": 4.8,
+          "y": 6,
+          "width": 90.4,
+          "height": 88
         },
         "asset": "texture://ui_shop-surface",
         "fit": "stretch"
@@ -32,8 +32,8 @@
         "kind": "image",
         "id": "screen_back_tl",
         "rect": {
-          "x": 3,
-          "y": 85,
+          "x": 4,
+          "y": 84,
           "width": 4.5,
           "height": 12
         },
@@ -44,9 +44,9 @@
         "kind": "image",
         "id": "screen_back_t",
         "rect": {
-          "x": 7.5,
-          "y": 85,
-          "width": 85,
+          "x": 8.5,
+          "y": 84,
+          "width": 83,
           "height": 12
         },
         "asset": "texture://ui_shop-window-panel-v2-t",
@@ -56,8 +56,8 @@
         "kind": "image",
         "id": "screen_back_tr",
         "rect": {
-          "x": 92.5,
-          "y": 85,
+          "x": 91.5,
+          "y": 84,
           "width": 4.5,
           "height": 12
         },
@@ -68,10 +68,10 @@
         "kind": "image",
         "id": "screen_back_l",
         "rect": {
-          "x": 3,
-          "y": 11,
+          "x": 4,
+          "y": 12,
           "width": 4.5,
-          "height": 74
+          "height": 72
         },
         "asset": "texture://ui_shop-window-panel-v2-l",
         "fit": "stretch"
@@ -80,10 +80,10 @@
         "kind": "image",
         "id": "screen_back_c",
         "rect": {
-          "x": 7.5,
-          "y": 11,
-          "width": 85,
-          "height": 74
+          "x": 8.5,
+          "y": 12,
+          "width": 83,
+          "height": 72
         },
         "asset": "texture://ui_shop-window-panel-v2-c",
         "fit": "stretch"
@@ -92,10 +92,10 @@
         "kind": "image",
         "id": "screen_back_r",
         "rect": {
-          "x": 92.5,
-          "y": 11,
+          "x": 91.5,
+          "y": 12,
           "width": 4.5,
-          "height": 74
+          "height": 72
         },
         "asset": "texture://ui_shop-window-panel-v2-r",
         "fit": "stretch"
@@ -104,8 +104,8 @@
         "kind": "image",
         "id": "screen_back_bl",
         "rect": {
-          "x": 3,
-          "y": 3,
+          "x": 4,
+          "y": 4,
           "width": 4.5,
           "height": 8
         },
@@ -116,9 +116,9 @@
         "kind": "image",
         "id": "screen_back_b",
         "rect": {
-          "x": 7.5,
-          "y": 3,
-          "width": 85,
+          "x": 8.5,
+          "y": 4,
+          "width": 83,
           "height": 8
         },
         "asset": "texture://ui_shop-window-panel-v2-b",
@@ -128,8 +128,8 @@
         "kind": "image",
         "id": "screen_back_br",
         "rect": {
-          "x": 92.5,
-          "y": 3,
+          "x": 91.5,
+          "y": 4,
           "width": 4.5,
           "height": 8
         },
@@ -140,9 +140,9 @@
         "kind": "text",
         "id": "screen_title",
         "rect": {
-          "x": 9,
-          "y": 87.31378600823045,
-          "width": 82,
+          "x": 38,
+          "y": 87.91378600823045,
+          "width": 24,
           "height": 4.372427983539095
         },
         "text": "系統設定"
@@ -151,10 +151,10 @@
         "kind": "text",
         "id": "settings_hint",
         "rect": {
-          "x": 9,
-          "y": 79.77970679012346,
-          "width": 82,
-          "height": 2.218364197530864
+          "x": 8,
+          "y": 80.01131687242798,
+          "width": 84,
+          "height": 2.8292181069958846
         },
         "text": "設定會儲存在目前裝置，下次開啟仍會保留。"
       },
@@ -162,10 +162,10 @@
         "kind": "text",
         "id": "settings_music_label",
         "rect": {
-          "x": 14,
-          "y": 66.8425925925926,
-          "width": 29,
-          "height": 2.314814814814815
+          "x": 20,
+          "y": 68.33539094650206,
+          "width": 24,
+          "height": 2.8292181069958846
         },
         "text": "音樂音量"
       },
@@ -173,10 +173,10 @@
         "kind": "text",
         "id": "settings_music_value",
         "rect": {
-          "x": 50,
-          "y": 66.8425925925926,
-          "width": 18,
-          "height": 2.314814814814815
+          "x": 46,
+          "y": 68.33539094650206,
+          "width": 12,
+          "height": 2.8292181069958846
         },
         "text": "70%"
       },
@@ -184,9 +184,9 @@
         "kind": "image",
         "id": "settings_music_down_plate_tl",
         "rect": {
-          "x": 72,
-          "y": 69.93333333333334,
-          "width": 0.5999999999999943,
+          "x": 62,
+          "y": 71.93333333333334,
+          "width": 0.6000000000000014,
           "height": 1.0666666666666629
         },
         "asset": "texture://ui_control-quiet-v3-tl",
@@ -196,9 +196,9 @@
         "kind": "image",
         "id": "settings_music_down_plate_t",
         "rect": {
-          "x": 72.6,
-          "y": 69.93333333333334,
-          "width": 6.800000000000011,
+          "x": 62.6,
+          "y": 71.93333333333334,
+          "width": 11.800000000000004,
           "height": 1.0666666666666629
         },
         "asset": "texture://ui_control-quiet-v3-t",
@@ -208,8 +208,8 @@
         "kind": "image",
         "id": "settings_music_down_plate_tr",
         "rect": {
-          "x": 79.4,
-          "y": 69.93333333333334,
+          "x": 74.4,
+          "y": 71.93333333333334,
           "width": 0.5999999999999943,
           "height": 1.0666666666666629
         },
@@ -220,10 +220,10 @@
         "kind": "image",
         "id": "settings_music_down_plate_l",
         "rect": {
-          "x": 72,
-          "y": 66.06666666666666,
-          "width": 0.5999999999999943,
-          "height": 3.8666666666666742
+          "x": 62,
+          "y": 67.56666666666666,
+          "width": 0.6000000000000014,
+          "height": 4.366666666666674
         },
         "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
@@ -232,10 +232,10 @@
         "kind": "image",
         "id": "settings_music_down_plate_c",
         "rect": {
-          "x": 72.6,
-          "y": 66.06666666666666,
-          "width": 6.800000000000011,
-          "height": 3.8666666666666742
+          "x": 62.6,
+          "y": 67.56666666666666,
+          "width": 11.800000000000004,
+          "height": 4.366666666666674
         },
         "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
@@ -244,10 +244,10 @@
         "kind": "image",
         "id": "settings_music_down_plate_r",
         "rect": {
-          "x": 79.4,
-          "y": 66.06666666666666,
+          "x": 74.4,
+          "y": 67.56666666666666,
           "width": 0.5999999999999943,
-          "height": 3.8666666666666742
+          "height": 4.366666666666674
         },
         "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
@@ -256,9 +256,9 @@
         "kind": "image",
         "id": "settings_music_down_plate_bl",
         "rect": {
-          "x": 72,
-          "y": 65,
-          "width": 0.5999999999999943,
+          "x": 62,
+          "y": 66.5,
+          "width": 0.6000000000000014,
           "height": 1.0666666666666629
         },
         "asset": "texture://ui_control-quiet-v3-bl",
@@ -268,9 +268,9 @@
         "kind": "image",
         "id": "settings_music_down_plate_b",
         "rect": {
-          "x": 72.6,
-          "y": 65,
-          "width": 6.800000000000011,
+          "x": 62.6,
+          "y": 66.5,
+          "width": 11.800000000000004,
           "height": 1.0666666666666629
         },
         "asset": "texture://ui_control-quiet-v3-b",
@@ -280,8 +280,8 @@
         "kind": "image",
         "id": "settings_music_down_plate_br",
         "rect": {
-          "x": 79.4,
-          "y": 65,
+          "x": 74.4,
+          "y": 66.5,
           "width": 0.5999999999999943,
           "height": 1.0666666666666629
         },
@@ -292,10 +292,10 @@
         "kind": "button",
         "id": "settings_music_down",
         "rect": {
-          "x": 72,
-          "y": 66.58539094650206,
-          "width": 8,
-          "height": 2.8292181069958846
+          "x": 62,
+          "y": 68.2067901234568,
+          "width": 13,
+          "height": 3.0864197530864192
         },
         "text": "−",
         "action": "Setting_music_down"
@@ -304,10 +304,10 @@
         "kind": "button",
         "id": "settings_music_down_hit_top",
         "rect": {
-          "x": 72,
-          "y": 69.41460905349794,
-          "width": 8,
-          "height": 1.5853909465020577
+          "x": 62,
+          "y": 71.29320987654322,
+          "width": 13,
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Setting_music_down"
@@ -316,10 +316,10 @@
         "kind": "button",
         "id": "settings_music_down_hit_bottom",
         "rect": {
-          "x": 72,
-          "y": 65,
-          "width": 8,
-          "height": 1.5853909465020577
+          "x": 62,
+          "y": 66.5,
+          "width": 13,
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Setting_music_down"
@@ -328,8 +328,8 @@
         "kind": "image",
         "id": "settings_music_up_plate_tl",
         "rect": {
-          "x": 83,
-          "y": 69.93333333333334,
+          "x": 77,
+          "y": 71.93333333333334,
           "width": 0.5999999999999943,
           "height": 1.0666666666666629
         },
@@ -340,9 +340,9 @@
         "kind": "image",
         "id": "settings_music_up_plate_t",
         "rect": {
-          "x": 83.6,
-          "y": 69.93333333333334,
-          "width": 6.800000000000011,
+          "x": 77.6,
+          "y": 71.93333333333334,
+          "width": 11.800000000000011,
           "height": 1.0666666666666629
         },
         "asset": "texture://ui_control-quiet-v3-t",
@@ -352,8 +352,8 @@
         "kind": "image",
         "id": "settings_music_up_plate_tr",
         "rect": {
-          "x": 90.4,
-          "y": 69.93333333333334,
+          "x": 89.4,
+          "y": 71.93333333333334,
           "width": 0.5999999999999943,
           "height": 1.0666666666666629
         },
@@ -364,10 +364,10 @@
         "kind": "image",
         "id": "settings_music_up_plate_l",
         "rect": {
-          "x": 83,
-          "y": 66.06666666666666,
+          "x": 77,
+          "y": 67.56666666666666,
           "width": 0.5999999999999943,
-          "height": 3.8666666666666742
+          "height": 4.366666666666674
         },
         "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
@@ -376,10 +376,10 @@
         "kind": "image",
         "id": "settings_music_up_plate_c",
         "rect": {
-          "x": 83.6,
-          "y": 66.06666666666666,
-          "width": 6.800000000000011,
-          "height": 3.8666666666666742
+          "x": 77.6,
+          "y": 67.56666666666666,
+          "width": 11.800000000000011,
+          "height": 4.366666666666674
         },
         "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
@@ -388,10 +388,10 @@
         "kind": "image",
         "id": "settings_music_up_plate_r",
         "rect": {
-          "x": 90.4,
-          "y": 66.06666666666666,
+          "x": 89.4,
+          "y": 67.56666666666666,
           "width": 0.5999999999999943,
-          "height": 3.8666666666666742
+          "height": 4.366666666666674
         },
         "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
@@ -400,8 +400,8 @@
         "kind": "image",
         "id": "settings_music_up_plate_bl",
         "rect": {
-          "x": 83,
-          "y": 65,
+          "x": 77,
+          "y": 66.5,
           "width": 0.5999999999999943,
           "height": 1.0666666666666629
         },
@@ -412,9 +412,9 @@
         "kind": "image",
         "id": "settings_music_up_plate_b",
         "rect": {
-          "x": 83.6,
-          "y": 65,
-          "width": 6.800000000000011,
+          "x": 77.6,
+          "y": 66.5,
+          "width": 11.800000000000011,
           "height": 1.0666666666666629
         },
         "asset": "texture://ui_control-quiet-v3-b",
@@ -424,8 +424,8 @@
         "kind": "image",
         "id": "settings_music_up_plate_br",
         "rect": {
-          "x": 90.4,
-          "y": 65,
+          "x": 89.4,
+          "y": 66.5,
           "width": 0.5999999999999943,
           "height": 1.0666666666666629
         },
@@ -436,10 +436,10 @@
         "kind": "button",
         "id": "settings_music_up",
         "rect": {
-          "x": 83,
-          "y": 66.58539094650206,
-          "width": 8,
-          "height": 2.8292181069958846
+          "x": 77,
+          "y": 68.2067901234568,
+          "width": 13,
+          "height": 3.0864197530864192
         },
         "text": "＋",
         "action": "Setting_music_up"
@@ -448,10 +448,10 @@
         "kind": "button",
         "id": "settings_music_up_hit_top",
         "rect": {
-          "x": 83,
-          "y": 69.41460905349794,
-          "width": 8,
-          "height": 1.5853909465020577
+          "x": 77,
+          "y": 71.29320987654322,
+          "width": 13,
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Setting_music_up"
@@ -460,10 +460,10 @@
         "kind": "button",
         "id": "settings_music_up_hit_bottom",
         "rect": {
-          "x": 83,
-          "y": 65,
-          "width": 8,
-          "height": 1.5853909465020577
+          "x": 77,
+          "y": 66.5,
+          "width": 13,
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Setting_music_up"
@@ -472,10 +472,10 @@
         "kind": "text",
         "id": "settings_sfx_label",
         "rect": {
-          "x": 14,
-          "y": 53.84259259259259,
-          "width": 29,
-          "height": 2.314814814814815
+          "x": 20,
+          "y": 54.33539094650206,
+          "width": 24,
+          "height": 2.8292181069958846
         },
         "text": "音效音量"
       },
@@ -483,10 +483,10 @@
         "kind": "text",
         "id": "settings_sfx_value",
         "rect": {
-          "x": 50,
-          "y": 53.84259259259259,
-          "width": 18,
-          "height": 2.314814814814815
+          "x": 46,
+          "y": 54.33539094650206,
+          "width": 12,
+          "height": 2.8292181069958846
         },
         "text": "85%"
       },
@@ -494,9 +494,9 @@
         "kind": "image",
         "id": "settings_sfx_down_plate_tl",
         "rect": {
-          "x": 72,
-          "y": 56.93333333333333,
-          "width": 0.5999999999999943,
+          "x": 62,
+          "y": 57.93333333333333,
+          "width": 0.6000000000000014,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-tl",
@@ -506,9 +506,9 @@
         "kind": "image",
         "id": "settings_sfx_down_plate_t",
         "rect": {
-          "x": 72.6,
-          "y": 56.93333333333333,
-          "width": 6.800000000000011,
+          "x": 62.6,
+          "y": 57.93333333333333,
+          "width": 11.800000000000004,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-t",
@@ -518,8 +518,8 @@
         "kind": "image",
         "id": "settings_sfx_down_plate_tr",
         "rect": {
-          "x": 79.4,
-          "y": 56.93333333333333,
+          "x": 74.4,
+          "y": 57.93333333333333,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
         },
@@ -530,10 +530,10 @@
         "kind": "image",
         "id": "settings_sfx_down_plate_l",
         "rect": {
-          "x": 72,
-          "y": 53.06666666666667,
-          "width": 0.5999999999999943,
-          "height": 3.86666666666666
+          "x": 62,
+          "y": 53.56666666666667,
+          "width": 0.6000000000000014,
+          "height": 4.36666666666666
         },
         "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
@@ -542,10 +542,10 @@
         "kind": "image",
         "id": "settings_sfx_down_plate_c",
         "rect": {
-          "x": 72.6,
-          "y": 53.06666666666667,
-          "width": 6.800000000000011,
-          "height": 3.86666666666666
+          "x": 62.6,
+          "y": 53.56666666666667,
+          "width": 11.800000000000004,
+          "height": 4.36666666666666
         },
         "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
@@ -554,10 +554,10 @@
         "kind": "image",
         "id": "settings_sfx_down_plate_r",
         "rect": {
-          "x": 79.4,
-          "y": 53.06666666666667,
+          "x": 74.4,
+          "y": 53.56666666666667,
           "width": 0.5999999999999943,
-          "height": 3.86666666666666
+          "height": 4.36666666666666
         },
         "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
@@ -566,9 +566,9 @@
         "kind": "image",
         "id": "settings_sfx_down_plate_bl",
         "rect": {
-          "x": 72,
-          "y": 52,
-          "width": 0.5999999999999943,
+          "x": 62,
+          "y": 52.5,
+          "width": 0.6000000000000014,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-bl",
@@ -578,9 +578,9 @@
         "kind": "image",
         "id": "settings_sfx_down_plate_b",
         "rect": {
-          "x": 72.6,
-          "y": 52,
-          "width": 6.800000000000011,
+          "x": 62.6,
+          "y": 52.5,
+          "width": 11.800000000000004,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-b",
@@ -590,8 +590,8 @@
         "kind": "image",
         "id": "settings_sfx_down_plate_br",
         "rect": {
-          "x": 79.4,
-          "y": 52,
+          "x": 74.4,
+          "y": 52.5,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
         },
@@ -602,10 +602,10 @@
         "kind": "button",
         "id": "settings_sfx_down",
         "rect": {
-          "x": 72,
-          "y": 53.58539094650206,
-          "width": 8,
-          "height": 2.8292181069958846
+          "x": 62,
+          "y": 54.20679012345679,
+          "width": 13,
+          "height": 3.0864197530864192
         },
         "text": "−",
         "action": "Setting_sfx_down"
@@ -614,10 +614,10 @@
         "kind": "button",
         "id": "settings_sfx_down_hit_top",
         "rect": {
-          "x": 72,
-          "y": 56.41460905349794,
-          "width": 8,
-          "height": 1.5853909465020577
+          "x": 62,
+          "y": 57.29320987654321,
+          "width": 13,
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Setting_sfx_down"
@@ -626,10 +626,10 @@
         "kind": "button",
         "id": "settings_sfx_down_hit_bottom",
         "rect": {
-          "x": 72,
-          "y": 52,
-          "width": 8,
-          "height": 1.5853909465020577
+          "x": 62,
+          "y": 52.5,
+          "width": 13,
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Setting_sfx_down"
@@ -638,8 +638,8 @@
         "kind": "image",
         "id": "settings_sfx_up_plate_tl",
         "rect": {
-          "x": 83,
-          "y": 56.93333333333333,
+          "x": 77,
+          "y": 57.93333333333333,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
         },
@@ -650,9 +650,9 @@
         "kind": "image",
         "id": "settings_sfx_up_plate_t",
         "rect": {
-          "x": 83.6,
-          "y": 56.93333333333333,
-          "width": 6.800000000000011,
+          "x": 77.6,
+          "y": 57.93333333333333,
+          "width": 11.800000000000011,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-t",
@@ -662,8 +662,8 @@
         "kind": "image",
         "id": "settings_sfx_up_plate_tr",
         "rect": {
-          "x": 90.4,
-          "y": 56.93333333333333,
+          "x": 89.4,
+          "y": 57.93333333333333,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
         },
@@ -674,10 +674,10 @@
         "kind": "image",
         "id": "settings_sfx_up_plate_l",
         "rect": {
-          "x": 83,
-          "y": 53.06666666666667,
+          "x": 77,
+          "y": 53.56666666666667,
           "width": 0.5999999999999943,
-          "height": 3.86666666666666
+          "height": 4.36666666666666
         },
         "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
@@ -686,10 +686,10 @@
         "kind": "image",
         "id": "settings_sfx_up_plate_c",
         "rect": {
-          "x": 83.6,
-          "y": 53.06666666666667,
-          "width": 6.800000000000011,
-          "height": 3.86666666666666
+          "x": 77.6,
+          "y": 53.56666666666667,
+          "width": 11.800000000000011,
+          "height": 4.36666666666666
         },
         "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
@@ -698,10 +698,10 @@
         "kind": "image",
         "id": "settings_sfx_up_plate_r",
         "rect": {
-          "x": 90.4,
-          "y": 53.06666666666667,
+          "x": 89.4,
+          "y": 53.56666666666667,
           "width": 0.5999999999999943,
-          "height": 3.86666666666666
+          "height": 4.36666666666666
         },
         "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
@@ -710,8 +710,8 @@
         "kind": "image",
         "id": "settings_sfx_up_plate_bl",
         "rect": {
-          "x": 83,
-          "y": 52,
+          "x": 77,
+          "y": 52.5,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
         },
@@ -722,9 +722,9 @@
         "kind": "image",
         "id": "settings_sfx_up_plate_b",
         "rect": {
-          "x": 83.6,
-          "y": 52,
-          "width": 6.800000000000011,
+          "x": 77.6,
+          "y": 52.5,
+          "width": 11.800000000000011,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-b",
@@ -734,8 +734,8 @@
         "kind": "image",
         "id": "settings_sfx_up_plate_br",
         "rect": {
-          "x": 90.4,
-          "y": 52,
+          "x": 89.4,
+          "y": 52.5,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
         },
@@ -746,10 +746,10 @@
         "kind": "button",
         "id": "settings_sfx_up",
         "rect": {
-          "x": 83,
-          "y": 53.58539094650206,
-          "width": 8,
-          "height": 2.8292181069958846
+          "x": 77,
+          "y": 54.20679012345679,
+          "width": 13,
+          "height": 3.0864197530864192
         },
         "text": "＋",
         "action": "Setting_sfx_up"
@@ -758,10 +758,10 @@
         "kind": "button",
         "id": "settings_sfx_up_hit_top",
         "rect": {
-          "x": 83,
-          "y": 56.41460905349794,
-          "width": 8,
-          "height": 1.5853909465020577
+          "x": 77,
+          "y": 57.29320987654321,
+          "width": 13,
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Setting_sfx_up"
@@ -770,10 +770,10 @@
         "kind": "button",
         "id": "settings_sfx_up_hit_bottom",
         "rect": {
-          "x": 83,
-          "y": 52,
-          "width": 8,
-          "height": 1.5853909465020577
+          "x": 77,
+          "y": 52.5,
+          "width": 13,
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Setting_sfx_up"
@@ -782,10 +782,10 @@
         "kind": "text",
         "id": "settings_quality_label",
         "rect": {
-          "x": 14,
-          "y": 40.84259259259259,
-          "width": 29,
-          "height": 2.314814814814815
+          "x": 20,
+          "y": 40.33539094650206,
+          "width": 24,
+          "height": 2.8292181069958846
         },
         "text": "畫質"
       },
@@ -793,10 +793,10 @@
         "kind": "text",
         "id": "settings_quality_value",
         "rect": {
-          "x": 50,
-          "y": 40.84259259259259,
-          "width": 18,
-          "height": 2.314814814814815
+          "x": 46,
+          "y": 40.33539094650206,
+          "width": 12,
+          "height": 2.8292181069958846
         },
         "text": "高"
       },
@@ -804,9 +804,9 @@
         "kind": "image",
         "id": "settings_quality_plate_tl",
         "rect": {
-          "x": 72,
+          "x": 62,
           "y": 43.93333333333333,
-          "width": 0.5999999999999943,
+          "width": 0.6000000000000014,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-tl",
@@ -816,9 +816,9 @@
         "kind": "image",
         "id": "settings_quality_plate_t",
         "rect": {
-          "x": 72.6,
+          "x": 62.6,
           "y": 43.93333333333333,
-          "width": 17.80000000000001,
+          "width": 26.80000000000002,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-t",
@@ -828,7 +828,7 @@
         "kind": "image",
         "id": "settings_quality_plate_tr",
         "rect": {
-          "x": 90.4,
+          "x": 89.40000000000002,
           "y": 43.93333333333333,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
@@ -840,10 +840,10 @@
         "kind": "image",
         "id": "settings_quality_plate_l",
         "rect": {
-          "x": 72,
-          "y": 40.06666666666667,
-          "width": 0.5999999999999943,
-          "height": 3.86666666666666
+          "x": 62,
+          "y": 39.56666666666667,
+          "width": 0.6000000000000014,
+          "height": 4.36666666666666
         },
         "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
@@ -852,10 +852,10 @@
         "kind": "image",
         "id": "settings_quality_plate_c",
         "rect": {
-          "x": 72.6,
-          "y": 40.06666666666667,
-          "width": 17.80000000000001,
-          "height": 3.86666666666666
+          "x": 62.6,
+          "y": 39.56666666666667,
+          "width": 26.80000000000002,
+          "height": 4.36666666666666
         },
         "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
@@ -864,10 +864,10 @@
         "kind": "image",
         "id": "settings_quality_plate_r",
         "rect": {
-          "x": 90.4,
-          "y": 40.06666666666667,
+          "x": 89.40000000000002,
+          "y": 39.56666666666667,
           "width": 0.5999999999999943,
-          "height": 3.86666666666666
+          "height": 4.36666666666666
         },
         "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
@@ -876,9 +876,9 @@
         "kind": "image",
         "id": "settings_quality_plate_bl",
         "rect": {
-          "x": 72,
-          "y": 39,
-          "width": 0.5999999999999943,
+          "x": 62,
+          "y": 38.5,
+          "width": 0.6000000000000014,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-bl",
@@ -888,9 +888,9 @@
         "kind": "image",
         "id": "settings_quality_plate_b",
         "rect": {
-          "x": 72.6,
-          "y": 39,
-          "width": 17.80000000000001,
+          "x": 62.6,
+          "y": 38.5,
+          "width": 26.80000000000002,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-b",
@@ -900,8 +900,8 @@
         "kind": "image",
         "id": "settings_quality_plate_br",
         "rect": {
-          "x": 90.4,
-          "y": 39,
+          "x": 89.40000000000002,
+          "y": 38.5,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
         },
@@ -912,10 +912,10 @@
         "kind": "button",
         "id": "settings_quality",
         "rect": {
-          "x": 72,
-          "y": 40.58539094650206,
-          "width": 19,
-          "height": 2.8292181069958846
+          "x": 62,
+          "y": 40.20679012345679,
+          "width": 28.000000000000014,
+          "height": 3.0864197530864192
         },
         "text": "切換",
         "action": "Setting_quality"
@@ -924,10 +924,10 @@
         "kind": "button",
         "id": "settings_quality_hit_top",
         "rect": {
-          "x": 72,
-          "y": 43.41460905349794,
-          "width": 19,
-          "height": 1.5853909465020577
+          "x": 62,
+          "y": 43.29320987654321,
+          "width": 28.000000000000014,
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Setting_quality"
@@ -936,10 +936,10 @@
         "kind": "button",
         "id": "settings_quality_hit_bottom",
         "rect": {
-          "x": 72,
-          "y": 39,
-          "width": 19,
-          "height": 1.5853909465020577
+          "x": 62,
+          "y": 38.5,
+          "width": 28.000000000000014,
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Setting_quality"
@@ -948,10 +948,10 @@
         "kind": "text",
         "id": "settings_language_label",
         "rect": {
-          "x": 14,
-          "y": 27.842592592592588,
-          "width": 29,
-          "height": 2.314814814814815
+          "x": 20,
+          "y": 26.335390946502056,
+          "width": 24,
+          "height": 2.8292181069958846
         },
         "text": "語系"
       },
@@ -959,10 +959,10 @@
         "kind": "text",
         "id": "settings_language_value",
         "rect": {
-          "x": 50,
-          "y": 27.842592592592588,
-          "width": 18,
-          "height": 2.314814814814815
+          "x": 46,
+          "y": 26.335390946502056,
+          "width": 12,
+          "height": 2.8292181069958846
         },
         "text": "繁中"
       },
@@ -970,9 +970,9 @@
         "kind": "image",
         "id": "settings_language_plate_tl",
         "rect": {
-          "x": 72,
-          "y": 30.933333333333334,
-          "width": 0.5999999999999943,
+          "x": 62,
+          "y": 29.933333333333334,
+          "width": 0.6000000000000014,
           "height": 1.0666666666666664
         },
         "asset": "texture://ui_control-quiet-v3-tl",
@@ -982,9 +982,9 @@
         "kind": "image",
         "id": "settings_language_plate_t",
         "rect": {
-          "x": 72.6,
-          "y": 30.933333333333334,
-          "width": 17.80000000000001,
+          "x": 62.6,
+          "y": 29.933333333333334,
+          "width": 26.80000000000002,
           "height": 1.0666666666666664
         },
         "asset": "texture://ui_control-quiet-v3-t",
@@ -994,8 +994,8 @@
         "kind": "image",
         "id": "settings_language_plate_tr",
         "rect": {
-          "x": 90.4,
-          "y": 30.933333333333334,
+          "x": 89.40000000000002,
+          "y": 29.933333333333334,
           "width": 0.5999999999999943,
           "height": 1.0666666666666664
         },
@@ -1006,10 +1006,10 @@
         "kind": "image",
         "id": "settings_language_plate_l",
         "rect": {
-          "x": 72,
-          "y": 27.066666666666666,
-          "width": 0.5999999999999943,
-          "height": 3.866666666666667
+          "x": 62,
+          "y": 25.566666666666666,
+          "width": 0.6000000000000014,
+          "height": 4.366666666666667
         },
         "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
@@ -1018,10 +1018,10 @@
         "kind": "image",
         "id": "settings_language_plate_c",
         "rect": {
-          "x": 72.6,
-          "y": 27.066666666666666,
-          "width": 17.80000000000001,
-          "height": 3.866666666666667
+          "x": 62.6,
+          "y": 25.566666666666666,
+          "width": 26.80000000000002,
+          "height": 4.366666666666667
         },
         "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
@@ -1030,10 +1030,10 @@
         "kind": "image",
         "id": "settings_language_plate_r",
         "rect": {
-          "x": 90.4,
-          "y": 27.066666666666666,
+          "x": 89.40000000000002,
+          "y": 25.566666666666666,
           "width": 0.5999999999999943,
-          "height": 3.866666666666667
+          "height": 4.366666666666667
         },
         "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
@@ -1042,9 +1042,9 @@
         "kind": "image",
         "id": "settings_language_plate_bl",
         "rect": {
-          "x": 72,
-          "y": 26,
-          "width": 0.5999999999999943,
+          "x": 62,
+          "y": 24.5,
+          "width": 0.6000000000000014,
           "height": 1.0666666666666664
         },
         "asset": "texture://ui_control-quiet-v3-bl",
@@ -1054,9 +1054,9 @@
         "kind": "image",
         "id": "settings_language_plate_b",
         "rect": {
-          "x": 72.6,
-          "y": 26,
-          "width": 17.80000000000001,
+          "x": 62.6,
+          "y": 24.5,
+          "width": 26.80000000000002,
           "height": 1.0666666666666664
         },
         "asset": "texture://ui_control-quiet-v3-b",
@@ -1066,8 +1066,8 @@
         "kind": "image",
         "id": "settings_language_plate_br",
         "rect": {
-          "x": 90.4,
-          "y": 26,
+          "x": 89.40000000000002,
+          "y": 24.5,
           "width": 0.5999999999999943,
           "height": 1.0666666666666664
         },
@@ -1078,10 +1078,10 @@
         "kind": "button",
         "id": "settings_language",
         "rect": {
-          "x": 72,
-          "y": 27.585390946502056,
-          "width": 19,
-          "height": 2.8292181069958846
+          "x": 62,
+          "y": 26.2067901234568,
+          "width": 28.000000000000014,
+          "height": 3.0864197530864192
         },
         "text": "切換",
         "action": "Setting_language"
@@ -1090,10 +1090,10 @@
         "kind": "button",
         "id": "settings_language_hit_top",
         "rect": {
-          "x": 72,
-          "y": 30.41460905349794,
-          "width": 19,
-          "height": 1.5853909465020577
+          "x": 62,
+          "y": 29.29320987654321,
+          "width": 28.000000000000014,
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Setting_language"
@@ -1102,154 +1102,46 @@
         "kind": "button",
         "id": "settings_language_hit_bottom",
         "rect": {
-          "x": 72,
-          "y": 26,
-          "width": 19,
-          "height": 1.5853909465020577
+          "x": 62,
+          "y": 24.500000000000007,
+          "width": 28.000000000000014,
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Setting_language"
       },
       {
         "kind": "image",
-        "id": "settings_back_plate_tl",
+        "id": "settings_back_plate",
         "rect": {
-          "x": 32,
-          "y": 10.933333333333335,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666664
+          "x": 87,
+          "y": 88,
+          "width": 5.5,
+          "height": 5.8
         },
-        "asset": "texture://ui_control-quiet-v3-tl",
+        "asset": "texture://ui_hud-key",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "settings_back_plate_t",
+        "id": "settings_back_icon",
         "rect": {
-          "x": 32.6,
-          "y": 10.933333333333335,
-          "width": 34.800000000000004,
-          "height": 1.0666666666666664
+          "x": 88.25,
+          "y": 89.45,
+          "width": 3,
+          "height": 3.7
         },
-        "asset": "texture://ui_control-quiet-v3-t",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "settings_back_plate_tr",
-        "rect": {
-          "x": 67.4,
-          "y": 10.933333333333335,
-          "width": 0.5999999999999943,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-tr",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "settings_back_plate_l",
-        "rect": {
-          "x": 32,
-          "y": 7.066666666666666,
-          "width": 0.6000000000000014,
-          "height": 3.866666666666669
-        },
-        "asset": "texture://ui_control-quiet-v3-l",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "settings_back_plate_c",
-        "rect": {
-          "x": 32.6,
-          "y": 7.066666666666666,
-          "width": 34.800000000000004,
-          "height": 3.866666666666669
-        },
-        "asset": "texture://ui_control-quiet-v3-c",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "settings_back_plate_r",
-        "rect": {
-          "x": 67.4,
-          "y": 7.066666666666666,
-          "width": 0.5999999999999943,
-          "height": 3.866666666666669
-        },
-        "asset": "texture://ui_control-quiet-v3-r",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "settings_back_plate_bl",
-        "rect": {
-          "x": 32,
-          "y": 6,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-bl",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "settings_back_plate_b",
-        "rect": {
-          "x": 32.6,
-          "y": 6,
-          "width": 34.800000000000004,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-b",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "settings_back_plate_br",
-        "rect": {
-          "x": 67.4,
-          "y": 6,
-          "width": 0.5999999999999943,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-br",
-        "fit": "stretch"
+        "asset": "texture://ui_icon-close",
+        "fit": "contain"
       },
       {
         "kind": "button",
         "id": "settings_back",
         "rect": {
-          "x": 32,
-          "y": 7.585390946502056,
-          "width": 36,
-          "height": 2.8292181069958846
-        },
-        "text": "返回主選單",
-        "action": "UI_home"
-      },
-      {
-        "kind": "button",
-        "id": "settings_back_hit_top",
-        "rect": {
-          "x": 32,
-          "y": 10.41460905349794,
-          "width": 36,
-          "height": 1.5853909465020586
-        },
-        "text": "",
-        "action": "UI_home"
-      },
-      {
-        "kind": "button",
-        "id": "settings_back_hit_bottom",
-        "rect": {
-          "x": 32,
-          "y": 6.000000000000001,
-          "width": 36,
-          "height": 1.5853909465020586
+          "x": 87,
+          "y": 88,
+          "width": 5.5,
+          "height": 5.8
         },
         "text": "",
         "action": "UI_home"
@@ -1261,278 +1153,660 @@
       "text": "系統設定",
       "font": 34,
       "clip": {
-        "x": 172.8,
-        "y": 89.7888888888889,
-        "width": 1574.4,
+        "x": 729.6,
+        "y": 83.30888888888896,
+        "width": 460.8,
         "height": 47.22222222222223
       },
       "ink": {
         "x": 893,
-        "y": 97.66562500000002,
+        "y": 91.18562500000007,
         "width": 134,
         "height": 31
       }
     },
     {
       "text": "設定會儲存在目前裝置，下次開啟仍會保留。",
-      "font": 17.25,
+      "font": 22,
       "clip": {
-        "x": 172.8,
-        "y": 194.42083333333335,
-        "width": 1574.4,
-        "height": 23.95833333333333
+        "x": 153.6,
+        "y": 185.32222222222222,
+        "width": 1612.8,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 787.5,
-        "y": 198.134375,
-        "width": 338.75,
-        "height": 17
+        "x": 741,
+        "y": 189.178125,
+        "width": 431,
+        "height": 22
       }
     },
     {
       "text": "音樂音量",
-      "font": 18,
+      "font": 22,
       "clip": {
-        "x": 268.8,
-        "y": 333.0999999999999,
-        "width": 556.8,
-        "height": 25
+        "x": 384,
+        "y": 311.4222222222222,
+        "width": 460.8,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 512.2,
-        "y": 336.6156249999999,
-        "width": 71,
-        "height": 17
+        "x": 571.4,
+        "y": 317.278125,
+        "width": 86,
+        "height": 19
       }
     },
     {
       "text": "70%",
-      "font": 18,
+      "font": 22,
       "clip": {
-        "x": 960,
-        "y": 333.0999999999999,
-        "width": 345.6,
-        "height": 25
+        "x": 883.2,
+        "y": 311.4222222222222,
+        "width": 230.4,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 1114.44404296875,
-        "y": 338.6156249999999,
-        "width": 36.865234375,
-        "height": 14
+        "x": 975.9649414062501,
+        "y": 318.278125,
+        "width": 44.501953125,
+        "height": 17
       }
     },
     {
       "text": "−",
-      "font": 22,
+      "font": 24,
       "clip": {
-        "x": 1382.4,
-        "y": 330.3222222222222,
-        "width": 153.6,
-        "height": 30.555555555555554
+        "x": 1190.4,
+        "y": 310.0333333333333,
+        "width": 249.6,
+        "height": 33.33333333333333
       },
       "ink": {
-        "x": 1451.9822265625,
-        "y": 347.17812499999997,
-        "width": 15,
+        "x": 1307.23515625,
+        "y": 329.059375,
+        "width": 16,
         "height": 1
       }
     },
     {
       "text": "＋",
-      "font": 22,
+      "font": 24,
       "clip": {
-        "x": 1593.6,
-        "y": 330.3222222222222,
-        "width": 153.6,
-        "height": 30.555555555555554
+        "x": 1478.4,
+        "y": 310.0333333333333,
+        "width": 249.6,
+        "height": 33.33333333333333
       },
       "ink": {
-        "x": 1664.3999999999999,
-        "y": 341.17812499999997,
-        "width": 12,
+        "x": 1596.2,
+        "y": 323.059375,
+        "width": 14,
         "height": 12
       }
     },
     {
       "text": "音效音量",
-      "font": 18,
+      "font": 22,
       "clip": {
-        "x": 268.8,
-        "y": 473.5,
-        "width": 556.8,
-        "height": 25
+        "x": 384,
+        "y": 462.62222222222226,
+        "width": 460.8,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 512.2,
-        "y": 477.015625,
-        "width": 71,
-        "height": 17
+        "x": 571.4,
+        "y": 467.47812500000003,
+        "width": 86,
+        "height": 20
       }
     },
     {
       "text": "85%",
-      "font": 18,
+      "font": 22,
       "clip": {
-        "x": 960,
-        "y": 473.5,
-        "width": 345.6,
-        "height": 25
+        "x": 883.2,
+        "y": 462.62222222222226,
+        "width": 230.4,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 1114.44404296875,
-        "y": 479.015625,
-        "width": 36.865234375,
-        "height": 14
+        "x": 975.9649414062501,
+        "y": 469.47812500000003,
+        "width": 44.501953125,
+        "height": 17
       }
     },
     {
       "text": "−",
-      "font": 22,
+      "font": 24,
       "clip": {
-        "x": 1382.4,
-        "y": 470.7222222222223,
-        "width": 153.6,
-        "height": 30.555555555555554
+        "x": 1190.4,
+        "y": 461.23333333333335,
+        "width": 249.6,
+        "height": 33.33333333333333
       },
       "ink": {
-        "x": 1451.9822265625,
-        "y": 487.57812500000006,
-        "width": 15,
+        "x": 1307.23515625,
+        "y": 480.25937500000003,
+        "width": 16,
         "height": 1
       }
     },
     {
       "text": "＋",
-      "font": 22,
+      "font": 24,
       "clip": {
-        "x": 1593.6,
-        "y": 470.7222222222223,
-        "width": 153.6,
-        "height": 30.555555555555554
+        "x": 1478.4,
+        "y": 461.23333333333335,
+        "width": 249.6,
+        "height": 33.33333333333333
       },
       "ink": {
-        "x": 1664.3999999999999,
-        "y": 481.57812500000006,
-        "width": 12,
+        "x": 1596.2,
+        "y": 474.25937500000003,
+        "width": 14,
         "height": 12
       }
     },
     {
       "text": "畫質",
-      "font": 18,
+      "font": 22,
       "clip": {
-        "x": 268.8,
-        "y": 613.9,
-        "width": 556.8,
-        "height": 25
+        "x": 384,
+        "y": 613.8222222222223,
+        "width": 460.8,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 529.2,
-        "y": 618.415625,
-        "width": 36,
-        "height": 16
+        "x": 593.4,
+        "y": 619.6781250000001,
+        "width": 43,
+        "height": 19
       }
     },
     {
       "text": "高",
-      "font": 18,
+      "font": 22,
       "clip": {
-        "x": 960,
-        "y": 613.9,
-        "width": 345.6,
-        "height": 25
+        "x": 883.2,
+        "y": 613.8222222222223,
+        "width": 230.4,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 1124.8,
-        "y": 617.415625,
-        "width": 16,
-        "height": 17
+        "x": 988.4000000000001,
+        "y": 618.6781250000001,
+        "width": 20,
+        "height": 20
       }
     },
     {
       "text": "切換",
-      "font": 22,
+      "font": 24,
       "clip": {
-        "x": 1382.4,
-        "y": 611.1222222222223,
-        "width": 364.8,
-        "height": 30.555555555555554
+        "x": 1190.4,
+        "y": 612.4333333333334,
+        "width": 537.6000000000003,
+        "height": 33.33333333333333
       },
       "ink": {
-        "x": 1543.8000000000002,
-        "y": 615.9781250000001,
-        "width": 42,
-        "height": 20
+        "x": 1436.2000000000003,
+        "y": 618.459375,
+        "width": 46,
+        "height": 21
       }
     },
     {
       "text": "語系",
-      "font": 18,
-      "clip": {
-        "x": 268.8,
-        "y": 754.3000000000002,
-        "width": 556.8,
-        "height": 25
-      },
-      "ink": {
-        "x": 529.2,
-        "y": 757.8156250000002,
-        "width": 36,
-        "height": 17
-      }
-    },
-    {
-      "text": "繁中",
-      "font": 18,
-      "clip": {
-        "x": 960,
-        "y": 754.3000000000002,
-        "width": 345.6,
-        "height": 25
-      },
-      "ink": {
-        "x": 1114.8,
-        "y": 757.8156250000002,
-        "width": 35,
-        "height": 17
-      }
-    },
-    {
-      "text": "切換",
       "font": 22,
       "clip": {
-        "x": 1382.4,
-        "y": 751.5222222222222,
-        "width": 364.8,
+        "x": 384,
+        "y": 765.0222222222222,
+        "width": 460.8,
         "height": 30.555555555555554
       },
       "ink": {
-        "x": 1543.8000000000002,
-        "y": 756.3781250000001,
+        "x": 593.4,
+        "y": 769.8781250000001,
         "width": 42,
         "height": 20
       }
     },
     {
-      "text": "返回主選單",
+      "text": "繁中",
       "font": 22,
       "clip": {
-        "x": 614.4,
-        "y": 967.5222222222222,
-        "width": 691.2,
+        "x": 883.2,
+        "y": 765.0222222222222,
+        "width": 230.4,
         "height": 30.555555555555554
       },
       "ink": {
-        "x": 905,
-        "y": 973.3781250000001,
-        "width": 109,
-        "height": 19
+        "x": 976.4000000000001,
+        "y": 769.8781250000001,
+        "width": 42,
+        "height": 20
+      }
+    },
+    {
+      "text": "切換",
+      "font": 24,
+      "clip": {
+        "x": 1190.4,
+        "y": 763.6333333333333,
+        "width": 537.6000000000003,
+        "height": 33.33333333333333
+      },
+      "ink": {
+        "x": 1436.2000000000003,
+        "y": 769.659375,
+        "width": 46,
+        "height": 21
       }
     }
   ],
   "metrics": {
     "backend": "canvas2d",
-    "nodes": 105,
+    "nodes": 96,
+    "usage": {
+      "logical_nodes": 96,
+      "leaf_nodes": 96,
+      "render_regions_upper_bound": 96,
+      "max_nodes": 2048,
+      "host_max_nodes": 16384,
+      "limit_source": "contract.default",
+      "subtrees": [
+        [
+          "screen_shade",
+          1
+        ],
+        [
+          "screen_back_fill",
+          1
+        ],
+        [
+          "screen_back_tl",
+          1
+        ],
+        [
+          "screen_back_t",
+          1
+        ],
+        [
+          "screen_back_tr",
+          1
+        ],
+        [
+          "screen_back_l",
+          1
+        ],
+        [
+          "screen_back_c",
+          1
+        ],
+        [
+          "screen_back_r",
+          1
+        ],
+        [
+          "screen_back_bl",
+          1
+        ],
+        [
+          "screen_back_b",
+          1
+        ],
+        [
+          "screen_back_br",
+          1
+        ],
+        [
+          "screen_title",
+          1
+        ],
+        [
+          "settings_hint",
+          1
+        ],
+        [
+          "settings_music_label",
+          1
+        ],
+        [
+          "settings_music_value",
+          1
+        ],
+        [
+          "settings_music_down_plate_tl",
+          1
+        ],
+        [
+          "settings_music_down_plate_t",
+          1
+        ],
+        [
+          "settings_music_down_plate_tr",
+          1
+        ],
+        [
+          "settings_music_down_plate_l",
+          1
+        ],
+        [
+          "settings_music_down_plate_c",
+          1
+        ],
+        [
+          "settings_music_down_plate_r",
+          1
+        ],
+        [
+          "settings_music_down_plate_bl",
+          1
+        ],
+        [
+          "settings_music_down_plate_b",
+          1
+        ],
+        [
+          "settings_music_down_plate_br",
+          1
+        ],
+        [
+          "settings_music_down",
+          1
+        ],
+        [
+          "settings_music_down_hit_top",
+          1
+        ],
+        [
+          "settings_music_down_hit_bottom",
+          1
+        ],
+        [
+          "settings_music_up_plate_tl",
+          1
+        ],
+        [
+          "settings_music_up_plate_t",
+          1
+        ],
+        [
+          "settings_music_up_plate_tr",
+          1
+        ],
+        [
+          "settings_music_up_plate_l",
+          1
+        ],
+        [
+          "settings_music_up_plate_c",
+          1
+        ],
+        [
+          "settings_music_up_plate_r",
+          1
+        ],
+        [
+          "settings_music_up_plate_bl",
+          1
+        ],
+        [
+          "settings_music_up_plate_b",
+          1
+        ],
+        [
+          "settings_music_up_plate_br",
+          1
+        ],
+        [
+          "settings_music_up",
+          1
+        ],
+        [
+          "settings_music_up_hit_top",
+          1
+        ],
+        [
+          "settings_music_up_hit_bottom",
+          1
+        ],
+        [
+          "settings_sfx_label",
+          1
+        ],
+        [
+          "settings_sfx_value",
+          1
+        ],
+        [
+          "settings_sfx_down_plate_tl",
+          1
+        ],
+        [
+          "settings_sfx_down_plate_t",
+          1
+        ],
+        [
+          "settings_sfx_down_plate_tr",
+          1
+        ],
+        [
+          "settings_sfx_down_plate_l",
+          1
+        ],
+        [
+          "settings_sfx_down_plate_c",
+          1
+        ],
+        [
+          "settings_sfx_down_plate_r",
+          1
+        ],
+        [
+          "settings_sfx_down_plate_bl",
+          1
+        ],
+        [
+          "settings_sfx_down_plate_b",
+          1
+        ],
+        [
+          "settings_sfx_down_plate_br",
+          1
+        ],
+        [
+          "settings_sfx_down",
+          1
+        ],
+        [
+          "settings_sfx_down_hit_top",
+          1
+        ],
+        [
+          "settings_sfx_down_hit_bottom",
+          1
+        ],
+        [
+          "settings_sfx_up_plate_tl",
+          1
+        ],
+        [
+          "settings_sfx_up_plate_t",
+          1
+        ],
+        [
+          "settings_sfx_up_plate_tr",
+          1
+        ],
+        [
+          "settings_sfx_up_plate_l",
+          1
+        ],
+        [
+          "settings_sfx_up_plate_c",
+          1
+        ],
+        [
+          "settings_sfx_up_plate_r",
+          1
+        ],
+        [
+          "settings_sfx_up_plate_bl",
+          1
+        ],
+        [
+          "settings_sfx_up_plate_b",
+          1
+        ],
+        [
+          "settings_sfx_up_plate_br",
+          1
+        ],
+        [
+          "settings_sfx_up",
+          1
+        ],
+        [
+          "settings_sfx_up_hit_top",
+          1
+        ],
+        [
+          "settings_sfx_up_hit_bottom",
+          1
+        ],
+        [
+          "settings_quality_label",
+          1
+        ],
+        [
+          "settings_quality_value",
+          1
+        ],
+        [
+          "settings_quality_plate_tl",
+          1
+        ],
+        [
+          "settings_quality_plate_t",
+          1
+        ],
+        [
+          "settings_quality_plate_tr",
+          1
+        ],
+        [
+          "settings_quality_plate_l",
+          1
+        ],
+        [
+          "settings_quality_plate_c",
+          1
+        ],
+        [
+          "settings_quality_plate_r",
+          1
+        ],
+        [
+          "settings_quality_plate_bl",
+          1
+        ],
+        [
+          "settings_quality_plate_b",
+          1
+        ],
+        [
+          "settings_quality_plate_br",
+          1
+        ],
+        [
+          "settings_quality",
+          1
+        ],
+        [
+          "settings_quality_hit_top",
+          1
+        ],
+        [
+          "settings_quality_hit_bottom",
+          1
+        ],
+        [
+          "settings_language_label",
+          1
+        ],
+        [
+          "settings_language_value",
+          1
+        ],
+        [
+          "settings_language_plate_tl",
+          1
+        ],
+        [
+          "settings_language_plate_t",
+          1
+        ],
+        [
+          "settings_language_plate_tr",
+          1
+        ],
+        [
+          "settings_language_plate_l",
+          1
+        ],
+        [
+          "settings_language_plate_c",
+          1
+        ],
+        [
+          "settings_language_plate_r",
+          1
+        ],
+        [
+          "settings_language_plate_bl",
+          1
+        ],
+        [
+          "settings_language_plate_b",
+          1
+        ],
+        [
+          "settings_language_plate_br",
+          1
+        ],
+        [
+          "settings_language",
+          1
+        ],
+        [
+          "settings_language_hit_top",
+          1
+        ],
+        [
+          "settings_language_hit_bottom",
+          1
+        ],
+        [
+          "settings_back_plate",
+          1
+        ],
+        [
+          "settings_back_icon",
+          1
+        ],
+        [
+          "settings_back",
+          1
+        ]
+      ]
+    },
+    "render_regions": 96,
+    "cpu_render_ms": 0.40000003576278687,
+    "gpu_render_ms": null,
+    "decoded_rgba_bytes_estimate": 14057568,
     "assets": [
       {
         "id": "texture://ui_shop-surface",
@@ -1613,11 +1887,20 @@
       {
         "id": "texture://ui_shop-window-panel-v2-br",
         "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-key",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-close",
+        "state": "ready"
       }
     ],
     "diagnostics": [],
     "fontFamily": "\"Microsoft JhengHei\",sans-serif",
     "limitations": [
+      "CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.",
       "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
       "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
     ]

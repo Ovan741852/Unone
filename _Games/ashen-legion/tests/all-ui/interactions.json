@@ -5,7 +5,7 @@
     "Delete confirmation defaults to Keep and Escape does not delete the save",
     "Expedition auto-arrival, keyboard map entry/return, painted map assets and unchanged offered destinations",
     "Keyboard purchase, inventory detail/equip, modal return, and full equipment-slot icon hit area",
-    "Rune pagination, deployment, pause/guide, protected abandon confirmation and AUTO selection",
+    "Rune grid scrolling, deployment, pause/guide, protected abandon confirmation and AUTO selection",
     "Fresh-profile keyboard direct deployment reaches battle without changing equipment; preparation remains available",
     "Chest keyboard hold emits one down/up transition, not repeated purchases (adapter test)"
   ],

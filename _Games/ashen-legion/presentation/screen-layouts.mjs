@@ -1,83 +1,117 @@
 // Per-screen composition in the same coordinate tree used by drawing and input.
 // Keep game rules in Luau. Pixel floors only determine layout, never gameplay.
+//
+// One desktop system for every screen (2026-09-20 layout pass):
+//   window      nineSlice at (4,4,92,92); usable content is x 8..92, y 16..93
+//   title band  screen_title centred on x=50 at y 7.4; currency badges at y 6.2
+//   controls    BH = 6.5 units = 70.2 design px, the height in UI-DESIGN-GUIDELINES
+//   footer      FOOT = 93 - BH, so an action row always ends inside the window fill
+//   close/back  one plated icon-close at the window's top-right corner
 export function layoutScreens({map,set,frame,control,text,plateRect,width,height,game,route,phase}){
- const px=n=>n/height*100, bh=Math.max(6,px(44)), line=px(24), small=px(20), foot=94-bh;
+ const px=n=>n/height*100;
+ // fitLabel reserves size*1.389 for one line, so a text slot is the ROW height,
+ // not the font size. LINE/BODY/SMALL are the shared single-line rows.
+ const BH=6.5,LINE=px(40),BODY=px(34),SMALL=px(31),FOOT=93-BH,GAP=px(14);
+ const bh=BH,compact=false; // One desktop layout; scaling belongs to the complete stage.
  const hide=(...ids)=>ids.forEach(id=>{map.delete(id);for(const key of [...map.keys()])if(key.startsWith(id+'_'))map.delete(key)});
- const place=(id,x,y,w,h=bh)=>control(id,x,y,w,h);
- const label=(id,x,y,w,h=line)=>set(id,x,y,w,h);
- const compact=false; // One desktop layout; scaling belongs to the complete stage.
+ const place=(id,x,y,w,h=BH)=>control(id,x,y,w,h);
+ const label=(id,x,y,w,h=LINE)=>set(id,x,y,w,h);
+ // A row of n equal cells filling [x0,x0+total]; every grid on every screen
+ // comes from this, so rows above and below each other share their edges.
+ const cells=(n,x0,total,gap)=>{const w=(total-gap*(n-1))/n;return {w,x:i=>x0+i*(w+gap)};};
  const shop=phase==='shop',battle=phase==='battle'&&!game.paused&&route!=='auto';
- // Common chrome has a reserved header and a non-overlapping footer.
+ // Common chrome: one title band, one currency band, one footer band.
  if(map.has('screen_title')){
-  label('screen_title',9,8,58,Math.max(line,5));
-  if(phase==='menu')label('screen_title',9,8,82,5);
-  for(const [id,x,w]of [['screen_gold_icon',71,3],['screen_gold',75,7],['screen_crystals_icon',83,3],['screen_crystals',87,6]])label(id,x,8,w);
+  label('screen_title',38,7.4,24,Math.max(LINE,5));
+  if(map.has('screen_gold_plate')){
+   label('screen_gold_plate',64,6.2,10.5,5.8);label('screen_gold_icon',65,7.15,3.2,3.9);label('screen_gold',68.7,7.3,5.3,3.5);
+   label('screen_crystals_plate',75,6.2,10.5,5.8);label('screen_crystals_icon',76,7.15,3.2,3.9);label('screen_crystals',79.7,7.3,5.3,3.5);
+  }else for(const [id,x,w]of [['screen_gold_icon',66,3],['screen_gold',70,7],['screen_crystals_icon',78,3],['screen_crystals',82,6]])label(id,x,7.3,w,3.5);
  }
- for(const [id,n]of map){const p=plateRect(id);if(p&&(n.kind==='button'||n.kind==='text'))control(id,p.x,100-p.y-p.height,p.width,Math.max(p.height,bh));}
- for(const id of ['ready','deploy','loadout_return','town_back','launch_expedition','back','profiles_back','settings_back','next','result_home']){
-  const p=plateRect(id);if(p)place(id,p.x,foot,p.width);
+ for(const [id,n]of map){const p=plateRect(id);if(p&&(n.kind==='button'||n.kind==='text'))control(id,p.x,100-p.y-p.height,p.width,Math.max(p.height,BH));}
+ for(const id of ['ready','deploy','launch_expedition','next']){
+  const p=plateRect(id);if(p)place(id,p.x,FOOT,p.width);
  }
- if(map.has('tab_gear')){place('tab_gear',8,17,22);place('tab_runes',32,17,22);}
+ // Return/close is a single title-bar affordance on every screen, with its
+ // plate and its icon kept together in the window's top-right corner.
+ for(const id of ['loadout_return','town_back','back','profiles_back','settings_back','result_home','defeat_town','guide_back']){
+  if(map.has(id)){place(id,87,6.2,5.5,5.8);if(map.has(id+'_icon'))label(id+'_icon',88.25,6.85,3,3.7);}
+ }
+ if(map.has('tab_gear')){
+  place('tab_gear',7,30.5,7,11);place('tab_runes',7,43,7,11);
+  for(const [id,y]of [['tab_gear',30.5],['tab_runes',43]]){
+   label(id+'_plate',7,y,7,11);label(id+'_active',7,y,7,11);label(id+'_icon',8.65,y+1.15,3.7,4.2);label(id+'_label',7.5,y+6.4,6,px(36));
+  }
+ }
  if(shop){
-  place('ready',62,foot,14);place('quick_deploy',78,foot,15);
-  if(map.has('tab_home')){place('tab_home',8,17,24);place('tab_sell',34,17,24);}
-  hide('shopkeeper_back');label('shopkeeper_portrait',9,31,23,compact?24:29);
-  label('shopkeeper_name',8,compact?56:62,25);label('shopkeeper_line',8,compact?64:69,25,compact?px(55):11);
+  place('ready',65,FOOT,13);place('quick_deploy',79,FOOT,13);
+  if(map.has('tab_home')){place('tab_home',8,16,22);place('tab_sell',32,16,22);}
+  hide('shopkeeper_back');label('shopkeeper_portrait',9,26,23,29);
+  label('shopkeeper_name',8,57,25,LINE);label('shopkeeper_line',8,63,25,px(96));
   // Status has its own rail; it never draws on top of a Buy button.
-  label('shop_feedback',37,17,56,line);label('shop_receipt',37,17,56,line);
-  if(map.has('tab_home')){label('shop_feedback',8,foot,52,bh);label('shop_receipt',8,foot,52,bh);}
+  label('shop_feedback',37,16,55,LINE);label('shop_receipt',37,16,55,LINE);
+  if(map.has('tab_home')){label('shop_feedback',8,FOOT,50,BH);label('shop_receipt',8,FOOT,50,BH);}
  }
  if(phase==='menu'&&route==='home'){
-  place('start',9,60,34);place('settings',9,60+bh+px(10),34);place('exit',9,60+2*(bh+px(10)),34);
-  label('title',8,34,34,px(70));label('subtitle',8,compact?51:48,36,line);label('exit_message',48,87,44,line);
+  // Crest, title, subtitle and the button stack all sit on x = 26.
+  place('start',9,58,34);place('settings',9,58+BH+GAP,34);place('exit',9,58+2*(BH+GAP),34);
+  label('title',9,34,34,px(70));label('subtitle',9,47,34,LINE);label('exit_message',48,87,44,LINE);
  }else if(route==='town'){
-  label('town_lord',9,31,23,39);
-  label('town_heading',37,18,56,px(34));label('town_subheading',37,23,56,px(32));
-  label('town_material_icon',15,20,48/width*100,px(48));label('town_gold',15+60/width*100,20,7,px(48));text('town_gold',map.get('town_gold')?.text.replace('建材 ',''));
-  label('town_record',8,75,26,px(64));
-  for(let i=1;i<=8;i++){const x=37+(i-1)%2*29,y=29+Math.floor((i-1)/2)*13,h=11.5;
-   place('town_'+i,x,y,27,h);
-   const middle=y+h/2;
-   label('town_icon_'+i,x+1.1,middle-px(36),72/width*100,px(72));
-   label('town_name_'+i,x+5.7,middle-px(38),14.5,px(36));
-   label('town_effect_'+i,x+5.7,middle+px(5),14.5,px(32));
-   label('town_cost_icon_'+i,x+21,middle-px(18),36/width*100,px(36));label('town_cost_'+i,x+23.3,middle-px(22),3,px(44));
-  }
+  label('town_lord',9,30,23,38);
+  label('town_heading',37,17,55,px(42));label('town_subheading',37,22,55,px(36));
+  label('town_material_icon',15,19,48/width*100,px(48));label('town_gold',15+60/width*100,19,7,px(48));text('town_gold',map.get('town_gold')?.text.replace('建材 ',''));
+  label('town_record',9,71,23,px(64));
+  {const g=cells(2,37,55,1);
+   for(let i=1;i<=8;i++){const x=g.x((i-1)%2),w=g.w,y=28+Math.floor((i-1)/2)*13,h=11.5;
+    place('town_'+i,x,y,w,h);
+    const middle=y+h/2;
+    label('town_icon_'+i,x+1.1,middle-px(50),72/width*100,px(72));
+    label('town_name_'+i,x+5.7,middle-px(40),15,px(50));
+    label('town_effect_'+i,x+5.7,middle+px(6),15,px(45));
+    label('town_cost_icon_'+i,x+w-6.4,middle-px(25),36/width*100,px(50));label('town_cost_'+i,x+w-4.1,middle-px(31),3.4,px(44));
+   }}
   if(map.has('town_upgrade_title')){
-   frame('town_upgrade_modal',15,8,70,84);
-   label('town_upgrade_kicker',23,14,54,small);label('town_upgrade_title',23,23,54,line);
-   label('town_upgrade_level',23,32,54,line);label('town_upgrade_desc',23,41,54,px(44));
-   label('town_upgrade_cost',23,56,54,line);label('town_upgrade_note',23,64,54,px(32));
-   place('town_upgrade_confirm',25,89-bh,23);place('town_upgrade_cancel',52,89-bh,23);
+   // A modal owns the whole screen: the background action must not stay live.
+   hide('launch_expedition','town_back');
+   frame('town_upgrade_modal',22,14,56,64);
+   label('town_upgrade_kicker',26,18,48,SMALL);label('town_upgrade_title',26,24,48,LINE);
+   label('town_upgrade_level',26,31,48,BODY);label('town_upgrade_desc',26,38,48,px(48));
+   label('town_upgrade_cost',26,48,48,BODY);label('town_upgrade_note',26,55,48,px(45));
+   place('town_upgrade_confirm',26,69,24);place('town_upgrade_cancel',52,69,24);
   }
  }else if(route==='profiles'){
-  label('profiles_hint',9,16,82,px(36));
-  for(let i=1;i<=3;i++){const x=13+(i-1)*26;frame('profile_card_'+i,x,26,22,56);
-   label('profile_slot_'+i,x+3,39,16,px(38));label('profile_name_'+i,x+3,44,16,px(42));
-   label('profile_detail_'+i,x+3,51,16,px(82));place('profile_load_'+i,x+3,61,10,6.5);
-   place('profile_delete_'+i,x+14,61,5,6.5);place('profile_create_'+i,x+3,61,16,6.5);
-  }
-  label('delete_warning',16,29,68,px(65));place('delete_confirm',25,57,22);place('delete_cancel',53,57,22);
+  label('profiles_hint',8,16,84,px(42));
+  {const g=cells(3,13,74,4);
+   for(let i=1;i<=3;i++){const x=g.x(i-1),w=g.w;frame('profile_card_'+i,x,25,w,45);
+    label('profile_slot_'+i,x+2,32,w-4,px(42));label('profile_name_'+i,x+2,37,w-4,px(40));
+    label('profile_detail_'+i,x+2,44,w-4,px(72));
+    place('profile_load_'+i,x+2,58,w/2-1.5);place('profile_delete_'+i,x+w/2+1.5,58,w/2-3.5);
+    place('profile_create_'+i,x+2,58,w-4);
+   }}
+  label('delete_warning',16,30,68,px(70));place('delete_confirm',25,55,22);place('delete_cancel',53,55,22);
  }else if(route==='settings'){
-  label('settings_hint',9,18,82,line);
+  label('settings_hint',8,17,84,BODY);
+  // Label / value / control are three fixed columns, not three ragged centres.
   for(const [i,name]of ['music','sfx','quality','language'].entries()){
-   const y=29+i*13;label('settings_'+name+'_label',14,y,29,bh);label('settings_'+name+'_value',50,y,18,bh);
-   place('settings_'+name+'_down',72,y,8);place('settings_'+name+'_up',83,y,8);place('settings_'+name,72,y,19);
+   const y=27+i*14;
+   label('settings_'+name+'_label',20,y,24,BH);label('settings_'+name+'_value',46,y,12,BH);
+   place('settings_'+name+'_down',62,y,13);place('settings_'+name+'_up',77,y,13);place('settings_'+name,62,y,28);
   }
  }else if(phase==='choice'){
-  label('screen_title',9,8,82,5);hide('screen_gold','screen_crystals');
-  label('choice_hint',12,17,76,px(36));label('choice_quote',12,22,76,px(36));
-  place('choice_loadout',30,87,20);place('view_map',53,87,17);
-  for(let i=1;i<=3;i++){const x=15+(i-1)*24;frame('choice_plate_'+i,x,29,22,55);
-   label('choice_icon_'+i,x+3,40.5,16,20.5);label('choice_name_'+i,x+3,61.8,16,px(36));
-   label('choice_desc_'+i,x+3,66,16,px(56));label('choice_action_'+i,x+3,76,16,px(36));
-   label('choice_'+i,x,29,22,55);
-  }
+  hide('screen_gold','screen_crystals');
+  label('choice_hint',12,16,76,px(45));label('choice_quote',12,21,76,px(45));
+  place('choice_loadout',29,FOOT,20);place('view_map',51,FOOT,20);
+  {const g=cells(3,15,70,2);
+   for(let i=1;i<=3;i++){const x=g.x(i-1),w=g.w;frame('choice_plate_'+i,x,28,w,52);
+    label('choice_icon_'+i,x+3,38,w-6,19);label('choice_name_'+i,x+2,57.5,w-4,px(50));
+    label('choice_desc_'+i,x+2,61.5,w-4,px(76));label('choice_action_'+i,x+2,69.2,w-4,px(44));
+    label('choice_'+i,x,28,w,52);
+   }}
  }else if(phase==='map'){
   // Preserve the painted atlas aspect, then transform its world markers together.
   const source=map.get('map_back').rect,sourceTop=100-source.y-source.height;
-  const atlasW=Math.min(width*.61,height*.60*(1672/941))/width*100,atlasH=atlasW*width/height/(1672/941);
-  const atlasX=7+(61-atlasW)/2,atlasY=20+(60-atlasH)/2;
+  const atlasW=Math.min(width*.61,height*.64*(1672/941))/width*100,atlasH=atlasW*width/height/(1672/941);
+  const atlasX=7+(61-atlasW)/2,atlasY=18+(64-atlasH)/2;
   const centers=new Map([...map].filter(([id])=>/^map_(node_\d+|current_ring|cursor_icon)$/.test(id)).map(([id,n])=>[id,{
    x:atlasX+((n.rect.x+n.rect.width/2-source.x)/source.width)*atlasW,
    y:atlasY+((100-n.rect.y-n.rect.height/2-sourceTop)/source.height)*atlasH,
@@ -85,116 +119,176 @@ export function layoutScreens({map,set,frame,control,text,plateRect,width,height
   label('map_back',atlasX,atlasY,atlasW,atlasH);
   for(let i=1;i<=7;i++){
    label('map_link_'+i,atlasX,atlasY,atlasW,atlasH);
-   const c=centers.get('map_node_'+i),size=i===game.round?(compact?46:60):(compact?36:46),w=size/width*100,h=px(size);
-   label('map_node_'+i,c.x-w/2,c.y-h/2,w,h);label('map_number_'+i,c.x-w/2,c.y-px(12),w,px(24));
+   const c=centers.get('map_node_'+i),size=i===game.round?60:46,w=size/width*100,h=px(size);
+   label('map_node_'+i,c.x-w/2,c.y-h/2,w,h);label('map_number_'+i,c.x-w/2,c.y-px(12),w,px(30));
   }
-  for(const [id,size,offset]of [['map_current_ring',compact?57:74,0],['map_cursor_icon',compact?26:32,compact?29:36]]){
+  for(const [id,size,offset]of [['map_current_ring',74,0],['map_cursor_icon',32,36]]){
    const c=centers.get(id);if(c)label(id,c.x-size/width*50,c.y-px(size/2+offset),size/width*100,px(size));
   }
-  label('map_lord',76,compact?22:24,12,18);label('map_stage',77,8,16,line);
-  label('map_current_title',71,compact?43:46,22,px(32));
-  label('map_plan',71,compact?56:57,22,px(48));label('map_next',71,73,22,px(36));
-  label('map_progress',8,foot,59,bh);place('visit_location',71,foot,22);
+  // Right rail: portrait, place name, status and next stop all on x = 82.
+  label('map_lord',76,22,12,18);label('map_stage',71,7.3,22,px(39));
+  label('map_current_title',71,43,22,px(48));
+  label('map_plan',71,52,22,px(48));label('map_next',71,64,22,px(48));
+  // The legend belongs to the atlas, so it sits directly under it.
+  label('map_progress',atlasX,atlasY+atlasH+1.6,atlasW,SMALL);place('visit_location',71,FOOT,22);
  }else if(route==='gear'){
-  label('bag_heading',64,27,29,line);
-  label('paper_doll_portrait',37,46,14,23);
-  for(let i=1;i<=3;i++){const y=38+(i-1)*14;
-   place('roster_unit_'+i,8,y,16);
+  // Left: one board holding the roster tabs, the doll and its slot grid.
+  label('loadout_board',14,31,38,46);label('loadout_board_title',14,32.2,38,px(39));
+  label('paper_doll_portrait',27.5,40,11,20);
+  hide('troop_quote'); // the deploy cost already rides on each roster tab
+  {const g=cells(3,14,38,1);
+   for(let i=1;i<=3;i++){const x=g.x(i-1),w=g.w;place('roster_unit_'+i,x,24.5,w,BH);
+    label('roster_unit_'+i+'_plate',x,24.5,w,BH);label('roster_unit_'+i+'_icon',x+1,25.6,2.6,3.4);
+    label('roster_unit_'+i+'_label',x+4,25.1,w-5,px(60));
+   }}
+  // Slot columns are symmetric about the board centre (x = 33).
+  for(const [i,[x,y]]of [[1,[17,36]],[2,[17,48]],[3,[17,60]],[4,[44.5,41]],[5,[44.5,55]]]){
+   label('slot_frame_'+i,x,y,4.5,8);label('slot_part_'+i,x+1,y+2,2.5,3.5);label('worn_icon_'+i,x+.55,y+1.8,3.4,4.4);label('slot_'+i,x,y+6.2,4.5,px(31));
+   label('slot_hit_'+i,x,y,4.5,8);
   }
-  label('troop_quote',8,77,16,line);text('troop_quote',map.get('troop_quote')?.text.replace('本次派兵\n','派兵 '));
-  for(const [i,[x,y]]of [[1,[37,38]],[2,[27,51]],[3,[47,51]],[4,[27,65]],[5,[47,65]]]){
-   frame('slot_frame_'+i,x,y,14,12);label('worn_icon_'+i,x+4.5,y,5,5.5);label('slot_'+i,x,y+5.5,14,6.5);
-   label('slot_hit_'+i,x,y,14,12);
+  frame('troop_stats_panel',14,85.5,38,6.5);label('troop_stats_title',15,87,7.5,px(35));
+  for(let i=1;i<=5;i++){const x=23+(i-1)*5.6;label('troop_stat_icon_'+i,x,87.15,1.6,px(26));label('troop_stat_value_'+i,x+1.8,87.25,3.2,px(31));}
+  hide('active_slot');place('unequip',25,78.5,16);place('deploy',70,FOOT,22);
+  if(map.has('drawer_heading')){
+   // Right: the drawer stays inside the window; its header uses its own axis.
+   frame('drawer_frame',56,13.5,36,70);
+   label('drawer_heading',58,16,32,LINE);label('drawer_subheading',58,20.5,32,px(31));
+   place('drawer_close',86.5,15.5,4.5,5.4);label('drawer_close_icon',87.5,16.2,2.5,3.2);
+   // The frame's center is x=60.5..87.5 and y=21.5..75.5. Keep every
+   // inventory tile inside that authored content area; the previous 32-unit
+   // grid crossed both ornamental side rails and the lower frame rail.
+   {const g=cells(3,60.5,27,1.5);
+    for(let i=1;i<=6;i++){const x=g.x((i-1)%3),w=g.w,y=25+Math.floor((i-1)/3)*25.5;
+     frame('pack_tile_'+i,x,y,w,23.5);
+     label('gear_icon_'+i,x+w/2-1.7,y+.7,3.4,4.2);label('gear_name_'+i,x+1,y+5.5,w-2,px(70));
+     label('gear_summary_'+i,x+1,y+10.6,w-2,px(50));label('gear_cost_'+i,x+1,y+14.6,w-2,px(30));
+     place('inspect_'+i,x,y,w,17.5);place('equip_'+i,x+1,y+18,w-2,5.5);label('equip_'+i+'_label',x+1.2,y+18.5,w-2.4,px(32));
+     label('empty_pack_icon_'+i,x+w/2-1.7,y+3.5,3.4,4.2);label('empty_pack_'+i,x+1,y+10,w-2,px(46));
+    }}
+   if(map.has('gear_scroll_track')){label('gear_scroll_track',88.8,25,1.2,49);label('gear_scroll_thumb',88.7,25,1.8,10);place('gear_scroll_up',88.4,18.5,3,5);place('gear_scroll_down',88.4,75.5,3,5);}
+  }else if(map.has('drawer_hint')){
+   label('drawer_hint',59,38,30,px(56));place('drawer_open',62,50,24);
   }
-  hide('active_slot');place('unequip',30,foot,29);place('loadout_return',8,foot,20);place('deploy',71,foot,22);
-  for(let i=1;i<=2;i++){const y=34+(i-1)*24;frame('pack_card_'+i,64,y,29,23);
-   label('gear_icon_'+i,65,y,4,px(23));label('gear_name_'+i,70,y,22,px(23));
-   label('gear_summary_'+i,65,y+px(23),27,px(20));label('gear_cost_'+i,65,y+23-bh,8,bh);
-   place('inspect_'+i,74,y+23-bh,8);place('equip_'+i,84,y+23-bh,8);label('empty_pack_icon_'+i,65,y+3,6,10);label('empty_pack_'+i,73,y+5,18,line);
-  }
-  place('gear_prev',62,17,6);place('gear_next',87,17,6);label('gear_page',71,17,13,bh);
   if(map.has('gear_detail_title')){
-   frame('gear_detail_modal',15,8,70,84);label('gear_detail_icon',23,18,12,19);label('gear_detail_title',39,19,38,line);
-   label('gear_detail_quote',39,29,38,px(44));label('gear_detail_effect',23,42,54,px(105));
-   place('gear_detail_equip',25,89-bh,24);place('gear_detail_close',52,89-bh,24);
+   // One modal, one axis, and no second close icon left live behind it.
+   hide('drawer_close','loadout_return');
+   frame('gear_detail_modal',22,14,56,64);
+   label('gear_detail_icon',44,19,12,14);label('gear_detail_title',28,35,44,LINE);
+   label('gear_detail_quote',28,42,44,px(76));label('gear_detail_effect',28,50,44,px(80));
+   place('gear_detail_equip',38,68,24);place('gear_detail_close',71.5,16.5,4.5,5.4);label('gear_detail_close_icon',72.5,17.2,2.5,3.2);
   }
  }else if(route==='runes'){
-  for(let i=1;i<=3;i++)place('unit_'+i,8,33+(i-1)*16,24);
-  for(let i=1;i<=3;i++){const y=31+(i-1)*17;
-   label('rune_icon_'+i,36,y,6,10);label('rune_name_'+i,44,y,29,line);
-   label('rune_desc_'+i,44,y+line,29,px(21));label('rune_owned_'+i,44,y+line+px(21),29,small);place('rune_'+i,76,y+1,17);
-  }
-  hide('rune_help');place('rune_off',8,foot,24);
-  place('rune_prev',62,17,6);place('rune_next',87,17,6);text('rune_prev','‹');text('rune_next','›');label('rune_page',71,17,13,bh);
-  place('loadout_return',45,foot,22);place('deploy',70,foot,23);
+  label('loadout_board',14,31,38,46);
+  label('rune_heading',56,22,32,LINE);label('rune_hint',56,27,32,px(31));
+  label('paper_doll_portrait',27.5,39,11,19);label('rune_loadout_slot',17,64,32,9);label('rune_loadout_icon',18.5,65.5,5,5);label('rune_loadout_name',25,65.5,22,px(48));label('rune_loadout_state',25,69.5,22,px(39));
+  hide('troop_quote');
+  {const g=cells(3,14,38,1);
+   for(let i=1;i<=3;i++){const x=g.x(i-1),w=g.w;place('unit_'+i,x,24.5,w,BH);
+    label('unit_'+i+'_plate',x,24.5,w,BH);label('unit_'+i+'_icon',x+1,25.6,2.6,3.4);label('unit_'+i+'_label',x+4,25.1,w-5,px(60));
+   }}
+  // Rune cards stop at x = 88 so the scrollbar stays inside the window too.
+  {const g=cells(2,56,32,1);
+   for(let i=1;i<=4;i++){const x=g.x((i-1)%2),w=g.w,y=32+Math.floor((i-1)/2)*21.5;
+    label('rune_tile_'+i,x,y,w,20.5);label('rune_icon_'+i,x+1,y+1.2,4,4.2);label('rune_name_'+i,x+5.5,y+1.2,w-6.5,px(45));
+    label('rune_desc_'+i,x+1,y+6.4,w-2,px(56));label('rune_owned_'+i,x+1,y+11.6,w-2,px(34));place('rune_'+i,x+1,y+14.4,w-2,5.6);
+   }}
+  label('rune_help',56,74,32,px(31));place('rune_off',62,80,20);
+  if(map.has('rune_scroll_track')){label('rune_scroll_track',89.5,32,1.4,39);label('rune_scroll_thumb',89.2,32,2,10);place('rune_scroll_up',88.7,25.5,3,5);place('rune_scroll_down',88.7,72,3,5);}
+  frame('troop_stats_panel',14,85.5,38,6.5);label('troop_stats_title',15,87,7.5,px(35));
+  for(let i=1;i<=5;i++){const x=23+(i-1)*5.6;label('troop_stat_icon_'+i,x,87.15,1.6,px(32));label('troop_stat_value_'+i,x+1.8,87.25,3.2,px(31));}
+  place('deploy',70,FOOT,22);
  }else if(route==='sell'){
-  for(let i=1;i<=4;i++){
-   if(game.location==='rune'){const y=33+(i-1)*16;label('sale_icon_'+i,37,y,7,10);label('sale_name_'+i,46,y,28,bh);place('sale_'+i,77,y,16);}
-   else{const x=37+(i-1)%2*29,y=34+Math.floor((i-1)/2)*24;label('sale_icon_'+i,x,y,7,9);label('sale_name_'+i,x+8,y,19,line);label('sale_status_'+i,x+8,y+line,19,small);place('sale_'+i,x,y+11,27);}
-  }
-  place('sale_prev',37,foot,9);place('sale_next',48,foot,9);
+  // Icon rail on the left of each row; the text block and its action share a width.
+  {const g=cells(2,37,55,1);
+   for(let i=1;i<=4;i++){
+    if(game.location==='rune'){const y=31+(i-1)*15;label('sale_icon_'+i,37,y,7,10);label('sale_name_'+i,46,y,29,BODY);place('sale_'+i,76,y+1.5,16);}
+    else{const x=g.x((i-1)%2),w=g.w,y=31+Math.floor((i-1)/2)*24;
+     label('sale_icon_'+i,x+1,y,6,9);label('sale_name_'+i,x+8,y,w-9,BODY);label('sale_status_'+i,x+8,y+BODY,w-9,SMALL);place('sale_'+i,x+8,y+11,w-9);}
+   }}
+  place('sale_prev',37,FOOT,11);place('sale_next',49,FOOT,11);
  }else if(shop&&game.location==='enchant'){
-  label('enchant_heading',37,17,56,line);
-  for(let i=1;i<=5;i++)place('enchant_slot_'+i,37+(i-1)*11.2,25,10.4);
-  for(let i=1;i<=3;i++)place('unit_'+i,37+(i-1)*19,25+bh+px(8),18);
-  label('enchant_item_icon',38,54,10,17);label('enchant_item_name',50,54,41,line);
-  label('enchant_current',50,54+line,41,px(36));label('enchant_cost',37,73,28,px(36));
-  place('enchant_roll',67,73,26);label('enchant_chances',8,foot,50,bh);
+  label('enchant_heading',37,16,55,BODY);
+  // Both rows share the same left and right edge.
+  {const g=cells(5,37,54.2,1);for(let i=1;i<=5;i++)place('enchant_slot_'+i,g.x(i-1),24,g.w);}
+  {const g=cells(3,37,54.2,1);for(let i=1;i<=3;i++)place('unit_'+i,g.x(i-1),24+BH+px(14),g.w);}
+  label('enchant_item_icon',38,52,10,17);label('enchant_item_name',50,52,41,BODY);
+  label('enchant_current',50,52+BODY,41,px(48));label('enchant_cost',37,72,26,px(48));
+  place('enchant_roll',65.2,71.5,26);label('enchant_chances',8,FOOT,46,BH);
   if(map.has('enchant_reveal_name')){
-   frame('enchant_reveal_back',35,40,59,42);label('enchant_reveal_tier',39,43,51,line);
-   label('enchant_reveal_icon',39,52,10,14);label('enchant_reveal_name',51,52,39,px(42));
-   place('enchant_accept',38,80-bh,25);place('enchant_keep',66,80-bh,25);
+   frame('enchant_reveal_back',36,38,55.2,44);label('enchant_reveal_tier',40,41,47.2,BODY);
+   label('enchant_reveal_icon',40,49,10,14);label('enchant_reveal_name',52,49,35,px(42));
+   place('enchant_accept',37,74,26.2);place('enchant_keep',65,74,26.2);
   }
  }else if(shop){
-  const contentTop=map.has('tab_home')?32:27,bottom=80;
-  for(let i=1;i<=2;i++){const x=37+(i-1)*29;frame('stock_panel_'+i,x,contentTop,27,bottom-contentTop);
-   label('stock_icon_'+i,x+2,contentTop+2,7,10);label('stock_name_'+i,x+10,contentTop+2,15,line*1.5);
-   label('stock_desc_'+i,x+2,contentTop+14,23,Math.max(px(52),bottom-contentTop-14-bh-10));
-   label('stock_cost_icon_'+i,x+7,bottom-bh-9,3,line);label('stock_cost_'+i,x+11,bottom-bh-9,9,line);
-   place('buy_'+i,x+2,bottom-bh-2,23);
+  // Icon, name, effect, price and action all stack on the card's own centre.
+  const contentTop=map.has('tab_home')?30:25,bottom=79;
+  const g=cells(2,37,55,1);
+  for(let i=1;i<=2;i++){const x=g.x(i-1),w=g.w;frame('stock_panel_'+i,x,contentTop,w,bottom-contentTop);
+   label('stock_icon_'+i,x+w/2-3.5,contentTop+2,7,10);label('stock_name_'+i,x+2,contentTop+13.5,w-4,LINE);
+   label('stock_desc_'+i,x+2,contentTop+19,w-4,Math.max(px(52),bottom-contentTop-19-BH-9));
+   label('stock_cost_icon_'+i,x+w/2-4.5,bottom-BH-7.5,3,BODY);label('stock_cost_'+i,x+w/2-1,bottom-BH-7.5,6,BODY);
+   place('buy_'+i,x+2,bottom-BH-2,w-4);
   }
-  place('stock_prev',37,foot,6);label('stock_page',44,foot,7,bh);place('stock_next',52,foot,6);
+  place('stock_prev',37,FOOT,9);label('stock_page',47,FOOT,7,BH);place('stock_next',55,FOOT,9);
  }else if(route==='auto'){
-  // Undo the legacy 74% sheet shrink before a real short-screen composition.
-  frame('screen_back',5,3,90,94);label('screen_title',9,7,82,line);label('auto_help',9,14,82,small);
-  for(const [i,name]of ['all','none','small','boss','special'].entries())place('auto_preset_'+name,9+i*16.6,21,15.6);
-  const y0=21+bh+px(8),footer=94-bh,row=(footer-px(32)-y0)/2;
-  for(let i=1;i<=10;i++){const x=9+(i-1)%5*16.6,y=y0+Math.floor((i-1)/5)*row,h=row-px(6);
-   frame('auto_card_'+i,x,y,15.6,h);label('auto_icon_'+i,x+3,y,9,h-px(36));label('auto_tick_'+i,x+12,y,2.5,px(16));
-   label('auto_pick_'+i,x,y,15.6,h-px(42));label('auto_name_'+i,x,y+h-px(42),15.6,px(22));label('auto_info_'+i,x,y+h-px(20),15.6,px(20));
-  }
-  label('auto_summary',9,footer-px(27),34,small);label('auto_note',44,footer-px(27),47,small);
-  place('auto_cancel',9,footer,20);place('auto_stop',31,footer,23);place('auto_apply',60,footer,31);
+  frame('screen_back',4,4,92,92);label('auto_help',8,15,84,SMALL);
+  // Presets are global actions, so their row deliberately does not share the
+  // column grid below it — otherwise they read as per-column headers.
+  {const g=cells(5,17.5,57,1.5);for(const [i,name]of ['all','none','small','boss','special'].entries())place('auto_preset_'+name,g.x(i),21,g.w);}
+  const y0=21+BH+GAP,footer=FOOT,row=(footer-px(48)-y0)/2;
+  {const g=cells(5,8,84,1.4);
+   for(let i=1;i<=10;i++){const x=g.x((i-1)%5),w=g.w,y=y0+Math.floor((i-1)/5)*row,h=row-px(11);
+    frame('auto_card_'+i,x,y,w,h);label('auto_icon_'+i,x+w/2-4.5,y,9,h-px(40));label('auto_tick_'+i,x+w-3.5,y+.6,2.5,px(22));
+    label('auto_pick_'+i,x,y,w,h-px(46));label('auto_name_'+i,x,y+h-px(46),w,px(34));label('auto_info_'+i,x,y+h-px(31),w,px(31));
+   }}
+  // Each caption sits over the button it describes.
+  label('auto_summary',8,footer-px(45),24,SMALL);label('auto_note',60,footer-px(45),32,SMALL);
+  place('auto_cancel',8,footer,24);place('auto_stop',34,footer,24);place('auto_apply',60,footer,32);
  }else if(battle){
-  const bottom=98-bh,unitH=px(65);
+  const bottom=98-BH,unitH=px(65);
   for(let i=1;i<=3;i++){const x=2+(i-1)*9;frame('hud_unit_plate_'+i,x,98-unitH,8.4,unitH);
-   label('hud_unit_icon_'+i,x+1.7,98-unitH,5,px(30));label('hud_unit_'+i,x,98-unitH,8.4,px(30));label('hud_unit_caption_'+i,x,98-px(35),8.4,px(35));
+   label('hud_unit_icon_'+i,x+1.7,98-unitH+px(3),5,px(39));label('hud_unit_'+i,x,98-unitH+px(6),8.4,px(39));label('hud_unit_caption_'+i,x,98-px(50),8.4,px(48));
   }
-  for(const [name,x]of [['lock',77],['auto',88]]){frame('mode_plate_'+name,x,98-unitH,10.4,unitH);label('mode_icon_'+name,x+3.5,98-unitH,3.4,px(30));label('mode_'+name,x,98-unitH,10.4,px(30));label('mode_label_'+name,x,98-px(28),10.4,px(26));}
-  place('auto_settings',77,98-unitH-bh-px(8),21.4);
-  frame('target_plate',77,98-unitH-bh-px(63),21.4,px(48));label('target',78,98-unitH-bh-px(61),19.4,small);label('target_guard',78,98-unitH-bh-px(38),19.4,small);
-  place('pause',93,2,Math.max(5.2,44/width*100));frame('pause_plate',93,2,Math.max(5.2,44/width*100),bh);label('pause_icon',94,2+px(8),3,px(28));
-  for(const [id,x]of [['coins',35],['crystals',55]]){frame(id+'_plate',x,bottom,18,bh);label(id+'_icon',x+1,bottom+px(7),3,px(30));label(id,x+5,bottom,12,bh);}
-  label('timeline_round',8,px(47),20,small);label('timeline_goal',60,px(47),31,small);label('timeline_time',42,px(10),16,px(28));
-  for(let i=1;i<=2;i++)place('potion_'+i,2,24+(i-1)*(bh+px(8)),12);
+  for(const [name,x]of [['lock',77],['auto',88]]){frame('mode_plate_'+name,x,98-unitH,10.4,unitH);label('mode_icon_'+name,x+3.5,98-unitH+px(3),3.4,px(39));label('mode_'+name,x,98-unitH+px(6),10.4,px(39));label('mode_label_'+name,x,98-px(36),10.4,px(34));}
+  place('auto_settings',77,98-unitH-BH-px(11),21.4);
+  frame('target_plate',77,98-unitH-BH-px(63),21.4,px(48));label('target',78,98-unitH-BH-px(61),19.4,SMALL);label('target_guard',78,98-unitH-BH-px(38),19.4,SMALL);
+  place('pause',93,2,Math.max(5.2,44/width*100));frame('pause_plate',93,2,Math.max(5.2,44/width*100),BH);label('pause_icon',94,2+px(10),3,px(30));
+  for(const [id,x]of [['coins',35],['crystals',55]]){frame(id+'_plate',x,bottom,18,BH);label(id+'_icon',x+1,bottom+px(13),3,px(42));label(id,x+5,bottom,12,BH);}
+  // Round, clock and goal share one band inside the timeline bar.
+  label('timeline_round',8,px(40),18,SMALL);label('timeline_time',42,px(40),16,SMALL);label('timeline_goal',62,px(40),27,SMALL);
+  for(let i=1;i<=2;i++)place('potion_'+i,2,24+(i-1)*(BH+px(14)),12);
  }else if(game.paused){
-  if(route==='guide'){label('help_title',16,19,68,line);for(let i=1;i<=6;i++)label('help_'+i,15,29+(i-1)*8,70,px(28));place('guide_back',24,foot,22);place('resume',51,foot,25);}
-  else if(route==='abandon'){label('abandon_warning',15,28,70,px(80));place('abandon_cancel',15,60,33);place('abandon_confirm',53,60,33);}
-  else{place('resume',32,34,36);place('guide',32,34+bh+px(14),36);place('quit',32,34+2*(bh+px(14)),36);place('mute',73,18,20);}
+  if(route==='guide'){
+   label('help_title',16,20,68,BODY);
+   for(let i=1;i<=6;i++)label('help_'+i,15,29+(i-1)*6.6,70,px(36));
+   place('resume',37.5,FOOT,25);
+  }
+  else if(route==='abandon'){label('abandon_warning',15,30,70,px(80));place('abandon_cancel',16,58,33);place('abandon_confirm',51,58,33);}
+  else{const y0=33;for(const [i,id]of ['resume','guide','quit','mute'].entries())place(id,32,y0+i*(BH+GAP),36);}
  }else if(['clear','victory'].includes(phase)){
-  label('result_message',9,20,82,line);label('result_earned_label',9,29,38,small);label('result_earned',9,35,38,px(52));
-  label('result_refund',51,31,40,line);label('result_crystals',51,41,40,px(38));
-  label('result_combat',9,53,82,line);place('chest',26,61,48);
-  label('chest_result',12,61,61,bh);place('chest_done',78,61,13);label('result_story',9,76,82,small);
+  // Three stat columns on one baseline, then the chest row, story and action.
+  label('result_message',8,19,84,BODY);
+  const g=cells(3,10,80,2);
+  label('result_earned_label',g.x(0),30,g.w,SMALL);label('result_earned',g.x(0),35,g.w,px(48));
+  label('result_refund',g.x(1),35,g.w,px(44));
+  label('result_crystals',g.x(2),34,g.w,px(56));
+  label('result_combat',8,47,84,BODY);
+  place('chest',30,55,40);
+  label('chest_result',34,55,24,BH);place('chest_done',60,55,14);
+  label('result_story',8,67,84,SMALL);
  }else if(phase==='defeat'){
-  label('defeat_crest',44,7,12,15);label('defeat_title',20,23,60,px(42));label('defeat_reason',12,35,76,line);label('defeat_route',12,43,76,small);
-  for(let i=1;i<=6;i++){const x=12+(i-1)%3*26,y=51+Math.floor((i-1)/3)*13;label('defeat_stat_label_'+i,x,y,24,small);label('defeat_stat_value_'+i,x,y+small,24,px(28));}
-  label('defeat_town_reward',12,78,76,small);hide('defeat_save');place('defeat_town',12,foot,35);place('defeat_retry',53,foot,35);
+  label('defeat_crest',44,7,12,15);label('defeat_title',20,23,60,px(42));label('defeat_reason',8,35,84,BODY);label('defeat_route',8,42,84,SMALL);
+  {const g=cells(3,8,84,0);
+   for(let i=1;i<=6;i++){const x=g.x((i-1)%3),y=50+Math.floor((i-1)/3)*13;label('defeat_stat_label_'+i,x,y,g.w,SMALL);label('defeat_stat_value_'+i,x,y+SMALL,g.w,px(42));}}
+  label('defeat_town_reward',8,77,84,SMALL);hide('defeat_save');place('defeat_retry',32,FOOT,36);
  }
  if(shop&&map.has('shop_detail_title')){
-  frame('shop_detail_modal',15,8,70,84);label('shop_detail_icon',23,18,12,19);label('shop_detail_title',39,19,38,line);
-  label('shop_detail_price_icon',46,29,3,line);label('shop_detail_price',50,29,14,line);label('shop_detail_effect',23,42,54,px(105));
-  place('shop_detail_buy',25,89-bh,24);place('shop_detail_close',52,89-bh,24);
+  frame('shop_detail_modal',22,14,56,64);
+  label('shop_detail_kicker',26,18,48,SMALL);label('shop_detail_title',26,24,48,LINE);
+  label('shop_detail_icon',26,31,11,15);label('shop_detail_story',39,32,35,px(44));
+  label('shop_detail_price_icon',26,48,3,BODY);label('shop_detail_price',30,48,10,BODY);label('shop_detail_deploy',44,48,30,BODY);
+  label('shop_detail_trigger',26,55,48,SMALL);label('shop_detail_effect',26,60,48,px(60));
+  place('shop_detail_buy',38,69,24);place('shop_detail_close',71.5,16.5,4.5,5.4);label('shop_detail_close_icon',72.5,17.2,2.5,3.2);
  }
  return {bh,compact};
 }

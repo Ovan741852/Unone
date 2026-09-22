@@ -90,7 +90,7 @@ function check(tree,modal,viewport={width:1920,height:1080}){
   await page.setViewportSize({width,height});await capture(`components-${width}`,false);
   for(let i=1;i<=4;i++){await click('ShopDetail'+i);await capture(`components-detail${i}-${width}`,true);await click('ShopDetailClose','shop_detail_close');}
  }
- await click('ShopDetail1');await click('Buy1');await capture('components-purchased-desktop',true);await click('ShopDetailClose','shop_detail_close');await capture('components-receipt-desktop',false);
+ await click('ShopDetail1');await click('Buy1');await capture('components-purchased-desktop',false);await capture('components-receipt-desktop',false);
  // Rerolls continue while affordable and expose the authoritative next price.
  async function clickIcon(id){const r=await page.evaluate(id=>window.ashen.uiTree().children.find(n=>n.id===id)?.rect,id);assert.ok(r,'Missing '+id);const p=await uiPoint(page,r);await page.mouse.move(p.x,p.y);assert.match(await page.locator('#game').getAttribute('title'),/重骰/);await page.mouse.click(p.x,p.y);await page.mouse.move(2,2);await page.waitForTimeout(180);}
  const beforeReroll=await page.evaluate(()=>window.ashen.state().crystals);await clickIcon('refresh_icon');

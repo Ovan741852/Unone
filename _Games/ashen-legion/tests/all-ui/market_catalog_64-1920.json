@@ -184,12 +184,24 @@
       },
       {
         "kind": "image",
+        "id": "screen_gold_plate",
+        "rect": {
+          "x": 68.5,
+          "y": 80.7,
+          "width": 10.5,
+          "height": 5.8
+        },
+        "asset": "texture://ui_hud-gold",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
         "id": "screen_gold_icon",
         "rect": {
-          "x": 78,
-          "y": 81.5,
-          "width": 3,
-          "height": 4
+          "x": 69.5,
+          "y": 81.64999999999999,
+          "width": 3.2,
+          "height": 3.9
         },
         "asset": "texture://ui_icon-coin",
         "fit": "contain"
@@ -198,21 +210,33 @@
         "kind": "text",
         "id": "screen_gold",
         "rect": {
-          "x": 81.7,
-          "y": 81.69958847736625,
-          "width": 7.3,
+          "x": 68.5,
+          "y": 81.79958847736626,
+          "width": 10.5,
           "height": 3.6008230452674894
         },
         "text": "320"
       },
       {
         "kind": "image",
+        "id": "screen_crystals_plate",
+        "rect": {
+          "x": 79.5,
+          "y": 80.7,
+          "width": 10.5,
+          "height": 5.8
+        },
+        "asset": "texture://ui_hud-crystal",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
         "id": "screen_crystals_icon",
         "rect": {
-          "x": 78,
-          "y": 77,
-          "width": 3,
-          "height": 4
+          "x": 80.5,
+          "y": 81.64999999999999,
+          "width": 3.2,
+          "height": 3.9
         },
         "asset": "texture://ui_icon-crystal",
         "fit": "contain"
@@ -221,9 +245,9 @@
         "kind": "text",
         "id": "screen_crystals",
         "rect": {
-          "x": 81.7,
-          "y": 77.19958847736625,
-          "width": 7.3,
+          "x": 79.5,
+          "y": 81.79958847736626,
+          "width": 10.5,
           "height": 3.6008230452674894
         },
         "text": "18"
@@ -1875,14 +1899,14 @@
       "text": "320",
       "font": 28,
       "clip": {
-        "x": 1568.64,
-        "y": 158.75555555555565,
-        "width": 140.16,
+        "x": 1315.2,
+        "y": 157.67555555555555,
+        "width": 201.6,
         "height": 38.888888888888886
       },
       "ink": {
-        "x": 1615.3772265625,
-        "y": 167.1218750000001,
+        "x": 1392.6572265625,
+        "y": 166.041875,
         "width": 47.45703125,
         "height": 23
       }
@@ -1891,14 +1915,14 @@
       "text": "18",
       "font": 28,
       "clip": {
-        "x": 1568.64,
-        "y": 207.3555555555556,
-        "width": 140.16,
+        "x": 1526.4,
+        "y": 157.67555555555555,
+        "width": 201.6,
         "height": 38.888888888888886
       },
       "ink": {
-        "x": 1624.491484375,
-        "y": 215.72187500000007,
+        "x": 1612.971484375,
+        "y": 166.041875,
         "width": 30.228515625,
         "height": 23
       }
@@ -2434,44 +2458,650 @@
   ],
   "metrics": {
     "backend": "canvas2d",
-    "nodes": 155,
+    "nodes": 157,
+    "usage": {
+      "logical_nodes": 157,
+      "leaf_nodes": 157,
+      "render_regions_upper_bound": 157,
+      "max_nodes": 2048,
+      "host_max_nodes": 16384,
+      "limit_source": "contract.default",
+      "subtrees": [
+        [
+          "shop_backdrop",
+          1
+        ],
+        [
+          "shop_backdrop_shade",
+          1
+        ],
+        [
+          "shop_window_fill",
+          1
+        ],
+        [
+          "screen_back_fill",
+          1
+        ],
+        [
+          "screen_back_tl",
+          1
+        ],
+        [
+          "screen_back_t",
+          1
+        ],
+        [
+          "screen_back_tr",
+          1
+        ],
+        [
+          "screen_back_l",
+          1
+        ],
+        [
+          "screen_back_c",
+          1
+        ],
+        [
+          "screen_back_r",
+          1
+        ],
+        [
+          "screen_back_bl",
+          1
+        ],
+        [
+          "screen_back_b",
+          1
+        ],
+        [
+          "screen_back_br",
+          1
+        ],
+        [
+          "shop_window_title",
+          1
+        ],
+        [
+          "screen_title",
+          1
+        ],
+        [
+          "screen_gold_plate",
+          1
+        ],
+        [
+          "screen_gold_icon",
+          1
+        ],
+        [
+          "screen_gold",
+          1
+        ],
+        [
+          "screen_crystals_plate",
+          1
+        ],
+        [
+          "screen_crystals_icon",
+          1
+        ],
+        [
+          "screen_crystals",
+          1
+        ],
+        [
+          "tab_home_plate_tl",
+          1
+        ],
+        [
+          "tab_home_plate_t",
+          1
+        ],
+        [
+          "tab_home_plate_tr",
+          1
+        ],
+        [
+          "tab_home_plate_l",
+          1
+        ],
+        [
+          "tab_home_plate_c",
+          1
+        ],
+        [
+          "tab_home_plate_r",
+          1
+        ],
+        [
+          "tab_home_plate_bl",
+          1
+        ],
+        [
+          "tab_home_plate_b",
+          1
+        ],
+        [
+          "tab_home_plate_br",
+          1
+        ],
+        [
+          "tab_home",
+          1
+        ],
+        [
+          "tab_home_hit_top",
+          1
+        ],
+        [
+          "tab_home_hit_bottom",
+          1
+        ],
+        [
+          "tab_sell_plate_tl",
+          1
+        ],
+        [
+          "tab_sell_plate_t",
+          1
+        ],
+        [
+          "tab_sell_plate_tr",
+          1
+        ],
+        [
+          "tab_sell_plate_l",
+          1
+        ],
+        [
+          "tab_sell_plate_c",
+          1
+        ],
+        [
+          "tab_sell_plate_r",
+          1
+        ],
+        [
+          "tab_sell_plate_bl",
+          1
+        ],
+        [
+          "tab_sell_plate_b",
+          1
+        ],
+        [
+          "tab_sell_plate_br",
+          1
+        ],
+        [
+          "tab_sell",
+          1
+        ],
+        [
+          "tab_sell_hit_top",
+          1
+        ],
+        [
+          "tab_sell_hit_bottom",
+          1
+        ],
+        [
+          "ready_plate_tl",
+          1
+        ],
+        [
+          "ready_plate_t",
+          1
+        ],
+        [
+          "ready_plate_tr",
+          1
+        ],
+        [
+          "ready_plate_l",
+          1
+        ],
+        [
+          "ready_plate_c",
+          1
+        ],
+        [
+          "ready_plate_r",
+          1
+        ],
+        [
+          "ready_plate_bl",
+          1
+        ],
+        [
+          "ready_plate_b",
+          1
+        ],
+        [
+          "ready_plate_br",
+          1
+        ],
+        [
+          "ready",
+          1
+        ],
+        [
+          "ready_hit_top",
+          1
+        ],
+        [
+          "ready_hit_bottom",
+          1
+        ],
+        [
+          "quick_deploy_plate_tl",
+          1
+        ],
+        [
+          "quick_deploy_plate_t",
+          1
+        ],
+        [
+          "quick_deploy_plate_tr",
+          1
+        ],
+        [
+          "quick_deploy_plate_l",
+          1
+        ],
+        [
+          "quick_deploy_plate_c",
+          1
+        ],
+        [
+          "quick_deploy_plate_r",
+          1
+        ],
+        [
+          "quick_deploy_plate_bl",
+          1
+        ],
+        [
+          "quick_deploy_plate_b",
+          1
+        ],
+        [
+          "quick_deploy_plate_br",
+          1
+        ],
+        [
+          "quick_deploy",
+          1
+        ],
+        [
+          "quick_deploy_hit_top",
+          1
+        ],
+        [
+          "quick_deploy_hit_bottom",
+          1
+        ],
+        [
+          "shopkeeper_portrait",
+          1
+        ],
+        [
+          "shopkeeper_name",
+          1
+        ],
+        [
+          "shopkeeper_line",
+          1
+        ],
+        [
+          "stock_panel_1_tl",
+          1
+        ],
+        [
+          "stock_panel_1_t",
+          1
+        ],
+        [
+          "stock_panel_1_tr",
+          1
+        ],
+        [
+          "stock_panel_1_l",
+          1
+        ],
+        [
+          "stock_panel_1_c",
+          1
+        ],
+        [
+          "stock_panel_1_r",
+          1
+        ],
+        [
+          "stock_panel_1_bl",
+          1
+        ],
+        [
+          "stock_panel_1_b",
+          1
+        ],
+        [
+          "stock_panel_1_br",
+          1
+        ],
+        [
+          "stock_icon_1",
+          1
+        ],
+        [
+          "stock_name_1",
+          1
+        ],
+        [
+          "stock_desc_1",
+          1
+        ],
+        [
+          "stock_cost_icon_1",
+          1
+        ],
+        [
+          "stock_cost_1",
+          1
+        ],
+        [
+          "stock_deploy_1",
+          1
+        ],
+        [
+          "stock_detail_1",
+          1
+        ],
+        [
+          "stock_hit_1",
+          1
+        ],
+        [
+          "stock_panel_2_tl",
+          1
+        ],
+        [
+          "stock_panel_2_t",
+          1
+        ],
+        [
+          "stock_panel_2_tr",
+          1
+        ],
+        [
+          "stock_panel_2_l",
+          1
+        ],
+        [
+          "stock_panel_2_c",
+          1
+        ],
+        [
+          "stock_panel_2_r",
+          1
+        ],
+        [
+          "stock_panel_2_bl",
+          1
+        ],
+        [
+          "stock_panel_2_b",
+          1
+        ],
+        [
+          "stock_panel_2_br",
+          1
+        ],
+        [
+          "stock_icon_2",
+          1
+        ],
+        [
+          "stock_name_2",
+          1
+        ],
+        [
+          "stock_desc_2",
+          1
+        ],
+        [
+          "stock_cost_icon_2",
+          1
+        ],
+        [
+          "stock_cost_2",
+          1
+        ],
+        [
+          "stock_deploy_2",
+          1
+        ],
+        [
+          "stock_detail_2",
+          1
+        ],
+        [
+          "stock_hit_2",
+          1
+        ],
+        [
+          "stock_panel_3_tl",
+          1
+        ],
+        [
+          "stock_panel_3_t",
+          1
+        ],
+        [
+          "stock_panel_3_tr",
+          1
+        ],
+        [
+          "stock_panel_3_l",
+          1
+        ],
+        [
+          "stock_panel_3_c",
+          1
+        ],
+        [
+          "stock_panel_3_r",
+          1
+        ],
+        [
+          "stock_panel_3_bl",
+          1
+        ],
+        [
+          "stock_panel_3_b",
+          1
+        ],
+        [
+          "stock_panel_3_br",
+          1
+        ],
+        [
+          "stock_icon_3",
+          1
+        ],
+        [
+          "stock_name_3",
+          1
+        ],
+        [
+          "stock_desc_3",
+          1
+        ],
+        [
+          "stock_cost_icon_3",
+          1
+        ],
+        [
+          "stock_cost_3",
+          1
+        ],
+        [
+          "stock_deploy_3",
+          1
+        ],
+        [
+          "stock_detail_3",
+          1
+        ],
+        [
+          "stock_hit_3",
+          1
+        ],
+        [
+          "stock_panel_4_tl",
+          1
+        ],
+        [
+          "stock_panel_4_t",
+          1
+        ],
+        [
+          "stock_panel_4_tr",
+          1
+        ],
+        [
+          "stock_panel_4_l",
+          1
+        ],
+        [
+          "stock_panel_4_c",
+          1
+        ],
+        [
+          "stock_panel_4_r",
+          1
+        ],
+        [
+          "stock_panel_4_bl",
+          1
+        ],
+        [
+          "stock_panel_4_b",
+          1
+        ],
+        [
+          "stock_panel_4_br",
+          1
+        ],
+        [
+          "stock_icon_4",
+          1
+        ],
+        [
+          "stock_name_4",
+          1
+        ],
+        [
+          "stock_desc_4",
+          1
+        ],
+        [
+          "stock_cost_icon_4",
+          1
+        ],
+        [
+          "stock_cost_4",
+          1
+        ],
+        [
+          "stock_deploy_4",
+          1
+        ],
+        [
+          "stock_detail_4",
+          1
+        ],
+        [
+          "stock_hit_4",
+          1
+        ],
+        [
+          "stock_hint",
+          1
+        ],
+        [
+          "refresh_plate_tl",
+          1
+        ],
+        [
+          "refresh_plate_t",
+          1
+        ],
+        [
+          "refresh_plate_tr",
+          1
+        ],
+        [
+          "refresh_plate_l",
+          1
+        ],
+        [
+          "refresh_plate_c",
+          1
+        ],
+        [
+          "refresh_plate_r",
+          1
+        ],
+        [
+          "refresh_plate_bl",
+          1
+        ],
+        [
+          "refresh_plate_b",
+          1
+        ],
+        [
+          "refresh_plate_br",
+          1
+        ],
+        [
+          "refresh",
+          1
+        ],
+        [
+          "refresh_hit_top",
+          1
+        ],
+        [
+          "refresh_hit_bottom",
+          1
+        ],
+        [
+          "refresh_icon",
+          1
+        ],
+        [
+          "refresh_currency_icon",
+          1
+        ],
+        [
+          "refresh_cost",
+          1
+        ],
+        [
+          "refresh_content_hit",
+          1
+        ]
+      ]
+    },
+    "render_regions": 157,
+    "cpu_render_ms": 1.0999999940395355,
+    "gpu_render_ms": null,
+    "decoded_rgba_bytes_estimate": 44473808,
     "assets": [
-      {
-        "id": "texture://ui_control-quiet-v3-tl",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-t",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-tr",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-l",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-c",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-r",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-bl",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-b",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-br",
-        "state": "ready"
-      },
       {
         "id": "texture://ui_shop-button-primary-v2-tl",
         "state": "ready"
@@ -2553,11 +3183,55 @@
         "state": "ready"
       },
       {
+        "id": "texture://ui_hud-gold",
+        "state": "ready"
+      },
+      {
         "id": "texture://ui_icon-coin",
         "state": "ready"
       },
       {
+        "id": "texture://ui_hud-crystal",
+        "state": "ready"
+      },
+      {
         "id": "texture://ui_icon-crystal",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
         "state": "ready"
       },
       {
@@ -2664,6 +3338,7 @@
     "diagnostics": [],
     "fontFamily": "\"Microsoft JhengHei\",sans-serif",
     "limitations": [
+      "CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.",
       "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
       "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
     ]

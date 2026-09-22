@@ -21,16 +21,20 @@ export function chooseBuildInput(s,p,frame){
  const targetBuild=p.unit===1&&!items.some(x=>x.skill==='pierce')?5:p.buildIndex;
  if(s.buildIndex!==targetBuild){input.actions['Build'+targetBuild]=true;return input;}
  if(s.phase==='choice'){
-  const cards=values(s.cards);const order=items.length<2?['market','tech','curse','potion','enchant']:['tech','market','enchant','potion','curse'];
+  const cards=values(s.cards);const order=items.length<2?['market','tech','rune','curse','potion','enchant']:['tech','market','rune','enchant','potion','curse'];
   const ranked=cards.map((c,i)=>({i,value:order.indexOf(c.id)})).sort((a,b)=>a.value-b.value);
   input.actions['Choice'+(ranked[0].i+1)]=true;return input;
  }
  if(s.phase==='clear' && s.chestCount>0 && frame%180<90){input.actions.OpenChest=true;return input;}
- if(s.phase==='shop'||s.phase==='clear'){
+ if(s.phase==='loadout'){
   const better=items.map((item,i)=>({item,i,score:score(item.skill)+score(item.enchant)})).filter(x=>{
    const old=items.find(y=>y.id===worn[x.item.slot-1]);return x.item.id!==old?.id&&x.score>(old?score(old.skill)+score(old.enchant):0);
   }).sort((a,b)=>b.score-a.score);
   if(better.length){input.actions['Equip'+(better[0].i+1)]=true;return input;}
+ }
+ if(s.phase==='loadout'){
+  const runes=values(s.runes),bag=values(s.runeBag);if(!runes[p.unit-1]){const i=bag.findIndex(n=>n>0);if(i>=0){input.actions['Rune'+(i+1)]=true;return input;}}
+  input.actions[s.loadoutReturn==='shop'?'Deploy':'ReturnFromLoadout']=true;return input;
  }
  if(s.phase==='clear'){if(s.presentationDelay<=0)input.actions.Next=true;return input;}
  if(s.phase!=='shop')return input;
@@ -41,6 +45,9 @@ export function chooseBuildInput(s,p,frame){
   const choices=stock.map((x,i)=>({x,i})).filter(({x})=>!x.sold&&score(x.skill)>0&&canUpgrade(x.price)&&!items.some(y=>y.skill===x.skill)).sort((a,b)=>score(b.x.skill)-score(a.x.skill));
   if(choices.length){input.actions['Buy'+(choices[0].i+1)]=true;return input;}
   if(!s.refreshUsed&&(split?s.crystals>=14:s.coins>reserve+120)){input.actions.RefreshShop=true;return input;}
+ }else if(s.location==='rune'){
+  const owned=values(s.runes).some(Boolean)||values(s.runeBag).some(n=>n>0);
+  const i=stock.findIndex(x=>!x.sold&&canUpgrade(x.price));if(!owned&&i>=0){input.actions['Buy'+(i+1)]=true;return input;}
  }else if(s.location==='tech'&&!s.researchUsed){
   const picks=stock.map((x,i)=>({x,i})).filter(({x})=>x.unit===p.unit&&score(x.value)>0&&canUpgrade(x.price)).sort((a,b)=>score(b.x.value)-score(a.x.value));
   if(picks.length){input.actions['Buy'+(picks[0].i+1)]=true;return input;}

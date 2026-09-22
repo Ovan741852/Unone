@@ -226,144 +226,36 @@
       },
       {
         "kind": "image",
-        "id": "guide_back_plate_tl",
-        "rect": {
-          "x": 24,
-          "y": 10.933333333333334,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-tl",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "guide_back_plate_t",
-        "rect": {
-          "x": 24.6,
-          "y": 10.933333333333334,
-          "width": 20.799999999999997,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-t",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "guide_back_plate_tr",
-        "rect": {
-          "x": 45.4,
-          "y": 10.933333333333334,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-tr",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "guide_back_plate_l",
-        "rect": {
-          "x": 24,
-          "y": 7.066666666666666,
-          "width": 0.6000000000000014,
-          "height": 3.866666666666667
-        },
-        "asset": "texture://ui_control-quiet-v3-l",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "guide_back_plate_c",
-        "rect": {
-          "x": 24.6,
-          "y": 7.066666666666666,
-          "width": 20.799999999999997,
-          "height": 3.866666666666667
-        },
-        "asset": "texture://ui_control-quiet-v3-c",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "guide_back_plate_r",
-        "rect": {
-          "x": 45.4,
-          "y": 7.066666666666666,
-          "width": 0.6000000000000014,
-          "height": 3.866666666666667
-        },
-        "asset": "texture://ui_control-quiet-v3-r",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "guide_back_plate_bl",
+        "id": "guide_back_plate",
         "rect": {
           "x": 24,
           "y": 6,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666664
+          "width": 22,
+          "height": 6
         },
-        "asset": "texture://ui_control-quiet-v3-bl",
+        "asset": "texture://ui_hud-key",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "guide_back_plate_b",
+        "id": "guide_back_icon",
         "rect": {
-          "x": 24.6,
-          "y": 6,
-          "width": 20.799999999999997,
-          "height": 1.0666666666666664
+          "x": 93.25,
+          "y": 88.14999999999999,
+          "width": 3,
+          "height": 3.7
         },
-        "asset": "texture://ui_control-quiet-v3-b",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "guide_back_plate_br",
-        "rect": {
-          "x": 45.4,
-          "y": 6,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-br",
-        "fit": "stretch"
+        "asset": "texture://ui_icon-close",
+        "fit": "contain"
       },
       {
         "kind": "button",
         "id": "guide_back",
         "rect": {
           "x": 24,
-          "y": 7.585390946502056,
+          "y": 6,
           "width": 22,
-          "height": 2.8292181069958846
-        },
-        "text": "返回暫停",
-        "action": "UI_home"
-      },
-      {
-        "kind": "button",
-        "id": "guide_back_hit_top",
-        "rect": {
-          "x": 24,
-          "y": 10.414609053497943,
-          "width": 22,
-          "height": 1.5853909465020577
-        },
-        "text": "",
-        "action": "UI_home"
-      },
-      {
-        "kind": "button",
-        "id": "guide_back_hit_bottom",
-        "rect": {
-          "x": 24,
-          "y": 6.000000000000002,
-          "width": 22,
-          "height": 1.5853909465020577
+          "height": 6
         },
         "text": "",
         "action": "UI_home"
@@ -644,22 +536,6 @@
       }
     },
     {
-      "text": "返回暫停",
-      "font": 22,
-      "clip": {
-        "x": 460.8,
-        "y": 967.5222222222222,
-        "width": 422.4,
-        "height": 30.555555555555554
-      },
-      "ink": {
-        "x": 628,
-        "y": 972.3781250000001,
-        "width": 88,
-        "height": 20
-      }
-    },
-    {
       "text": "繼續戰鬥",
       "font": 22,
       "clip": {
@@ -678,44 +554,158 @@
   ],
   "metrics": {
     "backend": "canvas2d",
-    "nodes": 43,
+    "nodes": 34,
+    "usage": {
+      "logical_nodes": 34,
+      "leaf_nodes": 34,
+      "render_regions_upper_bound": 34,
+      "max_nodes": 2048,
+      "host_max_nodes": 16384,
+      "limit_source": "contract.default",
+      "subtrees": [
+        [
+          "screen_shade",
+          1
+        ],
+        [
+          "screen_back_fill",
+          1
+        ],
+        [
+          "screen_back_tl",
+          1
+        ],
+        [
+          "screen_back_t",
+          1
+        ],
+        [
+          "screen_back_tr",
+          1
+        ],
+        [
+          "screen_back_l",
+          1
+        ],
+        [
+          "screen_back_c",
+          1
+        ],
+        [
+          "screen_back_r",
+          1
+        ],
+        [
+          "screen_back_bl",
+          1
+        ],
+        [
+          "screen_back_b",
+          1
+        ],
+        [
+          "screen_back_br",
+          1
+        ],
+        [
+          "screen_title",
+          1
+        ],
+        [
+          "help_title",
+          1
+        ],
+        [
+          "help_1",
+          1
+        ],
+        [
+          "help_2",
+          1
+        ],
+        [
+          "help_3",
+          1
+        ],
+        [
+          "help_4",
+          1
+        ],
+        [
+          "help_5",
+          1
+        ],
+        [
+          "help_6",
+          1
+        ],
+        [
+          "guide_back_plate",
+          1
+        ],
+        [
+          "guide_back_icon",
+          1
+        ],
+        [
+          "guide_back",
+          1
+        ],
+        [
+          "resume_plate_tl",
+          1
+        ],
+        [
+          "resume_plate_t",
+          1
+        ],
+        [
+          "resume_plate_tr",
+          1
+        ],
+        [
+          "resume_plate_l",
+          1
+        ],
+        [
+          "resume_plate_c",
+          1
+        ],
+        [
+          "resume_plate_r",
+          1
+        ],
+        [
+          "resume_plate_bl",
+          1
+        ],
+        [
+          "resume_plate_b",
+          1
+        ],
+        [
+          "resume_plate_br",
+          1
+        ],
+        [
+          "resume",
+          1
+        ],
+        [
+          "resume_hit_top",
+          1
+        ],
+        [
+          "resume_hit_bottom",
+          1
+        ]
+      ]
+    },
+    "render_regions": 34,
+    "cpu_render_ms": 0.29999999701976776,
+    "gpu_render_ms": null,
+    "decoded_rgba_bytes_estimate": 14817632,
     "assets": [
-      {
-        "id": "texture://ui_control-quiet-v3-tl",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-t",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-tr",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-l",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-c",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-r",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-bl",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-b",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-br",
-        "state": "ready"
-      },
       {
         "id": "texture://ui_scene-shade",
         "state": "ready"
@@ -795,11 +785,20 @@
       {
         "id": "texture://ui_shop-button-primary-v2-br",
         "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-key",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-close",
+        "state": "ready"
       }
     ],
     "diagnostics": [],
     "fontFamily": "\"Microsoft JhengHei\",sans-serif",
     "limitations": [
+      "CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.",
       "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
       "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
     ]

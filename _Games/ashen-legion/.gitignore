@@ -1,0 +1,27 @@
+# Generated exports and local tool/runtime state.
+/dist/
+/.cache/
+/.tmp/
+/.tools/
+/.unone/
+/.koncrate/
+/.koncrate-matrix-runtime/
+/.koncrate-matrix-tmp/
+node_modules/
+__pycache__/
+*.pyc
+*.blend[0-9]*
+*.log
+.DS_Store
+Thumbs.db
+
+# Credentials belong in the host, never the game repository.
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+*.pfx
+*.p12
+*.keystore

@@ -149,12 +149,24 @@
       },
       {
         "kind": "image",
+        "id": "screen_gold_plate",
+        "rect": {
+          "x": 68.5,
+          "y": 87.8,
+          "width": 10.5,
+          "height": 6
+        },
+        "asset": "texture://ui_hud-gold",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
         "id": "screen_gold_icon",
         "rect": {
-          "x": 71,
-          "y": 89.77777777777777,
-          "width": 3,
-          "height": 2.2222222222222223
+          "x": 69.5,
+          "y": 88.94999999999999,
+          "width": 3.2,
+          "height": 3.9
         },
         "asset": "texture://ui_icon-coin",
         "fit": "contain"
@@ -163,21 +175,33 @@
         "kind": "text",
         "id": "screen_gold",
         "rect": {
-          "x": 75,
-          "y": 89.77970679012346,
-          "width": 7,
-          "height": 2.218364197530864
+          "x": 68.5,
+          "y": 89.38539094650206,
+          "width": 10.5,
+          "height": 2.8292181069958846
         },
         "text": "320"
       },
       {
         "kind": "image",
+        "id": "screen_crystals_plate",
+        "rect": {
+          "x": 79.5,
+          "y": 87.8,
+          "width": 10.5,
+          "height": 6
+        },
+        "asset": "texture://ui_hud-crystal",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
         "id": "screen_crystals_icon",
         "rect": {
-          "x": 83,
-          "y": 89.77777777777777,
-          "width": 3,
-          "height": 2.2222222222222223
+          "x": 80.5,
+          "y": 88.94999999999999,
+          "width": 3.2,
+          "height": 3.9
         },
         "asset": "texture://ui_icon-crystal",
         "fit": "contain"
@@ -186,441 +210,151 @@
         "kind": "text",
         "id": "screen_crystals",
         "rect": {
-          "x": 87,
-          "y": 89.77970679012346,
-          "width": 6,
-          "height": 2.218364197530864
+          "x": 79.5,
+          "y": 89.38539094650206,
+          "width": 10.5,
+          "height": 2.8292181069958846
         },
         "text": "18"
       },
       {
         "kind": "image",
-        "id": "tab_gear_plate_tl",
+        "id": "tab_gear_plate",
         "rect": {
-          "x": 8,
-          "y": 81.93333333333334,
-          "width": 0.5999999999999996,
-          "height": 1.0666666666666629
+          "x": 7,
+          "y": 58.5,
+          "width": 7,
+          "height": 11
         },
-        "asset": "texture://ui_control-quiet-v3-tl",
+        "asset": "texture://ui_loadout-tab-v1",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "tab_gear_plate_t",
+        "id": "tab_gear_icon",
         "rect": {
-          "x": 8.6,
-          "y": 81.93333333333334,
-          "width": 20.799999999999997,
-          "height": 1.0666666666666629
+          "x": 8.65,
+          "y": 64.14999999999999,
+          "width": 3.7,
+          "height": 4.2
         },
-        "asset": "texture://ui_control-quiet-v3-t",
-        "fit": "stretch"
+        "asset": "texture://ui_icon-weapon",
+        "fit": "contain"
       },
       {
-        "kind": "image",
-        "id": "tab_gear_plate_tr",
+        "kind": "text",
+        "id": "tab_gear_label",
         "rect": {
-          "x": 29.4,
-          "y": 81.93333333333334,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666629
+          "x": 7.5,
+          "y": 60.779706790123456,
+          "width": 6,
+          "height": 2.218364197530864
         },
-        "asset": "texture://ui_control-quiet-v3-tr",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "tab_gear_plate_l",
-        "rect": {
-          "x": 8,
-          "y": 78.06666666666666,
-          "width": 0.5999999999999996,
-          "height": 3.8666666666666742
-        },
-        "asset": "texture://ui_control-quiet-v3-l",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "tab_gear_plate_c",
-        "rect": {
-          "x": 8.6,
-          "y": 78.06666666666666,
-          "width": 20.799999999999997,
-          "height": 3.8666666666666742
-        },
-        "asset": "texture://ui_control-quiet-v3-c",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "tab_gear_plate_r",
-        "rect": {
-          "x": 29.4,
-          "y": 78.06666666666666,
-          "width": 0.6000000000000014,
-          "height": 3.8666666666666742
-        },
-        "asset": "texture://ui_control-quiet-v3-r",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "tab_gear_plate_bl",
-        "rect": {
-          "x": 8,
-          "y": 77,
-          "width": 0.5999999999999996,
-          "height": 1.0666666666666629
-        },
-        "asset": "texture://ui_control-quiet-v3-bl",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "tab_gear_plate_b",
-        "rect": {
-          "x": 8.6,
-          "y": 77,
-          "width": 20.799999999999997,
-          "height": 1.0666666666666629
-        },
-        "asset": "texture://ui_control-quiet-v3-b",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "tab_gear_plate_br",
-        "rect": {
-          "x": 29.4,
-          "y": 77,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666629
-        },
-        "asset": "texture://ui_control-quiet-v3-br",
-        "fit": "stretch"
+        "text": "裝備"
       },
       {
         "kind": "button",
         "id": "tab_gear",
         "rect": {
-          "x": 8,
-          "y": 78.58539094650206,
-          "width": 22,
-          "height": 2.8292181069958846
-        },
-        "text": "裝備",
-        "action": "UI_gear"
-      },
-      {
-        "kind": "button",
-        "id": "tab_gear_hit_top",
-        "rect": {
-          "x": 8,
-          "y": 81.41460905349794,
-          "width": 22,
-          "height": 1.5853909465020577
-        },
-        "text": "",
-        "action": "UI_gear"
-      },
-      {
-        "kind": "button",
-        "id": "tab_gear_hit_bottom",
-        "rect": {
-          "x": 8,
-          "y": 77,
-          "width": 22,
-          "height": 1.5853909465020577
+          "x": 7,
+          "y": 58.5,
+          "width": 7,
+          "height": 11
         },
         "text": "",
         "action": "UI_gear"
       },
       {
         "kind": "image",
-        "id": "tab_runes_plate_tl",
+        "id": "tab_runes_plate",
         "rect": {
-          "x": 32,
-          "y": 81.7603305785124,
-          "width": 2.0919421487603316,
-          "height": 1.239669421487605
+          "x": 7,
+          "y": 46,
+          "width": 7,
+          "height": 11
         },
-        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "asset": "texture://ui_loadout-tab-v1",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "tab_runes_plate_t",
+        "id": "tab_runes_active",
         "rect": {
-          "x": 34.09194214876033,
-          "y": 81.7603305785124,
-          "width": 17.816115702479337,
-          "height": 1.239669421487605
+          "x": 7,
+          "y": 46,
+          "width": 7,
+          "height": 11
         },
-        "asset": "texture://ui_shop-button-primary-v2-t",
+        "asset": "texture://ui_loadout-tab-active-v1",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "tab_runes_plate_tr",
+        "id": "tab_runes_icon",
         "rect": {
-          "x": 51.90805785123967,
-          "y": 81.7603305785124,
-          "width": 2.0919421487603316,
-          "height": 1.239669421487605
+          "x": 8.65,
+          "y": 51.65,
+          "width": 3.7,
+          "height": 4.2
         },
-        "asset": "texture://ui_shop-button-primary-v2-tr",
-        "fit": "stretch"
+        "asset": "texture://ui_icon-rune",
+        "fit": "contain"
       },
       {
-        "kind": "image",
-        "id": "tab_runes_plate_l",
+        "kind": "text",
+        "id": "tab_runes_label",
         "rect": {
-          "x": 32,
-          "y": 78.2396694214876,
-          "width": 2.0919421487603316,
-          "height": 3.52066115702479
+          "x": 7.5,
+          "y": 48.279706790123456,
+          "width": 6,
+          "height": 2.218364197530864
         },
-        "asset": "texture://ui_shop-button-primary-v2-l",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "tab_runes_plate_c",
-        "rect": {
-          "x": 34.09194214876033,
-          "y": 78.2396694214876,
-          "width": 17.816115702479337,
-          "height": 3.52066115702479
-        },
-        "asset": "texture://ui_shop-button-primary-v2-c",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "tab_runes_plate_r",
-        "rect": {
-          "x": 51.90805785123967,
-          "y": 78.2396694214876,
-          "width": 2.0919421487603316,
-          "height": 3.52066115702479
-        },
-        "asset": "texture://ui_shop-button-primary-v2-r",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "tab_runes_plate_bl",
-        "rect": {
-          "x": 32,
-          "y": 77,
-          "width": 2.0919421487603316,
-          "height": 1.239669421487605
-        },
-        "asset": "texture://ui_shop-button-primary-v2-bl",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "tab_runes_plate_b",
-        "rect": {
-          "x": 34.09194214876033,
-          "y": 77,
-          "width": 17.816115702479337,
-          "height": 1.239669421487605
-        },
-        "asset": "texture://ui_shop-button-primary-v2-b",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "tab_runes_plate_br",
-        "rect": {
-          "x": 51.90805785123967,
-          "y": 77,
-          "width": 2.0919421487603316,
-          "height": 1.239669421487605
-        },
-        "asset": "texture://ui_shop-button-primary-v2-br",
-        "fit": "stretch"
+        "text": "符文"
       },
       {
         "kind": "button",
         "id": "tab_runes",
         "rect": {
-          "x": 32,
-          "y": 78.58539094650206,
-          "width": 22,
-          "height": 2.8292181069958846
-        },
-        "text": "符文",
-        "action": "UI_runes"
-      },
-      {
-        "kind": "button",
-        "id": "tab_runes_hit_top",
-        "rect": {
-          "x": 32,
-          "y": 81.41460905349794,
-          "width": 22,
-          "height": 1.5853909465020577
-        },
-        "text": "",
-        "action": "UI_runes"
-      },
-      {
-        "kind": "button",
-        "id": "tab_runes_hit_bottom",
-        "rect": {
-          "x": 32,
-          "y": 77,
-          "width": 22,
-          "height": 1.5853909465020577
+          "x": 7,
+          "y": 46,
+          "width": 7,
+          "height": 11
         },
         "text": "",
         "action": "UI_runes"
       },
       {
         "kind": "image",
-        "id": "loadout_return_plate_tl",
+        "id": "loadout_return_plate",
         "rect": {
-          "x": 45,
-          "y": 10.933333333333332,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666664
+          "x": 92,
+          "y": 87,
+          "width": 5.5,
+          "height": 6
         },
-        "asset": "texture://ui_control-quiet-v3-tl",
+        "asset": "texture://ui_hud-key",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "loadout_return_plate_t",
+        "id": "loadout_return_icon",
         "rect": {
-          "x": 45.6,
-          "y": 10.933333333333332,
-          "width": 20.800000000000004,
-          "height": 1.0666666666666664
+          "x": 93.25,
+          "y": 88.14999999999999,
+          "width": 3,
+          "height": 3.7
         },
-        "asset": "texture://ui_control-quiet-v3-t",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "loadout_return_plate_tr",
-        "rect": {
-          "x": 66.4,
-          "y": 10.933333333333332,
-          "width": 0.5999999999999943,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-tr",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "loadout_return_plate_l",
-        "rect": {
-          "x": 45,
-          "y": 7.066666666666666,
-          "width": 0.6000000000000014,
-          "height": 3.8666666666666654
-        },
-        "asset": "texture://ui_control-quiet-v3-l",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "loadout_return_plate_c",
-        "rect": {
-          "x": 45.6,
-          "y": 7.066666666666666,
-          "width": 20.800000000000004,
-          "height": 3.8666666666666654
-        },
-        "asset": "texture://ui_control-quiet-v3-c",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "loadout_return_plate_r",
-        "rect": {
-          "x": 66.4,
-          "y": 7.066666666666666,
-          "width": 0.5999999999999943,
-          "height": 3.8666666666666654
-        },
-        "asset": "texture://ui_control-quiet-v3-r",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "loadout_return_plate_bl",
-        "rect": {
-          "x": 45,
-          "y": 6,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-bl",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "loadout_return_plate_b",
-        "rect": {
-          "x": 45.6,
-          "y": 6,
-          "width": 20.800000000000004,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-b",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "loadout_return_plate_br",
-        "rect": {
-          "x": 66.4,
-          "y": 6,
-          "width": 0.5999999999999943,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-br",
-        "fit": "stretch"
+        "asset": "texture://ui_icon-close",
+        "fit": "contain"
       },
       {
         "kind": "button",
         "id": "loadout_return",
         "rect": {
-          "x": 45,
-          "y": 7.585390946502056,
-          "width": 22,
-          "height": 2.8292181069958846
-        },
-        "text": "返回商店",
-        "action": "ReturnFromLoadout"
-      },
-      {
-        "kind": "button",
-        "id": "loadout_return_hit_top",
-        "rect": {
-          "x": 45,
-          "y": 10.414609053497943,
-          "width": 22,
-          "height": 1.5853909465020568
-        },
-        "text": "",
-        "action": "ReturnFromLoadout"
-      },
-      {
-        "kind": "button",
-        "id": "loadout_return_hit_bottom",
-        "rect": {
-          "x": 45,
-          "y": 6.000000000000003,
-          "width": 22,
-          "height": 1.5853909465020568
+          "x": 92,
+          "y": 87,
+          "width": 5.5,
+          "height": 6
         },
         "text": "",
         "action": "ReturnFromLoadout"
@@ -771,489 +505,301 @@
       },
       {
         "kind": "image",
-        "id": "unit_1_plate_tl",
+        "id": "loadout_board",
         "rect": {
-          "x": 8,
-          "y": 65.7603305785124,
-          "width": 2.09194214876033,
-          "height": 1.239669421487605
+          "x": 14,
+          "y": 15,
+          "width": 38,
+          "height": 54
         },
-        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "asset": "texture://ui_loadout-board-v2",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "unit_1_plate_t",
+        "id": "unit_1_plate",
         "rect": {
-          "x": 10.09194214876033,
-          "y": 65.7603305785124,
-          "width": 19.816115702479337,
-          "height": 1.239669421487605
+          "x": 14,
+          "y": 68.5,
+          "width": 11.2,
+          "height": 6
         },
-        "asset": "texture://ui_shop-button-primary-v2-t",
+        "asset": "texture://ui_hud-active",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "unit_1_plate_tr",
+        "id": "unit_1_icon",
         "rect": {
-          "x": 29.90805785123967,
-          "y": 65.7603305785124,
-          "width": 2.0919421487603316,
-          "height": 1.239669421487605
+          "x": 15,
+          "y": 70.1,
+          "width": 2.6,
+          "height": 3.4
         },
-        "asset": "texture://ui_shop-button-primary-v2-tr",
-        "fit": "stretch"
+        "asset": "texture://ui_symbol-sword",
+        "fit": "contain"
       },
       {
-        "kind": "image",
-        "id": "unit_1_plate_l",
+        "kind": "text",
+        "id": "unit_1_label",
         "rect": {
-          "x": 8,
-          "y": 62.239669421487605,
-          "width": 2.09194214876033,
-          "height": 3.52066115702479
+          "x": 17.8,
+          "y": 70.86111111111111,
+          "width": 6.9,
+          "height": 2.314814814814815
         },
-        "asset": "texture://ui_shop-button-primary-v2-l",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_1_plate_c",
-        "rect": {
-          "x": 10.09194214876033,
-          "y": 62.239669421487605,
-          "width": 19.816115702479337,
-          "height": 3.52066115702479
-        },
-        "asset": "texture://ui_shop-button-primary-v2-c",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_1_plate_r",
-        "rect": {
-          "x": 29.90805785123967,
-          "y": 62.239669421487605,
-          "width": 2.0919421487603316,
-          "height": 3.52066115702479
-        },
-        "asset": "texture://ui_shop-button-primary-v2-r",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_1_plate_bl",
-        "rect": {
-          "x": 8,
-          "y": 61,
-          "width": 2.09194214876033,
-          "height": 1.239669421487605
-        },
-        "asset": "texture://ui_shop-button-primary-v2-bl",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_1_plate_b",
-        "rect": {
-          "x": 10.09194214876033,
-          "y": 61,
-          "width": 19.816115702479337,
-          "height": 1.239669421487605
-        },
-        "asset": "texture://ui_shop-button-primary-v2-b",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_1_plate_br",
-        "rect": {
-          "x": 29.90805785123967,
-          "y": 61,
-          "width": 2.0919421487603316,
-          "height": 1.239669421487605
-        },
-        "asset": "texture://ui_shop-button-primary-v2-br",
-        "fit": "stretch"
+        "text": "劍兵…"
       },
       {
         "kind": "button",
         "id": "unit_1",
         "rect": {
-          "x": 8,
-          "y": 62.58539094650206,
-          "width": 24,
-          "height": 2.8292181069958846
-        },
-        "text": "◆ 劍兵 · 4 金",
-        "action": "Unit1"
-      },
-      {
-        "kind": "button",
-        "id": "unit_1_hit_top",
-        "rect": {
-          "x": 8,
-          "y": 65.41460905349794,
-          "width": 24,
-          "height": 1.5853909465020577
-        },
-        "text": "",
-        "action": "Unit1"
-      },
-      {
-        "kind": "button",
-        "id": "unit_1_hit_bottom",
-        "rect": {
-          "x": 8,
-          "y": 61,
-          "width": 24,
-          "height": 1.5853909465020577
+          "x": 14,
+          "y": 68.5,
+          "width": 11.2,
+          "height": 6
         },
         "text": "",
         "action": "Unit1"
       },
       {
         "kind": "image",
-        "id": "unit_2_plate_tl",
+        "id": "unit_2_plate",
         "rect": {
-          "x": 8,
-          "y": 49.93333333333334,
-          "width": 0.5999999999999996,
-          "height": 1.06666666666667
+          "x": 26.2,
+          "y": 68.5,
+          "width": 11.2,
+          "height": 6
         },
-        "asset": "texture://ui_control-quiet-v3-tl",
+        "asset": "texture://ui_hud-key",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "unit_2_plate_t",
+        "id": "unit_2_icon",
         "rect": {
-          "x": 8.6,
-          "y": 49.93333333333334,
-          "width": 22.799999999999997,
-          "height": 1.06666666666667
+          "x": 27.2,
+          "y": 70.1,
+          "width": 2.6,
+          "height": 3.4
         },
-        "asset": "texture://ui_control-quiet-v3-t",
-        "fit": "stretch"
+        "asset": "texture://ui_symbol-spear",
+        "fit": "contain"
       },
       {
-        "kind": "image",
-        "id": "unit_2_plate_tr",
+        "kind": "text",
+        "id": "unit_2_label",
         "rect": {
-          "x": 31.4,
-          "y": 49.93333333333334,
-          "width": 0.6000000000000014,
-          "height": 1.06666666666667
+          "x": 30,
+          "y": 70.86111111111111,
+          "width": 6.9,
+          "height": 2.314814814814815
         },
-        "asset": "texture://ui_control-quiet-v3-tr",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_2_plate_l",
-        "rect": {
-          "x": 8,
-          "y": 46.06666666666667,
-          "width": 0.5999999999999996,
-          "height": 3.866666666666667
-        },
-        "asset": "texture://ui_control-quiet-v3-l",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_2_plate_c",
-        "rect": {
-          "x": 8.6,
-          "y": 46.06666666666667,
-          "width": 22.799999999999997,
-          "height": 3.866666666666667
-        },
-        "asset": "texture://ui_control-quiet-v3-c",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_2_plate_r",
-        "rect": {
-          "x": 31.4,
-          "y": 46.06666666666667,
-          "width": 0.6000000000000014,
-          "height": 3.866666666666667
-        },
-        "asset": "texture://ui_control-quiet-v3-r",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_2_plate_bl",
-        "rect": {
-          "x": 8,
-          "y": 45,
-          "width": 0.5999999999999996,
-          "height": 1.06666666666667
-        },
-        "asset": "texture://ui_control-quiet-v3-bl",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_2_plate_b",
-        "rect": {
-          "x": 8.6,
-          "y": 45,
-          "width": 22.799999999999997,
-          "height": 1.06666666666667
-        },
-        "asset": "texture://ui_control-quiet-v3-b",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_2_plate_br",
-        "rect": {
-          "x": 31.4,
-          "y": 45,
-          "width": 0.6000000000000014,
-          "height": 1.06666666666667
-        },
-        "asset": "texture://ui_control-quiet-v3-br",
-        "fit": "stretch"
+        "text": "槍兵…"
       },
       {
         "kind": "button",
         "id": "unit_2",
         "rect": {
-          "x": 8,
-          "y": 46.585390946502066,
-          "width": 24,
-          "height": 2.8292181069958846
-        },
-        "text": "槍兵 · 10 金",
-        "action": "Unit2"
-      },
-      {
-        "kind": "button",
-        "id": "unit_2_hit_top",
-        "rect": {
-          "x": 8,
-          "y": 49.41460905349795,
-          "width": 24,
-          "height": 1.5853909465020612
-        },
-        "text": "",
-        "action": "Unit2"
-      },
-      {
-        "kind": "button",
-        "id": "unit_2_hit_bottom",
-        "rect": {
-          "x": 8,
-          "y": 45.00000000000001,
-          "width": 24,
-          "height": 1.5853909465020612
+          "x": 26.2,
+          "y": 68.5,
+          "width": 11.2,
+          "height": 6
         },
         "text": "",
         "action": "Unit2"
       },
       {
         "kind": "image",
-        "id": "unit_3_plate_tl",
+        "id": "unit_3_plate",
         "rect": {
-          "x": 8,
-          "y": 33.93333333333334,
-          "width": 0.5999999999999996,
-          "height": 1.06666666666667
+          "x": 38.4,
+          "y": 68.5,
+          "width": 11.2,
+          "height": 6
         },
-        "asset": "texture://ui_control-quiet-v3-tl",
+        "asset": "texture://ui_hud-key",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "unit_3_plate_t",
+        "id": "unit_3_icon",
         "rect": {
-          "x": 8.6,
-          "y": 33.93333333333334,
-          "width": 22.800000000000004,
-          "height": 1.06666666666667
+          "x": 39.4,
+          "y": 70.1,
+          "width": 2.6,
+          "height": 3.4
         },
-        "asset": "texture://ui_control-quiet-v3-t",
-        "fit": "stretch"
+        "asset": "texture://ui_symbol-cavalry",
+        "fit": "contain"
       },
       {
-        "kind": "image",
-        "id": "unit_3_plate_tr",
+        "kind": "text",
+        "id": "unit_3_label",
         "rect": {
-          "x": 31.400000000000006,
-          "y": 33.93333333333334,
-          "width": 0.6000000000000014,
-          "height": 1.06666666666667
+          "x": 42.199999999999996,
+          "y": 70.86111111111111,
+          "width": 6.9,
+          "height": 2.314814814814815
         },
-        "asset": "texture://ui_control-quiet-v3-tr",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_3_plate_l",
-        "rect": {
-          "x": 8,
-          "y": 30.066666666666666,
-          "width": 0.5999999999999996,
-          "height": 3.8666666666666707
-        },
-        "asset": "texture://ui_control-quiet-v3-l",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_3_plate_c",
-        "rect": {
-          "x": 8.6,
-          "y": 30.066666666666666,
-          "width": 22.800000000000004,
-          "height": 3.8666666666666707
-        },
-        "asset": "texture://ui_control-quiet-v3-c",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_3_plate_r",
-        "rect": {
-          "x": 31.400000000000006,
-          "y": 30.066666666666666,
-          "width": 0.6000000000000014,
-          "height": 3.8666666666666707
-        },
-        "asset": "texture://ui_control-quiet-v3-r",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_3_plate_bl",
-        "rect": {
-          "x": 8,
-          "y": 29,
-          "width": 0.5999999999999996,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-bl",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_3_plate_b",
-        "rect": {
-          "x": 8.6,
-          "y": 29,
-          "width": 22.800000000000004,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-b",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "unit_3_plate_br",
-        "rect": {
-          "x": 31.400000000000006,
-          "y": 29,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-br",
-        "fit": "stretch"
+        "text": "騎兵…"
       },
       {
         "kind": "button",
         "id": "unit_3",
         "rect": {
-          "x": 8,
-          "y": 30.585390946502056,
-          "width": 24.000000000000007,
-          "height": 2.8292181069958846
-        },
-        "text": "騎兵 · 20 金",
-        "action": "Unit3"
-      },
-      {
-        "kind": "button",
-        "id": "unit_3_hit_top",
-        "rect": {
-          "x": 8,
-          "y": 33.41460905349794,
-          "width": 24.000000000000007,
-          "height": 1.5853909465020612
+          "x": 38.4,
+          "y": 68.5,
+          "width": 11.2,
+          "height": 6
         },
         "text": "",
         "action": "Unit3"
       },
       {
-        "kind": "button",
-        "id": "unit_3_hit_bottom",
+        "kind": "text",
+        "id": "troop_quote",
         "rect": {
-          "x": 8,
-          "y": 28.999999999999996,
-          "width": 24.000000000000007,
-          "height": 1.5853909465020612
+          "x": 15,
+          "y": 64.5462962962963,
+          "width": 9,
+          "height": 2.314814814814815
         },
-        "text": "",
-        "action": "Unit3"
+        "text": "派兵 4 金"
+      },
+      {
+        "kind": "text",
+        "id": "rune_heading",
+        "rect": {
+          "x": 56,
+          "y": 73.77970679012346,
+          "width": 39,
+          "height": 2.218364197530864
+        },
+        "text": "可用符文"
+      },
+      {
+        "kind": "text",
+        "id": "rune_hint",
+        "rect": {
+          "x": 56,
+          "y": 70.15779320987654,
+          "width": 39,
+          "height": 1.8325617283950615
+        },
+        "text": "選一枚符文裝入目前部隊"
+      },
+      {
+        "kind": "image",
+        "id": "rune_loadout_slot",
+        "rect": {
+          "x": 16,
+          "y": 16,
+          "width": 24,
+          "height": 9
+        },
+        "asset": "texture://ui_loadout-slot-empty-v1",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_loadout_icon",
+        "rect": {
+          "x": 18,
+          "y": 19,
+          "width": 5,
+          "height": 5
+        },
+        "asset": "texture://ui_icon-lock",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "rune_loadout_name",
+        "rect": {
+          "x": 25,
+          "y": 20.85185185185185,
+          "width": 14,
+          "height": 3.148148148148148
+        },
+        "text": ""
+      },
+      {
+        "kind": "text",
+        "id": "rune_loadout_state",
+        "rect": {
+          "x": 25,
+          "y": 17.40740740740741,
+          "width": 14,
+          "height": 2.5925925925925926
+        },
+        "text": ""
+      },
+      {
+        "kind": "image",
+        "id": "rune_tile_1",
+        "rect": {
+          "x": 57,
+          "y": 49.5,
+          "width": 18,
+          "height": 18.5
+        },
+        "asset": "texture://ui_loadout-item-tile-v2",
+        "fit": "stretch"
       },
       {
         "kind": "image",
         "id": "rune_icon_1",
         "rect": {
-          "x": 36,
-          "y": 59,
-          "width": 6,
-          "height": 10
+          "x": 58,
+          "y": 62.5,
+          "width": 4.5,
+          "height": 4.5
         },
-        "asset": "texture://ui_skill-hunter_vigor",
+        "asset": "texture://ui_skill-ember_burst",
         "fit": "contain"
       },
       {
         "kind": "text",
         "id": "rune_name_1",
         "rect": {
-          "x": 44,
-          "y": 66.77970679012346,
-          "width": 29,
-          "height": 2.218364197530864
+          "x": 63,
+          "y": 64.01131687242798,
+          "width": 11,
+          "height": 2.8292181069958846
         },
-        "text": "中王細收符文"
+        "text": "燼火符文"
       },
       {
         "kind": "text",
         "id": "rune_desc_1",
         "rect": {
-          "x": 44,
-          "y": 64.84104938271605,
-          "width": 29,
-          "height": 1.9290123456790123
+          "x": 58,
+          "y": 59.36111111111111,
+          "width": 16,
+          "height": 2.314814814814815
         },
-        "text": "對中王：小獎 +12、大獎 -12 百分點"
+        "text": "傷害 +35%"
       },
       {
         "kind": "text",
         "id": "rune_owned_1",
         "rect": {
-          "x": 44,
-          "y": 62.99112654320989,
-          "width": 29,
-          "height": 1.8325617283950615
+          "x": 58,
+          "y": 56.96875,
+          "width": 16,
+          "height": 2.025462962962963
         },
-        "text": "背包 0 枚"
+        "text": "背包 1 枚"
       },
       {
         "kind": "image",
         "id": "rune_1_plate_tl",
         "rect": {
-          "x": 76,
-          "y": 66.93333333333334,
-          "width": 0.5999999999999943,
-          "height": 1.0666666666666629
+          "x": 58,
+          "y": 54.93333333333333,
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-tl",
         "fit": "stretch"
@@ -1262,10 +808,10 @@
         "kind": "image",
         "id": "rune_1_plate_t",
         "rect": {
-          "x": 76.6,
-          "y": 66.93333333333334,
-          "width": 15.800000000000011,
-          "height": 1.0666666666666629
+          "x": 58.6,
+          "y": 54.93333333333333,
+          "width": 14.800000000000004,
+          "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-t",
         "fit": "stretch"
@@ -1274,10 +820,10 @@
         "kind": "image",
         "id": "rune_1_plate_tr",
         "rect": {
-          "x": 92.4,
-          "y": 66.93333333333334,
+          "x": 73.4,
+          "y": 54.93333333333333,
           "width": 0.5999999999999943,
-          "height": 1.0666666666666629
+          "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-tr",
         "fit": "stretch"
@@ -1286,10 +832,10 @@
         "kind": "image",
         "id": "rune_1_plate_l",
         "rect": {
-          "x": 76,
-          "y": 63.06666666666667,
-          "width": 0.5999999999999943,
-          "height": 3.866666666666667
+          "x": 58,
+          "y": 52.86666666666667,
+          "width": 0.6000000000000014,
+          "height": 2.066666666666663
         },
         "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
@@ -1298,10 +844,10 @@
         "kind": "image",
         "id": "rune_1_plate_c",
         "rect": {
-          "x": 76.6,
-          "y": 63.06666666666667,
-          "width": 15.800000000000011,
-          "height": 3.866666666666667
+          "x": 58.6,
+          "y": 52.86666666666667,
+          "width": 14.800000000000004,
+          "height": 2.066666666666663
         },
         "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
@@ -1310,10 +856,10 @@
         "kind": "image",
         "id": "rune_1_plate_r",
         "rect": {
-          "x": 92.4,
-          "y": 63.06666666666667,
+          "x": 73.4,
+          "y": 52.86666666666667,
           "width": 0.5999999999999943,
-          "height": 3.866666666666667
+          "height": 2.066666666666663
         },
         "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
@@ -1322,9 +868,9 @@
         "kind": "image",
         "id": "rune_1_plate_bl",
         "rect": {
-          "x": 76,
-          "y": 62,
-          "width": 0.5999999999999943,
+          "x": 58,
+          "y": 51.8,
+          "width": 0.6000000000000014,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-bl",
@@ -1334,9 +880,9 @@
         "kind": "image",
         "id": "rune_1_plate_b",
         "rect": {
-          "x": 76.6,
-          "y": 62,
-          "width": 15.800000000000011,
+          "x": 58.6,
+          "y": 51.8,
+          "width": 14.800000000000004,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-b",
@@ -1346,8 +892,8 @@
         "kind": "image",
         "id": "rune_1_plate_br",
         "rect": {
-          "x": 92.4,
-          "y": 62,
+          "x": 73.4,
+          "y": 51.8,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
         },
@@ -1355,58 +901,95 @@
         "fit": "stretch"
       },
       {
-        "kind": "text",
+        "kind": "button",
         "id": "rune_1",
         "rect": {
-          "x": 76,
-          "y": 63.58539094650206,
-          "width": 17,
+          "x": 58,
+          "y": 52.48539094650206,
+          "width": 16,
           "height": 2.8292181069958846
         },
-        "text": "尚未持有"
+        "text": "裝入",
+        "action": "Rune1"
+      },
+      {
+        "kind": "button",
+        "id": "rune_1_hit_top",
+        "rect": {
+          "x": 58,
+          "y": 55.31460905349794,
+          "width": 16,
+          "height": 0.6853909465020591
+        },
+        "text": "",
+        "action": "Rune1"
+      },
+      {
+        "kind": "button",
+        "id": "rune_1_hit_bottom",
+        "rect": {
+          "x": 58,
+          "y": 51.8,
+          "width": 16,
+          "height": 0.6853909465020591
+        },
+        "text": "",
+        "action": "Rune1"
+      },
+      {
+        "kind": "image",
+        "id": "rune_tile_2",
+        "rect": {
+          "x": 76,
+          "y": 49.5,
+          "width": 18,
+          "height": 18.5
+        },
+        "asset": "texture://ui_loadout-item-tile-v2",
+        "fit": "stretch"
       },
       {
         "kind": "image",
         "id": "rune_icon_2",
         "rect": {
-          "x": 36,
-          "y": 42,
-          "width": 6,
-          "height": 10
+          "x": 77,
+          "y": 62.5,
+          "width": 4.5,
+          "height": 4.5
         },
-        "asset": "texture://ui_skill-deadly",
+        "asset": "texture://ui_skill-plunder",
         "fit": "contain"
       },
       {
         "kind": "text",
         "id": "rune_name_2",
         "rect": {
-          "x": 44,
-          "y": 49.779706790123456,
-          "width": 29,
-          "height": 2.218364197530864
+          "x": 82,
+          "y": 64.01131687242798,
+          "width": 11,
+          "height": 2.8292181069958846
         },
-        "text": "大王抬賞符文"
+        "text": "迴響符文"
       },
       {
         "kind": "text",
         "id": "rune_desc_2",
         "rect": {
-          "x": 44,
-          "y": 47.84104938271605,
-          "width": 29,
-          "height": 1.9290123456790123
+          "x": 77,
+          "y": 59.36111111111111,
+          "width": 16,
+          "height": 2.314814814814815
         },
-        "text": "對大王：小獎 -12、大獎 +12 百分點"
+        "text": "一般獎金 +25%"
       },
       {
         "kind": "text",
         "id": "rune_owned_2",
         "rect": {
-          "x": 44,
-          "y": 45.99112654320988,
-          "width": 29,
-          "height": 1.8325617283950615
+          "x": 77,
+          "y": 56.96875,
+          "width": 16,
+          "height": 2.025462962962963
         },
         "text": "背包 0 枚"
       },
@@ -1414,8 +997,8 @@
         "kind": "image",
         "id": "rune_2_plate_tl",
         "rect": {
-          "x": 76,
-          "y": 49.93333333333333,
+          "x": 77,
+          "y": 54.93333333333333,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
         },
@@ -1426,9 +1009,9 @@
         "kind": "image",
         "id": "rune_2_plate_t",
         "rect": {
-          "x": 76.6,
-          "y": 49.93333333333333,
-          "width": 15.800000000000011,
+          "x": 77.6,
+          "y": 54.93333333333333,
+          "width": 14.800000000000011,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-t",
@@ -1439,7 +1022,7 @@
         "id": "rune_2_plate_tr",
         "rect": {
           "x": 92.4,
-          "y": 49.93333333333333,
+          "y": 54.93333333333333,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
         },
@@ -1450,10 +1033,10 @@
         "kind": "image",
         "id": "rune_2_plate_l",
         "rect": {
-          "x": 76,
-          "y": 46.06666666666667,
+          "x": 77,
+          "y": 52.86666666666667,
           "width": 0.5999999999999943,
-          "height": 3.86666666666666
+          "height": 2.066666666666663
         },
         "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
@@ -1462,10 +1045,10 @@
         "kind": "image",
         "id": "rune_2_plate_c",
         "rect": {
-          "x": 76.6,
-          "y": 46.06666666666667,
-          "width": 15.800000000000011,
-          "height": 3.86666666666666
+          "x": 77.6,
+          "y": 52.86666666666667,
+          "width": 14.800000000000011,
+          "height": 2.066666666666663
         },
         "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
@@ -1475,9 +1058,9 @@
         "id": "rune_2_plate_r",
         "rect": {
           "x": 92.4,
-          "y": 46.06666666666667,
+          "y": 52.86666666666667,
           "width": 0.5999999999999943,
-          "height": 3.86666666666666
+          "height": 2.066666666666663
         },
         "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
@@ -1486,8 +1069,8 @@
         "kind": "image",
         "id": "rune_2_plate_bl",
         "rect": {
-          "x": 76,
-          "y": 45,
+          "x": 77,
+          "y": 51.8,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
         },
@@ -1498,9 +1081,9 @@
         "kind": "image",
         "id": "rune_2_plate_b",
         "rect": {
-          "x": 76.6,
-          "y": 45,
-          "width": 15.800000000000011,
+          "x": 77.6,
+          "y": 51.8,
+          "width": 14.800000000000011,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-b",
@@ -1511,7 +1094,7 @@
         "id": "rune_2_plate_br",
         "rect": {
           "x": 92.4,
-          "y": 45,
+          "y": 51.8,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
         },
@@ -1522,55 +1105,67 @@
         "kind": "text",
         "id": "rune_2",
         "rect": {
-          "x": 76,
-          "y": 46.58539094650206,
-          "width": 17,
+          "x": 77,
+          "y": 52.48539094650206,
+          "width": 16,
           "height": 2.8292181069958846
         },
         "text": "尚未持有"
       },
       {
         "kind": "image",
+        "id": "rune_tile_3",
+        "rect": {
+          "x": 57,
+          "y": 29,
+          "width": 18,
+          "height": 18.5
+        },
+        "asset": "texture://ui_loadout-item-tile-v2",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
         "id": "rune_icon_3",
         "rect": {
-          "x": 36,
-          "y": 25,
-          "width": 6,
-          "height": 10
+          "x": 58,
+          "y": 42,
+          "width": 4.5,
+          "height": 4.5
         },
-        "asset": "texture://ui_skill-longlife",
+        "asset": "texture://ui_skill-frost_touch",
         "fit": "contain"
       },
       {
         "kind": "text",
         "id": "rune_name_3",
         "rect": {
-          "x": 44,
-          "y": 32.779706790123456,
-          "width": 29,
-          "height": 2.218364197530864
+          "x": 63,
+          "y": 43.51131687242799,
+          "width": 11,
+          "height": 2.8292181069958846
         },
-        "text": "大王細收符文"
+        "text": "凝霜符文"
       },
       {
         "kind": "text",
         "id": "rune_desc_3",
         "rect": {
-          "x": 44,
-          "y": 30.841049382716037,
-          "width": 29,
-          "height": 1.9290123456790123
+          "x": 58,
+          "y": 38.86111111111111,
+          "width": 16,
+          "height": 2.314814814814815
         },
-        "text": "對大王：小獎 +12、大獎 -12 百分點"
+        "text": "命中緩速兩秒"
       },
       {
         "kind": "text",
         "id": "rune_owned_3",
         "rect": {
-          "x": 44,
-          "y": 28.991126543209877,
-          "width": 29,
-          "height": 1.8325617283950615
+          "x": 58,
+          "y": 36.46875,
+          "width": 16,
+          "height": 2.025462962962963
         },
         "text": "背包 0 枚"
       },
@@ -1578,9 +1173,9 @@
         "kind": "image",
         "id": "rune_3_plate_tl",
         "rect": {
-          "x": 76,
-          "y": 32.93333333333333,
-          "width": 0.5999999999999943,
+          "x": 58,
+          "y": 34.43333333333333,
+          "width": 0.6000000000000014,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-tl",
@@ -1590,9 +1185,9 @@
         "kind": "image",
         "id": "rune_3_plate_t",
         "rect": {
-          "x": 76.6,
-          "y": 32.93333333333333,
-          "width": 15.800000000000011,
+          "x": 58.6,
+          "y": 34.43333333333333,
+          "width": 14.800000000000004,
           "height": 1.06666666666667
         },
         "asset": "texture://ui_control-quiet-v3-t",
@@ -1602,8 +1197,8 @@
         "kind": "image",
         "id": "rune_3_plate_tr",
         "rect": {
-          "x": 92.4,
-          "y": 32.93333333333333,
+          "x": 73.4,
+          "y": 34.43333333333333,
           "width": 0.5999999999999943,
           "height": 1.06666666666667
         },
@@ -1614,10 +1209,10 @@
         "kind": "image",
         "id": "rune_3_plate_l",
         "rect": {
-          "x": 76,
-          "y": 29.066666666666666,
-          "width": 0.5999999999999943,
-          "height": 3.8666666666666636
+          "x": 58,
+          "y": 32.36666666666667,
+          "width": 0.6000000000000014,
+          "height": 2.066666666666663
         },
         "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
@@ -1626,10 +1221,10 @@
         "kind": "image",
         "id": "rune_3_plate_c",
         "rect": {
-          "x": 76.6,
-          "y": 29.066666666666666,
-          "width": 15.800000000000011,
-          "height": 3.8666666666666636
+          "x": 58.6,
+          "y": 32.36666666666667,
+          "width": 14.800000000000004,
+          "height": 2.066666666666663
         },
         "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
@@ -1638,10 +1233,10 @@
         "kind": "image",
         "id": "rune_3_plate_r",
         "rect": {
-          "x": 92.4,
-          "y": 29.066666666666666,
+          "x": 73.4,
+          "y": 32.36666666666667,
           "width": 0.5999999999999943,
-          "height": 3.8666666666666636
+          "height": 2.066666666666663
         },
         "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
@@ -1650,9 +1245,9 @@
         "kind": "image",
         "id": "rune_3_plate_bl",
         "rect": {
-          "x": 76,
-          "y": 28,
-          "width": 0.5999999999999943,
+          "x": 58,
+          "y": 31.3,
+          "width": 0.6000000000000014,
           "height": 1.0666666666666664
         },
         "asset": "texture://ui_control-quiet-v3-bl",
@@ -1662,9 +1257,9 @@
         "kind": "image",
         "id": "rune_3_plate_b",
         "rect": {
-          "x": 76.6,
-          "y": 28,
-          "width": 15.800000000000011,
+          "x": 58.6,
+          "y": 31.3,
+          "width": 14.800000000000004,
           "height": 1.0666666666666664
         },
         "asset": "texture://ui_control-quiet-v3-b",
@@ -1674,8 +1269,8 @@
         "kind": "image",
         "id": "rune_3_plate_br",
         "rect": {
-          "x": 92.4,
-          "y": 28,
+          "x": 73.4,
+          "y": 31.3,
           "width": 0.5999999999999943,
           "height": 1.0666666666666664
         },
@@ -1686,20 +1281,207 @@
         "kind": "text",
         "id": "rune_3",
         "rect": {
-          "x": 76,
-          "y": 29.585390946502056,
-          "width": 17,
+          "x": 58,
+          "y": 31.98539094650206,
+          "width": 16,
           "height": 2.8292181069958846
         },
         "text": "尚未持有"
       },
       {
         "kind": "image",
+        "id": "rune_tile_4",
+        "rect": {
+          "x": 76,
+          "y": 29,
+          "width": 18,
+          "height": 18.5
+        },
+        "asset": "texture://ui_loadout-item-tile-v2",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_icon_4",
+        "rect": {
+          "x": 77,
+          "y": 42,
+          "width": 4.5,
+          "height": 4.5
+        },
+        "asset": "texture://ui_skill-showdown",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "rune_name_4",
+        "rect": {
+          "x": 82,
+          "y": 43.51131687242799,
+          "width": 11,
+          "height": 2.8292181069958846
+        },
+        "text": "小王抬賞符文"
+      },
+      {
+        "kind": "text",
+        "id": "rune_desc_4",
+        "rect": {
+          "x": 77,
+          "y": 38.86111111111111,
+          "width": 16,
+          "height": 2.314814814814815
+        },
+        "text": "對小王：小獎 -12、大獎 +12 百分點"
+      },
+      {
+        "kind": "text",
+        "id": "rune_owned_4",
+        "rect": {
+          "x": 77,
+          "y": 36.46875,
+          "width": 16,
+          "height": 2.025462962962963
+        },
+        "text": "背包 0 枚"
+      },
+      {
+        "kind": "image",
+        "id": "rune_4_plate_tl",
+        "rect": {
+          "x": 77,
+          "y": 34.43333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_4_plate_t",
+        "rect": {
+          "x": 77.6,
+          "y": 34.43333333333333,
+          "width": 14.800000000000011,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_4_plate_tr",
+        "rect": {
+          "x": 92.4,
+          "y": 34.43333333333333,
+          "width": 0.5999999999999943,
+          "height": 1.06666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_4_plate_l",
+        "rect": {
+          "x": 77,
+          "y": 32.36666666666667,
+          "width": 0.5999999999999943,
+          "height": 2.066666666666663
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_4_plate_c",
+        "rect": {
+          "x": 77.6,
+          "y": 32.36666666666667,
+          "width": 14.800000000000011,
+          "height": 2.066666666666663
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_4_plate_r",
+        "rect": {
+          "x": 92.4,
+          "y": 32.36666666666667,
+          "width": 0.5999999999999943,
+          "height": 2.066666666666663
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_4_plate_bl",
+        "rect": {
+          "x": 77,
+          "y": 31.3,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_4_plate_b",
+        "rect": {
+          "x": 77.6,
+          "y": 31.3,
+          "width": 14.800000000000011,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_4_plate_br",
+        "rect": {
+          "x": 92.4,
+          "y": 31.3,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "text",
+        "id": "rune_4",
+        "rect": {
+          "x": 77,
+          "y": 31.98539094650206,
+          "width": 16,
+          "height": 2.8292181069958846
+        },
+        "text": "尚未持有"
+      },
+      {
+        "kind": "text",
+        "id": "rune_help",
+        "rect": {
+          "x": 56,
+          "y": 23.157793209876548,
+          "width": 35,
+          "height": 1.8325617283950615
+        },
+        "text": "抬賞／細收只改開獎後的獎級分配；總開獎率、特獎不變。"
+      },
+      {
+        "kind": "image",
         "id": "rune_off_plate_tl",
         "rect": {
-          "x": 8,
-          "y": 10.933333333333334,
-          "width": 0.5999999999999996,
+          "x": 56,
+          "y": 17.93333333333333,
+          "width": 0.6000000000000014,
           "height": 1.0666666666666664
         },
         "asset": "texture://ui_control-quiet-v3-tl",
@@ -1709,9 +1491,9 @@
         "kind": "image",
         "id": "rune_off_plate_t",
         "rect": {
-          "x": 8.6,
-          "y": 10.933333333333334,
-          "width": 22.800000000000004,
+          "x": 56.6,
+          "y": 17.93333333333333,
+          "width": 16.800000000000004,
           "height": 1.0666666666666664
         },
         "asset": "texture://ui_control-quiet-v3-t",
@@ -1721,9 +1503,9 @@
         "kind": "image",
         "id": "rune_off_plate_tr",
         "rect": {
-          "x": 31.400000000000006,
-          "y": 10.933333333333334,
-          "width": 0.6000000000000014,
+          "x": 73.4,
+          "y": 17.93333333333333,
+          "width": 0.5999999999999943,
           "height": 1.0666666666666664
         },
         "asset": "texture://ui_control-quiet-v3-tr",
@@ -1733,10 +1515,10 @@
         "kind": "image",
         "id": "rune_off_plate_l",
         "rect": {
-          "x": 8,
-          "y": 7.066666666666666,
-          "width": 0.5999999999999996,
-          "height": 3.866666666666667
+          "x": 56,
+          "y": 15.066666666666666,
+          "width": 0.6000000000000014,
+          "height": 2.8666666666666636
         },
         "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
@@ -1745,10 +1527,10 @@
         "kind": "image",
         "id": "rune_off_plate_c",
         "rect": {
-          "x": 8.6,
-          "y": 7.066666666666666,
-          "width": 22.800000000000004,
-          "height": 3.866666666666667
+          "x": 56.6,
+          "y": 15.066666666666666,
+          "width": 16.800000000000004,
+          "height": 2.8666666666666636
         },
         "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
@@ -1757,10 +1539,10 @@
         "kind": "image",
         "id": "rune_off_plate_r",
         "rect": {
-          "x": 31.400000000000006,
-          "y": 7.066666666666666,
-          "width": 0.6000000000000014,
-          "height": 3.866666666666667
+          "x": 73.4,
+          "y": 15.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 2.8666666666666636
         },
         "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
@@ -1769,9 +1551,9 @@
         "kind": "image",
         "id": "rune_off_plate_bl",
         "rect": {
-          "x": 8,
-          "y": 6,
-          "width": 0.5999999999999996,
+          "x": 56,
+          "y": 14,
+          "width": 0.6000000000000014,
           "height": 1.0666666666666664
         },
         "asset": "texture://ui_control-quiet-v3-bl",
@@ -1781,9 +1563,9 @@
         "kind": "image",
         "id": "rune_off_plate_b",
         "rect": {
-          "x": 8.6,
-          "y": 6,
-          "width": 22.800000000000004,
+          "x": 56.6,
+          "y": 14,
+          "width": 16.800000000000004,
           "height": 1.0666666666666664
         },
         "asset": "texture://ui_control-quiet-v3-b",
@@ -1793,9 +1575,9 @@
         "kind": "image",
         "id": "rune_off_plate_br",
         "rect": {
-          "x": 31.400000000000006,
-          "y": 6,
-          "width": 0.6000000000000014,
+          "x": 73.4,
+          "y": 14,
+          "width": 0.5999999999999943,
           "height": 1.0666666666666664
         },
         "asset": "texture://ui_control-quiet-v3-br",
@@ -1805,163 +1587,43 @@
         "kind": "text",
         "id": "rune_off",
         "rect": {
-          "x": 8,
-          "y": 7.585390946502056,
-          "width": 24.000000000000007,
+          "x": 56,
+          "y": 15.085390946502056,
+          "width": 18,
           "height": 2.8292181069958846
         },
         "text": "卸下符文"
       },
       {
         "kind": "image",
-        "id": "rune_prev_plate_tl",
+        "id": "rune_scroll_track",
         "rect": {
-          "x": 62,
-          "y": 81.93333333333334,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666629
+          "x": 93.2,
+          "y": 28,
+          "width": 1.7,
+          "height": 37
         },
-        "asset": "texture://ui_control-quiet-v3-tl",
+        "asset": "texture://ui_loadout-scroll-track-v1",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "rune_prev_plate_t",
+        "id": "rune_scroll_thumb",
         "rect": {
-          "x": 62.6,
-          "y": 81.93333333333334,
-          "width": 4.800000000000004,
-          "height": 1.0666666666666629
+          "x": 92.8,
+          "y": 56,
+          "width": 2.5,
+          "height": 9
         },
-        "asset": "texture://ui_control-quiet-v3-t",
+        "asset": "texture://ui_loadout-scroll-thumb-v1",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "rune_prev_plate_tr",
+        "id": "rune_scroll_up_plate_tl",
         "rect": {
-          "x": 67.4,
-          "y": 81.93333333333334,
-          "width": 0.5999999999999943,
-          "height": 1.0666666666666629
-        },
-        "asset": "texture://ui_control-quiet-v3-tr",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "rune_prev_plate_l",
-        "rect": {
-          "x": 62,
-          "y": 78.06666666666666,
-          "width": 0.6000000000000014,
-          "height": 3.8666666666666742
-        },
-        "asset": "texture://ui_control-quiet-v3-l",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "rune_prev_plate_c",
-        "rect": {
-          "x": 62.6,
-          "y": 78.06666666666666,
-          "width": 4.800000000000004,
-          "height": 3.8666666666666742
-        },
-        "asset": "texture://ui_control-quiet-v3-c",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "rune_prev_plate_r",
-        "rect": {
-          "x": 67.4,
-          "y": 78.06666666666666,
-          "width": 0.5999999999999943,
-          "height": 3.8666666666666742
-        },
-        "asset": "texture://ui_control-quiet-v3-r",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "rune_prev_plate_bl",
-        "rect": {
-          "x": 62,
-          "y": 77,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666629
-        },
-        "asset": "texture://ui_control-quiet-v3-bl",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "rune_prev_plate_b",
-        "rect": {
-          "x": 62.6,
-          "y": 77,
-          "width": 4.800000000000004,
-          "height": 1.0666666666666629
-        },
-        "asset": "texture://ui_control-quiet-v3-b",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "rune_prev_plate_br",
-        "rect": {
-          "x": 67.4,
-          "y": 77,
-          "width": 0.5999999999999943,
-          "height": 1.0666666666666629
-        },
-        "asset": "texture://ui_control-quiet-v3-br",
-        "fit": "stretch"
-      },
-      {
-        "kind": "button",
-        "id": "rune_prev",
-        "rect": {
-          "x": 62,
-          "y": 78.58539094650206,
-          "width": 6,
-          "height": 2.8292181069958846
-        },
-        "text": "‹",
-        "action": "UI_page_prev"
-      },
-      {
-        "kind": "button",
-        "id": "rune_prev_hit_top",
-        "rect": {
-          "x": 62,
-          "y": 81.41460905349794,
-          "width": 6,
-          "height": 1.5853909465020577
-        },
-        "text": "",
-        "action": "UI_page_prev"
-      },
-      {
-        "kind": "button",
-        "id": "rune_prev_hit_bottom",
-        "rect": {
-          "x": 62,
-          "y": 77,
-          "width": 6,
-          "height": 1.5853909465020577
-        },
-        "text": "",
-        "action": "UI_page_prev"
-      },
-      {
-        "kind": "image",
-        "id": "rune_next_plate_tl",
-        "rect": {
-          "x": 87,
-          "y": 81.93333333333334,
+          "x": 93,
+          "y": 68.43333333333334,
           "width": 0.5999999999999943,
           "height": 1.0666666666666629
         },
@@ -1970,11 +1632,11 @@
       },
       {
         "kind": "image",
-        "id": "rune_next_plate_t",
+        "id": "rune_scroll_up_plate_t",
         "rect": {
-          "x": 87.6,
-          "y": 81.93333333333334,
-          "width": 4.800000000000011,
+          "x": 93.6,
+          "y": 68.43333333333334,
+          "width": 1.8000000000000114,
           "height": 1.0666666666666629
         },
         "asset": "texture://ui_control-quiet-v3-t",
@@ -1982,10 +1644,10 @@
       },
       {
         "kind": "image",
-        "id": "rune_next_plate_tr",
+        "id": "rune_scroll_up_plate_tr",
         "rect": {
-          "x": 92.4,
-          "y": 81.93333333333334,
+          "x": 95.4,
+          "y": 68.43333333333334,
           "width": 0.5999999999999943,
           "height": 1.0666666666666629
         },
@@ -1994,46 +1656,46 @@
       },
       {
         "kind": "image",
-        "id": "rune_next_plate_l",
+        "id": "rune_scroll_up_plate_l",
         "rect": {
-          "x": 87,
-          "y": 78.06666666666666,
+          "x": 93,
+          "y": 66.06666666666666,
           "width": 0.5999999999999943,
-          "height": 3.8666666666666742
+          "height": 2.3666666666666742
         },
         "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "rune_next_plate_c",
+        "id": "rune_scroll_up_plate_c",
         "rect": {
-          "x": 87.6,
-          "y": 78.06666666666666,
-          "width": 4.800000000000011,
-          "height": 3.8666666666666742
+          "x": 93.6,
+          "y": 66.06666666666666,
+          "width": 1.8000000000000114,
+          "height": 2.3666666666666742
         },
         "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "rune_next_plate_r",
+        "id": "rune_scroll_up_plate_r",
         "rect": {
-          "x": 92.4,
-          "y": 78.06666666666666,
+          "x": 95.4,
+          "y": 66.06666666666666,
           "width": 0.5999999999999943,
-          "height": 3.8666666666666742
+          "height": 2.3666666666666742
         },
         "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "rune_next_plate_bl",
+        "id": "rune_scroll_up_plate_bl",
         "rect": {
-          "x": 87,
-          "y": 77,
+          "x": 93,
+          "y": 65,
           "width": 0.5999999999999943,
           "height": 1.0666666666666629
         },
@@ -2042,11 +1704,11 @@
       },
       {
         "kind": "image",
-        "id": "rune_next_plate_b",
+        "id": "rune_scroll_up_plate_b",
         "rect": {
-          "x": 87.6,
-          "y": 77,
-          "width": 4.800000000000011,
+          "x": 93.6,
+          "y": 65,
+          "width": 1.8000000000000114,
           "height": 1.0666666666666629
         },
         "asset": "texture://ui_control-quiet-v3-b",
@@ -2054,10 +1716,10 @@
       },
       {
         "kind": "image",
-        "id": "rune_next_plate_br",
+        "id": "rune_scroll_up_plate_br",
         "rect": {
-          "x": 92.4,
-          "y": 77,
+          "x": 95.4,
+          "y": 65,
           "width": 0.5999999999999943,
           "height": 1.0666666666666629
         },
@@ -2066,25 +1728,392 @@
       },
       {
         "kind": "text",
-        "id": "rune_next",
+        "id": "rune_scroll_up",
         "rect": {
-          "x": 87,
-          "y": 78.58539094650206,
-          "width": 6,
+          "x": 93,
+          "y": 65.83539094650206,
+          "width": 3,
           "height": 2.8292181069958846
         },
-        "text": "›"
+        "text": "▲"
+      },
+      {
+        "kind": "image",
+        "id": "rune_scroll_down_plate_tl",
+        "rect": {
+          "x": 93,
+          "y": 29.433333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_scroll_down_plate_t",
+        "rect": {
+          "x": 93.6,
+          "y": 29.433333333333334,
+          "width": 1.8000000000000114,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_scroll_down_plate_tr",
+        "rect": {
+          "x": 95.4,
+          "y": 29.433333333333334,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_scroll_down_plate_l",
+        "rect": {
+          "x": 93,
+          "y": 27.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 2.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_scroll_down_plate_c",
+        "rect": {
+          "x": 93.6,
+          "y": 27.066666666666666,
+          "width": 1.8000000000000114,
+          "height": 2.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_scroll_down_plate_r",
+        "rect": {
+          "x": 95.4,
+          "y": 27.066666666666666,
+          "width": 0.5999999999999943,
+          "height": 2.366666666666667
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_scroll_down_plate_bl",
+        "rect": {
+          "x": 93,
+          "y": 26,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_scroll_down_plate_b",
+        "rect": {
+          "x": 93.6,
+          "y": 26,
+          "width": 1.8000000000000114,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "rune_scroll_down_plate_br",
+        "rect": {
+          "x": 95.4,
+          "y": 26,
+          "width": 0.5999999999999943,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
+      },
+      {
+        "kind": "button",
+        "id": "rune_scroll_down",
+        "rect": {
+          "x": 93,
+          "y": 26.835390946502056,
+          "width": 3,
+          "height": 2.8292181069958846
+        },
+        "text": "▼",
+        "action": "LoadoutScrollDown"
+      },
+      {
+        "kind": "button",
+        "id": "rune_scroll_down_hit_top",
+        "rect": {
+          "x": 93,
+          "y": 29.66460905349794,
+          "width": 3,
+          "height": 0.8353909465020577
+        },
+        "text": "",
+        "action": "LoadoutScrollDown"
+      },
+      {
+        "kind": "button",
+        "id": "rune_scroll_down_hit_bottom",
+        "rect": {
+          "x": 93,
+          "y": 26,
+          "width": 3,
+          "height": 0.8353909465020577
+        },
+        "text": "",
+        "action": "LoadoutScrollDown"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stats_panel_tl",
+        "rect": {
+          "x": 14,
+          "y": 12.933333333333334,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stats_panel_t",
+        "rect": {
+          "x": 14.6,
+          "y": 12.933333333333334,
+          "width": 36.8,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-t",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stats_panel_tr",
+        "rect": {
+          "x": 51.4,
+          "y": 12.933333333333334,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-tr",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stats_panel_l",
+        "rect": {
+          "x": 14,
+          "y": 9.066666666666661,
+          "width": 0.5999999999999996,
+          "height": 3.8666666666666725
+        },
+        "asset": "texture://ui_control-quiet-v3-l",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stats_panel_c",
+        "rect": {
+          "x": 14.6,
+          "y": 9.066666666666661,
+          "width": 36.8,
+          "height": 3.8666666666666725
+        },
+        "asset": "texture://ui_control-quiet-v3-c",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stats_panel_r",
+        "rect": {
+          "x": 51.4,
+          "y": 9.066666666666661,
+          "width": 0.6000000000000014,
+          "height": 3.8666666666666725
+        },
+        "asset": "texture://ui_control-quiet-v3-r",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stats_panel_bl",
+        "rect": {
+          "x": 14,
+          "y": 7.999999999999995,
+          "width": 0.5999999999999996,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-bl",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stats_panel_b",
+        "rect": {
+          "x": 14.6,
+          "y": 7.999999999999995,
+          "width": 36.8,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-b",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stats_panel_br",
+        "rect": {
+          "x": 51.4,
+          "y": 7.999999999999995,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666664
+        },
+        "asset": "texture://ui_control-quiet-v3-br",
+        "fit": "stretch"
       },
       {
         "kind": "text",
-        "id": "rune_page",
+        "id": "troop_stats_title",
         "rect": {
-          "x": 71,
-          "y": 78.8425925925926,
-          "width": 13,
+          "x": 15,
+          "y": 10.685185185185185,
+          "width": 7.5,
           "height": 2.314814814814815
         },
-        "text": "3 / 3"
+        "text": "部隊屬性"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stat_icon_1",
+        "rect": {
+          "x": 23,
+          "y": 10.720370370370365,
+          "width": 1.6,
+          "height": 2.1296296296296298
+        },
+        "asset": "texture://ui_icon-attack",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "troop_stat_value_1",
+        "rect": {
+          "x": 24.8,
+          "y": 10.71875,
+          "width": 3.2,
+          "height": 2.025462962962963
+        },
+        "text": "24"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stat_icon_2",
+        "rect": {
+          "x": 28.6,
+          "y": 10.720370370370365,
+          "width": 1.6,
+          "height": 2.1296296296296298
+        },
+        "asset": "texture://ui_icon-life",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "troop_stat_value_2",
+        "rect": {
+          "x": 30.400000000000002,
+          "y": 10.71875,
+          "width": 3.2,
+          "height": 2.025462962962963
+        },
+        "text": "5"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stat_icon_3",
+        "rect": {
+          "x": 34.2,
+          "y": 10.720370370370365,
+          "width": 1.6,
+          "height": 2.1296296296296298
+        },
+        "asset": "texture://ui_icon-speed",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "troop_stat_value_3",
+        "rect": {
+          "x": 36,
+          "y": 10.71875,
+          "width": 3.2,
+          "height": 2.025462962962963
+        },
+        "text": "8"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stat_icon_4",
+        "rect": {
+          "x": 39.8,
+          "y": 10.720370370370365,
+          "width": 1.6,
+          "height": 2.1296296296296298
+        },
+        "asset": "texture://ui_icon-crit",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "troop_stat_value_4",
+        "rect": {
+          "x": 41.599999999999994,
+          "y": 10.71875,
+          "width": 3.2,
+          "height": 2.025462962962963
+        },
+        "text": "10%"
+      },
+      {
+        "kind": "image",
+        "id": "troop_stat_icon_5",
+        "rect": {
+          "x": 45.4,
+          "y": 10.720370370370365,
+          "width": 1.6,
+          "height": 2.1296296296296298
+        },
+        "asset": "texture://ui_icon-pierce",
+        "fit": "contain"
+      },
+      {
+        "kind": "text",
+        "id": "troop_stat_value_5",
+        "rect": {
+          "x": 47.199999999999996,
+          "y": 10.71875,
+          "width": 3.2,
+          "height": 2.025462962962963
+        },
+        "text": "0"
       }
     ]
   },
@@ -2107,82 +2136,66 @@
     },
     {
       "text": "320",
-      "font": 17.25,
+      "font": 22,
       "clip": {
-        "x": 1440,
-        "y": 86.42083333333336,
-        "width": 134.4,
-        "height": 23.95833333333333
+        "x": 1315.2,
+        "y": 84.08222222222223,
+        "width": 201.6,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 1492.2031127929688,
-        "y": 92.13437500000003,
-        "width": 29.995849609375,
-        "height": 13
+        "x": 1397.87353515625,
+        "y": 90.938125,
+        "width": 37.501953125,
+        "height": 17
       }
     },
     {
       "text": "18",
-      "font": 17.25,
+      "font": 22,
       "clip": {
-        "x": 1670.4,
-        "y": 86.42083333333336,
-        "width": 115.2,
-        "height": 23.95833333333333
+        "x": 1526.4,
+        "y": 84.08222222222223,
+        "width": 201.6,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 1719.0020751953125,
-        "y": 92.13437500000003,
-        "width": 18.9979248046875,
-        "height": 13
+        "x": 1615.4490234375,
+        "y": 90.938125,
+        "width": 23.7509765625,
+        "height": 17
       }
     },
     {
       "text": "裝備",
-      "font": 22,
+      "font": 17.25,
       "clip": {
-        "x": 153.6,
-        "y": 200.7222222222222,
-        "width": 422.4,
-        "height": 30.555555555555554
+        "x": 144,
+        "y": 399.62083333333334,
+        "width": 115.2,
+        "height": 23.95833333333333
       },
       "ink": {
-        "x": 343.79999999999995,
-        "y": 206.57812499999997,
-        "width": 43,
-        "height": 19
+        "x": 184.35,
+        "y": 403.334375,
+        "width": 34.25,
+        "height": 16
       }
     },
     {
       "text": "符文",
-      "font": 22,
+      "font": 17.25,
       "clip": {
-        "x": 614.4,
-        "y": 200.7222222222222,
-        "width": 422.4,
-        "height": 30.555555555555554
+        "x": 144,
+        "y": 534.6208333333334,
+        "width": 115.2,
+        "height": 23.95833333333333
       },
       "ink": {
-        "x": 804.5999999999999,
-        "y": 205.57812499999997,
-        "width": 43,
-        "height": 20
-      }
-    },
-    {
-      "text": "返回商店",
-      "font": 22,
-      "clip": {
-        "x": 864,
-        "y": 967.5222222222222,
-        "width": 422.4,
-        "height": 30.555555555555554
-      },
-      "ink": {
-        "x": 1031.2,
-        "y": 972.3781250000001,
-        "width": 87,
-        "height": 20
+        "x": 184.35,
+        "y": 539.334375,
+        "width": 34.25,
+        "height": 15
       }
     },
     {
@@ -2202,350 +2215,1252 @@
       }
     },
     {
-      "text": "◆ 劍兵 · 4 金",
-      "font": 22,
+      "text": "劍兵…",
+      "font": 18,
       "clip": {
-        "x": 153.6,
-        "y": 373.52222222222224,
-        "width": 460.8,
-        "height": 30.555555555555554
+        "x": 341.76,
+        "y": 289.7,
+        "width": 132.48,
+        "height": 25
       },
       "ink": {
-        "x": 325.48828125,
-        "y": 378.378125,
-        "width": 117.0234375,
-        "height": 20
+        "x": 382.99072265625,
+        "y": 293.215625,
+        "width": 50,
+        "height": 17
       }
     },
     {
-      "text": "槍兵 · 10 金",
-      "font": 22,
+      "text": "槍兵…",
+      "font": 18,
       "clip": {
-        "x": 153.6,
-        "y": 546.3222222222222,
-        "width": 460.8,
-        "height": 30.555555555555554
+        "x": 576,
+        "y": 289.7,
+        "width": 132.48,
+        "height": 25
       },
       "ink": {
-        "x": 328.4638671875,
-        "y": 551.178125,
-        "width": 111.072265625,
-        "height": 20
+        "x": 617.23072265625,
+        "y": 293.215625,
+        "width": 50,
+        "height": 17
       }
     },
     {
-      "text": "騎兵 · 20 金",
-      "font": 22,
+      "text": "騎兵…",
+      "font": 18,
       "clip": {
-        "x": 153.6,
-        "y": 719.1222222222221,
-        "width": 460.8000000000001,
-        "height": 30.555555555555554
+        "x": 810.2399999999999,
+        "y": 289.7,
+        "width": 132.48,
+        "height": 25
       },
       "ink": {
-        "x": 328.46386718750006,
-        "y": 723.978125,
-        "width": 111.072265625,
-        "height": 20
+        "x": 851.4707226562499,
+        "y": 293.215625,
+        "width": 50,
+        "height": 17
       }
     },
     {
-      "text": "中王細收符文",
+      "text": "派兵 4 金",
+      "font": 18,
+      "clip": {
+        "x": 288,
+        "y": 357.89999999999986,
+        "width": 172.8,
+        "height": 25
+      },
+      "ink": {
+        "x": 337.68369140625,
+        "y": 361.41562499999986,
+        "width": 73.4326171875,
+        "height": 17
+      }
+    },
+    {
+      "text": "可用符文",
       "font": 17.25,
       "clip": {
-        "x": 844.8,
-        "y": 334.8208333333334,
-        "width": 556.8,
+        "x": 1075.2,
+        "y": 259.22083333333336,
+        "width": 748.8,
         "height": 23.95833333333333
       },
       "ink": {
-        "x": 1072.4499999999998,
-        "y": 338.53437500000007,
-        "width": 102.25,
-        "height": 16
+        "x": 1415.1,
+        "y": 263.93437500000005,
+        "width": 68.75,
+        "height": 15
       }
     },
     {
-      "text": "對中王：小獎 +12、大獎 -12 百分點",
-      "font": 15,
+      "text": "選一枚符文裝入目前部隊",
+      "font": 14.25,
       "clip": {
-        "x": 844.8,
-        "y": 358.88333333333327,
-        "width": 556.8,
-        "height": 20.83333333333333
+        "x": 1075.2,
+        "y": 302.50416666666666,
+        "width": 748.8,
+        "height": 19.791666666666664
       },
       "ink": {
-        "x": 1001.4202148437498,
-        "y": 363.15937499999995,
-        "width": 243.5595703125,
+        "x": 1371.225,
+        "y": 305.9625,
+        "width": 156.5,
         "height": 13
+      }
+    },
+    {
+      "text": "燼火符文",
+      "font": 22,
+      "clip": {
+        "x": 1209.6,
+        "y": 358.12222222222226,
+        "width": 211.2,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1272.1999999999998,
+        "y": 362.97812500000003,
+        "width": 87,
+        "height": 20
+      }
+    },
+    {
+      "text": "傷害 +35%",
+      "font": 18,
+      "clip": {
+        "x": 1113.6,
+        "y": 413.9,
+        "width": 307.2,
+        "height": 25
+      },
+      "ink": {
+        "x": 1221.9583007812498,
+        "y": 417.415625,
+        "width": 90.63671875,
+        "height": 17
+      }
+    },
+    {
+      "text": "背包 1 枚",
+      "font": 15.75,
+      "clip": {
+        "x": 1113.6,
+        "y": 442.8625,
+        "width": 307.2,
+        "height": 21.875
+      },
+      "ink": {
+        "x": 1235.0732299804686,
+        "y": 445.940625,
+        "width": 64.5035400390625,
+        "height": 15
+      }
+    },
+    {
+      "text": "裝入",
+      "font": 22,
+      "clip": {
+        "x": 1113.6,
+        "y": 482.6022222222223,
+        "width": 307.2,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1246.1999999999998,
+        "y": 488.45812500000005,
+        "width": 43,
+        "height": 19
+      }
+    },
+    {
+      "text": "迴響符文",
+      "font": 22,
+      "clip": {
+        "x": 1574.4,
+        "y": 358.12222222222226,
+        "width": 211.2,
+        "height": 30.555555555555554
+      },
+      "ink": {
+        "x": 1637,
+        "y": 362.97812500000003,
+        "width": 87,
+        "height": 20
+      }
+    },
+    {
+      "text": "一般獎金 +25%",
+      "font": 18,
+      "clip": {
+        "x": 1478.4,
+        "y": 413.9,
+        "width": 307.2,
+        "height": 25
+      },
+      "ink": {
+        "x": 1569.75830078125,
+        "y": 417.415625,
+        "width": 125.63671875,
+        "height": 17
       }
     },
     {
       "text": "背包 0 枚",
-      "font": 14.25,
+      "font": 15.75,
       "clip": {
-        "x": 844.8,
-        "y": 379.90416666666647,
-        "width": 556.8,
-        "height": 19.791666666666664
+        "x": 1478.4,
+        "y": 442.8625,
+        "width": 307.2,
+        "height": 21.875
       },
       "ink": {
-        "x": 1094.132922363281,
-        "y": 383.3624999999998,
-        "width": 57.8841552734375,
-        "height": 13
+        "x": 1599.8732299804688,
+        "y": 445.940625,
+        "width": 64.5035400390625,
+        "height": 15
       }
     },
     {
       "text": "尚未持有",
       "font": 22,
       "clip": {
-        "x": 1459.2,
-        "y": 362.7222222222223,
-        "width": 326.4,
+        "x": 1478.4,
+        "y": 482.6022222222223,
+        "width": 307.2,
         "height": 30.555555555555554
       },
       "ink": {
-        "x": 1580.4,
-        "y": 367.57812500000006,
+        "x": 1590,
+        "y": 487.45812500000005,
         "width": 85,
         "height": 20
       }
     },
     {
-      "text": "大王抬賞符文",
-      "font": 17.25,
+      "text": "凝霜符文",
+      "font": 22,
       "clip": {
-        "x": 844.8,
-        "y": 518.4208333333333,
-        "width": 556.8,
-        "height": 23.95833333333333
+        "x": 1209.6,
+        "y": 579.5222222222222,
+        "width": 211.2,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 1071.4499999999998,
-        "y": 522.134375,
-        "width": 103.25,
-        "height": 16
+        "x": 1272.1999999999998,
+        "y": 584.3781250000001,
+        "width": 87,
+        "height": 20
       }
     },
     {
-      "text": "對大王：小獎 -12、大獎 +12 百分點",
-      "font": 15,
+      "text": "命中緩速兩秒",
+      "font": 18,
       "clip": {
-        "x": 844.8,
-        "y": 542.4833333333332,
-        "width": 556.8,
-        "height": 20.83333333333333
+        "x": 1113.6,
+        "y": 635.3,
+        "width": 307.2,
+        "height": 25
       },
       "ink": {
-        "x": 1001.4202148437498,
-        "y": 546.7593749999999,
-        "width": 243.5595703125,
-        "height": 13
+        "x": 1213.1999999999998,
+        "y": 638.815625,
+        "width": 108,
+        "height": 18
       }
     },
     {
       "text": "背包 0 枚",
-      "font": 14.25,
+      "font": 15.75,
       "clip": {
-        "x": 844.8,
-        "y": 563.5041666666666,
-        "width": 556.8,
-        "height": 19.791666666666664
+        "x": 1113.6,
+        "y": 664.2625,
+        "width": 307.2,
+        "height": 21.875
       },
       "ink": {
-        "x": 1094.132922363281,
-        "y": 566.9625,
-        "width": 57.8841552734375,
-        "height": 13
+        "x": 1235.0732299804686,
+        "y": 667.340625,
+        "width": 64.5035400390625,
+        "height": 15
       }
     },
     {
       "text": "尚未持有",
       "font": 22,
       "clip": {
-        "x": 1459.2,
-        "y": 546.3222222222223,
-        "width": 326.4,
+        "x": 1113.6,
+        "y": 704.0022222222221,
+        "width": 307.2,
         "height": 30.555555555555554
       },
       "ink": {
-        "x": 1580.4,
-        "y": 551.1781250000001,
+        "x": 1225.1999999999998,
+        "y": 708.858125,
         "width": 85,
         "height": 20
       }
     },
     {
-      "text": "大王細收符文",
-      "font": 17.25,
+      "text": "小王抬賞符文",
+      "font": 22,
       "clip": {
-        "x": 844.8,
-        "y": 702.0208333333335,
-        "width": 556.8,
-        "height": 23.95833333333333
+        "x": 1574.4,
+        "y": 579.5222222222222,
+        "width": 211.2,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 1071.4499999999998,
-        "y": 705.7343750000001,
-        "width": 103.25,
+        "x": 1615,
+        "y": 584.3781250000001,
+        "width": 131,
+        "height": 20
+      }
+    },
+    {
+      "text": "對小王：小獎 -12、大獎 +12 百分點",
+      "font": 18,
+      "clip": {
+        "x": 1478.4,
+        "y": 635.3,
+        "width": 307.2,
+        "height": 25
+      },
+      "ink": {
+        "x": 1485.8642578125,
+        "y": 639.815625,
+        "width": 292.271484375,
         "height": 16
       }
     },
     {
-      "text": "對大王：小獎 +12、大獎 -12 百分點",
-      "font": 15,
-      "clip": {
-        "x": 844.8,
-        "y": 726.0833333333335,
-        "width": 556.8,
-        "height": 20.83333333333333
-      },
-      "ink": {
-        "x": 1001.4202148437498,
-        "y": 730.3593750000001,
-        "width": 243.5595703125,
-        "height": 13
-      }
-    },
-    {
       "text": "背包 0 枚",
-      "font": 14.25,
+      "font": 15.75,
       "clip": {
-        "x": 844.8,
-        "y": 747.1041666666667,
-        "width": 556.8,
-        "height": 19.791666666666664
+        "x": 1478.4,
+        "y": 664.2625,
+        "width": 307.2,
+        "height": 21.875
       },
       "ink": {
-        "x": 1094.132922363281,
-        "y": 750.5625000000001,
-        "width": 57.8841552734375,
-        "height": 13
+        "x": 1599.8732299804688,
+        "y": 667.340625,
+        "width": 64.5035400390625,
+        "height": 15
       }
     },
     {
       "text": "尚未持有",
       "font": 22,
       "clip": {
-        "x": 1459.2,
-        "y": 729.9222222222222,
-        "width": 326.4,
+        "x": 1478.4,
+        "y": 704.0022222222221,
+        "width": 307.2,
         "height": 30.555555555555554
       },
       "ink": {
-        "x": 1580.4,
-        "y": 734.778125,
+        "x": 1590,
+        "y": 708.858125,
         "width": 85,
         "height": 20
+      }
+    },
+    {
+      "text": "抬賞／細收只改開獎後的獎級分配；總開獎率、特獎不變。",
+      "font": 14.25,
+      "clip": {
+        "x": 1075.2,
+        "y": 810.1041666666665,
+        "width": 672,
+        "height": 19.791666666666664
+      },
+      "ink": {
+        "x": 1225.95,
+        "y": 813.5624999999999,
+        "width": 365.25,
+        "height": 14
       }
     },
     {
       "text": "卸下符文",
       "font": 22,
       "clip": {
-        "x": 153.6,
-        "y": 967.5222222222222,
-        "width": 460.8000000000001,
+        "x": 1075.2,
+        "y": 886.5222222222222,
+        "width": 345.6,
         "height": 30.555555555555554
       },
       "ink": {
-        "x": 341.00000000000006,
-        "y": 972.3781250000001,
+        "x": 1205,
+        "y": 891.3781250000001,
         "width": 87,
         "height": 20
       }
     },
     {
-      "text": "‹",
+      "text": "▲",
       "font": 22,
       "clip": {
-        "x": 1190.4,
-        "y": 200.7222222222222,
-        "width": 115.2,
+        "x": 1785.6,
+        "y": 338.4222222222222,
+        "width": 57.6,
         "height": 30.555555555555554
       },
       "ink": {
-        "x": 1244.26708984375,
-        "y": 214.57812499999997,
-        "width": 8,
-        "height": 8
+        "x": 1805.5127929687499,
+        "y": 347.278125,
+        "width": 17,
+        "height": 15
       }
     },
     {
-      "text": "›",
+      "text": "▼",
       "font": 22,
       "clip": {
-        "x": 1670.4,
-        "y": 200.7222222222222,
-        "width": 115.2,
+        "x": 1785.6,
+        "y": 759.6222222222221,
+        "width": 57.6,
         "height": 30.555555555555554
       },
       "ink": {
-        "x": 1724.26708984375,
-        "y": 214.57812499999997,
-        "width": 7,
-        "height": 8
+        "x": 1805.5127929687499,
+        "y": 768.478125,
+        "width": 17,
+        "height": 15
       }
     },
     {
-      "text": "3 / 3",
+      "text": "部隊屬性",
       "font": 18,
       "clip": {
-        "x": 1363.2,
-        "y": 203.49999999999997,
-        "width": 249.6,
+        "x": 288,
+        "y": 939.6,
+        "width": 144,
         "height": 25
       },
       "ink": {
-        "x": 1469.314453125,
-        "y": 209.01562499999997,
-        "width": 36.9384765625,
-        "height": 16
+        "x": 324,
+        "y": 943.115625,
+        "width": 72,
+        "height": 17
+      }
+    },
+    {
+      "text": "24",
+      "font": 15.75,
+      "clip": {
+        "x": 476.16,
+        "y": 942.3625,
+        "width": 61.44,
+        "height": 21.875
+      },
+      "ink": {
+        "x": 497.7514599609375,
+        "y": 947.440625,
+        "width": 19.1285400390625,
+        "height": 12
+      }
+    },
+    {
+      "text": "5",
+      "font": 15.75,
+      "clip": {
+        "x": 583.6800000000001,
+        "y": 942.3625,
+        "width": 61.44,
+        "height": 21.875
+      },
+      "ink": {
+        "x": 610.8357299804688,
+        "y": 947.440625,
+        "width": 8,
+        "height": 12
+      }
+    },
+    {
+      "text": "8",
+      "font": 15.75,
+      "clip": {
+        "x": 691.2,
+        "y": 942.3625,
+        "width": 61.44,
+        "height": 21.875
+      },
+      "ink": {
+        "x": 717.3557299804688,
+        "y": 947.440625,
+        "width": 9,
+        "height": 12
+      }
+    },
+    {
+      "text": "10%",
+      "font": 15.75,
+      "clip": {
+        "x": 798.7199999999998,
+        "y": 942.3625,
+        "width": 61.44,
+        "height": 21.875
+      },
+      "ink": {
+        "x": 814.3785375976561,
+        "y": 947.440625,
+        "width": 31.257080078125,
+        "height": 12
+      }
+    },
+    {
+      "text": "0",
+      "font": 15.75,
+      "clip": {
+        "x": 906.2399999999999,
+        "y": 942.3625,
+        "width": 61.44,
+        "height": 21.875
+      },
+      "ink": {
+        "x": 932.3957299804687,
+        "y": 947.440625,
+        "width": 9,
+        "height": 12
       }
     }
   ],
   "metrics": {
     "backend": "canvas2d",
-    "nodes": 175,
+    "nodes": 179,
+    "usage": {
+      "logical_nodes": 179,
+      "leaf_nodes": 179,
+      "render_regions_upper_bound": 179,
+      "max_nodes": 2048,
+      "host_max_nodes": 16384,
+      "limit_source": "contract.default",
+      "subtrees": [
+        [
+          "screen_shade",
+          1
+        ],
+        [
+          "screen_back_fill",
+          1
+        ],
+        [
+          "screen_back_tl",
+          1
+        ],
+        [
+          "screen_back_t",
+          1
+        ],
+        [
+          "screen_back_tr",
+          1
+        ],
+        [
+          "screen_back_l",
+          1
+        ],
+        [
+          "screen_back_c",
+          1
+        ],
+        [
+          "screen_back_r",
+          1
+        ],
+        [
+          "screen_back_bl",
+          1
+        ],
+        [
+          "screen_back_b",
+          1
+        ],
+        [
+          "screen_back_br",
+          1
+        ],
+        [
+          "screen_title",
+          1
+        ],
+        [
+          "screen_gold_plate",
+          1
+        ],
+        [
+          "screen_gold_icon",
+          1
+        ],
+        [
+          "screen_gold",
+          1
+        ],
+        [
+          "screen_crystals_plate",
+          1
+        ],
+        [
+          "screen_crystals_icon",
+          1
+        ],
+        [
+          "screen_crystals",
+          1
+        ],
+        [
+          "tab_gear_plate",
+          1
+        ],
+        [
+          "tab_gear_icon",
+          1
+        ],
+        [
+          "tab_gear_label",
+          1
+        ],
+        [
+          "tab_gear",
+          1
+        ],
+        [
+          "tab_runes_plate",
+          1
+        ],
+        [
+          "tab_runes_active",
+          1
+        ],
+        [
+          "tab_runes_icon",
+          1
+        ],
+        [
+          "tab_runes_label",
+          1
+        ],
+        [
+          "tab_runes",
+          1
+        ],
+        [
+          "loadout_return_plate",
+          1
+        ],
+        [
+          "loadout_return_icon",
+          1
+        ],
+        [
+          "loadout_return",
+          1
+        ],
+        [
+          "deploy_plate_tl",
+          1
+        ],
+        [
+          "deploy_plate_t",
+          1
+        ],
+        [
+          "deploy_plate_tr",
+          1
+        ],
+        [
+          "deploy_plate_l",
+          1
+        ],
+        [
+          "deploy_plate_c",
+          1
+        ],
+        [
+          "deploy_plate_r",
+          1
+        ],
+        [
+          "deploy_plate_bl",
+          1
+        ],
+        [
+          "deploy_plate_b",
+          1
+        ],
+        [
+          "deploy_plate_br",
+          1
+        ],
+        [
+          "deploy",
+          1
+        ],
+        [
+          "deploy_hit_top",
+          1
+        ],
+        [
+          "deploy_hit_bottom",
+          1
+        ],
+        [
+          "loadout_board",
+          1
+        ],
+        [
+          "unit_1_plate",
+          1
+        ],
+        [
+          "unit_1_icon",
+          1
+        ],
+        [
+          "unit_1_label",
+          1
+        ],
+        [
+          "unit_1",
+          1
+        ],
+        [
+          "unit_2_plate",
+          1
+        ],
+        [
+          "unit_2_icon",
+          1
+        ],
+        [
+          "unit_2_label",
+          1
+        ],
+        [
+          "unit_2",
+          1
+        ],
+        [
+          "unit_3_plate",
+          1
+        ],
+        [
+          "unit_3_icon",
+          1
+        ],
+        [
+          "unit_3_label",
+          1
+        ],
+        [
+          "unit_3",
+          1
+        ],
+        [
+          "troop_quote",
+          1
+        ],
+        [
+          "rune_heading",
+          1
+        ],
+        [
+          "rune_hint",
+          1
+        ],
+        [
+          "rune_loadout_slot",
+          1
+        ],
+        [
+          "rune_loadout_icon",
+          1
+        ],
+        [
+          "rune_loadout_name",
+          1
+        ],
+        [
+          "rune_loadout_state",
+          1
+        ],
+        [
+          "rune_tile_1",
+          1
+        ],
+        [
+          "rune_icon_1",
+          1
+        ],
+        [
+          "rune_name_1",
+          1
+        ],
+        [
+          "rune_desc_1",
+          1
+        ],
+        [
+          "rune_owned_1",
+          1
+        ],
+        [
+          "rune_1_plate_tl",
+          1
+        ],
+        [
+          "rune_1_plate_t",
+          1
+        ],
+        [
+          "rune_1_plate_tr",
+          1
+        ],
+        [
+          "rune_1_plate_l",
+          1
+        ],
+        [
+          "rune_1_plate_c",
+          1
+        ],
+        [
+          "rune_1_plate_r",
+          1
+        ],
+        [
+          "rune_1_plate_bl",
+          1
+        ],
+        [
+          "rune_1_plate_b",
+          1
+        ],
+        [
+          "rune_1_plate_br",
+          1
+        ],
+        [
+          "rune_1",
+          1
+        ],
+        [
+          "rune_1_hit_top",
+          1
+        ],
+        [
+          "rune_1_hit_bottom",
+          1
+        ],
+        [
+          "rune_tile_2",
+          1
+        ],
+        [
+          "rune_icon_2",
+          1
+        ],
+        [
+          "rune_name_2",
+          1
+        ],
+        [
+          "rune_desc_2",
+          1
+        ],
+        [
+          "rune_owned_2",
+          1
+        ],
+        [
+          "rune_2_plate_tl",
+          1
+        ],
+        [
+          "rune_2_plate_t",
+          1
+        ],
+        [
+          "rune_2_plate_tr",
+          1
+        ],
+        [
+          "rune_2_plate_l",
+          1
+        ],
+        [
+          "rune_2_plate_c",
+          1
+        ],
+        [
+          "rune_2_plate_r",
+          1
+        ],
+        [
+          "rune_2_plate_bl",
+          1
+        ],
+        [
+          "rune_2_plate_b",
+          1
+        ],
+        [
+          "rune_2_plate_br",
+          1
+        ],
+        [
+          "rune_2",
+          1
+        ],
+        [
+          "rune_tile_3",
+          1
+        ],
+        [
+          "rune_icon_3",
+          1
+        ],
+        [
+          "rune_name_3",
+          1
+        ],
+        [
+          "rune_desc_3",
+          1
+        ],
+        [
+          "rune_owned_3",
+          1
+        ],
+        [
+          "rune_3_plate_tl",
+          1
+        ],
+        [
+          "rune_3_plate_t",
+          1
+        ],
+        [
+          "rune_3_plate_tr",
+          1
+        ],
+        [
+          "rune_3_plate_l",
+          1
+        ],
+        [
+          "rune_3_plate_c",
+          1
+        ],
+        [
+          "rune_3_plate_r",
+          1
+        ],
+        [
+          "rune_3_plate_bl",
+          1
+        ],
+        [
+          "rune_3_plate_b",
+          1
+        ],
+        [
+          "rune_3_plate_br",
+          1
+        ],
+        [
+          "rune_3",
+          1
+        ],
+        [
+          "rune_tile_4",
+          1
+        ],
+        [
+          "rune_icon_4",
+          1
+        ],
+        [
+          "rune_name_4",
+          1
+        ],
+        [
+          "rune_desc_4",
+          1
+        ],
+        [
+          "rune_owned_4",
+          1
+        ],
+        [
+          "rune_4_plate_tl",
+          1
+        ],
+        [
+          "rune_4_plate_t",
+          1
+        ],
+        [
+          "rune_4_plate_tr",
+          1
+        ],
+        [
+          "rune_4_plate_l",
+          1
+        ],
+        [
+          "rune_4_plate_c",
+          1
+        ],
+        [
+          "rune_4_plate_r",
+          1
+        ],
+        [
+          "rune_4_plate_bl",
+          1
+        ],
+        [
+          "rune_4_plate_b",
+          1
+        ],
+        [
+          "rune_4_plate_br",
+          1
+        ],
+        [
+          "rune_4",
+          1
+        ],
+        [
+          "rune_help",
+          1
+        ],
+        [
+          "rune_off_plate_tl",
+          1
+        ],
+        [
+          "rune_off_plate_t",
+          1
+        ],
+        [
+          "rune_off_plate_tr",
+          1
+        ],
+        [
+          "rune_off_plate_l",
+          1
+        ],
+        [
+          "rune_off_plate_c",
+          1
+        ],
+        [
+          "rune_off_plate_r",
+          1
+        ],
+        [
+          "rune_off_plate_bl",
+          1
+        ],
+        [
+          "rune_off_plate_b",
+          1
+        ],
+        [
+          "rune_off_plate_br",
+          1
+        ],
+        [
+          "rune_off",
+          1
+        ],
+        [
+          "rune_scroll_track",
+          1
+        ],
+        [
+          "rune_scroll_thumb",
+          1
+        ],
+        [
+          "rune_scroll_up_plate_tl",
+          1
+        ],
+        [
+          "rune_scroll_up_plate_t",
+          1
+        ],
+        [
+          "rune_scroll_up_plate_tr",
+          1
+        ],
+        [
+          "rune_scroll_up_plate_l",
+          1
+        ],
+        [
+          "rune_scroll_up_plate_c",
+          1
+        ],
+        [
+          "rune_scroll_up_plate_r",
+          1
+        ],
+        [
+          "rune_scroll_up_plate_bl",
+          1
+        ],
+        [
+          "rune_scroll_up_plate_b",
+          1
+        ],
+        [
+          "rune_scroll_up_plate_br",
+          1
+        ],
+        [
+          "rune_scroll_up",
+          1
+        ],
+        [
+          "rune_scroll_down_plate_tl",
+          1
+        ],
+        [
+          "rune_scroll_down_plate_t",
+          1
+        ],
+        [
+          "rune_scroll_down_plate_tr",
+          1
+        ],
+        [
+          "rune_scroll_down_plate_l",
+          1
+        ],
+        [
+          "rune_scroll_down_plate_c",
+          1
+        ],
+        [
+          "rune_scroll_down_plate_r",
+          1
+        ],
+        [
+          "rune_scroll_down_plate_bl",
+          1
+        ],
+        [
+          "rune_scroll_down_plate_b",
+          1
+        ],
+        [
+          "rune_scroll_down_plate_br",
+          1
+        ],
+        [
+          "rune_scroll_down",
+          1
+        ],
+        [
+          "rune_scroll_down_hit_top",
+          1
+        ],
+        [
+          "rune_scroll_down_hit_bottom",
+          1
+        ],
+        [
+          "troop_stats_panel_tl",
+          1
+        ],
+        [
+          "troop_stats_panel_t",
+          1
+        ],
+        [
+          "troop_stats_panel_tr",
+          1
+        ],
+        [
+          "troop_stats_panel_l",
+          1
+        ],
+        [
+          "troop_stats_panel_c",
+          1
+        ],
+        [
+          "troop_stats_panel_r",
+          1
+        ],
+        [
+          "troop_stats_panel_bl",
+          1
+        ],
+        [
+          "troop_stats_panel_b",
+          1
+        ],
+        [
+          "troop_stats_panel_br",
+          1
+        ],
+        [
+          "troop_stats_title",
+          1
+        ],
+        [
+          "troop_stat_icon_1",
+          1
+        ],
+        [
+          "troop_stat_value_1",
+          1
+        ],
+        [
+          "troop_stat_icon_2",
+          1
+        ],
+        [
+          "troop_stat_value_2",
+          1
+        ],
+        [
+          "troop_stat_icon_3",
+          1
+        ],
+        [
+          "troop_stat_value_3",
+          1
+        ],
+        [
+          "troop_stat_icon_4",
+          1
+        ],
+        [
+          "troop_stat_value_4",
+          1
+        ],
+        [
+          "troop_stat_icon_5",
+          1
+        ],
+        [
+          "troop_stat_value_5",
+          1
+        ]
+      ]
+    },
+    "render_regions": 179,
+    "cpu_render_ms": 21.899999991059303,
+    "gpu_render_ms": null,
+    "decoded_rgba_bytes_estimate": 42201536,
     "assets": [
-      {
-        "id": "texture://ui_control-quiet-v3-tl",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-t",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-tr",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-l",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-c",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-r",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-bl",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-b",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-br",
-        "state": "ready"
-      },
       {
         "id": "texture://ui_shop-button-primary-v2-tl",
         "state": "ready"
@@ -2627,7 +3542,59 @@
         "state": "ready"
       },
       {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-key",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-close",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-gold",
+        "state": "ready"
+      },
+      {
         "id": "texture://ui_icon-coin",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-crystal",
         "state": "ready"
       },
       {
@@ -2635,21 +3602,102 @@
         "state": "ready"
       },
       {
-        "id": "texture://ui_skill-hunter_vigor",
+        "id": "texture://ui_loadout-tab-v1",
         "state": "ready"
       },
       {
-        "id": "texture://ui_skill-deadly",
+        "id": "texture://ui_loadout-tab-active-v1",
         "state": "ready"
       },
       {
-        "id": "texture://ui_skill-longlife",
+        "id": "texture://ui_icon-weapon",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-rune",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_loadout-board-v2",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-sword",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-active",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-spear",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_symbol-cavalry",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-attack",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-life",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-speed",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-crit",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-pierce",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_loadout-slot-empty-v1",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-lock",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_loadout-item-tile-v2",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_skill-ember_burst",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_skill-plunder",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_skill-frost_touch",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_skill-showdown",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_loadout-scroll-track-v1",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_loadout-scroll-thumb-v1",
         "state": "ready"
       }
     ],
     "diagnostics": [],
     "fontFamily": "\"Microsoft JhengHei\",sans-serif",
     "limitations": [
+      "CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.",
       "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
       "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
     ]

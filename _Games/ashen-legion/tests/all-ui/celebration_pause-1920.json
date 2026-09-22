@@ -210,6 +210,76 @@
   "metrics": {
     "backend": "canvas2d",
     "nodes": 14,
+    "usage": {
+      "logical_nodes": 14,
+      "leaf_nodes": 14,
+      "render_regions_upper_bound": 14,
+      "max_nodes": 2048,
+      "host_max_nodes": 16384,
+      "limit_source": "contract.default",
+      "subtrees": [
+        [
+          "outro_pause_back",
+          1
+        ],
+        [
+          "outro_pause_title",
+          1
+        ],
+        [
+          "outro_resume_plate_tl",
+          1
+        ],
+        [
+          "outro_resume_plate_t",
+          1
+        ],
+        [
+          "outro_resume_plate_tr",
+          1
+        ],
+        [
+          "outro_resume_plate_l",
+          1
+        ],
+        [
+          "outro_resume_plate_c",
+          1
+        ],
+        [
+          "outro_resume_plate_r",
+          1
+        ],
+        [
+          "outro_resume_plate_bl",
+          1
+        ],
+        [
+          "outro_resume_plate_b",
+          1
+        ],
+        [
+          "outro_resume_plate_br",
+          1
+        ],
+        [
+          "outro_resume",
+          1
+        ],
+        [
+          "outro_resume_hit_top",
+          1
+        ],
+        [
+          "outro_resume_hit_bottom",
+          1
+        ]
+      ]
+    },
+    "render_regions": 14,
+    "cpu_render_ms": 0.19999998807907104,
+    "gpu_render_ms": null,
+    "decoded_rgba_bytes_estimate": 5005760,
     "assets": [
       {
         "id": "texture://ui_shop-surface",
@@ -255,6 +325,7 @@
     "diagnostics": [],
     "fontFamily": "\"Microsoft JhengHei\",sans-serif",
     "limitations": [
+      "CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.",
       "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
       "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
     ]

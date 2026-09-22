@@ -14,7 +14,7 @@
       "name": "profiles",
       "width": 1920,
       "height": 1080,
-      "nodes": 97,
+      "nodes": 88,
       "failures": [],
       "minFont": 24
     },
@@ -22,7 +22,7 @@
       "name": "profiles_saved",
       "width": 1920,
       "height": 1080,
-      "nodes": 109,
+      "nodes": 100,
       "failures": [],
       "minFont": 24
     },
@@ -30,7 +30,7 @@
       "name": "delete",
       "width": 1920,
       "height": 1080,
-      "nodes": 50,
+      "nodes": 41,
       "failures": [],
       "minFont": 18
     },
@@ -38,7 +38,7 @@
       "name": "settings",
       "width": 1920,
       "height": 1080,
-      "nodes": 105,
+      "nodes": 96,
       "failures": [],
       "minFont": 17.25
     },
@@ -46,7 +46,7 @@
       "name": "town",
       "width": 1920,
       "height": 1080,
-      "nodes": 163,
+      "nodes": 154,
       "failures": [],
       "minFont": 18
     },
@@ -54,7 +54,7 @@
       "name": "town_modal",
       "width": 1920,
       "height": 1080,
-      "nodes": 202,
+      "nodes": 193,
       "failures": [],
       "minFont": 14.25
     },
@@ -78,7 +78,7 @@
       "name": "market",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -86,7 +86,7 @@
       "name": "market_modal",
       "width": 1920,
       "height": 1080,
-      "nodes": 196,
+      "nodes": 177,
       "failures": [],
       "minFont": 22
     },
@@ -94,7 +94,7 @@
       "name": "market_sold",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -102,7 +102,7 @@
       "name": "sell_empty",
       "width": 1920,
       "height": 1080,
-      "nodes": 68,
+      "nodes": 70,
       "failures": [],
       "minFont": 17.25
     },
@@ -110,7 +110,7 @@
       "name": "sell",
       "width": 1920,
       "height": 1080,
-      "nodes": 147,
+      "nodes": 149,
       "failures": [],
       "minFont": 14.25
     },
@@ -118,23 +118,23 @@
       "name": "gear",
       "width": 1920,
       "height": 1080,
-      "nodes": 254,
+      "nodes": 202,
       "failures": [],
-      "minFont": 14.25
+      "minFont": 14
     },
     {
       "name": "gear_empty",
       "width": 1920,
       "height": 1080,
-      "nodes": 200,
+      "nodes": 166,
       "failures": [],
-      "minFont": 17.25
+      "minFont": 14.25
     },
     {
       "name": "runes",
       "width": 1920,
       "height": 1080,
-      "nodes": 177,
+      "nodes": 179,
       "failures": [],
       "minFont": 14.25
     },
@@ -142,7 +142,7 @@
       "name": "enchant_empty",
       "width": 1920,
       "height": 1080,
-      "nodes": 145,
+      "nodes": 147,
       "failures": [],
       "minFont": 17.25
     },
@@ -150,7 +150,7 @@
       "name": "enchant",
       "width": 1920,
       "height": 1080,
-      "nodes": 149,
+      "nodes": 151,
       "failures": [],
       "minFont": 17.25
     },
@@ -158,7 +158,7 @@
       "name": "enchant_offer",
       "width": 1920,
       "height": 1080,
-      "nodes": 171,
+      "nodes": 173,
       "failures": [],
       "minFont": 17.25
     },
@@ -198,7 +198,7 @@
       "name": "guide",
       "width": 1920,
       "height": 1080,
-      "nodes": 43,
+      "nodes": 34,
       "failures": [],
       "minFont": 17.25
     },
@@ -230,7 +230,7 @@
       "name": "clear",
       "width": 1920,
       "height": 1080,
-      "nodes": 35,
+      "nodes": 37,
       "failures": [],
       "minFont": 14.25
     },
@@ -238,7 +238,7 @@
       "name": "clear_chest",
       "width": 1920,
       "height": 1080,
-      "nodes": 47,
+      "nodes": 49,
       "failures": [],
       "minFont": 14.25
     },
@@ -246,7 +246,7 @@
       "name": "clear_reward",
       "width": 1920,
       "height": 1080,
-      "nodes": 48,
+      "nodes": 50,
       "failures": [],
       "minFont": 14.25
     },
@@ -254,7 +254,7 @@
       "name": "victory",
       "width": 1920,
       "height": 1080,
-      "nodes": 35,
+      "nodes": 28,
       "failures": [],
       "minFont": 14.25
     },
@@ -262,7 +262,7 @@
       "name": "defeat",
       "width": 1920,
       "height": 1080,
-      "nodes": 42,
+      "nodes": 33,
       "failures": [],
       "minFont": 14.25
     },
@@ -270,7 +270,7 @@
       "name": "shop_rune",
       "width": 1920,
       "height": 1080,
-      "nodes": 126,
+      "nodes": 128,
       "failures": [],
       "minFont": 17.25
     },
@@ -278,7 +278,7 @@
       "name": "shop_potion",
       "width": 1920,
       "height": 1080,
-      "nodes": 102,
+      "nodes": 104,
       "failures": [],
       "minFont": 17.25
     },
@@ -286,7 +286,7 @@
       "name": "shop_tech",
       "width": 1920,
       "height": 1080,
-      "nodes": 102,
+      "nodes": 104,
       "failures": [],
       "minFont": 17.25
     },
@@ -294,7 +294,7 @@
       "name": "shop_curse",
       "width": 1920,
       "height": 1080,
-      "nodes": 102,
+      "nodes": 104,
       "failures": [],
       "minFont": 17.25
     },
@@ -302,7 +302,7 @@
       "name": "sell_rune",
       "width": 1920,
       "height": 1080,
-      "nodes": 127,
+      "nodes": 129,
       "failures": [],
       "minFont": 17.25
     },
@@ -310,7 +310,7 @@
       "name": "market_catalog_0",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -318,7 +318,7 @@
       "name": "market_catalog_4",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -326,7 +326,7 @@
       "name": "market_catalog_8",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -334,7 +334,7 @@
       "name": "market_catalog_12",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -342,7 +342,7 @@
       "name": "market_catalog_16",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -350,7 +350,7 @@
       "name": "market_catalog_20",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -358,7 +358,7 @@
       "name": "market_catalog_24",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -366,7 +366,7 @@
       "name": "market_catalog_28",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -374,7 +374,7 @@
       "name": "market_catalog_32",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -382,7 +382,7 @@
       "name": "market_catalog_36",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -390,7 +390,7 @@
       "name": "market_catalog_40",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -398,7 +398,7 @@
       "name": "market_catalog_44",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -406,7 +406,7 @@
       "name": "market_catalog_48",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -414,7 +414,7 @@
       "name": "market_catalog_52",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -422,7 +422,7 @@
       "name": "market_catalog_56",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -430,7 +430,7 @@
       "name": "market_catalog_60",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -438,7 +438,7 @@
       "name": "market_catalog_64",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -446,7 +446,7 @@
       "name": "market_catalog_68",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -454,7 +454,7 @@
       "name": "market_catalog_72",
       "width": 1920,
       "height": 1080,
-      "nodes": 155,
+      "nodes": 157,
       "failures": [],
       "minFont": 22
     },
@@ -462,7 +462,7 @@
       "name": "market_catalog_76",
       "width": 1920,
       "height": 1080,
-      "nodes": 141,
+      "nodes": 143,
       "failures": [],
       "minFont": 22
     },
@@ -470,31 +470,31 @@
       "name": "gear_detail",
       "width": 1920,
       "height": 1080,
-      "nodes": 217,
+      "nodes": 200,
       "failures": [],
-      "minFont": 14.25
+      "minFont": 14
     },
     {
       "name": "gear_other_owner",
       "width": 1920,
       "height": 1080,
-      "nodes": 254,
+      "nodes": 190,
       "failures": [],
-      "minFont": 14.25
+      "minFont": 14
     },
     {
       "name": "gear_other_owner_detail",
       "width": 1920,
       "height": 1080,
-      "nodes": 219,
+      "nodes": 190,
       "failures": [],
-      "minFont": 14.25
+      "minFont": 14
     },
     {
       "name": "town_populated",
       "width": 1920,
       "height": 1080,
-      "nodes": 163,
+      "nodes": 154,
       "failures": [],
       "minFont": 18
     },
@@ -502,7 +502,7 @@
       "name": "profiles_populated",
       "width": 1920,
       "height": 1080,
-      "nodes": 109,
+      "nodes": 100,
       "failures": [],
       "minFont": 24
     },
@@ -510,23 +510,23 @@
       "name": "gear_spear",
       "width": 1920,
       "height": 1080,
-      "nodes": 254,
+      "nodes": 190,
       "failures": [],
-      "minFont": 14.25
+      "minFont": 14
     },
     {
       "name": "gear_cavalry",
       "width": 1920,
       "height": 1080,
-      "nodes": 254,
+      "nodes": 190,
       "failures": [],
-      "minFont": 14.25
+      "minFont": 14
     },
     {
       "name": "runes_page3",
       "width": 1920,
       "height": 1080,
-      "nodes": 175,
+      "nodes": 179,
       "failures": [],
       "minFont": 14.25
     },
@@ -534,7 +534,7 @@
       "name": "detail_rune",
       "width": 1920,
       "height": 1080,
-      "nodes": 166,
+      "nodes": 159,
       "failures": [],
       "minFont": 17.25
     },
@@ -542,7 +542,7 @@
       "name": "detail_potion",
       "width": 1920,
       "height": 1080,
-      "nodes": 142,
+      "nodes": 135,
       "failures": [],
       "minFont": 17.25
     },
@@ -550,7 +550,7 @@
       "name": "detail_tech",
       "width": 1920,
       "height": 1080,
-      "nodes": 142,
+      "nodes": 135,
       "failures": [],
       "minFont": 17.25
     },
@@ -558,7 +558,7 @@
       "name": "detail_curse",
       "width": 1920,
       "height": 1080,
-      "nodes": 142,
+      "nodes": 135,
       "failures": [],
       "minFont": 17.25
     },
@@ -566,7 +566,7 @@
       "name": "shop_receipt",
       "width": 1920,
       "height": 1080,
-      "nodes": 126,
+      "nodes": 128,
       "failures": [],
       "minFont": 17.25
     },

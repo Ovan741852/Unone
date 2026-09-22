@@ -1159,144 +1159,36 @@
       },
       {
         "kind": "image",
-        "id": "profiles_back_plate_tl",
+        "id": "profiles_back_plate",
         "rect": {
-          "x": 32,
-          "y": 10.933333333333335,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666664
+          "x": 92,
+          "y": 87,
+          "width": 5.5,
+          "height": 6
         },
-        "asset": "texture://ui_control-quiet-v3-tl",
+        "asset": "texture://ui_hud-key",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "profiles_back_plate_t",
+        "id": "profiles_back_icon",
         "rect": {
-          "x": 32.6,
-          "y": 10.933333333333335,
-          "width": 34.800000000000004,
-          "height": 1.0666666666666664
+          "x": 93.25,
+          "y": 88.14999999999999,
+          "width": 3,
+          "height": 3.7
         },
-        "asset": "texture://ui_control-quiet-v3-t",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "profiles_back_plate_tr",
-        "rect": {
-          "x": 67.4,
-          "y": 10.933333333333335,
-          "width": 0.5999999999999943,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-tr",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "profiles_back_plate_l",
-        "rect": {
-          "x": 32,
-          "y": 7.066666666666666,
-          "width": 0.6000000000000014,
-          "height": 3.866666666666669
-        },
-        "asset": "texture://ui_control-quiet-v3-l",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "profiles_back_plate_c",
-        "rect": {
-          "x": 32.6,
-          "y": 7.066666666666666,
-          "width": 34.800000000000004,
-          "height": 3.866666666666669
-        },
-        "asset": "texture://ui_control-quiet-v3-c",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "profiles_back_plate_r",
-        "rect": {
-          "x": 67.4,
-          "y": 7.066666666666666,
-          "width": 0.5999999999999943,
-          "height": 3.866666666666669
-        },
-        "asset": "texture://ui_control-quiet-v3-r",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "profiles_back_plate_bl",
-        "rect": {
-          "x": 32,
-          "y": 6,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-bl",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "profiles_back_plate_b",
-        "rect": {
-          "x": 32.6,
-          "y": 6,
-          "width": 34.800000000000004,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-b",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "profiles_back_plate_br",
-        "rect": {
-          "x": 67.4,
-          "y": 6,
-          "width": 0.5999999999999943,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-br",
-        "fit": "stretch"
+        "asset": "texture://ui_icon-close",
+        "fit": "contain"
       },
       {
         "kind": "button",
         "id": "profiles_back",
         "rect": {
-          "x": 32,
-          "y": 7.456790123456797,
-          "width": 36,
-          "height": 3.0864197530864192
-        },
-        "text": "返回主選單",
-        "action": "UI_home"
-      },
-      {
-        "kind": "button",
-        "id": "profiles_back_hit_top",
-        "rect": {
-          "x": 32,
-          "y": 10.543209876543209,
-          "width": 36,
-          "height": 1.4567901234567913
-        },
-        "text": "",
-        "action": "UI_home"
-      },
-      {
-        "kind": "button",
-        "id": "profiles_back_hit_bottom",
-        "rect": {
-          "x": 32,
-          "y": 6.000000000000007,
-          "width": 36,
-          "height": 1.4567901234567913
+          "x": 92,
+          "y": 87,
+          "width": 5.5,
+          "height": 6
         },
         "text": "",
         "action": "UI_home"
@@ -1591,64 +1483,426 @@
         "width": 94,
         "height": 21
       }
-    },
-    {
-      "text": "返回主選單",
-      "font": 24,
-      "clip": {
-        "x": 614.4,
-        "y": 966.1333333333333,
-        "width": 691.2,
-        "height": 33.33333333333333
-      },
-      "ink": {
-        "x": 901,
-        "y": 972.159375,
-        "width": 118,
-        "height": 21
-      }
     }
   ],
   "metrics": {
     "backend": "canvas2d",
-    "nodes": 109,
+    "nodes": 100,
+    "usage": {
+      "logical_nodes": 100,
+      "leaf_nodes": 100,
+      "render_regions_upper_bound": 100,
+      "max_nodes": 2048,
+      "host_max_nodes": 16384,
+      "limit_source": "contract.default",
+      "subtrees": [
+        [
+          "screen_shade",
+          1
+        ],
+        [
+          "screen_back_fill",
+          1
+        ],
+        [
+          "screen_back_tl",
+          1
+        ],
+        [
+          "screen_back_t",
+          1
+        ],
+        [
+          "screen_back_tr",
+          1
+        ],
+        [
+          "screen_back_l",
+          1
+        ],
+        [
+          "screen_back_c",
+          1
+        ],
+        [
+          "screen_back_r",
+          1
+        ],
+        [
+          "screen_back_bl",
+          1
+        ],
+        [
+          "screen_back_b",
+          1
+        ],
+        [
+          "screen_back_br",
+          1
+        ],
+        [
+          "screen_title",
+          1
+        ],
+        [
+          "profiles_hint",
+          1
+        ],
+        [
+          "profile_card_1_tl",
+          1
+        ],
+        [
+          "profile_card_1_t",
+          1
+        ],
+        [
+          "profile_card_1_tr",
+          1
+        ],
+        [
+          "profile_card_1_l",
+          1
+        ],
+        [
+          "profile_card_1_c",
+          1
+        ],
+        [
+          "profile_card_1_r",
+          1
+        ],
+        [
+          "profile_card_1_bl",
+          1
+        ],
+        [
+          "profile_card_1_b",
+          1
+        ],
+        [
+          "profile_card_1_br",
+          1
+        ],
+        [
+          "profile_slot_1",
+          1
+        ],
+        [
+          "profile_name_1",
+          1
+        ],
+        [
+          "profile_detail_1",
+          1
+        ],
+        [
+          "profile_load_1_plate_tl",
+          1
+        ],
+        [
+          "profile_load_1_plate_t",
+          1
+        ],
+        [
+          "profile_load_1_plate_tr",
+          1
+        ],
+        [
+          "profile_load_1_plate_l",
+          1
+        ],
+        [
+          "profile_load_1_plate_c",
+          1
+        ],
+        [
+          "profile_load_1_plate_r",
+          1
+        ],
+        [
+          "profile_load_1_plate_bl",
+          1
+        ],
+        [
+          "profile_load_1_plate_b",
+          1
+        ],
+        [
+          "profile_load_1_plate_br",
+          1
+        ],
+        [
+          "profile_load_1",
+          1
+        ],
+        [
+          "profile_load_1_hit_top",
+          1
+        ],
+        [
+          "profile_load_1_hit_bottom",
+          1
+        ],
+        [
+          "profile_delete_1_plate_tl",
+          1
+        ],
+        [
+          "profile_delete_1_plate_t",
+          1
+        ],
+        [
+          "profile_delete_1_plate_tr",
+          1
+        ],
+        [
+          "profile_delete_1_plate_l",
+          1
+        ],
+        [
+          "profile_delete_1_plate_c",
+          1
+        ],
+        [
+          "profile_delete_1_plate_r",
+          1
+        ],
+        [
+          "profile_delete_1_plate_bl",
+          1
+        ],
+        [
+          "profile_delete_1_plate_b",
+          1
+        ],
+        [
+          "profile_delete_1_plate_br",
+          1
+        ],
+        [
+          "profile_delete_1",
+          1
+        ],
+        [
+          "profile_delete_1_hit_top",
+          1
+        ],
+        [
+          "profile_delete_1_hit_bottom",
+          1
+        ],
+        [
+          "profile_card_2_tl",
+          1
+        ],
+        [
+          "profile_card_2_t",
+          1
+        ],
+        [
+          "profile_card_2_tr",
+          1
+        ],
+        [
+          "profile_card_2_l",
+          1
+        ],
+        [
+          "profile_card_2_c",
+          1
+        ],
+        [
+          "profile_card_2_r",
+          1
+        ],
+        [
+          "profile_card_2_bl",
+          1
+        ],
+        [
+          "profile_card_2_b",
+          1
+        ],
+        [
+          "profile_card_2_br",
+          1
+        ],
+        [
+          "profile_slot_2",
+          1
+        ],
+        [
+          "profile_name_2",
+          1
+        ],
+        [
+          "profile_detail_2",
+          1
+        ],
+        [
+          "profile_create_2_plate_tl",
+          1
+        ],
+        [
+          "profile_create_2_plate_t",
+          1
+        ],
+        [
+          "profile_create_2_plate_tr",
+          1
+        ],
+        [
+          "profile_create_2_plate_l",
+          1
+        ],
+        [
+          "profile_create_2_plate_c",
+          1
+        ],
+        [
+          "profile_create_2_plate_r",
+          1
+        ],
+        [
+          "profile_create_2_plate_bl",
+          1
+        ],
+        [
+          "profile_create_2_plate_b",
+          1
+        ],
+        [
+          "profile_create_2_plate_br",
+          1
+        ],
+        [
+          "profile_create_2",
+          1
+        ],
+        [
+          "profile_create_2_hit_top",
+          1
+        ],
+        [
+          "profile_create_2_hit_bottom",
+          1
+        ],
+        [
+          "profile_card_3_tl",
+          1
+        ],
+        [
+          "profile_card_3_t",
+          1
+        ],
+        [
+          "profile_card_3_tr",
+          1
+        ],
+        [
+          "profile_card_3_l",
+          1
+        ],
+        [
+          "profile_card_3_c",
+          1
+        ],
+        [
+          "profile_card_3_r",
+          1
+        ],
+        [
+          "profile_card_3_bl",
+          1
+        ],
+        [
+          "profile_card_3_b",
+          1
+        ],
+        [
+          "profile_card_3_br",
+          1
+        ],
+        [
+          "profile_slot_3",
+          1
+        ],
+        [
+          "profile_name_3",
+          1
+        ],
+        [
+          "profile_detail_3",
+          1
+        ],
+        [
+          "profile_create_3_plate_tl",
+          1
+        ],
+        [
+          "profile_create_3_plate_t",
+          1
+        ],
+        [
+          "profile_create_3_plate_tr",
+          1
+        ],
+        [
+          "profile_create_3_plate_l",
+          1
+        ],
+        [
+          "profile_create_3_plate_c",
+          1
+        ],
+        [
+          "profile_create_3_plate_r",
+          1
+        ],
+        [
+          "profile_create_3_plate_bl",
+          1
+        ],
+        [
+          "profile_create_3_plate_b",
+          1
+        ],
+        [
+          "profile_create_3_plate_br",
+          1
+        ],
+        [
+          "profile_create_3",
+          1
+        ],
+        [
+          "profile_create_3_hit_top",
+          1
+        ],
+        [
+          "profile_create_3_hit_bottom",
+          1
+        ],
+        [
+          "profiles_back_plate",
+          1
+        ],
+        [
+          "profiles_back_icon",
+          1
+        ],
+        [
+          "profiles_back",
+          1
+        ]
+      ]
+    },
+    "render_regions": 100,
+    "cpu_render_ms": 0.5,
+    "gpu_render_ms": null,
+    "decoded_rgba_bytes_estimate": 24301472,
     "assets": [
-      {
-        "id": "texture://ui_control-quiet-v3-tl",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-t",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-tr",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-l",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-c",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-r",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-bl",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-b",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-br",
-        "state": "ready"
-      },
       {
         "id": "texture://ui_shop-button-primary-v2-tl",
         "state": "ready"
@@ -1730,6 +1984,50 @@
         "state": "ready"
       },
       {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-key",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-close",
+        "state": "ready"
+      },
+      {
         "id": "texture://ui_shop-card-rare-v2-tl",
         "state": "ready"
       },
@@ -1769,6 +2067,7 @@
     "diagnostics": [],
     "fontFamily": "\"Microsoft JhengHei\",sans-serif",
     "limitations": [
+      "CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.",
       "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
       "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
     ]

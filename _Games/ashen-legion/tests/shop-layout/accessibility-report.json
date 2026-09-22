@@ -1,7 +1,7 @@
 {
   "ok": true,
   "checks": [
-    "Tab / Enter / Space purchase; visible focus; modal trap; Escape returns to originating card; sold action disabled",
+    "Tab / Enter / Space purchase; visible focus; modal trap; successful purchase closes and returns focus to originating card",
     "Sell tab and return to buying stay keyboard reachable",
     "Touching card artwork opens detail (same action as card footer)",
     "Keyboard rerolls charge 2 then 4; next fee and insufficient state are exposed",

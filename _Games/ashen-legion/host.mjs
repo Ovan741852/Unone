@@ -8,6 +8,7 @@ import {createRewardPresentation} from './presentation/rewards.mjs';
 import {fitFormalUI} from './presentation/adaptive-ui.mjs';
 import {createUiMotion} from './presentation/ui-motion.mjs';
 import {createShopAccessibility} from './presentation/shop-accessibility.mjs';
+import {createLoadoutPreview} from './presentation/loadout-preview.mjs';
 // Game-owned browser host: input/projection and presentation only.
 // Authoritative simulation is the exported Unone Rust/WASM + main.luau.
 import {createThreeRenderer} from './web/renderer/three.js';
@@ -17,8 +18,11 @@ import {createAsyncScheduler} from './web/shared/async-scheduler.mjs';
 import {createLandscapeViewport} from './presentation/landscape-host.mjs';
 const stage=document.querySelector('#stage'),canvas=document.querySelector('#game'),input=createHostInput();
 const viewport=createLandscapeViewport(canvas);
-let actors,rewardPresentation,formalUi,worldLabels,projection,arenaWalls,sceneLighting;
-const formalCanvas=document.querySelector("#formal-ui");
+let actors,loadoutPreview,rewardPresentation,formalUi,worldLabels,projection,arenaWalls,sceneLighting;
+const formalCanvas=document.querySelector("#formal-ui"),loadoutCanvas=document.querySelector("#loadout-preview");
+// The loadout screen always keeps the paper-doll visible. `fit3d` only changes
+// its camera framing; the old `2d` preview switch was a QA-only escape hatch.
+const loadoutMode=new URLSearchParams(location.search).get('loadout')==='fit3d'?'fit3d':'3d';
 const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
 const uiMotion=createUiMotion({reducedMotion:()=>motionPreference.matches});
 let safeInsets={};
@@ -89,7 +93,7 @@ window.addEventListener('keydown',e=>{if(!ready||e.defaultPrevented||e.target.cl
 window.addEventListener('keyup',e=>input.setHeld(e.code,false));
 window.addEventListener('blur',()=>{releaseInput();if(['battle','celebration'].includes(snapshot?.world.observations.game.phase)&&!snapshot.world.observations.game.paused)input.queueAction('Pause')});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){releaseInput();if(['battle','celebration'].includes(snapshot?.world.observations.game.phase)&&!snapshot.world.observations.game.paused)input.queueAction('Pause')}});
-window.ashen={hold(action,value){if(ready)input.setHeld(action,value)},action(action){if(ready)input.queueAction(action)},release(){releaseInput()},state:()=>snapshot?.world.observations.game,uiTree:()=>uiMotion.tree(),projectPoint,projectClientPoint:(x,z,h=0)=>viewport.toClient(projectPoint(x,z,h)),setLighting:value=>sceneLighting?.setMode(value),setBloom:value=>renderer?.setBloom(value),setAO:value=>renderer?.setAO(value),metrics:()=>({...renderer?.metrics(),walls:arenaWalls?.inspect(),lighting:sceneLighting?.inspect(),camera:{projection:"perspective",fan:false},actors:actors?.inspect(),lottie:rewardPresentation?.inspect(),labels:worldLabels?.inspect(),ui:formalUi?.report(),motion:uiMotion.inspect(),viewport:{...viewport.inspect(),safeInsets}}),setSceneTheme:id=>{if(!environments?.themes[id])throw Error("Unknown scene theme");themeId=id}};
+window.ashen={hold(action,value){if(ready)input.setHeld(action,value)},action(action){if(ready)input.queueAction(action)},release(){releaseInput()},state:()=>snapshot?.world.observations.game,uiTree:()=>uiMotion.tree(),projectPoint,projectClientPoint:(x,z,h=0)=>viewport.toClient(projectPoint(x,z,h)),setLighting:value=>sceneLighting?.setMode(value),setBloom:value=>renderer?.setBloom(value),setAO:value=>renderer?.setAO(value),metrics:()=>({...renderer?.metrics(),walls:arenaWalls?.inspect(),lighting:sceneLighting?.inspect(),camera:{projection:"perspective",fan:false},actors:actors?.inspect(),loadoutPreview:{mode:loadoutMode,...loadoutPreview?.inspect()},lottie:rewardPresentation?.inspect(),labels:worldLabels?.inspect(),ui:formalUi?.report(),motion:uiMotion.inspect(),viewport:{...viewport.inspect(),safeInsets}}),setSceneTheme:id=>{if(!environments?.themes[id])throw Error("Unknown scene theme");themeId=id}};
 async function start(){
  const loading=window.ashenLoading;loading.mark('host');loading.phase('正在準備遠征…');
  const preparedActors=prepareActorAssets({onProgress:(done,total)=>loading.progress(done,total)});
@@ -114,10 +118,11 @@ async function start(){
   projection=context;sceneLighting=createSceneLighting(context);arenaWalls=createArenaWalls(context);
   presentationsReady=Promise.all([
    createActors({...context,preparedAssets:preparedActors}).then(value=>{loading.mark('actorsReady');return value}),
+   createLoadoutPreview({canvas:loadoutCanvas,preparedAssets:preparedActors,mode:loadoutMode}).then(value=>{loading.mark('loadoutPreviewReady');return value}),
    createRewardPresentation({container:stage,getInsets:()=>safeInsets}).then(value=>{loading.mark('rewardsReady');return value}),
-  ]).then(([readyActors,readyRewards])=>{
-   actors=readyActors;rewardPresentation=readyRewards;loading.mark('models');
-   context.attachPresentation({beforeRender:({snapshot,dt})=>{const game=snapshot?.world.observations.game;sceneLighting.update(game);arenaWalls.update(game);actors.update(game,dt);rewardPresentation.update(game,dt);rewardPresentation.applyCamera(snapshot?.world.camera3d)},onDispose:()=>{sceneLighting.dispose();arenaWalls.dispose();actors.dispose();rewardPresentation.dispose()}});
+  ]).then(([readyActors,readyLoadoutPreview,readyRewards])=>{
+   actors=readyActors;loadoutPreview=readyLoadoutPreview;rewardPresentation=readyRewards;loading.mark('models');
+   context.attachPresentation({beforeRender:({snapshot,dt})=>{const game=snapshot?.world.observations.game;sceneLighting.update(game);arenaWalls.update(game);actors.update(game,dt);loadoutPreview.update(game,dt);rewardPresentation.update(game,dt);rewardPresentation.applyCamera(snapshot?.world.camera3d)},onDispose:()=>{sceneLighting.dispose();arenaWalls.dispose();actors.dispose();loadoutPreview.dispose();rewardPresentation.dispose()}});
   });
   presentationsReady.catch(()=>{}); // Joined before the loading cover can open.
  };
