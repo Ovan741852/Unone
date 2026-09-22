@@ -106,21 +106,21 @@ const MAX_TEXTURE_EDGE: f32 = 512.0;
 fn decode_texture(source: &str, bytes: &[u8]) -> Result<(u32, u32, Vec<u8>), String> {
     if !source.to_ascii_lowercase().ends_with(".svg") {
         return Err(format!(
-            "native preview host 目前只解碼 SVG source，'{source}' 需要其他 decoder"
+            "The native preview host currently decodes only SVG sources; '{source}' needs another decoder"
         ));
     }
     let tree = resvg::usvg::Tree::from_data(bytes, &resvg::usvg::Options::default())
-        .map_err(|error| format!("SVG 解析失敗：{error}"))?;
+        .map_err(|error| format!("SVG parse failed: {error}"))?;
     let size = tree.size();
     let longest = size.width().max(size.height());
     if !longest.is_finite() || longest <= 0.0 {
-        return Err("SVG 沒有可用的尺寸".to_string());
+        return Err("The SVG has no usable dimensions".to_string());
     }
     let scale = (MAX_TEXTURE_EDGE / longest).clamp(f32::EPSILON, 1.0);
     let width = (size.width() * scale).ceil().max(1.0) as u32;
     let height = (size.height() * scale).ceil().max(1.0) as u32;
     let mut pixmap = resvg::tiny_skia::Pixmap::new(width, height)
-        .ok_or_else(|| format!("無法建立 {width}x{height} pixmap"))?;
+        .ok_or_else(|| format!("Could not create a {width}x{height} pixmap"))?;
     resvg::render(
         &tree,
         resvg::tiny_skia::Transform::from_scale(scale, scale),

@@ -1,4 +1,4 @@
-# Unified Camera component
+# ADR 0036: Unified Camera component
 
 ## Decision
 

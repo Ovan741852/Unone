@@ -143,9 +143,9 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
     {
         let mut diagnostic = Diagnostic::error(
             "PLUGIN_TOOL_NOT_FOUND",
-            "插件沒有宣告這個工具",
+            "The plugin does not declare this tool",
             format!(
-                "插件 '{}' 沒有公開工具 '{}'。先執行 plugin inspect 查看 tools。",
+                "Plugin '{}' does not expose tool '{}'. Run plugin inspect to see its tools.",
                 id, tool
             ),
         );
@@ -179,8 +179,8 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
         Err(error) => {
             let mut diagnostic = Diagnostic::error(
                 "PLUGIN_PROCESS_START_FAILED",
-                "無法啟動插件",
-                format!("{}：{}", record.manifest.entry.command, error),
+                "Could not start the plugin",
+                format!("{}: {}", record.manifest.entry.command, error),
             );
             diagnostic.facts = json!({
                 "plugin": id,
@@ -196,7 +196,7 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
         Err(error) => {
             return EngineResult::failure(Diagnostic::error(
                 "PLUGIN_REQUEST_SERIALIZE_FAILED",
-                "無法建立插件請求",
+                "Could not build the plugin request",
                 error.to_string(),
             ));
         }
@@ -209,7 +209,7 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
             let _ = child.kill();
             return EngineResult::failure(Diagnostic::error(
                 "PLUGIN_REQUEST_WRITE_FAILED",
-                "無法傳送插件請求",
+                "Could not send the plugin request",
                 error.to_string(),
             ));
         }
@@ -219,7 +219,7 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
         Err(error) => {
             return EngineResult::failure(Diagnostic::error(
                 "PLUGIN_PROCESS_WAIT_FAILED",
-                "無法等待插件完成",
+                "Could not wait for the plugin to finish",
                 error.to_string(),
             ));
         }
@@ -227,7 +227,7 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
     if !output.status.success() {
         let mut diagnostic = Diagnostic::error(
             "PLUGIN_PROCESS_FAILED",
-            "插件執行失敗",
+            "The plugin failed",
             String::from_utf8_lossy(&output.stderr).trim().to_string(),
         );
         diagnostic.facts = json!({
@@ -247,8 +247,8 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
     else {
         return EngineResult::failure(Diagnostic::error(
             "PLUGIN_RESPONSE_EMPTY",
-            "插件沒有回傳 JSON",
-            "插件 stdout 必須至少回傳一行 JSON；除錯文字請寫到 stderr。",
+            "The plugin returned no JSON",
+            "Plugin stdout must return at least one line of JSON; write debug text to stderr.",
         ));
     };
     let response = match serde_json::from_str::<Value>(line) {
@@ -256,7 +256,7 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
         Err(error) => {
             let mut diagnostic = Diagnostic::error(
                 "PLUGIN_RESPONSE_INVALID",
-                "插件回傳的不是有效 JSON",
+                "The plugin did not return valid JSON",
                 error.to_string(),
             );
             diagnostic.facts = json!({
@@ -281,8 +281,8 @@ pub fn call(project: &Path, id: &str, tool: &str, input: Value) -> EngineResult<
         }
         let mut diagnostic = Diagnostic::error(
             "PLUGIN_TOOL_FAILED",
-            "插件工具回報失敗",
-            "插件結果沒有提供可定位的 diagnostics。",
+            "The plugin tool reported a failure",
+            "The plugin result carried no locatable diagnostics.",
         );
         diagnostic.facts = json!({"plugin": id, "tool": tool, "response": response});
         return EngineResult::failure(diagnostic);
@@ -319,8 +319,8 @@ fn find_record(project: &Path, id: &str) -> Result<PluginRecord, Diagnostic> {
     }
     let mut diagnostic = Diagnostic::error(
         "PLUGIN_NOT_FOUND",
-        "找不到指定插件",
-        format!("沒有找到插件 '{}'；先執行 plugin list 查看已安裝插件。", id),
+        "No such plugin",
+        format!("No plugin '{}' was found; run plugin list to see installed plugins.", id),
     );
     diagnostic.facts = json!({
         "plugin": id,
@@ -331,7 +331,7 @@ fn find_record(project: &Path, id: &str) -> Result<PluginRecord, Diagnostic> {
         .suggested_actions
         .push(unone_engine::ActionSuggestion {
             action: "plugin_list".to_string(),
-            description: "列出目前專案與引擎可發現的插件。".to_string(),
+            description: "List the plugins discoverable for the current project and engine.".to_string(),
             command: Some("game plugin list --json".to_string()),
         });
     Err(diagnostic)
@@ -382,10 +382,10 @@ fn discover_records(roots: &[PathBuf]) -> (Vec<PluginRecord>, Vec<Diagnostic>) {
                 continue;
             }
             match fs::read_to_string(&manifest_path)
-                .map_err(|error| format!("{}：{}", manifest_path.display(), error))
+                .map_err(|error| format!("{}: {}", manifest_path.display(), error))
                 .and_then(|text| {
                     serde_json::from_str::<PluginManifest>(&text)
-                        .map_err(|error| format!("{}：{}", manifest_path.display(), error))
+                        .map_err(|error| format!("{}: {}", manifest_path.display(), error))
                 }) {
                 Ok(manifest) => {
                     if let Err(diagnostic) = validate_manifest(&manifest) {
@@ -396,8 +396,8 @@ fn discover_records(roots: &[PathBuf]) -> (Vec<PluginRecord>, Vec<Diagnostic>) {
                     {
                         diagnostics.push(Diagnostic::warning(
                             "PLUGIN_ID_DUPLICATE",
-                            "發現重複插件 id",
-                            format!("插件 '{}' 出現多次；保留先發現的版本。", manifest.id),
+                            "Duplicate plugin id",
+                            format!("Plugin '{}' appears more than once; the first one found is kept.", manifest.id),
                         ));
                     } else {
                         records.push(PluginRecord {
@@ -409,7 +409,7 @@ fn discover_records(roots: &[PathBuf]) -> (Vec<PluginRecord>, Vec<Diagnostic>) {
                 }
                 Err(error) => diagnostics.push(Diagnostic::warning(
                     "PLUGIN_MANIFEST_INVALID",
-                    "插件 manifest 無法讀取",
+                    "The plugin manifest could not be read",
                     error,
                 )),
             }
@@ -423,15 +423,15 @@ fn validate_manifest(manifest: &PluginManifest) -> Result<(), Diagnostic> {
     if manifest.api != PLUGIN_API {
         return Err(Diagnostic::error(
             "PLUGIN_API_UNSUPPORTED",
-            "插件 protocol 版本不支援",
-            format!("需要 {}，實際是 {}。", PLUGIN_API, manifest.api),
+            "Unsupported plugin protocol version",
+            format!("Expected {}, found {}.", PLUGIN_API, manifest.api),
         ));
     }
     if manifest.id.trim().is_empty() || manifest.entry.command.trim().is_empty() {
         return Err(Diagnostic::error(
             "PLUGIN_MANIFEST_INVALID",
-            "插件 manifest 缺少必要欄位",
-            "id 和 entry.command 不能是空字串。",
+            "The plugin manifest is missing a required field",
+            "id and entry.command must not be empty strings.",
         ));
     }
     Ok(())

@@ -700,8 +700,8 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
             if !input.is_object() {
                 return argument_error(Diagnostic::error(
                     "MCP_ARGUMENT_INVALID",
-                    "工具參數型別錯誤",
-                    "arguments.input 必須是 object。",
+                    "Tool argument has the wrong type",
+                    "arguments.input must be an object.",
                 ));
             }
             tool_result(crate::plugins::call(project, &id, &tool, input))
@@ -787,8 +787,8 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 None => {
                     let mut result = EngineResult::<serde_json::Value>::failure(Diagnostic::error(
                         "PERF_RUN_FAILED",
-                        "跑不完指定 frame 數，因此沒有可用的量測",
-                        "先用 game run 或 game verify 找出 runtime 問題。",
+                        "The requested frames did not complete, so no measurement is available",
+                        "Use game run or game verify to find the runtime problem first.",
                     ));
                     result.diagnostics.extend(run.diagnostics);
                     tool_result(result)
@@ -895,8 +895,8 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 _ => {
                     return argument_error(Diagnostic::error(
                         "ASSET_INIT_ARGUMENT_INVALID",
-                        "asset init 的 id 與 source 必須成對提供",
-                        "新增 asset declaration 時同時提供 id 與 source；不帶兩者只建立空 manifest。",
+                        "asset init requires id and source together",
+                        "Adding an asset declaration requires both id and source; without either, asset init only creates an empty manifest.",
                     ));
                 }
             };
@@ -918,9 +918,9 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 None => {
                     let mut diagnostic = Diagnostic::error(
                         "API_NOT_FOUND",
-                        "找不到指定的 Engine API",
+                        "No such Engine API",
                         format!(
-                            "目前公開 API 沒有 '{}'；先使用 unone_api_search 查詢可用能力。",
+                            "The public API has no '{}'; use unone_api_search to find available capabilities.",
                             name
                         ),
                     );
@@ -994,7 +994,7 @@ fn run_tool(project: &Path, arguments: &Value) -> Value {
             Err(error) => {
                 return argument_error(Diagnostic::error(
                     "INPUT_SEQUENCE_INVALID",
-                    "input_sequence 不是有效的 input frame 陣列",
+                    "input_sequence is not a valid array of input frames",
                     error.to_string(),
                 ));
             }
@@ -1004,8 +1004,8 @@ fn run_tool(project: &Path, arguments: &Value) -> Value {
     if action.is_some() && input_sequence.is_some() {
         return argument_error(Diagnostic::error(
             "MCP_ARGUMENT_CONFLICT",
-            "工具參數互相衝突",
-            "arguments.action 與 arguments.input_sequence 不能同時提供；請選擇單一輸入模式。",
+            "Tool arguments conflict",
+            "arguments.action and arguments.input_sequence cannot both be provided; choose one input mode.",
         ));
     }
 
@@ -1026,8 +1026,8 @@ fn required_string(arguments: &Value, name: &str) -> Result<String, Box<Diagnost
     optional_string(arguments, name)?.ok_or_else(|| {
         Box::new(Diagnostic::error(
             "MCP_ARGUMENT_REQUIRED",
-            "缺少必要的工具參數",
-            format!("請提供 arguments.{name}（string）。"),
+            "A required tool argument is missing",
+            format!("Provide arguments.{name} (string)."),
         ))
     })
 }
@@ -1038,8 +1038,8 @@ fn optional_string(arguments: &Value, name: &str) -> Result<Option<String>, Box<
         Some(Value::String(value)) => Ok(Some(value.clone())),
         Some(_) => Err(Box::new(Diagnostic::error(
             "MCP_ARGUMENT_INVALID",
-            "工具參數型別錯誤",
-            format!("arguments.{name} 必須是 string。"),
+            "Tool argument has the wrong type",
+            format!("arguments.{name} must be a string."),
         ))),
     }
 }
@@ -1050,8 +1050,8 @@ fn optional_bool(arguments: &Value, name: &str, default: bool) -> Result<bool, B
         Some(Value::Bool(value)) => Ok(*value),
         Some(_) => Err(Box::new(Diagnostic::error(
             "MCP_ARGUMENT_INVALID",
-            "工具參數型別錯誤",
-            format!("arguments.{name} 必須是 boolean。"),
+            "Tool argument has the wrong type",
+            format!("arguments.{name} must be a boolean."),
         ))),
     }
 }
@@ -1074,8 +1074,8 @@ fn ui_preview(
     if !run.ok {
         let mut result = EngineResult::<unone_engine::LayoutReport>::failure(Diagnostic::error(
             "UI_PREVIEW_RUN_FAILED",
-            "跑不完指定 frame 數，因此沒有 UI tree 可畫",
-            "先用 game run 或 game check 找出 runtime 問題。",
+            "The requested frames did not complete, so there is no UI tree to draw",
+            "Use game run or game check to find the runtime problem first.",
         ));
         result.diagnostics.extend(run.diagnostics);
         return result;
@@ -1083,8 +1083,8 @@ fn ui_preview(
     let Some(tree) = runtime.observe().ui else {
         return EngineResult::failure(Diagnostic::error(
             "UI_TREE_NOT_PUBLISHED",
-            "遊戲還沒有發布 UI tree",
-            format!("跑了 {frames} frame 之後 observation 沒有 ui；遊戲要先呼叫 api.ui.setRoot。"),
+            "The game has not published a UI tree",
+            format!("After {frames} frames the observation still has no ui; the game must call api.ui.setRoot first."),
         ));
     };
     let mut report = unone_engine::inspect_layout(&tree, cols, rows);
@@ -1099,13 +1099,13 @@ fn ui_preview(
         let mut diagnostic = if strict {
             Diagnostic::error(
                 finding.code.clone(),
-                "UI layout 有結構問題",
+                "The UI layout has structural findings",
                 finding.detail.clone(),
             )
         } else {
             Diagnostic::warning(
                 finding.code.clone(),
-                "UI layout 有結構問題",
+                "The UI layout has structural findings",
                 finding.detail.clone(),
             )
         };
@@ -1132,16 +1132,16 @@ fn optional_string_array(arguments: &Value, name: &str) -> Result<Vec<String>, B
                 value.as_str().map(str::to_string).ok_or_else(|| {
                     Box::new(Diagnostic::error(
                         "MCP_ARGUMENT_INVALID",
-                        "工具參數型別錯誤",
-                        format!("arguments.{name} 的每個項目都必須是字串。"),
+                        "Tool argument has the wrong type",
+                        format!("Every item in arguments.{name} must be a string."),
                     ))
                 })
             })
             .collect(),
         Some(_) => Err(Box::new(Diagnostic::error(
             "MCP_ARGUMENT_INVALID",
-            "工具參數型別錯誤",
-            format!("arguments.{name} 必須是字串陣列。"),
+            "Tool argument has the wrong type",
+            format!("arguments.{name} must be an array of strings."),
         ))),
     }
 }
@@ -1151,8 +1151,8 @@ fn required_bool(arguments: &Value, name: &str) -> Result<bool, Box<Diagnostic>>
         Some(Value::Bool(value)) => Ok(*value),
         Some(_) | None => Err(Box::new(Diagnostic::error(
             "MCP_ARGUMENT_INVALID",
-            "工具參數型別錯誤",
-            format!("arguments.{name} 必須是 boolean，且不可省略。"),
+            "Tool argument has the wrong type",
+            format!("arguments.{name} must be a boolean and cannot be omitted."),
         ))),
     }
 }
@@ -1163,14 +1163,14 @@ fn optional_u64(arguments: &Value, name: &str, default: u64) -> Result<u64, Box<
         Some(Value::Number(value)) => value.as_u64().ok_or_else(|| {
             Box::new(Diagnostic::error(
                 "MCP_ARGUMENT_INVALID",
-                "工具參數型別錯誤",
-                format!("arguments.{name} 必須是非負整數。"),
+                "Tool argument has the wrong type",
+                format!("arguments.{name} must be a non-negative integer."),
             ))
         }),
         Some(_) => Err(Box::new(Diagnostic::error(
             "MCP_ARGUMENT_INVALID",
-            "工具參數型別錯誤",
-            format!("arguments.{name} 必須是非負整數。"),
+            "Tool argument has the wrong type",
+            format!("arguments.{name} must be a non-negative integer."),
         ))),
     }
 }

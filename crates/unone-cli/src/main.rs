@@ -573,8 +573,8 @@ fn run() -> Result<ExitCode> {
                             EngineResult::<serde_json::Value>::failure(
                                 unone_engine::Diagnostic::error(
                                     "ASSET_INIT_ARGUMENT_INVALID",
-                                    "asset init 的 source 缺少 id",
-                                    "--source 只能和 --id 一起使用；不帶 id 時只建立空 manifest。",
+                                    "asset init received --source without --id",
+                                    "Use --source together with --id. Without an id, asset init only creates an empty manifest.",
                                 ),
                             ),
                             cli.json,
@@ -585,8 +585,8 @@ fn run() -> Result<ExitCode> {
                             EngineResult::<serde_json::Value>::failure(
                                 unone_engine::Diagnostic::error(
                                     "ASSET_INIT_ARGUMENT_INVALID",
-                                    "asset init 的 id 缺少 source",
-                                    "新增 asset declaration 時必須同時提供 --id 與 --source。",
+                                    "asset init received --id without --source",
+                                    "Adding an asset declaration requires both --id and --source.",
                                 ),
                             ),
                             cli.json,
@@ -638,7 +638,7 @@ fn run() -> Result<ExitCode> {
                             EngineResult::<serde_json::Value>::failure(
                                 unone_engine::Diagnostic::error(
                                     "RECORDING_WRITE_FAILED",
-                                    "無法序列化錄製檔",
+                                    "Could not serialize the recording",
                                     error.to_string(),
                                 ),
                             ),
@@ -654,8 +654,8 @@ fn run() -> Result<ExitCode> {
                         EngineResult::<serde_json::Value>::failure(
                             unone_engine::Diagnostic::error(
                                 "RECORDING_WRITE_FAILED",
-                                "無法建立錄製檔目錄",
-                                format!("{}：{}", parent.display(), error),
+                                "Could not create the recording directory",
+                                format!("{}: {}", parent.display(), error),
                             ),
                         ),
                         cli.json,
@@ -666,8 +666,8 @@ fn run() -> Result<ExitCode> {
                         EngineResult::<serde_json::Value>::failure(
                             unone_engine::Diagnostic::error(
                                 "RECORDING_WRITE_FAILED",
-                                "無法寫入錄製檔",
-                                format!("{}：{}", output.display(), error),
+                                "Could not write the recording",
+                                format!("{}: {}", output.display(), error),
                             ),
                         ),
                         cli.json,
@@ -732,10 +732,10 @@ fn run() -> Result<ExitCode> {
             let run = match input_sequence {
                 Some(path) => {
                     let sequence = match fs::read_to_string(&path)
-                        .map_err(|error| format!("{}：{}", path.display(), error))
+                        .map_err(|error| format!("{}: {}", path.display(), error))
                         .and_then(|text| {
                             serde_json::from_str::<Vec<InputFrame>>(&text)
-                                .map_err(|error| format!("{}：{}", path.display(), error))
+                                .map_err(|error| format!("{}: {}", path.display(), error))
                         }) {
                         Ok(sequence) => sequence,
                         Err(error) => {
@@ -743,7 +743,7 @@ fn run() -> Result<ExitCode> {
                                 EngineResult::<serde_json::Value>::failure(
                                     unone_engine::Diagnostic::error(
                                         "INPUT_SEQUENCE_INVALID",
-                                        "無法讀取 input sequence",
+                                        "Could not read the input sequence",
                                         error,
                                     ),
                                 ),
@@ -791,10 +791,10 @@ fn run() -> Result<ExitCode> {
                 let run = match input_sequence {
                     Some(path) => {
                         let sequence = match fs::read_to_string(&path)
-                            .map_err(|error| format!("{}：{}", path.display(), error))
+                            .map_err(|error| format!("{}: {}", path.display(), error))
                             .and_then(|text| {
                                 serde_json::from_str::<Vec<InputFrame>>(&text)
-                                    .map_err(|error| format!("{}：{}", path.display(), error))
+                                    .map_err(|error| format!("{}: {}", path.display(), error))
                             }) {
                             Ok(sequence) => sequence,
                             Err(error) => {
@@ -802,7 +802,7 @@ fn run() -> Result<ExitCode> {
                                     EngineResult::<serde_json::Value>::failure(
                                         unone_engine::Diagnostic::error(
                                             "INPUT_SEQUENCE_INVALID",
-                                            "無法讀取 input sequence",
+                                            "Could not read the input sequence",
                                             error,
                                         ),
                                     ),
@@ -822,9 +822,9 @@ fn run() -> Result<ExitCode> {
                         EngineResult::<serde_json::Value>::failure(
                             unone_engine::Diagnostic::error(
                                 "UI_TREE_NOT_PUBLISHED",
-                                "遊戲還沒有發布 UI tree",
+                                "The game has not published a UI tree",
                                 format!(
-                                    "跑了 {frames} frame 之後 observation 沒有 ui；遊戲要先呼叫 api.ui.setRoot。"
+                                    "After {frames} frames the observation still has no ui; the game must call api.ui.setRoot first."
                                 ),
                             ),
                         ),
@@ -845,13 +845,13 @@ fn run() -> Result<ExitCode> {
                     let mut diagnostic = if strict {
                         unone_engine::Diagnostic::error(
                             finding.code.clone(),
-                            "UI layout 有結構問題",
+                            "The UI layout has structural findings",
                             finding.detail.clone(),
                         )
                     } else {
                         unone_engine::Diagnostic::warning(
                             finding.code.clone(),
-                            "UI layout 有結構問題",
+                            "The UI layout has structural findings",
                             finding.detail.clone(),
                         )
                     };
@@ -894,8 +894,8 @@ fn run() -> Result<ExitCode> {
                 {
                     result.diagnostics.push(unone_engine::Diagnostic::warning(
                         "SYSTEM_SEARCH_EMPTY",
-                        "沒有符合的 system",
-                        "改用其他用途關鍵字，或先執行 game systems list 看完整清單。",
+                        "No system matched",
+                        "Try a different purpose keyword, or run game systems list for the complete list.",
                     ));
                 }
                 print_result(result, cli.json)
@@ -928,8 +928,8 @@ fn run() -> Result<ExitCode> {
                         EngineResult::<serde_json::Value>::failure(
                             unone_engine::Diagnostic::error(
                                 "API_TYPINGS_WRITE_FAILED",
-                                "無法建立型別契約輸出目錄",
-                                format!("{}：{}", parent.display(), error),
+                                "Could not create the type contract output directory",
+                                format!("{}: {}", parent.display(), error),
                             ),
                         ),
                         cli.json,
@@ -940,8 +940,8 @@ fn run() -> Result<ExitCode> {
                         EngineResult::<serde_json::Value>::failure(
                             unone_engine::Diagnostic::error(
                                 "API_TYPINGS_WRITE_FAILED",
-                                "無法寫入型別契約",
-                                format!("{}：{}", path.display(), error),
+                                "Could not write the type contract",
+                                format!("{}: {}", path.display(), error),
                             ),
                         ),
                         cli.json,
@@ -962,9 +962,9 @@ fn run() -> Result<ExitCode> {
                 None => print_result(
                     EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
                         "API_NOT_FOUND",
-                        "找不到指定的 Engine API",
+                        "No such Engine API",
                         format!(
-                            "目前公開 API 沒有 '{}'；先執行 game api search <meaning> 查看可用能力。",
+                            "The public API has no '{}'; run game api search <meaning> to see available capabilities.",
                             name
                         ),
                     )),
@@ -1011,8 +1011,8 @@ fn run() -> Result<ExitCode> {
                             EngineResult::<serde_json::Value>::failure(
                                 unone_engine::Diagnostic::error(
                                     "INPUT_SEQUENCE_READ_FAILED",
-                                    "無法讀取 input sequence",
-                                    format!("{}：{}", path.display(), error),
+                                    "Could not read the input sequence",
+                                    format!("{}: {}", path.display(), error),
                                 ),
                             ),
                             cli.json,
@@ -1026,8 +1026,8 @@ fn run() -> Result<ExitCode> {
                             EngineResult::<serde_json::Value>::failure(
                                 unone_engine::Diagnostic::error(
                                     "INPUT_SEQUENCE_INVALID",
-                                    "input sequence 不是有效的 JSON input frame 陣列",
-                                    format!("{}：{}", path.display(), error),
+                                    "The input sequence is not a valid JSON array of input frames",
+                                    format!("{}: {}", path.display(), error),
                                 ),
                             ),
                             cli.json,
@@ -1099,10 +1099,10 @@ fn run() -> Result<ExitCode> {
             PluginCommand::Call { id, tool, input } => {
                 let input = match input {
                     Some(path) => match fs::read_to_string(&path)
-                        .map_err(|error| format!("{}：{}", path.display(), error))
+                        .map_err(|error| format!("{}: {}", path.display(), error))
                         .and_then(|text| {
                             serde_json::from_str::<serde_json::Value>(&text)
-                                .map_err(|error| format!("{}：{}", path.display(), error))
+                                .map_err(|error| format!("{}: {}", path.display(), error))
                         }) {
                         Ok(value) => value,
                         Err(error) => {
@@ -1110,7 +1110,7 @@ fn run() -> Result<ExitCode> {
                                 EngineResult::<serde_json::Value>::failure(
                                     unone_engine::Diagnostic::error(
                                         "PLUGIN_INPUT_INVALID",
-                                        "插件 input 不是有效 JSON",
+                                        "The plugin input is not valid JSON",
                                         error,
                                     ),
                                 ),
@@ -1159,15 +1159,15 @@ fn print_result<T: serde::Serialize>(result: EngineResult<T>, json: bool) -> Res
 /// Read a per-frame input sequence file.
 fn read_input_frames(path: &Path) -> Result<Vec<InputFrame>, Box<unone_engine::Diagnostic>> {
     fs::read_to_string(path)
-        .map_err(|error| format!("{}：{}", path.display(), error))
+        .map_err(|error| format!("{}: {}", path.display(), error))
         .and_then(|text| {
             serde_json::from_str::<Vec<InputFrame>>(&text)
-                .map_err(|error| format!("{}：{}", path.display(), error))
+                .map_err(|error| format!("{}: {}", path.display(), error))
         })
         .map_err(|error| {
             Box::new(unone_engine::Diagnostic::error(
                 "INPUT_SEQUENCE_INVALID",
-                "無法讀取 input sequence",
+                "Could not read the input sequence",
                 error,
             ))
         })

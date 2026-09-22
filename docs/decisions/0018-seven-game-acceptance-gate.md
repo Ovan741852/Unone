@@ -1,7 +1,11 @@
 # Decision 0018: 七類遊戲作為最終驗收閘門
 
 日期：2026-09-05  
-狀態：accepted
+狀態：superseded by [ADR 0002](0002-seven-game-acceptance-gate.md)
+
+> 本記錄與 ADR 0002 是同一天、同一個決策的兩份記錄，內容一致。
+> ADR 0002 是英文正本，符合「engine-authored guidance 用英文」的規則，
+> 後續引用請指向 0002。此檔保留為歷史記錄，不再獨立維護。
 
 ## 決策
 

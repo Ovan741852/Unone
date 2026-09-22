@@ -1,0 +1,78 @@
+# Starting point for the gate that docs/roadmap.md and README.md already
+# describe. Added by the 2026-09-21 design review, which could not run it:
+# see docs/issues/2026-09-21-design-review-architecture-and-health.md (A5).
+#
+# Expect the first run to need adjustment. The two likely reasons are the
+# system packages the graphics/audio crates need, and whether the workspace
+# tests reach the luau-analyze types gate on a Linux runner. Jobs that are
+# unproven here are marked continue-on-error so one unknown does not hide the
+# result of the checks that do work. Promote them once they pass.
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  workspace:
+    name: Workspace check, clippy and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the pinned toolchain
+        run: rustup show active-toolchain || rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - name: Install luau-analyze
+        run: sh scripts/install-luau-analyze.sh
+      - name: Check
+        run: cargo check --workspace --all-targets
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Tests
+        run: cargo test --workspace
+
+  formatting:
+    name: rustfmt
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the pinned toolchain
+        run: rustup show active-toolchain || rustup toolchain install
+      - run: cargo fmt --all -- --check
+
+  excluded-crates:
+    name: Excluded player crates
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the pinned toolchain
+        run: rustup show active-toolchain || rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - name: System libraries for wgpu, winit and rodio
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libx11-dev libxkbcommon-dev \
+            libwayland-dev pkg-config
+      - name: Check unone-native-player
+        run: cargo check --manifest-path crates/unone-native-player/Cargo.toml --all-targets
+      - name: Check unone-player
+        run: cargo check --manifest-path crates/unone-player/Cargo.toml --all-targets
+
+  web:
+    name: Web module tests
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run colocated .test.mjs modules
+        run: node --test $(git ls-files 'web/**/*.test.mjs' 'scripts/*.test.mjs')

@@ -68,3 +68,10 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
   action from an unrelated directory; all eight API contract tests passed in
   the main agent's run. [Raw Claude output](evidence/2026-09-06-ai-authoring/api-context-claude-review.txt).
   This does not establish new-package or final-game acceptance.
+- 2026-09-21: architecture and code-health design review at `39d8ee1`, requested
+  as a design judgement rather than a defect hunt. Static reading only; no build,
+  test or clippy run, because the review environment had no reachable crate
+  registry. Seven architecture findings, nine maintainability findings, and four
+  open decisions for the author. Only documentation and engine-authored message
+  text were changed:
+  [record](issues/2026-09-21-design-review-architecture-and-health.md).
