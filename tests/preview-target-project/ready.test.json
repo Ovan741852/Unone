@@ -1,0 +1,6 @@
+{
+  "name": "same source starts and advances on either host",
+  "frames": 60,
+  "seed": 42,
+  "assertions": [{ "observation": { "key": "target_switch_fixture", "equals": true } }]
+}

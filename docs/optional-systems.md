@@ -12,7 +12,7 @@ For a game without physics:
 {"systems":{"physics2d":false,"physics3d":false}}
 ```
 
-Both physics backends, camera namespaces, random, UI, save, audio, Spine,
+Both physics backends, camera projection backings, random, UI, save, audio, Spine,
 native particles and Effekseer have optional Cargo features. World, input and
 observation remain required. Configuration/schema data types remain readable in
 all builds; a capability switch is not a promise to delete every mention of its
@@ -69,9 +69,17 @@ export host; enabling the core transport does not add a renderer decoder.
 
 Native Rust integrations use the same engine Cargo features and validation:
 `unone-engine = { ..., default-features = false, features = ["camera3d"] }`.
+For a normal host that can switch projections at runtime, use the unified
+`camera` feature instead; it enables both projection backings as one build
+capability. The `camera2d`/`camera3d` names remain only for intentionally lean
+legacy hosts.
 The general-purpose native CLI intentionally carries all systems. The Android
 player built from a web export inherits that export's selected WASM/modules;
 this change does not replace its WebView renderer with a native renderer.
+The public Luau surface is nevertheless one `api.camera` component with
+orthographic or perspective projection. `camera2d`/`camera3d` are build and
+legacy storage backings; `api.camera3d` is retained only as a compatibility
+namespace.
 
 ## Verification
 

@@ -1,4 +1,4 @@
-import { createParticleRenderer } from "./particles.js";
+import { createParticleRenderer } from "./particles.js?build=particle-texture-colorbins-v1";
 import { meshGeometry, validateMesh } from "./mesh.js";
 import {createInstanceRenderer} from './instances3d.js';
 import {createBloom} from './bloom.js';
@@ -257,7 +257,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     }
     for (const [id,mesh] of meshes3d) mesh.visible=alive3d.has(id);
     instances.draw(world.instances3d,specs);
-    particles.draw(world.particles);
+    particles.draw(world.particles, activeCamera);
     const overlay=effects?()=>{effects.draw(world,activeCamera);renderer.resetState();}:null;
     if(bloom) bloom.draw(scene,activeCamera,overlay);
     else {renderer.render(scene,activeCamera);overlay?.();}
@@ -286,6 +286,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     }
     disposeHooks.length = 0;
     presentationHooks.clear();
+    particles.dispose();
     clearTextures();
     window.removeEventListener("resize", resize);
     renderer.dispose?.();
@@ -310,7 +311,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     resetMeasurements:()=>bloom?.resetMeasurements(),
     implementation: "three.js",
     backend,
-      metrics: () => ({instances:instances.count,...instances.metrics(),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,effects:effects?.count??0,...bloom?.metrics()}),
+      metrics: () => ({instances:instances.count,...instances.metrics(),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 

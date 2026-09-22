@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 #[cfg(feature = "dev-tools")]
 use std::{fs, path::Path};
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::Error as DeError, ser::Error as SerError};
 
 use crate::{
     audio::{AudioBus, AudioEvent, AudioLoop, AudioMix},
@@ -258,28 +258,399 @@ impl Default for Camera2DData {
     }
 }
 
+/// The runtime's single source of truth for the active camera.
+///
+/// Orthographic is deliberately a projection of the same Camera concept, not
+/// a second camera object. Projection-specific values live together so
+/// switching modes does not throw away FOV or orthographic framing, while the
+/// old `Camera2DData`/`Camera3DData` types remain boundary adapters for hosts.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum CameraProjection {
+    Orthographic,
+    Perspective,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct CameraState {
+    pub(crate) projection: CameraProjection,
+    pub(crate) position: Vec3,
+    pub(crate) target: Vec3,
+    pub(crate) fov_degrees: f64,
+    pub(crate) orthographic_size: f64,
+}
+
+impl Default for CameraState {
+    fn default() -> Self {
+        Self {
+            projection: CameraProjection::Orthographic,
+            position: Vec3::default(),
+            target: Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -1.0,
+            },
+            fov_degrees: default_camera3d_fov(),
+            orthographic_size: default_view_height(),
+        }
+    }
+}
+
+impl CameraState {
+    pub(crate) fn from_orthographic(camera: Camera2DData) -> Self {
+        Self {
+            projection: CameraProjection::Orthographic,
+            position: Vec3 {
+                x: camera.position.x,
+                y: camera.position.y,
+                z: 0.0,
+            },
+            orthographic_size: camera.view_height / camera.zoom.max(f64::EPSILON),
+            ..Self::default()
+        }
+    }
+
+    pub(crate) fn from_perspective(camera: Camera3DData) -> Self {
+        Self {
+            projection: CameraProjection::Perspective,
+            position: camera.position,
+            target: camera.target,
+            fov_degrees: camera.fov_degrees,
+            ..Self::default()
+        }
+    }
+
+    pub(crate) fn projection_name(&self) -> &'static str {
+        match self.projection {
+            CameraProjection::Orthographic => "orthographic",
+            CameraProjection::Perspective => "perspective",
+        }
+    }
+
+    pub(crate) fn orthographic_data(&self) -> Camera2DData {
+        Camera2DData {
+            position: Vec2 {
+                x: self.position.x,
+                y: self.position.y,
+            },
+            zoom: default_view_height() / self.orthographic_size.max(f64::EPSILON),
+            view_height: default_view_height(),
+        }
+    }
+
+    pub(crate) fn perspective_data(&self) -> Camera3DData {
+        Camera3DData {
+            position: self.position,
+            target: self.target,
+            fov_degrees: self.fov_degrees,
+        }
+    }
+}
+
 impl Default for Vec2 {
     fn default() -> Self {
         Self { x: 0.0, y: 0.0 }
     }
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
-#[serde(deny_unknown_fields)]
+#[cfg_attr(feature = "dev-tools", schemars(deny_unknown_fields))]
 pub struct SceneFile {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(feature = "dev-tools", schemars(default))]
     pub physics3d: Option<crate::rigid3d::Physics3DScene>,
-    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    #[cfg_attr(feature = "dev-tools", schemars(default))]
     pub particle_effects: BTreeMap<String, crate::ParticleDefinition>,
-    #[serde(default)]
+    #[cfg_attr(feature = "dev-tools", schemars(default))]
     pub entities: Vec<SceneEntity>,
-    #[serde(default)]
+    #[cfg_attr(feature = "dev-tools", schemars(default))]
     pub physics: PhysicsSettings,
-    #[serde(default)]
+    /// The one authoring entry point for the active camera. Legacy 2D and
+    /// split `camera3d` input is still accepted by the custom deserializer,
+    /// but the generated schema advertises the unified forms first.
+    #[cfg_attr(feature = "dev-tools", schemars(default))]
+    #[cfg_attr(feature = "dev-tools", schemars(schema_with = "camera_scene_schema"))]
     pub camera: Camera2DData,
-    #[serde(default)]
+    /// Legacy split perspective storage. New source files should put the
+    /// projection in `camera`; this field is accepted only for compatibility
+    /// and is intentionally omitted by canonical serialization.
+    #[cfg_attr(feature = "dev-tools", schemars(default))]
     pub camera3d: Option<Camera3DData>,
+}
+
+impl Serialize for SceneFile {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        // Keep source and job payloads on the same single-camera contract.
+        // The in-memory split is an adapter for old hosts, not an authoring
+        // shape that should leak back into new files.
+        let camera = if let Some(camera) = &self.camera3d {
+            serde_json::json!({
+                "projection": "perspective",
+                "position": camera.position,
+                "target": camera.target,
+                "fovDegrees": camera.fov_degrees,
+            })
+        } else {
+            serde_json::json!({
+                "projection": "orthographic",
+                "position": {"x": self.camera.position.x, "y": self.camera.position.y, "z": 0.0},
+                "orthographicSize": self.camera.view_height / self.camera.zoom,
+            })
+        };
+        let mut object = serde_json::Map::new();
+        if let Some(physics3d) = &self.physics3d {
+            object.insert("physics3d".into(), serde_json::to_value(physics3d).map_err(S::Error::custom)?);
+        }
+        if !self.particle_effects.is_empty() {
+            object.insert("particle_effects".into(), serde_json::to_value(&self.particle_effects).map_err(S::Error::custom)?);
+        }
+        object.insert("entities".into(), serde_json::to_value(&self.entities).map_err(S::Error::custom)?);
+        object.insert("physics".into(), serde_json::to_value(&self.physics).map_err(S::Error::custom)?);
+        object.insert("camera".into(), camera);
+        serde_json::Value::Object(object).serialize(serializer)
+    }
+}
+
+/// Schema for the scene authoring boundary. `SceneFile` stores the two
+/// projection backings internally so existing hosts and snapshots stay
+/// stable, but a scene author should only have to reason about one Camera.
+#[cfg(feature = "dev-tools")]
+fn camera_scene_schema(generator: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    let legacy = generator.subschema_for::<Camera2DData>();
+    let vec2 = generator.subschema_for::<Vec2>();
+    let vec3 = generator.subschema_for::<Vec3>();
+    let number = serde_json::json!({"type": "number", "format": "double"});
+    let mut schema = serde_json::json!({
+        "description": "Unified Camera authoring. Use projection=orthographic for 2D framing or projection=perspective for 3D. The legacy {position, zoom, view_height} shape remains accepted.",
+        "oneOf": [legacy],
+    });
+    let one_of = schema
+        .get_mut("oneOf")
+        .and_then(serde_json::Value::as_array_mut)
+        .expect("camera schema oneOf");
+    one_of.push(serde_json::json!({
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Orthographic projection. `orthographicSize` is the visible world height; `position` may be Vec2 or Vec3 (z is ignored).",
+        "properties": {
+            "projection": {"const": "orthographic", "type": "string"},
+            "position": {"anyOf": [vec2.clone(), vec3.clone()]},
+            "orthographicSize": number.clone(),
+            "orthographic_size": number.clone(),
+            "zoom": number.clone(),
+            "view_height": number.clone(),
+        }
+    }));
+    one_of.push(serde_json::json!({
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Perspective projection for 3D scenes.",
+        "properties": {
+            "projection": {"const": "perspective", "type": "string"},
+            "position": vec3,
+            "target": vec3,
+            "fovDegrees": number.clone(),
+            "fov_degrees": number,
+        },
+        "required": ["target"]
+    }));
+    schemars::Schema::try_from(schema).expect("valid camera schema")
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct SceneFileWire {
+    #[serde(default)]
+    physics3d: Option<crate::rigid3d::Physics3DScene>,
+    #[serde(default)]
+    particle_effects: BTreeMap<String, crate::ParticleDefinition>,
+    #[serde(default)]
+    entities: Vec<SceneEntity>,
+    #[serde(default)]
+    physics: PhysicsSettings,
+    #[serde(default)]
+    camera: Option<serde_json::Value>,
+    #[serde(default)]
+    camera3d: Option<Camera3DData>,
+}
+
+impl<'de> Deserialize<'de> for SceneFile {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let wire = SceneFileWire::deserialize(deserializer)?;
+        let (camera, camera3d) = decode_camera_definition(wire.camera, wire.camera3d)
+            .map_err(D::Error::custom)?;
+        Ok(Self {
+            physics3d: wire.physics3d,
+            particle_effects: wire.particle_effects,
+            entities: wire.entities,
+            physics: wire.physics,
+            camera,
+            camera3d,
+        })
+    }
+}
+
+/// Accept the old split scene fields while making a single `camera` object the
+/// authoring contract. This conversion happens once at the scene boundary;
+/// the runtime and all hosts continue with one deterministic active mode.
+fn decode_camera_definition(
+    value: Option<serde_json::Value>,
+    legacy_perspective: Option<Camera3DData>,
+) -> Result<(Camera2DData, Option<Camera3DData>), String> {
+    let Some(value) = value else {
+        return Ok((Camera2DData::default(), legacy_perspective));
+    };
+    let object = value
+        .as_object()
+        .ok_or("camera must be an object")?;
+    const CAMERA_FIELDS: &[&str] = &[
+        "projection",
+        "position",
+        "target",
+        "fovDegrees",
+        "fov_degrees",
+        "orthographicSize",
+        "orthographic_size",
+        "zoom",
+        "view_height",
+    ];
+    if let Some(field) = object.keys().find(|field| !CAMERA_FIELDS.contains(&field.as_str())) {
+        return Err(format!("camera has unknown field '{field}'"));
+    }
+    let projection_value = object.get("projection");
+    let projection = projection_value.and_then(serde_json::Value::as_str);
+    if projection_value.is_some() && projection.is_none() {
+        return Err("camera.projection must be a string".into());
+    }
+    let position = object.get("position").cloned().unwrap_or_else(|| {
+        serde_json::json!({"x": 0.0, "y": 0.0})
+    });
+    let position_object = position
+        .as_object()
+        .ok_or("camera.position must be an object")?;
+    let x = number(position_object.get("x"), "camera.position.x")?;
+    let y = number(position_object.get("y"), "camera.position.y")?;
+    let z = position_object
+        .get("z")
+        .map(|value| number(Some(value), "camera.position.z"))
+        .transpose()?;
+    let has_target = object.contains_key("target");
+    let has_fov = object.contains_key("fovDegrees") || object.contains_key("fov_degrees");
+    let has_orthographic_size =
+        object.contains_key("orthographicSize") || object.contains_key("orthographic_size");
+    let has_orthographic_legacy =
+        object.contains_key("zoom") || object.contains_key("view_height");
+    let unified = projection.is_some()
+        || has_target
+        || has_fov
+        || has_orthographic_size
+        || z.is_some();
+    if !unified {
+        let camera: Camera2DData = serde_json::from_value(value)
+            .map_err(|error| format!("legacy camera is invalid: {error}"))?;
+        return Ok((camera, legacy_perspective));
+    }
+    // A target/FOV or a 3D position means perspective when the author omits
+    // the discriminator. Orthographic remains the safe default for a 2D
+    // position and the old zoom/view-height fields.
+    let projection = projection.unwrap_or(if has_target
+        || has_fov
+        || (z.is_some() && !has_orthographic_size && !has_orthographic_legacy)
+    {
+        "perspective"
+    } else {
+        "orthographic"
+    });
+    match projection {
+        "orthographic" => {
+            if has_target || has_fov {
+                return Err(
+                    "orthographic camera cannot declare target or fovDegrees; use projection=perspective"
+                        .into(),
+                );
+            }
+            let view_height = object
+                .get("view_height")
+                .map(|value| number(Some(value), "camera.view_height"))
+                .transpose()?
+                .unwrap_or(default_view_height());
+            let size = object
+                .get("orthographicSize")
+                .or_else(|| object.get("orthographic_size"))
+                .map(|value| number(Some(value), "camera.orthographicSize"))
+                .transpose()?
+                .unwrap_or(view_height);
+            if !size.is_finite() || size <= 0.0 {
+                return Err("camera.orthographicSize must be finite and greater than 0".into());
+            }
+            Ok((
+                Camera2DData {
+                    position: Vec2 { x, y },
+                    zoom: view_height / size,
+                    view_height,
+                },
+                None,
+            ))
+        }
+        "perspective" => {
+            if has_orthographic_size || has_orthographic_legacy {
+                return Err(
+                    "perspective camera cannot declare orthographicSize, zoom, or view_height"
+                        .into(),
+                );
+            }
+            let target = object
+                .get("target")
+                .ok_or("perspective camera requires target")?;
+            let target = target
+                .as_object()
+                .ok_or("camera.target must be an object")?;
+            let target = Vec3 {
+                x: number(target.get("x"), "camera.target.x")?,
+                y: number(target.get("y"), "camera.target.y")?,
+                z: number(target.get("z"), "camera.target.z")?,
+            };
+            let fov_degrees = object
+                .get("fovDegrees")
+                .or_else(|| object.get("fov_degrees"))
+                .map(|value| number(Some(value), "camera.fovDegrees"))
+                .transpose()?
+                .unwrap_or(default_camera3d_fov());
+            Ok((
+                Camera2DData {
+                    position: Vec2 { x, y },
+                    ..Camera2DData::default()
+                },
+                Some(Camera3DData {
+                    position: Vec3 {
+                        x,
+                        y,
+                        z: z.unwrap_or(default_camera3d_position().z),
+                    },
+                    target,
+                    fov_degrees,
+                }),
+            ))
+        }
+        other => Err(format!(
+            "camera.projection must be 'orthographic' or 'perspective', got '{other}'"
+        )),
+    }
+}
+
+fn number(value: Option<&serde_json::Value>, field: &str) -> Result<f64, String> {
+    let value = value
+        .and_then(serde_json::Value::as_f64)
+        .ok_or_else(|| format!("{field} must be a number"))?;
+    if !value.is_finite() {
+        return Err(format!("{field} must be finite"));
+    }
+    Ok(value)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -504,8 +875,9 @@ pub(crate) struct World {
     pub time_seconds: f64,
     pub entities: BTreeMap<String, EntityState>,
     pub physics: PhysicsSettings,
-    pub camera: Camera2DData,
-    pub camera3d: Option<Camera3DData>,
+    /// One active camera. Legacy camera fields are derived only when crossing
+    /// the scene/snapshot boundary; they are never independently mutable.
+    pub camera_state: CameraState,
     pub effects: Vec<EffectInstance>,
     next_effect_handle: u64,
     /// Contacts from the most recent physics step, rebuilt every frame.
@@ -536,8 +908,10 @@ impl World {
         let physics3d = scene.physics3d;
         self.particles.definitions = scene.particle_effects;
         self.physics = scene.physics;
-        self.camera = scene.camera;
-        self.camera3d = scene.camera3d;
+        self.camera_state = match scene.camera3d {
+            Some(camera) => CameraState::from_perspective(camera),
+            None => CameraState::from_orthographic(scene.camera),
+        };
         for entity in scene.entities {
             let rigidbody = entity.rigidbody.map(|body| RigidBodyState {
                 body_type: body.body_type,
@@ -670,6 +1044,23 @@ impl World {
                     )
                 })
                 .collect();
+        let camera = self.camera_state.orthographic_data();
+        let camera = Camera2DData {
+            position: Vec2 {
+                x: quantize_observation(camera.position.x),
+                y: quantize_observation(camera.position.y),
+            },
+            zoom: quantize_observation(camera.zoom),
+            view_height: quantize_observation(camera.view_height),
+        };
+        let camera3d = (self.camera_state.projection == CameraProjection::Perspective).then(|| {
+            let camera = self.camera_state.perspective_data();
+            Camera3DData {
+                position: quantize_vec3(camera.position),
+                target: quantize_vec3(camera.target),
+                fov_degrees: quantize_observation(camera.fov_degrees),
+            }
+        });
         WorldSnapshot {
             jobs: None,
             instances3d: self.instances3d.clone(),
@@ -679,19 +1070,8 @@ impl World {
             physics3d: None,
             frame: self.frame,
             time_seconds: self.time_seconds,
-            camera: Camera2DData {
-                position: Vec2 {
-                    x: quantize_observation(self.camera.position.x),
-                    y: quantize_observation(self.camera.position.y),
-                },
-                zoom: quantize_observation(self.camera.zoom),
-                view_height: quantize_observation(self.camera.view_height),
-            },
-            camera3d: self.camera3d.as_ref().map(|camera| Camera3DData {
-                position: quantize_vec3(camera.position),
-                target: quantize_vec3(camera.target),
-                fov_degrees: quantize_observation(camera.fov_degrees),
-            }),
+            camera,
+            camera3d,
             entities,
             observations: BTreeMap::new(),
             ui: None,
@@ -936,25 +1316,35 @@ impl World {
     }
 
     pub(crate) fn get_camera_position(&self) -> Vec2 {
-        self.camera.position
+        Vec2 {
+            x: self.camera_state.position.x,
+            y: self.camera_state.position.y,
+        }
     }
 
     pub(crate) fn set_camera_position(&mut self, position: Vec2) -> Result<(), String> {
-        validate_vec2(position, "Camera2D position")
+        validate_vec2(position, "Camera position")
             .map_err(|diagnostic| format!("{}: {}", diagnostic.code, diagnostic.explanation))?;
-        self.camera.position = position;
+        self.camera_state.position.x = position.x;
+        self.camera_state.position.y = position.y;
         Ok(())
     }
 
     pub(crate) fn get_camera_zoom(&self) -> f64 {
-        self.camera.zoom
+        default_view_height() / self.camera_state.orthographic_size.max(f64::EPSILON)
     }
 
     pub(crate) fn set_camera_zoom(&mut self, zoom: f64) -> Result<(), String> {
         if zoom <= 0.0 || !zoom.is_finite() {
             return Err("Camera2D zoom must be a finite number greater than 0.".to_string());
         }
-        self.camera.zoom = zoom;
+        if self.camera_state.projection != CameraProjection::Orthographic {
+            return Err(
+                "CAMERA_PROJECTION_INVALID: zoom is only available for orthographic projection"
+                    .into(),
+            );
+        }
+        self.camera_state.orthographic_size = default_view_height() / zoom;
         Ok(())
     }
 
@@ -1040,9 +1430,66 @@ impl World {
     }
 
     pub(crate) fn get_camera3d(&self) -> Result<Camera3DData, String> {
-        self.camera3d
-            .clone()
-            .ok_or_else(|| "The current scene has no Camera3D.".to_string())
+        if self.camera_state.projection == CameraProjection::Perspective {
+            Ok(self.camera_state.perspective_data())
+        } else {
+            Err("The current scene has no perspective Camera.".to_string())
+        }
+    }
+
+    /// The public camera contract is one camera with a projection mode.  The
+    /// old `camera`/`camera3d` fields remain as storage adapters for existing
+    /// scenes and hosts, but new callers should not need to know that split.
+    pub(crate) fn camera_projection(&self) -> &'static str {
+        self.camera_state.projection_name()
+    }
+
+    pub(crate) fn set_camera_projection(&mut self, projection: &str) -> Result<(), String> {
+        match projection {
+            "orthographic" => {
+                self.camera_state.projection = CameraProjection::Orthographic;
+                Ok(())
+            }
+            "perspective" => {
+                if self.camera_state.projection == CameraProjection::Orthographic
+                    && self.camera_state.position.z == 0.0
+                    && self.camera_state.target.z == -1.0
+                {
+                    self.camera_state.position.z = default_camera3d_position().z;
+                    self.camera_state.target = Vec3 {
+                        x: self.camera_state.position.x,
+                        y: self.camera_state.position.y,
+                        z: 0.0,
+                    };
+                }
+                self.camera_state.projection = CameraProjection::Perspective;
+                Ok(())
+            }
+            other => Err(format!(
+                "CAMERA_PROJECTION_INVALID: expected 'orthographic' or 'perspective', got '{other}'"
+            )),
+        }
+    }
+
+    pub(crate) fn camera_orthographic_size(&self) -> f64 {
+        self.camera_state.orthographic_size
+    }
+
+    pub(crate) fn set_camera_orthographic_size(&mut self, size: f64) -> Result<(), String> {
+        if !size.is_finite() || size <= 0.0 {
+            return Err(
+                "CAMERA_ORTHOGRAPHIC_SIZE_INVALID: size must be finite and greater than 0"
+                    .into(),
+            );
+        }
+        if self.camera_state.projection != CameraProjection::Orthographic {
+            return Err(
+                "CAMERA_PROJECTION_INVALID: orthographicSize is only available for orthographic projection"
+                    .into(),
+            );
+        }
+        self.camera_state.orthographic_size = size;
+        Ok(())
     }
 
     #[cfg(feature = "dev-tools")]
@@ -1053,32 +1500,49 @@ impl World {
             ..SceneFile::default()
         })
         .map_err(|diagnostic| diagnostic.explanation.clone())?;
-        if self.camera3d.is_none() {
-            return Err("The current scene has no Camera3D.".into());
+        self.set_camera_perspective(camera)
+    }
+
+    /// Replace the active perspective projection after runtime/API validation.
+    /// This method is intentionally separate from the dev-tools scene editor:
+    /// regular Luau can update the active Camera without depending on the
+    /// filesystem validation feature.
+    pub(crate) fn set_camera_perspective(&mut self, camera: Camera3DData) -> Result<(), String> {
+        validate_vec3(camera.position, "Camera position")
+            .map_err(|diagnostic| diagnostic.explanation.clone())?;
+        validate_vec3(camera.target, "Camera target")
+            .map_err(|diagnostic| diagnostic.explanation.clone())?;
+        if !(1.0..179.0).contains(&camera.fov_degrees) || !camera.fov_degrees.is_finite() {
+            return Err(
+                "CAMERA_FOV_INVALID: fovDegrees must be finite and between 1 and 179".into(),
+            );
         }
-        self.camera3d = Some(camera);
+        if self.camera_state.projection != CameraProjection::Perspective {
+            return Err("The current scene has no perspective Camera.".into());
+        }
+        self.camera_state.position = camera.position;
+        self.camera_state.target = camera.target;
+        self.camera_state.fov_degrees = camera.fov_degrees;
         Ok(())
     }
 
     pub(crate) fn set_camera3d_position(&mut self, position: Vec3) -> Result<(), String> {
         validate_vec3(position, "Camera3D position")
             .map_err(|diagnostic| diagnostic.explanation.clone())?;
-        let camera = self
-            .camera3d
-            .as_mut()
-            .ok_or_else(|| "The current scene has no Camera3D.".to_string())?;
-        camera.position = position;
+        if self.camera_state.projection != CameraProjection::Perspective {
+            return Err("The current scene has no perspective Camera.".to_string());
+        }
+        self.camera_state.position = position;
         Ok(())
     }
 
     pub(crate) fn set_camera3d_target(&mut self, target: Vec3) -> Result<(), String> {
         validate_vec3(target, "Camera3D target")
             .map_err(|diagnostic| diagnostic.explanation.clone())?;
-        let camera = self
-            .camera3d
-            .as_mut()
-            .ok_or_else(|| "The current scene has no Camera3D.".to_string())?;
-        camera.target = target;
+        if self.camera_state.projection != CameraProjection::Perspective {
+            return Err("The current scene has no perspective Camera.".to_string());
+        }
+        self.camera_state.target = target;
         Ok(())
     }
 
@@ -1400,7 +1864,7 @@ fn quantize_observation(value: f64) -> f64 {
 mod tests {
     use super::{
         AudioBus, EntityState, PhysicsSettings, RigidBodyState, RigidBodyType, SceneFile,
-        Transform2DData, Vec2, World,
+        Camera3DData, Transform2DData, Vec2, Vec3, World,
     };
     use std::collections::BTreeMap;
 
@@ -1449,8 +1913,7 @@ mod tests {
                 linear_damping: 0.0,
                 ground_friction: 0.0,
             },
-            camera: super::Camera2DData::default(),
-            camera3d: None,
+            camera_state: super::CameraState::default(),
             effects: Vec::new(),
             next_effect_handle: 0,
             contacts: Vec::new(),
@@ -1896,9 +2359,44 @@ mod tests {
         assert_eq!(error.code, "SCENE_TRANSFORM2D_INVALID");
         assert_eq!(serde_json::to_value(world.snapshot()).unwrap(), before);
         assert_eq!(world.physics.gravity, Vec2 { x: 0.0, y: -3.0 });
-        assert_eq!(world.camera.position, Vec2 { x: 4.0, y: 5.0 });
+        assert_eq!(world.get_camera_position(), Vec2 { x: 4.0, y: 5.0 });
         assert!(world.entities.contains_key("player"));
         assert!(!world.entities.contains_key("bad"));
+    }
+
+    #[test]
+    fn camera_projection_switch_keeps_one_state_and_preserves_mode_settings() {
+        let mut world = World::default();
+        world
+            .set_camera_position(Vec2 { x: 4.0, y: 5.0 })
+            .unwrap();
+        world.set_camera_orthographic_size(6.0).unwrap();
+        world.set_camera_projection("perspective").unwrap();
+        world
+            .set_camera_perspective(Camera3DData {
+                position: Vec3 {
+                    x: 4.0,
+                    y: 5.0,
+                    z: 12.0,
+                },
+                target: Vec3 {
+                    x: 4.0,
+                    y: 5.0,
+                    z: 0.0,
+                },
+                fov_degrees: 48.0,
+            })
+            .unwrap();
+
+        world.set_camera_projection("orthographic").unwrap();
+        assert_eq!(world.camera_projection(), "orthographic");
+        assert_eq!(world.camera_orthographic_size(), 6.0);
+        assert_eq!(world.get_camera_position(), Vec2 { x: 4.0, y: 5.0 });
+
+        world.set_camera_projection("perspective").unwrap();
+        assert_eq!(world.camera_projection(), "perspective");
+        assert_eq!(world.get_camera3d().unwrap().fov_degrees, 48.0);
+        assert_eq!(world.get_camera3d().unwrap().position.z, 12.0);
     }
 
     #[test]

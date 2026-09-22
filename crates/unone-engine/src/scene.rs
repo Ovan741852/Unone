@@ -517,6 +517,58 @@ mod tests {
     }
 
     #[test]
+    fn unified_camera_scene_definition_maps_to_the_legacy_host_projection() {
+        let scene = parse_scene_fragment(
+            r#"{"camera":{"projection":"perspective","position":{"x":0,"y":3,"z":8},"target":{"x":0,"y":0,"z":0},"fovDegrees":55},"entities":[]}"#,
+        )
+        .unwrap();
+        assert_eq!(scene.camera.position, crate::Vec2 { x: 0.0, y: 3.0 });
+        assert_eq!(scene.camera3d.as_ref().unwrap().position.z, 8.0);
+        assert_eq!(scene.camera3d.as_ref().unwrap().fov_degrees, 55.0);
+
+        let ortho = parse_scene_fragment(
+            r#"{"camera":{"projection":"orthographic","position":{"x":4,"y":2,"z":0},"orthographicSize":5},"entities":[]}"#,
+        )
+        .unwrap();
+        assert_eq!(ortho.camera.position, crate::Vec2 { x: 4.0, y: 2.0 });
+        assert_eq!(ortho.camera.view_height / ortho.camera.zoom, 5.0);
+        assert!(ortho.camera3d.is_none());
+    }
+
+    #[test]
+    fn canonical_scene_serialization_keeps_one_camera_authoring_shape() {
+        let scene = parse_scene_fragment(
+            r#"{"camera":{"projection":"perspective","position":{"x":0,"y":3,"z":8},"target":{"x":0,"y":0,"z":0},"fovDegrees":55},"entities":[]}"#,
+        )
+        .unwrap();
+        let encoded = serde_json::to_value(&scene).unwrap();
+        assert_eq!(encoded["camera"]["projection"], "perspective");
+        assert_eq!(encoded["camera"]["fovDegrees"], 55.0);
+        assert!(encoded.get("camera3d").is_none());
+        let round_trip = parse_scene_fragment(&encoded.to_string()).unwrap();
+        assert_eq!(round_trip.camera3d, scene.camera3d);
+    }
+
+    #[test]
+    fn omitted_projection_infers_perspective_only_from_3d_fields() {
+        let scene = parse_scene_fragment(
+            r#"{"camera":{"position":{"x":0,"y":3,"z":8},"target":{"x":0,"y":0,"z":0}},"entities":[]}"#,
+        )
+        .unwrap();
+        assert!(scene.camera3d.is_some());
+        let invalid = parse_scene_fragment(
+            r#"{"camera":{"projection":"orthographic","target":{"x":0,"y":0,"z":0}},"entities":[]}"#,
+        )
+        .unwrap_err();
+        assert!(invalid.explanation.contains("cannot declare target"));
+        let malformed = parse_scene_fragment(
+            r#"{"camera":{"projection":3,"position":{"x":0,"y":0}},"entities":[]}"#,
+        )
+        .unwrap_err();
+        assert!(malformed.explanation.contains("projection must be a string"));
+    }
+
+    #[test]
     fn rejects_unknown_root_and_deep_vector_fields_with_context() {
         let root = parse_scene_fragment(r#"{"entities":[],"typo":true}"#).unwrap_err();
         assert_eq!(root.code, "SCENE_INVALID");

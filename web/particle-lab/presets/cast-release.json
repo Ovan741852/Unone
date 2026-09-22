@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "duration_frames": 32,
+  "emitters": [
+    {"id":"impact-ring","count":1,"interval_frames":32,"lifetime_frames":36,"emission_shape":"ring","emission_radius":0.12,"velocity_mode":"radial","speed_min":0.4,"speed_max":1.4,"gravity":{"x":0,"y":0,"z":0},"size_start":0.2,"size_end":0.75,"size_easing":"ease_out","color_start":[0.32,0.84,1,0.95],"color_end":[0.58,0.92,1,0],"sprite_shape":"ring","additive":true},
+    {"id":"release-shards","count":18,"start_delay_frames":6,"interval_frames":32,"lifetime_frames":34,"spread":{"x":0.08,"y":0.04,"z":0.08},"velocity_mode":"cone","direction":{"x":0,"y":1,"z":0},"cone_angle_degrees":68,"speed_min":0.6,"speed_max":2.6,"gravity":{"x":0,"y":-0.2,"z":0},"size_start":0.18,"size_end":0.015,"color_start":[0.9,0.97,1,1],"color_end":[0.17,0.65,1,0],"sprite_shape":"diamond","additive":true}
+  ]
+}

@@ -18,9 +18,13 @@ wgpu = "30"
 pollster = "0.4"
 bytemuck = { version = "1", features = ["derive"] }
 png = "0.18"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp"] }
 base64 = "0.23"
 resvg = "0.48"
 roxmltree = "0.21"
+rodio = "0.22.2"
+[dev-dependencies]
+naga = { version = "30.0.1", features = ["wgsl-in"] }
 [target.'cfg(not(target_os = "android"))'.dependencies]
 winit = "0.30.12"
 [target.'cfg(target_os = "android")'.dependencies]

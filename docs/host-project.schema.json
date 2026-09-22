@@ -265,12 +265,39 @@
       ],
       "type": "object"
     },
+    "ParticleEasing": {
+      "enum": [
+        "linear",
+        "ease_in",
+        "ease_out",
+        "smooth_step"
+      ],
+      "type": "string"
+    },
+    "ParticleEmissionShape": {
+      "enum": [
+        "point",
+        "box",
+        "sphere",
+        "ring"
+      ],
+      "type": "string"
+    },
     "ParticleEmitter": {
       "additionalProperties": false,
       "properties": {
         "additive": {
           "default": false,
           "type": "boolean"
+        },
+        "angular_velocity": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "color_easing": {
+          "$ref": "#/$defs/ParticleEasing",
+          "default": "linear"
         },
         "color_end": {
           "items": {
@@ -290,10 +317,32 @@
           "minItems": 4,
           "type": "array"
         },
+        "cone_angle_degrees": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
         "count": {
           "format": "uint32",
           "minimum": 0,
           "type": "integer"
+        },
+        "direction": {
+          "$ref": "#/$defs/Vec3",
+          "default": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          }
+        },
+        "emission_radius": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "emission_shape": {
+          "$ref": "#/$defs/ParticleEmissionShape",
+          "default": "box"
         },
         "gravity": {
           "$ref": "#/$defs/Vec3",
@@ -316,11 +365,35 @@
           "minimum": 0,
           "type": "integer"
         },
+        "rotation_end": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "rotation_start": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "size_easing": {
+          "$ref": "#/$defs/ParticleEasing",
+          "default": "linear"
+        },
         "size_end": {
           "format": "double",
           "type": "number"
         },
         "size_start": {
+          "format": "double",
+          "type": "number"
+        },
+        "speed_max": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "speed_min": {
+          "default": 0.0,
           "format": "double",
           "type": "number"
         },
@@ -331,6 +404,16 @@
             "y": 0.0,
             "z": 0.0
           }
+        },
+        "sprite_shape": {
+          "$ref": "#/$defs/ParticleSpriteShape",
+          "default": "soft_circle"
+        },
+        "start_delay_frames": {
+          "default": 0,
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
         },
         "velocity_max": {
           "$ref": "#/$defs/Vec3",
@@ -347,6 +430,10 @@
             "y": 0.0,
             "z": 0.0
           }
+        },
+        "velocity_mode": {
+          "$ref": "#/$defs/ParticleVelocityMode",
+          "default": "vector"
         }
       },
       "required": [
@@ -360,6 +447,23 @@
         "color_end"
       ],
       "type": "object"
+    },
+    "ParticleSpriteShape": {
+      "enum": [
+        "soft_circle",
+        "diamond",
+        "ring",
+        "streak"
+      ],
+      "type": "string"
+    },
+    "ParticleVelocityMode": {
+      "enum": [
+        "vector",
+        "cone",
+        "radial"
+      ],
+      "type": "string"
     },
     "Physics3DScene": {
       "additionalProperties": false,
@@ -641,7 +745,6 @@
       "additionalProperties": false,
       "properties": {
         "camera": {
-          "$ref": "#/$defs/Camera2DData",
           "default": {
             "position": {
               "x": 0.0,
@@ -649,7 +752,78 @@
             },
             "view_height": 10.0,
             "zoom": 1.0
-          }
+          },
+          "description": "The one authoring entry point for the active camera. Legacy 2D and\nsplit `camera3d` input is still accepted by the custom deserializer,\nbut the generated schema advertises the unified forms first.",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Camera2DData"
+            },
+            {
+              "additionalProperties": false,
+              "description": "Orthographic projection. `orthographicSize` is the visible world height; `position` may be Vec2 or Vec3 (z is ignored).",
+              "properties": {
+                "orthographicSize": {
+                  "format": "double",
+                  "type": "number"
+                },
+                "orthographic_size": {
+                  "format": "double",
+                  "type": "number"
+                },
+                "position": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Vec2"
+                    },
+                    {
+                      "$ref": "#/$defs/Vec3"
+                    }
+                  ]
+                },
+                "projection": {
+                  "const": "orthographic",
+                  "type": "string"
+                },
+                "view_height": {
+                  "format": "double",
+                  "type": "number"
+                },
+                "zoom": {
+                  "format": "double",
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "description": "Perspective projection for 3D scenes.",
+              "properties": {
+                "fovDegrees": {
+                  "format": "double",
+                  "type": "number"
+                },
+                "fov_degrees": {
+                  "format": "double",
+                  "type": "number"
+                },
+                "position": {
+                  "$ref": "#/$defs/Vec3"
+                },
+                "projection": {
+                  "const": "perspective",
+                  "type": "string"
+                },
+                "target": {
+                  "$ref": "#/$defs/Vec3"
+                }
+              },
+              "required": [
+                "target"
+              ],
+              "type": "object"
+            }
+          ]
         },
         "camera3d": {
           "anyOf": [
@@ -660,7 +834,8 @@
               "type": "null"
             }
           ],
-          "default": null
+          "default": null,
+          "description": "Legacy split perspective storage. New source files should put the\nprojection in `camera`; this field is accepted only for compatibility\nand is intentionally omitted by canonical serialization."
         },
         "entities": {
           "default": [],
@@ -673,6 +848,7 @@
           "additionalProperties": {
             "$ref": "#/$defs/ParticleDefinition"
           },
+          "default": {},
           "type": "object"
         },
         "physics": {
@@ -695,7 +871,8 @@
             {
               "type": "null"
             }
-          ]
+          ],
+          "default": null
         }
       },
       "type": "object"

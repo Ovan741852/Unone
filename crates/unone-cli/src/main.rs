@@ -33,6 +33,7 @@ mod native_capture;
 mod native_clock;
 mod native_tools;
 mod plugins;
+mod prepare;
 mod session;
 mod sync;
 
@@ -199,6 +200,26 @@ enum ProjectCommand {
     Inspect,
     /// Pack, verify, and activate every project bundle in the required order.
     Sync,
+    /// Read-only target/runtime/system/presentation compatibility check for prepare.
+    Preflight {
+        #[arg(long, value_parser = ["web", "windows"])]
+        target: String,
+        #[arg(long)]
+        runtime_id: Option<String>,
+        #[arg(long)]
+        development: bool,
+    },
+    /// Verify, synchronize, export, and return a trusted Web/native launch descriptor.
+    Prepare {
+        #[arg(long, value_parser = ["web", "windows"])]
+        target: String,
+        #[arg(long)]
+        output: PathBuf,
+        #[arg(long)]
+        runtime_id: Option<String>,
+        #[arg(long)]
+        development: bool,
+    },
     /// Create a five-file headless starter with two tests and next actions in a new or truly empty directory.
     Init {
         #[arg(long, help = "Project name written to project.unone.json")]
@@ -479,6 +500,36 @@ fn run() -> Result<ExitCode> {
         Command::Project { command } => match command {
             ProjectCommand::Inspect => print_result(inspect_project(&cli.project), cli.json),
             ProjectCommand::Sync => print_result(sync::sync_project(&cli.project), cli.json),
+            ProjectCommand::Preflight {
+                target,
+                runtime_id,
+                development,
+            } => print_result(
+                prepare::project_preflight(
+                    &cli.project,
+                    cli.sdk.as_deref(),
+                    &target,
+                    runtime_id.as_deref(),
+                    development,
+                ),
+                cli.json,
+            ),
+            ProjectCommand::Prepare {
+                target,
+                output,
+                runtime_id,
+                development,
+            } => print_result(
+                prepare::project_prepare(
+                    &cli.project,
+                    cli.sdk.as_deref(),
+                    &target,
+                    &output,
+                    runtime_id.as_deref(),
+                    development,
+                ),
+                cli.json,
+            ),
             ProjectCommand::Init { name } => {
                 print_result(init_project(&cli.project, &name), cli.json)
             }

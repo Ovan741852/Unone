@@ -37,6 +37,149 @@ struct Manifest {
     runtimes: Vec<Runtime>,
     files: Vec<File>,
 }
+
+/// A runtime selected from an already hash-verified SDK manifest.
+///
+/// Keep this selection in one place so `export` and `project prepare` cannot
+/// drift into two different target/variant/system rules.  The descriptor is
+/// retained for the caller that needs to derive a trusted launch command.
+#[derive(Clone, Debug)]
+pub(crate) struct SdkSelection {
+    pub(crate) sdk_root: PathBuf,
+    pub(crate) templates_root: PathBuf,
+    pub(crate) runtime_root: PathBuf,
+    pub(crate) runtime_manifest: Value,
+    pub(crate) host: &'static crate::hosts::Host,
+    pub(crate) runtime_id: String,
+    pub(crate) variant: String,
+    pub(crate) engine_version: String,
+}
+
+impl SdkSelection {
+    pub(crate) fn report(&self) -> Value {
+        json!({
+            "target": self.host.id,
+            "family": self.host.family,
+            "runtime_id": self.runtime_id,
+            "variant": self.variant,
+            "engine_version": self.engine_version,
+            "runtime_root": self.runtime_root,
+            "descriptor": self.runtime_root.join("runtime.json"),
+            "readiness": self.runtime_manifest.get("readiness").cloned(),
+            "verified": true,
+        })
+    }
+}
+
+#[derive(Clone, Debug)]
+pub(crate) struct VerifiedExecutable {
+    pub(crate) relative: PathBuf,
+    pub(crate) path: PathBuf,
+    pub(crate) sha256: String,
+}
+
+/// Resolve the single Windows executable declared by a hash-verified runtime.
+/// The canonical path must stay inside that runtime; this is the path a host
+/// may launch, while the standalone export still carries its own copy.
+pub(crate) fn verified_windows_executable(
+    selection: &SdkSelection,
+) -> Result<VerifiedExecutable> {
+    ensure!(
+        selection.runtime_manifest["target"] == "windows",
+        "PREPARE_RUNTIME_DESCRIPTOR_INVALID: selected runtime is not a Windows runtime"
+    );
+    let files = selection.runtime_manifest["files"]
+        .as_array()
+        .context("PREPARE_RUNTIME_DESCRIPTOR_INVALID: Windows runtime.json has no files")?;
+    let declared = selection.runtime_manifest["executable"].as_str();
+    let mut candidates = Vec::new();
+    for file in files {
+        let path = file["path"]
+            .as_str()
+            .context("PREPARE_RUNTIME_DESCRIPTOR_INVALID: runtime file path is missing")?;
+        let expected_hash = file["sha256"]
+            .as_str()
+            .context("PREPARE_RUNTIME_DESCRIPTOR_INVALID: runtime file hash is missing")?;
+        let relative = safe_runtime_file(path)?;
+        if relative
+            .extension()
+            .is_some_and(|extension| extension.eq_ignore_ascii_case("exe"))
+        {
+            if declared
+                .is_some_and(|declared| normalize_runtime_file(&relative) != declared)
+            {
+                continue;
+            }
+            let path = selection
+                .runtime_root
+                .join(&relative)
+                .canonicalize()
+                .with_context(|| format!("PREPARE_RUNTIME_DESCRIPTOR_INVALID: missing {path}"))?;
+            ensure!(
+                path.starts_with(&selection.runtime_root),
+                "PREPARE_RUNTIME_DESCRIPTOR_INVALID: runtime executable escapes the selected runtime"
+            );
+            let bytes = fs::read(&path)
+                .with_context(|| format!("PREPARE_RUNTIME_DESCRIPTOR_INVALID: missing {path:?}"))?;
+            ensure!(
+                hash(&bytes).eq_ignore_ascii_case(expected_hash),
+                "PREPARE_RUNTIME_DESCRIPTOR_INVALID: runtime executable hash is invalid"
+            );
+            candidates.push(VerifiedExecutable {
+                relative,
+                path,
+                sha256: expected_hash.to_string(),
+            });
+        }
+    }
+    let candidate = if let Some(declared) = declared {
+        ensure!(
+            candidates.len() == 1,
+            "PREPARE_RUNTIME_DESCRIPTOR_INVALID: declared executable is not a verified .exe file"
+        );
+        ensure!(
+            normalize_runtime_file(&candidates[0].relative) == declared,
+            "PREPARE_RUNTIME_DESCRIPTOR_INVALID: declared executable is not the verified runtime file"
+        );
+        candidates.pop().unwrap()
+    } else {
+        ensure!(
+            candidates.len() == 1,
+            "PREPARE_EXECUTABLE_AMBIGUOUS: verified Windows runtime must declare exactly one .exe"
+        );
+        candidates.pop().unwrap()
+    };
+    Ok(candidate)
+}
+
+pub(crate) fn ensure_windows_runtime_executable_path(path: &Path) -> Result<()> {
+    let length = path.to_string_lossy().encode_utf16().count();
+    ensure!(
+        length < 260,
+        "SDK_RUNTIME_EXECUTABLE_PATH_TOO_LONG: canonical SDK runtime executable path is {} UTF-16 code units (the Windows native host requires fewer than 260); Fix: install the trusted SDK in a shallow directory and retry",
+        length
+    );
+    Ok(())
+}
+
+fn normalize_runtime_file(path: &Path) -> String {
+    path.to_string_lossy().replace('\\', "/")
+}
+
+fn safe_runtime_file(path: &str) -> Result<PathBuf> {
+    let candidate = Path::new(path);
+    ensure!(
+        !path.is_empty() && !candidate.is_absolute(),
+        "PREPARE_RUNTIME_DESCRIPTOR_INVALID: executable path must be relative"
+    );
+    ensure!(
+        candidate
+            .components()
+            .all(|component| matches!(component, std::path::Component::Normal(_))),
+        "PREPARE_RUNTIME_DESCRIPTOR_INVALID: executable path escapes the runtime"
+    );
+    Ok(candidate.to_path_buf())
+}
 fn runtime_files(r: &Value) -> Result<Vec<(String, String)>> {
     if r.get("target").and_then(Value::as_str).unwrap_or("web") == "web" {
         return ["javascript", "wasm"]
@@ -246,6 +389,101 @@ pub fn inspect(explicit: Option<&Path>) -> Result<Value> {
     report["sources"]=source_evidence;
     Ok(report)
 }
+
+/// Resolve the same trusted SDK/runtime selection used by an export without
+/// creating output.  Project content is parsed here as a read-only host gate,
+/// so `project prepare` can reject an incompatible presentation before sync or
+/// export changes any state.
+pub(crate) fn preflight(
+    project: &Path,
+    explicit: Option<&Path>,
+    target: &str,
+    id: Option<&str>,
+    development: bool,
+) -> Result<SdkSelection> {
+    let selection = select_runtime(project, explicit, target, id, development)?;
+    ensure!(
+        !(selection.host.family == "native-wgpu" && development),
+        "NATIVE_DEVELOPMENT_VARIANT_UNAVAILABLE: native player exports use the release runtime"
+    );
+    let (_, settings, assets, mut files) = crate::export::content(project)?;
+    // Validate the same presentation payload and packaged font paths that the
+    // exporters append, while still keeping preflight read-only.
+    crate::export::append_presentation(project, &mut files)?;
+    if selection.host.family == "native-wgpu" {
+        crate::hosts::native_wgpu_export_gate(
+            &settings,
+            crate::hosts::load_presentation(project)?.as_ref(),
+        )?;
+        native_asset_gate(&assets, &selection.runtime_manifest)?;
+    }
+    if selection.host.id == "windows" {
+        let executable = verified_windows_executable(&selection)?;
+        ensure_windows_runtime_executable_path(&executable.path)?;
+        // `project prepare` hands this descriptor to a host that waits for a
+        // readiness line.  Reject an old/incompatible runtime here, before
+        // sync or export can leave a generation that the host cannot launch.
+        native_readiness_gate(&selection.runtime_manifest)?;
+    }
+    Ok(selection)
+}
+
+fn select_runtime(
+    project: &Path,
+    explicit: Option<&Path>,
+    target: &str,
+    id: Option<&str>,
+    development: bool,
+) -> Result<SdkSelection> {
+    let host = crate::hosts::require_exportable(target)?;
+    let sdk_root = root(explicit)?;
+    let manifest = load(&sdk_root)?;
+    let (config, _) = unone_engine::ProjectPaths::discover(project)
+        .map_err(|e| anyhow::anyhow!("{}: {}", e.code, e.explanation))?;
+    let systems = unone_engine::SystemSettings::from_config(&config)
+        .map_err(|e| anyhow::anyhow!("{}: {}", e.code, e.explanation))?
+        .enabled_ids();
+    let variant = if development {
+        "development"
+    } else {
+        "production"
+    };
+    let mut candidates: Vec<_> = manifest
+        .runtimes
+        .iter()
+        .filter(|runtime| {
+            runtime.target == host.id
+                && runtime.variant == variant
+                && id.is_none_or(|wanted| wanted == runtime.id)
+                && systems
+                    .iter()
+                    .all(|system| runtime.compiled_systems.contains(system))
+        })
+        .collect();
+    candidates.sort_by(|left, right| {
+        left.bytes
+            .cmp(&right.bytes)
+            .then(left.id.cmp(&right.id))
+    });
+    let selected = candidates.first().context(
+        "SDK_RUNTIME_UNAVAILABLE: no matching target/variant/systems; run game sdk inspect --json and install a compatible runtime pack",
+    )?;
+    let runtime_root = safe(&sdk_root, &selected.path)?;
+    let templates_root = safe(&sdk_root, &manifest.templates)?;
+    let runtime_manifest: Value =
+        serde_json::from_slice(&fs::read(runtime_root.join("runtime.json"))?)?;
+    Ok(SdkSelection {
+        sdk_root,
+        templates_root,
+        runtime_root,
+        runtime_manifest,
+        host,
+        runtime_id: selected.id.clone(),
+        variant: variant.to_string(),
+        engine_version: manifest.engine_version,
+    })
+}
+
 pub fn export(
     project: &Path,
     output: &Path,
@@ -254,50 +492,32 @@ pub fn export(
     id: Option<&str>,
     development: bool,
 ) -> Result<Value> {
-    let host = crate::hosts::require_exportable(target)?;
-    let root = root(explicit)?;
-    let m = load(&root)?;
-    let (config, _) = unone_engine::ProjectPaths::discover(project)
-        .map_err(|e| anyhow::anyhow!(e.explanation))?;
-    let systems = unone_engine::SystemSettings::from_config(&config)
-        .map_err(|e| anyhow::anyhow!(e.explanation))?
-        .enabled_ids();
-    let variant = if development {
-        "development"
-    } else {
-        "production"
-    };
-    let mut candidates: Vec<_> = m
-        .runtimes
-        .iter()
-        .filter(|r| {
-            r.target == host.id
-                && r.variant == variant
-                && id.is_none_or(|id| id == r.id)
-                && systems.iter().all(|s| r.compiled_systems.contains(s))
-        })
-        .collect();
-    candidates.sort_by(|a, b| a.bytes.cmp(&b.bytes).then(a.id.cmp(&b.id)));
-    let selected=candidates.first().context("SDK_RUNTIME_UNAVAILABLE: no matching target/variant/systems; run game sdk inspect --json and install a compatible runtime pack")?;
-    let runtime_root = safe(&root, &selected.path)?;
-    let mut result = match host.packager {
+    let selection = select_runtime(project, explicit, target, id, development)?;
+    let mut result = match selection.host.packager {
         "web-directory" => crate::export::web_with_templates(
             project,
             output,
-            Some(&runtime_root),
+            Some(&selection.runtime_root),
             development,
-            &safe(&root, &m.templates)?,
+            &selection.templates_root,
         )?,
         "native-directory" | "native-activity-apk" => {
-            native_export(project, output, &root, &runtime_root, host, development)?
+            native_export(
+                project,
+                output,
+                &selection.sdk_root,
+                &selection.runtime_root,
+                selection.host,
+                development,
+            )?
         }
         _ => bail!(
             "SDK_TARGET_UNSUPPORTED: {}; {}",
-            host.id,
-            host.note
+            selection.host.id,
+            selection.host.note
         ),
     };
-    result["sdk_selection"] = json!({"target":host.id,"family":host.family,"runtime_id":selected.id,"variant":variant,"engine_version":m.engine_version});
+    result["sdk_selection"] = selection.report();
     Ok(result)
 }
 pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value> {
@@ -427,6 +647,36 @@ mod tests {
         );
         assert!(!out.exists());
     }
+
+    #[test]
+    fn windows_prepare_requires_the_native_ready_contract() {
+        let error = native_readiness_gate(&json!({})).unwrap_err();
+        assert!(error
+            .to_string()
+            .contains("NATIVE_READY_DESCRIPTOR_UNAVAILABLE"));
+
+        let error = native_readiness_gate(&json!({
+            "readiness": {"contract": "legacy-ready-v0"}
+        }))
+        .unwrap_err();
+        assert!(error
+            .to_string()
+            .contains("NATIVE_READY_DESCRIPTOR_UNAVAILABLE"));
+    }
+
+    #[test]
+    fn windows_prepare_accepts_the_declared_native_ready_shape() {
+        native_readiness_gate(&json!({
+            "readiness": {
+                "contract": "unone.native-ready.v1",
+                "stdout_prefix": "UNONE_NATIVE_READY ",
+                "emission": "once_after_first_render_ok_true",
+                "requires_surface": true,
+                "headless": "never_emits"
+            }
+        }))
+        .unwrap();
+    }
 }
 
 fn native_export(
@@ -481,20 +731,7 @@ fn native_export_staged(
     )?;
     crate::export::append_presentation(project, &mut files)?;
     let metadata: Value = serde_json::from_slice(&fs::read(runtime.join("runtime.json"))?)?;
-    for asset in assets["assets"].as_array().context("ASSETS_INVALID")? {
-        ensure!(
-            ["mesh3d", "texture2d"].contains(&asset["kind"].as_str().unwrap_or("")),
-            "NATIVE_DECODER_UNAVAILABLE: {}",
-            asset["kind"]
-        );
-        if asset["kind"] == "texture2d" {
-            // This gate admits UI sources. Mesh references are validated by the
-            // player separately; SVG here does not imply a mesh texture decoder.
-            let source=asset["source"].as_str().unwrap_or("").to_ascii_lowercase();
-            ensure!(source.ends_with(".png") || (source.ends_with(".svg") && metadata["ui"]["images"].as_array().is_some_and(|v|v.iter().any(|x|x=="svg-static"))),
-                "NATIVE_TEXTURE_FORMAT_UNSUPPORTED: {}; SVG UI requires a runtime advertising ui.images=svg-static; use a matching runtime or PNG companion",asset["source"]);
-        }
-    }
+    native_asset_gate(&assets, &metadata)?;
     let runtime_files = runtime_files(&metadata)?;
     if host.id == "windows" {
         for (name, _) in &runtime_files {
@@ -538,4 +775,52 @@ fn native_export_staged(
         );
     }
     Ok(report)
+}
+
+fn native_asset_gate(assets: &Value, metadata: &Value) -> Result<()> {
+    for asset in assets["assets"].as_array().context("ASSETS_INVALID")? {
+        ensure!(
+            ["mesh3d", "texture2d"].contains(&asset["kind"].as_str().unwrap_or("")),
+            "NATIVE_DECODER_UNAVAILABLE: {}",
+            asset["kind"]
+        );
+        if asset["kind"] == "texture2d" {
+            // This gate admits UI sources. Mesh references are validated by the
+            // player separately; SVG here does not imply a mesh texture decoder.
+            let source = asset["source"].as_str().unwrap_or("").to_ascii_lowercase();
+            ensure!(
+                source.ends_with(".png")
+                    || (source.ends_with(".svg")
+                        && metadata["ui"]["images"]
+                            .as_array()
+                            .is_some_and(|v| v.iter().any(|x| x == "svg-static"))),
+                "NATIVE_TEXTURE_FORMAT_UNSUPPORTED: {}; SVG UI requires a runtime advertising ui.images=svg-static; use a matching runtime or PNG companion",
+                asset["source"]
+            );
+        }
+    }
+    Ok(())
+}
+
+fn native_readiness_gate(metadata: &Value) -> Result<()> {
+    let readiness = metadata
+        .get("readiness")
+        .and_then(Value::as_object)
+        .context(
+            "NATIVE_READY_DESCRIPTOR_UNAVAILABLE: selected Windows runtime does not declare unone.native-ready.v1; rebuild or update the native runtime",
+        )?;
+    ensure!(
+        readiness.get("contract").and_then(Value::as_str) == Some("unone.native-ready.v1"),
+        "NATIVE_READY_DESCRIPTOR_UNAVAILABLE: selected Windows runtime does not declare unone.native-ready.v1; rebuild or update the native runtime"
+    );
+    ensure!(
+        readiness.get("stdout_prefix").and_then(Value::as_str)
+            == Some("UNONE_NATIVE_READY ")
+            && readiness.get("emission").and_then(Value::as_str)
+                == Some("once_after_first_render_ok_true")
+            && readiness.get("requires_surface").and_then(Value::as_bool) == Some(true)
+            && readiness.get("headless").and_then(Value::as_str) == Some("never_emits"),
+        "NATIVE_READY_DESCRIPTOR_INCOMPATIBLE: Windows runtime readiness declaration is not compatible with unone.native-ready.v1; rebuild or update the native runtime"
+    );
+    Ok(())
 }

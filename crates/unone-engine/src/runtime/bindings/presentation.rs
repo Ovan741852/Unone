@@ -64,6 +64,29 @@ pub(super) fn particle(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     )?;
     let particle_world = Rc::clone(&world);
     particle_api.set(
+        "move",
+        lua.create_function(move |_, (handle, position): (String, Table)| {
+            let position = Vec3 {
+                x: position.get("x")?,
+                y: position.get("y")?,
+                z: position.get("z")?,
+            };
+            let mut world = particle_world.borrow_mut();
+            let frame = world.frame;
+            world.particles.move_to(&handle, position, frame).map_err(mlua::Error::external)
+        })?,
+    )?;
+    let particle_world = Rc::clone(&world);
+    particle_api.set(
+        "finish",
+        lua.create_function(move |_, handle: String| {
+            let mut world = particle_world.borrow_mut();
+            let frame = world.frame;
+            Ok(world.particles.finish(&handle, frame))
+        })?,
+    )?;
+    let particle_world = Rc::clone(&world);
+    particle_api.set(
         "stop",
         lua.create_function(move |_, handle: String| {
             Ok(particle_world.borrow_mut().particles.stop(&handle))

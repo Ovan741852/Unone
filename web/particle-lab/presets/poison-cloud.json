@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "duration_frames": 72,
+  "emitters": [
+    {"id":"toxic-cloud","count":8,"interval_frames":4,"lifetime_frames":84,"emission_shape":"sphere","emission_radius":0.34,"velocity_mode":"radial","speed_min":0.12,"speed_max":0.52,"gravity":{"x":0,"y":0.06,"z":0},"size_start":0.24,"size_end":0.68,"size_easing":"ease_out","color_start":[0.36,0.92,0.21,0.42],"color_end":[0.12,0.45,0.06,0],"sprite_shape":"soft_circle","additive":false},
+    {"id":"toxic-glints","count":3,"start_delay_frames":8,"interval_frames":7,"lifetime_frames":42,"velocity_min":{"x":-0.2,"y":0.1,"z":-0.2},"velocity_max":{"x":0.2,"y":0.6,"z":0.2},"size_start":0.1,"size_end":0.01,"color_start":[0.72,1,0.29,0.9],"color_end":[0.23,0.76,0.08,0],"sprite_shape":"diamond","additive":true}
+  ]
+}

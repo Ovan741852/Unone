@@ -1,0 +1,49 @@
+{
+  "serial": "127.0.0.1:5555",
+  "application_id": "com.unone.nativeplayer.spriteperf",
+  "runtime_files": [
+    {
+      "path": "libunone_native_player.so",
+      "sha256": "227a83feb990d2efaa9a8b764736f1546b0f00fc335ced1d17dd26c79532c87d"
+    },
+    {
+      "path": "libc++_shared.so",
+      "sha256": "220f048039aab19e58132614392ff8e607ea2c3c2ddca26fa021455adbac4383"
+    }
+  ],
+  "scope": "Android emulator correctness smoke; no Android before/after FPS claim",
+  "results": [
+    {
+      "name": "moving-10000",
+      "adapter": "AdapterInfo { name: \"Adreno (TM) 650\", vendor: 20803, device: 0, device_type: IntegratedGpu, device_pci_bus_id: \"\", driver: \"\", driver_info: \"OpenGL ES 3.2 (4.5.0 NVIDIA 610.47)\", backend: Gl, subgroup_min_size: 4, subgroup_max_size: 128, transient_saves_memory: None, limit_bucket: None }",
+      "resolution": [
+        1600,
+        900
+      ],
+      "fps": 59.63879497437155,
+      "package_sha256": "f400a38b64c128f7415bac0e1149a41e6c33307797e4b244a083d754cd6485a2",
+      "observation_digest": "sha256:f4ac556884d5f4ee6532d117a434af3ccf49aa3a86eae9bbde24676e095478dd",
+      "draws": 1,
+      "submitted": 10000,
+      "upload_bytes": 240000,
+      "screenshot_sha256": "0a10b03b8133349926109d2aa8f967cec3e52246ef54a10699a49084efde4bd0",
+      "error": null
+    },
+    {
+      "name": "layering-12",
+      "adapter": "AdapterInfo { name: \"Adreno (TM) 650\", vendor: 20803, device: 0, device_type: IntegratedGpu, device_pci_bus_id: \"\", driver: \"\", driver_info: \"OpenGL ES 3.2 (4.5.0 NVIDIA 610.47)\", backend: Gl, subgroup_min_size: 4, subgroup_max_size: 128, transient_saves_memory: None, limit_bucket: None }",
+      "resolution": [
+        1600,
+        900
+      ],
+      "fps": 59.36356372796883,
+      "package_sha256": "0158a21b42083e6654ed6ea7d1936b6924c6af465a63ffdaa31a264667d0b8f6",
+      "observation_digest": "sha256:ff07dbe30f59c585bb78b23f773eaae9615d2de33df9f8e4c8a09ae4dbe0fac3",
+      "draws": 3,
+      "submitted": 12,
+      "upload_bytes": 0,
+      "screenshot_sha256": "f28b7cba432dd6f883518e89250a77c37c843e4c5a986eacddf22cfe4be51b50",
+      "error": null
+    }
+  ]
+}

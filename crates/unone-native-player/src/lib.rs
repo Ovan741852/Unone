@@ -1,18 +1,23 @@
 #![recursion_limit = "256"]
 mod lod;
+mod audio;
 mod particles;
 mod render;
+mod sprites;
 mod ui;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use std::{
     collections::BTreeMap,
-    path::PathBuf,
+    io::Write,
+    path::{Path, PathBuf},
     sync::Arc,
     time::{Duration, Instant},
 };
 use unone_engine::{EngineRuntime, HostProject, WorldSnapshot};
+#[cfg(target_os = "windows")]
+use winit::platform::windows::WindowAttributesExtWindows;
 use winit::{
     application::ApplicationHandler,
     event::{ElementState, WindowEvent},
@@ -21,9 +26,34 @@ use winit::{
     window::{Window, WindowId},
 };
 type R<T> = Result<T, String>;
+const NATIVE_RENDERER: &str = "wgpu-native-instanced";
+const READY_CONTRACT: &str = "unone.native-ready.v1";
+
 fn hash(b: &[u8]) -> String {
     format!("{:x}", Sha256::digest(b))
 }
+
+fn ensure_gui_executable_path(path: &Path) -> R<()> {
+    let length = path.to_string_lossy().encode_utf16().count();
+    if length >= 260 {
+        return Err(format!(
+            "NATIVE_EXECUTABLE_PATH_TOO_LONG: canonical native executable path is {length} UTF-16 code units; Fix: install the native runtime in a shallow directory; --root data paths may remain long"
+        ));
+    }
+    Ok(())
+}
+
+// Windows GUI startup only; headless and describe intentionally bypass this
+// platform-specific executable-path guard.
+#[cfg(target_os = "windows")]
+fn check_gui_executable_path() -> R<()> {
+    let executable = std::env::current_exe()
+        .map_err(|error| format!("NATIVE_EXECUTABLE_PATH_UNAVAILABLE: {error}"))?
+        .canonicalize()
+        .map_err(|error| format!("NATIVE_EXECUTABLE_PATH_UNAVAILABLE: {error}"))?;
+    ensure_gui_executable_path(&executable)
+}
+
 fn safe(s: &str) -> bool {
     !s.is_empty()
         && !s.contains(':')
@@ -147,6 +177,40 @@ fn emit(v: &Value) {
         }
     }
 }
+
+fn readiness_declaration() -> Value {
+    json!({
+        "contract": READY_CONTRACT,
+        "stdout_prefix": "UNONE_NATIVE_READY ",
+        "emission": "once_after_first_render_ok_true",
+        "requires_surface": true,
+        "headless": "never_emits",
+        "fields": [
+            "contract",
+            "package_sha256",
+            "host",
+            "renderer",
+            "adapter",
+            "resolution",
+            "process_id"
+        ]
+    })
+}
+
+fn emit_ready(package_sha256: &str, renderer: &render::Renderer) {
+    let value = json!({
+        "contract": READY_CONTRACT,
+        "package_sha256": package_sha256,
+        "host": std::env::consts::OS,
+        "renderer": NATIVE_RENDERER,
+        "adapter": &renderer.adapter,
+        "resolution": renderer.resolution(),
+        "process_id": std::process::id()
+    });
+    println!("UNONE_NATIVE_READY {}", serde_json::to_string(&value).unwrap());
+    let _ = std::io::stdout().flush();
+}
+
 struct App {
     host_input: unone_engine::InputFrame,
     pointer_edges: std::collections::VecDeque<unone_engine::PointerInput>,
@@ -160,6 +224,8 @@ struct App {
     report: Option<PathBuf>,
     window: Option<Arc<Window>>,
     renderer: Option<render::Renderer>,
+    ready_emitted: bool,
+    audio: audio::NativeAudio,
     last: Option<Instant>,
     units: u128,
     dropped: u64,
@@ -173,6 +239,7 @@ struct App {
     measured_ms: f64,
     measured_initial_frame: Option<u64>,
     captures: Vec<(String, f64)>,
+    presentation_warnings: std::collections::BTreeSet<String>,
 }
 impl App {
     fn reset_input(&mut self) {
@@ -215,6 +282,7 @@ impl App {
             runtime.tick().map_err(|e| e.explanation)?;
         }
         let snapshot = runtime.observe();
+        let audio = audio::NativeAudio::new(&package);
         Ok(Self {
             package,
             ui_input: Default::default(),
@@ -228,6 +296,8 @@ impl App {
             report,
             window: None,
             renderer: None,
+            ready_emitted: false,
+            audio,
             last: None,
             units: 0,
             dropped: 0,
@@ -241,6 +311,7 @@ impl App {
             measured_ms: 0.,
             measured_initial_frame: None,
             captures: Vec::new(),
+            presentation_warnings: Default::default(),
         })
     }
     fn capture_frame(&mut self) -> R<()> {
@@ -283,7 +354,8 @@ impl App {
             }
         }
         let r = self.renderer.as_ref();
-        let mut value = json!({"host":std::env::consts::OS,"renderer":if self.settings.headless{"none"}else{"wgpu-native-instanced"},"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"},"adapter":r.map(|r|&r.adapter),"resolution":r.map(|r|r.resolution()),"simulation_hz_measured":self.measured_initial_frame.map(|f|(self.snapshot.frame-f) as f64*1000./self.measured_ms.max(0.001)),"measured_seconds":self.measured_ms/1000.,"package_sha256":self.package.digest,"boot_ms":self.boot_ms,"frame":self.snapshot.frame,"observation_digest":unone_engine::observation_digest(&self.snapshot).ok(),"battle":self.snapshot.observations.get("battle"),"fx":self.snapshot.observations.get("fx"),"particle_count":self.snapshot.particles.len(),"camera3d":self.snapshot.camera3d,"drawn":self.drawn,"dropped_ticks":self.dropped,"submitted_instances_last_frame":r.map(|r|r.submitted),"draw_calls_last_frame":r.map(|r|r.draws),"upload_bytes_last_frame":r.map(|r|r.uploaded),"mesh_triangles_last_frame":r.map(|r|r.triangles),"lod_instances_last_frame":r.map(|r|r.lod_counts),"presentation_batches":r.map(|r|&r.presentation_batches),"instance_prepare_ms_last_frame":r.map(|r|r.lod_ms),"interval":stats(&self.samples.interval_ms),"tick":stats(&self.samples.tick_ms),"render_submit":stats(&self.samples.render_submit_ms),"renderer_cpu_phases":self.samples.renderer_phases.iter().map(|(k,v)|(*k,stats(v))).collect::<BTreeMap<_,_>>(),"fps":if self.samples.interval_ms.is_empty(){0.}else{1000.*self.samples.interval_ms.len() as f64/self.samples.interval_ms.iter().sum::<f64>()},"error":self.error,"measurement":{"timing_window_capacity":16384,"seed":self.settings.seed,"warmup_presentations":self.settings.warmup,"prewarm_ticks":self.settings.prewarm_ticks,"fixed_tick":self.settings.fixed_tick,"gpu_time_available":false,"submitted_is_not_visible_count":true,"render_submit_includes_driver_wait":true,"digest_outside_timing":true,"capture_enabled":self.settings.capture_dir.is_some(),"freeze_simulation":self.settings.freeze_simulation,"lod_enabled":!self.settings.disable_lod}});
+        let mut value = json!({"host":std::env::consts::OS,"renderer":if self.settings.headless{"none"}else{"wgpu-native-instanced"},"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"},"adapter":r.map(|r|&r.adapter),"resolution":r.map(|r|r.resolution()),"bloom_enabled":r.map(|r|r.bloom_enabled()),"simulation_hz_measured":self.measured_initial_frame.map(|f|(self.snapshot.frame-f) as f64*1000./self.measured_ms.max(0.001)),"measured_seconds":self.measured_ms/1000.,"package_sha256":self.package.digest,"boot_ms":self.boot_ms,"frame":self.snapshot.frame,"observation_digest":unone_engine::observation_digest(&self.snapshot).ok(),"battle":self.snapshot.observations.get("battle"),"fx":self.snapshot.observations.get("fx"),"particle_count":self.snapshot.particles.len(),"camera3d":self.snapshot.camera3d,"drawn":self.drawn,"dropped_ticks":self.dropped,"submitted_instances_last_frame":r.map(|r|r.submitted),"draw_calls_last_frame":r.map(|r|r.draws),"upload_bytes_last_frame":r.map(|r|r.uploaded),"mesh_triangles_last_frame":r.map(|r|r.triangles),"lod_instances_last_frame":r.map(|r|r.lod_counts),"presentation_batches":r.map(|r|&r.presentation_batches),"instance_prepare_ms_last_frame":r.map(|r|r.lod_ms),"presentation_warnings":self.presentation_warnings,"interval":stats(&self.samples.interval_ms),"tick":stats(&self.samples.tick_ms),"render_submit":stats(&self.samples.render_submit_ms),"renderer_cpu_phases":self.samples.renderer_phases.iter().map(|(k,v)|(*k,stats(v))).collect::<BTreeMap<_,_>>(),"fps":if self.samples.interval_ms.is_empty(){0.}else{1000.*self.samples.interval_ms.len() as f64/self.samples.interval_ms.iter().sum::<f64>()},"error":self.error,"measurement":{"timing_window_capacity":16384,"seed":self.settings.seed,"warmup_presentations":self.settings.warmup,"prewarm_ticks":self.settings.prewarm_ticks,"fixed_tick":self.settings.fixed_tick,"gpu_time_available":false,"submitted_is_not_visible_count":true,"render_submit_includes_driver_wait":true,"digest_outside_timing":true,"capture_enabled":self.settings.capture_dir.is_some(),"freeze_simulation":self.settings.freeze_simulation,"lod_enabled":!self.settings.disable_lod}});
+        value["audio"] = self.audio.report();
         if let Some(path) = &self.report {
             if let Err(e) = std::fs::write(path, serde_json::to_vec_pretty(&value).unwrap()) {
                 self.error = Some(format!("NATIVE_REPORT_WRITE_FAILED: {e}"));
@@ -306,13 +378,18 @@ impl ApplicationHandler for App {
             return;
         }
         let result = (|| -> R<_> {
+            let mut attributes = Window::default_attributes()
+                .with_title("Unone Native Player")
+                .with_inner_size(winit::dpi::LogicalSize::new(1280, 720));
+            // The native player has no file-import contract. Keep Windows OLE
+            // drag/drop registration disabled; this does not affect rendering.
+            #[cfg(target_os = "windows")]
+            {
+                attributes = attributes.with_drag_and_drop(false);
+            }
             let window = Arc::new(
                 event_loop
-                    .create_window(
-                        Window::default_attributes()
-                            .with_title("Unone Native Player")
-                            .with_inner_size(winit::dpi::LogicalSize::new(1280, 720)),
-                    )
+                    .create_window(attributes)
                     .map_err(|e| e.to_string())?,
             );
             let mut renderer =
@@ -333,6 +410,7 @@ impl ApplicationHandler for App {
                 self.snapshot = self.runtime.observe();
                 self.window = Some(w);
                 self.renderer = Some(r);
+                self.audio.resume();
                 self.boot_ms = self.boot.elapsed().as_secs_f64() * 1000.;
             }
             Err(e) => self.fail(e, event_loop),
@@ -345,6 +423,7 @@ impl ApplicationHandler for App {
         self.last = None;
         self.units = 0;
         self.paused = true;
+        self.audio.pause();
     }
     fn window_event(&mut self, event_loop: &ActiveEventLoop, id: WindowId, event: WindowEvent) {
         if self.window.as_ref().is_none_or(|w| w.id() != id) {
@@ -495,21 +574,29 @@ impl ApplicationHandler for App {
                         self.samples.tick_ms.push(t.elapsed().as_secs_f64() * 1000.);
                     }
                 }
-                if !self.snapshot.audio_events.is_empty()
-                    || !self.snapshot.audio_loops.is_empty()
-                    || !self.snapshot.effects.is_empty()
-                {
-                    self.fail(
-                        "NATIVE_PRESENTATION_UNSUPPORTED: audio/effects require a renderer adapter"
-                            .into(),
-                        event_loop,
-                    );
-                    return;
+                self.audio.sync(&self.snapshot);
+                for effect in &self.snapshot.effects {
+                    self.presentation_warnings.insert(format!(
+                        "NATIVE_PRESENTATION_UNSUPPORTED: Effekseer effect '{}' is not rendered by this host",
+                        effect.asset
+                    ));
+                }
+                for entity in self.snapshot.entities.values() {
+                    if let Some(animation) = &entity.animation {
+                        self.presentation_warnings.insert(format!(
+                            "NATIVE_PRESENTATION_UNSUPPORTED: Spine animation '{}' on '{}' is not rendered by this host",
+                            animation.animation, entity.id
+                        ));
+                    }
                 }
                 let start = Instant::now();
                 let rendered = self.renderer.as_mut().unwrap().render(&self.snapshot);
                 match rendered {
                     Ok(true) => {
+                        if !self.ready_emitted {
+                            emit_ready(&self.package.digest, self.renderer.as_ref().unwrap());
+                            self.ready_emitted = true;
+                        }
                         self.drawn += 1;
                         if let Err(e) = self.capture_frame() {
                             self.fail(e, event_loop);
@@ -560,7 +647,7 @@ pub fn desktop() -> R<()> {
     if std::env::args().nth(1).as_deref() == Some("--describe") {
         println!(
             "{}",
-            json!({"compiled_systems":unone_engine::compiled_systems(),"renderer":"wgpu-native-instanced","decoders":["unone-mesh-json","png-rgb-rgba"],"presentation":["mesh3d","instances3d","particle","ui"],"ui":{"backend":"cpu-raster-wgpu-overlay","nodes":["text","button","image","component"],"images":["png","svg-static"],"input":"mouse/touch semantic down-up; rectangular reverse-order hit testing","font":"system fallback or packaged presentation.ui.font_source","limitations":["UI redraw rasterizes/uploads the full surface when the tree changes","World camera3d remains required","Audio/effects are not implemented by this renderer","Android/iOS UI device validation has not been performed"]},"dev_tools":false,"preview_tools":false,"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"}})
+            json!({"compiled_systems":unone_engine::compiled_systems(),"renderer":NATIVE_RENDERER,"readiness":readiness_declaration(),"decoders":["unone-mesh-json","png-rgb-rgba","jpeg-rgba","webp-rgba","svg-static","audio-rodio"],"presentation":["mesh3d","instances3d","sprite2d","particle","ui","bloom"],"bloom":{"implementation":"quarter-resolution threshold + separable blur + composite","configured_by":"player.presentation.json:bloom","static_until_relaunch":true},"ui":{"backend":"cpu-raster-wgpu-overlay","nodes":["text","button","image","component"],"images":["png","svg-static"],"input":"mouse/touch semantic down-up; rectangular reverse-order hit testing","font":"system fallback or packaged presentation.ui.font_source","limitations":["UI redraws/uploads the full surface when the tree changes","File drag/drop is not a supported input contract; Windows OLE registration is disabled","Spine skeletal animation and Effekseer effects still require their native runtimes","Physical Android/iOS GPU coverage is device-specific; BlueStacks release evidence is tracked separately","Windows GUI launch rejects a canonical executable path of 260 or more UTF-16 code units; install the runtime shallow, while long --root data paths remain supported"]},"audio":{"implementation":"rodio/cpal native output","status":"host-adapter"},"dev_tools":false,"preview_tools":false,"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"}})
         );
         return Ok(());
     }
@@ -636,6 +723,8 @@ pub fn desktop() -> R<()> {
         app.finish();
         return Ok(());
     }
+    #[cfg(target_os = "windows")]
+    check_gui_executable_path()?;
     let event_loop = EventLoop::new().map_err(|e| e.to_string())?;
     event_loop.run_app(&mut app).map_err(|e| e.to_string())?;
     if let Some(e) = app.error {
@@ -684,6 +773,44 @@ fn android_main(android: winit::platform::android::activity::AndroidApp) {
 
 #[cfg(test)]
 mod telemetry_tests {
+    #[test]
+    fn gui_executable_path_limit_counts_utf16_code_units() {
+        let path = std::path::PathBuf::from(format!("C:/{}", "😀".repeat(130)));
+        let error = super::ensure_gui_executable_path(&path).unwrap_err();
+        assert!(error.contains("NATIVE_EXECUTABLE_PATH_TOO_LONG"));
+        assert!(error.contains("--root data paths may remain long"));
+    }
+
+    #[test]
+    fn gui_executable_path_accepts_a_shallow_runtime() {
+        super::ensure_gui_executable_path(std::path::Path::new(
+            r"C:\Unone\runtime\unone-native-player.exe",
+        ))
+        .unwrap();
+    }
+
+    #[test]
+    fn readiness_declaration_freezes_host_contract() {
+        let declaration = super::readiness_declaration();
+        assert_eq!(declaration["contract"], super::READY_CONTRACT);
+        assert_eq!(declaration["stdout_prefix"], "UNONE_NATIVE_READY ");
+        assert_eq!(declaration["emission"], "once_after_first_render_ok_true");
+        assert_eq!(declaration["requires_surface"], true);
+        assert_eq!(declaration["headless"], "never_emits");
+        assert_eq!(
+            declaration["fields"],
+            serde_json::json!([
+                "contract",
+                "package_sha256",
+                "host",
+                "renderer",
+                "adapter",
+                "resolution",
+                "process_id"
+            ])
+        );
+    }
+
     #[test]
     fn timing_window_is_bounded_and_retains_recent_samples() {
         let mut samples = super::SampleWindow::default();

@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "duration_frames": 2,
+  "emitters": [
+    {"id":"death-burst","count":48,"interval_frames":2,"lifetime_frames":52,"emission_shape":"sphere","emission_radius":0.16,"velocity_mode":"radial","speed_min":0.5,"speed_max":3.1,"gravity":{"x":0,"y":-0.25,"z":0},"size_start":0.2,"size_end":0.015,"size_easing":"ease_out","color_start":[0.95,0.42,1,1],"color_end":[0.24,0.04,0.38,0],"sprite_shape":"diamond","additive":true}
+  ]
+}

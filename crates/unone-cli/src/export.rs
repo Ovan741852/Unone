@@ -170,7 +170,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
                 text = replace_required(
                     text,
                     "import { createParticleRenderer } from \"./particles.js\";",
-                    "const createParticleRenderer = () => ({draw(){}, clear(){}, count:0});",
+                    "const createParticleRenderer = () => ({draw(){}, clear(){}, dispose(){}, count:0});",
                 )?;
             }
             if !settings.is_enabled("effekseer") {

@@ -1,0 +1,153 @@
+{
+  "date": "2026-09-19T13:28:57.970Z",
+  "scope": "Windows native GPU Sprite renderer; synthetic scenes, not game FPS or mobile evidence",
+  "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.47\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+  "resolution": [
+    1280,
+    720
+  ],
+  "before_player_sha256": "25baa335ddb4e05caa6121a76080c000d456c5586c41ab4d1647e0ab61b5a210",
+  "after_player_sha256": "c29ca860955eebc0bb506a85effc85ca52af0f987b84b38a5883027445bdcbb3",
+  "warmup": 30,
+  "runs": 3,
+  "equivalent_end_frames": 15,
+  "scenarios": [
+    {
+      "scenario": "static:1000",
+      "samples_per_variant": 540,
+      "prepare_mean_ms_median": {
+        "before": 1.4454111111111112,
+        "after": 0.038565
+      },
+      "prepare_reduction_percent": 97.33190095858926,
+      "prepare_p95_ms_median": {
+        "before": 1.9819999999999998,
+        "after": 0.06430000000000001
+      },
+      "encode_submit_mean_ms_median": {
+        "before": 0.7747888888888886,
+        "after": 0.13270999999999997
+      },
+      "fps_median": {
+        "before": 179.73026082455453,
+        "after": 179.82422182316785
+      },
+      "after_draws": 1,
+      "after_upload_bytes": 0,
+      "package_sha256": "94e85e4bb15893a41282d1112f5651390b9ee2201a7bae94a6f92f72f8bb7990",
+      "snapshot_digest": "sha256:0d102426eeb578c04585aee3e3d8d715a0d4f373e930363a6984fb1c64784cd3",
+      "screenshot_sha256": "0720c81c619283592b4ec7c8c20076518eefc4acb32bb780c1288252992d9933"
+    },
+    {
+      "scenario": "moving:1000",
+      "samples_per_variant": 540,
+      "prepare_mean_ms_median": {
+        "before": 1.4052483333333337,
+        "after": 0.033367222222222215
+      },
+      "prepare_reduction_percent": 97.62552842577844,
+      "prepare_p95_ms_median": {
+        "before": 1.7661,
+        "after": 0.056499999999999995
+      },
+      "encode_submit_mean_ms_median": {
+        "before": 0.7347772222222222,
+        "after": 0.12703388888888884
+      },
+      "fps_median": {
+        "before": 180.19679291754522,
+        "after": 180.1927341484451
+      },
+      "after_draws": 1,
+      "after_upload_bytes": 24000,
+      "package_sha256": "a574ef034b8a975ea96e1b1509adbe1c041a4b162ef461a91d98fdda5cbf0832",
+      "snapshot_digest": "sha256:155294d0c22a126a0062f78d858310ae804f8a2ff662f5840370eda78a73094d",
+      "screenshot_sha256": "683d38b504f01a5b7363bb6be1fe2a210d4173a221de21f5f48c364b16f8afae"
+    },
+    {
+      "scenario": "static:10000",
+      "samples_per_variant": 540,
+      "prepare_mean_ms_median": {
+        "before": 20.815308888888886,
+        "after": 0.31993722222222226
+      },
+      "prepare_reduction_percent": 98.46297153729483,
+      "prepare_p95_ms_median": {
+        "before": 22.3829,
+        "after": 0.5094000000000001
+      },
+      "encode_submit_mean_ms_median": {
+        "before": 10.343986666666666,
+        "after": 0.13068055555555555
+      },
+      "fps_median": {
+        "before": 31.613497593554246,
+        "after": 179.90916386316547
+      },
+      "after_draws": 1,
+      "after_upload_bytes": 0,
+      "package_sha256": "c63072e223e0c020d7562171cc9bd2e9cf76b966b987502cf29feaeee8c692ad",
+      "snapshot_digest": "sha256:cb4c58b6fd72291a8a02e71a55933b785faa698f818e8cf87468003d0d6b69e8",
+      "screenshot_sha256": "f10241d4bee30a1db32dff417cdbb226e9fb0ab9e80ed198620c2f5f0206d414"
+    },
+    {
+      "scenario": "moving:10000",
+      "samples_per_variant": 540,
+      "prepare_mean_ms_median": {
+        "before": 21.436479444444437,
+        "after": 0.4371716666666669
+      },
+      "prepare_reduction_percent": 97.96061817053655,
+      "prepare_p95_ms_median": {
+        "before": 22.8356,
+        "after": 0.5753
+      },
+      "encode_submit_mean_ms_median": {
+        "before": 10.84786277777778,
+        "after": 0.18345555555555554
+      },
+      "fps_median": {
+        "before": 24.03635225867132,
+        "after": 109.6275993084448
+      },
+      "after_draws": 1,
+      "after_upload_bytes": 240000,
+      "package_sha256": "f400a38b64c128f7415bac0e1149a41e6c33307797e4b244a083d754cd6485a2",
+      "snapshot_digest": "sha256:f4ac556884d5f4ee6532d117a434af3ccf49aa3a86eae9bbde24676e095478dd",
+      "screenshot_sha256": "e93e9a70b776f42fcc897aab5a92a650f93057255f7cf7b69f25e3824fd827c0"
+    },
+    {
+      "scenario": "layering:12",
+      "samples_per_variant": 540,
+      "prepare_mean_ms_median": {
+        "before": 0.03902388888888891,
+        "after": 0.003982222222222228
+      },
+      "prepare_reduction_percent": 89.79542445510583,
+      "prepare_p95_ms_median": {
+        "before": 0.060000000000000005,
+        "after": 0.0063
+      },
+      "encode_submit_mean_ms_median": {
+        "before": 0.1349627777777778,
+        "after": 0.13381999999999994
+      },
+      "fps_median": {
+        "before": 180.24753393835746,
+        "after": 180.01800180018
+      },
+      "after_draws": 3,
+      "after_upload_bytes": 0,
+      "package_sha256": "0158a21b42083e6654ed6ea7d1936b6924c6af465a63ffdaa31a264667d0b8f6",
+      "snapshot_digest": "sha256:ff07dbe30f59c585bb78b23f773eaae9615d2de33df9f8e4c8a09ae4dbe0fac3",
+      "screenshot_sha256": "d1e63a161e871c6613b448bdaa5199274c99fecca05907c4f310ee9559c51c10"
+    }
+  ],
+  "limitations": [
+    "Static freezes simulation; moving executes one actual Luau update per presentation, not real-time 60 Hz gameplay.",
+    "No native-codegen; both builds use the same release interpreter configuration.",
+    "FPS includes present/surface wait and is capped by this display near 180 Hz; CPU phases are measured separately.",
+    "GPU time is unavailable. End-frame PNG hashes prove these samples, not every possible scene.",
+    "Baseline capture doubles reported 2D draw/instance counts. Candidate corrects that telemetry bug; baseline raw counts are excluded from comparisons."
+  ]
+}

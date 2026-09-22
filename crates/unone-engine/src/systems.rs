@@ -476,25 +476,25 @@ fn descriptors() -> Vec<SystemDescriptor> {
         ),
         descriptor(
             "camera2d",
-            "2D camera position and zoom.",
+            "Compatibility backing for the unified Camera's orthographic projection.",
             SystemStatus::Available,
             true,
             true,
             vec!["api.camera.setPosition", "api.camera.setZoom"],
             vec!["world.camera"],
             "When disabled, api.camera reports SYSTEM_DISABLED; the snapshot still emits a default camera so the host has a fixed view.",
-            "Fixed-screen, non-scrolling games.",
+            "Legacy projects that intentionally keep only the orthographic Camera projection.",
         ),
         descriptor(
             "camera3d",
-            "3D camera and observation projection for Mesh3D/Transform3D.",
+            "Compatibility backing for the unified Camera's perspective projection and Mesh3D/Transform3D observation.",
             SystemStatus::Available,
             true,
             true,
             vec!["api.camera3d.setPosition", "api.camera3d.setTarget"],
             vec!["world.camera3d", "world.entities[].mesh3d"],
             "When disabled, api.camera3d reports SYSTEM_DISABLED; api.entity 3D transforms are currently unaffected by this switch.",
-            "Pure 2D games; disabling this makes 'this project should not contain a 3D camera' a verifiable fact.",
+            "Pure orthographic games; new projects should use api.camera.setProjection instead of creating a second camera namespace.",
         ),
         descriptor(
             "random",
@@ -543,7 +543,7 @@ fn descriptors() -> Vec<SystemDescriptor> {
             ],
             vec!["world.audio_events", "world.audio_loops"],
             "When disabled, api.audio reports SYSTEM_DISABLED and the snapshot contains no audio events or loops.",
-            "Silent games or verification projects that only compare visuals. Classification rules (exclusive/fade) are decided by the engine and included in the digest; hosts produce the actual sound, and the Web hosts currently play it while native preview and Android remain silent.",
+            "Silent games or verification projects that only compare visuals. Classification rules (exclusive/fade) are decided by the engine and included in the digest; Web and native player hosts produce the sound when their device report is available.",
         ),
         descriptor(
             "spine",
@@ -554,7 +554,7 @@ fn descriptors() -> Vec<SystemDescriptor> {
             vec!["api.animation.play", "api.animation.stop"],
             vec!["world.entities[].animation"],
             "When disabled, api.animation reports SYSTEM_DISABLED; animation declared by the scene still appears in the snapshot.",
-            "Games without skeletal animation; this system is disabled by default. Currently only the web/presentation Web host plays it with spine-webgl; native preview and the Android host do not. The engine only owns transport and determinism.",
+            "Games without skeletal animation; this system is disabled by default. Currently only the web/presentation Web host plays it with spine-webgl; native preview and Android still require a Spine host adapter. The engine only owns transport and determinism.",
         ),
         descriptor(
             "particle",
@@ -576,7 +576,7 @@ fn descriptors() -> Vec<SystemDescriptor> {
             vec!["api.effect.spawn", "api.effect.stop"],
             vec!["world.effects"],
             "When disabled, api.effect reports SYSTEM_DISABLED and the snapshot contains no effects.",
-            "Games without particle effects; this system is disabled by default. Currently only the web/presentation Web host plays it with Effekseer for WebGL; native preview and the Android host do not. The engine only owns transport and determinism.",
+            "Games without particle effects; this system is disabled by default. Currently only the web/presentation Web host plays it with Effekseer for WebGL; native preview and Android still require an Effekseer host adapter. The engine only owns transport and determinism.",
         ),
     ]
 }
