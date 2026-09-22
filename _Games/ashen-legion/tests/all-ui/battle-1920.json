@@ -857,6 +857,224 @@
   "metrics": {
     "backend": "canvas2d",
     "nodes": 51,
+    "usage": {
+      "logical_nodes": 51,
+      "leaf_nodes": 51,
+      "render_regions_upper_bound": 51,
+      "max_nodes": 2048,
+      "host_max_nodes": 16384,
+      "limit_source": "contract.default",
+      "subtrees": [
+        [
+          "timeline_track",
+          1
+        ],
+        [
+          "timeline_fill",
+          1
+        ],
+        [
+          "timeline_time",
+          1
+        ],
+        [
+          "timeline_round",
+          1
+        ],
+        [
+          "timeline_goal",
+          1
+        ],
+        [
+          "timeline_wheel",
+          1
+        ],
+        [
+          "timeline_beetle",
+          1
+        ],
+        [
+          "timeline_boss",
+          1
+        ],
+        [
+          "coins_plate",
+          1
+        ],
+        [
+          "coins_icon",
+          1
+        ],
+        [
+          "coins",
+          1
+        ],
+        [
+          "crystals_plate",
+          1
+        ],
+        [
+          "crystals_icon",
+          1
+        ],
+        [
+          "crystals",
+          1
+        ],
+        [
+          "hud_unit_plate_1",
+          1
+        ],
+        [
+          "hud_unit_icon_1",
+          1
+        ],
+        [
+          "hud_unit_1",
+          1
+        ],
+        [
+          "hud_unit_caption_1",
+          1
+        ],
+        [
+          "hud_unit_plate_2",
+          1
+        ],
+        [
+          "hud_unit_icon_2",
+          1
+        ],
+        [
+          "hud_unit_2",
+          1
+        ],
+        [
+          "hud_unit_caption_2",
+          1
+        ],
+        [
+          "hud_unit_plate_3",
+          1
+        ],
+        [
+          "hud_unit_icon_3",
+          1
+        ],
+        [
+          "hud_unit_3",
+          1
+        ],
+        [
+          "hud_unit_caption_3",
+          1
+        ],
+        [
+          "pause_plate",
+          1
+        ],
+        [
+          "pause_icon",
+          1
+        ],
+        [
+          "pause",
+          1
+        ],
+        [
+          "mode_plate_lock",
+          1
+        ],
+        [
+          "mode_icon_lock",
+          1
+        ],
+        [
+          "mode_lock",
+          1
+        ],
+        [
+          "mode_label_lock",
+          1
+        ],
+        [
+          "mode_plate_auto",
+          1
+        ],
+        [
+          "mode_icon_auto",
+          1
+        ],
+        [
+          "mode_auto",
+          1
+        ],
+        [
+          "mode_label_auto",
+          1
+        ],
+        [
+          "auto_settings_plate_tl",
+          1
+        ],
+        [
+          "auto_settings_plate_t",
+          1
+        ],
+        [
+          "auto_settings_plate_tr",
+          1
+        ],
+        [
+          "auto_settings_plate_l",
+          1
+        ],
+        [
+          "auto_settings_plate_c",
+          1
+        ],
+        [
+          "auto_settings_plate_r",
+          1
+        ],
+        [
+          "auto_settings_plate_bl",
+          1
+        ],
+        [
+          "auto_settings_plate_b",
+          1
+        ],
+        [
+          "auto_settings_plate_br",
+          1
+        ],
+        [
+          "auto_settings",
+          1
+        ],
+        [
+          "auto_settings_hit_top",
+          1
+        ],
+        [
+          "auto_settings_hit_bottom",
+          1
+        ],
+        [
+          "target_plate",
+          1
+        ],
+        [
+          "target",
+          1
+        ]
+      ]
+    },
+    "render_regions": 51,
+    "cpu_render_ms": 0.29999999701976776,
+    "gpu_render_ms": null,
+    "decoded_rgba_bytes_estimate": 7693024,
     "assets": [
       {
         "id": "texture://ui_control-quiet-v3-tl",
@@ -895,7 +1113,15 @@
         "state": "ready"
       },
       {
+        "id": "texture://ui_hud-gold",
+        "state": "ready"
+      },
+      {
         "id": "texture://ui_icon-coin",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-crystal",
         "state": "ready"
       },
       {
@@ -915,15 +1141,7 @@
         "state": "ready"
       },
       {
-        "id": "texture://ui_hud-gold",
-        "state": "ready"
-      },
-      {
         "id": "texture://ui_symbol-coin",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_hud-crystal",
         "state": "ready"
       },
       {
@@ -970,6 +1188,7 @@
     "diagnostics": [],
     "fontFamily": "\"Microsoft JhengHei\",sans-serif",
     "limitations": [
+      "CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.",
       "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
       "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
     ]

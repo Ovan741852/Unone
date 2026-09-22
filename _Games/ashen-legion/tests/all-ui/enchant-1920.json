@@ -149,12 +149,24 @@
       },
       {
         "kind": "image",
+        "id": "screen_gold_plate",
+        "rect": {
+          "x": 68.5,
+          "y": 80.5,
+          "width": 10.5,
+          "height": 6
+        },
+        "asset": "texture://ui_hud-gold",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
         "id": "screen_gold_icon",
         "rect": {
-          "x": 71,
-          "y": 89.77777777777777,
-          "width": 3,
-          "height": 2.2222222222222223
+          "x": 69.5,
+          "y": 81.64999999999999,
+          "width": 3.2,
+          "height": 3.9
         },
         "asset": "texture://ui_icon-coin",
         "fit": "contain"
@@ -163,21 +175,33 @@
         "kind": "text",
         "id": "screen_gold",
         "rect": {
-          "x": 75,
-          "y": 89.77970679012346,
-          "width": 7,
-          "height": 2.218364197530864
+          "x": 68.5,
+          "y": 82.08539094650206,
+          "width": 10.5,
+          "height": 2.8292181069958846
         },
         "text": "320"
       },
       {
         "kind": "image",
+        "id": "screen_crystals_plate",
+        "rect": {
+          "x": 79.5,
+          "y": 80.5,
+          "width": 10.5,
+          "height": 6
+        },
+        "asset": "texture://ui_hud-crystal",
+        "fit": "stretch"
+      },
+      {
+        "kind": "image",
         "id": "screen_crystals_icon",
         "rect": {
-          "x": 83,
-          "y": 89.77777777777777,
-          "width": 3,
-          "height": 2.2222222222222223
+          "x": 80.5,
+          "y": 81.64999999999999,
+          "width": 3.2,
+          "height": 3.9
         },
         "asset": "texture://ui_icon-crystal",
         "fit": "contain"
@@ -186,10 +210,10 @@
         "kind": "text",
         "id": "screen_crystals",
         "rect": {
-          "x": 87,
-          "y": 89.77970679012346,
-          "width": 6,
-          "height": 2.218364197530864
+          "x": 79.5,
+          "y": 82.08539094650206,
+          "width": 10.5,
+          "height": 2.8292181069958846
         },
         "text": "18"
       },
@@ -521,7 +545,7 @@
         "rect": {
           "x": 37,
           "y": 80.77970679012346,
-          "width": 56,
+          "width": 30,
           "height": 2.218364197530864
         },
         "text": "選擇已穿戴的部位"
@@ -1151,35 +1175,35 @@
         "id": "unit_1_plate_tl",
         "rect": {
           "x": 37,
-          "y": 67.01958983777166,
-          "width": 2.0919421487603316,
-          "height": 1.239669421487605
+          "y": 67.1925925925926,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
         },
-        "asset": "texture://ui_shop-button-primary-v2-tl",
+        "asset": "texture://ui_control-quiet-v3-tl",
         "fit": "stretch"
       },
       {
         "kind": "image",
         "id": "unit_1_plate_t",
         "rect": {
-          "x": 39.09194214876033,
-          "y": 67.01958983777166,
-          "width": 13.816115702479337,
-          "height": 1.239669421487605
+          "x": 37.6,
+          "y": 67.1925925925926,
+          "width": 16.799999999999997,
+          "height": 1.0666666666666629
         },
-        "asset": "texture://ui_shop-button-primary-v2-t",
+        "asset": "texture://ui_control-quiet-v3-t",
         "fit": "stretch"
       },
       {
         "kind": "image",
         "id": "unit_1_plate_tr",
         "rect": {
-          "x": 52.90805785123967,
-          "y": 67.01958983777166,
-          "width": 2.0919421487603316,
-          "height": 1.239669421487605
+          "x": 54.4,
+          "y": 67.1925925925926,
+          "width": 0.6000000000000014,
+          "height": 1.0666666666666629
         },
-        "asset": "texture://ui_shop-button-primary-v2-tr",
+        "asset": "texture://ui_control-quiet-v3-tr",
         "fit": "stretch"
       },
       {
@@ -1187,35 +1211,35 @@
         "id": "unit_1_plate_l",
         "rect": {
           "x": 37,
-          "y": 63.49892868074687,
-          "width": 2.0919421487603316,
-          "height": 3.52066115702479
+          "y": 63.32592592592594,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666667
         },
-        "asset": "texture://ui_shop-button-primary-v2-l",
+        "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
       },
       {
         "kind": "image",
         "id": "unit_1_plate_c",
         "rect": {
-          "x": 39.09194214876033,
-          "y": 63.49892868074687,
-          "width": 13.816115702479337,
-          "height": 3.52066115702479
+          "x": 37.6,
+          "y": 63.32592592592594,
+          "width": 16.799999999999997,
+          "height": 3.866666666666667
         },
-        "asset": "texture://ui_shop-button-primary-v2-c",
+        "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
       },
       {
         "kind": "image",
         "id": "unit_1_plate_r",
         "rect": {
-          "x": 52.90805785123967,
-          "y": 63.49892868074687,
-          "width": 2.0919421487603316,
-          "height": 3.52066115702479
+          "x": 54.4,
+          "y": 63.32592592592594,
+          "width": 0.6000000000000014,
+          "height": 3.866666666666667
         },
-        "asset": "texture://ui_shop-button-primary-v2-r",
+        "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
       },
       {
@@ -1224,34 +1248,34 @@
         "rect": {
           "x": 37,
           "y": 62.25925925925927,
-          "width": 2.0919421487603316,
-          "height": 1.239669421487605
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
         },
-        "asset": "texture://ui_shop-button-primary-v2-bl",
+        "asset": "texture://ui_control-quiet-v3-bl",
         "fit": "stretch"
       },
       {
         "kind": "image",
         "id": "unit_1_plate_b",
         "rect": {
-          "x": 39.09194214876033,
+          "x": 37.6,
           "y": 62.25925925925927,
-          "width": 13.816115702479337,
-          "height": 1.239669421487605
+          "width": 16.799999999999997,
+          "height": 1.06666666666667
         },
-        "asset": "texture://ui_shop-button-primary-v2-b",
+        "asset": "texture://ui_control-quiet-v3-b",
         "fit": "stretch"
       },
       {
         "kind": "image",
         "id": "unit_1_plate_br",
         "rect": {
-          "x": 52.90805785123967,
+          "x": 54.4,
           "y": 62.25925925925927,
-          "width": 2.0919421487603316,
-          "height": 1.239669421487605
+          "width": 0.6000000000000014,
+          "height": 1.06666666666667
         },
-        "asset": "texture://ui_shop-button-primary-v2-br",
+        "asset": "texture://ui_control-quiet-v3-br",
         "fit": "stretch"
       },
       {
@@ -1799,34 +1823,34 @@
     },
     {
       "text": "320",
-      "font": 17.25,
+      "font": 22,
       "clip": {
-        "x": 1440,
-        "y": 86.42083333333336,
-        "width": 134.4,
-        "height": 23.95833333333333
+        "x": 1315.2,
+        "y": 162.92222222222222,
+        "width": 201.6,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 1492.2031127929688,
-        "y": 92.13437500000003,
-        "width": 29.995849609375,
-        "height": 13
+        "x": 1397.87353515625,
+        "y": 169.778125,
+        "width": 37.501953125,
+        "height": 17
       }
     },
     {
       "text": "18",
-      "font": 17.25,
+      "font": 22,
       "clip": {
-        "x": 1670.4,
-        "y": 86.42083333333336,
-        "width": 115.2,
-        "height": 23.95833333333333
+        "x": 1526.4,
+        "y": 162.92222222222222,
+        "width": 201.6,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 1719.0020751953125,
-        "y": 92.13437500000003,
-        "width": 18.9979248046875,
-        "height": 13
+        "x": 1615.4490234375,
+        "y": 169.778125,
+        "width": 23.7509765625,
+        "height": 17
       }
     },
     {
@@ -1931,11 +1955,11 @@
       "clip": {
         "x": 710.4,
         "y": 183.62083333333337,
-        "width": 1075.2,
+        "width": 576,
         "height": 23.95833333333333
       },
       "ink": {
-        "x": 1179,
+        "x": 929.4,
         "y": 187.33437500000002,
         "width": 137.75,
         "height": 16
@@ -2152,7 +2176,625 @@
   ],
   "metrics": {
     "backend": "canvas2d",
-    "nodes": 149,
+    "nodes": 151,
+    "usage": {
+      "logical_nodes": 151,
+      "leaf_nodes": 151,
+      "render_regions_upper_bound": 151,
+      "max_nodes": 2048,
+      "host_max_nodes": 16384,
+      "limit_source": "contract.default",
+      "subtrees": [
+        [
+          "screen_shade",
+          1
+        ],
+        [
+          "screen_back_fill",
+          1
+        ],
+        [
+          "screen_back_tl",
+          1
+        ],
+        [
+          "screen_back_t",
+          1
+        ],
+        [
+          "screen_back_tr",
+          1
+        ],
+        [
+          "screen_back_l",
+          1
+        ],
+        [
+          "screen_back_c",
+          1
+        ],
+        [
+          "screen_back_r",
+          1
+        ],
+        [
+          "screen_back_bl",
+          1
+        ],
+        [
+          "screen_back_b",
+          1
+        ],
+        [
+          "screen_back_br",
+          1
+        ],
+        [
+          "screen_title",
+          1
+        ],
+        [
+          "screen_gold_plate",
+          1
+        ],
+        [
+          "screen_gold_icon",
+          1
+        ],
+        [
+          "screen_gold",
+          1
+        ],
+        [
+          "screen_crystals_plate",
+          1
+        ],
+        [
+          "screen_crystals_icon",
+          1
+        ],
+        [
+          "screen_crystals",
+          1
+        ],
+        [
+          "ready_plate_tl",
+          1
+        ],
+        [
+          "ready_plate_t",
+          1
+        ],
+        [
+          "ready_plate_tr",
+          1
+        ],
+        [
+          "ready_plate_l",
+          1
+        ],
+        [
+          "ready_plate_c",
+          1
+        ],
+        [
+          "ready_plate_r",
+          1
+        ],
+        [
+          "ready_plate_bl",
+          1
+        ],
+        [
+          "ready_plate_b",
+          1
+        ],
+        [
+          "ready_plate_br",
+          1
+        ],
+        [
+          "ready",
+          1
+        ],
+        [
+          "ready_hit_top",
+          1
+        ],
+        [
+          "ready_hit_bottom",
+          1
+        ],
+        [
+          "quick_deploy_plate_tl",
+          1
+        ],
+        [
+          "quick_deploy_plate_t",
+          1
+        ],
+        [
+          "quick_deploy_plate_tr",
+          1
+        ],
+        [
+          "quick_deploy_plate_l",
+          1
+        ],
+        [
+          "quick_deploy_plate_c",
+          1
+        ],
+        [
+          "quick_deploy_plate_r",
+          1
+        ],
+        [
+          "quick_deploy_plate_bl",
+          1
+        ],
+        [
+          "quick_deploy_plate_b",
+          1
+        ],
+        [
+          "quick_deploy_plate_br",
+          1
+        ],
+        [
+          "quick_deploy",
+          1
+        ],
+        [
+          "quick_deploy_hit_top",
+          1
+        ],
+        [
+          "quick_deploy_hit_bottom",
+          1
+        ],
+        [
+          "shopkeeper_portrait",
+          1
+        ],
+        [
+          "shopkeeper_name",
+          1
+        ],
+        [
+          "shopkeeper_line",
+          1
+        ],
+        [
+          "enchant_heading",
+          1
+        ],
+        [
+          "enchant_slot_1_plate_tl",
+          1
+        ],
+        [
+          "enchant_slot_1_plate_t",
+          1
+        ],
+        [
+          "enchant_slot_1_plate_tr",
+          1
+        ],
+        [
+          "enchant_slot_1_plate_l",
+          1
+        ],
+        [
+          "enchant_slot_1_plate_c",
+          1
+        ],
+        [
+          "enchant_slot_1_plate_r",
+          1
+        ],
+        [
+          "enchant_slot_1_plate_bl",
+          1
+        ],
+        [
+          "enchant_slot_1_plate_b",
+          1
+        ],
+        [
+          "enchant_slot_1_plate_br",
+          1
+        ],
+        [
+          "enchant_slot_1",
+          1
+        ],
+        [
+          "enchant_slot_2_plate_tl",
+          1
+        ],
+        [
+          "enchant_slot_2_plate_t",
+          1
+        ],
+        [
+          "enchant_slot_2_plate_tr",
+          1
+        ],
+        [
+          "enchant_slot_2_plate_l",
+          1
+        ],
+        [
+          "enchant_slot_2_plate_c",
+          1
+        ],
+        [
+          "enchant_slot_2_plate_r",
+          1
+        ],
+        [
+          "enchant_slot_2_plate_bl",
+          1
+        ],
+        [
+          "enchant_slot_2_plate_b",
+          1
+        ],
+        [
+          "enchant_slot_2_plate_br",
+          1
+        ],
+        [
+          "enchant_slot_2",
+          1
+        ],
+        [
+          "enchant_slot_3_plate_tl",
+          1
+        ],
+        [
+          "enchant_slot_3_plate_t",
+          1
+        ],
+        [
+          "enchant_slot_3_plate_tr",
+          1
+        ],
+        [
+          "enchant_slot_3_plate_l",
+          1
+        ],
+        [
+          "enchant_slot_3_plate_c",
+          1
+        ],
+        [
+          "enchant_slot_3_plate_r",
+          1
+        ],
+        [
+          "enchant_slot_3_plate_bl",
+          1
+        ],
+        [
+          "enchant_slot_3_plate_b",
+          1
+        ],
+        [
+          "enchant_slot_3_plate_br",
+          1
+        ],
+        [
+          "enchant_slot_3",
+          1
+        ],
+        [
+          "enchant_slot_4_plate_tl",
+          1
+        ],
+        [
+          "enchant_slot_4_plate_t",
+          1
+        ],
+        [
+          "enchant_slot_4_plate_tr",
+          1
+        ],
+        [
+          "enchant_slot_4_plate_l",
+          1
+        ],
+        [
+          "enchant_slot_4_plate_c",
+          1
+        ],
+        [
+          "enchant_slot_4_plate_r",
+          1
+        ],
+        [
+          "enchant_slot_4_plate_bl",
+          1
+        ],
+        [
+          "enchant_slot_4_plate_b",
+          1
+        ],
+        [
+          "enchant_slot_4_plate_br",
+          1
+        ],
+        [
+          "enchant_slot_4",
+          1
+        ],
+        [
+          "enchant_slot_5_plate_tl",
+          1
+        ],
+        [
+          "enchant_slot_5_plate_t",
+          1
+        ],
+        [
+          "enchant_slot_5_plate_tr",
+          1
+        ],
+        [
+          "enchant_slot_5_plate_l",
+          1
+        ],
+        [
+          "enchant_slot_5_plate_c",
+          1
+        ],
+        [
+          "enchant_slot_5_plate_r",
+          1
+        ],
+        [
+          "enchant_slot_5_plate_bl",
+          1
+        ],
+        [
+          "enchant_slot_5_plate_b",
+          1
+        ],
+        [
+          "enchant_slot_5_plate_br",
+          1
+        ],
+        [
+          "enchant_slot_5",
+          1
+        ],
+        [
+          "enchant_slot_5_hit_top",
+          1
+        ],
+        [
+          "enchant_slot_5_hit_bottom",
+          1
+        ],
+        [
+          "unit_1_plate_tl",
+          1
+        ],
+        [
+          "unit_1_plate_t",
+          1
+        ],
+        [
+          "unit_1_plate_tr",
+          1
+        ],
+        [
+          "unit_1_plate_l",
+          1
+        ],
+        [
+          "unit_1_plate_c",
+          1
+        ],
+        [
+          "unit_1_plate_r",
+          1
+        ],
+        [
+          "unit_1_plate_bl",
+          1
+        ],
+        [
+          "unit_1_plate_b",
+          1
+        ],
+        [
+          "unit_1_plate_br",
+          1
+        ],
+        [
+          "unit_1",
+          1
+        ],
+        [
+          "unit_1_hit_top",
+          1
+        ],
+        [
+          "unit_1_hit_bottom",
+          1
+        ],
+        [
+          "unit_2_plate_tl",
+          1
+        ],
+        [
+          "unit_2_plate_t",
+          1
+        ],
+        [
+          "unit_2_plate_tr",
+          1
+        ],
+        [
+          "unit_2_plate_l",
+          1
+        ],
+        [
+          "unit_2_plate_c",
+          1
+        ],
+        [
+          "unit_2_plate_r",
+          1
+        ],
+        [
+          "unit_2_plate_bl",
+          1
+        ],
+        [
+          "unit_2_plate_b",
+          1
+        ],
+        [
+          "unit_2_plate_br",
+          1
+        ],
+        [
+          "unit_2",
+          1
+        ],
+        [
+          "unit_2_hit_top",
+          1
+        ],
+        [
+          "unit_2_hit_bottom",
+          1
+        ],
+        [
+          "unit_3_plate_tl",
+          1
+        ],
+        [
+          "unit_3_plate_t",
+          1
+        ],
+        [
+          "unit_3_plate_tr",
+          1
+        ],
+        [
+          "unit_3_plate_l",
+          1
+        ],
+        [
+          "unit_3_plate_c",
+          1
+        ],
+        [
+          "unit_3_plate_r",
+          1
+        ],
+        [
+          "unit_3_plate_bl",
+          1
+        ],
+        [
+          "unit_3_plate_b",
+          1
+        ],
+        [
+          "unit_3_plate_br",
+          1
+        ],
+        [
+          "unit_3",
+          1
+        ],
+        [
+          "unit_3_hit_top",
+          1
+        ],
+        [
+          "unit_3_hit_bottom",
+          1
+        ],
+        [
+          "enchant_item_icon",
+          1
+        ],
+        [
+          "enchant_item_name",
+          1
+        ],
+        [
+          "enchant_current",
+          1
+        ],
+        [
+          "enchant_cost",
+          1
+        ],
+        [
+          "enchant_roll_plate_tl",
+          1
+        ],
+        [
+          "enchant_roll_plate_t",
+          1
+        ],
+        [
+          "enchant_roll_plate_tr",
+          1
+        ],
+        [
+          "enchant_roll_plate_l",
+          1
+        ],
+        [
+          "enchant_roll_plate_c",
+          1
+        ],
+        [
+          "enchant_roll_plate_r",
+          1
+        ],
+        [
+          "enchant_roll_plate_bl",
+          1
+        ],
+        [
+          "enchant_roll_plate_b",
+          1
+        ],
+        [
+          "enchant_roll_plate_br",
+          1
+        ],
+        [
+          "enchant_roll",
+          1
+        ],
+        [
+          "enchant_roll_hit_top",
+          1
+        ],
+        [
+          "enchant_roll_hit_bottom",
+          1
+        ],
+        [
+          "enchant_chances",
+          1
+        ]
+      ]
+    },
+    "render_regions": 151,
+    "cpu_render_ms": 0.5,
+    "gpu_render_ms": null,
+    "decoded_rgba_bytes_estimate": 25085104,
     "assets": [
       {
         "id": "texture://ui_shop-surface",
@@ -2235,7 +2877,15 @@
         "state": "ready"
       },
       {
+        "id": "texture://ui_hud-gold",
+        "state": "ready"
+      },
+      {
         "id": "texture://ui_icon-coin",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-crystal",
         "state": "ready"
       },
       {
@@ -2290,6 +2940,7 @@
     "diagnostics": [],
     "fontFamily": "\"Microsoft JhengHei\",sans-serif",
     "limitations": [
+      "CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.",
       "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
       "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
     ]

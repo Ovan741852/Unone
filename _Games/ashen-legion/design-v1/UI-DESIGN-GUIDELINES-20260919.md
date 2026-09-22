@@ -9,6 +9,7 @@
 - 所有節點必須落在 `0..100`；主要視窗保留至少 4 units 的外框安全邊界。
 - 視窗內容的標題列預留 5 units，底部操作列預留 7–8 units；正文不要貼住視窗邊緣。
 - 2026-09-19 使用者修訂：固定 1920×1080 電腦版構圖，不做自適應排版或旋轉；視窗只等比縮放完整 stage 並置中留黑邊。所有字級、元件尺寸及命中底線均為設計像素，非縮放後 CSS 像素。卡面保留一句核心效果＋成本，詳情提供完整規則。
+- 2026-09-20 使用者修訂：所有返回／關閉入口固定在視窗右上角，使用 `icon-close` 叉叉與至少 44×44 設計像素命中區；底部不再放返回文字按鈕，保留購買、穿戴、出戰與確認等正向操作。刪除／保留等不可逆或確認流程可保留明確文字取消。
 - 視覺背景可以滿版，但互動元件不能用背景作為命中區域。
 
 ## 2. 間距 token
@@ -68,6 +69,7 @@
 - 字寬以實際 Canvas `measureText` 測量，字型必須與正式 renderer 相同。英文／數值如 `12`、`30%` 不拆成零碎行。
 - 卡片框、圖片、說明、數值和按鈕為同一動畫組。遮罩和視窗底材不套 hover/press 放大。
 - 視窗使用安靜的不透明深綠底材，外圍保留模糊遊戲背景；不要把小塊紋理整張放大。
+- 部隊裝備使用左側穩定配裝區＋右側 Drawer：點擊部位才開啟裝備列表，Drawer 內採三欄 Grid；關閉 Drawer 不離開配裝主畫面。Drawer 的卡片保留圖示、名稱、一句效果、派兵成本與詳情／穿上 action。
 - 官方參考：[Unity 9-slicing](https://docs.unity.com/en-us/engine/6000.3/manual/unity2d/sprite/9-slice)、[Godot StyleBoxTexture](https://docs.godotengine.org/en/stable/classes/class_styleboxtexture.html)。區分 texture margin 與 content margin。
 
 ## 6. 交付前 checklist

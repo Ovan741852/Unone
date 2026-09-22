@@ -1,6 +1,6 @@
 // Game-owned composition of official image/text/button nodes. Canvas drawing
 // and hit testing consume this exact tree; no simulation edits.
-import {fitNineSlice,fitLabel} from './ui-components.mjs';
+import {fitNineSlice,fitLabel,isControl} from './ui-components.mjs';
 import skinData from './ui-skin-data.mjs';
 import {layoutScreens} from './screen-layouts.mjs';
 import {DESKTOP_VIEWPORT} from './landscape-host.mjs';
@@ -30,7 +30,7 @@ export function fitFormalUI(snapshot){
   for(const id of ['tab_home','tab_sell','ready','quick_deploy','refresh',...Array.from({length:4},(_,i)=>'stock_detail_'+(i+1)), 'shop_detail_buy','shop_detail_cancel','shop_detail_close']){
    const p=plateRect(id);if(p)control(id,p.x,top(p),p.width,bh);
   }
-  const footer=84;
+  const footer=86.5;
   control('refresh',40,footer,14,bh);control('ready',56,footer,16,bh);control('quick_deploy',74,footer,16,bh);
   set('stock_hint',10,footer,28,bh);
   for(const [id,x,w]of [['refresh_icon',41.8,2.5],['refresh_currency_icon',45,2],['refresh_cost',48,4]]){
@@ -43,7 +43,7 @@ export function fitFormalUI(snapshot){
   const scale=1;
   for(const [id,n]of map){
    if(!n.text||!['text','button'].includes(n.kind))continue;
-   const p=plateRect(id),button=!!p;
+   const p=plateRect(id),button=isControl(n,map.get(id+'_plate'));
    const slot=button?p:n.rect;
    const slice=map.get(id+'_plate')?.slice;const corner=slice?slice.left/slice.pixels_per_unit*height/width:0;
    const padding=button?corner*width/100+3*scale:2*scale;
@@ -75,18 +75,27 @@ export function fitFormalUI(snapshot){
  for(const [id,n]of map)if(n.slice)fitNineSlice(map,id,[width,height],skinData);
  for(const [id,n]of map){
   if(!n.text||!['text','button'].includes(n.kind))continue;
-  const p=plateRect(id),button=!!p&&(n.kind==='button'||map.has(id+'_hit_top')||!id.endsWith('_icon'));
+  const p=plateRect(id),button=isControl(n,map.get(id+'_plate'));
   const slot=button?p:n.rect,primary=button||/(_name_|^screen_title$|^title$|^town_\d+$|^coins$|^crystals$|^screen_gold$|^screen_crystals$)/.test(id);
   const heading=/^(title|screen_title|defeat_title|help_title|town_upgrade_title|map_current_title)$/.test(id);
   const refined=/^(town_(name|effect|cost|gold)|profile_|profiles_|choice_(name|desc|quote|action|hint))/.test(id);
-  const size=heading?(id==='title'?56:34):refined?(/^(town_(cost|gold)|profile_name_|choice_name_)/.test(id)?28:24):/^(result_earned|defeat_stat_value_)/.test(id)&&id!=='result_earned_label'?32:primary?22:18;
-  const min=refined?22:primary?16:14,padding=button?Math.min((map.get(id+'_plate')?.slice ? map.get(id+'_plate').slice.left/map.get(id+'_plate').slice.pixels_per_unit*height/width : 1)*width/100,slot.width*width/100*.18)+2:2;
+  const size=heading?(id==='title'?56:34):refined?(/^(town_(cost|gold)|profile_name_|choice_name_)/.test(id)?28:24):/^(result_earned|defeat_stat_value_)/.test(id)&&id!=='result_earned_label'?34:primary?24:22;
+  const min=refined?22:primary?24:20,padding=button?Math.min((map.get(id+'_plate')?.slice ? map.get(id+'_plate').slice.left/map.get(id+'_plate').slice.pixels_per_unit*height/width : 1)*width/100,slot.width*width/100*.18)+2:2;
   const availableHeight=slot.height*height/100;
-  const wrap=!button&&!/(_name_|_value_|^title$|_cost_|_page$|^screen_|^slot_)/.test(id);
-  const maxLines=button||!wrap?1:Math.max(1,Math.floor(availableHeight/(min*1.2)));
-  const fitted=fitLabel(n.text,{width:slot.width*width/100-padding*2,height:availableHeight*(button?.8:1),size:Math.max(min,size*Math.min(1,width/1200)),minSize:min,wrap,maxLines});
+  const slotLabel=/^slot_\d+$/.test(id);
+  const wrap=slotLabel||(!button&&!/((town|profile|stock|choice|rune|sale)_name_|_value_|^title$|_cost_|_page$|^screen_)/.test(id));
+  const maxLines=slotLabel?2:(button||!wrap?1:Math.max(1,Math.floor(availableHeight/(min*1.2))));
+  const fitted=fitLabel(n.text,{width:slot.width*width/100-padding*2,height:availableHeight*(button?.8:1),size:slotLabel?18:Math.max(min,size*Math.min(1,width/1200)),minSize:slotLabel?16:min,wrap,maxLines});
   text(id,fitted.text);const h=fitted.height/height*100;
-  if(button){const edge=Math.max(.01,(p.height-h)/2);set(id,p.x,top(p)+edge,p.width,h);set(id+'_hit_top',p.x,top(p),p.width,edge);set(id+'_hit_bottom',p.x,top(p)+edge+h,p.width,edge);}
+  if(button){
+   // Compact controls deliberately use one full-size native hit region. Keep
+   // that region at the plate size while fitting only the label visually;
+   // split controls still use their measured text band plus padding hits.
+   const compact=n.kind==='button'&&!map.has(id+'_hit_top')&&!map.has(id+'_hit_bottom');
+   const edge=Math.max(.01,(p.height-h)/2);
+   set(id,p.x,compact?top(p):top(p)+edge,p.width,compact?p.height:h);
+   if(!compact){set(id+'_hit_top',p.x,top(p),p.width,edge);set(id+'_hit_bottom',p.x,top(p)+edge+h,p.width,edge);}
+  }
   else set(id,n.rect.x,top(n.rect)+(n.rect.height-h)/2,/^(town_(name|effect|cost)_|town_gold$)/.test(id)?Math.min(n.rect.width,(fitted.width+4)/width*100):n.rect.width,h);
  }
  const sx=1-((insets.left??0)+(insets.right??0))/width,sy=1-((insets.top??0)+(insets.bottom??0))/height;

@@ -1,5 +1,7 @@
 # 森林領主 · Unone 漁機肉鴿
 
+私人 GitHub 倉庫、Git LFS 與獨立 clone 的引擎依賴，見 [REPOSITORY.md](REPOSITORY.md)。
+
 目前可玩版、使用方式與驗證範圍見 [RUNTIME-STATUS.md](RUNTIME-STATUS.md)。歷史 90 秒版數值已淘汰，保留於 README-legacy.md，不可作為現版規格。
 
 在專案根目錄執行 `./Start-Game.ps1` 開啟正式遊戲。已匯出版本包含官方 Animator、Lottie、Blender 士兵與怪物、換裝及九流派。

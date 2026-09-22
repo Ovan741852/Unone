@@ -15,7 +15,7 @@ const captureDir=fs.mkdtempSync(path.join(os.tmpdir(),'ashen-legion-ui-'));
  await page.waitForFunction(()=>window.ashen.state().phase==='choice');await capture('choice');
  await click('ViewMap');assert.equal((await state()).phase,'map');await capture('map-arrived');await click('VisitLocation');assert.equal((await state()).phase,'choice');
  const market=Object.values((await state()).cards).findIndex(c=>c.id==='market');await click('Choice'+(market+1));assert.equal((await state()).phase,'shop');await capture('shop');
- const before=(await state()).coins,crystals=(await state()).crystals,quote=(await state()).stock[0],price=quote.price;await click('ShopDetail1');await capture('shop-detail');await click('Buy1');assert.equal((await state()).coins,before);assert.equal((await state()).crystals,crystals-price);await click('ShopDetailClose','shop_detail_close');
+ const before=(await state()).coins,crystals=(await state()).crystals,quote=(await state()).stock[0],price=quote.price;await click('ShopDetail1');await capture('shop-detail');await click('Buy1');assert.equal((await state()).coins,before);assert.equal((await state()).crystals,crystals-price);assert.equal(await page.evaluate(()=>window.ashen.uiTree().children.some(n=>n.id==='shop_detail_title')),false);
  await click('LeaveShop');assert.equal((await state()).phase,'loadout');await click('Equip1');assert.equal((await state()).costs[0],Math.ceil((8+quote.deployExtra)*.5));await capture('gear');
  await click('UI_runes');await capture('runes');
  assert.ok(!await page.evaluate(()=>window.ashen.uiTree().children.some(n=>n.action==='UI_builds'||(n.text||'').includes('流派'))));

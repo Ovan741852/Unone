@@ -39,18 +39,18 @@ const uiPoint=require('./ui-test-pointer.cjs');
   assert.equal(JSON.stringify((await state()).cards),cardsBefore,'Viewing map must not reroll destinations');
   report.checks.push('Expedition auto-arrival, keyboard map entry/return, painted map assets and unchanged offered destinations');
   const choices=Object.values((await state()).cards),market=choices.findIndex(c=>c.id==='market');await key('choice_'+(market+1));
-  await key('stock_hit_1');await key('shop_detail_buy');await key('shop_detail_close');await key('ready');
+  await key('stock_hit_1');await key('shop_detail_buy');assert.equal(await focus(),'stock_hit_1');assert.equal(await page.locator('[data-shop-control="shop_detail_close"]').count(),0);await key('ready');
   await key('inspect_1');assert.equal(await focus(),'gear_detail_close');await key('gear_detail_equip');
   assert.ok((await state()).worn.flat().some(x=>x>0));await page.keyboard.press('Escape');await page.waitForTimeout(180);assert.equal(await focus(),'inspect_1');
   // Click the upper icon half of a slot, not only its text caption.
   const slot=await page.evaluate(()=>window.ashen.uiTree().children.find(n=>n.id==='slot_hit_1').rect);
   const slotPoint=await uiPoint(page,slot,.5,.15);await page.mouse.click(slotPoint.x,slotPoint.y);await page.waitForTimeout(160);assert.equal((await state()).equipSlot,1);
   report.checks.push('Keyboard purchase, inventory detail/equip, modal return, and full equipment-slot icon hit area');
-  await key('tab_runes');await key('rune_next');assert.equal((await state()).uiPage,2);await key('deploy');
+  await key('tab_runes');const runeThumbBefore=await page.evaluate(()=>window.ashen.uiTree().children.find(n=>n.id==='rune_scroll_thumb')?.rect.y??-1);await key('rune_scroll_down');const runeThumbAfter=await page.evaluate(()=>window.ashen.uiTree().children.find(n=>n.id==='rune_scroll_thumb')?.rect.y??-1);assert.ok(runeThumbAfter>runeThumbBefore,'Rune grid must scroll instead of paginate');assert.equal(await exists('rune_next'),0,'Rune grid must not paginate');await key('deploy');
   await key('pause');await key('guide');await key('guide_back');await key('quit');assert.equal(await focus(),'abandon_cancel');
   await page.keyboard.press('Escape');await page.waitForTimeout(180);await key('resume');
   await key('auto_settings');assert.equal(await focus(),'auto_cancel');await key('auto_preset_small');await key('auto_apply');assert.equal((await state()).autoEnabled,true);
-  report.checks.push('Rune pagination, deployment, pause/guide, protected abandon confirmation and AUTO selection');
+  report.checks.push('Rune grid scrolling, deployment, pause/guide, protected abandon confirmation and AUTO selection');
   // Independent fresh profile: exercise the new route through real controls.
   const quick=await browser.newPage({viewport:{width:1280,height:720}});
   quick.on('pageerror',e=>report.errors.push(e.message));

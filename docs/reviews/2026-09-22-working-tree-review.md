@@ -73,3 +73,73 @@ Android/iOS/macOS were not tested in this review. Large Wuxia prototype assets,
 blind-layout experiments and unverified Particle Lab UI changes are not included
 in this engine repair submission. Historical audit records are evidence of their
 declared versions only, not fresh badges for the modified engine.
+
+## Integration with newer `origin/master`
+
+Before pushing, fetched and merged `8d5bd16` (the newer Forest Lord UI and art
+work). Kept its loadout assets, typography and top-right close controls, while
+preserving the single-node nine-slice migration and complete host-file export.
+No gameplay rules moved into Rust.
+
+Additional integration findings repaired:
+
+- The incoming host imported `presentation/loadout-preview.mjs`, but the module
+  was absent from the repository, so the actual browser could not boot. Added
+  the game-owned module and a browser/GPU lifecycle regression. Rebuilding an
+  outfit removes the old root and cloned skeletons, without disposing geometry
+  shared with the battlefield. Twenty rebuilds retain one actor root and cause
+  zero shared-geometry disposals, with nonzero rendering calls.
+- A decorative currency badge's `*_plate` was mistaken for a button plate.
+  Numeric labels expanded under their icons. Shared control classification now
+  preserves resource-label bounds and still handles disabled controls.
+- Equipment name/owner, summary and cost rows overlapped; AUTO names overlapped
+  their counts. Assigned separate rows without lowering the existing font
+  floors. Compact equipment actions remain above 44 design pixels.
+- Shop tests still expected a removed bottom cancel button. Updated assertions
+  to the documented top-right close control, retaining its action, artwork,
+  hit-area containment, modal keyboard trap and pointer-click verification.
+
+The Impeccable narrow-refinement process was used to compare actual screenshots
+with the existing design instead of replacing it. Its final mechanical detector
+reported no findings; this is not a complete accessibility certification.
+The historical `.impeccable/design.json` sidecar predates `DESIGN.md`; no unrelated
+design-document migration was performed.
+
+### Post-merge verification
+
+| Gate | Result |
+| --- | --- |
+| `node --test _Games/ashen-legion/tools/ui-components.test.mjs` | 2 passed |
+| Actual Edge `verify-shop-components.cjs` | 29 checks passed; four window sizes, glyph bounds, purchasing, rerolls and animation states |
+| Actual Edge `verify-shop-accessibility.cjs` | 5 groups passed; native accessibility tree, keyboard focus/trap, synthetic touch and letterboxing |
+| Actual Edge `verify-loadout-preview.cjs` | Passed; 20 outfit rebuilds, one root, zero shared geometry disposals |
+| `verify-all-screens.mjs` | 98 synthetic Luau/WASM UI states passed; no browser errors; final AUTO and loadout screenshots inspected |
+| `verify-formal-flows.mjs` | Passed; purchases, enchant, chest hold, all seven arrivals and settlement |
+
+Game browser/flow tests use an isolated export with the frozen 2026-09-20
+release WASM from `ui-slice-20260920/runtime-final`, plus the merged game source
+and current presentation/host modules. They do not establish a new release
+performance measurement. The current Rust sources were separately exercised by
+the workspace and native test gates above. No Android/iOS simulator claim is
+made for these desktop game tests.
+
+Additional evidence in the same build-cache directory:
+
+- `review-20260922-game-shop-confirm/components-report.json` and screenshots.
+- `review-20260922-game-accessibility/accessibility-report.json` and screenshots.
+- `review-20260922-all-ui-confirm/report.json` and all 98 state captures.
+
+### Known legacy test debt (not reported as a pass)
+
+`game --project _Games/ashen-legion test --json` has 17 failing cases out of 19.
+An isolated `origin/master` game snapshot, run using the same engine, produces
+identical names, pass/fail values and failure messages for every case. These
+legacy scripts start from the menu without traversing the newer profile/formal
+UI flow. The explicit formal-flow and browser suites above cover that flow.
+The old fixtures remain unchanged and need a separate migration; the repository
+must not be described as having every game test green. For this command, callers
+must inspect `value.passed`, not just the outer successful-command envelope.
+
+Baseline and merged results are retained as `review-20260922-origin-game-tests.json`
+and `review-20260922-game-tests.json`. This review's submission is the engine and
+integration repair, not a full game-release approval.

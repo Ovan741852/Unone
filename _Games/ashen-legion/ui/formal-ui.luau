@@ -2,6 +2,7 @@
 -- All purchases, combat and rewards still use existing game semantic actions.
 local formalRoute="home"
 local formalPage=1
+local formalScroll=0
 local formalPreviousPhase=""
 local formalMuted=false
 -- BEGIN GENERATED UI SKINS
@@ -84,10 +85,13 @@ local formalReceiptUntil=0
 local formalSeenStock:{[number]:boolean}={}
 local formalShopDetail=0
 local formalGearDetail=0
+local formalDrawerOpen=true
+local formalLoadoutWasActive=false
+local formalDrawerClosed=false
 local formalShopEnteredFrame=0
 local function returnFromLoadout()
  if S.phase=="loadout" then S.phase=S.loadoutReturn;formalPreviousPhase=S.phase end
- formalRoute="home";formalPage=1;formalShopDetail=0
+ formalRoute="home";formalPage=1;formalScroll=0;formalShopDetail=0
 end
 local function runePageForSelection():number
  local selected=S.runes[S.selected]
@@ -97,9 +101,12 @@ end
 local function formalInput(api:any)
  if pressed(api,"UI_mute")then formalMuted=not formalMuted end
  S.audioMuted=formalMuted
+ if S.phase=="loadout" and not formalLoadoutWasActive then formalDrawerOpen=true;formalDrawerClosed=false;formalLoadoutWasActive=true
+ elseif S.phase~="loadout" then formalLoadoutWasActive=false;formalDrawerClosed=false end
+ if S.phase=="loadout" and not formalDrawerClosed then formalDrawerOpen=true end
  if formalPreviousPhase~=S.phase then
-  formalPreviousPhase=S.phase;formalRoute=S.phase=="loadout" and "gear" or "home";formalPage=1
-  formalReceipt="";formalReceiptUntil=0;formalSeenStock={};formalShopDetail=0;formalGearDetail=0
+  formalPreviousPhase=S.phase;formalRoute=S.phase=="loadout" and "gear" or "home";formalPage=1;formalScroll=0
+  formalReceipt="";formalReceiptUntil=0;formalSeenStock={};formalShopDetail=0;formalGearDetail=0;formalDrawerOpen=S.phase=="loadout"
   if S.phase=="shop" then formalShopEnteredFrame=frame end
  end
  if formalShopDetail>0 then
@@ -110,9 +117,19 @@ local function formalInput(api:any)
   if pressed(api,"GearDetailClose") or pressed(api,"Escape") then formalGearDetail=0 end
   return
  end
+ if pressed(api,"CloseDrawer") then formalDrawerOpen=false;formalDrawerClosed=true;return end
+ if pressed(api,"OpenDrawer") then formalDrawerOpen=true;formalDrawerClosed=false end
+ if pressed(api,"LoadoutScrollUp") then formalScroll=max(0,formalScroll-1) end
+ if pressed(api,"LoadoutScrollDown") then formalScroll+=1 end
+ if S.phase=="loadout" and formalRoute=="gear" then
+  for i=1,5 do if pressed(api,"Slot"..i) then S.equipSlot=i;formalDrawerOpen=true;formalDrawerClosed=false end end
+ end
  if S.phase~="battle" and S.phase~="celebration" and pressed(api,"Escape")then returnFromLoadout()end
  if pressed(api,"ReturnFromLoadout")then returnFromLoadout()end
- if pressed(api,"OpenLoadout") and openLoadout()then formalPreviousPhase="loadout";formalRoute="gear";formalPage=1 end
+ if pressed(api,"ReturnFromMap") and S.phase=="map" then
+  S.phase="choice";S.mapMoving=false;formalRoute="home";formalPage=1
+ end
+ if pressed(api,"OpenLoadout") and openLoadout()then formalRoute="gear";formalPage=1;formalScroll=0 end
  -- Modal input is deliberately handled before route navigation. A pending
  -- upgrade captures the screen until the player confirms or cancels it.
  if S.phase=="menu" and formalRoute=="town" then
@@ -130,7 +147,7 @@ local function formalInput(api:any)
  for _,route in ipairs({"home","profiles","settings","gear","runes","town","guide","abandon","sell"})do
   if pressed(api,"UI_"..route)then
    if route=="gear" or route=="runes" then
-    if openLoadout()then formalPreviousPhase="loadout";formalRoute=route;formalPage=route=="runes" and runePageForSelection() or 1 end
+    if openLoadout()then formalRoute=route;formalPage=route=="runes" and runePageForSelection() or 1;formalScroll=0 end
    elseif route=="home" then returnFromLoadout()
    elseif route=="town" then if S.phase=="menu" then formalRoute="town" end
    elseif route~="sell" or (S.phase=="shop" and (S.location=="market" or S.location=="rune"))then formalRoute=route;formalPage=route=="sell" and S.location=="rune" and runePageForSelection() or 1 end
@@ -162,7 +179,7 @@ publishFormalUI=function(api:any)
  local function rect(x:number,y:number,w:number,h:number)return {x=x,y=100-y-h,width=w,height=h}end
  local nineSlice:any=nil
  local function img(id:string,asset:string,x:number,y:number,w:number,h:number)
-  if nineSlice and (string.match(id,"^slot_frame_%d+$") or string.match(id,"^auto_card_%d+$"))then nineSlice(id,"texture://ui_control-quiet-v3",x,y,w,h);return end
+  if nineSlice and string.match(id,"^auto_card_%d+$")then nineSlice(id,"texture://ui_control-quiet-v3",x,y,w,h);return end
   if nineSlice and (asset=="texture://ui_panel" or asset=="texture://ui_card") then
    if id=="screen_back" or string.find(id,"modal") then nineSlice(id,"texture://ui_shop-window-panel-v2",x,y,w,h);return end
    asset="texture://ui_shop-surface"
@@ -207,7 +224,7 @@ publishFormalUI=function(api:any)
  end
  local function button(id:string,label:string,action:string,x:number,y:number,w:number,h:number,enabled:boolean?,skin:string?)
   local primary=({Start=true,QuickDeploy=true,Deploy=true,Next=true,LaunchExpedition=true,Auto_apply=true,Pause=true,OpenChest=true,ChestDone=true,AcceptEnchant=true})[action]==true
-  local chosen=(string.sub(id,1,4)=="tab_" and action=="UI_"..formalRoute) or string.find(label,"✓") or (string.sub(id,1,5)=="unit_" and string.sub(label,1,3)=="◆")
+  local chosen=(string.sub(id,1,4)=="tab_" and action=="UI_"..formalRoute) or string.find(label,"✓") or (string.match(id,"^(unit|roster_unit)_") and string.sub(label,1,3)=="◆")
   if skin=="shop-button-secondary-v2" then skin="control-quiet-v3" end
   nineSlice(id.."_plate","texture://ui_"..(skin or (enabled~=false and (primary or chosen) and "shop-button-primary-v2" or "control-quiet-v3")),x,y,w,h,.2)
   local ch=min(3,h-1);local edge=(h-ch)/2
@@ -220,30 +237,42 @@ publishFormalUI=function(api:any)
    table.insert(nodes,{kind="button",id=id.."_hit_bottom",text="",action=action,rect=rect(x,y+edge+ch,w,edge)})
   end
  end
+ local function compactButton(id:string,label:string,action:string,x:number,y:number,w:number,h:number,enabled:boolean?)
+  img(id.."_plate","texture://ui_control-quiet-v3",x,y,w,h)
+  if enabled==false then text(id,label,x+.4,y+.2,w-.8,h-.4)
+  else
+   text(id.."_label",label,x+.4,y+.2,w-.8,h-.4)
+   table.insert(nodes,{kind="button",id=id,text="",action=action,rect=rect(x,y,w,h)})
+  end
+ end
+ local function closeButton(id:string,action:string,x:number?,y:number?)
+  local bx=x or 92;local by=y or 7;local bw=5.5;local bh=6
+  img(id.."_plate","texture://ui_hud-key",bx,by,bw,bh)
+  img(id.."_icon","texture://ui_icon-close",bx+1.25,by+1.15,3,3.7)
+  table.insert(nodes,{kind="button",id=id,text="",action=action,rect=rect(bx,by,bw,bh)})
+ end
+ local function resourceBadge(id:string,plate:string,icon:string,value:any,x:number,y:number,w:number)
+  img(id.."_plate","texture://ui_hud-"..plate,x,y,w,5.8)
+  img(id.."_icon","texture://ui_icon-"..icon,x+1,y+.95,3.2,3.9)
+  text(id,value,x+4.7,y+1.1,w-5.4,3.5)
+ end
  local function panel(title:string)
   local shopWindow=S.phase=="shop" and S.location=="market" and formalRoute~="sell"
+  -- One window rect, one title band and one currency band on every screen.
+  -- The 4-unit outer margin is the shared safe area from UI-DESIGN-GUIDELINES.
   if shopWindow then
    img("shop_backdrop","texture://ui_shop-backdrop",0,0,100,100)
    img("shop_backdrop_shade","texture://ui_scene-shade",0,0,100,100)
-   img("shop_window_fill","texture://ui_shop-surface",7,8,86,83)
-   nineSlice("screen_back","texture://ui_shop-window-panel-v2",6,6,88,88)
-   text("shop_window_title","森林領主 · 榛姨的商店",32,11,36,4)
-   text("screen_title",title,10,15,24,5)
-   img("screen_gold_icon","texture://ui_icon-coin",78,14.5,3,4)
-   text("screen_gold",floor(S.coins),81.7,14.5,7.3,4)
-   img("screen_crystals_icon","texture://ui_icon-crystal",78,19,3,4)
-   text("screen_crystals",S.crystals,81.7,19,7.3,4)
   else
    img("screen_shade","texture://ui_scene-shade",0,0,100,100)
-   img("screen_back","texture://ui_panel",3,3,94,94)
-   text("screen_title",title,9,9,58,5)
-   -- These are run-only currencies, not balances belonging to a saved estate.
-   if S.phase~="menu" then
-    img("screen_gold_icon","texture://ui_icon-coin",71,9,3,4)
-    text("screen_gold",floor(S.coins),75,9,7,4)
-    img("screen_crystals_icon","texture://ui_icon-crystal",83,9,3,4)
-    text("screen_crystals",S.crystals,87,9,6,4)
-   end
+  end
+  nineSlice("screen_back","texture://ui_shop-window-panel-v2",4,4,92,92)
+  text("screen_title",title,38,7.4,24,5)
+  if shopWindow then text("shop_window_title","森林領主 · 榛姨的商店",34,12.6,32,2.8)end
+  -- These are run-only currencies, not balances belonging to a saved estate.
+  if S.phase~="menu" then
+   resourceBadge("screen_gold","gold","coin",floor(S.coins),64,6.2,10.5)
+   resourceBadge("screen_crystals","crystal","crystal",S.crystals,75,6.2,10.5)
   end
  end
  local function shopkeeper(line:string,portrait:string?,speaker:string?)
@@ -262,38 +291,66 @@ publishFormalUI=function(api:any)
  end
  local function tabs()
   if S.phase=="loadout" then
-   button("tab_gear","裝備","UI_gear",7,16,22,6)
-   button("tab_runes","符文","UI_runes",31,16,22,6)
+   local function loadoutTab(id:string,label:string,action:string,x:number,y:number,active:boolean)
+    img(id.."_plate","texture://ui_loadout-tab-v1",x,y,7,11)
+    if active then img(id.."_active","texture://ui_loadout-tab-active-v1",x,y,7,11)end
+    img(id.."_icon",action=="UI_gear" and "texture://ui_icon-weapon" or "texture://ui_icon-rune",x+1.65,y+1.15,3.7,4.2)
+    text(id.."_label",label,x+.5,y+6.5,6,2.4)
+    table.insert(nodes,{kind="button",id=id,text="",action=action,rect=rect(x,y,7,11)})
+   end
+   loadoutTab("tab_gear","裝備","UI_gear",7,30.5,formalRoute=="gear")
+   loadoutTab("tab_runes","符文","UI_runes",7,43,formalRoute=="runes")
   elseif S.phase=="shop" and (S.location=="market" or S.location=="rune")then
    local noun=S.location=="market" and "裝備" or "符文"
-   if S.location=="market" and formalRoute~="sell" then
-    button("tab_home","買入裝備","UI_home",10,22,16,5.5,true,"shop-button-primary-v2")
-    button("tab_sell","出售裝備","UI_sell",28,22,16,5.5,true,"shop-button-secondary-v2")
-   else
-    button("tab_home","買入"..noun,"UI_home",7,16,25,6)
-    button("tab_sell","出售"..noun,"UI_sell",34,16,25,6)
-   end
+   -- Same rect in both tab states; switching a tab must not move the row.
+   button("tab_home","買入"..noun,"UI_home",8,16,22,6.5)
+   button("tab_sell","出售"..noun,"UI_sell",32,16,22,6.5)
   end
  end
- local unitNames={"劍兵","槍兵","騎兵"}
- local slotNames={"頭","身","腳","手","武器"}
- local function unitButtons(y:number)
-  for k=1,3 do button("unit_"..k,(S.selected==k and "◆ " or "")..unitNames[k].." · "..costs(k).." 金","Unit"..k,7+(k-1)*23,y,22,6)end
+local unitNames={"劍兵","槍兵","騎兵"}
+local slotNames={"頭","身","腳","手","武器"}
+local unitIcons={"symbol-sword","symbol-spear","symbol-cavalry"}
+local slotIcons={"icon-helmet","icon-body","icon-boots","icon-gloves","icon-weapon"}
+local function unitButtons(y:number,x0:number?,w:number?,gap:number?)
+ local ox=x0 or 7;local ww=w or 22;local gg=gap or 1
+ for k=1,3 do button("unit_"..k,(S.selected==k and "◆ " or "")..unitNames[k].." · "..costs(k).." 金","Unit"..k,ox+(k-1)*(ww+gg),y,ww,6)end
+end
+local function loadoutUnitButtons(y:number,x0:number,w:number,gap:number,prefix:string)
+ for k=1,3 do
+  local x=x0+(k-1)*(w+gap);local id=prefix.."_"..k;local active=S.selected==k
+  img(id.."_plate","texture://ui_"..(active and "hud-active" or "hud-key"),x,y,w,6)
+  img(id.."_icon","texture://ui_"..unitIcons[k],x+1,y+1,2.6,3.4)
+  text(id.."_label",unitNames[k].."\n"..costs(k).."金",x+3.8,y+1,w-4.3,4)
+  table.insert(nodes,{kind="button",id=id,text="",action="Unit"..k,rect=rect(x,y,w,6)})
  end
+end
+local function troopStatsOverview()
+ local stat=(S.unitStats and S.unitStats[S.selected]) or {}
+ nineSlice("troop_stats_panel","texture://ui_control-quiet-v3",14,86,38,6)
+ text("troop_stats_title","部隊屬性",15,87,7.5,2.5)
+ local entries={{"icon-attack",floor((stat.damage or 0)+.5)},{"icon-life",floor((stat.life or 0)+.5)},{"icon-speed",floor((stat.speed or 0)+.5)},{"icon-crit",floor((stat.crit or 0)*100+.5).."%"},{"icon-pierce",stat.pierce or 0}}
+ for i,e in ipairs(entries)do
+  local x=23+(i-1)*5.6
+  img("troop_stat_icon_"..i,"texture://ui_"..e[1],x,87.15,1.6,2.3)
+  text("troop_stat_value_"..i,tostring(e[2]),x+1.8,87.25,3.2,2.2)
+ end
+end
  local function footer()
   if S.phase=="shop" then
    button("ready","部隊配置","LeaveShop",65,88,13,7,S.enchantPending==nil)
    button("quick_deploy","直接出戰","QuickDeploy",80,88,13,7,S.enchantPending==nil)
-  elseif S.phase=="loadout" then
-   button("loadout_return",({shop="返回商店",choice="返回景點",clear="返回結算"})[S.loadoutReturn] or "返回","ReturnFromLoadout",45,88,22,7)
+ elseif S.phase=="loadout" then
+   closeButton("loadout_return","ReturnFromLoadout")
    if S.loadoutReturn=="shop" then button("deploy","整備完成 · 出戰","Deploy",70,88,23,7)end
-  elseif S.phase=="menu" and formalRoute=="town" then
-   button("town_back","返回標題","UI_home",48,88,20,7);button("launch_expedition","出發遠征","LaunchExpedition",71,88,22,7)
-  else button("back","返回","UI_home",75,88,18,7)end
+ elseif S.phase=="menu" and formalRoute=="town" then
+   closeButton("town_back","UI_home");button("launch_expedition","出發遠征","LaunchExpedition",71,88,22,7)
+ elseif S.phase=="map" then
+   closeButton("back","ReturnFromMap")
+  else closeButton("back","UI_home")end
  end
  if S.phase=="map" then
   panel("森林王冠之路")
-  hidden.screen_gold=true;hidden.screen_crystals=true
+  hidden.screen_gold=true;hidden.screen_crystals=true;hidden.screen_gold_plate=true;hidden.screen_crystals_plate=true
   local bx,by,bw,bh=7,22,61,61*1.6/(1672/941)
   img("map_back","texture://ui_forest-map-v2",bx,by,bw,bh)
   for i=1,7 do
@@ -423,7 +480,7 @@ publishFormalUI=function(api:any)
    text("help_title","掌握這場狩獵",25,22,50,5)
    local tips={"按住戰場派兵，放開停止。","劍兵碰撞消失；槍兵落地旋斬；騎兵穿透。","碰牆反彈，壽命耗盡消失。","破防只代表一次抽獎，未中獎的怪物留場。","大王最後 30 秒登場，開出大獎才過關。","金幣派兵，結晶強化；倖存部隊返還實付金幣。"}
    for i,line in ipairs(tips)do text("help_"..i,line,24,31+(i-1)*7,52,5)end
-   button("guide_back","返回暫停","UI_home",24,80,22,7)
+   closeButton("guide_back","UI_home")
    button("resume","繼續戰鬥","Pause",51,80,25,7)
   else
   button("resume","繼續征戰","Pause",32,37,36,9)
@@ -434,7 +491,7 @@ publishFormalUI=function(api:any)
  elseif S.phase=="menu" and formalRoute=="home" then
   img("menu_ground","texture://ui_panel",0,0,100,100)
   img("menu_art","texture://ui_expedition-keyart-v2",0,0,100,100)
-  img("crest","texture://ui_crest",15,13,16,20)
+  img("crest","texture://ui_crest",18,12,16,20)
   text("title","森林領主",8,35,32,12)
   text("subtitle","七輪遠征 · 奪回森林王冠",8,49,32,5)
   button("start","讀取進度","Start",9,61,34,9)
@@ -465,7 +522,7 @@ publishFormalUI=function(api:any)
     end
    end
   end
-  button("profiles_back","返回主選單","UI_home",32,86,36,7)
+  closeButton("profiles_back","UI_home")
  elseif S.phase=="menu" and formalRoute=="settings" then
   panel("系統設定")
   text("settings_hint","設定會儲存在目前裝置，下次開啟仍會保留。",9,17,82,4)
@@ -483,7 +540,7 @@ publishFormalUI=function(api:any)
   text("settings_language_label","語系",16,66,28,5)
   text("settings_language_value",S.settings.language or "繁中",53,66,17,5)
   button("settings_language","切換","Setting_language",72,65,18,7)
-  button("settings_back","返回主選單","UI_home",32,84,36,7)
+  closeButton("settings_back","UI_home")
  elseif S.phase=="choice" then
   panel(chapters[S.round].." · 選擇景點")
   button("view_map","查看地圖","ViewMap",77,17,16,6)
@@ -494,9 +551,9 @@ publishFormalUI=function(api:any)
    local x=12+(i-1)*27;local y=27
    nineSlice("choice_plate_"..i,"texture://ui_shop-card-rare-v2",x,y,24,59)
    img("choice_icon_"..i,"texture://ui_"..(placePortraits[c.id] or "quartermaster-v1"),x+3,y+8,18,24)
-   text("choice_name_"..i,c.name,x+3,y+33,18,4)
-   text("choice_desc_"..i,c.desc:gsub("；每支派兵 %+(%d+)","；標準加價 +%1（整筆半價）"),x+3,y+39,18,9)
-   text("choice_action_"..i,"拜訪此處",x+3,y+50,18,4)
+   text("choice_name_"..i,c.name,x+3,y+32,18,4)
+   text("choice_desc_"..i,c.desc:gsub("；每支派兵 %+(%d+)","；標準加價 +%1（整筆半價）"),x+3,y+38,18,8)
+   text("choice_action_"..i,"拜訪此處",x+3,y+46.5,18,4)
    table.insert(nodes,{kind="button",id="choice_"..i,text="",action="Choice"..i,rect=rect(x,y,24,59)})
   end
  elseif S.phase=="defeat" then
@@ -517,7 +574,7 @@ publishFormalUI=function(api:any)
   end
   text("defeat_town_reward","建材 +"..(town.materials-S.townStartMaterials).." 已入庫 · 庫存 "..town.materials,12,76,76,4)
   text("defeat_save","戰利與建材已記入目前札記；本局金幣與結晶不會帶出。",12,81,76,3)
-  button("defeat_town","返回領主札記","ReturnTown",12,86,35,8,elapsed>=1.2)
+  if elapsed>=1.2 then closeButton("defeat_town","ReturnTown") end
   button("defeat_retry","重整旗鼓 · 再次出征","Start",53,86,35,8,elapsed>=1.2)
  elseif S.phase=="clear" or S.phase=="victory" then
   panel(S.phase=="defeat" and "軍團暫退" or (S.phase=="victory" and "森林王冠 · 遠征完成" or "關卡凱旋"))
@@ -531,13 +588,13 @@ publishFormalUI=function(api:any)
   if S.chestCount>0 then button("chest","按住開啟寶箱 ×"..S.chestCount,"OpenChest",26,56,48,9)end
   if S.chestResult then text("chest_result",S.chestResult,12,68,64,6);button("chest_done","收下","ChestDone",78,68,13,6)end
   if S.phase=="clear" then button("next","前往下一站","Next",32,83,36,9,S.presentationDelay<=0)
-  else button("result_home","返回領主札記","ReturnTown",32,83,36,9)end
+  else closeButton("result_home","ReturnTown")end
  else
   if formalRoute=="town" then img("town_scene","texture://ui_shop-backdrop",0,0,100,100)end
   panel(S.phase=="loadout" and "部隊裝備" or formalRoute=="town" and "領地建設" or ({market="裝備店",rune="符文店",potion="藥水工坊",tech="軍團研究",enchant="附魔鐵砧",curse="荊棘契約"})[S.location] or "領地與軍備")
   if formalRoute~="town" then tabs()end;footer()
  if formalRoute=="town" then
-   hidden.screen_gold=true;hidden.screen_crystals=true;hidden.screen_crystals_plate=true
+   hidden.screen_gold=true;hidden.screen_crystals=true;hidden.screen_gold_plate=true;hidden.screen_crystals_plate=true
    img("town_lord","texture://ui_portrait-lord-v2",8,53,26,29)
    text("town_heading","領地研究",37,18,56,4)
    text("town_subheading","選擇研究，查看效果、前置條件與花費",37,23,56,3)
@@ -561,6 +618,7 @@ publishFormalUI=function(api:any)
    if S.townUpgradePending then
     local i=S.townUpgradeIndex or 0;local def=townNodeDefs[i];local level=townUpgradeLevel(i);local price=townUpgradePrice(i);local affordable=price~=nil and town.materials>=price;local unlocked=townNodePrereqsMet(i);local maxed=def and level>=def.max
     img("town_upgrade_shade","texture://ui_scene-shade",0,0,100,100)
+    table.insert(nodes,{kind="button",id="town_upgrade_scrim",text="",action="TownUpgradeCancel",rect=rect(0,0,100,100)})
     img("town_upgrade_modal","texture://ui_panel",22,21,56,59)
     text("town_upgrade_kicker","研究詳情",29,27,42,3)
     text("town_upgrade_title",def and def.name or "領地節點",29,32,42,6)
@@ -572,65 +630,97 @@ publishFormalUI=function(api:any)
     button("town_upgrade_cancel", "先不升級", "TownUpgradeCancel",52,71,20,7,true)
    end
   elseif formalRoute=="gear" then
-   -- A troop-first fitting view: roster, paper doll, and shared pack are
-   -- visibly separate. Every placement edits this run's equipment assignment.
-   for k=1,3 do
-    local y=27+(k-1)*14
-    button("roster_unit_"..k,(S.selected==k and "◆ " or "")..unitNames[k],"Unit"..k,7,y+9,17,5)
-   end
-   text("troop_quote","本次派兵\n"..costs(S.selected).." 金",7,72,17,8)
-   img("paper_doll_portrait","texture://ui_portrait-"..({"sword","spear","cavalry"})[S.selected],34,37,17,24)
-   local slotPositions={{36,26},{26,39},{46,39},{26,57},{46,57}}
+   -- The loadout board is the stable task surface; the inventory is a
+   -- closable drawer so choosing a slot never changes the page context.
+   img("loadout_board","texture://ui_loadout-board-v2",14,31,38,54)
+   loadoutUnitButtons(25.5,14,11.2,1,"roster_unit")
+   text("troop_quote","本次派兵\n"..costs(S.selected).." 金",15,33,9,7)
+   text("loadout_board_title",unitNames[S.selected].." · 裝備配置",26,33,16,3.5)
+   -- Match the reference composition: three body slots on the left and two on the right.
+   local slotPositions={{17,37},{17,51},{17,65},{45,43},{45,61}}
    for i,n in ipairs(slotNames)do
     local item=itemById(S.worn[S.selected][i]);local p=slotPositions[i];local x,y=p[1],p[2]
-    img("slot_frame_"..i,"texture://ui_"..(S.equipSlot==i and "selected" or "secondary"),x,y,14,12)
-    img("worn_icon_"..i,"texture://ui_"..(item and "gear-"..item.skill or "icon-"..({"helmet","body","boots","gloves","weapon"})[i]),x+4.3,y+.5,5.4,5.5)
-    local shortName=item and truncate(item.name,5) or n
-    table.insert(nodes,{kind="button",id="slot_"..i,text=(S.equipSlot==i and "◆ " or "")..shortName,action="Slot"..i,rect=rect(x,y+6,14,5)})
-    table.insert(nodes,{kind="button",id="slot_hit_"..i,text="",action="Slot"..i,rect=rect(x,y,14,12)})
+    img("slot_frame_"..i,"texture://ui_loadout-slot-square-v1",x,y,4.5,8)
+    img("slot_part_"..i,"texture://ui_"..slotIcons[i],x+1,y+2,2.5,3.5)
+    if item then img("worn_icon_"..i,"texture://ui_gear-"..item.skill,x+.55,y+1.8,3.4,4.4)end
+    local shortName=item and truncate(item.name,5) or ""
+    table.insert(nodes,{kind="button",id="slot_"..i,text=shortName,action="Slot"..i,rect=rect(x,y+6.2,4.5,2.2)})
+    table.insert(nodes,{kind="button",id="slot_hit_"..i,text="",action="Slot"..i,rect=rect(x,y,4.5,8)})
    end
    local activeItem=itemById(S.worn[S.selected][S.equipSlot])
-   button("unequip",activeItem and "卸下此裝備" or "目前空置","Unequip",34,81,20,5,activeItem~=nil)
-   text("bag_heading","行囊 · "..slotNames[S.equipSlot],63,21,30,4)
-   local matching={};for i,item in ipairs(S.items)do if item.slot==S.equipSlot then table.insert(matching,i)end end
-   local pageCount=max(1,math.ceil(#matching/2));formalPage=min(formalPage,pageCount)
-   for j=1,2 do local index=matching[(formalPage-1)*2+j];local item=index and S.items[index];local y=26+(j-1)*23
-    img("pack_card_"..j,"texture://ui_card",63,y,30,16)
-    if item then
-     img("gear_icon_"..j,"texture://ui_gear-"..item.skill,64,y+1.5,7,9)
-     local holder=nil;for k,worn in ipairs(S.worn)do if worn[item.slot]==item.id then holder=k end end
-     local wearing=holder==S.selected
-     text("gear_name_"..j,(holder and not wearing and unitNames[holder].."持有 · " or "")..item.name..(item.enchant and " ◆" or ""),72,y+1,20,3.5)
-     text("gear_summary_"..j,skillSummary(item.skill),65,y+6,26,4)
-     text("gear_cost_"..j,"派兵 "..costs(S.selected,item).."金",64,y+11.5,8,3)
-     button("equip_"..j,wearing and "已裝" or "穿上","Equip"..index,83,y+10,9,5,not wearing)
-     button("inspect_"..j,"詳情","GearDetail"..index,72,y+10,9,5)
-    else
-     img("empty_pack_icon_"..j,"texture://ui_icon-"..({"helmet","body","boots","gloves","weapon"})[S.equipSlot],65,y+3,6,8)
-     text("empty_pack_"..j,"空的行囊",73,y+4,18,4)
+   if activeItem then button("unequip","卸下此裝備","Unequip",48,80.5,16,4.5,true)end
+   troopStatsOverview()
+   if formalDrawerOpen then
+    nineSlice("drawer_frame","texture://ui_shop-window-panel-v2",54,19,42,61)
+    text("drawer_heading","選擇裝備",57,22,26,4)
+    text("drawer_subheading",slotNames[S.equipSlot].." > 可穿戴裝備",57,27,28,3)
+    closeButton("drawer_close","CloseDrawer",89,22)
+    local matching={};for i,item in ipairs(S.items)do if item.slot==S.equipSlot then table.insert(matching,i)end end
+    local maxScroll=max(0,#matching-6);formalScroll=min(formalScroll,maxScroll)
+    -- Keep the three-column inventory inside the drawer's authored content
+    -- bounds. The old 12.1-unit step put the last 11.5-unit tile at 92.7,
+    -- past the inner right edge (91.5) and underneath the frame ornament.
+    local tileW=10.8;local tileStep=11.4
+    for j=1,6 do
+     local index=matching[formalScroll+j];local item=index and S.items[index];local x=57+((j-1)%3)*tileStep;local y=32+floor((j-1)/3)*15
+     nineSlice("pack_tile_"..j,"texture://ui_control-quiet-v3",x,y,tileW,13.8,.2)
+     if item then
+      img("gear_icon_"..j,"texture://ui_gear-"..item.skill,x+1,y+1,3.2,4)
+      local holder=nil;for k,worn in ipairs(S.worn)do if worn[item.slot]==item.id then holder=k end end
+      local wearing=holder==S.selected
+      -- The tile wraps to two lines now, so the holder disclosure is not cut.
+      text("gear_name_"..j,(holder and not wearing and unitNames[holder].."持有 · " or "")..item.name,x+4.6,y+1,6.1,2.8)
+      text("gear_summary_"..j,skillSummary(item.skill),x+1,y+5.2,9.5,2.6)
+      text("gear_cost_"..j,"派兵 "..costs(S.selected,item).."金",x+1,y+8,9.5,1.5)
+      table.insert(nodes,{kind="button",id="inspect_"..j,text="",action="GearDetail"..index,rect=rect(x,y,tileW,9.5)})
+      compactButton("equip_"..j,wearing and "已裝" or "穿上","Equip"..index,x+5.5,y+9.6,4.5,4.2,not wearing)
+     end
     end
+    if maxScroll>0 then
+     img("gear_scroll_track","texture://ui_loadout-scroll-track-v1",93.2,35,1.7,37)
+     local thumbY=35+(formalScroll/maxScroll)*27
+     img("gear_scroll_thumb","texture://ui_loadout-scroll-thumb-v1",92.8,thumbY,2.5,9)
+     button("gear_scroll_up","▲","LoadoutScrollUp",93,30.5,3,4.5,formalScroll>0)
+     button("gear_scroll_down","▼","LoadoutScrollDown",93,69.5,3,4.5,formalScroll<maxScroll)
+    end
+   else
+    text("drawer_hint","點擊左側部位\n開啟裝備列表",60,38,27,8)
+    button("drawer_open","選擇裝備","OpenDrawer",61,51,24,6,true,"shop-button-secondary-v2")
    end
-   button("gear_prev","‹","UI_page_prev",73,82,7,5,pageCount>1 and formalPage>1)
-   text("gear_page",formalPage.." / "..pageCount,81,82,12,4)
-   button("gear_next","›","UI_page_next",87,82,6,5,pageCount>1 and formalPage<pageCount)
   elseif formalRoute=="runes" then
-   unitButtons(26)
-   local pages=math.ceil(#runeDefinitions/3);formalPage=min(formalPage,pages)
-   for j=1,3 do local i=(formalPage-1)*3+j;local def=runeDefinitions[i]
+   img("loadout_board","texture://ui_loadout-board-v2",14,31,38,54)
+   loadoutUnitButtons(25.5,14,11.2,1,"unit")
+   text("troop_quote","本次派兵\n"..costs(S.selected).." 金",15,33,9,7)
+   text("rune_heading","可用符文",56,21,39,4)
+   text("rune_hint","選一枚符文裝入目前部隊",56,26,39,3)
+   local equippedRuneIndex=S.runes[S.selected];local equippedRune=equippedRuneIndex>0 and runeDefinitions[equippedRuneIndex] or nil
+   img("rune_loadout_slot","texture://ui_loadout-slot-empty-v1",16,75,24,9)
+   img("rune_loadout_icon","texture://ui_"..(equippedRune and "skill-"..equippedRune.icon or "icon-lock"),18,76,5,5)
+   text("rune_loadout_name",equippedRune and equippedRune.name or "",25,76,14,3.5)
+   text("rune_loadout_state",equippedRune and "目前已裝符文" or "",25,80,14,3)
+   local runeMaxScroll=max(0,#runeDefinitions-4);formalScroll=min(formalScroll,runeMaxScroll)
+    for j=1,4 do local i=formalScroll+j;local def=runeDefinitions[i]
     if def then
      local donor=runeHolder(i,S.selected);local active=S.runes[S.selected]==i
-     local y=39+(j-1)*13
-     img("rune_icon_"..j,"texture://ui_skill-"..def.icon,37,y,5,8)
-     text("rune_name_"..j,def.name,43,y,29,4)
-     text("rune_desc_"..j,def.effect,43,y+4,29,4.4)
-     text("rune_owned_"..j,"背包 "..(S.runeBag[i] or 0).." 枚"..(donor and " · "..unitNames[donor].."已裝入" or ""),43,y+8.5,29,3)
-     button("rune_"..j,active and "已裝入" or S.runeBag[i]>0 and "裝入" or donor and "轉交此部隊" or "尚未持有","Rune"..i,74,y+1,19,6,not active and ((S.runeBag[i] or 0)>0 or donor~=nil))
+     local x=57+((j-1)%2)*19;local y=32+floor((j-1)/2)*20.5
+     img("rune_tile_"..j,"texture://ui_loadout-item-tile-v2",x,y,18,18.5)
+     img("rune_icon_"..j,"texture://ui_skill-"..def.icon,x+1,y+1,4.5,4.5)
+     text("rune_name_"..j,def.name,x+6,y+1,11,3.5)
+     text("rune_desc_"..j,def.effect,x+1,y+6,16,3)
+     text("rune_owned_"..j,"背包 "..(S.runeBag[i] or 0).." 枚"..(donor and " · "..unitNames[donor].."已裝入" or ""),x+1,y+9,16,2)
+     button("rune_"..j,active and "已裝入" or S.runeBag[i]>0 and "裝入" or donor and "轉交" or "尚未持有","Rune"..i,x+1,y+12,16,4.2,not active and ((S.runeBag[i] or 0)>0 or donor~=nil))
     end
    end
-   text("rune_help","抬賞／細收只改開獎後的獎級分配；總開獎率、特獎不變。",37,77,56,3)
-   button("rune_off","卸下符文","RuneOff",74,81,19,4,S.runes[S.selected]~=0)
-   button("rune_prev","上一頁","UI_page_prev",37,86,11,5,formalPage>1);button("rune_next","下一頁","UI_page_next",49,86,11,5,formalPage<pages)
-   text("rune_page",formalPage.." / "..pages,37,81,20,3)
+   text("rune_help","抬賞／細收只改開獎後的獎級分配；總開獎率、特獎不變。",56,75,39,3)
+   button("rune_off","卸下符文","RuneOff",56,81,18,5,S.runes[S.selected]~=0)
+   if runeMaxScroll>0 then
+    img("rune_scroll_track","texture://ui_loadout-scroll-track-v1",93.2,35,1.7,37)
+    local thumbY=35+(formalScroll/runeMaxScroll)*27
+    img("rune_scroll_thumb","texture://ui_loadout-scroll-thumb-v1",92.8,thumbY,2.5,9)
+    button("rune_scroll_up","▲","LoadoutScrollUp",93,30.5,3,4.5,formalScroll>0)
+    button("rune_scroll_down","▼","LoadoutScrollDown",93,69.5,3,4.5,formalScroll<runeMaxScroll)
+   end
+   troopStatsOverview()
   elseif formalRoute=="sell" then
    shopkeeper("不需要的物資，可以換回一半購入結晶。裝備先從部隊卸下。",placePortraits[S.location],placeSpeakers[S.location])
    if S.location=="rune" then
@@ -668,7 +758,8 @@ publishFormalUI=function(api:any)
     text("enchant_item_name",item and item.name or "此部位尚未裝備",52,46,39,5)
     text("enchant_current",item and ("目前詞綴 · "..(item.enchant and skillDetail(item.enchant) or "無")) or "先在部隊配置穿上裝備，再回來附魔。",52,52,39,7)
     text("enchant_cost","每次消耗 8 結晶 · 每處最多兩次",39,64,52,4)
-    button("enchant_roll","試附魔","Enchant",47,71,30,8,item~=nil and S.enchantPending==nil and S.enchantUses<2)
+    -- The offer state owns the action row; no disabled plate may stay beneath it.
+    if S.enchantPending==nil then button("enchant_roll","試附魔","Enchant",47,71,30,8,item~=nil and S.enchantUses<2)end
     text("enchant_chances","普通 70% · 精良 25% · 史詩 5%",39,81,52,3)
     if S.enchantPending then
      img("enchant_reveal_back","texture://ui_card",36,37,57,39)
@@ -727,7 +818,7 @@ publishFormalUI=function(api:any)
        nineSlice("shop_detail_modal","texture://ui_shop-window-panel-v2",22,14,56,72)
        text("shop_detail_kicker","裝備詳情 · "..(detailKind=="legendary" and "傳奇" or detailKind=="epic" and "史詩" or "稀有"),28,20,31,4)
        text("shop_detail_title",item.name,39,28,29,5)
-       button("shop_detail_close","關閉","ShopDetailClose",64,20,9,5.5,true,"shop-button-secondary-v2")
+       closeButton("shop_detail_close","ShopDetailClose",71,16)
        img("shop_detail_icon","texture://ui_gear-"..item.skill,28,28,10,16)
        text("shop_detail_story",slotNames[item.slot].."部位裝備 · 買入後至部隊配置穿戴",40,35,29,8)
        img("shop_detail_price_icon","texture://ui_icon-crystal",32,46,3,4)
@@ -737,7 +828,6 @@ publishFormalUI=function(api:any)
        text("shop_detail_effect",detailEffect,28,59,44,10)
        local allowed=not item.sold and canStoreItem() and S.crystals>=item.price
        button("shop_detail_buy",item.sold and "已取得" or (S.crystals<item.price and "結晶不足" or "買入"),"Buy"..formalShopDetail,28,73,21,5.5,allowed,"shop-button-primary-v2")
-       button("shop_detail_cancel","先不買","ShopDetailClose",51,73,21,5.5,true,"shop-button-secondary-v2")
       end
      end
     else
@@ -749,7 +839,7 @@ publishFormalUI=function(api:any)
        if item.kind=="gear" then icon="gear-"..item.skill;desc=skillDetail(item.skill).."\n"..slotNames[item.slot].."槽 · 部隊配置後穿戴"
        elseif item.kind=="rune" then local def=runeDefinitions[item.value];icon="skill-"..def.icon;desc=def.effect
        elseif item.kind=="tech" then local entry=S.skillBook[item.value];icon="skill-"..item.value;desc=(entry and skillDetail(item.value) or "隨機兵種能力").."\n指定部隊："..unitNames[item.unit]
-       elseif item.kind=="potion" then icon="building-alchemy";desc=({"全軍移速提高 8 秒。","目前部隊壽命延長 1.5 秒。","召回目前倖存部隊並返還實付金幣。"})[item.value]
+       elseif item.kind=="potion" then icon=({"icon-potion-haste","icon-potion-life","icon-potion-recall"})[item.value] or "building-alchemy";desc=({"全軍移速提高 8 秒。","目前部隊壽命延長 1.5 秒。","召回目前倖存部隊並返還實付金幣。"})[item.value]
        elseif item.kind=="curse" then icon="icon-curse-debt";desc=curseDetails[item.value]end
        img("stock_icon_"..j,"texture://ui_"..icon,x+1,y+2,7,9)
        local displayName=item.kind=="tech" and S.skillBook[item.value] and S.skillBook[item.value].name or item.name
@@ -780,6 +870,7 @@ publishFormalUI=function(api:any)
  if supplyDetail then
   local item=supplyDetail.item
   img("shop_detail_shade","texture://ui_scene-shade",0,0,100,100)
+  table.insert(nodes,{kind="button",id="shop_modal_scrim",text="",action="ShopDetailClose",rect=rect(0,0,100,100)})
   nineSlice("shop_detail_modal","texture://ui_shop-window-panel-v2",18,12,64,76)
   img("shop_detail_icon","texture://ui_"..supplyDetail.icon,25,22,12,18)
   text("shop_detail_title",supplyDetail.name,40,22,34,5)
@@ -787,7 +878,7 @@ publishFormalUI=function(api:any)
   text("shop_detail_price",item.price,50,32,10,4)
   text("shop_detail_effect",supplyDetail.description,25,45,50,23)
   button("shop_detail_buy",item.sold and "已取得" or supplyDetail.allowed and "確認買入" or "目前無法購買","Buy"..supplyDetail.index,26,74,23,7,supplyDetail.allowed)
-  button("shop_detail_close","返回商店","ShopDetailClose",52,74,23,7)
+  closeButton("shop_detail_close","ShopDetailClose",71,16)
  end
  if formalGearDetail>0 and S.phase=="loadout" then
   local item=S.items[formalGearDetail]
@@ -810,17 +901,17 @@ publishFormalUI=function(api:any)
    text("gear_detail_quote",(holder and unitNames[holder].."穿戴中" or "存放在行囊").."\n穿戴後派兵費 "..costs(S.selected,item).." 金幣",40,33,34,5)
    text("gear_detail_effect",skillDetail(item.skill)..(item.enchant and "\n附魔："..skillDetail(item.enchant) or ""),25,47,50,19)
    button("gear_detail_equip",holder and holder~=S.selected and "轉交此裝備" or "穿戴此裝備","Equip"..formalGearDetail,26,74,23,7,S.worn[S.selected][item.slot]~=item.id)
-   button("gear_detail_close","返回行囊","GearDetailClose",52,74,23,7)
+   closeButton("gear_detail_close","GearDetailClose",71,16)
   end
  end
  if S.phase=="battle" and S.autoConfigOpen then
-  hidden.screen_gold=true;hidden.screen_crystals=true;hidden.screen_crystals_plate=true
+  hidden.screen_gold=true;hidden.screen_crystals=true;hidden.screen_gold_plate=true;hidden.screen_crystals_plate=true
   -- Compact centered sheet keeps the battlefield visible on a wide viewport.
   for _,n in ipairs(nodes)do local q=n.rect;n.rect={x=13+q.x*.74,y=6+q.y*.86,width=q.width*.74,height=q.height*.86}end
  elseif S.paused and S.phase=="battle" then
-  hidden.screen_gold=true;hidden.screen_crystals=true;hidden.screen_crystals_plate=true
+  hidden.screen_gold=true;hidden.screen_crystals=true;hidden.screen_gold_plate=true;hidden.screen_crystals_plate=true
  end
- if hidden.screen_gold then hidden.screen_gold_icon=true;hidden.screen_crystals_icon=true end
+ if hidden.screen_gold then hidden.screen_gold_icon=true;hidden.screen_gold_plate=true;hidden.screen_crystals_icon=true;hidden.screen_crystals_plate=true end
  local visible:{any}={};for _,n in ipairs(nodes)do if not hidden[n.id] and not hidden[string.gsub(n.id,"_hit_[a-z]+$","")] then table.insert(visible,n)end end;nodes=visible
  S.uiRoute=formalRoute;S.uiPage=formalPage
  api.ui.setRoot({kind="screen",id="forest_lord",node=S.phase..":"..(S.autoConfigOpen and "auto" or formalRoute),children=nodes})

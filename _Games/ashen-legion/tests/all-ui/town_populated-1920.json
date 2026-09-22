@@ -161,144 +161,36 @@
       },
       {
         "kind": "image",
-        "id": "town_back_plate_tl",
+        "id": "town_back_plate",
         "rect": {
-          "x": 48,
-          "y": 10.933333333333335,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666664
+          "x": 92,
+          "y": 87,
+          "width": 5.5,
+          "height": 6
         },
-        "asset": "texture://ui_control-quiet-v3-tl",
+        "asset": "texture://ui_hud-key",
         "fit": "stretch"
       },
       {
         "kind": "image",
-        "id": "town_back_plate_t",
+        "id": "town_back_icon",
         "rect": {
-          "x": 48.6,
-          "y": 10.933333333333335,
-          "width": 18.800000000000004,
-          "height": 1.0666666666666664
+          "x": 93.25,
+          "y": 88.14999999999999,
+          "width": 3,
+          "height": 3.7
         },
-        "asset": "texture://ui_control-quiet-v3-t",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "town_back_plate_tr",
-        "rect": {
-          "x": 67.4,
-          "y": 10.933333333333335,
-          "width": 0.5999999999999943,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-tr",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "town_back_plate_l",
-        "rect": {
-          "x": 48,
-          "y": 7.066666666666666,
-          "width": 0.6000000000000014,
-          "height": 3.866666666666669
-        },
-        "asset": "texture://ui_control-quiet-v3-l",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "town_back_plate_c",
-        "rect": {
-          "x": 48.6,
-          "y": 7.066666666666666,
-          "width": 18.800000000000004,
-          "height": 3.866666666666669
-        },
-        "asset": "texture://ui_control-quiet-v3-c",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "town_back_plate_r",
-        "rect": {
-          "x": 67.4,
-          "y": 7.066666666666666,
-          "width": 0.5999999999999943,
-          "height": 3.866666666666669
-        },
-        "asset": "texture://ui_control-quiet-v3-r",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "town_back_plate_bl",
-        "rect": {
-          "x": 48,
-          "y": 6,
-          "width": 0.6000000000000014,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-bl",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "town_back_plate_b",
-        "rect": {
-          "x": 48.6,
-          "y": 6,
-          "width": 18.800000000000004,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-b",
-        "fit": "stretch"
-      },
-      {
-        "kind": "image",
-        "id": "town_back_plate_br",
-        "rect": {
-          "x": 67.4,
-          "y": 6,
-          "width": 0.5999999999999943,
-          "height": 1.0666666666666664
-        },
-        "asset": "texture://ui_control-quiet-v3-br",
-        "fit": "stretch"
+        "asset": "texture://ui_icon-close",
+        "fit": "contain"
       },
       {
         "kind": "button",
         "id": "town_back",
         "rect": {
-          "x": 48,
-          "y": 7.585390946502056,
-          "width": 20,
-          "height": 2.8292181069958846
-        },
-        "text": "返回標題",
-        "action": "UI_home"
-      },
-      {
-        "kind": "button",
-        "id": "town_back_hit_top",
-        "rect": {
-          "x": 48,
-          "y": 10.41460905349794,
-          "width": 20,
-          "height": 1.5853909465020586
-        },
-        "text": "",
-        "action": "UI_home"
-      },
-      {
-        "kind": "button",
-        "id": "town_back_hit_bottom",
-        "rect": {
-          "x": 48,
-          "y": 6.000000000000001,
-          "width": 20,
-          "height": 1.5853909465020586
+          "x": 92,
+          "y": 87,
+          "width": 5.5,
+          "height": 6
         },
         "text": "",
         "action": "UI_home"
@@ -1951,22 +1843,6 @@
       }
     },
     {
-      "text": "返回標題",
-      "font": 22,
-      "clip": {
-        "x": 921.6,
-        "y": 967.5222222222222,
-        "width": 384,
-        "height": 30.555555555555554
-      },
-      "ink": {
-        "x": 1069.6,
-        "y": 973.3781250000001,
-        "width": 88,
-        "height": 19
-      }
-    },
-    {
       "text": "出發遠征",
       "font": 22,
       "clip": {
@@ -2433,44 +2309,638 @@
   ],
   "metrics": {
     "backend": "canvas2d",
-    "nodes": 163,
+    "nodes": 154,
+    "usage": {
+      "logical_nodes": 154,
+      "leaf_nodes": 154,
+      "render_regions_upper_bound": 154,
+      "max_nodes": 2048,
+      "host_max_nodes": 16384,
+      "limit_source": "contract.default",
+      "subtrees": [
+        [
+          "town_scene",
+          1
+        ],
+        [
+          "screen_shade",
+          1
+        ],
+        [
+          "screen_back_fill",
+          1
+        ],
+        [
+          "screen_back_tl",
+          1
+        ],
+        [
+          "screen_back_t",
+          1
+        ],
+        [
+          "screen_back_tr",
+          1
+        ],
+        [
+          "screen_back_l",
+          1
+        ],
+        [
+          "screen_back_c",
+          1
+        ],
+        [
+          "screen_back_r",
+          1
+        ],
+        [
+          "screen_back_bl",
+          1
+        ],
+        [
+          "screen_back_b",
+          1
+        ],
+        [
+          "screen_back_br",
+          1
+        ],
+        [
+          "screen_title",
+          1
+        ],
+        [
+          "town_back_plate",
+          1
+        ],
+        [
+          "town_back_icon",
+          1
+        ],
+        [
+          "town_back",
+          1
+        ],
+        [
+          "launch_expedition_plate_tl",
+          1
+        ],
+        [
+          "launch_expedition_plate_t",
+          1
+        ],
+        [
+          "launch_expedition_plate_tr",
+          1
+        ],
+        [
+          "launch_expedition_plate_l",
+          1
+        ],
+        [
+          "launch_expedition_plate_c",
+          1
+        ],
+        [
+          "launch_expedition_plate_r",
+          1
+        ],
+        [
+          "launch_expedition_plate_bl",
+          1
+        ],
+        [
+          "launch_expedition_plate_b",
+          1
+        ],
+        [
+          "launch_expedition_plate_br",
+          1
+        ],
+        [
+          "launch_expedition",
+          1
+        ],
+        [
+          "launch_expedition_hit_top",
+          1
+        ],
+        [
+          "launch_expedition_hit_bottom",
+          1
+        ],
+        [
+          "town_lord",
+          1
+        ],
+        [
+          "town_heading",
+          1
+        ],
+        [
+          "town_subheading",
+          1
+        ],
+        [
+          "town_material_icon",
+          1
+        ],
+        [
+          "town_gold",
+          1
+        ],
+        [
+          "town_record",
+          1
+        ],
+        [
+          "town_1_plate_tl",
+          1
+        ],
+        [
+          "town_1_plate_t",
+          1
+        ],
+        [
+          "town_1_plate_tr",
+          1
+        ],
+        [
+          "town_1_plate_l",
+          1
+        ],
+        [
+          "town_1_plate_c",
+          1
+        ],
+        [
+          "town_1_plate_r",
+          1
+        ],
+        [
+          "town_1_plate_bl",
+          1
+        ],
+        [
+          "town_1_plate_b",
+          1
+        ],
+        [
+          "town_1_plate_br",
+          1
+        ],
+        [
+          "town_icon_1",
+          1
+        ],
+        [
+          "town_name_1",
+          1
+        ],
+        [
+          "town_effect_1",
+          1
+        ],
+        [
+          "town_cost_icon_1",
+          1
+        ],
+        [
+          "town_cost_1",
+          1
+        ],
+        [
+          "town_1",
+          1
+        ],
+        [
+          "town_2_plate_tl",
+          1
+        ],
+        [
+          "town_2_plate_t",
+          1
+        ],
+        [
+          "town_2_plate_tr",
+          1
+        ],
+        [
+          "town_2_plate_l",
+          1
+        ],
+        [
+          "town_2_plate_c",
+          1
+        ],
+        [
+          "town_2_plate_r",
+          1
+        ],
+        [
+          "town_2_plate_bl",
+          1
+        ],
+        [
+          "town_2_plate_b",
+          1
+        ],
+        [
+          "town_2_plate_br",
+          1
+        ],
+        [
+          "town_icon_2",
+          1
+        ],
+        [
+          "town_name_2",
+          1
+        ],
+        [
+          "town_effect_2",
+          1
+        ],
+        [
+          "town_cost_icon_2",
+          1
+        ],
+        [
+          "town_cost_2",
+          1
+        ],
+        [
+          "town_2",
+          1
+        ],
+        [
+          "town_3_plate_tl",
+          1
+        ],
+        [
+          "town_3_plate_t",
+          1
+        ],
+        [
+          "town_3_plate_tr",
+          1
+        ],
+        [
+          "town_3_plate_l",
+          1
+        ],
+        [
+          "town_3_plate_c",
+          1
+        ],
+        [
+          "town_3_plate_r",
+          1
+        ],
+        [
+          "town_3_plate_bl",
+          1
+        ],
+        [
+          "town_3_plate_b",
+          1
+        ],
+        [
+          "town_3_plate_br",
+          1
+        ],
+        [
+          "town_icon_3",
+          1
+        ],
+        [
+          "town_name_3",
+          1
+        ],
+        [
+          "town_effect_3",
+          1
+        ],
+        [
+          "town_cost_icon_3",
+          1
+        ],
+        [
+          "town_cost_3",
+          1
+        ],
+        [
+          "town_3",
+          1
+        ],
+        [
+          "town_4_plate_tl",
+          1
+        ],
+        [
+          "town_4_plate_t",
+          1
+        ],
+        [
+          "town_4_plate_tr",
+          1
+        ],
+        [
+          "town_4_plate_l",
+          1
+        ],
+        [
+          "town_4_plate_c",
+          1
+        ],
+        [
+          "town_4_plate_r",
+          1
+        ],
+        [
+          "town_4_plate_bl",
+          1
+        ],
+        [
+          "town_4_plate_b",
+          1
+        ],
+        [
+          "town_4_plate_br",
+          1
+        ],
+        [
+          "town_icon_4",
+          1
+        ],
+        [
+          "town_name_4",
+          1
+        ],
+        [
+          "town_effect_4",
+          1
+        ],
+        [
+          "town_cost_icon_4",
+          1
+        ],
+        [
+          "town_cost_4",
+          1
+        ],
+        [
+          "town_4",
+          1
+        ],
+        [
+          "town_5_plate_tl",
+          1
+        ],
+        [
+          "town_5_plate_t",
+          1
+        ],
+        [
+          "town_5_plate_tr",
+          1
+        ],
+        [
+          "town_5_plate_l",
+          1
+        ],
+        [
+          "town_5_plate_c",
+          1
+        ],
+        [
+          "town_5_plate_r",
+          1
+        ],
+        [
+          "town_5_plate_bl",
+          1
+        ],
+        [
+          "town_5_plate_b",
+          1
+        ],
+        [
+          "town_5_plate_br",
+          1
+        ],
+        [
+          "town_icon_5",
+          1
+        ],
+        [
+          "town_name_5",
+          1
+        ],
+        [
+          "town_effect_5",
+          1
+        ],
+        [
+          "town_cost_icon_5",
+          1
+        ],
+        [
+          "town_cost_5",
+          1
+        ],
+        [
+          "town_5",
+          1
+        ],
+        [
+          "town_6_plate_tl",
+          1
+        ],
+        [
+          "town_6_plate_t",
+          1
+        ],
+        [
+          "town_6_plate_tr",
+          1
+        ],
+        [
+          "town_6_plate_l",
+          1
+        ],
+        [
+          "town_6_plate_c",
+          1
+        ],
+        [
+          "town_6_plate_r",
+          1
+        ],
+        [
+          "town_6_plate_bl",
+          1
+        ],
+        [
+          "town_6_plate_b",
+          1
+        ],
+        [
+          "town_6_plate_br",
+          1
+        ],
+        [
+          "town_icon_6",
+          1
+        ],
+        [
+          "town_name_6",
+          1
+        ],
+        [
+          "town_effect_6",
+          1
+        ],
+        [
+          "town_cost_icon_6",
+          1
+        ],
+        [
+          "town_cost_6",
+          1
+        ],
+        [
+          "town_6",
+          1
+        ],
+        [
+          "town_7_plate_tl",
+          1
+        ],
+        [
+          "town_7_plate_t",
+          1
+        ],
+        [
+          "town_7_plate_tr",
+          1
+        ],
+        [
+          "town_7_plate_l",
+          1
+        ],
+        [
+          "town_7_plate_c",
+          1
+        ],
+        [
+          "town_7_plate_r",
+          1
+        ],
+        [
+          "town_7_plate_bl",
+          1
+        ],
+        [
+          "town_7_plate_b",
+          1
+        ],
+        [
+          "town_7_plate_br",
+          1
+        ],
+        [
+          "town_icon_7",
+          1
+        ],
+        [
+          "town_name_7",
+          1
+        ],
+        [
+          "town_effect_7",
+          1
+        ],
+        [
+          "town_cost_icon_7",
+          1
+        ],
+        [
+          "town_cost_7",
+          1
+        ],
+        [
+          "town_7",
+          1
+        ],
+        [
+          "town_8_plate_tl",
+          1
+        ],
+        [
+          "town_8_plate_t",
+          1
+        ],
+        [
+          "town_8_plate_tr",
+          1
+        ],
+        [
+          "town_8_plate_l",
+          1
+        ],
+        [
+          "town_8_plate_c",
+          1
+        ],
+        [
+          "town_8_plate_r",
+          1
+        ],
+        [
+          "town_8_plate_bl",
+          1
+        ],
+        [
+          "town_8_plate_b",
+          1
+        ],
+        [
+          "town_8_plate_br",
+          1
+        ],
+        [
+          "town_icon_8",
+          1
+        ],
+        [
+          "town_name_8",
+          1
+        ],
+        [
+          "town_effect_8",
+          1
+        ],
+        [
+          "town_cost_icon_8",
+          1
+        ],
+        [
+          "town_cost_8",
+          1
+        ],
+        [
+          "town_8",
+          1
+        ]
+      ]
+    },
+    "render_regions": 154,
+    "cpu_render_ms": 38.5,
+    "gpu_render_ms": null,
+    "decoded_rgba_bytes_estimate": 37665600,
     "assets": [
-      {
-        "id": "texture://ui_control-quiet-v3-tl",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-t",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-tr",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-l",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-c",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-r",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-bl",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-b",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-br",
-        "state": "ready"
-      },
       {
         "id": "texture://ui_shop-button-primary-v2-tl",
         "state": "ready"
@@ -2552,6 +3022,50 @@
         "state": "ready"
       },
       {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_hud-key",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_icon-close",
+        "state": "ready"
+      },
+      {
         "id": "texture://ui_shop-backdrop",
         "state": "ready"
       },
@@ -2587,6 +3101,7 @@
     "diagnostics": [],
     "fontFamily": "\"Microsoft JhengHei\",sans-serif",
     "limitations": [
+      "CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.",
       "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
       "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
     ]

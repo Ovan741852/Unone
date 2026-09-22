@@ -52,16 +52,20 @@ function check(tree,modal,viewport={width:1920,height:1080}){
  }
  if(!modal)siblings(['stock_panel_1','stock_panel_2','stock_panel_3','stock_panel_4','shopkeeper_portrait','shopkeeper_name','shopkeeper_line','stock_hint','refresh_plate','ready_plate','quick_deploy_plate']);
  if(modal){
-  const frame=box('shop_detail_modal'),ids=['kicker','title','icon','story','price_icon','price','deploy','trigger','effect','buy_plate','cancel_plate','close_plate'].map(s=>'shop_detail_'+s);
+  const frame=box('shop_detail_modal'),ids=['kicker','title','icon','story','price_icon','price','deploy','trigger','effect','buy_plate','close_plate'].map(s=>'shop_detail_'+s);
   for(const id of ids)ok(contains(frame,box(id)),'Outside modal '+id);
   siblings(ids);
+  ok(by.get('shop_detail_close')?.action==='ShopDetailClose','Missing modal close action');
+  ok(by.get('shop_detail_close_icon')?.asset==='texture://ui_icon-close','Missing modal close icon');
+  ok(contains(box('shop_detail_close'),box('shop_detail_close_icon')),'Close icon outside hit target');
+  ok(!by.has('shop_detail_cancel'),'Duplicate legacy cancel control');
   ok(!by.has('refresh'),'Underlying reroll rendered above modal');
  }
  // Same-size buttons must share corner sizes and actual plate height.
  const buttonIds=['tab_home','tab_sell','ready','quick_deploy'];
  const heights=buttonIds.map(id=>box(id+'_plate').height);
  ok(Math.max(...heights)-Math.min(...heights)<.15,'Inconsistent shared button height');
- for(const id of [...buttonIds,...(modal?['shop_detail_close','shop_detail_buy','shop_detail_cancel']:['refresh'])]){
+ for(const id of [...buttonIds,...(modal?['shop_detail_close','shop_detail_buy']:['refresh'])]){
   const r=box(id+'_plate');ok(r.width*viewport.width/100>=43.9&&r.height*viewport.height/100>=43.9,'Target below 44px '+id);
  }
  return failures;
@@ -94,7 +98,7 @@ function check(tree,modal,viewport={width:1920,height:1080}){
   await page.setViewportSize({width,height});await capture(`components-${width}`,false);
   for(let i=1;i<=4;i++){await click('ShopDetail'+i);await capture(`components-detail${i}-${width}`,true);await click('ShopDetailClose','shop_detail_close');}
  }
- await click('ShopDetail1');await click('Buy1');await capture('components-purchased-desktop',true);await click('ShopDetailClose','shop_detail_close');await capture('components-receipt-desktop',false);
+ await click('ShopDetail1');await click('Buy1');await capture('components-purchased-desktop',false);await capture('components-receipt-desktop',false);
  // Rerolls continue while affordable and expose the authoritative next price.
  async function clickIcon(id){const r=await page.evaluate(id=>window.ashen.uiTree().children.find(n=>n.id===id)?.rect,id);assert.ok(r,'Missing '+id);const p=await uiPoint(page,r);await page.mouse.move(p.x,p.y);assert.match(await page.locator('#game').getAttribute('title'),/重骰/);await page.mouse.click(p.x,p.y);await page.mouse.move(2,2);await page.waitForTimeout(180);}
  const beforeReroll=await page.evaluate(()=>window.ashen.state().crystals);await clickIcon('refresh_icon');

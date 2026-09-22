@@ -7,7 +7,12 @@ for(const location of ['potion','tech','curse','enchant']){
  fixture(`S.phase="shop";S.location="${location}";stockShop();addItem(gearCatalog[1],0);S.worn[1][5]=S.items[1].id;S.equipSlot=5`);
  if(location==='enchant'){
   assert.ok(actions().includes('Enchant'));tick({actions:{Enchant:true}});tick({});assert.ok(actions().includes('AcceptEnchant'));assert.ok(!actions().includes('LeaveShop'));tick({actions:{AcceptEnchant:true}});tick({});assert.ok(actions().includes('LeaveShop'));
- }else{assert.ok(actions().includes('Buy1'));tick({actions:{Buy1:true}});const s=tick({});assert.ok(s.stock[0].sold);}
+ }else{
+  // The shop is detail-first: open the first stock card, then confirm from
+  // the detail modal. Keep the direct Buy1 branch for older fixtures.
+  if(actions().includes('ShopDetail1')){tick({actions:{ShopDetail1:true}});tick({});}
+  assert.ok(actions().includes('Buy1'));tick({actions:{Buy1:true}});const s=tick({});assert.ok(s.stock[0].sold);
+ }
 }
 fixture('S.phase="clear";S.presentationDelay=0;S.chests={{tier=3,playerId=1}};S.chestCount=1');
 assert.ok(actions().includes('OpenChest'));

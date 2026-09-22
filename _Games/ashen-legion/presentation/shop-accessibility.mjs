@@ -41,7 +41,7 @@ export function createShopAccessibility({canvas,stage,onAction,onHold=()=>{}}){
   const kind=by.has('shop_detail_title')?'shop':by.has('town_upgrade_title')?'town':by.has('gear_detail_title')?'gear':by.has('delete_warning')?'delete':by.has('enchant_reveal_name')?'enchant':by.has('abandon_warning')?'abandon':game.autoConfigOpen?'auto':'';
   const modal=!!kind,title=by.get(kind+'_detail_title')?.text??by.get('town_upgrade_title')?.text;
   closeAction=({shop:'ShopDetailClose',gear:'GearDetailClose',town:'TownUpgradeCancel',delete:'CancelDelete',enchant:'KeepEnchant',abandon:'UI_home',auto:'Auto_cancel'})[kind]??'';
-  const modalIds={shop:['shop_detail_close','shop_detail_buy','shop_detail_cancel'],gear:['gear_detail_close','gear_detail_equip'],town:['town_upgrade_cancel','town_upgrade_confirm'],delete:['delete_cancel','delete_confirm'],enchant:['enchant_keep','enchant_accept'],abandon:['abandon_cancel','abandon_confirm']};
+  const modalIds={shop:['shop_detail_close','shop_detail_buy'],gear:['gear_detail_close','gear_detail_equip'],town:['town_upgrade_cancel','town_upgrade_confirm'],delete:['delete_cancel','delete_confirm'],enchant:['enchant_keep','enchant_accept'],abandon:['abandon_cancel','abandon_confirm']};
   const first=modalIds[kind]?.[0]??(kind==='auto'?'auto_cancel':'');
   assign(root,'role',modal?'dialog':'group');assign(root,'aria-label',kind==='shop'?`裝備詳情：${title}`:title??by.get('screen_title')?.text??by.get('title')?.text??'森林領主');
   if(modal)assign(root,'aria-modal','true');else root.removeAttribute('aria-modal');
@@ -67,6 +67,14 @@ export function createShopAccessibility({canvas,stage,onAction,onHold=()=>{}}){
    const action=node.action??(id==='refresh'?by.get('refresh_content_hit')?.action:undefined);
    button.disabled=!action;button.dataset.action=action??'';
    let label=node.text;
+   if(id==='tab_gear')label='裝備分頁';
+   if(id==='tab_runes')label='符文分頁';
+   if(/^roster_unit_\d+$/.test(id)||/^unit_\d+$/.test(id))label=`${['劍兵','槍兵','騎兵'][Number(id.split('_').at(-1))-1]??'兵種'}，派兵費 ${game.costs?.[Number(id.split('_').at(-1))-1]??''} 金`;
+   if(id==='gear_scroll_up')label='裝備列表向上滾動';
+   if(id==='gear_scroll_down')label='裝備列表向下滾動';
+   if(id==='rune_scroll_up')label='符文列表向上滾動';
+   if(id==='rune_scroll_down')label='符文列表向下滾動';
+   if(/^slot_\d+$/.test(id))label=`${['頭','身','腳','手','武器'][Number(id.split('_')[1])-1]??'裝備'}裝備槽，點擊開啟裝備列表`;
    if(/^choice_\d+$/.test(id)){const i=id.split('_')[1];label=`${by.get('choice_name_'+i)?.text}，${by.get('choice_desc_'+i)?.text.replaceAll('\n','')}。拜訪此處`;}
    if(/^town_\d+$/.test(id)){const i=id.split('_')[1];label=`${by.get('town_name_'+i)?.text}，${by.get('town_effect_'+i)?.text}，建材 ${by.get('town_cost_'+i)?.text}。查看研究條件`;}
    if(/^profile_(create|load|delete)_\d+$/.test(id))label=`札記 ${id.split('_').at(-1)}，${node.text}`;

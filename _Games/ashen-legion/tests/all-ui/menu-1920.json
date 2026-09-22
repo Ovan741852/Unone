@@ -32,8 +32,8 @@
         "kind": "image",
         "id": "crest",
         "rect": {
-          "x": 15,
-          "y": 67,
+          "x": 18,
+          "y": 68,
           "width": 16,
           "height": 20
         },
@@ -44,7 +44,7 @@
         "kind": "text",
         "id": "title",
         "rect": {
-          "x": 8,
+          "x": 9,
           "y": 59.52816358024692,
           "width": 34,
           "height": 6.462191358024691
@@ -55,10 +55,10 @@
         "kind": "text",
         "id": "subtitle",
         "rect": {
-          "x": 8,
-          "y": 49.779706790123456,
-          "width": 36,
-          "height": 2.218364197530864
+          "x": 9,
+          "y": 49.73353909465021,
+          "width": 34,
+          "height": 2.8292181069958846
         },
         "text": "七輪遠征 · 奪回森林王冠"
       },
@@ -67,9 +67,9 @@
         "id": "start_plate_tl",
         "rect": {
           "x": 9,
-          "y": 38.760330578512395,
-          "width": 2.09194214876033,
-          "height": 1.239669421487605
+          "y": 40.65702479338843,
+          "width": 2.2662706611570247,
+          "height": 1.3429752066115697
         },
         "asset": "texture://ui_shop-button-primary-v2-tl",
         "fit": "stretch"
@@ -78,10 +78,10 @@
         "kind": "image",
         "id": "start_plate_t",
         "rect": {
-          "x": 11.09194214876033,
-          "y": 38.760330578512395,
-          "width": 29.816115702479337,
-          "height": 1.239669421487605
+          "x": 11.266270661157025,
+          "y": 40.65702479338843,
+          "width": 29.467458677685954,
+          "height": 1.3429752066115697
         },
         "asset": "texture://ui_shop-button-primary-v2-t",
         "fit": "stretch"
@@ -90,10 +90,10 @@
         "kind": "image",
         "id": "start_plate_tr",
         "rect": {
-          "x": 40.90805785123967,
-          "y": 38.760330578512395,
-          "width": 2.0919421487603316,
-          "height": 1.239669421487605
+          "x": 40.73372933884298,
+          "y": 40.65702479338843,
+          "width": 2.266270661157023,
+          "height": 1.3429752066115697
         },
         "asset": "texture://ui_shop-button-primary-v2-tr",
         "fit": "stretch"
@@ -103,9 +103,9 @@
         "id": "start_plate_l",
         "rect": {
           "x": 9,
-          "y": 35.239669421487605,
-          "width": 2.09194214876033,
-          "height": 3.52066115702479
+          "y": 36.84297520661157,
+          "width": 2.2662706611570247,
+          "height": 3.8140495867768607
         },
         "asset": "texture://ui_shop-button-primary-v2-l",
         "fit": "stretch"
@@ -114,10 +114,10 @@
         "kind": "image",
         "id": "start_plate_c",
         "rect": {
-          "x": 11.09194214876033,
-          "y": 35.239669421487605,
-          "width": 29.816115702479337,
-          "height": 3.52066115702479
+          "x": 11.266270661157025,
+          "y": 36.84297520661157,
+          "width": 29.467458677685954,
+          "height": 3.8140495867768607
         },
         "asset": "texture://ui_shop-button-primary-v2-c",
         "fit": "stretch"
@@ -126,10 +126,10 @@
         "kind": "image",
         "id": "start_plate_r",
         "rect": {
-          "x": 40.90805785123967,
-          "y": 35.239669421487605,
-          "width": 2.0919421487603316,
-          "height": 3.52066115702479
+          "x": 40.73372933884298,
+          "y": 36.84297520661157,
+          "width": 2.266270661157023,
+          "height": 3.8140495867768607
         },
         "asset": "texture://ui_shop-button-primary-v2-r",
         "fit": "stretch"
@@ -139,9 +139,9 @@
         "id": "start_plate_bl",
         "rect": {
           "x": 9,
-          "y": 34,
-          "width": 2.09194214876033,
-          "height": 1.239669421487605
+          "y": 35.5,
+          "width": 2.2662706611570247,
+          "height": 1.3429752066115697
         },
         "asset": "texture://ui_shop-button-primary-v2-bl",
         "fit": "stretch"
@@ -150,10 +150,10 @@
         "kind": "image",
         "id": "start_plate_b",
         "rect": {
-          "x": 11.09194214876033,
-          "y": 34,
-          "width": 29.816115702479337,
-          "height": 1.239669421487605
+          "x": 11.266270661157025,
+          "y": 35.5,
+          "width": 29.467458677685954,
+          "height": 1.3429752066115697
         },
         "asset": "texture://ui_shop-button-primary-v2-b",
         "fit": "stretch"
@@ -162,10 +162,10 @@
         "kind": "image",
         "id": "start_plate_br",
         "rect": {
-          "x": 40.90805785123967,
-          "y": 34,
-          "width": 2.0919421487603316,
-          "height": 1.239669421487605
+          "x": 40.73372933884298,
+          "y": 35.5,
+          "width": 2.266270661157023,
+          "height": 1.3429752066115697
         },
         "asset": "texture://ui_shop-button-primary-v2-br",
         "fit": "stretch"
@@ -175,9 +175,9 @@
         "id": "start",
         "rect": {
           "x": 9,
-          "y": 35.58539094650206,
+          "y": 37.20679012345679,
           "width": 34,
-          "height": 2.8292181069958846
+          "height": 3.0864197530864192
         },
         "text": "讀取進度",
         "action": "Start"
@@ -187,9 +187,9 @@
         "id": "start_hit_top",
         "rect": {
           "x": 9,
-          "y": 38.41460905349794,
+          "y": 40.29320987654321,
           "width": 34,
-          "height": 1.5853909465020577
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Start"
@@ -199,9 +199,9 @@
         "id": "start_hit_bottom",
         "rect": {
           "x": 9,
-          "y": 34,
+          "y": 35.5,
           "width": 34,
-          "height": 1.5853909465020577
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "Start"
@@ -211,7 +211,7 @@
         "id": "settings_plate_tl",
         "rect": {
           "x": 9,
-          "y": 32.007407407407406,
+          "y": 33.13703703703704,
           "width": 0.5999999999999996,
           "height": 1.06666666666667
         },
@@ -223,7 +223,7 @@
         "id": "settings_plate_t",
         "rect": {
           "x": 9.6,
-          "y": 32.007407407407406,
+          "y": 33.13703703703704,
           "width": 32.8,
           "height": 1.06666666666667
         },
@@ -235,7 +235,7 @@
         "id": "settings_plate_tr",
         "rect": {
           "x": 42.4,
-          "y": 32.007407407407406,
+          "y": 33.13703703703704,
           "width": 0.6000000000000014,
           "height": 1.06666666666667
         },
@@ -247,9 +247,9 @@
         "id": "settings_plate_l",
         "rect": {
           "x": 9,
-          "y": 28.140740740740743,
+          "y": 28.770370370370376,
           "width": 0.5999999999999996,
-          "height": 3.8666666666666636
+          "height": 4.366666666666664
         },
         "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
@@ -259,9 +259,9 @@
         "id": "settings_plate_c",
         "rect": {
           "x": 9.6,
-          "y": 28.140740740740743,
+          "y": 28.770370370370376,
           "width": 32.8,
-          "height": 3.8666666666666636
+          "height": 4.366666666666664
         },
         "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
@@ -271,9 +271,9 @@
         "id": "settings_plate_r",
         "rect": {
           "x": 42.4,
-          "y": 28.140740740740743,
+          "y": 28.770370370370376,
           "width": 0.6000000000000014,
-          "height": 3.8666666666666636
+          "height": 4.366666666666664
         },
         "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
@@ -283,7 +283,7 @@
         "id": "settings_plate_bl",
         "rect": {
           "x": 9,
-          "y": 27.074074074074076,
+          "y": 27.70370370370371,
           "width": 0.5999999999999996,
           "height": 1.0666666666666664
         },
@@ -295,7 +295,7 @@
         "id": "settings_plate_b",
         "rect": {
           "x": 9.6,
-          "y": 27.074074074074076,
+          "y": 27.70370370370371,
           "width": 32.8,
           "height": 1.0666666666666664
         },
@@ -307,7 +307,7 @@
         "id": "settings_plate_br",
         "rect": {
           "x": 42.4,
-          "y": 27.074074074074076,
+          "y": 27.70370370370371,
           "width": 0.6000000000000014,
           "height": 1.0666666666666664
         },
@@ -319,9 +319,9 @@
         "id": "settings",
         "rect": {
           "x": 9,
-          "y": 28.659465020576132,
+          "y": 29.410493827160508,
           "width": 34,
-          "height": 2.8292181069958846
+          "height": 3.0864197530864192
         },
         "text": "系統設定",
         "action": "UI_settings"
@@ -331,9 +331,9 @@
         "id": "settings_hit_top",
         "rect": {
           "x": 9,
-          "y": 31.488683127572017,
+          "y": 32.49691358024692,
           "width": 34,
-          "height": 1.5853909465020577
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "UI_settings"
@@ -343,9 +343,9 @@
         "id": "settings_hit_bottom",
         "rect": {
           "x": 9,
-          "y": 27.074074074074076,
+          "y": 27.703703703703717,
           "width": 34,
-          "height": 1.5853909465020577
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "UI_settings"
@@ -355,7 +355,7 @@
         "id": "exit_plate_tl",
         "rect": {
           "x": 9,
-          "y": 25.081481481481486,
+          "y": 25.34074074074074,
           "width": 0.5999999999999996,
           "height": 1.0666666666666664
         },
@@ -367,7 +367,7 @@
         "id": "exit_plate_t",
         "rect": {
           "x": 9.6,
-          "y": 25.081481481481486,
+          "y": 25.34074074074074,
           "width": 32.8,
           "height": 1.0666666666666664
         },
@@ -379,7 +379,7 @@
         "id": "exit_plate_tr",
         "rect": {
           "x": 42.4,
-          "y": 25.081481481481486,
+          "y": 25.34074074074074,
           "width": 0.6000000000000014,
           "height": 1.0666666666666664
         },
@@ -391,9 +391,9 @@
         "id": "exit_plate_l",
         "rect": {
           "x": 9,
-          "y": 21.21481481481482,
+          "y": 20.97407407407407,
           "width": 0.5999999999999996,
-          "height": 3.866666666666667
+          "height": 4.366666666666667
         },
         "asset": "texture://ui_control-quiet-v3-l",
         "fit": "stretch"
@@ -403,9 +403,9 @@
         "id": "exit_plate_c",
         "rect": {
           "x": 9.6,
-          "y": 21.21481481481482,
+          "y": 20.97407407407407,
           "width": 32.8,
-          "height": 3.866666666666667
+          "height": 4.366666666666667
         },
         "asset": "texture://ui_control-quiet-v3-c",
         "fit": "stretch"
@@ -415,9 +415,9 @@
         "id": "exit_plate_r",
         "rect": {
           "x": 42.4,
-          "y": 21.21481481481482,
+          "y": 20.97407407407407,
           "width": 0.6000000000000014,
-          "height": 3.866666666666667
+          "height": 4.366666666666667
         },
         "asset": "texture://ui_control-quiet-v3-r",
         "fit": "stretch"
@@ -427,7 +427,7 @@
         "id": "exit_plate_bl",
         "rect": {
           "x": 9,
-          "y": 20.148148148148152,
+          "y": 19.907407407407405,
           "width": 0.5999999999999996,
           "height": 1.0666666666666664
         },
@@ -439,7 +439,7 @@
         "id": "exit_plate_b",
         "rect": {
           "x": 9.6,
-          "y": 20.148148148148152,
+          "y": 19.907407407407405,
           "width": 32.8,
           "height": 1.0666666666666664
         },
@@ -451,7 +451,7 @@
         "id": "exit_plate_br",
         "rect": {
           "x": 42.4,
-          "y": 20.148148148148152,
+          "y": 19.907407407407405,
           "width": 0.6000000000000014,
           "height": 1.0666666666666664
         },
@@ -463,9 +463,9 @@
         "id": "exit",
         "rect": {
           "x": 9,
-          "y": 21.733539094650208,
+          "y": 21.614197530864203,
           "width": 34,
-          "height": 2.8292181069958846
+          "height": 3.0864197530864192
         },
         "text": "離開",
         "action": "ExitGame"
@@ -475,9 +475,9 @@
         "id": "exit_hit_top",
         "rect": {
           "x": 9,
-          "y": 24.562757201646093,
+          "y": 24.700617283950614,
           "width": 34,
-          "height": 1.5853909465020577
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "ExitGame"
@@ -487,9 +487,9 @@
         "id": "exit_hit_bottom",
         "rect": {
           "x": 9,
-          "y": 20.148148148148152,
+          "y": 19.907407407407412,
           "width": 34,
-          "height": 1.5853909465020577
+          "height": 1.7067901234567904
         },
         "text": "",
         "action": "ExitGame"
@@ -501,13 +501,13 @@
       "text": "森林領主",
       "font": 50.25,
       "clip": {
-        "x": 153.6,
+        "x": 172.8,
         "y": 367.3041666666666,
         "width": 652.8,
         "height": 69.79166666666666
       },
       "ink": {
-        "x": 381.5,
+        "x": 400.7,
         "y": 379.80937499999993,
         "width": 195.75,
         "height": 45
@@ -515,72 +515,250 @@
     },
     {
       "text": "七輪遠征 · 奪回森林王冠",
-      "font": 17.25,
+      "font": 22,
       "clip": {
-        "x": 153.6,
-        "y": 518.4208333333333,
-        "width": 691.2,
-        "height": 23.95833333333333
+        "x": 172.8,
+        "y": 512.3222222222222,
+        "width": 652.8,
+        "height": 30.555555555555554
       },
       "ink": {
-        "x": 406.64970703125005,
-        "y": 522.134375,
-        "width": 184.8505859375,
-        "height": 16
+        "x": 382.16484375,
+        "y": 517.178125,
+        "width": 234.0703125,
+        "height": 20
       }
     },
     {
       "text": "讀取進度",
-      "font": 22,
+      "font": 24,
       "clip": {
         "x": 172.8,
-        "y": 665.1222222222221,
+        "y": 644.8333333333334,
         "width": 652.8,
-        "height": 30.555555555555554
+        "height": 33.33333333333333
       },
       "ink": {
-        "x": 456.2,
-        "y": 669.978125,
-        "width": 87,
-        "height": 20
+        "x": 452.2,
+        "y": 650.859375,
+        "width": 95,
+        "height": 21
       }
     },
     {
       "text": "系統設定",
-      "font": 22,
+      "font": 24,
       "clip": {
         "x": 172.8,
-        "y": 739.9222222222222,
+        "y": 729.0333333333332,
         "width": 652.8,
-        "height": 30.555555555555554
+        "height": 33.33333333333333
       },
       "ink": {
-        "x": 456.2,
-        "y": 744.778125,
-        "width": 86,
-        "height": 20
+        "x": 452.2,
+        "y": 734.0593749999998,
+        "width": 94,
+        "height": 22
       }
     },
     {
       "text": "離開",
-      "font": 22,
+      "font": 24,
       "clip": {
         "x": 172.8,
-        "y": 814.7222222222222,
+        "y": 813.2333333333332,
         "width": 652.8,
-        "height": 30.555555555555554
+        "height": 33.33333333333333
       },
       "ink": {
-        "x": 478.2,
-        "y": 819.578125,
-        "width": 42,
-        "height": 20
+        "x": 476.2,
+        "y": 819.2593749999999,
+        "width": 45,
+        "height": 21
       }
     }
   ],
   "metrics": {
     "backend": "canvas2d",
     "nodes": 41,
+    "usage": {
+      "logical_nodes": 41,
+      "leaf_nodes": 41,
+      "render_regions_upper_bound": 41,
+      "max_nodes": 2048,
+      "host_max_nodes": 16384,
+      "limit_source": "contract.default",
+      "subtrees": [
+        [
+          "menu_ground",
+          1
+        ],
+        [
+          "menu_art",
+          1
+        ],
+        [
+          "crest",
+          1
+        ],
+        [
+          "title",
+          1
+        ],
+        [
+          "subtitle",
+          1
+        ],
+        [
+          "start_plate_tl",
+          1
+        ],
+        [
+          "start_plate_t",
+          1
+        ],
+        [
+          "start_plate_tr",
+          1
+        ],
+        [
+          "start_plate_l",
+          1
+        ],
+        [
+          "start_plate_c",
+          1
+        ],
+        [
+          "start_plate_r",
+          1
+        ],
+        [
+          "start_plate_bl",
+          1
+        ],
+        [
+          "start_plate_b",
+          1
+        ],
+        [
+          "start_plate_br",
+          1
+        ],
+        [
+          "start",
+          1
+        ],
+        [
+          "start_hit_top",
+          1
+        ],
+        [
+          "start_hit_bottom",
+          1
+        ],
+        [
+          "settings_plate_tl",
+          1
+        ],
+        [
+          "settings_plate_t",
+          1
+        ],
+        [
+          "settings_plate_tr",
+          1
+        ],
+        [
+          "settings_plate_l",
+          1
+        ],
+        [
+          "settings_plate_c",
+          1
+        ],
+        [
+          "settings_plate_r",
+          1
+        ],
+        [
+          "settings_plate_bl",
+          1
+        ],
+        [
+          "settings_plate_b",
+          1
+        ],
+        [
+          "settings_plate_br",
+          1
+        ],
+        [
+          "settings",
+          1
+        ],
+        [
+          "settings_hit_top",
+          1
+        ],
+        [
+          "settings_hit_bottom",
+          1
+        ],
+        [
+          "exit_plate_tl",
+          1
+        ],
+        [
+          "exit_plate_t",
+          1
+        ],
+        [
+          "exit_plate_tr",
+          1
+        ],
+        [
+          "exit_plate_l",
+          1
+        ],
+        [
+          "exit_plate_c",
+          1
+        ],
+        [
+          "exit_plate_r",
+          1
+        ],
+        [
+          "exit_plate_bl",
+          1
+        ],
+        [
+          "exit_plate_b",
+          1
+        ],
+        [
+          "exit_plate_br",
+          1
+        ],
+        [
+          "exit",
+          1
+        ],
+        [
+          "exit_hit_top",
+          1
+        ],
+        [
+          "exit_hit_bottom",
+          1
+        ]
+      ]
+    },
+    "render_regions": 41,
+    "cpu_render_ms": 0.8999999761581421,
+    "gpu_render_ms": null,
+    "decoded_rgba_bytes_estimate": 14758432,
     "assets": [
       {
         "id": "texture://ui_shop-surface",
@@ -670,6 +848,7 @@
     "diagnostics": [],
     "fontFamily": "\"Microsoft JhengHei\",sans-serif",
     "limitations": [
+      "CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.",
       "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
       "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
     ]

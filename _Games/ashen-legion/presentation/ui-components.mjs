@@ -11,6 +11,12 @@ export const skins={
  'shop-button-secondary-v2':{borders:[300,100,300,100],trim:true,scale:'height'},
 };
 
+// A decorative resource badge is not a control. Disabled controls use text
+// nodes, so recognize their button skin rather than every matching *_plate.
+export function isControl(node,plate){
+ return !!plate&&(node.kind==='button'||/^texture:\/\/ui_(shop-button-|control-quiet-)/.test(plate.asset??''));
+}
+
 // One Core image node; this function selects the game skin's sizing rule.
 // Generic crop geometry and rendering live in the official hosts.
 export function fitNineSlice(nodes,id,[vw,vh],metadata){

@@ -38,10 +38,29 @@
   "metrics": {
     "backend": "canvas2d",
     "nodes": 1,
+    "usage": {
+      "logical_nodes": 1,
+      "leaf_nodes": 1,
+      "render_regions_upper_bound": 1,
+      "max_nodes": 2048,
+      "host_max_nodes": 16384,
+      "limit_source": "contract.default",
+      "subtrees": [
+        [
+          "outro_wait",
+          1
+        ]
+      ]
+    },
+    "render_regions": 1,
+    "cpu_render_ms": 0.09999999403953552,
+    "gpu_render_ms": null,
+    "decoded_rgba_bytes_estimate": 0,
     "assets": [],
     "diagnostics": [],
     "fontFamily": "\"Microsoft JhengHei\",sans-serif",
     "limitations": [
+      "CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.",
       "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
       "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
     ]

@@ -533,43 +533,169 @@
   "metrics": {
     "backend": "canvas2d",
     "nodes": 37,
+    "usage": {
+      "logical_nodes": 37,
+      "leaf_nodes": 37,
+      "render_regions_upper_bound": 37,
+      "max_nodes": 2048,
+      "host_max_nodes": 16384,
+      "limit_source": "contract.default",
+      "subtrees": [
+        [
+          "screen_shade",
+          1
+        ],
+        [
+          "screen_back_fill",
+          1
+        ],
+        [
+          "screen_back_tl",
+          1
+        ],
+        [
+          "screen_back_t",
+          1
+        ],
+        [
+          "screen_back_tr",
+          1
+        ],
+        [
+          "screen_back_l",
+          1
+        ],
+        [
+          "screen_back_c",
+          1
+        ],
+        [
+          "screen_back_r",
+          1
+        ],
+        [
+          "screen_back_bl",
+          1
+        ],
+        [
+          "screen_back_b",
+          1
+        ],
+        [
+          "screen_back_br",
+          1
+        ],
+        [
+          "screen_title",
+          1
+        ],
+        [
+          "abandon_warning",
+          1
+        ],
+        [
+          "abandon_cancel_plate_tl",
+          1
+        ],
+        [
+          "abandon_cancel_plate_t",
+          1
+        ],
+        [
+          "abandon_cancel_plate_tr",
+          1
+        ],
+        [
+          "abandon_cancel_plate_l",
+          1
+        ],
+        [
+          "abandon_cancel_plate_c",
+          1
+        ],
+        [
+          "abandon_cancel_plate_r",
+          1
+        ],
+        [
+          "abandon_cancel_plate_bl",
+          1
+        ],
+        [
+          "abandon_cancel_plate_b",
+          1
+        ],
+        [
+          "abandon_cancel_plate_br",
+          1
+        ],
+        [
+          "abandon_cancel",
+          1
+        ],
+        [
+          "abandon_cancel_hit_top",
+          1
+        ],
+        [
+          "abandon_cancel_hit_bottom",
+          1
+        ],
+        [
+          "abandon_confirm_plate_tl",
+          1
+        ],
+        [
+          "abandon_confirm_plate_t",
+          1
+        ],
+        [
+          "abandon_confirm_plate_tr",
+          1
+        ],
+        [
+          "abandon_confirm_plate_l",
+          1
+        ],
+        [
+          "abandon_confirm_plate_c",
+          1
+        ],
+        [
+          "abandon_confirm_plate_r",
+          1
+        ],
+        [
+          "abandon_confirm_plate_bl",
+          1
+        ],
+        [
+          "abandon_confirm_plate_b",
+          1
+        ],
+        [
+          "abandon_confirm_plate_br",
+          1
+        ],
+        [
+          "abandon_confirm",
+          1
+        ],
+        [
+          "abandon_confirm_hit_top",
+          1
+        ],
+        [
+          "abandon_confirm_hit_bottom",
+          1
+        ]
+      ]
+    },
+    "render_regions": 37,
+    "cpu_render_ms": 0.29999999701976776,
+    "gpu_render_ms": null,
+    "decoded_rgba_bytes_estimate": 13682784,
     "assets": [
-      {
-        "id": "texture://ui_control-quiet-v3-tl",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-t",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-tr",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-l",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-c",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-r",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-bl",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-b",
-        "state": "ready"
-      },
-      {
-        "id": "texture://ui_control-quiet-v3-br",
-        "state": "ready"
-      },
       {
         "id": "texture://ui_scene-shade",
         "state": "ready"
@@ -613,11 +739,48 @@
       {
         "id": "texture://ui_shop-window-panel-v2-br",
         "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-t",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-tr",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-l",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-c",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-r",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-bl",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-b",
+        "state": "ready"
+      },
+      {
+        "id": "texture://ui_control-quiet-v3-br",
+        "state": "ready"
       }
     ],
     "diagnostics": [],
     "fontFamily": "\"Microsoft JhengHei\",sans-serif",
     "limitations": [
+      "CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.",
       "System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.",
       "Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native."
     ]

@@ -365,6 +365,31 @@
       "source": "assets/formal-ui/hud-active.png"
     },
     {
+      "id": "texture://ui_loadout-tab-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/loadout-tab-v1.png"
+    },
+    {
+      "id": "texture://ui_loadout-tab-active-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/loadout-tab-active-v1.png"
+    },
+    {
+      "id": "texture://ui_loadout-slot-square-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/loadout-slot-square-v1.png"
+    },
+    {
+      "id": "texture://ui_loadout-scroll-track-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/loadout-scroll-track-v1.png"
+    },
+    {
+      "id": "texture://ui_loadout-scroll-thumb-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/loadout-scroll-thumb-v1.png"
+    },
+    {
       "id": "texture://ui_hud-gold",
       "kind": "texture2d",
       "source": "assets/formal-ui/hud-gold.png"
@@ -373,6 +398,11 @@
       "id": "texture://ui_hud-crystal",
       "kind": "texture2d",
       "source": "assets/formal-ui/hud-crystal.png"
+    },
+    {
+      "id": "texture://ui_tab-active-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/tab-active-v1.png"
     },
     {
       "id": "texture://ui_route-map",
@@ -1628,6 +1658,36 @@
       "id": "texture://ui_control-quiet-v3",
       "kind": "texture2d",
       "source": "assets/formal-ui/control-quiet-v3.png"
+    },
+    {
+      "id": "texture://ui_loadout-board-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/loadout-board-v1.png"
+    },
+    {
+      "id": "texture://ui_loadout-board-v2",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/loadout-board-v2.png"
+    },
+    {
+      "id": "texture://ui_loadout-slot-empty-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/loadout-slot-empty-v1.png"
+    },
+    {
+      "id": "texture://ui_loadout-item-tile-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/loadout-item-tile-v1.png"
+    },
+    {
+      "id": "texture://ui_loadout-item-tile-v2",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/loadout-item-tile-v2.png"
+    },
+    {
+      "id": "texture://ui_shop-close-v2",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-close-v2.png"
     },
     {
       "id": "texture://ui_target-acorn",
