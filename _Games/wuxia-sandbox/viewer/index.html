@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>雲水鎮與青石鎮 · 雙城江湖</title><link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/combat.css">
+</head>
+<body>
+  <main id="game" aria-label="雲水鎮三維遊戲場景">
+    <canvas id="world" tabindex="0" aria-label="小鎮鏡頭：左鍵平移、右鍵或 Shift 拖曳旋轉、滾輪縮放；WASD 移動，Q E 旋轉，F 跟隨，Esc 自由鏡頭"></canvas>
+    <div id="landmarks" role="group" aria-label="建築與民居，點選查看資料"></div><div id="nameplates" aria-label="鎮民姓名與行為"></div>
+    <div id="combat-effects" aria-hidden="true"></div>
+    <header class="title-panel">
+      <span class="eyebrow">江湖百態 · 生活沙盒</span>
+      <h1>雲水鎮 · 青石鎮<span class="seal">雙城</span></h1>
+      <p>八十位居民，各有一段人生。</p>
+      <p id="ai-status" role="status">人物決策：等待 NanoJev</p>
+      <div class="day-cycle" aria-label="小鎮日夜"><strong id="day-phase">時辰</strong><span id="day-time">讀取中…</span><progress id="day-progress" max="1" value="0" aria-label="一天進度"></progress></div>
+      <div class="town-facts"><span>80 位居民</span><span>40 戶住宅</span><span>180 × 144 雙城</span></div>
+      <div class="combat-observer"><span id="combat-status">尚無交鋒 · 等待 NanoJev 決策</span><button id="watch-fight" disabled>觀戰</button></div>
+    </header>
+    <nav class="controls" aria-label="遊戲控制">
+      <span id="clock">讀取小鎮…</span><button id="pause" aria-label="暫停模擬">Ⅱ 暫停</button>
+      <button id="speed">1×</button><button id="overview">俯瞰全鎮</button><button id="roster-toggle">居民名冊</button><button id="economy-toggle" aria-expanded="false" aria-controls="economy">小鎮帳本</button>
+    </nav>
+    <section id="roster" class="panel roster" hidden>
+      <div class="panel-heading"><h2>居民名冊</h2><button id="roster-close" aria-label="關閉名冊">×</button></div>
+      <input id="search" type="search" placeholder="搜尋姓名或職業" aria-label="搜尋居民">
+      <div id="residents"></div>
+    </section>
+    <section id="economy" class="panel economy" hidden aria-label="小鎮經濟帳本">
+      <div class="panel-heading"><h2>小鎮帳本</h2><button id="economy-close" aria-label="關閉小鎮帳本">×</button></div>
+      <p id="economy-summary">等候 Luau 經濟資料…</p>
+      <p id="economy-health" class="economy-note"></p>
+      <h3>今日物價與庫存</h3>
+      <table class="ledger-table"><caption>價格：文／份。庫存分商家／隨身（含遺物）。</caption><thead><tr><th scope="col">商品</th><th scope="col">價格</th><th scope="col">商家／隨身</th><th scope="col">累計產／耗</th></tr></thead><tbody id="goods"></tbody></table>
+      <h3>商號與公庫</h3>
+      <table class="ledger-table"><caption>各帳戶現金，包含啟動資金</caption><thead><tr><th scope="col">帳戶</th><th scope="col">現金</th><th scope="col">僱員</th></tr></thead><tbody id="businesses"></tbody></table>
+      <details><summary>經濟怎麼運作</summary><p class="economy-note">職業生產 → 商家補貨 → 居民消費 → 稅收支付公共工作。庫存少會漲價；沒錢或沒貨就無法成交。飯食需消耗食材製作。補貨暫以帳戶間交割，尚無運貨車。這是遊戲內封閉經濟，沒有銀行或外貿。</p></details>
+      <h3>最近交易</h3><ol id="town-ledger" class="receipts"></ol>
+      <p id="economy-audit" class="economy-note"></p>
+    </section>
+    <aside id="details" class="panel details" hidden aria-label="居民詳細資訊">
+      <div class="panel-heading"><span class="eyebrow">人物誌</span><button id="detail-close" aria-label="關閉人物詳情">×</button></div>
+      <div class="person-heading"><img id="portrait" alt="角色模型頭像"><div><h2 id="person-name"></h2><p id="person-role"></p></div></div>
+      <section class="person-status" aria-labelledby="person-status-heading"><h3 id="person-status-heading">目前狀態</h3><ul id="person-status-list"></ul><p id="person-status-values"></p></section>
+      <p id="person-combat" class="person-combat"></p>
+      <section id="person-memorial" class="person-memorial" hidden aria-label="生平／墓誌"><h3>生平／墓誌</h3><p><strong>死亡原因</strong> <span id="person-death-cause"></span></p><p id="person-estate"></p><div id="memorial-life"><h4>身世與生前資料</h4><p class="source-note">身世／背景／性格為角色設定；武學／關係為留存狀態。</p></div><div id="memorial-records"><h4>本輪留存紀錄</h4></div></section>
+      <section class="person-identity" aria-label="價值觀、感情觀與人格">
+        <h3>價值觀與感情觀</h3>
+        <p id="person-values"></p><p id="person-love"></p>
+        <details id="identity-details"><summary>人格特質與內在矛盾</summary>
+          <dl><dt>自我底線</dt><dd id="person-red-line"></dd><dt>感情界線</dt><dd id="person-love-boundary"></dd><dt>內在矛盾</dt><dd id="person-tension"></dd></dl>
+          <div id="person-traits"></div>
+          <p class="source-note">0–100 為固定角色設定，並非好壞評分或心理診斷；與當下心情分開。這份資料會送進 NanoJev，但尚不保證每次行為都符合人設。</p>
+        </details>
+      </section>
+      <section id="person-mind" class="person-mind" aria-label="心情與想法"><h3 id="person-emotion"></h3><p id="person-emotion-cause"></p><h4>正在做 <small>目前意圖</small></h4><p id="person-intent"></p><p id="person-interaction" class="source-note" hidden></p><p id="person-progress" class="source-note"></p><h4>接下來打算 <small>提前規劃</small></h4><p id="person-next-plan"></p><p id="person-plan-status" class="source-note"></p><p class="source-note">行為與切換時機由 NanoJev 選擇；心情原因是狀態摘要，非模型內心獨白。</p></section>
+      <div class="intent-card"><p id="person-rest"></p><div class="camera-actions"><button id="follow" aria-pressed="false">跟隨這位居民</button><button id="focus">定位一次</button></div></div>
+      <div id="person-stats" class="stats" aria-label="人物需求，範圍零到一百">
+        <div><label for="hunger">飢餓 <output id="hunger-value"></output></label><meter id="hunger" min="0" max="100" low="35" high="70" optimum="0"></meter></div>
+        <div><label for="fatigue">疲勞 <output id="fatigue-value"></output></label><meter id="fatigue" min="0" max="100" low="35" high="78" optimum="0"></meter></div>
+        <div><label for="morale">士氣 <output id="morale-value"></output></label><meter id="morale" min="0" max="100" low="38" high="75" optimum="100"></meter></div>
+        <div><label for="injury">傷勢 <output id="injury-value"></output></label><meter id="injury" min="0" max="100" low="20" high="60" optimum="0"></meter></div>
+        <div><label for="loneliness">孤獨 <output id="loneliness-value"></output></label><meter id="loneliness" min="0" max="100" low="35" high="65" optimum="0"></meter></div>
+        <div><label for="fear">恐懼 <output id="fear-value"></output></label><meter id="fear" min="0" max="100" low="30" high="60" optimum="0"></meter></div>
+      </div>
+      <div id="finance-home"><section id="person-finance" class="personal-finance" aria-label="人物收支"><h3>錢袋 <span id="person-cash">—</span></h3><p id="person-income"></p><p id="person-employer"></p><p id="person-finance-status"></p><details id="person-ledger-details"><summary id="person-ledger-heading">個人最近收支</summary><ol id="person-ledger" class="receipts"></ol></details></section></div>
+      <section class="inventory" aria-label="隨身行囊"><h3>隨身行囊</h3><ul id="person-inventory"></ul><p id="person-item-event" class="source-note"></p></section>
+      <div id="biography-home"><dl id="person-biography"><dt id="person-career-row" hidden>生前職業／任職</dt><dd id="person-career" hidden></dd><dt>身世</dt><dd id="person-bio"></dd><dt>成長背景</dt><dd id="person-background"></dd><dt>性格與喜好</dt><dd id="person-preferences"></dd><dt>武學</dt><dd id="person-martial"></dd><dt>修仙</dt><dd id="person-cultivation"></dd><dt>關係摘要（最多三人）</dt><dd id="person-relations"></dd></dl></div>
+      <section class="chronicle" aria-labelledby="person-chronicle-heading"><h3 id="person-chronicle-heading">人物編年史</h3><p id="person-mentor" class="source-note"></p><ol id="person-chronicle" class="chronicle-list"></ol></section>
+      <details id="decision-details"><summary>查看決策依據</summary><p id="person-reason" class="source-note"></p><p id="thinking"></p></details>
+    </aside>
+    <aside id="building-details" class="panel details building-details" hidden aria-labelledby="building-title">
+      <div class="panel-heading"><h2 id="building-title" tabindex="-1"></h2><button id="building-close" aria-label="關閉建築資料">×</button></div>
+      <p id="building-purpose"></p>
+      <dl id="building-occupancy"><dt>目前場域人數</dt><dd id="building-occupants"></dd></dl>
+      <section id="building-household" aria-labelledby="building-household-title"><h3 id="building-household-title">住戶登記</h3><div id="building-residents"></div><p id="building-empty">住戶未記錄</p></section>
+      <p id="building-note" class="source-note"></p>
+      <div class="camera-actions"><button id="building-focus">定位此建築</button></div>
+    </aside>
+    <nav class="camera-controls" aria-label="鏡頭控制">
+      <span id="camera-status" role="status">自由鏡頭</span>
+      <button id="smart-camera" aria-pressed="true">智慧鏡頭：開</button>
+      <div class="camera-modes" role="group" aria-label="左鍵拖曳模式"><button id="camera-pan" aria-pressed="true" title="左鍵拖曳平移">平移</button><button id="camera-rotate" aria-pressed="false" title="左鍵拖曳旋轉；右鍵也可旋轉">旋轉</button></div>
+      <button id="follow-selected" aria-pressed="false" disabled>跟隨選取角色</button>
+    </nav>
+    <footer>
+      <div class="event-strip"><span class="event-heading">鎮中見聞</span><span id="event">居民正從各自家門出發…</span></div>
+      <div class="footnotes"><span>左鍵平移 · 右鍵旋轉 · 滾輪縮放 · WASD 移動 / QE 旋轉 · F 跟隨 / Esc 退出</span><span id="connection" role="status">連接 Unone…</span></div>
+    </footer>
+    <div id="loading" role="status"><span class="seal">雲</span><h2>走進雲水鎮</h2><p id="load-message">正在讀取人物與建築模型…</p></div>
+  </main>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

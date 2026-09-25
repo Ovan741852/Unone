@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "checkpoint_sha256": "fff62d1412685c1714eaa386acb603f9690371fb3cc8ad03dc41319302597c28",
+  "selection": "sample",
+  "model_decisions_replayed": 410,
+  "frames": 10318,
+  "unique_residents": 40,
+  "sampled_below_top": 332,
+  "money_delta": 0,
+  "actions": [
+    "attack",
+    "cooperate",
+    "duel",
+    "eat",
+    "flirt",
+    "help",
+    "hunt",
+    "propose",
+    "rest",
+    "shop",
+    "social",
+    "steal",
+    "train",
+    "travel",
+    "wait",
+    "work"
+  ],
+  "p95_ms": 1.664
+}

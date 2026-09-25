@@ -1,0 +1,17 @@
+{
+  "name": "synthetic-transport-only-one-valid-model-intention-is-applied",
+  "frames": 120,
+  "seed": 42,
+  "input_sequence": [
+    {},
+    {"actions":{"nano_reply":true,"nano_npc_1_1_1_apply":true,"nano_npc_1_1_1_work":true,"nano_npc_1_1_1_target_none":true,"nano_npc_1_1_1_timing_after_current":true}},
+    {"actions":{"nano_reply":true,"nano_npc_1_1_1_apply":true,"nano_npc_1_1_1_attack":true,"nano_npc_1_1_1_target_npc_2":true}},
+    {"actions":{"nano_reply":true,"nano_npc_2_1_2_apply":true,"nano_npc_2_1_2_work":true,"nano_npc_2_1_2_attack":true,"nano_npc_2_1_2_target_none":true,"nano_npc_2_1_2_timing_after_current":true}},
+    {"actions":{"nano_reply":true,"nano_npc_3_1_3_apply":true,"nano_npc_3_1_3_work":true,"nano_npc_3_1_3_target_none":true,"nano_npc_3_1_3_timing_after_current":true,"nano_npc_3_1_3_timing_interrupt_now":true}},
+    {"actions":{"nano_reply":true,"nano_npc_4_1_4_apply":true,"nano_npc_4_1_4_work":true,"nano_npc_4_1_4_target_none":true}}
+  ],
+  "assertions": [
+    {"observation":{"key":"decision_count","equals":1}},
+    {"observation":{"key":"nanoj_decision_backend","equals":"nanojev-external-no-fallback"}}
+  ]
+}

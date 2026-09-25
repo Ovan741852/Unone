@@ -1,0 +1,16 @@
+{
+  "name": "paging-and-clicking-a-resident-publishes-detail-selection",
+  "frames": 4,
+  "seed": 42,
+  "input_sequence": [
+    {"pointer":{"position":{"x":42,"y":8},"screen_position":{"x":42,"y":8},"down":true}},
+    {},
+    {"pointer":{"position":{"x":20,"y":54},"screen_position":{"x":20,"y":54},"down":true}},
+    {}
+  ],
+  "assertions": [
+    {"observation":{"key":"selected_npc_id","equals":"npc_12"}},
+    {"observation":{"key":"resident_page","equals":2}},
+    {"observation":{"key":"resident_page_count","equals":10}}
+  ]
+}

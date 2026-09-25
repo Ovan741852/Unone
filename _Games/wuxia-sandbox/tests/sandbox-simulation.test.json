@@ -1,0 +1,13 @@
+{
+  "name": "wuxia-sandbox-staggers-decisions-and-requires-arrival-before-social-events",
+  "frames": 120,
+  "seed": 42,
+  "assertions": [
+    {"observation":{"key":"npc_count","equals":80}},
+    {"observation":{"key":"decision_count","equals":0}},
+    {"observation":{"key":"decision_requests_count","equals":16}},
+    {"observation":{"key":"relationship_count","equals":9}},
+    {"observation":{"key":"event_count","equals":0}},
+    {"observation":{"key":"simulation_tick_count","equals":4}}
+  ]
+}

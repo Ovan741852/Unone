@@ -1,0 +1,25 @@
+{
+  "asset_manifest": "assets/manifest.json",
+  "bundle_manifest": "bundles/manifest.json",
+  "entry_script": "scripts/main.luau",
+  "main_scene": "scenes/main.scene.json",
+  "name": "Wuxia Sandbox",
+  "systems": {
+    "audio": false,
+    "camera3d": true,
+    "effekseer": false,
+    "jobs": false,
+    "observation": true,
+    "particle": true,
+    "physics2d": false,
+    "random": true,
+    "spine": false,
+    "ui": true
+  },
+  "test_files": [
+    "tests/sandbox-start.test.json",
+    "tests/sandbox-simulation.test.json",
+    "tests/sandbox-selection.test.json",
+    "tests/nanojev-transport.test.json"
+  ]
+}

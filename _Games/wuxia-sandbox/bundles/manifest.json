@@ -1,0 +1,54 @@
+{
+  "version": 69,
+  "bundles": [
+    {
+      "id": "project",
+      "version": "1",
+      "source": "project.unone.json",
+      "sha256": "1079591f26ea09dda6d7e6e8e8584ed3116c498d0aeb561473c2db32a03f689a",
+      "size_bytes": 615,
+      "dependencies": []
+    },
+    {
+      "id": "script",
+      "version": "1",
+      "source": "scripts/main.luau",
+      "sha256": "88d441455191034ace2d7f65c56389c169037e56bfb71428ff9105f2977ff2e1",
+      "size_bytes": 249283,
+      "dependencies": [
+        "project"
+      ]
+    },
+    {
+      "id": "scene",
+      "version": "1",
+      "source": "scenes/main.scene.json",
+      "sha256": "e320422559d681f045476142c8c87e9308b2f4548cfe5d59e85402be04951abb",
+      "size_bytes": 60493,
+      "dependencies": [
+        "project"
+      ]
+    },
+    {
+      "id": "asset-manifest",
+      "version": "1",
+      "source": "assets/manifest.json",
+      "sha256": "8096c1fe0a7b48e7786b930c5d49f2d988e872caefc420a11e025a9842fae24d",
+      "size_bytes": 4060,
+      "dependencies": [
+        "project"
+      ]
+    },
+    {
+      "id": "content",
+      "version": "1",
+      "source": "bundles/content.bundle",
+      "sha256": "9a2bc843614b6edea10b8e41c73cd41ab0a66ef82fd40467566b9d6a567d6cfb",
+      "size_bytes": 1084662,
+      "dependencies": [
+        "project",
+        "asset-manifest"
+      ]
+    }
+  ]
+}

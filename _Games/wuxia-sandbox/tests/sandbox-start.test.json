@@ -1,0 +1,18 @@
+{
+  "name": "wuxia-sandbox-starts-with-readable-world-state",
+  "frames": 1,
+  "seed": 42,
+  "assertions": [
+    {"observation":{"key":"npc_count","equals":80}},
+    {"observation":{"key":"building_count","equals":22}},
+    {"observation":{"key":"home_count","equals":40}},
+    {"observation":{"key":"residential_capacity","equals":80}},
+    {"observation":{"key":"selected_npc_id","equals":"npc_1"}},
+    {"observation":{"key":"resident_page_count","equals":10}},
+    {"observation":{"key":"relationship_count","equals":9}},
+    {"observation":{"key":"decision_interval_frames","equals":120}},
+    {"observation":{"key":"decision_schedule","equals":"per-npc staggered; 120 frames after accepted decision"}},
+    {"observation":{"key":"nanoj_decision_backend","equals":"nanojev-external-no-fallback"}},
+    {"observation":{"key":"world_time_minutes","equals":0}}
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "residents": 40,
+  "unique_profiles": 40,
+  "traits_per_person": 6,
+  "initial_max_tokens": 644,
+  "four_peer_stress_max_tokens": 734,
+  "context_limit": 1024,
+  "offline_decisions": 0,
+  "actual_profile_decisions_checked": 272
+}
