@@ -1,1 +1,39 @@
-<!doctype html><html><head><meta charset="utf-8"><title>Unone native particle preview</title><style>body{margin:0;background:#101827;color:#eef;font:15px system-ui;display:grid;grid-template-columns:360px 1fr;height:100vh}aside{padding:20px;overflow:auto}textarea{width:100%;height:60vh;background:#172539;color:#def}canvas{width:100%;height:100%}input{width:90px}pre{white-space:pre-wrap}</style><script>window.runtimeReady=new Promise((resolve,reject)=>{window.Module={onRuntimeInitialized:resolve,onAbort:reject,locateFile:p=>new URL('../../artifacts/player-runtime/'+p,location.href).href};});</script><script defer src="../../artifacts/player-runtime/unone-player.js"></script><script type="module" src="main.js"></script></head><body><aside><h2>Native 3D particles</h2><p>JSON definition → seeded runtime → exact frame</p><label>Seed <input id="seed" type="number" min="0" value="42"></label><label>Frame <input id="frame" type="number" min="0" max="7200" value="15"></label><textarea id="definition" aria-label="Particle JSON"></textarea><button id="preview">Preview</button><pre id="result">Loading…</pre></aside><canvas></canvas></body></html>
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Unone Particle Lab</title>
+  <style>
+    :root{color-scheme:dark;font:15px/1.5 system-ui,sans-serif;background:#09121f;color:#e5edfa}
+    *{box-sizing:border-box}body{margin:0;height:100vh;display:grid;grid-template-columns:minmax(310px,390px) 1fr}
+    aside{padding:20px;overflow:auto;background:#101c2b;border-right:1px solid #28384d}
+    h1{font-size:20px;margin:0 0 4px}p{margin:0 0 18px;color:#9bacc4;font-size:13px}
+    .row{display:flex;gap:10px;align-items:center;margin:12px 0}.row label{flex:1}
+    input,select,button{font:inherit;color:inherit;background:#1a2a40;border:1px solid #40536c;border-radius:7px;padding:8px}
+    input[type=number]{width:90px}input[type=checkbox]{accent-color:#7ac7ff}
+    textarea{display:block;width:100%;height:55vh;resize:vertical;background:#09121f;color:#d8e8fa;border:1px solid #34445b;border-radius:8px;padding:10px;font:12px/1.45 ui-monospace,monospace}
+    button{cursor:pointer;background:#23628b;border-color:#4488b3;padding-inline:18px}.checks{display:flex;gap:16px}
+    pre{white-space:pre-wrap;color:#9eb5d1;font-size:12px;min-height:56px}canvas{width:100%;height:100%;display:block}
+    @media(max-width:720px){body{grid-template-columns:1fr;grid-template-rows:minmax(270px,43vh) 1fr}aside{padding:14px;overflow:auto}textarea{height:19vh}canvas{min-height:0}}
+  </style>
+  <script>
+    window.runtimeReady=new Promise((resolve,reject)=>{window.Module={onRuntimeInitialized:resolve,onAbort:reject,locateFile:p=>new URL('../../artifacts/player-runtime/'+p,location.href).href};});
+  </script>
+  <script defer src="../../artifacts/player-runtime/unone-player.js"></script>
+  <script type="module" src="main.js?build=particle-lab-v18"></script>
+</head>
+<body>
+  <aside>
+    <h1>Particle Lab</h1>
+    <p>固定種子、逐格預覽；範本是視覺資料，遊戲觸發規則仍由 Luau 控制。</p>
+    <div class="row"><label for="preset">效果範本</label><select id="preset" aria-label="效果範本"></select></div>
+    <div class="row"><label for="seed">Seed</label><input id="seed" type="number" min="0" value="42"><label for="frame">Frame</label><input id="frame" type="number" min="0" max="7200" value="15"></div>
+    <div class="row checks"><label><input id="bloom" type="checkbox" checked> Bloom</label><label><input id="ao" type="checkbox"> AO</label></div>
+    <textarea id="definition" aria-label="Particle JSON" spellcheck="false"></textarea>
+    <div class="row"><button id="preview">重新預覽</button></div>
+    <pre id="result">Loading native runtime…</pre>
+  </aside>
+  <canvas aria-label="Particle effect preview"></canvas>
+</body>
+</html>
