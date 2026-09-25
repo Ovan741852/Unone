@@ -3,121 +3,151 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#141611" />
-    <title>Frame Atelier · Unone UI</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=4" />
+    <meta name="theme-color" content="#15191d" />
+    <title>Frame Atelier · Unone</title>
+    <link rel="stylesheet" href="./style.css?v=18" />
   </head>
   <body>
     <div class="app-shell" data-unone-app="frame-atelier">
       <header class="topbar">
-        <a class="brand" href="../../" aria-label="回到 Unone">
-          <span class="brand-mark">/\</span>
-          <span class="brand-copy"><strong>FRAME ATELIER</strong><small>UNONE UI WORKSHOP</small></span>
+        <a class="brand" href="../../" aria-label="Unone">
+          <span class="brand-mark">U</span>
+          <span class="brand-copy"><strong>FRAME ATELIER</strong><small>介面編輯器</small></span>
         </a>
-        <div class="topbar-center">
-          <span class="crumb">YesSir / Forest Lord / Loadout</span>
+        <div class="project-name-wrap">
+          <label class="sr-only" for="project-name">專案名稱</label>
+          <input id="project-name" class="project-name" value="Yes Sir · 英雄裝備" maxlength="48" />
           <span class="save-state"><i></i><span id="save-state">已儲存</span></span>
         </div>
         <div class="topbar-actions">
-          <button class="ghost-button" id="reset-project" type="button">重設範例</button>
-          <button class="primary-button" id="export-project" type="button">匯出 GDD <span>↗</span></button>
+          <button class="history-button" id="undo" type="button" title="復原 Ctrl+Z" aria-label="復原">↶</button>
+          <button class="history-button" id="redo" type="button" title="重做 Ctrl+Y" aria-label="重做">↷</button>
+          <button class="top-button" id="new-project" type="button">空白專案</button>
+          <button class="top-button" id="reset-project" type="button" title="還原預設範例">還原範例</button>
+          <button class="top-button" id="import-project" type="button">匯入專案</button>
+          <button class="top-button" id="export-project" type="button">匯出專案</button>
+          <input id="project-file" type="file" accept=".json,application/json" hidden />
         </div>
       </header>
 
       <div class="workbench">
-        <aside class="left-panel panel-surface">
-          <div class="panel-heading">
-            <div><span class="eyebrow">PROJECT</span><h1>森林領主</h1></div>
-            <button class="icon-button" id="add-frame" type="button" aria-label="新增 frame">＋</button>
-          </div>
-          <div class="project-meta"><span>Frame map</span><strong id="frame-count">02 frames</strong></div>
-          <div class="frame-list" id="frame-list"></div>
-          <div class="left-bottom">
-            <div class="contract-card" id="unone-contract" data-unone-contract>
-              <div class="contract-icon">◌</div>
-              <div><strong>Unone UI contract</strong><span id="contract-status">檢查中…</span></div>
-              <span class="status-dot" id="contract-dot"></span>
+        <aside class="left-panel">
+          <section class="palette-section">
+            <div class="section-heading">
+              <div><span class="eyebrow">ADD</span><h1>元件</h1></div>
+              <span class="section-hint">拖入畫布</span>
             </div>
-            <p class="hint-copy">框選畫面區域，讓 AI 先補上用途。你可以隨時調整，不需要一次說對。</p>
-          </div>
-        </aside>
-
-        <main class="stage-column">
-          <div class="stage-toolbar">
-            <div class="tool-group" role="toolbar" aria-label="畫布工具">
-              <button class="tool-button is-active" id="select-tool" type="button" data-tool="select"><span>⌁</span>選取</button>
-              <button class="tool-button" id="draw-tool" type="button" data-tool="draw"><span>＋</span>畫 frame</button>
-              <button class="tool-button" id="grid-tool" type="button" data-tool="grid"><span>▦</span>九宮格</button>
+            <div id="component-palette">
+              <div class="palette-group">
+                <span class="palette-group-label">結構與排列</span>
+                <div class="component-grid">
+                <button class="component-tile" type="button" draggable="true" data-add-type="container"><span class="component-icon icon-container"><i></i></span><span>Container</span></button>
+                <button class="component-tile" type="button" draggable="true" data-add-type="panel"><span class="component-icon icon-panel">▱</span><span>Panel</span></button>
+                <button class="component-tile" type="button" draggable="true" data-add-type="scrollview"><span class="component-icon icon-scroll"><i></i></span><span>ScrollView</span></button>
+                </div>
+              </div>
+              <div class="palette-group">
+                <span class="palette-group-label">視覺元件</span>
+                <div class="component-grid">
+                <button class="component-tile" type="button" draggable="true" data-add-type="button"><span class="component-icon icon-button">●</span><span>Button</span></button>
+                <button class="component-tile" type="button" draggable="true" data-add-type="label"><span class="component-icon icon-label">T</span><span>Label</span></button>
+                <button class="component-tile" type="button" draggable="true" data-add-type="image"><span class="component-icon icon-image">▧</span><span>Image</span></button>
+                <button class="component-tile" type="button" draggable="true" data-add-type="input"><span class="component-icon icon-input">▤</span><span>Input</span></button>
+                <button class="component-tile" type="button" draggable="true" data-add-type="checkbox"><span class="component-icon icon-check">✓</span><span>Checkbox</span></button>
+                <button class="component-tile" type="button" draggable="true" data-add-type="progressbar"><span class="component-icon icon-progress"><i></i></span><span>ProgressBar</span></button>
+                </div>
+              </div>
+              <p class="palette-note">清單／格子用排列容器＋共用 Prefab 組成</p>
             </div>
-            <div class="profile-switch" role="toolbar" aria-label="設計版型">
-              <button class="profile-button is-active" type="button" data-profile="desktop">Desktop <span>1920 × 1080</span></button>
-              <button class="profile-button" type="button" data-profile="mobile">Mobile <span>390 × 844</span></button>
-            </div>
-            <div class="stage-info"><span id="active-tool-label">選取模式</span><span class="separator"></span><span id="stage-dimensions">1920 × 1080</span></div>
-          </div>
-
-          <section class="stage-wrap" aria-label="Frame 畫布">
-            <div class="stage-grid-lines" aria-hidden="true"></div>
-            <div class="device-board" id="device-board" data-ratio="9:16">
-              <div class="device-topbar"><span id="device-clock">9:41</span><span class="device-icons">⌁ ᯤ ▰</span></div>
-              <div class="device-content" id="device-content"></div>
-              <div class="device-home-indicator"></div>
-              <div class="draw-crosshair" id="draw-crosshair" aria-hidden="true"></div>
-            </div>
-            <div class="stage-caption"><span><b class="live-dot"></b> LIVE PREVIEW</span><span id="selection-caption">選取一個 frame 開始</span></div>
           </section>
 
-          <section class="asset-dock">
-            <div class="dock-heading"><div><span class="eyebrow">ASSET CANDIDATES</span><h2>生成草稿</h2></div><button class="text-button" id="clear-assets" type="button">清除</button></div>
-            <div class="asset-row" id="asset-row"></div>
+          <section class="tree-section">
+            <div class="section-heading tree-heading">
+              <div><span class="eyebrow">LAYERS</span><h2>結構</h2></div>
+              <button class="small-icon-button" id="add-root" type="button" title="新增元件">＋</button>
+            </div>
+            <div class="tree-list" id="element-tree" role="tree" aria-label="介面元件結構" tabindex="-1"></div>
+            <p class="tree-tip">Container、Panel、ScrollView 都能收納子元件。</p>
+          </section>
+
+          <section class="prefab-section">
+            <div class="section-heading prefab-heading">
+              <div><span class="eyebrow">PROJECT LIBRARY</span><h2>共用元件</h2></div>
+              <span id="prefab-count" class="count-pill">0</span>
+            </div>
+            <div class="prefab-list" id="prefab-list"></div>
+          </section>
+        </aside>
+
+        <main class="editor-main">
+          <div class="canvas-toolbar">
+            <div class="tool-group" role="toolbar" aria-label="畫布工具">
+              <button class="tool-button is-active" type="button" data-tool="select" title="選取並拖曳"><span>↖</span>選取</button>
+              <button class="tool-button" type="button" data-tool="draw" title="在畫布空白處拖曳新增 Panel"><span>▱</span>框選 Panel</button>
+              <button class="tool-button" type="button" id="toggle-grid" aria-pressed="true"><span>▦</span>格線</button>
+            </div>
+            <div class="canvas-toolbar-right">
+              <div class="profile-switch" role="group" aria-label="畫布尺寸">
+                <button class="profile-button is-active" type="button" data-profile="desktop">電腦 <span>1920 × 1080</span></button>
+                <button class="profile-button" type="button" data-profile="mobile">手機 <span>390 × 844</span></button>
+              </div>
+              <span class="toolbar-divider"></span>
+              <button class="zoom-button" id="zoom-out" type="button" aria-label="縮小畫布">−</button>
+              <span class="zoom-value" id="zoom-value">適合視窗</span>
+              <button class="zoom-button" id="zoom-in" type="button" aria-label="放大畫布">＋</button>
+              <button class="zoom-fit" id="zoom-fit" type="button">置中</button>
+            </div>
+          </div>
+
+          <section class="canvas-area" id="canvas-area" aria-label="畫布工作區">
+            <div class="canvas-scroll" id="canvas-scroll">
+              <div class="artboard" id="artboard" data-profile="desktop" aria-label="設計畫布">
+                <div class="scene" id="scene"></div>
+                <div class="drop-hint" id="drop-hint" hidden>放開以新增元件</div>
+              </div>
+            </div>
+            <div class="canvas-footer">
+              <span><i class="live-dot"></i><span id="canvas-message">拖曳移動；選取後可改尺寸</span></span>
+              <span id="canvas-size">1920 × 1080</span>
+              <span id="selection-size">尚未選取</span>
+            </div>
+          </section>
+
+          <section class="ai-dock" aria-label="AI 新增元件">
+            <div class="ai-dock-brand">
+              <span class="ai-spark">✳</span>
+              <span class="ai-dock-copy"><strong id="ai-dock-title">描述整個介面</strong><span class="ai-status-row"><small id="ai-status" role="status" aria-live="polite">正在檢查 Gemma 4…</small><button class="ai-retry" id="ai-retry" type="button" hidden>重試連線</button></span></span>
+            </div>
+            <button class="mic-button" id="voice-input" type="button" title="語音輸入" aria-label="語音輸入">◖</button>
+            <label class="sr-only" for="ai-prompt">描述要新增的畫面，或修改選取的容器</label>
+            <textarea id="ai-prompt" rows="1" placeholder="描述整個畫面，例如：做一個英雄裝備頁面，重點是快速比較裝備"></textarea>
+            <button class="ai-submit" id="ai-submit" type="button" disabled><span>✳</span><span id="ai-submit-label">檢查連線…</span></button>
+            <span class="voice-state" id="voice-state" aria-live="polite"></span>
           </section>
         </main>
 
-        <aside class="right-panel panel-surface">
-          <div class="inspector-heading"><div><span class="eyebrow">INSPECTOR</span><h2>Frame 設定</h2></div><span class="frame-id" id="inspector-id">F01</span></div>
-          <section class="brief-card" aria-labelledby="brief-heading">
-            <div class="brief-card-head"><div><span class="eyebrow">HUMAN BRIEF</span><h2 id="brief-heading">先說你要做什麼</h2></div><span class="brief-step">01 → 02 → 03</span></div>
-            <label class="field-label" for="brief-title">介面名稱<input id="brief-title" type="text" autocomplete="off" /></label>
-            <label class="field-label" for="brief-goal">這個畫面要做什麼？<textarea id="brief-goal" rows="2" placeholder="例如：讓玩家查看英雄狀態、替換裝備並準備出戰"></textarea></label>
-            <label class="field-label" for="brief-emphasis">最重要的是什麼？<textarea id="brief-emphasis" rows="2" placeholder="例如：英雄身分和目前裝備要一眼看懂"></textarea></label>
-            <label class="field-label" for="brief-systems">系統／數值／必須出現<span class="optional">選填</span><textarea id="brief-systems" rows="2" placeholder="例如：生命、攻擊、防禦、裝備槽、背包、出戰按鈕"></textarea></label>
-            <button class="brief-generate" id="generate-interface" type="button"><span>✦</span><span><strong>讓 Gemma 安排介面</strong><small>先決定 panel，再逐一拆解</small></span><span>→</span></button>
-            <p class="brief-status" id="brief-status">人類只提供需求；panel、元件與版面交給 AI。</p>
-          </section>
-          <div class="field-stack">
-            <label class="field-label" for="frame-name">名稱<input id="frame-name" type="text" autocomplete="off" /></label>
-            <label class="field-label" for="frame-purpose">這個區域要做什麼？<textarea id="frame-purpose" rows="3" placeholder="例如：顯示玩家目前任務與下一步"></textarea></label>
-            <div class="field-row">
-              <label class="field-label">比例<select id="frame-ratio"><option value="auto">Auto</option><option value="1:1">1 : 1</option><option value="4:3">4 : 3</option><option value="9:16">9 : 16</option><option value="16:9">16 : 9</option></select></label>
-              <label class="field-label">狀態<select id="frame-status"><option value="draft">草稿</option><option value="approved">已確認</option><option value="needs_review">待檢查</option></select></label>
+        <aside class="inspector-panel">
+          <div class="inspector-top">
+            <div><span class="eyebrow">INSPECTOR</span><h2 id="inspector-heading">屬性</h2></div>
+            <span class="selection-badge" id="selection-badge">未選取</span>
+          </div>
+          <div class="inspector-content" id="inspector-content"></div>
+          <section class="shared-button-style">
+            <div class="shared-style-heading"><div><span class="eyebrow">PROJECT STYLE</span><h3>共用按鈕樣式</h3></div><span class="sync-mark">↻</span></div>
+            <div class="style-controls">
+              <label class="color-control"><span>底色</span><input id="button-color" type="color" value="#2e8f7b" /></label>
+              <label class="radius-control"><span>圓角</span><input id="button-radius" type="number" min="0" max="32" value="8" /><small>px</small></label>
             </div>
-            <label class="field-label" for="frame-note">備註<span class="optional">選填</span><input id="frame-note" type="text" autocomplete="off" placeholder="視覺或內容限制" /></label>
-          </div>
-
-          <div class="assistant-card" id="assistant-card">
-            <div class="assistant-head"><span class="assistant-orb">✦</span><div><strong>Gemma 3 拆解</strong><span id="assistant-status">先決定 panel，再逐一拆元件</span></div><span class="model-badge">LOCAL</span></div>
-            <div class="assistant-body" id="assistant-body"><p class="empty-assistant">按下補全，AI 會依照企畫案先辨識 label、用途、動態性與共用性，再確認 frame 大小。</p></div>
-            <div class="assistant-actions"><button class="assistant-button" id="ask-assistant" type="button">✦ 補全與拆解</button><button class="apply-button" id="apply-suggestion" type="button" disabled>套用建議</button><button class="hierarchy-button" id="analyze-hierarchy" type="button">⌘ 依粗框展開整張畫面</button></div>
-          </div>
-
-          <section class="hierarchy-card" id="hierarchy-card" hidden>
-            <div class="hierarchy-card-head"><div><span class="eyebrow">LAYOUT HIERARCHY</span><strong>畫面結構樹</strong></div><span id="hierarchy-count">0 nodes</span></div>
-            <p class="hierarchy-intro">這棵樹由人類需求開始：先有 panel 責任，再有 panel 內的元件。圖片只作為之後的參考。</p>
-            <div class="hierarchy-body" id="hierarchy-body"></div>
+            <p>專案內所有按鈕共用這組基本樣式。</p>
           </section>
-
-          <div class="inspector-bottom">
-            <button class="generate-button" id="generate-draft" type="button"><span>✦</span><span><strong>建立生成草稿</strong><small>使用用途與 frame 大小</small></span><span class="arrow">→</span></button>
-            <div class="unone-note"><span>i</span><p>AI 依照企畫案標記固定／動態、子元素、共用元件與九宮格候選；不需要 Computer Use 就能修改 scene state。</p></div>
-          </div>
+          <details class="change-history" id="change-history">
+            <summary><span>修改紀錄</span><span class="history-count" id="change-history-count">0</span></summary>
+            <div class="change-history-list" id="change-history-list" aria-live="polite"></div>
+          </details>
         </aside>
       </div>
-
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </div>
-    <script type="module" src="./main.js?v=11"></script>
+    <script type="module" src="./main.js?v=29"></script>
   </body>
 </html>

@@ -26,6 +26,9 @@ COMMAND_NAMES = {
     "inspect", "select_frame", "set_profile", "add_frame", "update_frame",
     "analyze_frame", "generate_interface", "analyze_hierarchy", "apply_suggestion",
     "apply_suggested_rect", "keep_current_rect", "add_subframes", "create_draft",
+    "select_element", "add_element", "update_element", "delete_element",
+    "duplicate_element", "set_parent", "save_prefab", "insert_prefab",
+    "decompose_panel", "panel_plan", "get_change_history",
 }
 
 
@@ -113,7 +116,7 @@ class Handler(SimpleHTTPRequestHandler):
         elif path == "/api/frame-atelier/health":
             with self.server.condition:
                 connected = time.monotonic() - self.server.state["last_seen"] < 3
-            self._json(200, {"ready": True, "browser_connected": connected, "protocol": "unone.frame-atelier.v1"})
+            self._json(200, {"ready": True, "browser_connected": connected, "protocol": "unone.frame-atelier.v2"})
         elif path == "/api/frame-atelier/poll":
             with self.server.condition:
                 self.server.state["last_seen"] = time.monotonic()

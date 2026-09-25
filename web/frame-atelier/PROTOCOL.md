@@ -1,53 +1,79 @@
-# Frame Atelier AI-native protocol
+# Frame Atelier AI-native editor protocol
 
-Frame Atelier keeps the editor state as serializable data. The model does not
-need to inspect a screenshot or drive the browser to make a layout decision.
-The local host exposes the same shape as `window.frameAtelier`. The page polls
-the local command bridge, so an agent can use the editor without reading pixels
-or driving a browser.
+Frame Atelier exposes semantic editor state and commands through
+window.frameAtelier. An AI can inspect and edit the hierarchy without
+Computer Use, screenshots, or browser-driving instructions.
 
 ```js
-const state = window.frameAtelier.inspect();
-await window.frameAtelier.command("update_frame", {
-  id: "F02",
-  purpose: "顯示可查看與穿戴的裝備卡片",
-  rect: {x: 59, y: 20, width: 37, height: 70},
+const snapshot = window.frameAtelier.inspect();
+const next = await window.frameAtelier.command("add_element", {
+  type: "container",
+  parentId: "el-004",
+  name: "資源列",
+  layoutMode: "horizontal",
+  gap: 3,
+  rect: { x: 8, y: 70, width: 80, height: 16 },
+});
+const row = next.elements.find((item) => item.name === "資源列");
+await window.frameAtelier.command("add_element", {
+  type: "progressbar", parentId: row.id, name: "生命值", value: 72,
 });
 ```
 
-From a local agent, use the HTTP command endpoint instead:
+Run python scripts/serve-frame-atelier.py from the Unone checkout and open
+http://127.0.0.1:8001/Unone/web/frame-atelier/. The loopback server permits
+only the editor's static resources and authenticated local bridge requests.
+It must not be exposed to the LAN.
 
-```powershell
-$session = Invoke-RestMethod http://127.0.0.1:8001/api/frame-atelier/session -Headers @{ 'X-Frame-Atelier' = '1' }
-$headers = @{ Authorization = "Bearer $($session.token)" }
-Invoke-RestMethod http://127.0.0.1:8001/api/frame-atelier/command -Headers $headers -Method Post -ContentType 'application/json' -Body (@{
-  name = "update_frame"
-  payload = @{ id = "F02"; purpose = "顯示可查看與穿戴的裝備卡片"; rect = @{ x = 59; y = 20; width = 37; height = 70 } }
-} | ConvertTo-Json -Depth 8)
+The snapshot protocol is unone.frame-atelier.v2. It contains project settings,
+the active desktop/mobile profile, elements with parent IDs and per-profile
+rectangles, reusable prefabs, and a semantic unone_ui tree.
+
+Generic node kinds are `container`, `panel`, `scrollview`, `progressbar`,
+`button`, `label`, `image`, `input`, and `checkbox`. `panel`, `container`, and
+`scrollview` can own children. A Container's `layoutMode` is one of `free`,
+`horizontal`, `vertical`, `grid`, or `overlay`; `gap`, `padding`, and `columns`
+configure its layout. Children in automatic layouts use their `order` value
+and preferred width/height; the snapshot's `rect` is the resulting preview
+rectangle and `preferred_rect` preserves the authored size. ScrollView has a
+vertical content area controlled by `contentLength`. ProgressBar uses a
+0–100 `value`.
+
+Every node has a `visible` flag; `update_element` accepts `{id, visible}` and
+the layer tree has an eye toggle. Image nodes can use `variant: "icon"` or
+`variant: "watermark"` for clean overlay previews. A container can arrange
+siblings while a child Panel owns overlaid image states. AI decomposition may
+return nested `children` (up to five levels); existing IDs can be reused when
+nodes move within the selected subtree. Initial visibility is preview state;
+runtime game logic still decides which equipment state is active.
+
+Lists, inventory slots, cards, and other product/game-specific patterns are
+not engine node kinds. Build them from generic containers and visual nodes,
+then save the composition as a project Prefab.
+
+Core commands are inspect, select_element, set_profile, add_element,
+update_element, delete_element, duplicate_element, set_parent, save_prefab,
+insert_prefab, panel_plan, decompose_panel, and get_change_history. Legacy frame
+command names remain accepted as aliases where possible.
+
+The editor keeps the latest 100 changes in browser-local project storage.
+AI entries include the user's prompt, selected target, provider, and before/after
+hierarchy changes; manual edits are summarized from saved state differences.
+Read them without computer use:
+
+```js
+const history = await window.frameAtelier.command("get_change_history", { limit: 20 });
 ```
 
-Run `python scripts/serve-frame-atelier.py` from the Unone checkout and open
-`http://127.0.0.1:8001/Unone/web/frame-atelier/`. The server trusts local processes,
-not arbitrary websites: it checks Host/Origin/fetch metadata, denies cross-origin
-requests, and requires a per-process bearer token on every API except session
-bootstrap (which requires the custom header shown above). Never log or persist
-the token. Restarting the server rotates it; the page reconnects on its next poll.
-This is not an account service or a LAN/remote-development server.
+For older local bridges that allow `inspect` but not `get_change_history`, use
+`inspect` with `{ includeHistory: true, historyLimit: 20 }`; the response adds a
+`change_history` field to the regular hierarchy snapshot.
 
-Only explicit prototype resources are served; no repository browsing is allowed.
-The sibling `UnoneUI` checkout is required; the YesSir background image is optional.
-The separate assistant on port 8787 is not started or secured by this bridge.
-Commands are bounded (32 pending, 1..300 seconds) and never automatically replayed.
-A timeout reports `may_have_executed`: inspect state before deciding to retry.
+The command can optionally filter by `targetId`; pass `allProjects: true` to
+include other projects kept in this browser's local history.
 
-Available commands: `inspect`, `select_frame`, `set_profile`, `add_frame`,
-`update_frame`, `analyze_frame`, `generate_interface`, `analyze_hierarchy`, `apply_suggestion`,
-`apply_suggested_rect`, `keep_current_rect`, `add_subframes`, and `create_draft`.
-
-The stable payload includes the project, active design profile, 0..100 logical
-rectangles, frame purpose/status/note, asset candidates and the Unone UI tree.
-The frame-first Gemma request runs as small stages: it first plans panels from a
-human brief, reviews obvious geometry failures, then decomposes one approved
-panel at a time. The payload is JSON and does not send a screenshot. A future
-Unone plugin/Workshop adapter can call the same commands through the Developer
-Protocol without using Computer Use.
+The current local model is Ollama `gemma4:e4b` at `127.0.0.1:11435`.
+Panel planning and selected-panel decomposition are separate requests; a
+decomposition receives the full panel list and component registry to reduce
+repeated content. The editor stores drafts locally and keeps working when
+Ollama is not running.
