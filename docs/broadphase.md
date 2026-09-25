@@ -19,7 +19,21 @@ cargo test -p unone-engine --release --lib broadphase_benchmark -- --ignored --n
 
 On the measured sparse lattice, 1,000 bodies took 1.95 ms for grid physics versus
 41.39 ms for the former collision phase; 4,000 took 11.21 versus 1,022.37 ms.
-These medians are nine samples, not end-to-end FPS. Grid maps/ordered sets add
+These medians are nine samples, not end-to-end FPS.
+
+The solver resolves pairs through body indices instead of per-pair entity-ID map
+lookups, and each body's grid occupancy is a cell rectangle rather than an
+allocated key list. Arithmetic and pair order are unchanged; digests match the
+prior solver exactly. Dense overlap is measured separately:
+
+```powershell
+cargo run -p unone-engine --release --example physics2d_stress -- 30 300
+```
+
+2026-09-25, same Windows x86_64 machine, before/after this change: dense 45x45
+overlapping bodies 4.20-4.45 to 2.02-2.30 ms median tick (three runs each,
+digest `sha256:0844bbda...` unchanged); sparse lattice grid physics 1.05 to 0.78 ms
+at 1,000 bodies and 4.98 to 3.78 ms at 4,000. Grid maps/ordered sets add
 logarithmic overhead; dense occupancy and oversized fallback can still approach
 quadratic work. The Dragon probe disables physics2d, so these results do not
 demonstrate a performance increase in that 3D scene. Raw values and scope are in

@@ -4,10 +4,18 @@
 use crate::world::Vec2;
 use std::collections::{BTreeMap, BTreeSet};
 type Cell = (i64, i64);
+
+#[derive(Clone, Copy, PartialEq, Debug)]
+enum Occupancy {
+    Empty,
+    Cells([i64; 4]), // [x0, y0, x1, y1] inclusive
+    Oversized,
+}
+
 pub(crate) struct CircleGrid {
     size: f64,
     cells: BTreeMap<Cell, BTreeSet<usize>>,
-    occupied: Vec<Option<Vec<Cell>>>,
+    occupied: Vec<Occupancy>,
     oversized: BTreeSet<usize>,
 }
 impl CircleGrid {
@@ -18,7 +26,7 @@ impl CircleGrid {
         let mut grid = Self {
             size,
             cells: BTreeMap::new(),
-            occupied: vec![Some(vec![]); circles.len()],
+            occupied: vec![Occupancy::Empty; circles.len()],
             oversized: BTreeSet::new(),
         };
         for (i, (position, radius)) in circles.iter().enumerate() {
@@ -26,7 +34,7 @@ impl CircleGrid {
         }
         grid
     }
-    fn keys(&self, p: Vec2, r: f64) -> Option<Vec<Cell>> {
+    fn rect(&self, p: Vec2, r: f64) -> Occupancy {
         let bounds = [
             (p.x - r) / self.size,
             (p.y - r) / self.size,
@@ -37,46 +45,61 @@ impl CircleGrid {
             .iter()
             .all(|v| v.is_finite() && v.abs() < (i64::MAX - 1) as f64)
         {
-            return None;
+            return Occupancy::Oversized;
         }
         let [x0, y0, x1, y1] = bounds.map(|v| v.floor() as i64);
-        let width = x1.checked_sub(x0)?.checked_add(1)?;
-        let height = y1.checked_sub(y0)?.checked_add(1)?;
-        if width <= 0 || height <= 0 || width.checked_mul(height)? > 64 {
-            return None;
+        let width = x1.checked_sub(x0).and_then(|w| w.checked_add(1));
+        let height = y1.checked_sub(y0).and_then(|h| h.checked_add(1));
+        if let (Some(w), Some(h)) = (width, height)
+            && w > 0
+            && h > 0
+            && w.checked_mul(h).is_some_and(|area| area <= 64)
+        {
+            return Occupancy::Cells([x0, y0, x1, y1]);
         }
-        let mut keys = Vec::new();
-        for x in x0..=x1 {
-            for y in y0..=y1 {
-                keys.push((x, y));
-            }
-        }
-        Some(keys)
+        Occupancy::Oversized
     }
     pub fn update(&mut self, index: usize, p: Vec2, r: f64) {
-        let next = self.keys(p, r);
+        let next = self.rect(p, r);
         if self.occupied[index] == next {
             return;
         }
-        if let Some(old) = self.occupied[index].take() {
-            for key in old {
-                if let Some(members) = self.cells.get_mut(&key) {
-                    members.remove(&index);
-                    if members.is_empty() {
-                        self.cells.remove(&key);
+
+        match self.occupied[index] {
+            Occupancy::Empty => {}
+            Occupancy::Cells([x0, y0, x1, y1]) => {
+                for x in x0..=x1 {
+                    for y in y0..=y1 {
+                        let key = (x, y);
+                        if let Some(members) = self.cells.get_mut(&key) {
+                            members.remove(&index);
+                            if members.is_empty() {
+                                self.cells.remove(&key);
+                            }
+                        }
                     }
                 }
             }
-        } else {
-            self.oversized.remove(&index);
-        }
-        if let Some(keys) = &next {
-            for key in keys {
-                self.cells.entry(*key).or_default().insert(index);
+            Occupancy::Oversized => {
+                self.oversized.remove(&index);
             }
-        } else {
-            self.oversized.insert(index);
         }
+
+        match next {
+            Occupancy::Empty => {}
+            Occupancy::Cells([x0, y0, x1, y1]) => {
+                for x in x0..=x1 {
+                    for y in y0..=y1 {
+                        let key = (x, y);
+                        self.cells.entry(key).or_default().insert(index);
+                    }
+                }
+            }
+            Occupancy::Oversized => {
+                self.oversized.insert(index);
+            }
+        }
+
         self.occupied[index] = next;
     }
     pub fn extend_candidates(
@@ -87,17 +110,25 @@ impl CircleGrid {
         after: usize,
     ) {
         // Large/out-of-range bodies fall back conservatively, never disappear.
-        let Some(keys) = &self.occupied[index] else {
-            pending.extend(after + 1..self.occupied.len());
-            return;
-        };
-        pending.extend(self.oversized.range(after + 1..).copied());
-        for key in keys {
-            if !seen.insert(*key) {
-                continue;
+        match self.occupied[index] {
+            // Every body is placed during construction.
+            Occupancy::Empty => {}
+            Occupancy::Cells([x0, y0, x1, y1]) => {
+                for x in x0..=x1 {
+                    for y in y0..=y1 {
+                        let key = (x, y);
+                        if !seen.insert(key) {
+                            continue;
+                        }
+                        if let Some(members) = self.cells.get(&key) {
+                            pending.extend(members.range(after + 1..).copied());
+                        }
+                    }
+                }
+                pending.extend(self.oversized.range(after + 1..).copied());
             }
-            if let Some(members) = self.cells.get(key) {
-                pending.extend(members.range(after + 1..).copied());
+            Occupancy::Oversized => {
+                pending.extend(after + 1..self.occupied.len());
             }
         }
     }

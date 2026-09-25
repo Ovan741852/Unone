@@ -1160,14 +1160,10 @@ impl World {
         {
             return;
         }
-        let positions: BTreeMap<String, Vec2> = self
-            .entities
-            .iter()
-            .map(|(id, entity)| (id.clone(), entity.transform))
-            .collect();
         let frame = self.frame;
+        let entities = &self.entities;
         self.audio
-            .follow_entities(frame, |id| positions.get(id).copied());
+            .follow_entities(frame, |id| entities.get(id).map(|entity| entity.transform));
     }
 
     /// Remove an entity and everything attached to it.
@@ -1642,28 +1638,28 @@ impl World {
         // Visual-only entities cannot collide. Keep them out of the pair list
         // so the common scene case does not pay for O(n²) no-op resolver calls.
         // BTreeMap iteration keeps the candidate order deterministic.
-        let ids: Vec<String> = self
+        let mut bodies: Vec<(&String, &mut EntityState)> = self
             .entities
-            .iter()
+            .iter_mut()
             .filter(|(_, entity)| entity.rigidbody.is_some())
-            .map(|(id, _)| id.clone())
             .collect();
-        let circles = ids
+        let circles = bodies
             .iter()
-            .map(|id| {
-                let entity = &self.entities[id];
-                (entity.transform, entity.rigidbody.as_ref().unwrap().radius)
-            })
+            .map(|(_, entity)| (entity.transform, entity.rigidbody.as_ref().unwrap().radius))
             .collect::<Vec<_>>();
         let mut grid = crate::broadphase::CircleGrid::new(&circles);
-        for left_index in 0..ids.len() {
+        let contacts = &mut self.contacts;
+        for left_index in 0..bodies.len() {
             let mut seen = std::collections::BTreeSet::new();
             let mut pending = std::collections::BTreeSet::new();
             grid.extend_candidates(left_index, &mut seen, &mut pending, left_index);
             while let Some(right_index) = pending.pop_first() {
-                if self.resolve_circle_collision(&ids[left_index], &ids[right_index]) {
+                let (left_slice, right_slice) = bodies.split_at_mut(right_index);
+                let (left_id, left_entity) = &mut left_slice[left_index];
+                let (right_id, right_entity) = &mut right_slice[0];
+                if resolve_circle_pair(left_id, left_entity, right_id, right_entity, contacts) {
                     for index in [left_index, right_index] {
-                        let entity = &self.entities[&ids[index]];
+                        let (_, entity) = &bodies[index];
                         grid.update(
                             index,
                             entity.transform,
@@ -1675,112 +1671,109 @@ impl World {
             }
         }
     }
+}
 
-    fn resolve_circle_collision(&mut self, left_id: &str, right_id: &str) -> bool {
-        // Ids arrive in sorted order from the caller, so a pair always reads
-        // the same way and the contact list stays deterministic.
-        let Some(left) = self.entities.get(left_id) else {
-            return false;
-        };
-        let Some(right) = self.entities.get(right_id) else {
-            return false;
-        };
-        let (Some(left_body), Some(right_body)) = (&left.rigidbody, &right.rigidbody) else {
-            return false;
-        };
-        if left_body.body_type == RigidBodyType::Static
-            && right_body.body_type == RigidBodyType::Static
-        {
-            return false;
-        }
-        let delta = Vec2 {
-            x: right.transform.x - left.transform.x,
-            y: right.transform.y - left.transform.y,
-        };
-        let distance_squared = delta.x * delta.x + delta.y * delta.y;
-        let (distance, normal) = if distance_squared <= f64::EPSILON {
-            (0.0, Vec2 { x: 1.0, y: 0.0 })
-        } else {
-            let distance = distance_squared.sqrt();
-            (
-                distance,
-                Vec2 {
-                    x: delta.x / distance,
-                    y: delta.y / distance,
-                },
-            )
-        };
-        let penetration = left_body.radius + right_body.radius - distance;
-        if penetration <= 0.0 {
-            return false;
-        }
-
-        let left_inverse_mass = if left_body.body_type == RigidBodyType::Dynamic {
-            1.0 / left_body.mass
-        } else {
-            0.0
-        };
-        let right_inverse_mass = if right_body.body_type == RigidBodyType::Dynamic {
-            1.0 / right_body.mass
-        } else {
-            0.0
-        };
-        let inverse_mass_sum = left_inverse_mass + right_inverse_mass;
-        if inverse_mass_sum <= 0.0 {
-            return false;
-        }
-
-        let left_velocity = left_body.velocity;
-        let right_velocity = right_body.velocity;
-        let relative_velocity = Vec2 {
-            x: right_velocity.x - left_velocity.x,
-            y: right_velocity.y - left_velocity.y,
-        };
-        let velocity_along_normal = relative_velocity.x * normal.x + relative_velocity.y * normal.y;
-        let restitution = (left_body.restitution + right_body.restitution) * 0.5;
-        let impulse_magnitude = if velocity_along_normal < 0.0 {
-            -(1.0 + restitution) * velocity_along_normal / inverse_mass_sum
-        } else {
-            0.0
-        };
-        let correction_magnitude = penetration * 0.8 / inverse_mass_sum;
-        let correction = Vec2 {
-            x: normal.x * correction_magnitude,
-            y: normal.y * correction_magnitude,
-        };
-        let impulse = Vec2 {
-            x: normal.x * impulse_magnitude,
-            y: normal.y * impulse_magnitude,
-        };
-
-        self.contacts.push(Contact {
-            a: left_id.to_string(),
-            b: right_id.to_string(),
-            normal,
-            penetration,
-            impulse: impulse_magnitude,
-        });
-
-        if let Some(left) = self.entities.get_mut(left_id)
-            && let Some(body) = &mut left.rigidbody
-            && body.body_type == RigidBodyType::Dynamic
-        {
-            left.transform.x -= correction.x * left_inverse_mass;
-            left.transform.y -= correction.y * left_inverse_mass;
-            body.velocity.x -= impulse.x * left_inverse_mass;
-            body.velocity.y -= impulse.y * left_inverse_mass;
-        }
-        if let Some(right) = self.entities.get_mut(right_id)
-            && let Some(body) = &mut right.rigidbody
-            && body.body_type == RigidBodyType::Dynamic
-        {
-            right.transform.x += correction.x * right_inverse_mass;
-            right.transform.y += correction.y * right_inverse_mass;
-            body.velocity.x += impulse.x * right_inverse_mass;
-            body.velocity.y += impulse.y * right_inverse_mass;
-        }
-        true
+fn resolve_circle_pair(
+    left_id: &str,
+    left: &mut EntityState,
+    right_id: &str,
+    right: &mut EntityState,
+    contacts: &mut Vec<Contact>,
+) -> bool {
+    // Ids arrive in sorted order from the caller, so a pair always reads
+    // the same way and the contact list stays deterministic.
+    let (Some(left_body), Some(right_body)) = (&left.rigidbody, &right.rigidbody) else {
+        return false;
+    };
+    if left_body.body_type == RigidBodyType::Static && right_body.body_type == RigidBodyType::Static
+    {
+        return false;
     }
+    let delta = Vec2 {
+        x: right.transform.x - left.transform.x,
+        y: right.transform.y - left.transform.y,
+    };
+    let distance_squared = delta.x * delta.x + delta.y * delta.y;
+    let (distance, normal) = if distance_squared <= f64::EPSILON {
+        (0.0, Vec2 { x: 1.0, y: 0.0 })
+    } else {
+        let distance = distance_squared.sqrt();
+        (
+            distance,
+            Vec2 {
+                x: delta.x / distance,
+                y: delta.y / distance,
+            },
+        )
+    };
+    let penetration = left_body.radius + right_body.radius - distance;
+    if penetration <= 0.0 {
+        return false;
+    }
+
+    let left_inverse_mass = if left_body.body_type == RigidBodyType::Dynamic {
+        1.0 / left_body.mass
+    } else {
+        0.0
+    };
+    let right_inverse_mass = if right_body.body_type == RigidBodyType::Dynamic {
+        1.0 / right_body.mass
+    } else {
+        0.0
+    };
+    let inverse_mass_sum = left_inverse_mass + right_inverse_mass;
+    if inverse_mass_sum <= 0.0 {
+        return false;
+    }
+
+    let left_velocity = left_body.velocity;
+    let right_velocity = right_body.velocity;
+    let relative_velocity = Vec2 {
+        x: right_velocity.x - left_velocity.x,
+        y: right_velocity.y - left_velocity.y,
+    };
+    let velocity_along_normal = relative_velocity.x * normal.x + relative_velocity.y * normal.y;
+    let restitution = (left_body.restitution + right_body.restitution) * 0.5;
+    let impulse_magnitude = if velocity_along_normal < 0.0 {
+        -(1.0 + restitution) * velocity_along_normal / inverse_mass_sum
+    } else {
+        0.0
+    };
+    let correction_magnitude = penetration * 0.8 / inverse_mass_sum;
+    let correction = Vec2 {
+        x: normal.x * correction_magnitude,
+        y: normal.y * correction_magnitude,
+    };
+    let impulse = Vec2 {
+        x: normal.x * impulse_magnitude,
+        y: normal.y * impulse_magnitude,
+    };
+
+    contacts.push(Contact {
+        a: left_id.to_string(),
+        b: right_id.to_string(),
+        normal,
+        penetration,
+        impulse: impulse_magnitude,
+    });
+
+    if let Some(body) = &mut left.rigidbody
+        && body.body_type == RigidBodyType::Dynamic
+    {
+        left.transform.x -= correction.x * left_inverse_mass;
+        left.transform.y -= correction.y * left_inverse_mass;
+        body.velocity.x -= impulse.x * left_inverse_mass;
+        body.velocity.y -= impulse.y * left_inverse_mass;
+    }
+    if let Some(body) = &mut right.rigidbody
+        && body.body_type == RigidBodyType::Dynamic
+    {
+        right.transform.x += correction.x * right_inverse_mass;
+        right.transform.y += correction.y * right_inverse_mass;
+        body.velocity.x += impulse.x * right_inverse_mass;
+        body.velocity.y += impulse.y * right_inverse_mass;
+    }
+    true
 }
 
 pub(crate) fn validate_vec3(value: Vec3, label: &str) -> Result<(), Box<Diagnostic>> {
@@ -1863,7 +1856,7 @@ fn quantize_observation(value: f64) -> f64 {
 mod tests {
     use super::{
         AudioBus, EntityState, PhysicsSettings, RigidBodyState, RigidBodyType, SceneFile,
-        Camera3DData, Transform2DData, Vec2, Vec3, World,
+        Camera3DData, Transform2DData, Vec2, Vec3, World, resolve_circle_pair,
     };
     use std::collections::BTreeMap;
 
@@ -1924,10 +1917,13 @@ mod tests {
 
     fn brute_pairs(world: &mut World) {
         world.contacts.clear();
-        let ids = world.entities.keys().cloned().collect::<Vec<_>>();
-        for i in 0..ids.len() {
-            for j in i + 1..ids.len() {
-                world.resolve_circle_collision(&ids[i], &ids[j]);
+        let mut bodies = world.entities.iter_mut().collect::<Vec<_>>();
+        for i in 0..bodies.len() {
+            for j in i + 1..bodies.len() {
+                let (left, right) = bodies.split_at_mut(j);
+                let (left_id, left) = &mut left[i];
+                let (right_id, right) = &mut right[0];
+                resolve_circle_pair(left_id, left, right_id, right, &mut world.contacts);
             }
         }
     }

@@ -817,11 +817,15 @@ impl EngineRuntime {
     ) -> EngineResult<RunReport> {
         for frame_index in 0..frames {
             let tick = if let Some(input_sequence) = input_sequence {
-                let frame = input_sequence
-                    .get(frame_index as usize)
-                    .cloned()
-                    .unwrap_or_default();
-                self.tick_with_input(&frame)
+                let default_frame;
+                let frame = match input_sequence.get(frame_index as usize) {
+                    Some(frame) => frame,
+                    None => {
+                        default_frame = InputFrame::default();
+                        &default_frame
+                    }
+                };
+                self.tick_with_input(frame)
             } else {
                 self.tick()
             };
@@ -1017,6 +1021,7 @@ impl EngineRuntime {
     }
 
     fn cache_performance_counts(&mut self, snapshot: &WorldSnapshot) {
+        let instances: usize = snapshot.instances3d.values().map(|b| b.count).sum();
         self.performance_counts = FrameCounts {
             entities: snapshot.entities.len(),
             rigidbodies: snapshot
@@ -1029,8 +1034,8 @@ impl EngineRuntime {
             effects: snapshot.effects.len(),
             particles: snapshot.particles.len(),
             observations: snapshot.observations.len(),
-            instances: snapshot.instances3d.values().map(|b| b.count).sum(),
-            instance_bytes: snapshot.instances3d.values().map(|b| b.count * 40).sum(),
+            instances,
+            instance_bytes: instances * 40,
         };
     }
     /// Cached counters: profiling must not clone/serialize the full scene.
