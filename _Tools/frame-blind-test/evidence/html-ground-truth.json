@@ -1,0 +1,971 @@
+{
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "screenshot": "D:\\Projects\\Unone\\_Tools\\frame-blind-test\\evidence\\hero-loadout.png",
+  "regions": [
+    {
+      "id": "screen",
+      "name": "王國鑄印裝備庫",
+      "label": "王國鑄印裝備庫",
+      "role": "region",
+      "behavior": "unknown",
+      "purpose": "英雄裝備與戰鬥配置主畫面",
+      "dynamic_fields": [],
+      "fixed_fields": [],
+      "children": [],
+      "component": {
+        "reusable": false,
+        "type": "one-off"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "不建議九宮格"
+      },
+      "icon": {
+        "required": false,
+        "purpose": "不需要額外 icon"
+      },
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 100,
+        "height": 100
+      }
+    },
+    {
+      "id": "topbar",
+      "name": "導航與資源列",
+      "label": "導航與資源列",
+      "role": "panel",
+      "behavior": "dynamic_state",
+      "purpose": "顯示頁面位置、資源與玩家識別",
+      "dynamic_fields": [
+        "資源數值",
+        "玩家等級",
+        "目前頁籤"
+      ],
+      "fixed_fields": [
+        "導覽項目",
+        "資源 icon 位置",
+        "玩家識別位置"
+      ],
+      "children": [],
+      "component": {
+        "reusable": true,
+        "type": "game-topbar"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "不建議九宮格"
+      },
+      "icon": {
+        "required": false,
+        "purpose": "不需要額外 icon"
+      },
+      "rect": {
+        "x": 1.979,
+        "y": 2.593,
+        "width": 96.042,
+        "height": 7.5
+      }
+    },
+    {
+      "id": "hero-panel",
+      "name": "英雄身份面板",
+      "label": "英雄身份面板",
+      "role": "panel",
+      "behavior": "dynamic_content",
+      "purpose": "呈現英雄名稱、職業、等級與套裝狀態",
+      "dynamic_fields": [
+        "角色名稱",
+        "等級",
+        "XP",
+        "套裝進度",
+        "已裝備狀態"
+      ],
+      "fixed_fields": [
+        "標題層級",
+        "進度列位置",
+        "履歷按鈕"
+      ],
+      "children": [
+        "hero-identity",
+        "hero-level",
+        "hero-portrait",
+        "set-progress",
+        "history-button"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "hero-summary-panel"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "不建議九宮格"
+      },
+      "icon": {
+        "required": false,
+        "purpose": "不需要額外 icon"
+      },
+      "rect": {
+        "x": 2,
+        "y": 13.999,
+        "width": 29,
+        "height": 67.999
+      }
+    },
+    {
+      "id": "character-stage",
+      "name": "英雄與裝備槽",
+      "label": "角色與裝備配置",
+      "role": "panel",
+      "behavior": "dynamic_slot",
+      "purpose": "呈現英雄視覺與可替換的頭盔、胸甲、手套、武器、護符、靴子",
+      "dynamic_fields": [
+        "角色立繪",
+        "裝備槽內容",
+        "戰力評分",
+        "套裝效果"
+      ],
+      "fixed_fields": [
+        "角色舞台位置",
+        "槽位錨點"
+      ],
+      "children": [
+        "equipment-slot-1",
+        "equipment-slot-2",
+        "equipment-slot-3",
+        "equipment-slot-4",
+        "equipment-slot-5",
+        "equipment-slot-6",
+        "set-bonus"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "character-loadout-stage"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "不建議九宮格"
+      },
+      "icon": {
+        "required": false,
+        "purpose": "不需要額外 icon"
+      },
+      "rect": {
+        "x": 33,
+        "y": 13.999,
+        "width": 35.999,
+        "height": 67.999
+      }
+    },
+    {
+      "id": "slot-helm",
+      "name": "影誓頭盔槽",
+      "label": "頭盔裝備槽",
+      "role": "equipment_slot",
+      "behavior": "dynamic_slot",
+      "purpose": "顯示英雄頭部裝備與替換入口",
+      "dynamic_fields": [
+        "裝備圖示",
+        "裝備名稱",
+        "防禦數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "替換入口"
+      ],
+      "children": [],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "可作為可替換素材候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "頭盔裝備圖示"
+      },
+      "rect": {
+        "x": 34.846,
+        "y": 24.262,
+        "width": 7.896,
+        "height": 6.667
+      }
+    },
+    {
+      "id": "slot-chest",
+      "name": "裂城胸甲槽",
+      "label": "胸甲裝備槽",
+      "role": "equipment_slot",
+      "behavior": "dynamic_slot",
+      "purpose": "顯示英雄身體裝備與套裝加成",
+      "dynamic_fields": [
+        "裝備圖示",
+        "裝備名稱",
+        "防禦數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "替換入口"
+      ],
+      "children": [],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "可作為可替換素材候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "胸甲防具圖示"
+      },
+      "rect": {
+        "x": 34.846,
+        "y": 39.86,
+        "width": 7.896,
+        "height": 6.667
+      }
+    },
+    {
+      "id": "slot-gloves",
+      "name": "夜行手套槽",
+      "label": "手套裝備槽",
+      "role": "equipment_slot",
+      "behavior": "dynamic_slot",
+      "purpose": "顯示英雄手部裝備與攻速加成",
+      "dynamic_fields": [
+        "裝備圖示",
+        "裝備名稱",
+        "攻速數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "替換入口"
+      ],
+      "children": [],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "可作為可替換素材候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "手部裝備圖示"
+      },
+      "rect": {
+        "x": 35.564,
+        "y": 56.813,
+        "width": 7.896,
+        "height": 6.667
+      }
+    },
+    {
+      "id": "slot-weapon",
+      "name": "暮裂長刃槽",
+      "label": "主武器裝備槽",
+      "role": "equipment_slot",
+      "behavior": "dynamic_slot",
+      "purpose": "顯示英雄主武器與傷害數值",
+      "dynamic_fields": [
+        "武器圖示",
+        "武器名稱",
+        "傷害數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "替換入口"
+      ],
+      "children": [],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "可作為可替換素材候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "主武器圖示"
+      },
+      "rect": {
+        "x": 59.256,
+        "y": 43.251,
+        "width": 7.896,
+        "height": 6.667
+      }
+    },
+    {
+      "id": "slot-charm",
+      "name": "王印護符槽",
+      "label": "護符裝備槽",
+      "role": "equipment_slot",
+      "behavior": "dynamic_slot",
+      "purpose": "顯示英雄護符與被動效果",
+      "dynamic_fields": [
+        "裝備圖示",
+        "裝備名稱",
+        "暴擊數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "替換入口"
+      ],
+      "children": [],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "可作為可替換素材候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "護符圖示"
+      },
+      "rect": {
+        "x": 58.538,
+        "y": 59.525,
+        "width": 7.896,
+        "height": 6.667
+      }
+    },
+    {
+      "id": "slot-boots",
+      "name": "遠征戰靴槽",
+      "label": "戰靴裝備槽",
+      "role": "equipment_slot",
+      "behavior": "dynamic_slot",
+      "purpose": "顯示英雄腳部裝備與移速加成",
+      "dynamic_fields": [
+        "裝備圖示",
+        "裝備名稱",
+        "移速數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "替換入口"
+      ],
+      "children": [],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "可作為可替換素材候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "戰靴圖示"
+      },
+      "rect": {
+        "x": 52.077,
+        "y": 69.136,
+        "width": 7.896,
+        "height": 6.667
+      }
+    },
+    {
+      "id": "inventory-panel",
+      "name": "軍械庫清單",
+      "label": "軍械庫清單",
+      "role": "dynamic_list",
+      "behavior": "dynamic_list",
+      "purpose": "讓玩家瀏覽、篩選與裝備可用物品",
+      "dynamic_fields": [
+        "物品數量",
+        "篩選結果",
+        "物品選取狀態",
+        "裝備按鈕狀態"
+      ],
+      "fixed_fields": [
+        "清單欄位",
+        "篩選控制",
+        "卡片結構"
+      ],
+      "children": [
+        "filter",
+        "inventory-item-1",
+        "inventory-item-2",
+        "inventory-item-3",
+        "inventory-item-4",
+        "open-inventory-button"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "inventory-panel"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "卡片中的物品主視覺可批次生成"
+      },
+      "icon": {
+        "required": false,
+        "purpose": "不需要額外 icon"
+      },
+      "rect": {
+        "x": 71.001,
+        "y": 13.999,
+        "width": 27,
+        "height": 43.999
+      }
+    },
+    {
+      "id": "stats-panel",
+      "name": "英雄屬性摘要",
+      "label": "戰鬥屬性摘要",
+      "role": "metric",
+      "behavior": "dynamic_value",
+      "purpose": "比較生命、攻擊、防禦與暴擊等戰鬥屬性",
+      "dynamic_fields": [
+        "生命",
+        "攻擊",
+        "防禦",
+        "暴擊",
+        "週期增益"
+      ],
+      "fixed_fields": [
+        "數值 label",
+        "進度條位置",
+        "欄位排列"
+      ],
+      "children": [
+        "health-stat",
+        "attack-stat",
+        "defense-stat",
+        "critical-stat"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "stat-summary-panel"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "不建議九宮格"
+      },
+      "icon": {
+        "required": false,
+        "purpose": "不需要額外 icon"
+      },
+      "rect": {
+        "x": 71.001,
+        "y": 61,
+        "width": 27,
+        "height": 17.999
+      }
+    },
+    {
+      "id": "ability-panel",
+      "name": "技能與快捷欄",
+      "label": "技能與快捷欄",
+      "role": "ability_bar",
+      "behavior": "dynamic_state",
+      "purpose": "顯示英雄主動技能、被動技能與快捷鍵配置",
+      "dynamic_fields": [
+        "技能冷卻",
+        "READY/ACTIVE 狀態",
+        "技能描述",
+        "被動效果"
+      ],
+      "fixed_fields": [
+        "快捷鍵 label",
+        "技能 icon 位置",
+        "進入遠征按鈕"
+      ],
+      "children": [
+        "ability-v",
+        "ability-q",
+        "ability-e",
+        "passive",
+        "deploy-button"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "ability-bar"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "不建議九宮格"
+      },
+      "icon": {
+        "required": false,
+        "purpose": "不需要額外 icon"
+      },
+      "rect": {
+        "x": 33,
+        "y": 79.501,
+        "width": 65,
+        "height": 12.999
+      }
+    }
+  ],
+  "elements": [
+    {
+      "id": "nav-brand",
+      "parent_id": "topbar",
+      "label": "品牌標誌區",
+      "role": "nav",
+      "contains_text": true,
+      "rect": {
+        "x": 3.229,
+        "y": 4.537,
+        "width": 15.104,
+        "height": 3.519
+      }
+    },
+    {
+      "id": "nav-links",
+      "parent_id": "topbar",
+      "label": "主導覽",
+      "role": "nav",
+      "contains_text": true,
+      "rect": {
+        "x": 46.119,
+        "y": 2.593,
+        "width": 10.156,
+        "height": 7.407
+      }
+    },
+    {
+      "id": "resource-strip",
+      "parent_id": "topbar",
+      "label": "資源狀態",
+      "role": "status",
+      "contains_text": true,
+      "rect": {
+        "x": 84.061,
+        "y": 4.861,
+        "width": 12.71,
+        "height": 2.87
+      }
+    },
+    {
+      "id": "player-chip",
+      "parent_id": "resource-strip",
+      "label": "玩家識別",
+      "role": "avatar",
+      "contains_text": true,
+      "rect": {
+        "x": 92.175,
+        "y": 4.861,
+        "width": 4.596,
+        "height": 2.87
+      }
+    },
+    {
+      "id": "hero-heading",
+      "parent_id": "hero-panel",
+      "label": "英雄面板標題",
+      "role": "heading",
+      "contains_text": true,
+      "rect": {
+        "x": 3.302,
+        "y": 16.128,
+        "width": 26.396,
+        "height": 1.111
+      }
+    },
+    {
+      "id": "hero-identity",
+      "parent_id": "hero-panel",
+      "label": "英雄身份區",
+      "role": "text",
+      "contains_text": true,
+      "rect": {
+        "x": 3.302,
+        "y": 18.906,
+        "width": 26.396,
+        "height": 7.13
+      }
+    },
+    {
+      "id": "hero-level",
+      "parent_id": "hero-panel",
+      "label": "等級與經驗",
+      "role": "metric",
+      "contains_text": true,
+      "rect": {
+        "x": 3.302,
+        "y": 27.703,
+        "width": 26.396,
+        "height": 5.648
+      }
+    },
+    {
+      "id": "hero-xp",
+      "parent_id": "hero-level",
+      "label": "經驗進度條",
+      "role": "progress",
+      "contains_text": false,
+      "rect": {
+        "x": 3.302,
+        "y": 32.98,
+        "width": 26.396,
+        "height": 0.37
+      }
+    },
+    {
+      "id": "hero-portrait",
+      "parent_id": "hero-panel",
+      "label": "英雄肖像",
+      "role": "image",
+      "contains_text": false,
+      "rect": {
+        "x": 2.052,
+        "y": 35.017,
+        "width": 28.896,
+        "height": 16.571
+      }
+    },
+    {
+      "id": "set-summary",
+      "parent_id": "hero-panel",
+      "label": "套裝摘要",
+      "role": "metric",
+      "contains_text": true,
+      "rect": {
+        "x": 3.302,
+        "y": 52.977,
+        "width": 26.396,
+        "height": 4.537
+      }
+    },
+    {
+      "id": "set-progress",
+      "parent_id": "hero-panel",
+      "label": "套裝進度",
+      "role": "list",
+      "contains_text": true,
+      "rect": {
+        "x": 3.302,
+        "y": 58.533,
+        "width": 26.396,
+        "height": 8.333
+      }
+    },
+    {
+      "id": "history-button",
+      "parent_id": "hero-panel",
+      "label": "英雄履歷按鈕",
+      "role": "button",
+      "contains_text": true,
+      "rect": {
+        "x": 3.302,
+        "y": 68.07,
+        "width": 26.396,
+        "height": 3.241
+      }
+    },
+    {
+      "id": "stage-heading",
+      "parent_id": "character-stage",
+      "label": "配置標題",
+      "role": "heading",
+      "contains_text": true,
+      "rect": {
+        "x": 33.052,
+        "y": 14.091,
+        "width": 35.895,
+        "height": 5.556
+      }
+    },
+    {
+      "id": "character-art",
+      "parent_id": "character-stage",
+      "label": "角色立繪",
+      "role": "image",
+      "contains_text": false,
+      "rect": {
+        "x": 39.871,
+        "y": 22.907,
+        "width": 22.254,
+        "height": 50.859
+      }
+    },
+    {
+      "id": "set-bonus",
+      "parent_id": "character-stage",
+      "label": "套裝效果",
+      "role": "status",
+      "contains_text": true,
+      "rect": {
+        "x": 43.102,
+        "y": 68.55,
+        "width": 6.536,
+        "height": 6.574
+      }
+    },
+    {
+      "id": "inventory-heading",
+      "parent_id": "inventory-panel",
+      "label": "軍械庫標題",
+      "role": "heading",
+      "contains_text": true,
+      "rect": {
+        "x": 72.303,
+        "y": 16.128,
+        "width": 24.395,
+        "height": 5.556
+      }
+    },
+    {
+      "id": "inventory-filter",
+      "parent_id": "inventory-panel",
+      "label": "篩選按鈕",
+      "role": "button",
+      "contains_text": true,
+      "rect": {
+        "x": 94.209,
+        "y": 16.128,
+        "width": 2.489,
+        "height": 2.87
+      }
+    },
+    {
+      "id": "inventory-tabs",
+      "parent_id": "inventory-panel",
+      "label": "裝備分類分頁",
+      "role": "tab",
+      "contains_text": true,
+      "rect": {
+        "x": 72.303,
+        "y": 23.258,
+        "width": 24.395,
+        "height": 2.5
+      }
+    },
+    {
+      "id": "inventory-item-1",
+      "parent_id": "inventory-panel",
+      "label": "裝備卡一",
+      "role": "card",
+      "contains_text": true,
+      "rect": {
+        "x": 72.303,
+        "y": 26.777,
+        "width": 24.395,
+        "height": 5.278
+      }
+    },
+    {
+      "id": "inventory-item-2",
+      "parent_id": "inventory-panel",
+      "label": "裝備卡二",
+      "role": "card",
+      "contains_text": true,
+      "rect": {
+        "x": 72.303,
+        "y": 32.703,
+        "width": 24.395,
+        "height": 5.278
+      }
+    },
+    {
+      "id": "inventory-item-3",
+      "parent_id": "inventory-panel",
+      "label": "裝備卡三",
+      "role": "card",
+      "contains_text": true,
+      "rect": {
+        "x": 72.303,
+        "y": 38.628,
+        "width": 24.395,
+        "height": 5.278
+      }
+    },
+    {
+      "id": "inventory-item-4",
+      "parent_id": "inventory-panel",
+      "label": "裝備卡四",
+      "role": "card",
+      "contains_text": true,
+      "rect": {
+        "x": 72.303,
+        "y": 44.554,
+        "width": 24.395,
+        "height": 5.278
+      }
+    },
+    {
+      "id": "open-inventory-button",
+      "parent_id": "inventory-panel",
+      "label": "開啟完整軍械庫",
+      "role": "button",
+      "contains_text": true,
+      "rect": {
+        "x": 72.303,
+        "y": 50.943,
+        "width": 24.395,
+        "height": 3.241
+      }
+    },
+    {
+      "id": "stats-heading",
+      "parent_id": "stats-panel",
+      "label": "屬性標題",
+      "role": "heading",
+      "contains_text": true,
+      "rect": {
+        "x": 72.303,
+        "y": 62.759,
+        "width": 24.395,
+        "height": 5.556
+      }
+    },
+    {
+      "id": "health-stat",
+      "parent_id": "stats-panel",
+      "label": "生命數值",
+      "role": "metric",
+      "contains_text": true,
+      "rect": {
+        "x": 72.303,
+        "y": 69.518,
+        "width": 11.572,
+        "height": 3.704
+      }
+    },
+    {
+      "id": "attack-stat",
+      "parent_id": "stats-panel",
+      "label": "攻擊數值",
+      "role": "metric",
+      "contains_text": true,
+      "rect": {
+        "x": 85.125,
+        "y": 69.518,
+        "width": 11.573,
+        "height": 3.704
+      }
+    },
+    {
+      "id": "defense-stat",
+      "parent_id": "stats-panel",
+      "label": "防禦數值",
+      "role": "metric",
+      "contains_text": true,
+      "rect": {
+        "x": 72.303,
+        "y": 74.426,
+        "width": 11.572,
+        "height": 3.704
+      }
+    },
+    {
+      "id": "critical-stat",
+      "parent_id": "stats-panel",
+      "label": "暴擊數值",
+      "role": "metric",
+      "contains_text": true,
+      "rect": {
+        "x": 85.125,
+        "y": 74.426,
+        "width": 11.573,
+        "height": 3.704
+      }
+    },
+    {
+      "id": "ability-heading",
+      "parent_id": "ability-panel",
+      "label": "技能標題",
+      "role": "heading",
+      "contains_text": true,
+      "rect": {
+        "x": 33.937,
+        "y": 83.453,
+        "width": 6.146,
+        "height": 5.093
+      }
+    },
+    {
+      "id": "ability-v",
+      "parent_id": "ability-panel",
+      "label": "V 技能",
+      "role": "card",
+      "contains_text": true,
+      "rect": {
+        "x": 41.021,
+        "y": 80.77,
+        "width": 11.797,
+        "height": 10.463
+      }
+    },
+    {
+      "id": "ability-q",
+      "parent_id": "ability-panel",
+      "label": "Q 技能",
+      "role": "card",
+      "contains_text": true,
+      "rect": {
+        "x": 53.234,
+        "y": 80.77,
+        "width": 11.797,
+        "height": 10.463
+      }
+    },
+    {
+      "id": "ability-e",
+      "parent_id": "ability-panel",
+      "label": "E 技能",
+      "role": "card",
+      "contains_text": true,
+      "rect": {
+        "x": 65.448,
+        "y": 80.77,
+        "width": 11.797,
+        "height": 10.463
+      }
+    },
+    {
+      "id": "passive",
+      "parent_id": "ability-panel",
+      "label": "被動技能",
+      "role": "status",
+      "contains_text": true,
+      "rect": {
+        "x": 77.661,
+        "y": 80.77,
+        "width": 11.797,
+        "height": 10.463
+      }
+    },
+    {
+      "id": "deploy-button",
+      "parent_id": "ability-panel",
+      "label": "進入遠征",
+      "role": "button",
+      "contains_text": true,
+      "rect": {
+        "x": 90.396,
+        "y": 83.129,
+        "width": 6.667,
+        "height": 5.741
+      }
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,4728 @@
+{
+  "stage": "guided_hierarchy",
+  "schema_version": "layout-hierarchy.v1",
+  "provider": "human-rough-panels + qwen2.5-vl-3b-local",
+  "ocr_mode": "region_only",
+  "source": "human_rough_panels",
+  "max_depth": 3,
+  "rough_panels": [
+    {
+      "id": "F01",
+      "name": "角色與裝備區",
+      "label": "角色與裝備區",
+      "role": "panel",
+      "behavior": "unknown",
+      "purpose": "呈現角色、裝備槽與出戰配置",
+      "dynamic_fields": [],
+      "fixed_fields": [],
+      "component": {
+        "reusable": true,
+        "type": "ui-panel"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "面板結構不直接做九宮格"
+      },
+      "icon": {
+        "required": false,
+        "purpose": "不需要額外 icon"
+      },
+      "rect": {
+        "x": 4.0,
+        "y": 7.0,
+        "width": 53.0,
+        "height": 84.0
+      },
+      "parent_id": "screen",
+      "children": [],
+      "source": "human_rough_panel",
+      "confidence": 1.0,
+      "hint": "人類粗框提示：先把這裡視為一個父級 panel"
+    },
+    {
+      "id": "F02",
+      "name": "Inventory 卡列",
+      "label": "Inventory 卡列",
+      "role": "panel",
+      "behavior": "unknown",
+      "purpose": "顯示可查看與穿戴的裝備卡片",
+      "dynamic_fields": [],
+      "fixed_fields": [],
+      "component": {
+        "reusable": true,
+        "type": "ui-panel"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "面板結構不直接做九宮格"
+      },
+      "icon": {
+        "required": false,
+        "purpose": "不需要額外 icon"
+      },
+      "rect": {
+        "x": 59.0,
+        "y": 10.0,
+        "width": 37.0,
+        "height": 70.0
+      },
+      "parent_id": "screen",
+      "children": [],
+      "source": "human_rough_panel",
+      "confidence": 1.0,
+      "hint": "人類粗框提示：先把這裡視為一個父級 panel"
+    },
+    {
+      "id": "F03",
+      "name": "Primary action",
+      "label": "Primary action",
+      "role": "panel",
+      "behavior": "unknown",
+      "purpose": "承接確認後的正向操作",
+      "dynamic_fields": [],
+      "fixed_fields": [],
+      "component": {
+        "reusable": true,
+        "type": "ui-panel"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "面板結構不直接做九宮格"
+      },
+      "icon": {
+        "required": false,
+        "purpose": "不需要額外 icon"
+      },
+      "rect": {
+        "x": 60.0,
+        "y": 87.0,
+        "width": 36.0,
+        "height": 10.0
+      },
+      "parent_id": "screen",
+      "children": [],
+      "source": "human_rough_panel",
+      "confidence": 1.0,
+      "hint": "人類粗框提示：先把這裡視為一個父級 panel"
+    }
+  ],
+  "vision": {
+    "children": [
+      {
+        "stage": "vision_children",
+        "provider": "qwen2.5-vl-3b-local",
+        "vision_model_available": true,
+        "ocr_mode": "region_only",
+        "image_width": 1920,
+        "image_height": 1080,
+        "parent_id": "F01",
+        "parent_rect": {
+          "x": 4.0,
+          "y": 7.0,
+          "width": 53.0,
+          "height": 84.0
+        },
+        "elements": [],
+        "regions": [],
+        "hierarchy": {
+          "id": "F01",
+          "label": "角色與裝備區",
+          "role": "root",
+          "rect": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 100.0,
+            "height": 100.0
+          },
+          "children": [],
+          "nodes": []
+        },
+        "analysis": "Vision 只標出元件區域與類型；文字內容保留為文字區域，不作為比對主鍵。",
+        "confidence": 0.0,
+        "raw": "```json\n[\n    {\n        \"id\": \"loading_out\",\n        \"label\": \"loading_out\",\n        \"role\": \"text\",\n        \"bbox\": [445, 67, 562, 76],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"outfit_config\",\n        \"label\": \"outfit_config\",\n        \"role\": \"text\",\n        \"bbox\": [445, 86, 509, 103],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"raven_vale\",\n        \"label\": \"raven_vale\",\n        \"role\": \"text\",\n        \"bbox\": [36, 116, 151, 137],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"profile\",\n        \"label\": \"profile\",\n        \"role\": \"text\",\n        \"bbox\": [36, 76, 59, 85],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"raven_vale_profile\",\n        \"label\": \"raven_vale_profile\",\n        \"role\": \"text\",\n        \"bbox\": [36, 149, 117, 158],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"level\",\n        \"label\": \"level\",\n        \"role\": \"text\",\n        \"bbox\": [36, 187, 33, 196],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"xp\",\n        \"label\": \"xp\",\n        \"role\": \"text\",\n        \"bbox\": [12, 187, 31, 196],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"xp_total\",\n        \"label\": \"xp_total\",\n        \"role\": \"text\",\n        \"bbox\": [317, 208, 390, 217],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"tactical_kit_ready\",\n        \"label\": \"tactical_kit_ready\",\n        \"role",
+        "latency_ms": 16931.4,
+        "depth": 0
+      },
+      {
+        "stage": "vision_children",
+        "provider": "qwen2.5-vl-3b-local",
+        "vision_model_available": true,
+        "ocr_mode": "region_only",
+        "image_width": 1920,
+        "image_height": 1080,
+        "parent_id": "F02",
+        "parent_rect": {
+          "x": 59.0,
+          "y": 10.0,
+          "width": 37.0,
+          "height": 70.0
+        },
+        "elements": [
+          {
+            "id": "F02__inventory-1",
+            "name": "Inventory 卡列",
+            "label": "Inventory 卡列",
+            "role": "panel",
+            "purpose": "組織這個區域中的介面元件，承接一段獨立的畫面工作",
+            "rect": {
+              "x": 70.969,
+              "y": 14.167,
+              "width": 24.459,
+              "height": 43.889
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2",
+            "name": "可用裝備",
+            "label": "可用裝備",
+            "role": "list",
+            "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+            "rect": {
+              "x": 72.114,
+              "y": 19.259,
+              "width": 23.262,
+              "height": 34.074
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__weapon-3",
+            "name": "武器",
+            "label": "武器",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.114,
+              "y": 23.148,
+              "width": 23.262,
+              "height": 1.667
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__armor-4",
+            "name": "防具",
+            "label": "防具",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.114,
+              "y": 24.815,
+              "width": 23.262,
+              "height": 1.667
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__other-5",
+            "name": "其他",
+            "label": "其他",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.114,
+              "y": 26.481,
+              "width": 23.262,
+              "height": 1.667
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-card-6",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 27.037,
+              "width": 23.262,
+              "height": 23.704
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__combat-readout-7",
+            "name": "戰鬥屬性",
+            "label": "戰鬥屬性",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 63.519,
+              "width": 23.262,
+              "height": 15.463
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          }
+        ],
+        "regions": [
+          {
+            "id": "F02__inventory-1",
+            "name": "Inventory 卡列",
+            "label": "Inventory 卡列",
+            "role": "panel",
+            "purpose": "組織這個區域中的介面元件，承接一段獨立的畫面工作",
+            "rect": {
+              "x": 70.969,
+              "y": 14.167,
+              "width": 24.459,
+              "height": 43.889
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2",
+            "name": "可用裝備",
+            "label": "可用裝備",
+            "role": "list",
+            "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+            "rect": {
+              "x": 72.114,
+              "y": 19.259,
+              "width": 23.262,
+              "height": 34.074
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__weapon-3",
+            "name": "武器",
+            "label": "武器",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.114,
+              "y": 23.148,
+              "width": 23.262,
+              "height": 1.667
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__armor-4",
+            "name": "防具",
+            "label": "防具",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.114,
+              "y": 24.815,
+              "width": 23.262,
+              "height": 1.667
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__other-5",
+            "name": "其他",
+            "label": "其他",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.114,
+              "y": 26.481,
+              "width": 23.262,
+              "height": 1.667
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-card-6",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 27.037,
+              "width": 23.262,
+              "height": 23.704
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__combat-readout-7",
+            "name": "戰鬥屬性",
+            "label": "戰鬥屬性",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 63.519,
+              "width": 23.262,
+              "height": 15.463
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02",
+            "source": "qwen2.5-vl"
+          }
+        ],
+        "hierarchy": {
+          "id": "F02",
+          "label": "Inventory 卡列",
+          "role": "root",
+          "rect": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 100.0,
+            "height": 100.0
+          },
+          "children": [
+            "inventory",
+            "combat_readout"
+          ],
+          "nodes": [
+            {
+              "id": "inventory",
+              "name": "Inventory 卡列",
+              "label": "Inventory 卡列",
+              "role": "panel",
+              "purpose": "組織這個區域中的介面元件，承接一段獨立的畫面工作",
+              "rect": {
+                "x": 70.969,
+                "y": 14.167,
+                "width": 24.459,
+                "height": 43.889
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02",
+              "source": "qwen2.5-vl",
+              "children": [
+                "equipment_list"
+              ]
+            },
+            {
+              "id": "equipment_list",
+              "name": "可用裝備",
+              "label": "可用裝備",
+              "role": "list",
+              "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+              "rect": {
+                "x": 72.114,
+                "y": 19.259,
+                "width": 23.262,
+                "height": 34.074
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "inventory",
+              "source": "qwen2.5-vl",
+              "children": [
+                "weapon",
+                "armor",
+                "equipment_card"
+              ]
+            },
+            {
+              "id": "weapon",
+              "name": "武器",
+              "label": "武器",
+              "role": "list_row",
+              "purpose": "呈現清單中的單一項目或狀態",
+              "rect": {
+                "x": 72.114,
+                "y": 23.148,
+                "width": 23.262,
+                "height": 1.667
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "equipment_list",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "armor",
+              "name": "防具",
+              "label": "防具",
+              "role": "list_row",
+              "purpose": "呈現清單中的單一項目或狀態",
+              "rect": {
+                "x": 72.114,
+                "y": 24.815,
+                "width": 23.262,
+                "height": 1.667
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "equipment_list",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "other",
+              "name": "其他",
+              "label": "其他",
+              "role": "list_row",
+              "purpose": "呈現清單中的單一項目或狀態",
+              "rect": {
+                "x": 72.114,
+                "y": 26.481,
+                "width": 23.262,
+                "height": 1.667
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "equipment_card",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "equipment_card",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "card",
+              "purpose": "承載一組可獨立閱讀或操作的資訊",
+              "rect": {
+                "x": 72.114,
+                "y": 27.037,
+                "width": 23.262,
+                "height": 23.704
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "equipment_list",
+              "source": "qwen2.5-vl",
+              "children": [
+                "other"
+              ]
+            },
+            {
+              "id": "combat_readout",
+              "name": "戰鬥屬性",
+              "label": "戰鬥屬性",
+              "role": "card",
+              "purpose": "承載一組可獨立閱讀或操作的資訊",
+              "rect": {
+                "x": 72.114,
+                "y": 63.519,
+                "width": 23.262,
+                "height": 15.463
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02",
+              "source": "qwen2.5-vl",
+              "children": []
+            }
+          ]
+        },
+        "analysis": "Vision 只標出元件區域與類型；文字內容保留為文字區域，不作為比對主鍵。",
+        "confidence": 0.58,
+        "raw": "```json\n[\n    {\n        \"id\": \"inventory\",\n        \"label\": \"Inventory 卡列\",\n        \"role\": \"panel\",\n        \"bbox\": [230, 45, 700, 519],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_list\",\n        \"label\": \"可用裝備\",\n        \"role\": \"list\",\n        \"bbox\": [252, 100, 699, 468],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"weapon\",\n        \"label\": \"武器\",\n        \"role\": \"list_row\",\n        \"bbox\": [252, 142, 699, 160],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"armor\",\n        \"label\": \"防具\",\n        \"role\": \"list_row\",\n        \"bbox\": [252, 160, 699, 178],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"other\",\n        \"label\": \"其他\",\n        \"role\": \"list_row\",\n        \"bbox\": [252, 178, 699, 196],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"bbox\": [252, 184, 699, 440],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"combat_readout\",\n        \"label\": \"戰鬥屬性\",\n        \"role\": \"card\",\n        \"bbox\": [252, 578, 699, 745],\n        \"contains_text\": true\n    }\n]\n```",
+        "latency_ms": 9862.9,
+        "depth": 0
+      },
+      {
+        "stage": "vision_children",
+        "provider": "qwen2.5-vl-3b-local",
+        "vision_model_available": true,
+        "ocr_mode": "region_only",
+        "image_width": 1920,
+        "image_height": 1080,
+        "parent_id": "F03",
+        "parent_rect": {
+          "x": 60.0,
+          "y": 87.0,
+          "width": 36.0,
+          "height": 10.0
+        },
+        "elements": [],
+        "regions": [],
+        "hierarchy": {
+          "id": "F03",
+          "label": "Primary action",
+          "role": "root",
+          "rect": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 100.0,
+            "height": 100.0
+          },
+          "children": [],
+          "nodes": []
+        },
+        "analysis": "Vision 只標出元件區域與類型；文字內容保留為文字區域，不作為比對主鍵。",
+        "confidence": 0.0,
+        "raw": "```json\n[\n    {\n        \"id\": \"primary-action\",\n        \"label\": \"Primary action\",\n        \"role\": \"panel\",\n        \"purpose\": \"main content area\",\n        \"bbox\": [0, 0, 1, 256],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"ready\",\n        \"label\": \"READY\",\n        \"role\": \"text\",\n        \"purpose\": \"status indicator\",\n        \"bbox\": [93, 47, 104, 52],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"level-indicator\",\n        \"label\": \"我階\",\n        \"role\": \"text\",\n        \"purpose\": \"level indicator\",\n        \"bbox\": [114, 47, 124, 52],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"experience-progress-bar\",\n        \"label\": \"經驗進度條\",\n        \"role\": \"progress\",\n        \"purpose\": \"experience progress\",\n        \"bbox\": [134, 47, 144, 52],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"avatar\",\n        \"label\": \"肖像\",\n        \"role\": \"image\",\n        \"purpose\": \"avatar\",\n        \"bbox\": [154, 47, 164, 52],\n        \"confidence\": 0.9,\n        \"contains_text\": false\n    },\n    {\n        \"id\": \"equipment-summary\",\n        \"label\": \"套裝摘要\",\n        \"role\": \"text\",\n        \"purpose\": \"equipment summary\",\n        \"bbox\": [174, 47, 184, 52],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment-list\",\n        \"label\": \"清單列\",\n        \"role\": \"list\",\n        \"purpose\": \"equipment list\",\n        \"bbox\": [194, 47, 204, 52],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment-card\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"purpose\": \"equipment card\",\n        \"bbox\": [214, 47, 224, 52],",
+        "latency_ms": 13125.3,
+        "depth": 0
+      },
+      {
+        "stage": "vision_children",
+        "provider": "qwen2.5-vl-3b-local",
+        "vision_model_available": true,
+        "ocr_mode": "region_only",
+        "image_width": 1920,
+        "image_height": 1080,
+        "parent_id": "F02__inventory-1",
+        "parent_rect": {
+          "x": 70.969,
+          "y": 14.167,
+          "width": 24.459,
+          "height": 43.889
+        },
+        "elements": [
+          {
+            "id": "F02__inventory-1__header-1",
+            "name": "可用裝備",
+            "label": "可用裝備",
+            "role": "heading",
+            "purpose": "標示這個區域的標題或分類",
+            "rect": {
+              "x": 72.27,
+              "y": 19.63,
+              "width": 4.423,
+              "height": 1.574
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__tab-2",
+            "name": "全部",
+            "label": "全部",
+            "role": "tab",
+            "purpose": "切換同一區域中的內容分類",
+            "rect": {
+              "x": 72.426,
+              "y": 23.704,
+              "width": 1.145,
+              "height": 0.833
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__tab-4-3",
+            "name": "武器",
+            "label": "武器",
+            "role": "tab",
+            "purpose": "切換同一區域中的內容分類",
+            "rect": {
+              "x": 77.474,
+              "y": 23.704,
+              "width": 0.781,
+              "height": 0.833
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__tab-5-4",
+            "name": "防具",
+            "label": "防具",
+            "role": "tab",
+            "purpose": "切換同一區域中的內容分類",
+            "rect": {
+              "x": 79.087,
+              "y": 23.704,
+              "width": 0.572,
+              "height": 0.833
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__tab-6-5",
+            "name": "其他",
+            "label": "其他",
+            "role": "tab",
+            "purpose": "切換同一區域中的內容分類",
+            "rect": {
+              "x": 80.492,
+              "y": 23.704,
+              "width": 0.468,
+              "height": 0.833
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-list-6",
+            "name": "列表",
+            "label": "列表",
+            "role": "list",
+            "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+            "rect": {
+              "x": 72.27,
+              "y": 26.667,
+              "width": 23.158,
+              "height": 24.167
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-card-7",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.27,
+              "y": 26.667,
+              "width": 23.158,
+              "height": 24.167
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          }
+        ],
+        "regions": [
+          {
+            "id": "F02__inventory-1__header-1",
+            "name": "可用裝備",
+            "label": "可用裝備",
+            "role": "heading",
+            "purpose": "標示這個區域的標題或分類",
+            "rect": {
+              "x": 72.27,
+              "y": 19.63,
+              "width": 4.423,
+              "height": 1.574
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__tab-2",
+            "name": "全部",
+            "label": "全部",
+            "role": "tab",
+            "purpose": "切換同一區域中的內容分類",
+            "rect": {
+              "x": 72.426,
+              "y": 23.704,
+              "width": 1.145,
+              "height": 0.833
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__tab-4-3",
+            "name": "武器",
+            "label": "武器",
+            "role": "tab",
+            "purpose": "切換同一區域中的內容分類",
+            "rect": {
+              "x": 77.474,
+              "y": 23.704,
+              "width": 0.781,
+              "height": 0.833
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__tab-5-4",
+            "name": "防具",
+            "label": "防具",
+            "role": "tab",
+            "purpose": "切換同一區域中的內容分類",
+            "rect": {
+              "x": 79.087,
+              "y": 23.704,
+              "width": 0.572,
+              "height": 0.833
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__tab-6-5",
+            "name": "其他",
+            "label": "其他",
+            "role": "tab",
+            "purpose": "切換同一區域中的內容分類",
+            "rect": {
+              "x": 80.492,
+              "y": 23.704,
+              "width": 0.468,
+              "height": 0.833
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-list-6",
+            "name": "列表",
+            "label": "列表",
+            "role": "list",
+            "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+            "rect": {
+              "x": 72.27,
+              "y": 26.667,
+              "width": 23.158,
+              "height": 24.167
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-card-7",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.27,
+              "y": 26.667,
+              "width": 23.158,
+              "height": 24.167
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1",
+            "source": "qwen2.5-vl"
+          }
+        ],
+        "hierarchy": {
+          "id": "F02__inventory-1",
+          "label": "Inventory 卡列",
+          "role": "root",
+          "rect": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 100.0,
+            "height": 100.0
+          },
+          "children": [
+            "header",
+            "tab",
+            "tab-4",
+            "tab-5",
+            "tab-6",
+            "item_list",
+            "item_card"
+          ],
+          "nodes": [
+            {
+              "id": "header",
+              "name": "可用裝備",
+              "label": "可用裝備",
+              "role": "heading",
+              "purpose": "標示這個區域的標題或分類",
+              "rect": {
+                "x": 72.27,
+                "y": 19.63,
+                "width": 4.423,
+                "height": 1.574
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__inventory-1",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "tab",
+              "name": "全部",
+              "label": "全部",
+              "role": "tab",
+              "purpose": "切換同一區域中的內容分類",
+              "rect": {
+                "x": 72.426,
+                "y": 23.704,
+                "width": 1.145,
+                "height": 0.833
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__inventory-1",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "tab-4",
+              "name": "武器",
+              "label": "武器",
+              "role": "tab",
+              "purpose": "切換同一區域中的內容分類",
+              "rect": {
+                "x": 77.474,
+                "y": 23.704,
+                "width": 0.781,
+                "height": 0.833
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__inventory-1",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "tab-5",
+              "name": "防具",
+              "label": "防具",
+              "role": "tab",
+              "purpose": "切換同一區域中的內容分類",
+              "rect": {
+                "x": 79.087,
+                "y": 23.704,
+                "width": 0.572,
+                "height": 0.833
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__inventory-1",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "tab-6",
+              "name": "其他",
+              "label": "其他",
+              "role": "tab",
+              "purpose": "切換同一區域中的內容分類",
+              "rect": {
+                "x": 80.492,
+                "y": 23.704,
+                "width": 0.468,
+                "height": 0.833
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__inventory-1",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "item_list",
+              "name": "列表",
+              "label": "列表",
+              "role": "list",
+              "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+              "rect": {
+                "x": 72.27,
+                "y": 26.667,
+                "width": 23.158,
+                "height": 24.167
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__inventory-1",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "item_card",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "card",
+              "purpose": "承載一組可獨立閱讀或操作的資訊",
+              "rect": {
+                "x": 72.27,
+                "y": 26.667,
+                "width": 23.158,
+                "height": 24.167
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__inventory-1",
+              "source": "qwen2.5-vl",
+              "children": []
+            }
+          ]
+        },
+        "analysis": "Vision 只標出元件區域與類型；文字內容保留為文字區域，不作為比對主鍵。",
+        "confidence": 0.58,
+        "raw": "```json\n[\n    {\n        \"id\": \"inventory\",\n        \"label\": \"Inventory 卡列\",\n        \"role\": \"panel\",\n        \"bbox\": [0, 0, 476, 476],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"header\",\n        \"label\": \"可用裝備\",\n        \"role\": \"heading\",\n        \"bbox\": [25, 59, 110, 76],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"tab\",\n        \"label\": \"全部\",\n        \"role\": \"tab\",\n        \"bbox\": [28, 103, 50, 112],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"tab\",\n        \"label\": \"武器\",\n        \"role\": \"tab\",\n        \"bbox\": [125, 103, 140, 112],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"tab\",\n        \"label\": \"防具\",\n        \"role\": \"tab\",\n        \"bbox\": [156, 103, 167, 112],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"tab\",\n        \"label\": \"其他\",\n        \"role\": \"tab\",\n        \"bbox\": [183, 103, 192, 112],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"item_list\",\n        \"label\": \"列表\",\n        \"role\": \"list\",\n        \"bbox\": [25, 135, 476, 396],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"item_card\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"bbox\": [25, 135, 476, 396],\n        \"contains_text\": true\n    }\n]\n```",
+        "latency_ms": 10710.4,
+        "depth": 1
+      },
+      {
+        "stage": "vision_children",
+        "provider": "qwen2.5-vl-3b-local",
+        "vision_model_available": true,
+        "ocr_mode": "region_only",
+        "image_width": 1920,
+        "image_height": 1080,
+        "parent_id": "F02__equipment-list-2",
+        "parent_rect": {
+          "x": 72.114,
+          "y": 19.259,
+          "width": 23.262,
+          "height": 34.074
+        },
+        "elements": [
+          {
+            "id": "F02__equipment-list-2__equipment-list-1",
+            "name": "可用裝備",
+            "label": "可用裝備",
+            "role": "list",
+            "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+            "rect": {
+              "x": 72.114,
+              "y": 21.574,
+              "width": 20.504,
+              "height": 31.111
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-card-1-2",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 27.315,
+              "width": 20.504,
+              "height": 4.537
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-card-2-3",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 33.981,
+              "width": 20.504,
+              "height": 4.722
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-card-3-4",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 39.907,
+              "width": 20.504,
+              "height": 4.722
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-card-4-5",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 45.833,
+              "width": 20.504,
+              "height": 4.722
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2",
+            "source": "qwen2.5-vl"
+          }
+        ],
+        "regions": [
+          {
+            "id": "F02__equipment-list-2__equipment-list-1",
+            "name": "可用裝備",
+            "label": "可用裝備",
+            "role": "list",
+            "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+            "rect": {
+              "x": 72.114,
+              "y": 21.574,
+              "width": 20.504,
+              "height": 31.111
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-card-1-2",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 27.315,
+              "width": 20.504,
+              "height": 4.537
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-card-2-3",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 33.981,
+              "width": 20.504,
+              "height": 4.722
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-card-3-4",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 39.907,
+              "width": 20.504,
+              "height": 4.722
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-card-4-5",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 45.833,
+              "width": 20.504,
+              "height": 4.722
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2",
+            "source": "qwen2.5-vl"
+          }
+        ],
+        "hierarchy": {
+          "id": "F02__equipment-list-2",
+          "label": "可用裝備",
+          "role": "root",
+          "rect": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 100.0,
+            "height": 100.0
+          },
+          "children": [
+            "equipment_list"
+          ],
+          "nodes": [
+            {
+              "id": "equipment_list",
+              "name": "可用裝備",
+              "label": "可用裝備",
+              "role": "list",
+              "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+              "rect": {
+                "x": 72.114,
+                "y": 21.574,
+                "width": 20.504,
+                "height": 31.111
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__equipment-list-2",
+              "source": "qwen2.5-vl",
+              "children": [
+                "equipment_card_1",
+                "equipment_card_2",
+                "equipment_card_3",
+                "equipment_card_4"
+              ]
+            },
+            {
+              "id": "equipment_card_1",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "card",
+              "purpose": "承載一組可獨立閱讀或操作的資訊",
+              "rect": {
+                "x": 72.114,
+                "y": 27.315,
+                "width": 20.504,
+                "height": 4.537
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "equipment_list",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "equipment_card_2",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "card",
+              "purpose": "承載一組可獨立閱讀或操作的資訊",
+              "rect": {
+                "x": 72.114,
+                "y": 33.981,
+                "width": 20.504,
+                "height": 4.722
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "equipment_list",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "equipment_card_3",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "card",
+              "purpose": "承載一組可獨立閱讀或操作的資訊",
+              "rect": {
+                "x": 72.114,
+                "y": 39.907,
+                "width": 20.504,
+                "height": 4.722
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "equipment_list",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "equipment_card_4",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "card",
+              "purpose": "承載一組可獨立閱讀或操作的資訊",
+              "rect": {
+                "x": 72.114,
+                "y": 45.833,
+                "width": 20.504,
+                "height": 4.722
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "equipment_list",
+              "source": "qwen2.5-vl",
+              "children": []
+            }
+          ]
+        },
+        "analysis": "Vision 只標出元件區域與類型；文字內容保留為文字區域，不作為比對主鍵。",
+        "confidence": 0.9,
+        "raw": "```json\n[\n    {\n        \"id\": \"equipment_list\",\n        \"label\": \"可用裝備\",\n        \"role\": \"list\",\n        \"bbox\": [0, 25, 394, 361],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card_1\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"bbox\": [0, 87, 394, 136],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card_2\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"bbox\": [0, 159, 394, 210],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card_3\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"bbox\": [0, 223, 394, 274],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card_4\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"bbox\": [0, 287, 394, 338],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    }\n]\n```",
+        "latency_ms": 8039.8,
+        "depth": 1
+      },
+      {
+        "stage": "vision_children",
+        "provider": "qwen2.5-vl-3b-local",
+        "vision_model_available": true,
+        "ocr_mode": "region_only",
+        "image_width": 1920,
+        "image_height": 1080,
+        "parent_id": "F02__equipment-card-6",
+        "parent_rect": {
+          "x": 72.114,
+          "y": 27.037,
+          "width": 23.262,
+          "height": 23.704
+        },
+        "elements": [],
+        "regions": [],
+        "hierarchy": {
+          "id": "F02__equipment-card-6",
+          "label": "裝備卡",
+          "role": "root",
+          "rect": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 100.0,
+            "height": 100.0
+          },
+          "children": [],
+          "nodes": []
+        },
+        "analysis": "Vision 只標出元件區域與類型；文字內容保留為文字區域，不作為比對主鍵。",
+        "confidence": 0.0,
+        "raw": "```json\n[\n    {\n        \"id\": \"equipment_card\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"purpose\": \"展示裝備信息\",\n        \"bbox\": [0, 0, 532, 249],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_name\",\n        \"label\": \"名稱/屬性\",\n        \"role\": \"text\",\n        \"purpose\": \"顯示裝備名稱和屬性\",\n        \"bbox\": [0, 16, 117, 29],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_level\",\n        \"label\": \"等級\",\n        \"role\": \"text\",\n        \"purpose\": \"顯示裝備等級\",\n        \"bbox\": [120, 16, 160, 29],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_experience\",\n        \"label\": \"經驗\",\n        \"role\": \"text\",\n        \"purpose\": \"顯示裝備經驗\",\n        \"bbox\": [163, 16, 220, 29],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_icon\",\n        \"label\": \"圖示\",\n        \"role\": \"icon\",\n        \"purpose\": \"顯示裝備圖示\",\n        \"bbox\": [0, 32, 117, 105],\n        \"confidence\": 0.9,\n        \"contains_text\": false\n    },\n    {\n        \"id\": \"equipment_name_2\",\n        \"label\": \"名稱/屬性\",\n        \"role\": \"text\",\n        \"purpose\": \"顯示裝備名稱和屬性\",\n        \"bbox\": [0, 108, 117, 121],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_level_2\",\n        \"label\": \"等級\",\n        \"role\": \"text\",\n        \"purpose\": \"顯示裝備等級\",\n        \"bbox\": [120, 108, 160, 121],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_experience_2\",",
+        "latency_ms": 13080.3,
+        "depth": 1
+      },
+      {
+        "stage": "vision_children",
+        "provider": "qwen2.5-vl-3b-local",
+        "vision_model_available": true,
+        "ocr_mode": "region_only",
+        "image_width": 1920,
+        "image_height": 1080,
+        "parent_id": "F02__combat-readout-7",
+        "parent_rect": {
+          "x": 72.114,
+          "y": 63.519,
+          "width": 23.262,
+          "height": 15.463
+        },
+        "elements": [
+          {
+            "id": "F02__combat-readout-7__life-bar-1",
+            "name": "生命",
+            "label": "生命",
+            "role": "metric",
+            "purpose": "呈現一個可讀取或比較的數值",
+            "rect": {
+              "x": 73.277,
+              "y": 67.075,
+              "width": 9.77,
+              "height": 0.464
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__combat-readout-7",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__combat-readout-7__attack-value-2",
+            "name": "攻擊",
+            "label": "攻擊",
+            "role": "metric",
+            "purpose": "呈現一個可讀取或比較的數值",
+            "rect": {
+              "x": 84.908,
+              "y": 67.075,
+              "width": 5.118,
+              "height": 0.464
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__combat-readout-7",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__combat-readout-7__defense-value-3",
+            "name": "防禦",
+            "label": "防禦",
+            "role": "metric",
+            "purpose": "呈現一個可讀取或比較的數值",
+            "rect": {
+              "x": 73.277,
+              "y": 69.395,
+              "width": 9.77,
+              "height": 0.464
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__combat-readout-7",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__combat-readout-7__critical-strike-rate-4",
+            "name": "暴擊",
+            "label": "暴擊",
+            "role": "metric",
+            "purpose": "呈現一個可讀取或比較的數值",
+            "rect": {
+              "x": 84.908,
+              "y": 69.395,
+              "width": 5.118,
+              "height": 0.464
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__combat-readout-7",
+            "source": "qwen2.5-vl"
+          }
+        ],
+        "regions": [
+          {
+            "id": "F02__combat-readout-7__life-bar-1",
+            "name": "生命",
+            "label": "生命",
+            "role": "metric",
+            "purpose": "呈現一個可讀取或比較的數值",
+            "rect": {
+              "x": 73.277,
+              "y": 67.075,
+              "width": 9.77,
+              "height": 0.464
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__combat-readout-7",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__combat-readout-7__attack-value-2",
+            "name": "攻擊",
+            "label": "攻擊",
+            "role": "metric",
+            "purpose": "呈現一個可讀取或比較的數值",
+            "rect": {
+              "x": 84.908,
+              "y": 67.075,
+              "width": 5.118,
+              "height": 0.464
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__combat-readout-7",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__combat-readout-7__defense-value-3",
+            "name": "防禦",
+            "label": "防禦",
+            "role": "metric",
+            "purpose": "呈現一個可讀取或比較的數值",
+            "rect": {
+              "x": 73.277,
+              "y": 69.395,
+              "width": 9.77,
+              "height": 0.464
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__combat-readout-7",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__combat-readout-7__critical-strike-rate-4",
+            "name": "暴擊",
+            "label": "暴擊",
+            "role": "metric",
+            "purpose": "呈現一個可讀取或比較的數值",
+            "rect": {
+              "x": 84.908,
+              "y": 69.395,
+              "width": 5.118,
+              "height": 0.464
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__combat-readout-7",
+            "source": "qwen2.5-vl"
+          }
+        ],
+        "hierarchy": {
+          "id": "F02__combat-readout-7",
+          "label": "戰鬥屬性",
+          "role": "root",
+          "rect": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 100.0,
+            "height": 100.0
+          },
+          "children": [
+            "life_bar",
+            "attack_value",
+            "defense_value",
+            "critical_strike_rate"
+          ],
+          "nodes": [
+            {
+              "id": "life_bar",
+              "name": "生命",
+              "label": "生命",
+              "role": "metric",
+              "purpose": "呈現一個可讀取或比較的數值",
+              "rect": {
+                "x": 73.277,
+                "y": 67.075,
+                "width": 9.77,
+                "height": 0.464
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__combat-readout-7",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "attack_value",
+              "name": "攻擊",
+              "label": "攻擊",
+              "role": "metric",
+              "purpose": "呈現一個可讀取或比較的數值",
+              "rect": {
+                "x": 84.908,
+                "y": 67.075,
+                "width": 5.118,
+                "height": 0.464
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__combat-readout-7",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "defense_value",
+              "name": "防禦",
+              "label": "防禦",
+              "role": "metric",
+              "purpose": "呈現一個可讀取或比較的數值",
+              "rect": {
+                "x": 73.277,
+                "y": 69.395,
+                "width": 9.77,
+                "height": 0.464
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__combat-readout-7",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "critical_strike_rate",
+              "name": "暴擊",
+              "label": "暴擊",
+              "role": "metric",
+              "purpose": "呈現一個可讀取或比較的數值",
+              "rect": {
+                "x": 84.908,
+                "y": 69.395,
+                "width": 5.118,
+                "height": 0.464
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__combat-readout-7",
+              "source": "qwen2.5-vl",
+              "children": []
+            }
+          ]
+        },
+        "analysis": "Vision 只標出元件區域與類型；文字內容保留為文字區域，不作為比對主鍵。",
+        "confidence": 0.9,
+        "raw": "```json\n[\n    {\n        \"id\": \"life_bar\",\n        \"label\": \"生命\",\n        \"role\": \"metric\",\n        \"bbox\": [0.05, 0.23, 0.47, 0.26],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"attack_value\",\n        \"label\": \"攻擊\",\n        \"role\": \"metric\",\n        \"bbox\": [0.55, 0.23, 0.77, 0.26],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"defense_value\",\n        \"label\": \"防禦\",\n        \"role\": \"metric\",\n        \"bbox\": [0.05, 0.38, 0.47, 0.41],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"critical_strike_rate\",\n        \"label\": \"暴擊\",\n        \"role\": \"metric\",\n        \"bbox\": [0.55, 0.38, 0.77, 0.41],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    }\n]\n```",
+        "latency_ms": 6912.4,
+        "depth": 1
+      },
+      {
+        "stage": "vision_children",
+        "provider": "qwen2.5-vl-3b-local",
+        "vision_model_available": true,
+        "ocr_mode": "region_only",
+        "image_width": 1920,
+        "image_height": 1080,
+        "parent_id": "F02__inventory-1__item-list-6",
+        "parent_rect": {
+          "x": 72.27,
+          "y": 26.667,
+          "width": 23.158,
+          "height": 24.167
+        },
+        "elements": [
+          {
+            "id": "F02__inventory-1__item-list-6__equipment-card-1",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.27,
+              "y": 28.889,
+              "width": 23.158,
+              "height": 12.315
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1__item-list-6",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-list-6__equipment-card-2-2",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.27,
+              "y": 36.389,
+              "width": 23.158,
+              "height": 3.056
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1__item-list-6",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-list-6__equipment-card-3-3",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.27,
+              "y": 34.075,
+              "width": 23.158,
+              "height": 2.315
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1__item-list-6",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-list-6__equipment-card-4-4",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.27,
+              "y": 31.76,
+              "width": 23.158,
+              "height": 2.315
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1__item-list-6",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-list-6__equipment-card-5-5",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.27,
+              "y": 29.445,
+              "width": 23.158,
+              "height": 2.315
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1__item-list-6",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-list-6__equipment-card-6-6",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.27,
+              "y": 26.76,
+              "width": 23.158,
+              "height": 2.685
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1__item-list-6",
+            "source": "qwen2.5-vl"
+          }
+        ],
+        "regions": [
+          {
+            "id": "F02__inventory-1__item-list-6__equipment-card-1",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.27,
+              "y": 28.889,
+              "width": 23.158,
+              "height": 12.315
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1__item-list-6",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-list-6__equipment-card-2-2",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.27,
+              "y": 36.389,
+              "width": 23.158,
+              "height": 3.056
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1__item-list-6",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-list-6__equipment-card-3-3",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.27,
+              "y": 34.075,
+              "width": 23.158,
+              "height": 2.315
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1__item-list-6",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-list-6__equipment-card-4-4",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.27,
+              "y": 31.76,
+              "width": 23.158,
+              "height": 2.315
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1__item-list-6",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-list-6__equipment-card-5-5",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.27,
+              "y": 29.445,
+              "width": 23.158,
+              "height": 2.315
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1__item-list-6",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__inventory-1__item-list-6__equipment-card-6-6",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "list_row",
+            "purpose": "呈現清單中的單一項目或狀態",
+            "rect": {
+              "x": 72.27,
+              "y": 26.76,
+              "width": 23.158,
+              "height": 2.685
+            },
+            "confidence": 0.58,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__inventory-1__item-list-6",
+            "source": "qwen2.5-vl"
+          }
+        ],
+        "hierarchy": {
+          "id": "F02__inventory-1__item-list-6",
+          "label": "列表",
+          "role": "root",
+          "rect": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 100.0,
+            "height": 100.0
+          },
+          "children": [
+            "equipment_card",
+            "equipment_card-6"
+          ],
+          "nodes": [
+            {
+              "id": "equipment_card",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "list_row",
+              "purpose": "呈現清單中的單一項目或狀態",
+              "rect": {
+                "x": 72.27,
+                "y": 28.889,
+                "width": 23.158,
+                "height": 12.315
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__inventory-1__item-list-6",
+              "source": "qwen2.5-vl",
+              "children": [
+                "equipment_card-3",
+                "equipment_card-4",
+                "equipment_card-5",
+                "equipment_card-2"
+              ]
+            },
+            {
+              "id": "equipment_card-2",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "list_row",
+              "purpose": "呈現清單中的單一項目或狀態",
+              "rect": {
+                "x": 72.27,
+                "y": 36.389,
+                "width": 23.158,
+                "height": 3.056
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "equipment_card",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "equipment_card-3",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "list_row",
+              "purpose": "呈現清單中的單一項目或狀態",
+              "rect": {
+                "x": 72.27,
+                "y": 34.075,
+                "width": 23.158,
+                "height": 2.315
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "equipment_card",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "equipment_card-4",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "list_row",
+              "purpose": "呈現清單中的單一項目或狀態",
+              "rect": {
+                "x": 72.27,
+                "y": 31.76,
+                "width": 23.158,
+                "height": 2.315
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "equipment_card",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "equipment_card-5",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "list_row",
+              "purpose": "呈現清單中的單一項目或狀態",
+              "rect": {
+                "x": 72.27,
+                "y": 29.445,
+                "width": 23.158,
+                "height": 2.315
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "equipment_card",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "equipment_card-6",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "list_row",
+              "purpose": "呈現清單中的單一項目或狀態",
+              "rect": {
+                "x": 72.27,
+                "y": 26.76,
+                "width": 23.158,
+                "height": 2.685
+              },
+              "confidence": 0.58,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__inventory-1__item-list-6",
+              "source": "qwen2.5-vl",
+              "children": []
+            }
+          ]
+        },
+        "analysis": "Vision 只標出元件區域與類型；文字內容保留為文字區域，不作為比對主鍵。",
+        "confidence": 0.58,
+        "raw": "```json\n[\n    {\n        \"id\": \"equipment_card\",\n        \"label\": \"裝備卡\",\n        \"role\": \"list_row\",\n        \"bbox\": [0, 24, 639, 157],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card\",\n        \"label\": \"裝備卡\",\n        \"role\": \"list_row\",\n        \"bbox\": [0, 105, 639, 138],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card\",\n        \"label\": \"裝備卡\",\n        \"role\": \"list_row\",\n        \"bbox\": [0, 80, 639, 105],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card\",\n        \"label\": \"裝備卡\",\n        \"role\": \"list_row\",\n        \"bbox\": [0, 55, 639, 80],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card\",\n        \"label\": \"裝備卡\",\n        \"role\": \"list_row\",\n        \"bbox\": [0, 30, 639, 55],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card\",\n        \"label\": \"裝備卡\",\n        \"role\": \"list_row\",\n        \"bbox\": [0, 1, 639, 30],\n        \"contains_text\": true\n    }\n]\n```",
+        "latency_ms": 8199.0,
+        "depth": 2
+      },
+      {
+        "stage": "vision_children",
+        "provider": "qwen2.5-vl-3b-local",
+        "vision_model_available": true,
+        "ocr_mode": "region_only",
+        "image_width": 1920,
+        "image_height": 1080,
+        "parent_id": "F02__inventory-1__item-card-7",
+        "parent_rect": {
+          "x": 72.27,
+          "y": 26.667,
+          "width": 23.158,
+          "height": 24.167
+        },
+        "elements": [],
+        "regions": [],
+        "hierarchy": {
+          "id": "F02__inventory-1__item-card-7",
+          "label": "裝備卡",
+          "role": "root",
+          "rect": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 100.0,
+            "height": 100.0
+          },
+          "children": [],
+          "nodes": []
+        },
+        "analysis": "Vision 只標出元件區域與類型；文字內容保留為文字區域，不作為比對主鍵。",
+        "confidence": 0.0,
+        "raw": "```json\n[\n    {\n        \"id\": \"equipment_card\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"purpose\": \"展示裝備信息\",\n        \"bbox\": [0, 0, 1, 1],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_name\",\n        \"label\": \"名稱\",\n        \"role\": \"text\",\n        \"purpose\": \"裝備名稱\",\n        \"bbox\": [0.25, 0.13, 0.47, 0.16],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_level\",\n        \"label\": \"等級\",\n        \"role\": \"text\",\n        \"purpose\": \"裝備等級\",\n        \"bbox\": [0.5, 0.13, 0.62, 0.16],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_quality\",\n        \"label\": \"套裝\",\n        \"role\": \"text\",\n        \"purpose\": \"裝備套裝\",\n        \"bbox\": [0.65, 0.13, 0.77, 0.16],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_icon\",\n        \"label\": \"圖示\",\n        \"role\": \"icon\",\n        \"purpose\": \"裝備圖示\",\n        \"bbox\": [0.0, 0.13, 0.1, 0.25],\n        \"confidence\": 0.9,\n        \"contains_text\": false\n    },\n    {\n        \"id\": \"equipment_description\",\n        \"label\": \"描述\",\n        \"role\": \"text\",\n        \"purpose\": \"裝備描述\",\n        \"bbox\": [0.0, 0.25, 0.1, 0.37],\n        \"confidence\": 0.9,\n        \"contains_text\": false\n    },\n    {\n        \"id\": \"equipment_stats\",\n        \"label\": \"屬性\",\n        \"role\": \"text\",\n        \"purpose\": \"裝備屬性\",\n        \"bbox\": [0.0, 0.37, 0.1, 0.49],\n        \"confidence\": 0.9,\n        contains_text: false\n    },\n    {\n        \"id\": \"equipment_quality_bad",
+        "latency_ms": 13046.0,
+        "depth": 2
+      },
+      {
+        "stage": "vision_children",
+        "provider": "qwen2.5-vl-3b-local",
+        "vision_model_available": true,
+        "ocr_mode": "region_only",
+        "image_width": 1920,
+        "image_height": 1080,
+        "parent_id": "F02__equipment-list-2__equipment-list-1",
+        "parent_rect": {
+          "x": 72.114,
+          "y": 21.574,
+          "width": 20.504,
+          "height": 31.111
+        },
+        "elements": [
+          {
+            "id": "F02__equipment-list-2__equipment-list-1__equipment-list-1",
+            "name": "列表",
+            "label": "列表",
+            "role": "list",
+            "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+            "rect": {
+              "x": 72.114,
+              "y": 23.796,
+              "width": 10.2,
+              "height": 1.019
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2__equipment-list-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-list-1__equipment-card-1-2",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 28.055,
+              "width": 10.2,
+              "height": 3.704
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2__equipment-list-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-list-1__equipment-card-2-3",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 32.685,
+              "width": 10.2,
+              "height": 3.704
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2__equipment-list-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-list-1__equipment-card-3-4",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 37.315,
+              "width": 10.2,
+              "height": 3.704
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2__equipment-list-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-list-1__equipment-card-4-5",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 41.944,
+              "width": 10.2,
+              "height": 3.704
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2__equipment-list-1",
+            "source": "qwen2.5-vl"
+          }
+        ],
+        "regions": [
+          {
+            "id": "F02__equipment-list-2__equipment-list-1__equipment-list-1",
+            "name": "列表",
+            "label": "列表",
+            "role": "list",
+            "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+            "rect": {
+              "x": 72.114,
+              "y": 23.796,
+              "width": 10.2,
+              "height": 1.019
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2__equipment-list-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-list-1__equipment-card-1-2",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 28.055,
+              "width": 10.2,
+              "height": 3.704
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2__equipment-list-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-list-1__equipment-card-2-3",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 32.685,
+              "width": 10.2,
+              "height": 3.704
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2__equipment-list-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-list-1__equipment-card-3-4",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 37.315,
+              "width": 10.2,
+              "height": 3.704
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2__equipment-list-1",
+            "source": "qwen2.5-vl"
+          },
+          {
+            "id": "F02__equipment-list-2__equipment-list-1__equipment-card-4-5",
+            "name": "裝備卡",
+            "label": "裝備卡",
+            "role": "card",
+            "purpose": "承載一組可獨立閱讀或操作的資訊",
+            "rect": {
+              "x": 72.114,
+              "y": 41.944,
+              "width": 10.2,
+              "height": 3.704
+            },
+            "confidence": 0.9,
+            "contains_text": true,
+            "ocr": {
+              "mode": "region_only",
+              "text": null
+            },
+            "parent_id": "F02__equipment-list-2__equipment-list-1",
+            "source": "qwen2.5-vl"
+          }
+        ],
+        "hierarchy": {
+          "id": "F02__equipment-list-2__equipment-list-1",
+          "label": "可用裝備",
+          "role": "root",
+          "rect": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 100.0,
+            "height": 100.0
+          },
+          "children": [
+            "equipment_list",
+            "equipment_card_1",
+            "equipment_card_2",
+            "equipment_card_3",
+            "equipment_card_4"
+          ],
+          "nodes": [
+            {
+              "id": "equipment_list",
+              "name": "列表",
+              "label": "列表",
+              "role": "list",
+              "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+              "rect": {
+                "x": 72.114,
+                "y": 23.796,
+                "width": 10.2,
+                "height": 1.019
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__equipment-list-2__equipment-list-1",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "equipment_card_1",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "card",
+              "purpose": "承載一組可獨立閱讀或操作的資訊",
+              "rect": {
+                "x": 72.114,
+                "y": 28.055,
+                "width": 10.2,
+                "height": 3.704
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__equipment-list-2__equipment-list-1",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "equipment_card_2",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "card",
+              "purpose": "承載一組可獨立閱讀或操作的資訊",
+              "rect": {
+                "x": 72.114,
+                "y": 32.685,
+                "width": 10.2,
+                "height": 3.704
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__equipment-list-2__equipment-list-1",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "equipment_card_3",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "card",
+              "purpose": "承載一組可獨立閱讀或操作的資訊",
+              "rect": {
+                "x": 72.114,
+                "y": 37.315,
+                "width": 10.2,
+                "height": 3.704
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__equipment-list-2__equipment-list-1",
+              "source": "qwen2.5-vl",
+              "children": []
+            },
+            {
+              "id": "equipment_card_4",
+              "name": "裝備卡",
+              "label": "裝備卡",
+              "role": "card",
+              "purpose": "承載一組可獨立閱讀或操作的資訊",
+              "rect": {
+                "x": 72.114,
+                "y": 41.944,
+                "width": 10.2,
+                "height": 3.704
+              },
+              "confidence": 0.9,
+              "contains_text": true,
+              "ocr": {
+                "mode": "region_only",
+                "text": null
+              },
+              "parent_id": "F02__equipment-list-2__equipment-list-1",
+              "source": "qwen2.5-vl",
+              "children": []
+            }
+          ]
+        },
+        "analysis": "Vision 只標出元件區域與類型；文字內容保留為文字區域，不作為比對主鍵。",
+        "confidence": 0.9,
+        "raw": "```json\n[\n    {\n        \"id\": \"equipment_list\",\n        \"label\": \"列表\",\n        \"role\": \"list\",\n        \"bbox\": [0, 24, 196, 35],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card_1\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"bbox\": [0, 70, 196, 110],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card_2\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"bbox\": [0, 120, 196, 160],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card_3\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"bbox\": [0, 170, 196, 210],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card_4\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"bbox\": [0, 220, 196, 260],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    }\n]\n```",
+        "latency_ms": 7953.1,
+        "depth": 2
+      },
+      {
+        "stage": "vision_children",
+        "provider": "qwen2.5-vl-3b-local",
+        "vision_model_available": true,
+        "ocr_mode": "region_only",
+        "image_width": 1920,
+        "image_height": 1080,
+        "parent_id": "F02__equipment-list-2__equipment-card-2-3",
+        "parent_rect": {
+          "x": 72.114,
+          "y": 33.981,
+          "width": 20.504,
+          "height": 4.722
+        },
+        "elements": [],
+        "regions": [],
+        "hierarchy": {
+          "id": "F02__equipment-list-2__equipment-card-2-3",
+          "label": "裝備卡",
+          "role": "root",
+          "rect": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 100.0,
+            "height": 100.0
+          },
+          "children": [],
+          "nodes": []
+        },
+        "analysis": "Vision 只標出元件區域與類型；文字內容保留為文字區域，不作為比對主鍵。",
+        "confidence": 0.0,
+        "raw": "```json\n[\n    {\n        \"id\": \"equipment_card\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"purpose\": \"展示裝備信息\",\n        \"bbox\": [0.0, 0.0, 1.0, 1.0],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    }\n]\n```",
+        "latency_ms": 2049.5,
+        "depth": 2
+      },
+      {
+        "stage": "vision_children",
+        "provider": "qwen2.5-vl-3b-local",
+        "vision_model_available": true,
+        "ocr_mode": "region_only",
+        "image_width": 1920,
+        "image_height": 1080,
+        "parent_id": "F02__equipment-list-2__equipment-card-3-4",
+        "parent_rect": {
+          "x": 72.114,
+          "y": 39.907,
+          "width": 20.504,
+          "height": 4.722
+        },
+        "elements": [],
+        "regions": [],
+        "hierarchy": {
+          "id": "F02__equipment-list-2__equipment-card-3-4",
+          "label": "裝備卡",
+          "role": "root",
+          "rect": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 100.0,
+            "height": 100.0
+          },
+          "children": [],
+          "nodes": []
+        },
+        "analysis": "Vision 只標出元件區域與類型；文字內容保留為文字區域，不作為比對主鍵。",
+        "confidence": 0.0,
+        "raw": "```json\n[\n    {\n        \"id\": \"equipment_card\",\n        \"label\": \"裝備卡\",\n        \"role\": \"card\",\n        \"purpose\": \"展示裝備信息\",\n        \"bbox\": [0, 0, 1, 1],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_name\",\n        \"label\": \"裝備名稱\",\n        \"role\": \"text\",\n        \"purpose\": \"顯示裝備名稱\",\n        \"bbox\": [0.2, 0.15, 0.3, 0.25],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_type\",\n        \"label\": \"裝備類型\",\n        \"role\": \"text\",\n        \"purpose\": \"顯示裝備類型\",\n        \"bbox\": [0.4, 0.15, 0.5, 0.25],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_level\",\n        \"label\": \"裝備等級\",\n        \"role\": \"text\",\n        \"purpose\": \"顯示裝備等級\",\n        \"bbox\": [0.6, 0.15, 0.7, 0.25],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_quality\",\n        \"label\": \"裝備品質\",\n        \"role\": \"text\",\n        \"purpose\": \"顯示裝備品質\",\n        \"bbox\": [0.8, 0.15, 0.9, 0.25],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_stats\",\n        \"label\": \"裝備屬性\",\n        \"role\": \"text\",\n        \"purpose\": \"顯示裝備屬性\",\n        \"bbox\": [0.2, 0.3, 0.3, 0.4],\n        \"confidence\": 0.9,\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_stat_value\",\n        \"label\": \"屬性值\",\n        \"role\": \"text\",\n        \"purpose\": \"顯示具體屬性值\",\n        \"bbox\": [0.4, 0.3, 0.5, 0.4],\n        \"confidence\": 0.9,\n        \"contains_text\": true",
+        "latency_ms": 13196.6,
+        "depth": 2
+      }
+    ],
+    "elements": [
+      {
+        "id": "F02__inventory-1",
+        "name": "Inventory 卡列",
+        "label": "Inventory 卡列",
+        "role": "panel",
+        "purpose": "組織這個區域中的介面元件，承接一段獨立的畫面工作",
+        "rect": {
+          "x": 70.969,
+          "y": 14.167,
+          "width": 24.459,
+          "height": 43.889
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__equipment-list-2",
+        "name": "可用裝備",
+        "label": "可用裝備",
+        "role": "list",
+        "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+        "rect": {
+          "x": 72.114,
+          "y": 19.259,
+          "width": 23.262,
+          "height": 34.074
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__weapon-3",
+        "name": "武器",
+        "label": "武器",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.114,
+          "y": 23.148,
+          "width": 23.262,
+          "height": 1.667
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__armor-4",
+        "name": "防具",
+        "label": "防具",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.114,
+          "y": 24.815,
+          "width": 23.262,
+          "height": 1.667
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__other-5",
+        "name": "其他",
+        "label": "其他",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.114,
+          "y": 26.481,
+          "width": 23.262,
+          "height": 1.667
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__equipment-card-6",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 27.037,
+          "width": 23.262,
+          "height": 23.704
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__combat-readout-7",
+        "name": "戰鬥屬性",
+        "label": "戰鬥屬性",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 63.519,
+          "width": 23.262,
+          "height": 15.463
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__inventory-1__header-1",
+        "name": "可用裝備",
+        "label": "可用裝備",
+        "role": "heading",
+        "purpose": "標示這個區域的標題或分類",
+        "rect": {
+          "x": 72.27,
+          "y": 19.63,
+          "width": 4.423,
+          "height": 1.574
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__inventory-1__tab-2",
+        "name": "全部",
+        "label": "全部",
+        "role": "tab",
+        "purpose": "切換同一區域中的內容分類",
+        "rect": {
+          "x": 72.426,
+          "y": 23.704,
+          "width": 1.145,
+          "height": 0.833
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__inventory-1__tab-4-3",
+        "name": "武器",
+        "label": "武器",
+        "role": "tab",
+        "purpose": "切換同一區域中的內容分類",
+        "rect": {
+          "x": 77.474,
+          "y": 23.704,
+          "width": 0.781,
+          "height": 0.833
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__inventory-1__tab-5-4",
+        "name": "防具",
+        "label": "防具",
+        "role": "tab",
+        "purpose": "切換同一區域中的內容分類",
+        "rect": {
+          "x": 79.087,
+          "y": 23.704,
+          "width": 0.572,
+          "height": 0.833
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__inventory-1__tab-6-5",
+        "name": "其他",
+        "label": "其他",
+        "role": "tab",
+        "purpose": "切換同一區域中的內容分類",
+        "rect": {
+          "x": 80.492,
+          "y": 23.704,
+          "width": 0.468,
+          "height": 0.833
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__inventory-1__item-list-6",
+        "name": "列表",
+        "label": "列表",
+        "role": "list",
+        "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+        "rect": {
+          "x": 72.27,
+          "y": 26.667,
+          "width": 23.158,
+          "height": 24.167
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-list-1",
+        "name": "可用裝備",
+        "label": "可用裝備",
+        "role": "list",
+        "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+        "rect": {
+          "x": 72.114,
+          "y": 21.574,
+          "width": 20.504,
+          "height": 31.111
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-card-1-2",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 27.315,
+          "width": 20.504,
+          "height": 4.537
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-card-2-3",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 33.981,
+          "width": 20.504,
+          "height": 4.722
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-card-3-4",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 39.907,
+          "width": 20.504,
+          "height": 4.722
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-card-4-5",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 45.833,
+          "width": 20.504,
+          "height": 4.722
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__combat-readout-7__life-bar-1",
+        "name": "生命",
+        "label": "生命",
+        "role": "metric",
+        "purpose": "呈現一個可讀取或比較的數值",
+        "rect": {
+          "x": 73.277,
+          "y": 67.075,
+          "width": 9.77,
+          "height": 0.464
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__combat-readout-7",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__combat-readout-7__attack-value-2",
+        "name": "攻擊",
+        "label": "攻擊",
+        "role": "metric",
+        "purpose": "呈現一個可讀取或比較的數值",
+        "rect": {
+          "x": 84.908,
+          "y": 67.075,
+          "width": 5.118,
+          "height": 0.464
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__combat-readout-7",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__combat-readout-7__defense-value-3",
+        "name": "防禦",
+        "label": "防禦",
+        "role": "metric",
+        "purpose": "呈現一個可讀取或比較的數值",
+        "rect": {
+          "x": 73.277,
+          "y": 69.395,
+          "width": 9.77,
+          "height": 0.464
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__combat-readout-7",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__combat-readout-7__critical-strike-rate-4",
+        "name": "暴擊",
+        "label": "暴擊",
+        "role": "metric",
+        "purpose": "呈現一個可讀取或比較的數值",
+        "rect": {
+          "x": 84.908,
+          "y": 69.395,
+          "width": 5.118,
+          "height": 0.464
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__combat-readout-7",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__inventory-1__item-list-6__equipment-card-1",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.27,
+          "y": 28.889,
+          "width": 23.158,
+          "height": 12.315
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1__item-list-6",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__inventory-1__item-list-6__equipment-card-2-2",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.27,
+          "y": 36.389,
+          "width": 23.158,
+          "height": 3.056
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1__item-list-6",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__inventory-1__item-list-6__equipment-card-3-3",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.27,
+          "y": 34.075,
+          "width": 23.158,
+          "height": 2.315
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1__item-list-6",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__inventory-1__item-list-6__equipment-card-4-4",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.27,
+          "y": 31.76,
+          "width": 23.158,
+          "height": 2.315
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1__item-list-6",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__inventory-1__item-list-6__equipment-card-5-5",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.27,
+          "y": 29.445,
+          "width": 23.158,
+          "height": 2.315
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1__item-list-6",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__inventory-1__item-list-6__equipment-card-6-6",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.27,
+          "y": 26.76,
+          "width": 23.158,
+          "height": 2.685
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1__item-list-6",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-list-1__equipment-list-1",
+        "name": "列表",
+        "label": "列表",
+        "role": "list",
+        "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+        "rect": {
+          "x": 72.114,
+          "y": 23.796,
+          "width": 10.2,
+          "height": 1.019
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2__equipment-list-1",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-list-1__equipment-card-1-2",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 28.055,
+          "width": 10.2,
+          "height": 3.704
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2__equipment-list-1",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-list-1__equipment-card-2-3",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 32.685,
+          "width": 10.2,
+          "height": 3.704
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2__equipment-list-1",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-list-1__equipment-card-3-4",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 37.315,
+          "width": 10.2,
+          "height": 3.704
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2__equipment-list-1",
+        "source": "qwen2.5-vl"
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-list-1__equipment-card-4-5",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 41.944,
+          "width": 10.2,
+          "height": 3.704
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2__equipment-list-1",
+        "source": "qwen2.5-vl"
+      }
+    ]
+  },
+  "hierarchy": {
+    "schema_version": "layout-hierarchy.v1",
+    "coordinate_space": "viewport_percent",
+    "text_policy": "region_only_exact_text_optional",
+    "root": {
+      "id": "screen",
+      "label": "畫面",
+      "role": "root",
+      "rect": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 100.0,
+        "height": 100.0
+      },
+      "children": [
+        "F01",
+        "F02",
+        "F03"
+      ]
+    },
+    "nodes": [
+      {
+        "id": "F01",
+        "name": "角色與裝備區",
+        "label": "角色與裝備區",
+        "role": "panel",
+        "behavior": "unknown",
+        "purpose": "呈現角色、裝備槽與出戰配置",
+        "dynamic_fields": [],
+        "fixed_fields": [],
+        "component": {
+          "reusable": true,
+          "type": "ui-panel"
+        },
+        "nine_grid": {
+          "eligible": false,
+          "reason": "面板結構不直接做九宮格"
+        },
+        "icon": {
+          "required": false,
+          "purpose": "不需要額外 icon"
+        },
+        "rect": {
+          "x": 4.0,
+          "y": 7.0,
+          "width": 53.0,
+          "height": 84.0
+        },
+        "parent_id": "screen",
+        "children": [],
+        "source": "human_rough_panel",
+        "confidence": 1.0,
+        "hint": "人類粗框提示：先把這裡視為一個父級 panel"
+      },
+      {
+        "id": "F02",
+        "name": "Inventory 卡列",
+        "label": "Inventory 卡列",
+        "role": "panel",
+        "behavior": "unknown",
+        "purpose": "顯示可查看與穿戴的裝備卡片",
+        "dynamic_fields": [],
+        "fixed_fields": [],
+        "component": {
+          "reusable": true,
+          "type": "ui-panel"
+        },
+        "nine_grid": {
+          "eligible": false,
+          "reason": "面板結構不直接做九宮格"
+        },
+        "icon": {
+          "required": false,
+          "purpose": "不需要額外 icon"
+        },
+        "rect": {
+          "x": 59.0,
+          "y": 10.0,
+          "width": 37.0,
+          "height": 70.0
+        },
+        "parent_id": "screen",
+        "children": [
+          "F02__inventory-1",
+          "F02__equipment-list-2",
+          "F02__weapon-3",
+          "F02__armor-4",
+          "F02__other-5",
+          "F02__equipment-card-6",
+          "F02__combat-readout-7"
+        ],
+        "source": "human_rough_panel",
+        "confidence": 1.0,
+        "hint": "人類粗框提示：先把這裡視為一個父級 panel"
+      },
+      {
+        "id": "F03",
+        "name": "Primary action",
+        "label": "Primary action",
+        "role": "panel",
+        "behavior": "unknown",
+        "purpose": "承接確認後的正向操作",
+        "dynamic_fields": [],
+        "fixed_fields": [],
+        "component": {
+          "reusable": true,
+          "type": "ui-panel"
+        },
+        "nine_grid": {
+          "eligible": false,
+          "reason": "面板結構不直接做九宮格"
+        },
+        "icon": {
+          "required": false,
+          "purpose": "不需要額外 icon"
+        },
+        "rect": {
+          "x": 60.0,
+          "y": 87.0,
+          "width": 36.0,
+          "height": 10.0
+        },
+        "parent_id": "screen",
+        "children": [],
+        "source": "human_rough_panel",
+        "confidence": 1.0,
+        "hint": "人類粗框提示：先把這裡視為一個父級 panel"
+      },
+      {
+        "id": "F02__inventory-1",
+        "name": "Inventory 卡列",
+        "label": "Inventory 卡列",
+        "role": "panel",
+        "purpose": "組織這個區域中的介面元件，承接一段獨立的畫面工作",
+        "rect": {
+          "x": 70.969,
+          "y": 14.167,
+          "width": 24.459,
+          "height": 43.889
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl",
+        "children": [
+          "F02__inventory-1__header-1",
+          "F02__inventory-1__tab-2",
+          "F02__inventory-1__tab-4-3",
+          "F02__inventory-1__tab-5-4",
+          "F02__inventory-1__tab-6-5",
+          "F02__inventory-1__item-list-6"
+        ]
+      },
+      {
+        "id": "F02__equipment-list-2",
+        "name": "可用裝備",
+        "label": "可用裝備",
+        "role": "list",
+        "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+        "rect": {
+          "x": 72.114,
+          "y": 19.259,
+          "width": 23.262,
+          "height": 34.074
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl",
+        "children": [
+          "F02__equipment-list-2__equipment-list-1",
+          "F02__equipment-list-2__equipment-card-1-2",
+          "F02__equipment-list-2__equipment-card-2-3",
+          "F02__equipment-list-2__equipment-card-3-4",
+          "F02__equipment-list-2__equipment-card-4-5"
+        ]
+      },
+      {
+        "id": "F02__weapon-3",
+        "name": "武器",
+        "label": "武器",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.114,
+          "y": 23.148,
+          "width": 23.262,
+          "height": 1.667
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__armor-4",
+        "name": "防具",
+        "label": "防具",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.114,
+          "y": 24.815,
+          "width": 23.262,
+          "height": 1.667
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__other-5",
+        "name": "其他",
+        "label": "其他",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.114,
+          "y": 26.481,
+          "width": 23.262,
+          "height": 1.667
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__equipment-card-6",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 27.037,
+          "width": 23.262,
+          "height": 23.704
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__combat-readout-7",
+        "name": "戰鬥屬性",
+        "label": "戰鬥屬性",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 63.519,
+          "width": 23.262,
+          "height": 15.463
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02",
+        "source": "qwen2.5-vl",
+        "children": [
+          "F02__combat-readout-7__life-bar-1",
+          "F02__combat-readout-7__attack-value-2",
+          "F02__combat-readout-7__defense-value-3",
+          "F02__combat-readout-7__critical-strike-rate-4"
+        ]
+      },
+      {
+        "id": "F02__inventory-1__header-1",
+        "name": "可用裝備",
+        "label": "可用裝備",
+        "role": "heading",
+        "purpose": "標示這個區域的標題或分類",
+        "rect": {
+          "x": 72.27,
+          "y": 19.63,
+          "width": 4.423,
+          "height": 1.574
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__inventory-1__tab-2",
+        "name": "全部",
+        "label": "全部",
+        "role": "tab",
+        "purpose": "切換同一區域中的內容分類",
+        "rect": {
+          "x": 72.426,
+          "y": 23.704,
+          "width": 1.145,
+          "height": 0.833
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__inventory-1__tab-4-3",
+        "name": "武器",
+        "label": "武器",
+        "role": "tab",
+        "purpose": "切換同一區域中的內容分類",
+        "rect": {
+          "x": 77.474,
+          "y": 23.704,
+          "width": 0.781,
+          "height": 0.833
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__inventory-1__tab-5-4",
+        "name": "防具",
+        "label": "防具",
+        "role": "tab",
+        "purpose": "切換同一區域中的內容分類",
+        "rect": {
+          "x": 79.087,
+          "y": 23.704,
+          "width": 0.572,
+          "height": 0.833
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__inventory-1__tab-6-5",
+        "name": "其他",
+        "label": "其他",
+        "role": "tab",
+        "purpose": "切換同一區域中的內容分類",
+        "rect": {
+          "x": 80.492,
+          "y": 23.704,
+          "width": 0.468,
+          "height": 0.833
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__inventory-1__item-list-6",
+        "name": "列表",
+        "label": "列表",
+        "role": "list",
+        "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+        "rect": {
+          "x": 72.27,
+          "y": 26.667,
+          "width": 23.158,
+          "height": 24.167
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1",
+        "source": "qwen2.5-vl",
+        "children": [
+          "F02__inventory-1__item-list-6__equipment-card-1",
+          "F02__inventory-1__item-list-6__equipment-card-2-2",
+          "F02__inventory-1__item-list-6__equipment-card-3-3",
+          "F02__inventory-1__item-list-6__equipment-card-4-4",
+          "F02__inventory-1__item-list-6__equipment-card-5-5",
+          "F02__inventory-1__item-list-6__equipment-card-6-6"
+        ]
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-list-1",
+        "name": "可用裝備",
+        "label": "可用裝備",
+        "role": "list",
+        "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+        "rect": {
+          "x": 72.114,
+          "y": 21.574,
+          "width": 20.504,
+          "height": 31.111
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2",
+        "source": "qwen2.5-vl",
+        "children": [
+          "F02__equipment-list-2__equipment-list-1__equipment-list-1",
+          "F02__equipment-list-2__equipment-list-1__equipment-card-1-2",
+          "F02__equipment-list-2__equipment-list-1__equipment-card-2-3",
+          "F02__equipment-list-2__equipment-list-1__equipment-card-3-4",
+          "F02__equipment-list-2__equipment-list-1__equipment-card-4-5"
+        ]
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-card-1-2",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 27.315,
+          "width": 20.504,
+          "height": 4.537
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-card-2-3",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 33.981,
+          "width": 20.504,
+          "height": 4.722
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-card-3-4",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 39.907,
+          "width": 20.504,
+          "height": 4.722
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-card-4-5",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 45.833,
+          "width": 20.504,
+          "height": 4.722
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__combat-readout-7__life-bar-1",
+        "name": "生命",
+        "label": "生命",
+        "role": "metric",
+        "purpose": "呈現一個可讀取或比較的數值",
+        "rect": {
+          "x": 73.277,
+          "y": 67.075,
+          "width": 9.77,
+          "height": 0.464
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__combat-readout-7",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__combat-readout-7__attack-value-2",
+        "name": "攻擊",
+        "label": "攻擊",
+        "role": "metric",
+        "purpose": "呈現一個可讀取或比較的數值",
+        "rect": {
+          "x": 84.908,
+          "y": 67.075,
+          "width": 5.118,
+          "height": 0.464
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__combat-readout-7",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__combat-readout-7__defense-value-3",
+        "name": "防禦",
+        "label": "防禦",
+        "role": "metric",
+        "purpose": "呈現一個可讀取或比較的數值",
+        "rect": {
+          "x": 73.277,
+          "y": 69.395,
+          "width": 9.77,
+          "height": 0.464
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__combat-readout-7",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__combat-readout-7__critical-strike-rate-4",
+        "name": "暴擊",
+        "label": "暴擊",
+        "role": "metric",
+        "purpose": "呈現一個可讀取或比較的數值",
+        "rect": {
+          "x": 84.908,
+          "y": 69.395,
+          "width": 5.118,
+          "height": 0.464
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__combat-readout-7",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__inventory-1__item-list-6__equipment-card-1",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.27,
+          "y": 28.889,
+          "width": 23.158,
+          "height": 12.315
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1__item-list-6",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__inventory-1__item-list-6__equipment-card-2-2",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.27,
+          "y": 36.389,
+          "width": 23.158,
+          "height": 3.056
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1__item-list-6",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__inventory-1__item-list-6__equipment-card-3-3",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.27,
+          "y": 34.075,
+          "width": 23.158,
+          "height": 2.315
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1__item-list-6",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__inventory-1__item-list-6__equipment-card-4-4",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.27,
+          "y": 31.76,
+          "width": 23.158,
+          "height": 2.315
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1__item-list-6",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__inventory-1__item-list-6__equipment-card-5-5",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.27,
+          "y": 29.445,
+          "width": 23.158,
+          "height": 2.315
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1__item-list-6",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__inventory-1__item-list-6__equipment-card-6-6",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "list_row",
+        "purpose": "呈現清單中的單一項目或狀態",
+        "rect": {
+          "x": 72.27,
+          "y": 26.76,
+          "width": 23.158,
+          "height": 2.685
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__inventory-1__item-list-6",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-list-1__equipment-list-1",
+        "name": "列表",
+        "label": "列表",
+        "role": "list",
+        "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+        "rect": {
+          "x": 72.114,
+          "y": 23.796,
+          "width": 10.2,
+          "height": 1.019
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2__equipment-list-1",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-list-1__equipment-card-1-2",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 28.055,
+          "width": 10.2,
+          "height": 3.704
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2__equipment-list-1",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-list-1__equipment-card-2-3",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 32.685,
+          "width": 10.2,
+          "height": 3.704
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2__equipment-list-1",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-list-1__equipment-card-3-4",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 37.315,
+          "width": 10.2,
+          "height": 3.704
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2__equipment-list-1",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "F02__equipment-list-2__equipment-list-1__equipment-card-4-5",
+        "name": "裝備卡",
+        "label": "裝備卡",
+        "role": "card",
+        "purpose": "承載一組可獨立閱讀或操作的資訊",
+        "rect": {
+          "x": 72.114,
+          "y": 41.944,
+          "width": 10.2,
+          "height": 3.704
+        },
+        "confidence": 0.9,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "F02__equipment-list-2__equipment-list-1",
+        "source": "qwen2.5-vl",
+        "children": []
+      }
+    ]
+  },
+  "summary": [
+    {
+      "id": "F01",
+      "parent_id": "screen",
+      "label": "角色與裝備區",
+      "role": "panel",
+      "purpose": "呈現角色、裝備槽與出戰配置",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02",
+      "parent_id": "screen",
+      "label": "Inventory 卡列",
+      "role": "panel",
+      "purpose": "顯示可查看與穿戴的裝備卡片",
+      "composition": [
+        "Inventory 卡列",
+        "可用裝備",
+        "武器",
+        "防具",
+        "其他",
+        "裝備卡",
+        "戰鬥屬性"
+      ],
+      "child_count": 7
+    },
+    {
+      "id": "F03",
+      "parent_id": "screen",
+      "label": "Primary action",
+      "role": "panel",
+      "purpose": "承接確認後的正向操作",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__inventory-1",
+      "parent_id": "F02",
+      "label": "Inventory 卡列",
+      "role": "panel",
+      "purpose": "組織這個區域中的介面元件，承接一段獨立的畫面工作",
+      "composition": [
+        "可用裝備",
+        "全部",
+        "武器",
+        "防具",
+        "其他",
+        "列表"
+      ],
+      "child_count": 6
+    },
+    {
+      "id": "F02__equipment-list-2",
+      "parent_id": "F02",
+      "label": "可用裝備",
+      "role": "list",
+      "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+      "composition": [
+        "可用裝備",
+        "裝備卡",
+        "裝備卡",
+        "裝備卡",
+        "裝備卡"
+      ],
+      "child_count": 5
+    },
+    {
+      "id": "F02__weapon-3",
+      "parent_id": "F02",
+      "label": "武器",
+      "role": "list_row",
+      "purpose": "呈現清單中的單一項目或狀態",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__armor-4",
+      "parent_id": "F02",
+      "label": "防具",
+      "role": "list_row",
+      "purpose": "呈現清單中的單一項目或狀態",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__other-5",
+      "parent_id": "F02",
+      "label": "其他",
+      "role": "list_row",
+      "purpose": "呈現清單中的單一項目或狀態",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__equipment-card-6",
+      "parent_id": "F02",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "承載一組可獨立閱讀或操作的資訊",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__combat-readout-7",
+      "parent_id": "F02",
+      "label": "戰鬥屬性",
+      "role": "card",
+      "purpose": "承載一組可獨立閱讀或操作的資訊",
+      "composition": [
+        "生命",
+        "攻擊",
+        "防禦",
+        "暴擊"
+      ],
+      "child_count": 4
+    },
+    {
+      "id": "F02__inventory-1__header-1",
+      "parent_id": "F02__inventory-1",
+      "label": "可用裝備",
+      "role": "heading",
+      "purpose": "標示這個區域的標題或分類",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__inventory-1__tab-2",
+      "parent_id": "F02__inventory-1",
+      "label": "全部",
+      "role": "tab",
+      "purpose": "切換同一區域中的內容分類",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__inventory-1__tab-4-3",
+      "parent_id": "F02__inventory-1",
+      "label": "武器",
+      "role": "tab",
+      "purpose": "切換同一區域中的內容分類",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__inventory-1__tab-5-4",
+      "parent_id": "F02__inventory-1",
+      "label": "防具",
+      "role": "tab",
+      "purpose": "切換同一區域中的內容分類",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__inventory-1__tab-6-5",
+      "parent_id": "F02__inventory-1",
+      "label": "其他",
+      "role": "tab",
+      "purpose": "切換同一區域中的內容分類",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__inventory-1__item-list-6",
+      "parent_id": "F02__inventory-1",
+      "label": "列表",
+      "role": "list",
+      "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+      "composition": [
+        "裝備卡",
+        "裝備卡",
+        "裝備卡",
+        "裝備卡",
+        "裝備卡",
+        "裝備卡"
+      ],
+      "child_count": 6
+    },
+    {
+      "id": "F02__equipment-list-2__equipment-list-1",
+      "parent_id": "F02__equipment-list-2",
+      "label": "可用裝備",
+      "role": "list",
+      "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+      "composition": [
+        "列表",
+        "裝備卡",
+        "裝備卡",
+        "裝備卡",
+        "裝備卡"
+      ],
+      "child_count": 5
+    },
+    {
+      "id": "F02__equipment-list-2__equipment-card-1-2",
+      "parent_id": "F02__equipment-list-2",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "承載一組可獨立閱讀或操作的資訊",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__equipment-list-2__equipment-card-2-3",
+      "parent_id": "F02__equipment-list-2",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "承載一組可獨立閱讀或操作的資訊",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__equipment-list-2__equipment-card-3-4",
+      "parent_id": "F02__equipment-list-2",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "承載一組可獨立閱讀或操作的資訊",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__equipment-list-2__equipment-card-4-5",
+      "parent_id": "F02__equipment-list-2",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "承載一組可獨立閱讀或操作的資訊",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__combat-readout-7__life-bar-1",
+      "parent_id": "F02__combat-readout-7",
+      "label": "生命",
+      "role": "metric",
+      "purpose": "呈現一個可讀取或比較的數值",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__combat-readout-7__attack-value-2",
+      "parent_id": "F02__combat-readout-7",
+      "label": "攻擊",
+      "role": "metric",
+      "purpose": "呈現一個可讀取或比較的數值",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__combat-readout-7__defense-value-3",
+      "parent_id": "F02__combat-readout-7",
+      "label": "防禦",
+      "role": "metric",
+      "purpose": "呈現一個可讀取或比較的數值",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__combat-readout-7__critical-strike-rate-4",
+      "parent_id": "F02__combat-readout-7",
+      "label": "暴擊",
+      "role": "metric",
+      "purpose": "呈現一個可讀取或比較的數值",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__inventory-1__item-list-6__equipment-card-1",
+      "parent_id": "F02__inventory-1__item-list-6",
+      "label": "裝備卡",
+      "role": "list_row",
+      "purpose": "呈現清單中的單一項目或狀態",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__inventory-1__item-list-6__equipment-card-2-2",
+      "parent_id": "F02__inventory-1__item-list-6",
+      "label": "裝備卡",
+      "role": "list_row",
+      "purpose": "呈現清單中的單一項目或狀態",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__inventory-1__item-list-6__equipment-card-3-3",
+      "parent_id": "F02__inventory-1__item-list-6",
+      "label": "裝備卡",
+      "role": "list_row",
+      "purpose": "呈現清單中的單一項目或狀態",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__inventory-1__item-list-6__equipment-card-4-4",
+      "parent_id": "F02__inventory-1__item-list-6",
+      "label": "裝備卡",
+      "role": "list_row",
+      "purpose": "呈現清單中的單一項目或狀態",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__inventory-1__item-list-6__equipment-card-5-5",
+      "parent_id": "F02__inventory-1__item-list-6",
+      "label": "裝備卡",
+      "role": "list_row",
+      "purpose": "呈現清單中的單一項目或狀態",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__inventory-1__item-list-6__equipment-card-6-6",
+      "parent_id": "F02__inventory-1__item-list-6",
+      "label": "裝備卡",
+      "role": "list_row",
+      "purpose": "呈現清單中的單一項目或狀態",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__equipment-list-2__equipment-list-1__equipment-list-1",
+      "parent_id": "F02__equipment-list-2__equipment-list-1",
+      "label": "列表",
+      "role": "list",
+      "purpose": "排列一組同類項目，讓使用者瀏覽或選取",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__equipment-list-2__equipment-list-1__equipment-card-1-2",
+      "parent_id": "F02__equipment-list-2__equipment-list-1",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "承載一組可獨立閱讀或操作的資訊",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__equipment-list-2__equipment-list-1__equipment-card-2-3",
+      "parent_id": "F02__equipment-list-2__equipment-list-1",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "承載一組可獨立閱讀或操作的資訊",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__equipment-list-2__equipment-list-1__equipment-card-3-4",
+      "parent_id": "F02__equipment-list-2__equipment-list-1",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "承載一組可獨立閱讀或操作的資訊",
+      "composition": [],
+      "child_count": 0
+    },
+    {
+      "id": "F02__equipment-list-2__equipment-list-1__equipment-card-4-5",
+      "parent_id": "F02__equipment-list-2__equipment-list-1",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "承載一組可獨立閱讀或操作的資訊",
+      "composition": [],
+      "child_count": 0
+    }
+  ],
+  "pipeline": [
+    "human_rough_panel_roots",
+    "vision_children_per_panel",
+    "recursive_container_scan:max_depth=3",
+    "renderer_neutral_hierarchy",
+    "composition_summary"
+  ],
+  "latency_ms": 123372.1,
+  "analysis": "人類粗框只決定父級掃描範圍；Vision 逐層找出 panel 內的元件，直到葉節點或掃描上限。文字內容只作為區域提示，不是結構主鍵。"
+}

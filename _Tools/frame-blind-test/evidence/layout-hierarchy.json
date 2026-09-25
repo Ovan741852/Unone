@@ -1,0 +1,1980 @@
+{
+  "schema_version": "layout-hierarchy.v1",
+  "coordinate_space": "viewport_percent",
+  "text_policy": "region_only_exact_text_optional",
+  "root": {
+    "id": "screen",
+    "label": "畫面",
+    "role": "root",
+    "rect": {
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0
+    },
+    "children": [
+      "topbar",
+      "hero-panel",
+      "character-stage",
+      "inventory-panel",
+      "stats-panel",
+      "ability-panel",
+      "equipment-slot-1",
+      "equipment-slot-2",
+      "equipment-slot-3",
+      "equipment-slot-4",
+      "equipment-slot-5",
+      "equipment-slot-6"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "topbar",
+      "name": "盲拆區域：導航與資源列",
+      "label": "導航與資源列",
+      "role": "panel",
+      "purpose": "上方橫向導覽與狀態資訊",
+      "action": "切換頁面、查看資源與玩家狀態",
+      "rect": {
+        "x": 1.979,
+        "y": 2.593,
+        "width": 96.042,
+        "height": 7.5
+      },
+      "confidence": 0.91,
+      "behavior": "dynamic_state",
+      "dynamic_fields": [
+        "資源數值",
+        "玩家等級",
+        "目前頁籤"
+      ],
+      "fixed_fields": [
+        "導覽項目",
+        "資源 icon 位置",
+        "玩家識別位置"
+      ],
+      "children": [
+        "level_indicator",
+        "experience_progress_bar",
+        "button",
+        "ironkeep",
+        "equipment",
+        "weapon",
+        "skill",
+        "progress",
+        "gold",
+        "experience-63",
+        "level-64",
+        "gold_value",
+        "experience_value",
+        "level_value"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "game-topbar"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "固定 UI 結構，不是圖片素材"
+      }
+    },
+    {
+      "id": "hero-panel",
+      "name": "盲拆區域：左側英雄面板",
+      "label": "英雄身份面板",
+      "role": "panel",
+      "purpose": "角色身份、等級與套裝摘要",
+      "action": "查看角色狀態與套裝進度",
+      "rect": {
+        "x": 1.927,
+        "y": 13.889,
+        "width": 29.115,
+        "height": 68.241
+      },
+      "confidence": 0.86,
+      "behavior": "dynamic_content",
+      "dynamic_fields": [
+        "角色名稱",
+        "等級",
+        "XP",
+        "套裝進度",
+        "已裝備狀態"
+      ],
+      "fixed_fields": [
+        "標題層級",
+        "進度列位置",
+        "履歷按鈕"
+      ],
+      "children": [
+        "equipment_list",
+        "identity_block",
+        "name",
+        "level",
+        "experience",
+        "equipment_summary-31",
+        "equipment_list-32",
+        "equipment_card-33"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "hero-summary-panel"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "資訊面板，不應直接生成九宮格"
+      }
+    },
+    {
+      "id": "character-stage",
+      "name": "盲拆區域：中央角色區",
+      "label": "角色與裝備配置",
+      "role": "panel",
+      "purpose": "角色視覺與可替換裝備槽",
+      "action": "查看角色並替換裝備",
+      "rect": {
+        "x": 33.073,
+        "y": 14.074,
+        "width": 35.885,
+        "height": 65.463
+      },
+      "confidence": 0.84,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "角色立繪",
+        "裝備槽內容",
+        "戰力評分",
+        "套裝效果"
+      ],
+      "fixed_fields": [
+        "角色舞台位置",
+        "槽位錨點"
+      ],
+      "children": [
+        "equipment_card",
+        "equipment_card-2",
+        "equipment_card-3",
+        "equipment_card-4",
+        "equipment_card-5"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "character-loadout-stage"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "角色與槽位需要連續構圖"
+      }
+    },
+    {
+      "id": "inventory-panel",
+      "name": "盲拆區域：軍械庫清單",
+      "label": "軍械庫清單",
+      "role": "dynamic_list",
+      "purpose": "瀏覽、篩選與裝備可用物品",
+      "action": "瀏覽、篩選與裝備物品",
+      "rect": {
+        "x": 71.042,
+        "y": 14.074,
+        "width": 26.927,
+        "height": 43.796
+      },
+      "confidence": 0.86,
+      "behavior": "dynamic_list",
+      "dynamic_fields": [
+        "物品數量",
+        "篩選結果",
+        "物品選取狀態",
+        "裝備按鈕狀態"
+      ],
+      "fixed_fields": [
+        "清單欄位",
+        "篩選控制",
+        "卡片結構"
+      ],
+      "children": [
+        "nav",
+        "heading",
+        "tab",
+        "tab-4",
+        "tab-5",
+        "tab-6",
+        "list_row",
+        "list_row-8",
+        "list_row-9",
+        "list_row-10"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "inventory-panel"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "卡片中的物品主視覺可批次生成"
+      }
+    },
+    {
+      "id": "stats-panel",
+      "name": "盲拆區域：戰鬥屬性",
+      "label": "戰鬥屬性摘要",
+      "role": "metric",
+      "purpose": "比較生命、攻擊、防禦與暴擊等戰鬥屬性",
+      "action": "查看角色戰鬥數值",
+      "rect": {
+        "x": 71.042,
+        "y": 61.111,
+        "width": 26.927,
+        "height": 17.778
+      },
+      "confidence": 0.78,
+      "behavior": "dynamic_value",
+      "dynamic_fields": [
+        "生命",
+        "攻擊",
+        "防禦",
+        "暴擊",
+        "週期增益"
+      ],
+      "fixed_fields": [
+        "數值 label",
+        "進度條位置",
+        "欄位排列"
+      ],
+      "children": [
+        "health",
+        "attack",
+        "defense",
+        "critical"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "stat-summary-panel"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "數值 UI 不應生成九宮格"
+      }
+    },
+    {
+      "id": "ability-panel",
+      "name": "盲拆區域：技能快捷欄",
+      "label": "技能與快捷欄",
+      "role": "ability_bar",
+      "purpose": "技能、被動效果與部署操作",
+      "action": "使用技能、查看冷卻並進入遠征",
+      "rect": {
+        "x": 32.969,
+        "y": 79.444,
+        "width": 65.0,
+        "height": 13.056
+      },
+      "confidence": 0.82,
+      "behavior": "dynamic_state",
+      "dynamic_fields": [
+        "技能冷卻",
+        "READY/ACTIVE 狀態",
+        "技能描述",
+        "被動效果"
+      ],
+      "fixed_fields": [
+        "快捷鍵 label",
+        "技能 icon 位置",
+        "進入遠征按鈕"
+      ],
+      "children": [
+        "TacticalKit",
+        "QIcon",
+        "QName",
+        "QDuration",
+        "EIcon",
+        "EPassive",
+        "EPassiveName",
+        "EPassiveActive",
+        "EPassiveDescription",
+        "EPassiveDescription-11",
+        "EPassiveDescription-12",
+        "EPassiveDescription-13",
+        "ReadyButton"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "ability-bar"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "技能 UI 需保持操作一致性"
+      }
+    },
+    {
+      "id": "equipment-slot-1",
+      "name": "盲拆裝備槽 1",
+      "label": "頭盔裝備槽",
+      "role": "equipment_slot",
+      "purpose": "可獨立替換的英雄裝備元素",
+      "action": "替換頭部防具",
+      "rect": {
+        "x": 35.156,
+        "y": 24.815,
+        "width": 7.292,
+        "height": 5.556
+      },
+      "confidence": 0.71,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "裝備內容",
+        "數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "操作入口"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "裝備圖示可生成多個候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "頭盔裝備槽圖示"
+      },
+      "children": []
+    },
+    {
+      "id": "equipment-slot-2",
+      "name": "盲拆裝備槽 2",
+      "label": "胸甲裝備槽",
+      "role": "equipment_slot",
+      "purpose": "可獨立替換的英雄裝備元素",
+      "action": "替換身體防具",
+      "rect": {
+        "x": 35.156,
+        "y": 40.37,
+        "width": 7.292,
+        "height": 5.556
+      },
+      "confidence": 0.71,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "裝備內容",
+        "數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "操作入口"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "裝備圖示可生成多個候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "胸甲裝備槽圖示"
+      },
+      "children": []
+    },
+    {
+      "id": "equipment-slot-3",
+      "name": "盲拆裝備槽 3",
+      "label": "手套裝備槽",
+      "role": "equipment_slot",
+      "purpose": "可獨立替換的英雄裝備元素",
+      "action": "替換手部裝備",
+      "rect": {
+        "x": 35.885,
+        "y": 57.407,
+        "width": 7.24,
+        "height": 5.556
+      },
+      "confidence": 0.71,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "裝備內容",
+        "數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "操作入口"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "裝備圖示可生成多個候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "手套裝備槽圖示"
+      },
+      "children": []
+    },
+    {
+      "id": "equipment-slot-4",
+      "name": "盲拆裝備槽 4",
+      "label": "主武器裝備槽",
+      "role": "equipment_slot",
+      "purpose": "可獨立替換的英雄裝備元素",
+      "action": "替換主武器",
+      "rect": {
+        "x": 59.583,
+        "y": 43.796,
+        "width": 7.24,
+        "height": 5.556
+      },
+      "confidence": 0.71,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "裝備內容",
+        "數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "操作入口"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "裝備圖示可生成多個候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "主武器裝備槽圖示"
+      },
+      "children": []
+    },
+    {
+      "id": "equipment-slot-5",
+      "name": "盲拆裝備槽 5",
+      "label": "護符裝備槽",
+      "role": "equipment_slot",
+      "purpose": "可獨立替換的英雄裝備元素",
+      "action": "替換被動護符",
+      "rect": {
+        "x": 58.854,
+        "y": 60.093,
+        "width": 7.292,
+        "height": 5.556
+      },
+      "confidence": 0.71,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "裝備內容",
+        "數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "操作入口"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "裝備圖示可生成多個候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "護符裝備槽圖示"
+      },
+      "children": []
+    },
+    {
+      "id": "equipment-slot-6",
+      "name": "盲拆裝備槽 6",
+      "label": "戰靴裝備槽",
+      "role": "equipment_slot",
+      "purpose": "可獨立替換的英雄裝備元素",
+      "action": "替換移動裝備",
+      "rect": {
+        "x": 53.438,
+        "y": 69.722,
+        "width": 6.198,
+        "height": 5.556
+      },
+      "confidence": 0.71,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "裝備內容",
+        "數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "操作入口"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "裝備圖示可生成多個候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "戰靴裝備槽圖示"
+      },
+      "children": []
+    },
+    {
+      "id": "top_navigation",
+      "name": "導覽列",
+      "label": "導覽列",
+      "role": "nav",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 0.0,
+        "y": 2.778,
+        "width": 56.823,
+        "height": 2.407
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "screen",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "hero_profile",
+      "name": "英雄身份區",
+      "label": "英雄身份區",
+      "role": "panel",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 0.729,
+        "y": 8.056,
+        "width": 9.688,
+        "height": 21.111
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "screen",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "level_indicator",
+      "name": "等級指示",
+      "label": "等級指示",
+      "role": "metric",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 10.938,
+        "y": 9.259,
+        "width": 2.083,
+        "height": 1.389
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "experience_progress_bar",
+      "name": "經驗進度條",
+      "label": "經驗進度條",
+      "role": "progress",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 13.542,
+        "y": 9.259,
+        "width": 2.604,
+        "height": 1.389
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "avatar",
+      "name": "肖像",
+      "label": "肖像",
+      "role": "image",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 10.938,
+        "y": 10.648,
+        "width": 5.208,
+        "height": 9.259
+      },
+      "confidence": 0.9,
+      "contains_text": false,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "screen",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_summary",
+      "name": "套裝摘要",
+      "label": "套裝摘要",
+      "role": "card",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 16.667,
+        "y": 10.648,
+        "width": 5.208,
+        "height": 9.259
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "screen",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_list",
+      "name": "清單列",
+      "label": "清單列",
+      "role": "list",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 16.667,
+        "y": 19.907,
+        "width": 5.208,
+        "height": 9.259
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "button",
+      "name": "按鈕",
+      "label": "按鈕",
+      "role": "button",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 49.219,
+        "y": 9.259,
+        "width": 1.562,
+        "height": 1.389
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "metric",
+      "name": "數值列",
+      "label": "數值列",
+      "role": "metric",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 49.219,
+        "y": 10.648,
+        "width": 1.562,
+        "height": 1.389
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "screen",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_card",
+      "name": "裝備卡",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 34.899,
+        "y": 24.074,
+        "width": 8.293,
+        "height": 17.407
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "character-stage",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_card-2",
+      "name": "裝備卡",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 34.899,
+        "y": 39.074,
+        "width": 8.293,
+        "height": 17.407
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "character-stage",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_card-3",
+      "name": "裝備卡",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 34.899,
+        "y": 56.481,
+        "width": 8.293,
+        "height": 18.519
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "character-stage",
+      "source": "qwen2.5-vl",
+      "children": [
+        "equipment_name",
+        "equipment_type",
+        "equipment_level",
+        "equipment_progress",
+        "equipment_icon"
+      ]
+    },
+    {
+      "id": "equipment_card-4",
+      "name": "裝備卡",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 34.899,
+        "y": 75.0,
+        "width": 8.293,
+        "height": 4.537
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "character-stage",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_card-5",
+      "name": "裝備卡",
+      "label": "裝備卡",
+      "role": "card",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 43.505,
+        "y": 67.963,
+        "width": 17.004,
+        "height": 11.574
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "character-stage",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "identity_block",
+      "name": "身份块",
+      "label": "身份块",
+      "role": "panel",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 2.915,
+        "y": 17.87,
+        "width": 11.074,
+        "height": 8.056
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl",
+      "children": [
+        "Raven Vale"
+      ]
+    },
+    {
+      "id": "name",
+      "name": "姓名",
+      "label": "姓名",
+      "role": "text",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 6.398,
+        "y": 20.741,
+        "width": 7.487,
+        "height": 2.407
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "level",
+      "name": "等级",
+      "label": "等级",
+      "role": "text",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 3.383,
+        "y": 29.445,
+        "width": 2.808,
+        "height": 1.296
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "experience",
+      "name": "经验",
+      "label": "经验",
+      "role": "text",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 24.699,
+        "y": 31.574,
+        "width": 4.887,
+        "height": 1.296
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_summary-31",
+      "name": "装备摘要",
+      "label": "装备摘要",
+      "role": "text",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 3.383,
+        "y": 50.371,
+        "width": 2.808,
+        "height": 1.296
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_list-32",
+      "name": "装备列表",
+      "label": "装备列表",
+      "role": "list",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 3.383,
+        "y": 52.222,
+        "width": 26.203,
+        "height": 13.148
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_card-33",
+      "name": "装备卡片",
+      "label": "装备卡片",
+      "role": "card",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 3.383,
+        "y": 67.593,
+        "width": 26.203,
+        "height": 2.407
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "nav",
+      "name": "導覽列",
+      "label": "導覽列",
+      "role": "nav",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 71.042,
+        "y": 16.389,
+        "width": 25.156,
+        "height": 2.87
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "inventory-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "heading",
+      "name": "可用裝備",
+      "label": "可用裝備",
+      "role": "heading",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 72.24,
+        "y": 19.352,
+        "width": 4.167,
+        "height": 2.037
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "inventory-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "tab",
+      "name": "全部 24",
+      "label": "全部 24",
+      "role": "tab",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 72.24,
+        "y": 23.611,
+        "width": 1.823,
+        "height": 1.111
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "inventory-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "tab-4",
+      "name": "武器 8",
+      "label": "武器 8",
+      "role": "tab",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 74.74,
+        "y": 23.611,
+        "width": 1.719,
+        "height": 1.111
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "inventory-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "tab-5",
+      "name": "防具 13",
+      "label": "防具 13",
+      "role": "tab",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 77.657,
+        "y": 23.611,
+        "width": 1.667,
+        "height": 1.111
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "inventory-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "tab-6",
+      "name": "其他 5",
+      "label": "其他 5",
+      "role": "tab",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 80.521,
+        "y": 23.611,
+        "width": 1.094,
+        "height": 1.111
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "inventory-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "list_row",
+      "name": "裝備卡",
+      "label": "裝備卡",
+      "role": "list_row",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 72.24,
+        "y": 27.037,
+        "width": 23.437,
+        "height": 21.667
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "inventory-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "list_row-8",
+      "name": "裝備卡",
+      "label": "裝備卡",
+      "role": "list_row",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 72.24,
+        "y": 46.574,
+        "width": 23.437,
+        "height": 2.13
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "inventory-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "list_row-9",
+      "name": "裝備卡",
+      "label": "裝備卡",
+      "role": "list_row",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 72.24,
+        "y": 39.259,
+        "width": 23.437,
+        "height": 2.593
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "inventory-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "list_row-10",
+      "name": "裝備卡",
+      "label": "裝備卡",
+      "role": "list_row",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 72.24,
+        "y": 27.037,
+        "width": 23.437,
+        "height": 2.593
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "inventory-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "TacticalKit",
+      "name": "戰術技能",
+      "label": "戰術技能",
+      "role": "panel",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 32.969,
+        "y": 83.857,
+        "width": 8.49,
+        "height": 7.999
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "ability-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "QIcon",
+      "name": "Q",
+      "label": "Q",
+      "role": "icon",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 53.646,
+        "y": 83.857,
+        "width": 1.615,
+        "height": 2.85
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "ability-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "QName",
+      "name": "黑暗護盾",
+      "label": "黑暗護盾",
+      "role": "text",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 53.646,
+        "y": 83.857,
+        "width": 1.615,
+        "height": 1.011
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "ability-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "QDuration",
+      "name": "5秒/持續24%",
+      "label": "5秒/持續24%",
+      "role": "text",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 53.646,
+        "y": 84.869,
+        "width": 1.615,
+        "height": 0.919
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "ability-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "EIcon",
+      "name": "E",
+      "label": "E",
+      "role": "icon",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 62.032,
+        "y": 83.857,
+        "width": 1.615,
+        "height": 2.85
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "ability-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "EPassive",
+      "name": "PASSIVE",
+      "label": "PASSIVE",
+      "role": "text",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 62.032,
+        "y": 83.857,
+        "width": 1.615,
+        "height": 1.011
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "ability-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "EPassiveName",
+      "name": "影行者",
+      "label": "影行者",
+      "role": "text",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 62.032,
+        "y": 84.869,
+        "width": 1.615,
+        "height": 0.919
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "ability-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "EPassiveActive",
+      "name": "ACTIVE",
+      "label": "ACTIVE",
+      "role": "text",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 62.032,
+        "y": 85.788,
+        "width": 1.615,
+        "height": 0.919
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "ability-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "EPassiveDescription",
+      "name": "閃避",
+      "label": "閃避",
+      "role": "text",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 62.032,
+        "y": 86.708,
+        "width": 1.615,
+        "height": 0.919
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "ability-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "EPassiveDescription-11",
+      "name": "防禦",
+      "label": "防禦",
+      "role": "text",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 62.032,
+        "y": 87.627,
+        "width": 1.615,
+        "height": 0.919
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "ability-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "EPassiveDescription-12",
+      "name": "回復",
+      "label": "回復",
+      "role": "text",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 62.032,
+        "y": 88.546,
+        "width": 1.615,
+        "height": 0.919
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "ability-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "EPassiveDescription-13",
+      "name": "增強",
+      "label": "增強",
+      "role": "text",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 62.032,
+        "y": 89.466,
+        "width": 1.615,
+        "height": 0.919
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "ability-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "ReadyButton",
+      "name": "準備完成",
+      "label": "準備完成",
+      "role": "button",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 85.052,
+        "y": 85.88,
+        "width": 6.146,
+        "height": 1.747
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "ability-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "ironkeep",
+      "name": "英雄裝備庫",
+      "label": "英雄裝備庫",
+      "role": "list_row",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 5.363,
+        "y": 4.815,
+        "width": 6.663,
+        "height": 1.204
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment",
+      "name": "裝備",
+      "label": "裝備",
+      "role": "tab",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 34.409,
+        "y": 5.741,
+        "width": 1.405,
+        "height": 1.204
+      },
+      "confidence": 0.8,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "weapon",
+      "name": "軍械庫",
+      "label": "軍械庫",
+      "role": "tab",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 37.272,
+        "y": 5.741,
+        "width": 1.926,
+        "height": 1.204
+      },
+      "confidence": 0.8,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "skill",
+      "name": "技能",
+      "label": "技能",
+      "role": "tab",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 40.656,
+        "y": 5.741,
+        "width": 1.405,
+        "height": 1.204
+      },
+      "confidence": 0.8,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "progress",
+      "name": "戰績",
+      "label": "戰績",
+      "role": "tab",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 43.519,
+        "y": 5.741,
+        "width": 1.093,
+        "height": 1.204
+      },
+      "confidence": 0.8,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "gold",
+      "name": "金幣",
+      "label": "金幣",
+      "role": "metric",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 48.829,
+        "y": 5.741,
+        "width": 3.852,
+        "height": 1.204
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "experience-63",
+      "name": "經驗",
+      "label": "經驗",
+      "role": "metric",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 54.971,
+        "y": 5.741,
+        "width": 1.145,
+        "height": 1.204
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "level-64",
+      "name": "等級",
+      "label": "等級",
+      "role": "metric",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 57.886,
+        "y": 5.741,
+        "width": 0.625,
+        "height": 1.204
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "gold_value",
+      "name": "數值列",
+      "label": "數值列",
+      "role": "metric",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 48.829,
+        "y": 6.945,
+        "width": 3.852,
+        "height": 1.111
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "experience_value",
+      "name": "數值列",
+      "label": "數值列",
+      "role": "metric",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 54.971,
+        "y": 6.945,
+        "width": 1.145,
+        "height": 1.111
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "level_value",
+      "name": "數值列",
+      "label": "數值列",
+      "role": "metric",
+      "purpose": "可獨立處理的介面元件",
+      "rect": {
+        "x": 57.886,
+        "y": 6.945,
+        "width": 0.625,
+        "height": 1.111
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "topbar",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "health",
+      "name": "生命",
+      "label": "生命",
+      "role": "metric",
+      "purpose": "生命值",
+      "rect": {
+        "x": 71.042,
+        "y": 64.243,
+        "width": 26.927,
+        "height": 1.105
+      },
+      "confidence": 0.8,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "stats-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "attack",
+      "name": "攻擊",
+      "label": "攻擊",
+      "role": "metric",
+      "purpose": "攻擊力",
+      "rect": {
+        "x": 71.042,
+        "y": 66.361,
+        "width": 26.927,
+        "height": 1.105
+      },
+      "confidence": 0.8,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "stats-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "defense",
+      "name": "防禦",
+      "label": "防禦",
+      "role": "metric",
+      "purpose": "防禦力",
+      "rect": {
+        "x": 71.042,
+        "y": 68.48,
+        "width": 26.927,
+        "height": 1.105
+      },
+      "confidence": 0.8,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "stats-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "critical",
+      "name": "暴擊",
+      "label": "暴擊",
+      "role": "metric",
+      "purpose": "暴擊率",
+      "rect": {
+        "x": 71.042,
+        "y": 70.599,
+        "width": 26.927,
+        "height": 1.105
+      },
+      "confidence": 0.8,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "stats-panel",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_name",
+      "name": "名稱",
+      "label": "名稱",
+      "role": "text",
+      "purpose": "display equipment name",
+      "rect": {
+        "x": 35.728,
+        "y": 58.333,
+        "width": 1.659,
+        "height": 1.852
+      },
+      "confidence": 0.8,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "equipment_card-3",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_type",
+      "name": "類型",
+      "label": "類型",
+      "role": "text",
+      "purpose": "display equipment type",
+      "rect": {
+        "x": 38.216,
+        "y": 58.333,
+        "width": 0.829,
+        "height": 1.852
+      },
+      "confidence": 0.7,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "equipment_card-3",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_level",
+      "name": "等級",
+      "label": "等級",
+      "role": "text",
+      "purpose": "display equipment level",
+      "rect": {
+        "x": 39.875,
+        "y": 58.333,
+        "width": 0.829,
+        "height": 1.852
+      },
+      "confidence": 0.6,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "equipment_card-3",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_progress",
+      "name": "進度",
+      "label": "進度",
+      "role": "text",
+      "purpose": "display equipment progress",
+      "rect": {
+        "x": 41.533,
+        "y": 58.333,
+        "width": 0.829,
+        "height": 1.852
+      },
+      "confidence": 0.5,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "equipment_card-3",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "equipment_icon",
+      "name": "圖示",
+      "label": "圖示",
+      "role": "icon",
+      "purpose": "display equipment icon",
+      "rect": {
+        "x": 42.363,
+        "y": 58.333,
+        "width": 0.829,
+        "height": 1.852
+      },
+      "confidence": 0.4,
+      "contains_text": false,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "equipment_card-3",
+      "source": "qwen2.5-vl",
+      "children": []
+    },
+    {
+      "id": "Raven Vale",
+      "name": "identity block",
+      "label": "identity block",
+      "role": "panel",
+      "purpose": "displaying the name of the character or entity",
+      "rect": {
+        "x": 6.791,
+        "y": 19.24,
+        "width": 5.98,
+        "height": 0.725
+      },
+      "confidence": 0.9,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "identity_block",
+      "source": "qwen2.5-vl",
+      "children": []
+    }
+  ]
+}

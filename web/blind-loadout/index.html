@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>王國鑄印 · Hero Loadout</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="loadout-screen" id="loadout-screen" data-region="screen" data-name="王國鑄印裝備庫" data-purpose="英雄裝備與戰鬥配置主畫面">
+      <header class="topbar region" data-region="topbar" data-name="導航與資源列" data-label="導航與資源列" data-role="panel" data-behavior="dynamic_state" data-dynamic-fields="資源數值|玩家等級|目前頁籤" data-fixed-fields="導覽項目|資源 icon 位置|玩家識別位置" data-component-type="game-topbar" data-reusable="true" data-nine-grid="false" data-purpose="顯示頁面位置、資源與玩家識別">
+        <div class="brand-lockup" data-element="nav-brand" data-parent="topbar" data-role="nav" data-label="品牌標誌區">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div><strong>THE IRONKEEP</strong><span>王國鑄印 · 英雄裝備庫</span></div>
+        </div>
+        <nav class="top-nav" data-element="nav-links" data-parent="topbar" data-role="nav" data-label="主導覽"><a class="active" href="#loadout-screen">裝備</a><a href="#inventory-panel">軍械庫</a><a href="#ability-panel">技能</a><a href="#stats-panel">戰績</a></nav>
+        <div class="resource-strip" data-element="resource-strip" data-parent="topbar" data-role="status" data-label="資源狀態"><span><i class="resource-glyph gold"></i> 12,480</span><span><i class="resource-glyph crystal"></i> 186</span><span class="player-chip" data-element="player-chip" data-parent="resource-strip" data-role="avatar" data-label="玩家識別"><b>07</b><span>RAVEN<br /><em>LV. 42</em></span></span></div>
+      </header>
+
+      <section class="hero-panel region" data-region="hero-panel" data-name="英雄身份面板" data-label="英雄身份面板" data-role="panel" data-behavior="dynamic_content" data-dynamic-fields="角色名稱|等級|XP|套裝進度|已裝備狀態" data-fixed-fields="標題層級|進度列位置|履歷按鈕" data-children="hero-identity|hero-level|hero-portrait|set-progress|history-button" data-component-type="hero-summary-panel" data-reusable="true" data-nine-grid="false" data-purpose="呈現英雄名稱、職業、等級與套裝狀態">
+        <div class="panel-heading" data-element="hero-heading" data-parent="hero-panel" data-role="heading" data-label="英雄面板標題"><span class="section-kicker">HERO PROFILE</span><span class="online-dot">已部署</span></div>
+        <div class="hero-identity" data-element="hero-identity" data-parent="hero-panel" data-role="text" data-label="英雄身份區">
+          <div class="hero-badge">R</div>
+          <div><h1>Raven Vale</h1><p>暮影騎士 · 破陣者</p></div>
+        </div>
+        <div class="hero-level" data-element="hero-level" data-parent="hero-panel" data-role="metric" data-label="等級與經驗"><div><span>等級</span><strong>42</strong></div><div class="xp-copy">8,420 / 10,000 XP</div><div class="xp-track" data-element="hero-xp" data-parent="hero-level" data-role="progress" data-label="經驗進度條"><i></i></div></div>
+        <div class="hero-portrait" data-element="hero-portrait" data-parent="hero-panel" data-role="image" data-label="英雄肖像" role="img" aria-label="Raven Vale 英雄肖像"></div>
+        <div class="set-summary" data-element="set-summary" data-parent="hero-panel" data-role="metric" data-label="套裝摘要"><div><span>目前套裝</span><strong>黑曜遠征</strong></div><span class="set-count">4 / 6</span></div>
+        <ul class="set-list" data-element="set-progress" data-parent="hero-panel" data-role="list" data-label="套裝進度"><li class="complete"><span>01</span><b>影誓頭盔</b><em>已裝備</em></li><li class="complete"><span>02</span><b>裂城胸甲</b><em>已裝備</em></li><li><span>03</span><b>空缺套裝部位</b><em>待尋找</em></li></ul>
+        <button class="ghost-action" data-element="history-button" data-parent="hero-panel" data-role="button" data-label="英雄履歷按鈕" type="button">檢視英雄履歷 <span>＋</span></button>
+      </section>
+
+      <section class="character-stage region" data-region="character-stage" data-name="英雄與裝備槽" data-label="角色與裝備配置" data-role="panel" data-behavior="dynamic_slot" data-dynamic-fields="角色立繪|裝備槽內容|戰力評分|套裝效果" data-fixed-fields="角色舞台位置|槽位錨點" data-children="equipment-slot-1|equipment-slot-2|equipment-slot-3|equipment-slot-4|equipment-slot-5|equipment-slot-6|set-bonus" data-component-type="character-loadout-stage" data-reusable="true" data-nine-grid="false" data-purpose="呈現英雄視覺與可替換的頭盔、胸甲、手套、武器、護符、靴子">
+        <div class="stage-heading" data-element="stage-heading" data-parent="character-stage" data-role="heading" data-label="配置標題"><div><span class="section-kicker">LOADOUT / RAVEN VALE</span><h2>出戰配置</h2></div><span class="power-score"><small>戰力評分</small><strong>8,742</strong></span></div>
+        <div class="character-art" data-element="character-art" data-parent="character-stage" data-role="image" data-label="角色立繪" role="img" aria-label="暮影騎士角色立繪"></div>
+        <div class="equipment-slot slot-helm region" data-region="slot-helm" data-name="影誓頭盔槽" data-label="頭盔裝備槽" data-role="equipment_slot" data-behavior="dynamic_slot" data-dynamic-fields="裝備圖示|裝備名稱|防禦數值|空缺狀態" data-fixed-fields="槽位 label|icon 位置|替換入口" data-component-type="equipment-slot" data-reusable="true" data-nine-grid="true" data-icon-required="true" data-icon-purpose="頭盔裝備圖示" data-purpose="顯示英雄頭部裝備與替換入口"><span class="slot-label">頭盔</span><b class="slot-art helm-art"></b><strong>影誓頭盔</strong><em>+18 護甲</em></div>
+        <div class="equipment-slot slot-chest region" data-region="slot-chest" data-name="裂城胸甲槽" data-label="胸甲裝備槽" data-role="equipment_slot" data-behavior="dynamic_slot" data-dynamic-fields="裝備圖示|裝備名稱|防禦數值|空缺狀態" data-fixed-fields="槽位 label|icon 位置|替換入口" data-component-type="equipment-slot" data-reusable="true" data-nine-grid="true" data-icon-required="true" data-icon-purpose="胸甲防具圖示" data-purpose="顯示英雄身體裝備與套裝加成"><span class="slot-label">胸甲</span><b class="slot-art chest-art"></b><strong>裂城胸甲</strong><em>+34 護甲</em></div>
+        <div class="equipment-slot slot-gloves region" data-region="slot-gloves" data-name="夜行手套槽" data-label="手套裝備槽" data-role="equipment_slot" data-behavior="dynamic_slot" data-dynamic-fields="裝備圖示|裝備名稱|攻速數值|空缺狀態" data-fixed-fields="槽位 label|icon 位置|替換入口" data-component-type="equipment-slot" data-reusable="true" data-nine-grid="true" data-icon-required="true" data-icon-purpose="手部裝備圖示" data-purpose="顯示英雄手部裝備與攻速加成"><span class="slot-label">手部</span><b class="slot-art gloves-art"></b><strong>夜行手套</strong><em>+8% 攻速</em></div>
+        <div class="equipment-slot slot-weapon region" data-region="slot-weapon" data-name="暮裂長刃槽" data-label="主武器裝備槽" data-role="equipment_slot" data-behavior="dynamic_slot" data-dynamic-fields="武器圖示|武器名稱|傷害數值|空缺狀態" data-fixed-fields="槽位 label|icon 位置|替換入口" data-component-type="equipment-slot" data-reusable="true" data-nine-grid="true" data-icon-required="true" data-icon-purpose="主武器圖示" data-purpose="顯示英雄主武器與傷害數值"><span class="slot-label">主武器</span><b class="slot-art weapon-art"></b><strong>暮裂長刃</strong><em>128–164 傷害</em></div>
+        <div class="equipment-slot slot-charm region" data-region="slot-charm" data-name="王印護符槽" data-label="護符裝備槽" data-role="equipment_slot" data-behavior="dynamic_slot" data-dynamic-fields="裝備圖示|裝備名稱|暴擊數值|空缺狀態" data-fixed-fields="槽位 label|icon 位置|替換入口" data-component-type="equipment-slot" data-reusable="true" data-nine-grid="true" data-icon-required="true" data-icon-purpose="護符圖示" data-purpose="顯示英雄護符與被動效果"><span class="slot-label">護符</span><b class="slot-art charm-art"></b><strong>王印護符</strong><em>+12% 暴擊</em></div>
+        <div class="equipment-slot slot-boots region" data-region="slot-boots" data-name="遠征戰靴槽" data-label="戰靴裝備槽" data-role="equipment_slot" data-behavior="dynamic_slot" data-dynamic-fields="裝備圖示|裝備名稱|移速數值|空缺狀態" data-fixed-fields="槽位 label|icon 位置|替換入口" data-component-type="equipment-slot" data-reusable="true" data-nine-grid="true" data-icon-required="true" data-icon-purpose="戰靴圖示" data-purpose="顯示英雄腳部裝備與移速加成"><span class="slot-label">靴子</span><b class="slot-art boots-art"></b><strong>遠征戰靴</strong><em>+10 移速</em></div>
+        <div class="stage-note" data-element="set-bonus" data-parent="character-stage" data-role="status" data-label="套裝效果"><span>套裝效果</span><strong>影行者</strong><em>閃避後 2 秒內傷害 +15%</em></div>
+      </section>
+
+      <section class="inventory-panel region" id="inventory-panel" data-region="inventory-panel" data-name="軍械庫清單" data-label="軍械庫清單" data-role="dynamic_list" data-behavior="dynamic_list" data-dynamic-fields="物品數量|篩選結果|物品選取狀態|裝備按鈕狀態" data-fixed-fields="清單欄位|篩選控制|卡片結構" data-children="filter|inventory-item-1|inventory-item-2|inventory-item-3|inventory-item-4|open-inventory-button" data-component-type="inventory-panel" data-reusable="true" data-nine-grid="true" data-nine-grid-reason="卡片中的物品主視覺可批次生成" data-purpose="讓玩家瀏覽、篩選與裝備可用物品">
+        <div class="panel-heading" data-element="inventory-heading" data-parent="inventory-panel" data-role="heading" data-label="軍械庫標題"><div><span class="section-kicker">ARMORY / 24 ITEMS</span><h2>可用裝備</h2></div><button class="filter-button" data-element="inventory-filter" data-parent="inventory-panel" data-role="button" data-label="篩選按鈕" type="button">篩選 <span>⌄</span></button></div>
+        <div class="inventory-tabs" data-element="inventory-tabs" data-parent="inventory-panel" data-role="tab" data-label="裝備分類分頁"><button class="active" type="button">全部 <b>24</b></button><button type="button">武器 <b>8</b></button><button type="button">防具 <b>11</b></button><button type="button">其他 <b>5</b></button></div>
+        <div class="inventory-list">
+          <article class="inventory-item selected" data-element="inventory-item-1" data-parent="inventory-panel" data-role="card" data-label="裝備卡一"><span class="item-art item-sword"></span><div><strong>暮裂長刃</strong><span>長劍 · 傳奇</span><em>128–164 傷害</em></div><button type="button">已裝備</button></article>
+          <article class="inventory-item" data-element="inventory-item-2" data-parent="inventory-panel" data-role="card" data-label="裝備卡二"><span class="item-art item-axe"></span><div><strong>灰燼斬斧</strong><span>重斧 · 史詩</span><em>142–188 傷害</em></div><button type="button">裝備</button></article>
+          <article class="inventory-item" data-element="inventory-item-3" data-parent="inventory-panel" data-role="card" data-label="裝備卡三"><span class="item-art item-hood"></span><div><strong>霧行兜帽</strong><span>頭盔 · 稀有</span><em>+22 護甲</em></div><button type="button">裝備</button></article>
+          <article class="inventory-item" data-element="inventory-item-4" data-parent="inventory-panel" data-role="card" data-label="裝備卡四"><span class="item-art item-ring"></span><div><strong>月蝕戒指</strong><span>飾品 · 史詩</span><em>+7% 暴擊</em></div><button type="button">裝備</button></article>
+        </div>
+        <button class="wide-action" data-element="open-inventory-button" data-parent="inventory-panel" data-role="button" data-label="開啟完整軍械庫" type="button">開啟完整軍械庫 <span>→</span></button>
+      </section>
+
+      <section class="stats-panel region" id="stats-panel" data-region="stats-panel" data-name="英雄屬性摘要" data-label="戰鬥屬性摘要" data-role="metric" data-behavior="dynamic_value" data-dynamic-fields="生命|攻擊|防禦|暴擊|週期增益" data-fixed-fields="數值 label|進度條位置|欄位排列" data-children="health-stat|attack-stat|defense-stat|critical-stat" data-component-type="stat-summary-panel" data-reusable="true" data-nine-grid="false" data-purpose="比較生命、攻擊、防禦與暴擊等戰鬥屬性">
+        <div class="panel-heading" data-element="stats-heading" data-parent="stats-panel" data-role="heading" data-label="屬性標題"><div><span class="section-kicker">COMBAT READOUT</span><h2>戰鬥屬性</h2></div><span class="delta">+12% 本週</span></div>
+        <div class="stat-grid"><div data-element="health-stat" data-parent="stats-panel" data-role="metric" data-label="生命數值"><span>生命</span><strong>2,840</strong><i><b style="width:82%"></b></i></div><div data-element="attack-stat" data-parent="stats-panel" data-role="metric" data-label="攻擊數值"><span>攻擊</span><strong>164</strong><i><b style="width:66%"></b></i></div><div data-element="defense-stat" data-parent="stats-panel" data-role="metric" data-label="防禦數值"><span>防禦</span><strong>128</strong><i><b style="width:54%"></b></i></div><div data-element="critical-stat" data-parent="stats-panel" data-role="metric" data-label="暴擊數值"><span>暴擊</span><strong>28%</strong><i><b style="width:28%"></b></i></div></div>
+      </section>
+
+      <section class="ability-panel region" id="ability-panel" data-region="ability-panel" data-name="技能與快捷欄" data-label="技能與快捷欄" data-role="ability_bar" data-behavior="dynamic_state" data-dynamic-fields="技能冷卻|READY/ACTIVE 狀態|技能描述|被動效果" data-fixed-fields="快捷鍵 label|技能 icon 位置|進入遠征按鈕" data-children="ability-v|ability-q|ability-e|passive|deploy-button" data-component-type="ability-bar" data-reusable="true" data-nine-grid="false" data-purpose="顯示英雄主動技能、被動技能與快捷鍵配置">
+        <div class="ability-title" data-element="ability-heading" data-parent="ability-panel" data-role="heading" data-label="技能標題"><span class="section-kicker">TACTICAL KIT</span><h2>戰術技能</h2></div>
+        <div class="ability-list"><div class="ability active" data-element="ability-v" data-parent="ability-panel" data-role="card" data-label="V 技能"><b>V</b><span class="ability-icon slash"></span><div><strong>裂影突進</strong><em>位移並造成 180% 傷害</em></div><small>READY</small></div><div class="ability" data-element="ability-q" data-parent="ability-panel" data-role="card" data-label="Q 技能"><b>Q</b><span class="ability-icon ward"></span><div><strong>黑曜護幕</strong><em>5 秒內減傷 24%</em></div><small>03.4s</small></div><div class="ability" data-element="ability-e" data-parent="ability-panel" data-role="card" data-label="E 技能"><b>E</b><span class="ability-icon mark"></span><div><strong>王印標記</strong><em>標記敵人並暴露弱點</em></div><small>READY</small></div><div class="ability passive" data-element="passive" data-parent="ability-panel" data-role="status" data-label="被動技能"><b>PASSIVE</b><div><strong>影行者</strong><em>閃避後獲得短暫增傷</em></div><small>ACTIVE</small></div></div>
+        <button class="deploy-button" data-element="deploy-button" data-parent="ability-panel" data-role="button" data-label="進入遠征" type="button"><span>準備完成</span><strong>進入遠征</strong><i>→</i></button>
+      </section>
+
+      <footer class="footer-bar"><span>IRONKEEP / LOADOUT BUILD 07</span><span>已同步至王國檔案庫 · 21:48</span><span>ESC 返回　ENTER 確認</span></footer>
+    </main>
+  </body>
+</html>

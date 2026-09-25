@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Frame Atelier · HTML / Blind Frames</title>
+  <style>
+    :root { color-scheme: dark; --ink:#071116; --panel:#0d2026; --line:#2d565c; --paper:#e9e5d7; --muted:#91aaa5; --gold:#e0b873; --cyan:#63e6d5; --pink:#f28ca3; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-width:1180px; background:radial-gradient(circle at 50% 0%,#16383c 0,#071116 52%); color:var(--paper); font-family:"Segoe UI","Noto Sans TC",sans-serif; }
+    .shell { width:min(1880px,calc(100vw - 56px)); margin:28px auto 48px; }
+    header { display:flex; justify-content:space-between; align-items:end; gap:32px; padding:20px 24px; border:1px solid var(--line); background:rgba(9,25,31,.92); }
+    .eyebrow { color:var(--cyan); font:11px Consolas,monospace; letter-spacing:.16em; }
+    h1 { margin:8px 0 0; color:var(--gold); font-size:29px; font-weight:500; letter-spacing:-.03em; }
+    header p { margin:8px 0 0; color:var(--muted); font-size:13px; }
+    .status { text-align:right; color:var(--muted); font:12px Consolas,monospace; line-height:1.7; }
+    .status b { color:var(--cyan); font-weight:500; }
+    .view-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px; }
+    .card { min-width:0; border:1px solid var(--line); background:rgba(8,20,25,.9); }
+    .card h2 { display:flex; justify-content:space-between; margin:0; padding:14px 16px; border-bottom:1px solid var(--line); font-size:17px; font-weight:500; }
+    .card h2 small { color:var(--muted); font:11px Consolas,monospace; }
+    .canvas-wrap { padding:12px; background:#071116; }
+    canvas { display:block; width:100%; height:auto; border:1px solid rgba(133,194,184,.22); background:#071116; }
+    .overlay { margin-top:16px; }
+    .overlay h2 { color:var(--gold); }
+    .overlay .canvas-wrap { max-width:1280px; margin:auto; }
+    .legend { display:flex; gap:18px; flex-wrap:wrap; padding:12px 16px 0; color:var(--muted); font-size:12px; }
+    .legend span::before { content:""; display:inline-block; width:18px; height:3px; margin:0 7px 3px 0; background:currentColor; }
+    .legend .html { color:var(--gold); }.legend .tool { color:var(--cyan); }.legend .vision { color:#ff9fba; }.legend .gap { color:var(--pink); }
+    .hierarchy { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr); gap:16px; padding:12px 16px 16px; }
+    .hierarchy-tree { min-height:160px; padding:14px; border:1px solid rgba(255,159,186,.22); background:rgba(20,30,37,.72); color:var(--muted); font:11px Consolas,monospace; line-height:1.65; overflow:auto; }
+    .hierarchy-tree .node { margin-left:14px; }.hierarchy-tree .root { margin-left:0; color:#ff9fba; }.hierarchy-tree b { color:var(--paper); font-weight:500; }.hierarchy-tree i { color:var(--muted); font-style:normal; }
+    .export-list { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:14px 16px 18px; }
+    .export-link { display:block; padding:14px; border:1px solid rgba(99,230,213,.28); background:rgba(15,42,46,.72); color:var(--paper); text-decoration:none; }
+    .export-link:hover { border-color:var(--cyan); background:rgba(18,57,63,.9); }.export-link strong { display:block; color:var(--cyan); font:11px Consolas,monospace; }.export-link span { display:block; margin-top:7px; color:var(--muted); font-size:12px; }
+    @media (max-width:1400px) { .hierarchy { grid-template-columns:1fr; } }
+    .frame-layout { margin-top:16px; border:1px solid var(--line); background:rgba(8,20,25,.9); }
+    .frame-layout h2 { margin:0; padding:14px 16px; border-bottom:1px solid var(--line); font-size:17px; font-weight:500; }
+    .frame-list { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:14px; }
+    .frame-item { padding:11px 12px; border:1px solid rgba(99,230,213,.28); background:rgba(15,42,46,.72); }
+    .frame-item strong { display:block; color:var(--cyan); font:11px Consolas,monospace; }
+    .frame-item b { display:block; margin-top:5px; color:var(--paper); font-size:13px; font-weight:500; }
+    .frame-item span { display:block; margin-top:5px; color:var(--muted); font:10px Consolas,monospace; }
+    .back { color:var(--gold); text-decoration:none; font:11px Consolas,monospace; }
+    @media (max-width:1400px) { .shell { width:calc(100vw - 32px); }.frame-list { grid-template-columns:repeat(3,1fr); } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <div class="eyebrow">FRAME ATELIER / BLIND DECOMPOSITION</div>
+        <h1>HTML 原始框架 vs 工具自動拆出的 Frame Layout</h1>
+        <p>同一張截圖、同一個座標系；左邊是 HTML 標註，右邊是工具只看畫面後產生的框。</p>
+      </div>
+      <div class="status"><a class="back" href="/Unone/web/blind-loadout/">← 回到英雄裝備介面</a><br><b id="status">讀取比較資料…</b></div>
+    </header>
+
+    <div class="view-grid">
+      <section class="card">
+        <h2>HTML 原始 Frame <small>GOLD / SOURCE</small></h2>
+        <div class="canvas-wrap"><canvas id="truth"></canvas></div>
+      </section>
+      <section class="card">
+        <h2>工具自動拆解 Frame <small>CYAN / BLIND OUTPUT</small></h2>
+        <div class="canvas-wrap"><canvas id="blind"></canvas></div>
+      </section>
+    </div>
+
+    <section class="card overlay">
+      <h2>疊合檢視 <small>偏移會直接露出來</small></h2>
+      <div class="legend"><span class="html">HTML 原始框</span><span class="tool">工具拆解框</span><span class="gap">兩者邊界差異</span></div>
+      <div class="canvas-wrap"><canvas id="overlay"></canvas></div>
+    </section>
+
+    <section class="card overlay">
+      <h2>Vision 小元件與 UI Hierarchy <small>PINK / REGION-ONLY OCR</small></h2>
+      <div class="legend"><span class="vision">Vision 元件框</span><span>文字只當區域訊號，不當作比對主鍵</span></div>
+      <div class="canvas-wrap"><canvas id="vision"></canvas></div>
+      <div class="hierarchy"><div><div class="eyebrow">RENDERER-NEUTRAL TREE</div><div id="hierarchy-tree" class="hierarchy-tree">讀取 hierarchy…</div></div><div><div class="eyebrow">SMALL COMPONENTS</div><div id="vision-list" class="frame-list"></div></div></div>
+    </section>
+
+    <section class="frame-layout">
+      <h2>工具實際產生的 Frame 清單</h2>
+      <div id="frame-list" class="frame-list"></div>
+    </section>
+
+    <section class="frame-layout">
+      <h2>Renderer 輸出</h2>
+      <div class="export-list">
+        <a class="export-link" href="/Unone/_Tools/frame-blind-test/evidence/hierarchy-scaffold.html" target="_blank"><strong>HTML SCAFFOLD</strong><span>用 hierarchy 生成可預覽的 HTML/CSS 結構骨架</span></a>
+        <a class="export-link" href="/Unone/_Tools/frame-blind-test/evidence/UnoneHierarchyImporter.cs" target="_blank"><strong>UNITY IMPORTER</strong><span>放入 Assets/Editor 後建立 Canvas 與 Prefab</span></a>
+        <a class="export-link" href="/Unone/_Tools/frame-blind-test/evidence/layout-hierarchy.json" target="_blank"><strong>HIERARCHY JSON</strong><span>跨 HTML、Unity、Godot 的共用中間格式</span></a>
+      </div>
+    </section>
+  </div>
+  <script>
+    const imageUrl = "/Unone/_Tools/frame-blind-test/evidence/hero-loadout.png";
+    const truthUrl = "/Unone/_Tools/frame-blind-test/evidence/html-ground-truth.json";
+    const blindUrl = "/Unone/_Tools/frame-blind-test/evidence/blind-result.json";
+    const visionUrl = "/Unone/_Tools/frame-blind-test/evidence/vision-result.json";
+    const comparisonUrl = "/Unone/_Tools/frame-blind-test/evidence/comparison.json";
+    const colors = { truth: "#e0b873", blind: "#63e6d5", vision: "#ff9fba", gap: "#f28ca3" };
+
+    function rectPixels(rect, width, height) {
+      return { x: rect.x / 100 * width, y: rect.y / 100 * height, w: rect.width / 100 * width, h: rect.height / 100 * height };
+    }
+    function drawLabel(ctx, text, x, y, color) {
+      ctx.font = "12px Consolas, monospace";
+      const width = ctx.measureText(text).width + 12;
+      ctx.fillStyle = "rgba(5,14,18,.88)";
+      ctx.fillRect(x, Math.max(0, y - 20), width, 20);
+      ctx.fillStyle = color;
+      ctx.fillText(text, x + 6, Math.max(14, y - 6));
+    }
+    function drawFrames(canvas, image, regions, kind, labelMode) {
+      const ctx = canvas.getContext("2d");
+      const width = 960, height = Math.round(width * image.naturalHeight / image.naturalWidth);
+      canvas.width = width; canvas.height = height;
+      ctx.drawImage(image, 0, 0, width, height);
+      ctx.lineWidth = 2;
+      regions.forEach((region, index) => {
+        const r = rectPixels(region.rect, width, height);
+        ctx.strokeStyle = colors[kind];
+        ctx.fillStyle = kind === "truth" ? "rgba(224,184,115,.035)" : kind === "vision" ? "rgba(255,159,186,.05)" : "rgba(99,230,213,.035)";
+        ctx.fillRect(r.x, r.y, r.w, r.h); ctx.strokeRect(r.x, r.y, r.w, r.h);
+        const label = labelMode === "truth" ? region.id : `frame-${String(index + 1).padStart(2, "0")}`;
+        drawLabel(ctx, label, r.x, r.y, colors[kind]);
+      });
+    }
+    function drawOverlay(canvas, image, truth, blind) {
+      const ctx = canvas.getContext("2d");
+      const width = 1280, height = Math.round(width * image.naturalHeight / image.naturalWidth);
+      canvas.width = width; canvas.height = height; ctx.drawImage(image, 0, 0, width, height);
+      const draw = (regions, color, dash, prefix) => regions.forEach((region, index) => {
+        const r = rectPixels(region.rect, width, height); ctx.save(); ctx.setLineDash(dash); ctx.lineWidth = 2; ctx.strokeStyle = color; ctx.strokeRect(r.x, r.y, r.w, r.h); ctx.restore();
+        if (region.id !== "screen") drawLabel(ctx, `${prefix}${index + 1}`, r.x, r.y, color);
+      });
+      draw(truth.filter(item => item.id !== "screen"), colors.truth, [], "H");
+      draw(blind, colors.blind, [8, 5], "T");
+    }
+    function addFrameCards(regions) {
+      const list = document.getElementById("frame-list");
+      regions.forEach((region, index) => {
+        const card = document.createElement("div"); card.className = "frame-item";
+        const label = region.label || region.name || "未命名元素";
+        const behavior = region.behavior || "待判定";
+        const role = region.role || "region";
+        const component = region.component?.reusable ? `共用 · ${region.component.type}` : "單次元素";
+        const nineGrid = region.nine_grid?.eligible ? "可九宮格" : "不做九宮格";
+        const dynamic = region.dynamic_fields?.length ? `動態：${region.dynamic_fields.join("、")}` : "動態：無／待判定";
+        const fixed = region.fixed_fields?.length ? `固定：${region.fixed_fields.join("、")}` : "固定：無／待判定";
+        const children = region.children?.length ? `子元素：${region.children.join("、")}` : "子元素：無／待判定";
+        const icon = region.icon?.required ? `icon：需要 · ${region.icon.purpose || "用途待判定"}` : "icon：不需要";
+        card.innerHTML = `<strong>FRAME ${String(index + 1).padStart(2, "0")}</strong><b>${label}</b><span>${role} · ${behavior}</span><span>${region.purpose || "用途待判定"}</span><span>${component} · ${nineGrid}</span><span>${dynamic}</span><span>${fixed}</span><span>${children}</span><span>${icon}</span><span>x ${region.rect.x.toFixed(1)} · y ${region.rect.y.toFixed(1)} · w ${region.rect.width.toFixed(1)} · h ${region.rect.height.toFixed(1)}</span>`;
+        list.appendChild(card);
+      });
+    }
+    function addVisionCards(elements) {
+      const list = document.getElementById("vision-list");
+      list.style.gridTemplateColumns = "1fr";
+      elements.slice(0, 36).forEach((element, index) => {
+        const card = document.createElement("div"); card.className = "frame-item";
+        const parent = element.parent_id ? ` ← ${element.parent_id}` : "";
+        card.innerHTML = `<strong>ELEMENT ${String(index + 1).padStart(2, "0")}</strong><b></b><span></span><span></span>`;
+        card.querySelector("b").textContent = element.label || "視覺元件";
+        card.querySelectorAll("span")[0].textContent = `${element.role || "unknown"}${parent}`;
+        card.querySelectorAll("span")[1].textContent = `x ${element.rect.x.toFixed(1)} · y ${element.rect.y.toFixed(1)} · w ${element.rect.width.toFixed(1)} · h ${element.rect.height.toFixed(1)}`;
+        list.appendChild(card);
+      });
+    }
+    function drawHierarchy(tree) {
+      const root = document.getElementById("hierarchy-tree");
+      root.replaceChildren();
+      const nodes = Object.fromEntries((tree?.nodes || []).map(node => [node.id, node]));
+      function branch(id, depth = 0) {
+        const node = id === "screen" ? tree.root : nodes[id]; if (!node) return;
+        const row = document.createElement("div"); row.className = depth ? "node" : "root";
+        row.style.marginLeft = `${depth * 14}px`;
+        const label = document.createElement("b"); label.textContent = node.label || node.name || id;
+        const meta = document.createElement("i"); meta.textContent = `  [${node.role || "region"}] ${id}`;
+        row.append(label, meta); root.appendChild(row);
+        (node.children || []).forEach(child => branch(child, depth + 1));
+      }
+      branch("screen");
+    }
+    (async () => {
+      const [image, truthData, blindData, visionData, comparisonData] = await Promise.all([
+        new Promise((resolve, reject) => { const item = new Image(); item.onload = () => resolve(item); item.onerror = reject; item.src = imageUrl; }),
+        fetch(truthUrl).then(response => response.json()),
+        fetch(blindUrl).then(response => response.json()),
+        fetch(visionUrl).then(response => response.json()),
+        fetch(comparisonUrl).then(response => response.json()),
+      ]);
+      const truth = truthData.regions;
+      const blind = blindData.regions;
+      drawFrames(document.getElementById("truth"), image, truth, "truth", "truth");
+      drawFrames(document.getElementById("blind"), image, blind, "blind", "blind");
+      drawOverlay(document.getElementById("overlay"), image, truth, blind);
+      drawFrames(document.getElementById("vision"), image, visionData.elements || [], "vision", "vision");
+      drawHierarchy(visionData.hierarchy);
+      addVisionCards(visionData.elements || []);
+      addFrameCards(blind);
+      const visionScore = comparisonData.vision ? ` · Vision ${Math.round((comparisonData.vision.match_rate || 0) * 100)}%` : "";
+      document.getElementById("status").textContent = `${blind.length} 個大 Frame · ${visionData.elements?.length || 0} 個 Vision 元件 · 幾何 ${comparisonData.score} · 語意 ${Math.round((comparisonData.semantic_score || 0) * 10000) / 100}%${visionScore}`;
+    })().catch(error => { document.getElementById("status").textContent = `載入失敗：${error.message}`; });
+  </script>
+</body>
+</html>

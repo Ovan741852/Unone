@@ -1,0 +1,465 @@
+{
+  "stage": "virtual_groups",
+  "provider": "gemma3-local+semantic-geometry-fallback",
+  "panel": {
+    "id": "hero-panel",
+    "name": "盲拆區域：左側英雄面板",
+    "label": "英雄身份面板",
+    "role": "panel",
+    "purpose": "角色身份、等級與套裝摘要",
+    "action": "查看角色狀態與套裝進度",
+    "rect": {
+      "x": 1.927,
+      "y": 13.889,
+      "width": 29.115,
+      "height": 68.241
+    },
+    "confidence": 0.86,
+    "behavior": "dynamic_content",
+    "dynamic_fields": [
+      "角色名稱",
+      "等級",
+      "XP",
+      "套裝進度",
+      "已裝備狀態"
+    ],
+    "fixed_fields": [
+      "標題層級",
+      "進度列位置",
+      "履歷按鈕"
+    ],
+    "children": [
+      "hero-identity",
+      "hero-level",
+      "hero-portrait",
+      "set-progress",
+      "history-button"
+    ],
+    "component": {
+      "reusable": true,
+      "type": "hero-summary-panel"
+    },
+    "nine_grid": {
+      "eligible": false,
+      "reason": "資訊面板，不應直接生成九宮格"
+    }
+  },
+  "elements": [
+    {
+      "id": "identity_block",
+      "name": "身份块",
+      "label": "身份块",
+      "role": "panel",
+      "purpose": "英雄名称和等级",
+      "rect": {
+        "x": 3.695,
+        "y": 20.278,
+        "width": 10.242,
+        "height": 5.463
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "level_indicator",
+      "name": "等级指示",
+      "label": "等级指示",
+      "role": "metric",
+      "purpose": "显示等级",
+      "rect": {
+        "x": 3.383,
+        "y": 29.259,
+        "width": 2.86,
+        "height": 1.574
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "experience_progress_bar",
+      "name": "经验进度条",
+      "label": "经验进度条",
+      "role": "progress",
+      "purpose": "显示经验值进度",
+      "rect": {
+        "x": 3.383,
+        "y": 31.389,
+        "width": 26.203,
+        "height": 1.759
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "portrait",
+      "name": "肖像",
+      "label": "肖像",
+      "role": "image",
+      "purpose": "英雄头像",
+      "rect": {
+        "x": 3.383,
+        "y": 34.63,
+        "width": 27.555,
+        "height": 16.482
+      },
+      "confidence": 0.58,
+      "contains_text": false,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "equipment_summary",
+      "name": "套装摘要",
+      "label": "套装摘要",
+      "role": "list",
+      "purpose": "当前装备信息",
+      "rect": {
+        "x": 3.383,
+        "y": 52.778,
+        "width": 26.203,
+        "height": 12.593
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "equipment_card",
+      "name": "装备卡",
+      "label": "装备卡",
+      "role": "card",
+      "purpose": "装备详细信息",
+      "rect": {
+        "x": 3.383,
+        "y": 67.408,
+        "width": 26.203,
+        "height": 2.685
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    }
+  ],
+  "groups": [
+    {
+      "id": "virtual-element-1",
+      "name": "數值與進度區",
+      "label": "數值與進度區",
+      "role": "virtual_group",
+      "visibility": "virtual",
+      "purpose": "把數值標籤與進度指示視為同一個資訊群組",
+      "reason": "角色相容、水平重疊 1.00、垂直間距 0.56%",
+      "rect": {
+        "x": 2.583,
+        "y": 28.459,
+        "width": 27.803,
+        "height": 5.489
+      },
+      "confidence": 0.78,
+      "contains_text": true,
+      "parent_id": "hero-panel",
+      "source": "gemma3-semantic-grouping",
+      "children": [
+        "level_indicator",
+        "experience_progress_bar"
+      ]
+    },
+    {
+      "id": "virtual-element-2",
+      "name": "摘要與操作區",
+      "label": "摘要與操作區",
+      "role": "virtual_group",
+      "visibility": "virtual",
+      "purpose": "清單摘要與其操作卡片具有共同用途",
+      "reason": "角色相容、水平重疊 1.00、垂直間距 2.04%",
+      "rect": {
+        "x": 2.583,
+        "y": 51.978,
+        "width": 27.803,
+        "height": 18.915
+      },
+      "confidence": 0.779,
+      "contains_text": true,
+      "parent_id": "hero-panel",
+      "source": "gemma3-semantic-grouping",
+      "children": [
+        "equipment_summary",
+        "equipment_card"
+      ]
+    }
+  ],
+  "hierarchy": {
+    "id": "screen",
+    "label": "畫面",
+    "role": "root",
+    "rect": {
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0
+    },
+    "children": [
+      "hero-panel"
+    ],
+    "nodes": [
+      {
+        "id": "hero-panel",
+        "name": "盲拆區域：左側英雄面板",
+        "label": "英雄身份面板",
+        "role": "panel",
+        "purpose": "角色身份、等級與套裝摘要",
+        "action": "查看角色狀態與套裝進度",
+        "rect": {
+          "x": 1.927,
+          "y": 13.889,
+          "width": 29.115,
+          "height": 68.241
+        },
+        "confidence": 0.86,
+        "behavior": "dynamic_content",
+        "dynamic_fields": [
+          "角色名稱",
+          "等級",
+          "XP",
+          "套裝進度",
+          "已裝備狀態"
+        ],
+        "fixed_fields": [
+          "標題層級",
+          "進度列位置",
+          "履歷按鈕"
+        ],
+        "children": [
+          "virtual-element-1",
+          "virtual-element-2",
+          "identity_block",
+          "portrait"
+        ],
+        "component": {
+          "reusable": true,
+          "type": "hero-summary-panel"
+        },
+        "nine_grid": {
+          "eligible": false,
+          "reason": "資訊面板，不應直接生成九宮格"
+        },
+        "parent_id": "screen",
+        "source": "approved_panel"
+      },
+      {
+        "id": "virtual-element-1",
+        "name": "數值與進度區",
+        "label": "數值與進度區",
+        "role": "virtual_group",
+        "visibility": "virtual",
+        "purpose": "把數值標籤與進度指示視為同一個資訊群組",
+        "reason": "角色相容、水平重疊 1.00、垂直間距 0.56%",
+        "rect": {
+          "x": 2.583,
+          "y": 28.459,
+          "width": 27.803,
+          "height": 5.489
+        },
+        "confidence": 0.78,
+        "contains_text": true,
+        "parent_id": "hero-panel",
+        "source": "gemma3-semantic-grouping",
+        "children": [
+          "level_indicator",
+          "experience_progress_bar"
+        ]
+      },
+      {
+        "id": "virtual-element-2",
+        "name": "摘要與操作區",
+        "label": "摘要與操作區",
+        "role": "virtual_group",
+        "visibility": "virtual",
+        "purpose": "清單摘要與其操作卡片具有共同用途",
+        "reason": "角色相容、水平重疊 1.00、垂直間距 2.04%",
+        "rect": {
+          "x": 2.583,
+          "y": 51.978,
+          "width": 27.803,
+          "height": 18.915
+        },
+        "confidence": 0.779,
+        "contains_text": true,
+        "parent_id": "hero-panel",
+        "source": "gemma3-semantic-grouping",
+        "children": [
+          "equipment_summary",
+          "equipment_card"
+        ]
+      },
+      {
+        "id": "identity_block",
+        "name": "身份块",
+        "label": "身份块",
+        "role": "panel",
+        "purpose": "英雄名称和等级",
+        "rect": {
+          "x": 3.695,
+          "y": 20.278,
+          "width": 10.242,
+          "height": 5.463
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "hero-panel",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "level_indicator",
+        "name": "等级指示",
+        "label": "等级指示",
+        "role": "metric",
+        "purpose": "显示等级",
+        "rect": {
+          "x": 3.383,
+          "y": 29.259,
+          "width": 2.86,
+          "height": 1.574
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "virtual-element-1",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "experience_progress_bar",
+        "name": "经验进度条",
+        "label": "经验进度条",
+        "role": "progress",
+        "purpose": "显示经验值进度",
+        "rect": {
+          "x": 3.383,
+          "y": 31.389,
+          "width": 26.203,
+          "height": 1.759
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "virtual-element-1",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "portrait",
+        "name": "肖像",
+        "label": "肖像",
+        "role": "image",
+        "purpose": "英雄头像",
+        "rect": {
+          "x": 3.383,
+          "y": 34.63,
+          "width": 27.555,
+          "height": 16.482
+        },
+        "confidence": 0.58,
+        "contains_text": false,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "hero-panel",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "equipment_summary",
+        "name": "套装摘要",
+        "label": "套装摘要",
+        "role": "list",
+        "purpose": "当前装备信息",
+        "rect": {
+          "x": 3.383,
+          "y": 52.778,
+          "width": 26.203,
+          "height": 12.593
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "virtual-element-2",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "equipment_card",
+        "name": "装备卡",
+        "label": "装备卡",
+        "role": "card",
+        "purpose": "装备详细信息",
+        "rect": {
+          "x": 3.383,
+          "y": 67.408,
+          "width": 26.203,
+          "height": 2.685
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "virtual-element-2",
+        "source": "qwen2.5-vl",
+        "children": []
+      }
+    ]
+  },
+  "analysis": "先判斷共同用途與幾何關係，再由子元件 AABB 聯集建立 virtual_group；不把每個框直接當成 Panel。",
+  "confidence": 0.78,
+  "latency_ms": 36077.0,
+  "raw": "```json.\n```json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json.json"
+}

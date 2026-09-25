@@ -1,0 +1,983 @@
+{
+  "stage": "blind",
+  "provider": "pixel-blind-segmentation",
+  "vision_model_available": false,
+  "warning": "Gemma 3 4B 目前是文字模型；此階段只用截圖像素做幾何盲拆，沒有讀取 HTML 或 DOM。",
+  "image_width": 1920,
+  "image_height": 1080,
+  "regions": [
+    {
+      "id": "topbar",
+      "name": "盲拆區域：導航與資源列",
+      "label": "導航與資源列",
+      "role": "panel",
+      "purpose": "上方橫向導覽與狀態資訊",
+      "action": "切換頁面、查看資源與玩家狀態",
+      "rect": {
+        "x": 1.979,
+        "y": 2.593,
+        "width": 96.042,
+        "height": 7.5
+      },
+      "confidence": 0.91,
+      "behavior": "dynamic_state",
+      "dynamic_fields": [
+        "資源數值",
+        "玩家等級",
+        "目前頁籤"
+      ],
+      "fixed_fields": [
+        "導覽項目",
+        "資源 icon 位置",
+        "玩家識別位置"
+      ],
+      "children": [
+        "navigation",
+        "resource-strip",
+        "player-chip"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "game-topbar"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "固定 UI 結構，不是圖片素材"
+      }
+    },
+    {
+      "id": "hero-panel",
+      "name": "盲拆區域：左側英雄面板",
+      "label": "英雄身份面板",
+      "role": "panel",
+      "purpose": "角色身份、等級與套裝摘要",
+      "action": "查看角色狀態與套裝進度",
+      "rect": {
+        "x": 1.927,
+        "y": 13.889,
+        "width": 29.115,
+        "height": 68.241
+      },
+      "confidence": 0.86,
+      "behavior": "dynamic_content",
+      "dynamic_fields": [
+        "角色名稱",
+        "等級",
+        "XP",
+        "套裝進度",
+        "已裝備狀態"
+      ],
+      "fixed_fields": [
+        "標題層級",
+        "進度列位置",
+        "履歷按鈕"
+      ],
+      "children": [
+        "hero-identity",
+        "hero-level",
+        "hero-portrait",
+        "set-progress",
+        "history-button"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "hero-summary-panel"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "資訊面板，不應直接生成九宮格"
+      }
+    },
+    {
+      "id": "character-stage",
+      "name": "盲拆區域：中央角色區",
+      "label": "角色與裝備配置",
+      "role": "panel",
+      "purpose": "角色視覺與可替換裝備槽",
+      "action": "查看角色並替換裝備",
+      "rect": {
+        "x": 33.073,
+        "y": 14.074,
+        "width": 35.885,
+        "height": 65.463
+      },
+      "confidence": 0.84,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "角色立繪",
+        "裝備槽內容",
+        "戰力評分",
+        "套裝效果"
+      ],
+      "fixed_fields": [
+        "角色舞台位置",
+        "槽位錨點"
+      ],
+      "children": [
+        "equipment-slot-1",
+        "equipment-slot-2",
+        "equipment-slot-3",
+        "equipment-slot-4",
+        "equipment-slot-5",
+        "equipment-slot-6",
+        "set-bonus"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "character-loadout-stage"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "角色與槽位需要連續構圖"
+      }
+    },
+    {
+      "id": "inventory-panel",
+      "name": "盲拆區域：軍械庫清單",
+      "label": "軍械庫清單",
+      "role": "dynamic_list",
+      "purpose": "瀏覽、篩選與裝備可用物品",
+      "action": "瀏覽、篩選與裝備物品",
+      "rect": {
+        "x": 71.042,
+        "y": 14.074,
+        "width": 26.927,
+        "height": 43.796
+      },
+      "confidence": 0.86,
+      "behavior": "dynamic_list",
+      "dynamic_fields": [
+        "物品數量",
+        "篩選結果",
+        "物品選取狀態",
+        "裝備按鈕狀態"
+      ],
+      "fixed_fields": [
+        "清單欄位",
+        "篩選控制",
+        "卡片結構"
+      ],
+      "children": [
+        "filter",
+        "inventory-item-1",
+        "inventory-item-2",
+        "inventory-item-3",
+        "inventory-item-4",
+        "open-inventory-button"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "inventory-panel"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "卡片中的物品主視覺可批次生成"
+      }
+    },
+    {
+      "id": "stats-panel",
+      "name": "盲拆區域：戰鬥屬性",
+      "label": "戰鬥屬性摘要",
+      "role": "metric",
+      "purpose": "比較生命、攻擊、防禦與暴擊等戰鬥屬性",
+      "action": "查看角色戰鬥數值",
+      "rect": {
+        "x": 71.042,
+        "y": 61.111,
+        "width": 26.927,
+        "height": 17.778
+      },
+      "confidence": 0.78,
+      "behavior": "dynamic_value",
+      "dynamic_fields": [
+        "生命",
+        "攻擊",
+        "防禦",
+        "暴擊",
+        "週期增益"
+      ],
+      "fixed_fields": [
+        "數值 label",
+        "進度條位置",
+        "欄位排列"
+      ],
+      "children": [
+        "health-stat",
+        "attack-stat",
+        "defense-stat",
+        "critical-stat"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "stat-summary-panel"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "數值 UI 不應生成九宮格"
+      }
+    },
+    {
+      "id": "ability-panel",
+      "name": "盲拆區域：技能快捷欄",
+      "label": "技能與快捷欄",
+      "role": "ability_bar",
+      "purpose": "技能、被動效果與部署操作",
+      "action": "使用技能、查看冷卻並進入遠征",
+      "rect": {
+        "x": 32.969,
+        "y": 79.444,
+        "width": 65.0,
+        "height": 13.056
+      },
+      "confidence": 0.82,
+      "behavior": "dynamic_state",
+      "dynamic_fields": [
+        "技能冷卻",
+        "READY/ACTIVE 狀態",
+        "技能描述",
+        "被動效果"
+      ],
+      "fixed_fields": [
+        "快捷鍵 label",
+        "技能 icon 位置",
+        "進入遠征按鈕"
+      ],
+      "children": [
+        "ability-v",
+        "ability-q",
+        "ability-e",
+        "passive",
+        "deploy-button"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "ability-bar"
+      },
+      "nine_grid": {
+        "eligible": false,
+        "reason": "技能 UI 需保持操作一致性"
+      }
+    },
+    {
+      "id": "equipment-slot-1",
+      "name": "盲拆裝備槽 1",
+      "label": "頭盔裝備槽",
+      "role": "equipment_slot",
+      "purpose": "可獨立替換的英雄裝備元素",
+      "action": "替換頭部防具",
+      "rect": {
+        "x": 35.156,
+        "y": 24.815,
+        "width": 7.292,
+        "height": 5.556
+      },
+      "confidence": 0.71,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "裝備內容",
+        "數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "操作入口"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "裝備圖示可生成多個候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "頭盔裝備槽圖示"
+      }
+    },
+    {
+      "id": "equipment-slot-2",
+      "name": "盲拆裝備槽 2",
+      "label": "胸甲裝備槽",
+      "role": "equipment_slot",
+      "purpose": "可獨立替換的英雄裝備元素",
+      "action": "替換身體防具",
+      "rect": {
+        "x": 35.156,
+        "y": 40.37,
+        "width": 7.292,
+        "height": 5.556
+      },
+      "confidence": 0.71,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "裝備內容",
+        "數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "操作入口"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "裝備圖示可生成多個候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "胸甲裝備槽圖示"
+      }
+    },
+    {
+      "id": "equipment-slot-3",
+      "name": "盲拆裝備槽 3",
+      "label": "手套裝備槽",
+      "role": "equipment_slot",
+      "purpose": "可獨立替換的英雄裝備元素",
+      "action": "替換手部裝備",
+      "rect": {
+        "x": 35.885,
+        "y": 57.407,
+        "width": 7.24,
+        "height": 5.556
+      },
+      "confidence": 0.71,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "裝備內容",
+        "數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "操作入口"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "裝備圖示可生成多個候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "手套裝備槽圖示"
+      }
+    },
+    {
+      "id": "equipment-slot-4",
+      "name": "盲拆裝備槽 4",
+      "label": "主武器裝備槽",
+      "role": "equipment_slot",
+      "purpose": "可獨立替換的英雄裝備元素",
+      "action": "替換主武器",
+      "rect": {
+        "x": 59.583,
+        "y": 43.796,
+        "width": 7.24,
+        "height": 5.556
+      },
+      "confidence": 0.71,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "裝備內容",
+        "數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "操作入口"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "裝備圖示可生成多個候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "主武器裝備槽圖示"
+      }
+    },
+    {
+      "id": "equipment-slot-5",
+      "name": "盲拆裝備槽 5",
+      "label": "護符裝備槽",
+      "role": "equipment_slot",
+      "purpose": "可獨立替換的英雄裝備元素",
+      "action": "替換被動護符",
+      "rect": {
+        "x": 58.854,
+        "y": 60.093,
+        "width": 7.292,
+        "height": 5.556
+      },
+      "confidence": 0.71,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "裝備內容",
+        "數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "操作入口"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "裝備圖示可生成多個候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "護符裝備槽圖示"
+      }
+    },
+    {
+      "id": "equipment-slot-6",
+      "name": "盲拆裝備槽 6",
+      "label": "戰靴裝備槽",
+      "role": "equipment_slot",
+      "purpose": "可獨立替換的英雄裝備元素",
+      "action": "替換移動裝備",
+      "rect": {
+        "x": 53.438,
+        "y": 69.722,
+        "width": 6.198,
+        "height": 5.556
+      },
+      "confidence": 0.71,
+      "behavior": "dynamic_slot",
+      "dynamic_fields": [
+        "裝備內容",
+        "數值",
+        "空缺狀態"
+      ],
+      "fixed_fields": [
+        "槽位 label",
+        "icon 位置",
+        "操作入口"
+      ],
+      "component": {
+        "reusable": true,
+        "type": "equipment-slot"
+      },
+      "nine_grid": {
+        "eligible": true,
+        "reason": "裝備圖示可生成多個候選"
+      },
+      "icon": {
+        "required": true,
+        "purpose": "戰靴裝備槽圖示"
+      }
+    }
+  ],
+  "hierarchy": {
+    "id": "screen",
+    "label": "畫面",
+    "role": "root",
+    "rect": {
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0
+    },
+    "children": [
+      "topbar",
+      "hero-panel",
+      "character-stage",
+      "inventory-panel",
+      "stats-panel",
+      "ability-panel"
+    ],
+    "nodes": [
+      {
+        "id": "topbar",
+        "name": "盲拆區域：導航與資源列",
+        "label": "導航與資源列",
+        "role": "panel",
+        "purpose": "上方橫向導覽與狀態資訊",
+        "action": "切換頁面、查看資源與玩家狀態",
+        "rect": {
+          "x": 1.979,
+          "y": 2.593,
+          "width": 96.042,
+          "height": 7.5
+        },
+        "confidence": 0.91,
+        "behavior": "dynamic_state",
+        "dynamic_fields": [
+          "資源數值",
+          "玩家等級",
+          "目前頁籤"
+        ],
+        "fixed_fields": [
+          "導覽項目",
+          "資源 icon 位置",
+          "玩家識別位置"
+        ],
+        "children": [],
+        "component": {
+          "reusable": true,
+          "type": "game-topbar"
+        },
+        "nine_grid": {
+          "eligible": false,
+          "reason": "固定 UI 結構，不是圖片素材"
+        },
+        "parent_id": "screen"
+      },
+      {
+        "id": "hero-panel",
+        "name": "盲拆區域：左側英雄面板",
+        "label": "英雄身份面板",
+        "role": "panel",
+        "purpose": "角色身份、等級與套裝摘要",
+        "action": "查看角色狀態與套裝進度",
+        "rect": {
+          "x": 1.927,
+          "y": 13.889,
+          "width": 29.115,
+          "height": 68.241
+        },
+        "confidence": 0.86,
+        "behavior": "dynamic_content",
+        "dynamic_fields": [
+          "角色名稱",
+          "等級",
+          "XP",
+          "套裝進度",
+          "已裝備狀態"
+        ],
+        "fixed_fields": [
+          "標題層級",
+          "進度列位置",
+          "履歷按鈕"
+        ],
+        "children": [],
+        "component": {
+          "reusable": true,
+          "type": "hero-summary-panel"
+        },
+        "nine_grid": {
+          "eligible": false,
+          "reason": "資訊面板，不應直接生成九宮格"
+        },
+        "parent_id": "screen"
+      },
+      {
+        "id": "character-stage",
+        "name": "盲拆區域：中央角色區",
+        "label": "角色與裝備配置",
+        "role": "panel",
+        "purpose": "角色視覺與可替換裝備槽",
+        "action": "查看角色並替換裝備",
+        "rect": {
+          "x": 33.073,
+          "y": 14.074,
+          "width": 35.885,
+          "height": 65.463
+        },
+        "confidence": 0.84,
+        "behavior": "dynamic_slot",
+        "dynamic_fields": [
+          "角色立繪",
+          "裝備槽內容",
+          "戰力評分",
+          "套裝效果"
+        ],
+        "fixed_fields": [
+          "角色舞台位置",
+          "槽位錨點"
+        ],
+        "children": [
+          "equipment-slot-6",
+          "equipment-slot-3",
+          "equipment-slot-4",
+          "equipment-slot-1",
+          "equipment-slot-2",
+          "equipment-slot-5"
+        ],
+        "component": {
+          "reusable": true,
+          "type": "character-loadout-stage"
+        },
+        "nine_grid": {
+          "eligible": false,
+          "reason": "角色與槽位需要連續構圖"
+        },
+        "parent_id": "screen"
+      },
+      {
+        "id": "inventory-panel",
+        "name": "盲拆區域：軍械庫清單",
+        "label": "軍械庫清單",
+        "role": "dynamic_list",
+        "purpose": "瀏覽、篩選與裝備可用物品",
+        "action": "瀏覽、篩選與裝備物品",
+        "rect": {
+          "x": 71.042,
+          "y": 14.074,
+          "width": 26.927,
+          "height": 43.796
+        },
+        "confidence": 0.86,
+        "behavior": "dynamic_list",
+        "dynamic_fields": [
+          "物品數量",
+          "篩選結果",
+          "物品選取狀態",
+          "裝備按鈕狀態"
+        ],
+        "fixed_fields": [
+          "清單欄位",
+          "篩選控制",
+          "卡片結構"
+        ],
+        "children": [],
+        "component": {
+          "reusable": true,
+          "type": "inventory-panel"
+        },
+        "nine_grid": {
+          "eligible": true,
+          "reason": "卡片中的物品主視覺可批次生成"
+        },
+        "parent_id": "screen"
+      },
+      {
+        "id": "stats-panel",
+        "name": "盲拆區域：戰鬥屬性",
+        "label": "戰鬥屬性摘要",
+        "role": "metric",
+        "purpose": "比較生命、攻擊、防禦與暴擊等戰鬥屬性",
+        "action": "查看角色戰鬥數值",
+        "rect": {
+          "x": 71.042,
+          "y": 61.111,
+          "width": 26.927,
+          "height": 17.778
+        },
+        "confidence": 0.78,
+        "behavior": "dynamic_value",
+        "dynamic_fields": [
+          "生命",
+          "攻擊",
+          "防禦",
+          "暴擊",
+          "週期增益"
+        ],
+        "fixed_fields": [
+          "數值 label",
+          "進度條位置",
+          "欄位排列"
+        ],
+        "children": [],
+        "component": {
+          "reusable": true,
+          "type": "stat-summary-panel"
+        },
+        "nine_grid": {
+          "eligible": false,
+          "reason": "數值 UI 不應生成九宮格"
+        },
+        "parent_id": "screen"
+      },
+      {
+        "id": "ability-panel",
+        "name": "盲拆區域：技能快捷欄",
+        "label": "技能與快捷欄",
+        "role": "ability_bar",
+        "purpose": "技能、被動效果與部署操作",
+        "action": "使用技能、查看冷卻並進入遠征",
+        "rect": {
+          "x": 32.969,
+          "y": 79.444,
+          "width": 65.0,
+          "height": 13.056
+        },
+        "confidence": 0.82,
+        "behavior": "dynamic_state",
+        "dynamic_fields": [
+          "技能冷卻",
+          "READY/ACTIVE 狀態",
+          "技能描述",
+          "被動效果"
+        ],
+        "fixed_fields": [
+          "快捷鍵 label",
+          "技能 icon 位置",
+          "進入遠征按鈕"
+        ],
+        "children": [],
+        "component": {
+          "reusable": true,
+          "type": "ability-bar"
+        },
+        "nine_grid": {
+          "eligible": false,
+          "reason": "技能 UI 需保持操作一致性"
+        },
+        "parent_id": "screen"
+      },
+      {
+        "id": "equipment-slot-1",
+        "name": "盲拆裝備槽 1",
+        "label": "頭盔裝備槽",
+        "role": "equipment_slot",
+        "purpose": "可獨立替換的英雄裝備元素",
+        "action": "替換頭部防具",
+        "rect": {
+          "x": 35.156,
+          "y": 24.815,
+          "width": 7.292,
+          "height": 5.556
+        },
+        "confidence": 0.71,
+        "behavior": "dynamic_slot",
+        "dynamic_fields": [
+          "裝備內容",
+          "數值",
+          "空缺狀態"
+        ],
+        "fixed_fields": [
+          "槽位 label",
+          "icon 位置",
+          "操作入口"
+        ],
+        "component": {
+          "reusable": true,
+          "type": "equipment-slot"
+        },
+        "nine_grid": {
+          "eligible": true,
+          "reason": "裝備圖示可生成多個候選"
+        },
+        "icon": {
+          "required": true,
+          "purpose": "頭盔裝備槽圖示"
+        },
+        "children": [],
+        "parent_id": "character-stage"
+      },
+      {
+        "id": "equipment-slot-2",
+        "name": "盲拆裝備槽 2",
+        "label": "胸甲裝備槽",
+        "role": "equipment_slot",
+        "purpose": "可獨立替換的英雄裝備元素",
+        "action": "替換身體防具",
+        "rect": {
+          "x": 35.156,
+          "y": 40.37,
+          "width": 7.292,
+          "height": 5.556
+        },
+        "confidence": 0.71,
+        "behavior": "dynamic_slot",
+        "dynamic_fields": [
+          "裝備內容",
+          "數值",
+          "空缺狀態"
+        ],
+        "fixed_fields": [
+          "槽位 label",
+          "icon 位置",
+          "操作入口"
+        ],
+        "component": {
+          "reusable": true,
+          "type": "equipment-slot"
+        },
+        "nine_grid": {
+          "eligible": true,
+          "reason": "裝備圖示可生成多個候選"
+        },
+        "icon": {
+          "required": true,
+          "purpose": "胸甲裝備槽圖示"
+        },
+        "children": [],
+        "parent_id": "character-stage"
+      },
+      {
+        "id": "equipment-slot-3",
+        "name": "盲拆裝備槽 3",
+        "label": "手套裝備槽",
+        "role": "equipment_slot",
+        "purpose": "可獨立替換的英雄裝備元素",
+        "action": "替換手部裝備",
+        "rect": {
+          "x": 35.885,
+          "y": 57.407,
+          "width": 7.24,
+          "height": 5.556
+        },
+        "confidence": 0.71,
+        "behavior": "dynamic_slot",
+        "dynamic_fields": [
+          "裝備內容",
+          "數值",
+          "空缺狀態"
+        ],
+        "fixed_fields": [
+          "槽位 label",
+          "icon 位置",
+          "操作入口"
+        ],
+        "component": {
+          "reusable": true,
+          "type": "equipment-slot"
+        },
+        "nine_grid": {
+          "eligible": true,
+          "reason": "裝備圖示可生成多個候選"
+        },
+        "icon": {
+          "required": true,
+          "purpose": "手套裝備槽圖示"
+        },
+        "children": [],
+        "parent_id": "character-stage"
+      },
+      {
+        "id": "equipment-slot-4",
+        "name": "盲拆裝備槽 4",
+        "label": "主武器裝備槽",
+        "role": "equipment_slot",
+        "purpose": "可獨立替換的英雄裝備元素",
+        "action": "替換主武器",
+        "rect": {
+          "x": 59.583,
+          "y": 43.796,
+          "width": 7.24,
+          "height": 5.556
+        },
+        "confidence": 0.71,
+        "behavior": "dynamic_slot",
+        "dynamic_fields": [
+          "裝備內容",
+          "數值",
+          "空缺狀態"
+        ],
+        "fixed_fields": [
+          "槽位 label",
+          "icon 位置",
+          "操作入口"
+        ],
+        "component": {
+          "reusable": true,
+          "type": "equipment-slot"
+        },
+        "nine_grid": {
+          "eligible": true,
+          "reason": "裝備圖示可生成多個候選"
+        },
+        "icon": {
+          "required": true,
+          "purpose": "主武器裝備槽圖示"
+        },
+        "children": [],
+        "parent_id": "character-stage"
+      },
+      {
+        "id": "equipment-slot-5",
+        "name": "盲拆裝備槽 5",
+        "label": "護符裝備槽",
+        "role": "equipment_slot",
+        "purpose": "可獨立替換的英雄裝備元素",
+        "action": "替換被動護符",
+        "rect": {
+          "x": 58.854,
+          "y": 60.093,
+          "width": 7.292,
+          "height": 5.556
+        },
+        "confidence": 0.71,
+        "behavior": "dynamic_slot",
+        "dynamic_fields": [
+          "裝備內容",
+          "數值",
+          "空缺狀態"
+        ],
+        "fixed_fields": [
+          "槽位 label",
+          "icon 位置",
+          "操作入口"
+        ],
+        "component": {
+          "reusable": true,
+          "type": "equipment-slot"
+        },
+        "nine_grid": {
+          "eligible": true,
+          "reason": "裝備圖示可生成多個候選"
+        },
+        "icon": {
+          "required": true,
+          "purpose": "護符裝備槽圖示"
+        },
+        "children": [],
+        "parent_id": "character-stage"
+      },
+      {
+        "id": "equipment-slot-6",
+        "name": "盲拆裝備槽 6",
+        "label": "戰靴裝備槽",
+        "role": "equipment_slot",
+        "purpose": "可獨立替換的英雄裝備元素",
+        "action": "替換移動裝備",
+        "rect": {
+          "x": 53.438,
+          "y": 69.722,
+          "width": 6.198,
+          "height": 5.556
+        },
+        "confidence": 0.71,
+        "behavior": "dynamic_slot",
+        "dynamic_fields": [
+          "裝備內容",
+          "數值",
+          "空缺狀態"
+        ],
+        "fixed_fields": [
+          "槽位 label",
+          "icon 位置",
+          "操作入口"
+        ],
+        "component": {
+          "reusable": true,
+          "type": "equipment-slot"
+        },
+        "nine_grid": {
+          "eligible": true,
+          "reason": "裝備圖示可生成多個候選"
+        },
+        "icon": {
+          "required": true,
+          "purpose": "戰靴裝備槽圖示"
+        },
+        "children": [],
+        "parent_id": "character-stage"
+      }
+    ]
+  },
+  "analysis": "先從像素邊界找出大面板，再找中央裝備槽；這一步不負責可靠的文字語意辨識。",
+  "confidence": 0.778,
+  "latency_ms": 89.4
+}

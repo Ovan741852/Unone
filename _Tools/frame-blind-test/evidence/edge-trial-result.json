@@ -1,0 +1,89 @@
+{
+  "variant": "grayscale_gaussian_canny35_110_close3_once",
+  "input": "D:\\Projects\\Unone\\_Tools\\frame-blind-test\\evidence\\hero-loadout.png",
+  "preprocess": [
+    "BGR to grayscale",
+    "GaussianBlur 3x3",
+    "Canny 35/110",
+    "MORPH_CLOSE 3x3 once"
+  ],
+  "evaluation": {
+    "expected_count": 12,
+    "candidate_count": 24,
+    "mean_iou": 0.7715,
+    "pass_rate": 0.75,
+    "matches": [
+      {
+        "expected": "topbar",
+        "iou": 0.0,
+        "pass": false
+      },
+      {
+        "expected": "hero-panel",
+        "iou": 0.4954,
+        "pass": false
+      },
+      {
+        "expected": "character-stage",
+        "iou": 0.9598,
+        "pass": true
+      },
+      {
+        "expected": "slot-helm",
+        "iou": 0.9619,
+        "pass": true
+      },
+      {
+        "expected": "slot-chest",
+        "iou": 0.9639,
+        "pass": true
+      },
+      {
+        "expected": "slot-gloves",
+        "iou": 0.9619,
+        "pass": true
+      },
+      {
+        "expected": "slot-weapon",
+        "iou": 0.9568,
+        "pass": true
+      },
+      {
+        "expected": "slot-charm",
+        "iou": 0.9668,
+        "pass": true
+      },
+      {
+        "expected": "slot-boots",
+        "iou": 0.9665,
+        "pass": true
+      },
+      {
+        "expected": "inventory-panel",
+        "iou": 0.9927,
+        "pass": true
+      },
+      {
+        "expected": "stats-panel",
+        "iou": 0.985,
+        "pass": true
+      },
+      {
+        "expected": "ability-panel",
+        "iou": 0.0475,
+        "pass": false
+      }
+    ]
+  },
+  "baseline": {
+    "mean_iou": 0.868,
+    "pass_rate": 1.0,
+    "source": "comparison.json"
+  },
+  "artifacts": {
+    "gray": "D:\\Projects\\Unone\\_Tools\\frame-blind-test\\evidence\\edge-trial-gray.png",
+    "canny": "D:\\Projects\\Unone\\_Tools\\frame-blind-test\\evidence\\edge-trial-canny.png",
+    "overlay": "D:\\Projects\\Unone\\_Tools\\frame-blind-test\\evidence\\edge-trial-overlay.png"
+  },
+  "note": "Geometry-only trial; ground truth is used only after detection for evaluation, never during candidate extraction."
+}

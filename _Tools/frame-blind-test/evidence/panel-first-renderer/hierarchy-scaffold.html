@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unone · Hierarchy HTML Scaffold</title>
+<style>
+:root { color-scheme: dark; --bg:#081116; --paper:#e9e5d7; --muted:#91aaa5; --cyan:#63e6d5; --gold:#e0b873; --pink:#ff9fba; }
+* { box-sizing:border-box; } body { margin:0; min-width:980px; background:var(--bg); color:var(--paper); font:13px "Segoe UI","Noto Sans TC",sans-serif; }
+.toolbar { position:sticky; top:0; z-index:20; display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center; padding:14px 18px; background:#0d2026; border-bottom:1px solid #2d565c; }
+.toolbar strong { color:var(--gold); font-weight:500; letter-spacing:.04em; } .toolbar span { color:var(--muted); }
+button { border:1px solid #3a7a79; background:#123339; color:var(--paper); padding:7px 11px; cursor:pointer; } button:hover { border-color:var(--cyan); }
+.stage { width:min(1920px,calc(100vw - 36px)); margin:24px auto; padding:18px; }
+.workspace { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:16px; align-items:start; }
+.screen { position:relative; width:100%; aspect-ratio:16 / 9; overflow:hidden; border:1px solid #2d565c; background:#0b1d22; }
+.reference { position:absolute; inset:0; background:url('../hero-loadout.png') center/100% 100% no-repeat; opacity:.52; filter:saturate(.72) brightness(.72); }
+.scaffold { position:absolute; inset:0; }
+.node { position:absolute; min-width:10px; min-height:8px; border:1px solid rgba(99,230,213,.72); background:rgba(13,53,57,.12); color:var(--paper); pointer-events:auto; transition:background .15s,border-color .15s,opacity .15s; }
+.node.is-hidden { display:none; }
+.node:not([data-depth="0"]) .node-chip,.node:not([data-depth="0"]) .node-meta { opacity:0; pointer-events:none; }
+.node:hover .node-chip,.node:hover .node-meta,.node.is-active .node-chip,.node.is-active .node-meta { opacity:1; pointer-events:auto; }
+.node:hover { z-index:10; border-color:var(--gold); background:rgba(224,184,115,.16); }
+.node.is-active { z-index:12; border-color:var(--gold); background:rgba(224,184,115,.18); }
+.node-chip,.node-meta { position:absolute; left:3px; max-width:calc(100% - 6px); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; background:rgba(5,14,18,.9); padding:2px 5px; }
+.node-chip { top:3px; color:var(--pink); font-size:11px; } .node-meta { bottom:3px; color:var(--muted); font:10px Consolas,monospace; }
+.role-button { border-color:rgba(224,184,115,.85); } .role-image,.role-avatar { border-color:rgba(255,159,186,.7); background:rgba(255,159,186,.08); }
+.role-progress { border-color:var(--gold); background:rgba(224,184,115,.2); } .role-text,.role-heading,.role-metric { border-style:dashed; }
+.hide-labels .node-chip,.hide-labels .node-meta { display:none; } .hide-reference .reference { display:none; }
+.legend { margin-top:14px; color:var(--muted); line-height:1.5; } .legend b { color:var(--pink); font-weight:500; }
+.tree-panel { max-height:min(76vh,760px); overflow:auto; padding:14px; border:1px solid #2d565c; background:#0d2026; }
+.tree-panel h2 { margin:0 0 10px; color:var(--gold); font-size:14px; font-weight:500; }
+.tree-hint { margin:0 0 12px; color:var(--muted); line-height:1.45; }
+.tree-node { margin:5px 0; padding-left:8px; border-left:1px solid #285057; }
+.tree-node[open] > summary { color:var(--gold); }
+.tree-node summary { display:flex; gap:8px; align-items:baseline; cursor:pointer; padding:5px 4px; list-style-position:outside; }
+.tree-node summary::marker { color:var(--cyan); } .tree-label { color:var(--paper); } .tree-role { color:var(--cyan); font:10px Consolas,monospace; }
+.tree-purpose { margin:0 4px 7px 18px; color:var(--muted); font-size:11px; line-height:1.4; }
+@media (max-width:1100px) { .workspace { grid-template-columns:1fr; } .tree-panel { max-height:none; } }
+</style></head><body>
+<div class="toolbar"><strong>LAYOUT HIERARCHY / HTML SCAFFOLD</strong><span>先看 panel，再逐層展開元件</span><button id="expand-one">展開可見子層</button><button id="collapse-all">收合全部</button><button id="labels">隱藏節點標籤</button><button id="reference">隱藏參考圖</button></div>
+<main class="stage"><div class="workspace"><section><div id="screen" class="screen"><div class="reference"></div><div class="scaffold"><div class="node role-panel depth-0" data-node-id="topbar" data-parent-id="screen" data-role="panel" data-depth="0" data-has-text="0" data-has-children="0" style="left:1.979%;top:2.593%;width:96.042%;height:7.500%"><span class="node-chip">導航與資源列</span><span class="node-meta">panel · topbar</span></div> <div class="node role-panel depth-0" data-node-id="hero-panel" data-parent-id="screen" data-role="panel" data-depth="0" data-has-text="0" data-has-children="0" style="left:1.927%;top:13.889%;width:29.115%;height:68.241%"><span class="node-chip">英雄身份面板</span><span class="node-meta">panel · hero-panel</span></div> <div class="node role-panel depth-0" data-node-id="character-stage" data-parent-id="screen" data-role="panel" data-depth="0" data-has-text="0" data-has-children="1" style="left:33.073%;top:14.074%;width:35.885%;height:65.463%"><span class="node-chip">角色與裝備配置</span><span class="node-meta">panel · character-stage</span></div> <div class="node role-unknown depth-1" data-node-id="equipment-slot-6" data-parent-id="character-stage" data-role="equipment_slot" data-depth="1" data-has-text="0" data-has-children="0" style="left:53.438%;top:69.722%;width:6.198%;height:5.556%"><span class="node-chip">戰靴裝備槽</span><span class="node-meta">equipment_slot · equipment-slot-6</span></div> <div class="node role-unknown depth-1" data-node-id="equipment-slot-3" data-parent-id="character-stage" data-role="equipment_slot" data-depth="1" data-has-text="0" data-has-children="0" style="left:35.885%;top:57.407%;width:7.240%;height:5.556%"><span class="node-chip">手套裝備槽</span><span class="node-meta">equipment_slot · equipment-slot-3</span></div> <div class="node role-unknown depth-1" data-node-id="equipment-slot-4" data-parent-id="character-stage" data-role="equipment_slot" data-depth="1" data-has-text="0" data-has-children="0" style="left:59.583%;top:43.796%;width:7.240%;height:5.556%"><span class="node-chip">主武器裝備槽</span><span class="node-meta">equipment_slot · equipment-slot-4</span></div> <div class="node role-unknown depth-1" data-node-id="equipment-slot-1" data-parent-id="character-stage" data-role="equipment_slot" data-depth="1" data-has-text="0" data-has-children="0" style="left:35.156%;top:24.815%;width:7.292%;height:5.556%"><span class="node-chip">頭盔裝備槽</span><span class="node-meta">equipment_slot · equipment-slot-1</span></div> <div class="node role-unknown depth-1" data-node-id="equipment-slot-2" data-parent-id="character-stage" data-role="equipment_slot" data-depth="1" data-has-text="0" data-has-children="0" style="left:35.156%;top:40.370%;width:7.292%;height:5.556%"><span class="node-chip">胸甲裝備槽</span><span class="node-meta">equipment_slot · equipment-slot-2</span></div> <div class="node role-unknown depth-1" data-node-id="equipment-slot-5" data-parent-id="character-stage" data-role="equipment_slot" data-depth="1" data-has-text="0" data-has-children="0" style="left:58.854%;top:60.093%;width:7.292%;height:5.556%"><span class="node-chip">護符裝備槽</span><span class="node-meta">equipment_slot · equipment-slot-5</span></div> <div class="node role-unknown depth-0" data-node-id="inventory-panel" data-parent-id="screen" data-role="dynamic_list" data-depth="0" data-has-text="0" data-has-children="0" style="left:71.042%;top:14.074%;width:26.927%;height:43.796%"><span class="node-chip">軍械庫清單</span><span class="node-meta">dynamic_list · inventory-panel</span></div> <div class="node role-metric depth-0" data-node-id="stats-panel" data-parent-id="screen" data-role="metric" data-depth="0" data-has-text="0" data-has-children="0" style="left:71.042%;top:61.111%;width:26.927%;height:17.778%"><span class="node-chip">戰鬥屬性摘要</span><span class="node-meta">metric · stats-panel</span></div> <div class="node role-unknown depth-0" data-node-id="ability-panel" data-parent-id="screen" data-role="ability_bar" data-depth="0" data-has-text="0" data-has-children="0" style="left:32.969%;top:79.444%;width:65.000%;height:13.056%"><span class="node-chip">技能與快捷欄</span><span class="node-meta">ability_bar · ability-panel</span></div></div></div>
+<div class="legend">原圖是底層參考；<b>點擊畫面框</b> 或展開右側樹狀節點，才會顯示下一層。粉紅文字是節點標籤，邊框是 hierarchy 節點。</div></section>
+<aside class="tree-panel"><h2>Hierarchy tree</h2><p class="tree-hint">外層 panel 預設可見。開啟節點後，畫面只顯示它的子層。</p><details class="tree-node depth-0" data-node-id="topbar"><summary><span class="tree-label">導航與資源列</span><span class="tree-role">panel</span></summary><div class="tree-purpose">上方橫向導覽與狀態資訊</div></details><details class="tree-node depth-0" data-node-id="hero-panel"><summary><span class="tree-label">英雄身份面板</span><span class="tree-role">panel</span></summary><div class="tree-purpose">角色身份、等級與套裝摘要</div></details><details class="tree-node depth-0" data-node-id="character-stage"><summary><span class="tree-label">角色與裝備配置</span><span class="tree-role">panel</span></summary><div class="tree-purpose">角色視覺與可替換裝備槽</div><details class="tree-node depth-1" data-node-id="equipment-slot-6"><summary><span class="tree-label">戰靴裝備槽</span><span class="tree-role">equipment_slot</span></summary><div class="tree-purpose">可獨立替換的英雄裝備元素</div></details><details class="tree-node depth-1" data-node-id="equipment-slot-3"><summary><span class="tree-label">手套裝備槽</span><span class="tree-role">equipment_slot</span></summary><div class="tree-purpose">可獨立替換的英雄裝備元素</div></details><details class="tree-node depth-1" data-node-id="equipment-slot-4"><summary><span class="tree-label">主武器裝備槽</span><span class="tree-role">equipment_slot</span></summary><div class="tree-purpose">可獨立替換的英雄裝備元素</div></details><details class="tree-node depth-1" data-node-id="equipment-slot-1"><summary><span class="tree-label">頭盔裝備槽</span><span class="tree-role">equipment_slot</span></summary><div class="tree-purpose">可獨立替換的英雄裝備元素</div></details><details class="tree-node depth-1" data-node-id="equipment-slot-2"><summary><span class="tree-label">胸甲裝備槽</span><span class="tree-role">equipment_slot</span></summary><div class="tree-purpose">可獨立替換的英雄裝備元素</div></details><details class="tree-node depth-1" data-node-id="equipment-slot-5"><summary><span class="tree-label">護符裝備槽</span><span class="tree-role">equipment_slot</span></summary><div class="tree-purpose">可獨立替換的英雄裝備元素</div></details></details><details class="tree-node depth-0" data-node-id="inventory-panel"><summary><span class="tree-label">軍械庫清單</span><span class="tree-role">dynamic_list</span></summary><div class="tree-purpose">瀏覽、篩選與裝備可用物品</div></details><details class="tree-node depth-0" data-node-id="stats-panel"><summary><span class="tree-label">戰鬥屬性摘要</span><span class="tree-role">metric</span></summary><div class="tree-purpose">比較生命、攻擊、防禦與暴擊等戰鬥屬性</div></details><details class="tree-node depth-0" data-node-id="ability-panel"><summary><span class="tree-label">技能與快捷欄</span><span class="tree-role">ability_bar</span></summary><div class="tree-purpose">技能、被動效果與部署操作</div></details></aside></div></main>
+<script>
+const screen=document.getElementById('screen');
+const nodes=[...screen.querySelectorAll('.node')];
+const treeNodes=[...document.querySelectorAll('.tree-node')];
+const expanded=new Set();
+const nodeById=new Map(nodes.map(node=>[node.dataset.nodeId,node]));
+const treeById=new Map(treeNodes.map(node=>[node.dataset.nodeId,node]));
+function visible(node) {
+  let parent=node.dataset.parentId;
+  while (parent && parent !== 'screen') {
+    if (!expanded.has(parent)) return false;
+    parent=nodeById.get(parent)?.dataset.parentId;
+  }
+  return true;
+}
+function refresh() {
+  nodes.forEach(node=>{ node.classList.toggle('is-hidden', !visible(node)); node.classList.toggle('is-active', expanded.has(node.dataset.nodeId)); });
+  treeNodes.forEach(treeNode=>{ treeNode.open=expanded.has(treeNode.dataset.nodeId); });
+}
+function toggle(id, value) {
+  if (!nodeById.get(id)?.dataset.hasChildren || nodeById.get(id).dataset.hasChildren === '0') return;
+  value === undefined ? (expanded.has(id) ? expanded.delete(id) : expanded.add(id)) : (value ? expanded.add(id) : expanded.delete(id));
+  refresh();
+}
+nodes.forEach(node=>node.addEventListener('click', event=>{ event.stopPropagation(); toggle(node.dataset.nodeId); }));
+treeNodes.forEach(treeNode=>treeNode.addEventListener('toggle',()=>{ if (treeNode.open) expanded.add(treeNode.dataset.nodeId); else expanded.delete(treeNode.dataset.nodeId); refresh(); }));
+document.getElementById('expand-one').onclick=()=>{ nodes.filter(node=>visible(node) && node.dataset.hasChildren==='1').forEach(node=>expanded.add(node.dataset.nodeId)); refresh(); };
+document.getElementById('collapse-all').onclick=()=>{ expanded.clear(); refresh(); };
+document.getElementById('labels').onclick=(event)=>{screen.classList.toggle('hide-labels');event.currentTarget.textContent=screen.classList.contains('hide-labels')?'顯示節點標籤':'隱藏節點標籤'};
+document.getElementById('reference').onclick=(event)=>{screen.classList.toggle('hide-reference');event.currentTarget.textContent=screen.classList.contains('hide-reference')?'顯示參考圖':'隱藏參考圖'};
+refresh();
+</script></body></html>

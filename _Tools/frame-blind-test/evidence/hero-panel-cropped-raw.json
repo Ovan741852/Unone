@@ -1,0 +1,559 @@
+{
+  "stage": "vision_children",
+  "provider": "qwen2.5-vl-3b-local",
+  "vision_model_available": true,
+  "ocr_mode": "region_only",
+  "image_width": 1767,
+  "image_height": 2265,
+  "parent_id": "hero-panel",
+  "parent_rect": {
+    "x": 0,
+    "y": 0,
+    "width": 100,
+    "height": 100
+  },
+  "elements": [
+    {
+      "id": "hero_profile",
+      "name": "英雄身份面板",
+      "label": "英雄身份面板",
+      "role": "panel",
+      "purpose": "英雄信息展示",
+      "rect": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 38.031,
+        "height": 38.322
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "identity_block",
+      "name": "身份块",
+      "label": "身份块",
+      "role": "heading",
+      "purpose": "英雄名称和等级",
+      "rect": {
+        "x": 1.924,
+        "y": 1.545,
+        "width": 14.035,
+        "height": 5.519
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "level_indicator",
+      "name": "等级指示",
+      "label": "等级指示",
+      "role": "metric",
+      "purpose": "显示英雄等级",
+      "rect": {
+        "x": 1.924,
+        "y": 8.786,
+        "width": 4.414,
+        "height": 1.148
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "experience_progress_bar",
+      "name": "经验进度条",
+      "label": "经验进度条",
+      "role": "progress",
+      "purpose": "显示英雄当前经验值与目标经验值的进度",
+      "rect": {
+        "x": 1.924,
+        "y": 10.155,
+        "width": 33.503,
+        "height": 1.104
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "portrait",
+      "name": "肖像",
+      "label": "肖像",
+      "role": "image",
+      "purpose": "英雄头像",
+      "rect": {
+        "x": 1.924,
+        "y": 12.009,
+        "width": 34.975,
+        "height": 9.095
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "equipment_summary",
+      "name": "套装摘要",
+      "label": "套装摘要",
+      "role": "list",
+      "purpose": "显示当前装备状态",
+      "rect": {
+        "x": 1.924,
+        "y": 22.075,
+        "width": 33.503,
+        "height": 2.208
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "equipment_list",
+      "name": "装备清单",
+      "label": "装备清单",
+      "role": "list",
+      "purpose": "显示当前装备列表",
+      "rect": {
+        "x": 1.924,
+        "y": 24.283,
+        "width": 33.503,
+        "height": 4.857
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "equipment_card",
+      "name": "装备卡片",
+      "label": "装备卡片",
+      "role": "card",
+      "purpose": "显示单个装备卡片",
+      "rect": {
+        "x": 1.924,
+        "y": 30.243,
+        "width": 33.503,
+        "height": 1.457
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    }
+  ],
+  "regions": [
+    {
+      "id": "hero_profile",
+      "name": "英雄身份面板",
+      "label": "英雄身份面板",
+      "role": "panel",
+      "purpose": "英雄信息展示",
+      "rect": {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 38.031,
+        "height": 38.322
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "identity_block",
+      "name": "身份块",
+      "label": "身份块",
+      "role": "heading",
+      "purpose": "英雄名称和等级",
+      "rect": {
+        "x": 1.924,
+        "y": 1.545,
+        "width": 14.035,
+        "height": 5.519
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "level_indicator",
+      "name": "等级指示",
+      "label": "等级指示",
+      "role": "metric",
+      "purpose": "显示英雄等级",
+      "rect": {
+        "x": 1.924,
+        "y": 8.786,
+        "width": 4.414,
+        "height": 1.148
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "experience_progress_bar",
+      "name": "经验进度条",
+      "label": "经验进度条",
+      "role": "progress",
+      "purpose": "显示英雄当前经验值与目标经验值的进度",
+      "rect": {
+        "x": 1.924,
+        "y": 10.155,
+        "width": 33.503,
+        "height": 1.104
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "portrait",
+      "name": "肖像",
+      "label": "肖像",
+      "role": "image",
+      "purpose": "英雄头像",
+      "rect": {
+        "x": 1.924,
+        "y": 12.009,
+        "width": 34.975,
+        "height": 9.095
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "equipment_summary",
+      "name": "套装摘要",
+      "label": "套装摘要",
+      "role": "list",
+      "purpose": "显示当前装备状态",
+      "rect": {
+        "x": 1.924,
+        "y": 22.075,
+        "width": 33.503,
+        "height": 2.208
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "equipment_list",
+      "name": "装备清单",
+      "label": "装备清单",
+      "role": "list",
+      "purpose": "显示当前装备列表",
+      "rect": {
+        "x": 1.924,
+        "y": 24.283,
+        "width": 33.503,
+        "height": 4.857
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    },
+    {
+      "id": "equipment_card",
+      "name": "装备卡片",
+      "label": "装备卡片",
+      "role": "card",
+      "purpose": "显示单个装备卡片",
+      "rect": {
+        "x": 1.924,
+        "y": 30.243,
+        "width": 33.503,
+        "height": 1.457
+      },
+      "confidence": 0.58,
+      "contains_text": true,
+      "ocr": {
+        "mode": "region_only",
+        "text": null
+      },
+      "parent_id": "hero-panel",
+      "source": "qwen2.5-vl"
+    }
+  ],
+  "hierarchy": {
+    "id": "hero-panel",
+    "label": "英雄身份面板",
+    "role": "root",
+    "rect": {
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0
+    },
+    "children": [
+      "hero_profile"
+    ],
+    "nodes": [
+      {
+        "id": "hero_profile",
+        "name": "英雄身份面板",
+        "label": "英雄身份面板",
+        "role": "panel",
+        "purpose": "英雄信息展示",
+        "rect": {
+          "x": 0.0,
+          "y": 0.0,
+          "width": 38.031,
+          "height": 38.322
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "hero-panel",
+        "source": "qwen2.5-vl",
+        "children": [
+          "level_indicator",
+          "experience_progress_bar",
+          "equipment_card",
+          "equipment_summary",
+          "identity_block",
+          "equipment_list",
+          "portrait"
+        ]
+      },
+      {
+        "id": "identity_block",
+        "name": "身份块",
+        "label": "身份块",
+        "role": "heading",
+        "purpose": "英雄名称和等级",
+        "rect": {
+          "x": 1.924,
+          "y": 1.545,
+          "width": 14.035,
+          "height": 5.519
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "hero_profile",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "level_indicator",
+        "name": "等级指示",
+        "label": "等级指示",
+        "role": "metric",
+        "purpose": "显示英雄等级",
+        "rect": {
+          "x": 1.924,
+          "y": 8.786,
+          "width": 4.414,
+          "height": 1.148
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "hero_profile",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "experience_progress_bar",
+        "name": "经验进度条",
+        "label": "经验进度条",
+        "role": "progress",
+        "purpose": "显示英雄当前经验值与目标经验值的进度",
+        "rect": {
+          "x": 1.924,
+          "y": 10.155,
+          "width": 33.503,
+          "height": 1.104
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "hero_profile",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "portrait",
+        "name": "肖像",
+        "label": "肖像",
+        "role": "image",
+        "purpose": "英雄头像",
+        "rect": {
+          "x": 1.924,
+          "y": 12.009,
+          "width": 34.975,
+          "height": 9.095
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "hero_profile",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "equipment_summary",
+        "name": "套装摘要",
+        "label": "套装摘要",
+        "role": "list",
+        "purpose": "显示当前装备状态",
+        "rect": {
+          "x": 1.924,
+          "y": 22.075,
+          "width": 33.503,
+          "height": 2.208
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "hero_profile",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "equipment_list",
+        "name": "装备清单",
+        "label": "装备清单",
+        "role": "list",
+        "purpose": "显示当前装备列表",
+        "rect": {
+          "x": 1.924,
+          "y": 24.283,
+          "width": 33.503,
+          "height": 4.857
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "hero_profile",
+        "source": "qwen2.5-vl",
+        "children": []
+      },
+      {
+        "id": "equipment_card",
+        "name": "装备卡片",
+        "label": "装备卡片",
+        "role": "card",
+        "purpose": "显示单个装备卡片",
+        "rect": {
+          "x": 1.924,
+          "y": 30.243,
+          "width": 33.503,
+          "height": 1.457
+        },
+        "confidence": 0.58,
+        "contains_text": true,
+        "ocr": {
+          "mode": "region_only",
+          "text": null
+        },
+        "parent_id": "hero_profile",
+        "source": "qwen2.5-vl",
+        "children": []
+      }
+    ]
+  },
+  "analysis": "Vision 只標出元件區域與類型；文字內容保留為文字區域，不作為比對主鍵。",
+  "confidence": 0.58,
+  "raw": "```json\n[\n    {\n        \"id\": \"hero_profile\",\n        \"label\": \"英雄身份面板\",\n        \"role\": \"panel\",\n        \"purpose\": \"英雄信息展示\",\n        \"bbox\": [0, 0, 672, 868],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"identity_block\",\n        \"label\": \"身份块\",\n        \"role\": \"heading\",\n        \"purpose\": \"英雄名称和等级\",\n        \"bbox\": [34, 35, 282, 160],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"level_indicator\",\n        \"label\": \"等级指示\",\n        \"role\": \"metric\",\n        \"purpose\": \"显示英雄等级\",\n        \"bbox\": [34, 199, 112, 225],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"experience_progress_bar\",\n        \"label\": \"经验进度条\",\n        \"role\": \"progress\",\n        \"purpose\": \"显示英雄当前经验值与目标经验值的进度\",\n        \"bbox\": [34, 230, 626, 255],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"portrait\",\n        \"label\": \"肖像\",\n        \"role\": \"image\",\n        \"purpose\": \"英雄头像\",\n        \"bbox\": [34, 272, 652, 478],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_summary\",\n        \"label\": \"套装摘要\",\n        \"role\": \"list\",\n        \"purpose\": \"显示当前装备状态\",\n        \"bbox\": [34, 500, 626, 550],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_list\",\n        \"label\": \"装备清单\",\n        \"role\": \"list\",\n        \"purpose\": \"显示当前装备列表\",\n        \"bbox\": [34, 550, 626, 660],\n        \"contains_text\": true\n    },\n    {\n        \"id\": \"equipment_card\",\n        \"label\": \"装备卡片\",\n        \"role\": \"card\",\n        \"purpose\": \"显示单个装备卡片\",\n        \"bbox\": [34, 685, 626, 718],\n        \"contains_text\": true\n    }\n]\n```",
+  "latency_ms": 17148.3
+}
