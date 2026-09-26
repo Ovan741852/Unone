@@ -12,15 +12,18 @@ export function fitFormalUI(snapshot){
  const game=snapshot?.world?.observations?.game??{};
  const battle=tree.node==='battle:home'&&!game.paused;
  const route=tree.node?.split(':')[1],phase=game.phase??tree.node?.split(':')[0];
- const map=new Map(tree.children.map(n=>[n.id,{...n,rect:{...n.rect}}]));
+ const flatten=(nodes,out=[])=>{for(const n of nodes??[])if(n.kind==='component')flatten(n.children,out);else out.push(n);return out;};
+ const map=new Map(flatten(tree.children).map(n=>[n.id,{...n,rect:{...n.rect}}]));
  const set=(id,x,y,w,h)=>{const n=map.get(id);if(n)map.set(id,put(n,x,y,w,h));};
  const frameRect=id=>map.get(id)?.rect??null;
  const frame=(id,x,y,w,h)=>{const source=frameRect(id);if(!source)return;const fill=map.get(id+'_fill');set(id,x,y,w,h);if(fill){const q=fill.rect,sx=w/source.width,sy=h/source.height;map.set(fill.id,{...fill,rect:{x:x+(q.x-source.x)*sx,y:100-y-h+(q.y-source.y)*sy,width:q.width*sx,height:q.height*sy}});}};
  const plateRect=id=>frameRect(id+'_plate');
  const setPlate=(id,...args)=>frame(id+'_plate',...args);
  const control=(id,x,y,w,h,ch=Math.min(3,h-1))=>{const edge=(h-ch)/2;setPlate(id,x,y,w,h);
-  if(map.has(id+'_hit_top')){set(id,x,y+edge,w,ch);set(id+'_hit_top',x,y,w,edge);set(id+'_hit_bottom',x,y+edge+ch,w,edge);}
-  else if(map.get(id)?.kind==='button')set(id,x,y,w,h);else set(id,x+1,y+edge,w-2,ch);
+  // One button node owns the complete visible plate. Its label is centered by
+  // the renderer, so splitting the remaining plate into duplicate hit nodes
+  // only pollutes hierarchy and selection without improving the hit target.
+  set(id,x,y,w,h);
  };
  const text=(id,value)=>{const n=map.get(id);if(n)map.set(id,{...n,text:value});};
  if(map.has('shop_window_title')){
@@ -88,13 +91,9 @@ export function fitFormalUI(snapshot){
   const fitted=fitLabel(n.text,{width:slot.width*width/100-padding*2,height:availableHeight*(button?.8:1),size:slotLabel?18:Math.max(min,size*Math.min(1,width/1200)),minSize:slotLabel?16:min,wrap,maxLines});
   text(id,fitted.text);const h=fitted.height/height*100;
   if(button){
-   // Compact controls deliberately use one full-size native hit region. Keep
-   // that region at the plate size while fitting only the label visually;
-   // split controls still use their measured text band plus padding hits.
-   const compact=n.kind==='button'&&!map.has(id+'_hit_top')&&!map.has(id+'_hit_bottom');
-   const edge=Math.max(.01,(p.height-h)/2);
-   set(id,p.x,compact?top(p):top(p)+edge,p.width,compact?p.height:h);
-   if(!compact){set(id+'_hit_top',p.x,top(p),p.width,edge);set(id+'_hit_bottom',p.x,top(p)+edge+h,p.width,edge);}
+   // Keep the native hit rectangle equal to its visible plate for every
+   // button; the button renderer centers its label within that rectangle.
+   set(id,p.x,top(p),p.width,p.height);
   }
   else set(id,n.rect.x,top(n.rect)+(n.rect.height-h)/2,/^(town_(name|effect|cost)_|town_gold$)/.test(id)?Math.min(n.rect.width,(fitted.width+4)/width*100):n.rect.width,h);
  }

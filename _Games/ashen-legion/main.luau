@@ -2385,6 +2385,18 @@ publishFormalUI=function(api:any)
  end
  local nodes:{any}={}
  local supplyDetail:any=nil
+ local rootComponents:{any}={}
+ local componentStack:{any}={}
+ local function beginComponent(id:string,name:string)
+  table.insert(componentStack,{id=id,name=name,first=#nodes+1,children={}})
+ end
+ local function endComponent()
+  local group=table.remove(componentStack)
+  group.last=#nodes
+  if group.first>group.last then return end
+  local parent=componentStack[#componentStack]
+  table.insert(parent and parent.children or rootComponents,group)
+ end
  local hidden:{[string]:boolean}={}
  local function rect(x:number,y:number,w:number,h:number)return {x=x,y=100-y-h,width=w,height=h}end
  local nineSlice:any=nil
@@ -2436,37 +2448,43 @@ publishFormalUI=function(api:any)
   local primary=({Start=true,QuickDeploy=true,Deploy=true,Next=true,LaunchExpedition=true,Auto_apply=true,Pause=true,OpenChest=true,ChestDone=true,AcceptEnchant=true})[action]==true
   local chosen=(string.sub(id,1,4)=="tab_" and action=="UI_"..formalRoute) or string.find(label,"✓") or (string.match(id,"^(unit|roster_unit)_") and string.sub(label,1,3)=="◆")
   if skin=="shop-button-secondary-v2" then skin="control-quiet-v3" end
+  beginComponent(id,"ui.button")
   nineSlice(id.."_plate","texture://ui_"..(skin or (enabled~=false and (primary or chosen) and "shop-button-primary-v2" or "control-quiet-v3")),x,y,w,h,.2)
   local ch=min(3,h-1);local edge=(h-ch)/2
   if enabled==false then text(id,label,x+1,y+edge,w-2,ch)
   else
-   -- Adjacent regions share one action, as with the battle HUD. The label
-   -- remains a native button; padding extends its target without overlapping it.
+   -- Keep one readable action target. The plate already provides enough room.
    table.insert(nodes,{kind="button",id=id,text=label,action=action,rect=rect(x,y+edge,w,ch)})
-   table.insert(nodes,{kind="button",id=id.."_hit_top",text="",action=action,rect=rect(x,y,w,edge)})
-   table.insert(nodes,{kind="button",id=id.."_hit_bottom",text="",action=action,rect=rect(x,y+edge+ch,w,edge)})
   end
+  endComponent()
  end
  local function compactButton(id:string,label:string,action:string,x:number,y:number,w:number,h:number,enabled:boolean?)
+  beginComponent(id,"ui.compact-button")
   img(id.."_plate","texture://ui_control-quiet-v3",x,y,w,h)
   if enabled==false then text(id,label,x+.4,y+.2,w-.8,h-.4)
   else
    text(id.."_label",label,x+.4,y+.2,w-.8,h-.4)
    table.insert(nodes,{kind="button",id=id,text="",action=action,rect=rect(x,y,w,h)})
   end
+  endComponent()
  end
  local function closeButton(id:string,action:string,x:number?,y:number?)
+  beginComponent(id,"ui.icon-button")
   local bx=x or 92;local by=y or 7;local bw=5.5;local bh=6
   img(id.."_plate","texture://ui_hud-key",bx,by,bw,bh)
   img(id.."_icon","texture://ui_icon-close",bx+1.25,by+1.15,3,3.7)
   table.insert(nodes,{kind="button",id=id,text="",action=action,rect=rect(bx,by,bw,bh)})
+  endComponent()
  end
  local function resourceBadge(id:string,plate:string,icon:string,value:any,x:number,y:number,w:number)
+  beginComponent(id,"ui.resource-badge")
   img(id.."_plate","texture://ui_hud-"..plate,x,y,w,5.8)
   img(id.."_icon","texture://ui_icon-"..icon,x+1,y+.95,3.2,3.9)
   text(id,value,x+4.7,y+1.1,w-5.4,3.5)
+  endComponent()
  end
  local function panel(title:string)
+  beginComponent("screen_frame","ui.screen-frame")
   local shopWindow=S.phase=="shop" and S.location=="market" and formalRoute~="sell"
   -- One window rect, one title band and one currency band on every screen.
   -- The 4-unit outer margin is the shared safe area from UI-DESIGN-GUIDELINES.
@@ -2484,13 +2502,16 @@ publishFormalUI=function(api:any)
    resourceBadge("screen_gold","gold","coin",floor(S.coins),64,6.2,10.5)
    resourceBadge("screen_crystals","crystal","crystal",S.crystals,75,6.2,10.5)
   end
+  endComponent()
  end
  local function shopkeeper(line:string,portrait:string?,speaker:string?)
+  beginComponent("shopkeeper","ui.shopkeeper")
   local marketShop=S.phase=="shop" and S.location=="market" and formalRoute~="sell"
   if marketShop then
    img("shopkeeper_portrait","texture://ui_"..(portrait or "portrait-merchant"),10,31,16,28)
    text("shopkeeper_name",speaker or "商旅",10,61,16,4)
    text("shopkeeper_line",line,10,67,16,11)
+   endComponent()
    return
   end
   local width=marketShop and 23 or 27
@@ -2498,15 +2519,18 @@ publishFormalUI=function(api:any)
   img("shopkeeper_portrait","texture://ui_"..(portrait or "portrait-merchant"),marketShop and 9 or 10,28,marketShop and 18 or 21,marketShop and 25 or 27)
   text("shopkeeper_name",speaker or "商旅",8,56,marketShop and 21 or 25,4)
   text("shopkeeper_line",wrap(line,marketShop and 11 or 13),8,61,marketShop and 21 or 25,16)
+  endComponent()
  end
  local function tabs()
   if S.phase=="loadout" then
    local function loadoutTab(id:string,label:string,action:string,x:number,y:number,active:boolean)
+    beginComponent(id,"ui.tab")
     img(id.."_plate","texture://ui_loadout-tab-v1",x,y,7,11)
     if active then img(id.."_active","texture://ui_loadout-tab-active-v1",x,y,7,11)end
     img(id.."_icon",action=="UI_gear" and "texture://ui_icon-weapon" or "texture://ui_icon-rune",x+1.65,y+1.15,3.7,4.2)
     text(id.."_label",label,x+.5,y+6.5,6,2.4)
     table.insert(nodes,{kind="button",id=id,text="",action=action,rect=rect(x,y,7,11)})
+    endComponent()
    end
    loadoutTab("tab_gear","裝備","UI_gear",7,30.5,formalRoute=="gear")
    loadoutTab("tab_runes","符文","UI_runes",7,43,formalRoute=="runes")
@@ -3122,9 +3146,39 @@ end
   hidden.screen_gold=true;hidden.screen_crystals=true;hidden.screen_gold_plate=true;hidden.screen_crystals_plate=true
  end
  if hidden.screen_gold then hidden.screen_gold_icon=true;hidden.screen_gold_plate=true;hidden.screen_crystals_icon=true;hidden.screen_crystals_plate=true end
- local visible:{any}={};for _,n in ipairs(nodes)do if not hidden[n.id] and not hidden[string.gsub(n.id,"_hit_[a-z]+$","")] then table.insert(visible,n)end end;nodes=visible
+ local function buildRange(first:number,last:number,groups:{any}):{any}
+  table.sort(groups,function(a,b)return a.first<b.first end)
+  local out:{any}={};local index=first
+  for _,group in ipairs(groups)do
+   while index<group.first do table.insert(out,nodes[index]);index+=1 end
+   local children=buildRange(group.first,group.last,group.children)
+   if #children>0 then
+    local left=math.huge;local bottom=math.huge;local right=-math.huge;local top=-math.huge
+    for _,child in ipairs(children)do local r=child.rect;left=min(left,r.x);bottom=min(bottom,r.y);right=math.max(right,r.x+r.width);top=math.max(top,r.y+r.height)end
+    table.insert(out,{kind="component",id="component_"..group.id,component=group.name,rect={x=left,y=bottom,width=right-left,height=top-bottom},children=children})
+   end
+   index=group.last+1
+  end
+  while index<=last do table.insert(out,nodes[index]);index+=1 end
+  return out
+ end
+ local hierarchy=buildRange(1,#nodes,rootComponents)
+ local function visibleNodes(list:{any}):{any}
+  local out:{any}={}
+  for _,node in ipairs(list)do
+   if node.kind=="component" then
+    node.children=visibleNodes(node.children)
+    if #node.children>0 then
+     local left=math.huge;local bottom=math.huge;local right=-math.huge;local top=-math.huge
+     for _,child in ipairs(node.children)do local r=child.rect;left=min(left,r.x);bottom=min(bottom,r.y);right=math.max(right,r.x+r.width);top=math.max(top,r.y+r.height)end
+     node.rect={x=left,y=bottom,width=right-left,height=top-bottom};table.insert(out,node)
+    end
+   elseif not hidden[node.id] and not hidden[string.gsub(node.id,"_hit_[a-z]+$","")] then table.insert(out,node)end
+  end
+  return out
+ end
  S.uiRoute=formalRoute;S.uiPage=formalPage
- api.ui.setRoot({kind="screen",id="forest_lord",node=S.phase..":"..(S.autoConfigOpen and "auto" or formalRoute),children=nodes})
+ api.ui.setRoot({kind="screen",id="forest_lord",node=S.phase..":"..(S.autoConfigOpen and "auto" or formalRoute),children=visibleNodes(hierarchy)})
 end
 
 -- END FORMAL UI
