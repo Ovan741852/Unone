@@ -1,0 +1,22 @@
+{
+  "version": "battle-hud-v1",
+  "date": "2026-09-27",
+  "generator": "Built-in image generation",
+  "entries": [
+    {
+      "id": "event-horde",
+      "resources": ["event-horde"],
+      "original": "C:/Users/liNao/.codex/generated_images/01a081f9-7892-73d1-8af5-f70c583cbd19/exec-77a60855-7601-4fff-a062-163478fd246b.png",
+      "runtime": "assets/formal-ui/event-horde.png",
+      "sha256": "7c6fae7b124a5dc1024436ece049392e0e8ba4bedbce02f32a5d2baeb9d84a3e",
+      "prompt": "Use case: fantasy game HUD asset. Create one square, isolated transparent PNG event icon for an approaching monster horde. Show a tight cluster of exactly three distinct tiny forest enemies (a tusked boar, a golden beetle, and a small leafy creature) charging forward together, with clear readable faces and overlapping silhouettes that read as a group. Low-poly 3D toy forms with painterly storybook shading, warm amber key light from upper left and subtle cool teal fill from the right, rich forest-green, bark-brown, and warm gold accents. Match a polished hand-painted low-poly game icon, not photorealism. Fill about 82% of the square and keep the silhouette bold enough to read at 32 pixels. True transparent background with clean alpha; no panel, no border, no circle badge, no text, no numbers, no environment, no floor, no cast shadow outside the characters.",
+      "processing": "Copied generated RGBA unchanged; native alpha preserved.",
+      "alphaCheck": {
+        "mode": "RGBA",
+        "size": [1254, 1254],
+        "alphaRange": [0, 255],
+        "corners": [0, 0, 0, 0]
+      }
+    }
+  ]
+}

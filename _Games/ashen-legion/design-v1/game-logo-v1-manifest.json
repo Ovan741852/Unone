@@ -1,0 +1,14 @@
+{
+  "version": "game-logo-v1",
+  "generator": "Built-in ImageGen",
+  "source": "art-source/game-logo-v1.png",
+  "runtime": "assets/formal-ui/game-logo-v1.png",
+  "sha256": "3dbdb61f08d6436832b18d8a8ff1e54907ef1ba7ad9b9bc8551957376807caed",
+  "dimensions": [2172, 724],
+  "alpha": true,
+  "text": {
+    "traditional_chinese": "是的，領主大人",
+    "english": "YES, MY LORD"
+  },
+  "prompt": "Create a wide 3:1 transparent fantasy game wordmark, not an icon. Large Traditional Chinese title 是的，領主大人 on one line, with YES, MY LORD centered below. Deep emerald and burnished gold, illustrated engraved lettering, restrained acorn crest and leaf flourishes, crisp dark edging, no background or extra text."
+}

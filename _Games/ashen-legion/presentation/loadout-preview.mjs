@@ -2,7 +2,8 @@ import * as T from 'three';
 import {clone} from 'three/addons/utils/SkeletonUtils.js';
 import {createInkStyle} from './ink-style.mjs';
 
-// Game-owned presentation only. Equipment rules remain in the Luau observation.
+// A small, isolated Three.js paper-doll preview. It reads only the published
+// game observation; the Luau state remains the sole owner of equipment rules.
 const SLOTS=['head','body','feet','hands','weapon'];
 const BONES={head:['mixamorigHead'],body:['mixamorigSpine1'],feet:['mixamorigLeftFoot','mixamorigRightFoot'],hands:['mixamorigLeftHand','mixamorigRightHand'],weapon:['mixamorigRightHand']};
 
@@ -26,17 +27,7 @@ export async function createLoadoutPreview({canvas,preparedAssets,mode='3d'}){
  const rim=new T.DirectionalLight(0x9fced0,.8);rim.position.set(2.5,2.4,-3);scene.add(rim);
  const ink=createInkStyle(T);
  let root=null,actor=null,mixer=null,gearObjects={};let visible=false,lastSignature='';let elapsed=0;
- function releaseClone(object){
-  // SkeletonUtils owns cloned skeletons, but geometry/textures are shared with
-  // the battlefield asset cache. Only the asset owner may dispose those.
-  const skeletons=new Set();object.traverse(o=>{if(o.isSkinnedMesh)skeletons.add(o.skeleton)});
-  for(const skeleton of skeletons)skeleton.dispose();object.removeFromParent();
- }
- function clearGear(){for(const list of Object.values(gearObjects))for(const object of list)releaseClone(object);gearObjects={};}
- function clearActor(){
-  mixer?.stopAllAction();if(actor)mixer?.uncacheRoot(actor);mixer=null;
-  clearGear();if(root)releaseClone(root);root=null;actor=null;
- }
+ function clearGear(){for(const list of Object.values(gearObjects))for(const object of list){object.removeFromParent();object.traverse(o=>o.geometry?.dispose?.());}gearObjects={};}
  function applyEquipment(game){
   if(!actor)return;clearGear();
   const items=new Map(Object.values(game.items??{}).map(item=>[item.id,item]));
@@ -44,25 +35,26 @@ export async function createLoadoutPreview({canvas,preparedAssets,mode='3d'}){
   for(let index=0;index<SLOTS.length;index++){
    const slot=SLOTS[index],group=actor.getObjectByName('Equipment_'+slot);if(group)group.visible=true;
    const item=items.get(worn[index]??0),model=item&&equipmentAssets.get(item.skill);if(!model)continue;gearObjects[slot]=[];
-   for(const boneName of BONES[slot]){const bone=actor.getObjectByName(boneName);if(!bone)continue;const ornament=clone(model.scene);ornament.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.castShadow=true;o.userData.fanRigid=true;}});if(slot==='head')ornament.position.y=.35;bone.add(ornament);ink.apply(ornament);gearObjects[slot].push(ornament);}
+   const bones={head:['mixamorigHead'],body:['mixamorigSpine1'],feet:['mixamorigLeftFoot','mixamorigRightFoot'],hands:['mixamorigLeftHand','mixamorigRightHand'],weapon:['mixamorigRightHand']}[slot];
+   for(const boneName of bones){const bone=actor.getObjectByName(boneName);if(!bone)continue;const ornament=clone(model.scene);ornament.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.castShadow=true;o.userData.fanRigid=true;}});if(slot==='head')ornament.position.y=.35;bone.add(ornament);ink.apply(ornament);gearObjects[slot].push(ornament);}
    if(slot==='weapon'&&group)group.visible=false;
   }
  }
  function makeActor(game){
-  clearActor();
-  root=new T.Group();root.name='LoadoutPreviewRoot';actor=clone(source.scene);actor.rotation.y=selectedMode==='fit3d'?-.12:-.18;actor.position.y=selectedMode==='fit3d'?.08:.12;actor.scale.setScalar(selectedMode==='fit3d'?.62:.78);
+  if(actor){clearGear();actor.removeFromParent();}
+  root=new T.Group();root.name='LoadoutPreviewRoot';actor=clone(source.scene);actor.rotation.y=selectedMode==='fit3d'?-0.12:-.18;actor.position.y=selectedMode==='fit3d'?.08:.12;actor.scale.setScalar(selectedMode==='fit3d'?.62:.78);
   actor.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.castShadow=true;o.receiveShadow=true;o.userData.fanRigid=true;}});root.add(actor);scene.add(root);ink.apply(actor);
   mixer=new T.AnimationMixer(actor);const clip=source.animations.find(item=>item.name==='idle')??source.animations[0];if(clip)mixer.clipAction(clip).play();applyEquipment(game);
  }
  function resize(){const width=Math.max(1,canvas.clientWidth||1),height=Math.max(1,canvas.clientHeight||1);renderer.setSize(width,height,false);camera.aspect=width/height;camera.updateProjectionMatrix();}
  addEventListener('resize',resize);resize();canvas.style.display='none';
  function update(game,dt=0){
-  const route=game?.uiRoute??'',nextVisible=game?.phase==='loadout'&&(route==='gear'||route==='runes');
+  const route=game?.uiRoute??'',nextVisible=game?.phase==='loadout'&&(route==='gear'||route==='runes')&&!game?.uiGearDetail;
   if(nextVisible!==visible){visible=nextVisible;canvas.style.display=visible?'block':'none';if(visible)resize();}
   if(!visible)return;
   const selected=game.selected??1,worn=game.worn?.[Math.max(0,selected-1)]??game.worn?.[selected]??[],signature=selected+':'+worn.join(',')+':'+Object.values(game.items??{}).length;
-  if(signature!==lastSignature){makeActor(game);lastSignature=signature;}
+  if(signature!==lastSignature){lastSignature=signature;makeActor(game);}
   const delta=Math.min(Math.max(Number(dt)||0,0),.08);elapsed+=delta;mixer?.update(delta);if(root)root.rotation.y=-.18+Math.sin(elapsed*.35)*.035;renderer.render(scene,camera);
  }
- return {update,inspect:()=>{const box=root?new T.Box3().setFromObject(root):null;let meshes=0;root?.traverse(o=>{if(o.isMesh)meshes++});return {visible,mode:selectedMode,asset:'presentation/soldier-v2.glb',slots:SLOTS.length,animated:Boolean(mixer),outfitSignature:lastSignature,meshes,bounds:box?{min:box.min.toArray(),max:box.max.toArray()}:null,drawCalls:renderer.info.render.calls,actorRoots:scene.children.filter(o=>o.name==='LoadoutPreviewRoot').length};},dispose(){removeEventListener('resize',resize);clearActor();ink.dispose();renderer.dispose();}};
+ return {update,inspect:()=>{const box=root?new T.Box3().setFromObject(root):null;return {visible,mode:selectedMode,asset:'presentation/soldier-v2.glb',slots:SLOTS.length,animated:Boolean(mixer),outfitSignature:lastSignature,meshes:root?[...(()=>{const list=[];root.traverse(o=>{if(o.isMesh)list.push(o)});return list})()].length:0,bounds:box?{min:box.min.toArray(),max:box.max.toArray()}:null,drawCalls:renderer.info.render.calls};},dispose(){removeEventListener('resize',resize);clearGear();root?.removeFromParent();ink.dispose();renderer.dispose();}};
 }

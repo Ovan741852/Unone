@@ -16,7 +16,9 @@ import {createRuntimeBackend} from './web/shared/runtime-backend.mjs';
 import {createHostInput} from './web/shared/host-input.js';
 import {createAsyncScheduler} from './web/shared/async-scheduler.mjs';
 import {createLandscapeViewport} from './presentation/landscape-host.mjs';
+import {createDeveloper} from './web/developer/main.js';
 const stage=document.querySelector('#stage'),canvas=document.querySelector('#game'),input=createHostInput();
+const developer=createDeveloper();
 const viewport=createLandscapeViewport(canvas);
 let actors,loadoutPreview,rewardPresentation,formalUi,worldLabels,projection,arenaWalls,sceneLighting;
 const formalCanvas=document.querySelector("#formal-ui"),loadoutCanvas=document.querySelector("#loadout-preview");
@@ -28,7 +30,7 @@ const uiMotion=createUiMotion({reducedMotion:()=>motionPreference.matches});
 let safeInsets={};
 function measureInsets(){safeInsets=viewport.safeInsets()}
 measureInsets();
-let backend,renderer,snapshot,scheduler,ready=false,lastFrame=-1,environments,themeId;
+let backend,renderer,snapshot,scheduler,ready=false,lastFrame=-1,environments,themeId,developerPaused=false,developerInput=null;
 const shopAccessibility=createShopAccessibility({canvas:formalCanvas,stage,onAction:action=>{if(ready)input.queueAction(action)},onHold:(action,held)=>{if(ready)input.queueActionTransition(action,held)}});
 let appliedQuality='';
 function applyPresentationSettings(game){
@@ -55,6 +57,13 @@ let down=false;let savedFingerprint="";
 function releaseInput(){uiMotion.pointer("cancel");formalUi?.releaseAll();down=false;input.releaseAll()}
 function fail(e){console.error(e);ready=false;document.body.dataset.ready='false';window.ashenLoading.fail(e);scheduler?.stop()}
 const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(`${path}: ${r.status}`);return r.json()};
+function setDeveloperPaused(value){developerPaused=Boolean(value);releaseInput();if(developerPaused)scheduler?.pause();else if(ready)scheduler?.resume()}
+async function tickOnce(){
+ const before=snapshot?.world.observations.game,frame=developerInput??input.consumeFrame();developerInput=null;
+ snapshot=await backend.request({kind:'tick',input:frame});const after=snapshot.world.observations.game;
+ if(before&&(before.phase!==after.phase||before.autoConfigOpen!==after.autoConfigOpen||before.lockEnabled!==after.lockEnabled||before.autoEnabled!==after.autoEnabled))releaseInput();
+ return snapshot;
+}
 export function projectPoint(x,z,height=0){
  const p=new projection.THREE.Vector3(x,height,z).project(projection.camera3d);
  const y=(1-p.y)/2;
@@ -150,14 +159,31 @@ async function start(){
   if(snapshot.save_payload){const serialized=JSON.stringify(snapshot.save_payload);if(serialized!==savedFingerprint){try{localStorage.setItem('forest-lord-town-v1',serialized);savedFingerprint=serialized}catch(e){console.warn('Town save not persisted:',e.message)}}}
   if(snapshot.world.frame!==lastFrame){lastFrame=snapshot.world.frame;window.dispatchEvent(new CustomEvent('ashen-state',{detail:snapshot.world.observations.game}));}
  };
- scheduler=createAsyncScheduler({tick:async()=>{const before=snapshot?.world.observations.game;snapshot=await backend.request({kind:'tick',input:input.consumeFrame()});const after=snapshot.world.observations.game;if(before.phase!==after.phase||before.autoConfigOpen!==after.autoConfigOpen||before.lockEnabled!==after.lockEnabled||before.autoEnabled!==after.autoEnabled)releaseInput()},render:draw,onError:fail});
+ scheduler=createAsyncScheduler({tick:tickOnce,render:draw,onError:fail});
  // The official UI resolves assets asynchronously even when supplied decoded
  // images. Keep the loading cover until its first complete frame is drawn.
  loading.mark('firstDrawStart');draw();loading.mark('firstDraw');
  while(formalUi?.report().assets.some(a=>a.state==='loading')){await new Promise(requestAnimationFrame);draw()}
  if(formalUi?.report().diagnostics.length)throw Error('首屏介面載入失敗');
  await new Promise(requestAnimationFrame);draw();loading.mark('firstFrame');
- ready=true;document.body.dataset.ready='true';loading.finish();window.dispatchEvent(new CustomEvent('ashen-ready'));scheduler.start();
+ ready=true;document.body.dataset.ready='true';loading.finish();window.dispatchEvent(new CustomEvent('ashen-ready'));
+ const developerSnapshot=()=>{
+  const source=snapshot?.world?.ui,rendered=uiMotion.tree();
+  if(!source||!rendered?.children)return snapshot;
+  const rects=new Map(rendered.children.filter(node=>node.rect).map(node=>[String(node.id),node.rect]));
+  const remap=node=>{
+   if(node.kind==='component'){
+    const children=(node.children??[]).map(remap),boxes=children.map(child=>child.rect).filter(Boolean);
+    const rect=boxes.length?{x:Math.min(...boxes.map(box=>box.x)),y:Math.min(...boxes.map(box=>box.y)),width:Math.max(...boxes.map(box=>box.x+box.width))-Math.min(...boxes.map(box=>box.x)),height:Math.max(...boxes.map(box=>box.y+box.height))-Math.min(...boxes.map(box=>box.y))}:node.rect;
+    return {...node,rect,children};
+   }
+   const rect=rects.get(String(node.id));return rect?{...node,rect:{...rect}}:node;
+  };
+  const ui={...source,children:(source.children??[]).map(remap)};
+  return {...snapshot,world:{...snapshot.world,ui}};
+ };
+ developer.connect({getSnapshot:developerSnapshot,acceptSnapshot:value=>{snapshot=value},coreRequest:async request=>{const value=await backend.request({kind:'developer',request});if(value.observation)snapshot=value.observation;return value},setTransport:async mode=>{snapshot=await backend.request({kind:'transport',mode});return snapshot},backendReport:()=>backend.report(),getStats:()=>({...renderer.metrics(),dropped_steps:scheduler?.totalDroppedSteps??0}),draw,tick:tickOnce,releaseInput,setPaused:setDeveloperPaused,getPaused:()=>developerPaused,setBloom:value=>renderer.setBloom(value),queueInput:frame=>{developerInput=frame}});
+ scheduler.start();
  window.addEventListener('resize',()=>{measureInsets();releaseInput();backend.request({kind:'aspect',value:canvas.clientWidth/canvas.clientHeight}).catch(fail)});
  window.addEventListener('pagehide',()=>{scheduler.stop();shopAccessibility.dispose();worldLabels?.dispose();formalUi?.dispose();renderer.dispose?.();backend.close()});
 }

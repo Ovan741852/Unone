@@ -8,7 +8,7 @@ const captureDir=fs.mkdtempSync(path.join(os.tmpdir(),'ashen-legion-ui-'));
  const state=()=>page.evaluate(()=>window.ashen.state());
  async function click(action,target){const r=await page.evaluate(({action,target})=>window.ashen.uiTree().children.find(n=>n.kind==='button'&&(target?n.id===target:n.action===action))?.rect,{action,target});assert.ok(r,'Missing action '+action);const p=await uiPoint(page,r);await page.mouse.click(p.x,p.y);await page.waitForTimeout(130);}
  async function capture(name){await page.waitForFunction(()=>window.ashen.metrics().ui.assets.every(a=>a.state==='ready'));trees[name]=await page.evaluate(()=>window.ashen.uiTree());await page.screenshot({path:path.join(captureDir,'formal-ui-'+name+'.png')});}
- await capture('menu');assert.equal(await page.locator('button:visible,section:visible,aside:visible,dialog:visible').count(),0);
+ await capture('menu');assert.equal(await page.locator('button:visible,section:visible,aside:visible,dialog:visible').evaluateAll(els=>els.filter(el=>!el.closest('#unone-developer')).length),0);
  await click('Start');assert.equal((await state()).phase,'menu');await capture('town');
  assert.ok(await page.evaluate(()=>window.ashen.uiTree().children.some(n=>n.action==='Profile1')));
  await click('Profile2');await click('LaunchExpedition');assert.equal((await state()).phase,'map');await capture('map');

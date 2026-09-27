@@ -1242,14 +1242,14 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec![parameter(
                 "root",
                 "UiTree",
-                "A screen root with text, button, image, and reusable component children. Optional budget.max_nodes overrides the default within the host safety ceiling (query ui.inspect). Image slice={left,top,right,bottom,pixels_per_unit,source?} uses one asset and one logical node; source/borders are source pixels, destination borders are vertical design units. Slice replaces fit: omit fit or use stretch. Every visible node uses a 0..100 normalized logical rect.",
+                "A screen root with text, button, slider, combobox, image, and reusable component children. Optional budget.max_nodes overrides the default within the host safety ceiling (query ui.inspect). Image slice={left,top,right,bottom,pixels_per_unit,source?} uses one asset and one logical node; source/borders are source pixels, destination borders are vertical design units. Slice replaces fit: omit fit or use stretch. Every visible node uses a 0..100 normalized logical rect.",
             )],
             "(): no additional data on success.",
             vec!["Replace the game-owned UI tree for the current frame"],
             "The latest tree is immediately visible in observe, the run report, test assertions, and Web/native host snapshots; the engine validates only schema, coordinates, and count limits.",
             vec![
                 "root kind must be screen",
-                "child kind supports text, button, image (stable asset:// or texture:// id + fit + optional alt), or component (name + children)",
+                "child kind supports text, button, slider (action + optional value text), combobox (action + optional selected text + expanded boolean, default false), image (stable asset:// or texture:// id + fit + optional alt), or component (name + children); a skinned slider is a component whose children may expose stable track, fill, handler, and semantic slider nodes; a skinned combobox similarly exposes field, value, arrow, popup and option nodes, with selection and popup state controlled by the UI author",
                 "node ids must be unique, and rects must contain finite values greater than 0 within the 0..100 design space",
             ],
             "api.ui.setRoot({ kind = \"screen\", id = \"dialogue\", node = \"intro\", children = { { kind = \"image\", id = \"logo\", asset = \"asset://ui/logo\", fit = \"contain\", rect = { x = 10, y = 80, width = 20, height = 10 } }, { kind = \"component\", id = \"toolbar\", component = \"ui.toolbar\", rect = { x = 0, y = 0, width = 100, height = 20 }, children = {} } } })",

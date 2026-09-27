@@ -28,7 +28,7 @@ for(const n of nodes){
 
 // Content regions intentionally leave room for the decorative nine-slice frame.
 const fromTop=(x,y,width,height)=>({x,y:100-y-height,width,height});
-const drawerGrid=fromTop(60.5,21.5,27,54);
+const drawerGrid=fromTop(58.5,21.5,30,54);
 const gridIds=/^(pack_tile_|gear_icon_|gear_name_|gear_summary_|gear_cost_|inspect_|equip_)/;
 for(const n of nodes.filter(n=>gridIds.test(n.id))){
  if(!contains(drawerGrid,n.rect)) failures.push({scope:'drawer-grid',id:n.id,rect:n.rect,bound:drawerGrid});

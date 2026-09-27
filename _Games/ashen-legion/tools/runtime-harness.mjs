@@ -5,7 +5,7 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
-const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),out=resolve(process.env.GAME_TEST_EXPORT??join(root,'dist/web'));
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),out=join(root,'dist/web');
 const runtime=JSON.parse(readFileSync(join(out,'runtime/runtime.json'))),js=join(out,'runtime',runtime.javascript);
 const module=await new Promise((done,reject)=>{
  const options={wasmBinary:new Uint8Array(readFileSync(join(out,'runtime',runtime.wasm))),noInitialRun:true,print:()=>{},printErr:console.error,onAbort:reject};

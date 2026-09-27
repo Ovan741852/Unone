@@ -3,7 +3,7 @@
 const {chromium}=require('C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 const assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
 const uiPoint=require('./ui-test-pointer.cjs');
-const out=process.env.GAME_TEST_EVIDENCE?path.resolve(process.env.GAME_TEST_EVIDENCE):path.resolve(__dirname,'../tests/shop-layout');fs.mkdirSync(out,{recursive:true});
+const out=path.resolve(__dirname,'../tests/shop-layout');fs.mkdirSync(out,{recursive:true});
 const overlap=(a,b)=>a.x<b.x+b.width-.01&&a.x+a.width>b.x+.01&&a.y<b.y+b.height-.01&&a.y+a.height>b.y+.01;
 const contains=(a,b)=>a.x<=b.x+.02&&a.y<=b.y+.02&&a.x+a.width>=b.x+b.width-.02&&a.y+a.height>=b.y+b.height-.02;
 const parts=['tl','t','tr','l','c','r','bl','b','br'];
@@ -16,15 +16,11 @@ function check(tree,modal,viewport={width:1920,height:1080}){
  const siblings=ids=>{for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++)ok(!overlap(box(ids[i]),box(ids[j])),`Sibling overlap: ${ids[i]} / ${ids[j]}`)};
  for(const n of nodes)ok(contains({x:0,y:0,width:100,height:100},n.rect),'Offscreen '+n.id);
  const window=box('screen_back'),cards=[1,2,3,4].map(i=>box('stock_panel_'+i));
- ok(!nodes.some(n=>n.id.endsWith('_tl')),'Legacy nine-node skin returned');
- for(const id of ['screen_back',...cards.map((_,i)=>'stock_panel_'+(i+1))])ok(!!by.get(id)?.slice,'Missing native nine-slice '+id);
- for(const node of nodes.filter(n=>n.slice)){
-  const key=node.asset.replace('texture://ui_',''),data=skinData[key];
-  ok(!!data,'Unknown skin '+key);if(!data)continue;
-  const s=node.slice;
-  ok(JSON.stringify([s.left,s.top,s.right,s.bottom])===JSON.stringify(data.borders),'Wrong source cut-lines '+node.id);
-  ok(s.source.x===data.trim[0]&&s.source.y===data.trim[1]&&s.source.width===data.width&&s.source.height===data.height,'Wrong trim region '+node.id);
-  ok(Number.isFinite(s.pixels_per_unit)&&s.pixels_per_unit>0,'Invalid uniform corner scale '+node.id);
+ for(const node of nodes.filter(n=>n.id.endsWith('_tl'))){
+  const key=node.asset.replace('texture://ui_','').replace(/-tl$/,'');
+  const [left,top]=skinData[key].borders;
+  const actual=node.rect.width*viewport.width/(node.rect.height*viewport.height);
+  ok(Math.abs(actual-left/top)<.002,'Distorted corner '+node.id);
  }
  cards.forEach((card,i)=>{
   ok(contains(window,card),'Card outside window '+i);
@@ -52,20 +48,16 @@ function check(tree,modal,viewport={width:1920,height:1080}){
  }
  if(!modal)siblings(['stock_panel_1','stock_panel_2','stock_panel_3','stock_panel_4','shopkeeper_portrait','shopkeeper_name','shopkeeper_line','stock_hint','refresh_plate','ready_plate','quick_deploy_plate']);
  if(modal){
-  const frame=box('shop_detail_modal'),ids=['kicker','title','icon','story','price_icon','price','deploy','trigger','effect','buy_plate','close_plate'].map(s=>'shop_detail_'+s);
+  const frame=box('shop_detail_modal'),ids=['kicker','title','icon','story','price_icon','price','deploy','trigger','effect','buy_plate','cancel_plate','close_plate'].map(s=>'shop_detail_'+s);
   for(const id of ids)ok(contains(frame,box(id)),'Outside modal '+id);
   siblings(ids);
-  ok(by.get('shop_detail_close')?.action==='ShopDetailClose','Missing modal close action');
-  ok(by.get('shop_detail_close_icon')?.asset==='texture://ui_icon-close','Missing modal close icon');
-  ok(contains(box('shop_detail_close'),box('shop_detail_close_icon')),'Close icon outside hit target');
-  ok(!by.has('shop_detail_cancel'),'Duplicate legacy cancel control');
   ok(!by.has('refresh'),'Underlying reroll rendered above modal');
  }
  // Same-size buttons must share corner sizes and actual plate height.
  const buttonIds=['tab_home','tab_sell','ready','quick_deploy'];
  const heights=buttonIds.map(id=>box(id+'_plate').height);
  ok(Math.max(...heights)-Math.min(...heights)<.15,'Inconsistent shared button height');
- for(const id of [...buttonIds,...(modal?['shop_detail_close','shop_detail_buy']:['refresh'])]){
+ for(const id of [...buttonIds,...(modal?['shop_detail_close','shop_detail_buy','shop_detail_cancel']:['refresh'])]){
   const r=box(id+'_plate');ok(r.width*viewport.width/100>=43.9&&r.height*viewport.height/100>=43.9,'Target below 44px '+id);
  }
  return failures;

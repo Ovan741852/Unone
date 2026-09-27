@@ -147,6 +147,13 @@ fn node_parts(node: &UiNode) -> (&str, &str, &UiRect, &str, Option<&str>, Option
             text,
             action,
         } => ("button", id, rect, text, Some(action), None),
+        UiNode::Slider {
+            id,
+            rect,
+            text,
+            action,
+        } => ("slider", id, rect, text, Some(action), None),
+        UiNode::ComboBox { id, rect, text, action, .. } => ("combobox", id, rect, text, Some(action), None),
         UiNode::Image {
             id, rect, asset, ..
         } => ("image", id, rect, "", None, Some(asset)),

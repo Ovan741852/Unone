@@ -1,0 +1,14 @@
+{
+  "name": "ComboBoxParity",
+  "systems": {
+    "physics2d": false,
+    "physics3d": false
+  },
+  "entry_script": "main.luau",
+  "main_scene": "scene.json",
+  "test_files": [
+    "closed.test.json",
+    "open.test.json",
+    "selected.test.json"
+  ]
+}

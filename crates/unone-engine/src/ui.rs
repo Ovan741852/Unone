@@ -265,6 +265,28 @@ pub enum UiNode {
         #[serde(skip_serializing_if = "Option::is_none")]
         alt: Option<String>,
     },
+    /// A semantic slider input. The leaf owns no artwork: put it inside a
+    /// reusable slider component beside stable `track`, `fill`, and `handler`
+    /// image nodes. The host/game can replace those visual slots while Core
+    /// preserves the identity, action, value text, and input policy boundary.
+    #[serde(rename = "slider")]
+    Slider {
+        id: String,
+        rect: UiRect,
+        text: String,
+        action: String,
+    },
+    /// A skinnable selection field. Hosts route the whole rect to `action`;
+    /// selected text and expanded state remain controlled by the UI author.
+    /// Put field/value/arrow/popup visuals beside it in a reusable component.
+    #[serde(rename = "combobox")]
+    ComboBox {
+        id: String,
+        rect: UiRect,
+        text: String,
+        action: String,
+        expanded: bool,
+    },
     /// A reusable semantic component instance. Core owns the tree boundary and
     /// validates its children, while the host decides how the component is
     /// styled. Children retain the same screen design space as the existing
@@ -294,6 +316,8 @@ impl UiNode {
             Self::Text { id, .. }
             | Self::Button { id, .. }
             | Self::Image { id, .. }
+            | Self::Slider { id, .. }
+            | Self::ComboBox { id, .. }
             | Self::Component { id, .. } => id,
         }
     }
@@ -303,6 +327,8 @@ impl UiNode {
             Self::Text { rect, .. }
             | Self::Button { rect, .. }
             | Self::Image { rect, .. }
+            | Self::Slider { rect, .. }
+            | Self::ComboBox { rect, .. }
             | Self::Component { rect, .. } => rect,
         }
     }
@@ -312,13 +338,18 @@ impl UiNode {
             Self::Text { rect, .. }
             | Self::Button { rect, .. }
             | Self::Image { rect, .. }
+            | Self::Slider { rect, .. }
+            | Self::ComboBox { rect, .. }
             | Self::Component { rect, .. } => rect,
         }
     }
 
     pub fn text_mut(&mut self) -> Option<&mut String> {
         match self {
-            Self::Text { text, .. } | Self::Button { text, .. } => Some(text),
+            Self::Text { text, .. }
+            | Self::Button { text, .. }
+            | Self::Slider { text, .. }
+            | Self::ComboBox { text, .. } => Some(text),
             Self::Image { .. } | Self::Component { .. } => None,
         }
     }
@@ -414,6 +445,8 @@ struct RawUiNode {
     component: Option<String>,
     #[serde(default)]
     children: Option<Vec<RawUiNode>>,
+    #[serde(default)]
+    expanded: Option<bool>,
 }
 
 /// Anchored offsets and sizes are in vertical units: percent of the viewport
@@ -559,7 +592,7 @@ impl UiTree {
     }
     /// Validate the UI representation the engine understands.
     ///
-    /// Text, button, image and reusable component nodes share one deterministic
+    /// Text, button, slider, image and reusable component nodes share one deterministic
     /// design-space contract. Component children may nest, but they do not
     /// introduce local coordinates or implicit layout; this keeps the Core
     /// boundary inspectable while allowing reusable templates to be published
@@ -690,6 +723,9 @@ fn parse_node(
         ));
     }
     *node_count += 1;
+    if raw_node.expanded.is_some() && raw_node.kind != "combobox" {
+        return Err(format!("ui.setRoot node '{}' only supports expanded on combobox", raw_node.id));
+    }
     if raw_node.slice.is_some() && raw_node.kind != "image" {
         return Err(format!(
             "UI_SLICE_INVALID: node '{}' is not an image",
@@ -734,6 +770,38 @@ fn parse_node(
             })?;
             ensure_non_empty("button action", &action)?;
             Ok(UiNode::Button {
+                id,
+                rect,
+                text: raw_node.text.unwrap_or_default(),
+                action,
+            })
+        }
+        "slider" | "combobox" => {
+            let kind = raw_node.kind.as_str();
+            if raw_node.asset.is_some()
+                || raw_node.fit.is_some()
+                || raw_node.alt.is_some()
+                || raw_node.component.is_some()
+                || raw_node.children.is_some()
+            {
+                return Err(format!(
+                    "ui.setRoot {kind} node '{id}' only accepts text, action, placement and combobox expanded"
+                ));
+            }
+            let action = raw_node.action.ok_or_else(|| {
+                format!("ui.setRoot {kind} node '{id}' requires a non-empty action")
+            })?;
+            ensure_non_empty("widget action", &action)?;
+            if kind == "combobox" {
+                return Ok(UiNode::ComboBox {
+                    id,
+                    rect,
+                    text: raw_node.text.unwrap_or_default(),
+                    action,
+                    expanded: raw_node.expanded.unwrap_or(false),
+                });
+            }
+            Ok(UiNode::Slider {
                 id,
                 rect,
                 text: raw_node.text.unwrap_or_default(),
@@ -805,7 +873,7 @@ fn parse_node(
             })
         }
         kind => Err(format!(
-            "ui.setRoot node '{id}' has unsupported kind '{kind}'; use text, button, image or component"
+            "ui.setRoot node '{id}' has unsupported kind '{kind}'; use text, button, slider, combobox, image or component"
         )),
     }
 }
@@ -943,6 +1011,27 @@ mod tests {
                 .unwrap_err()
                 .contains("UI_SLICE_FIT_CONFLICT")
         );
+    }
+
+    #[test]
+    fn combobox_preserves_controlled_state_and_requires_action() {
+        let mut value = serde_json::json!({
+            "kind":"screen", "id":"settings", "node":"settings", "children":[{
+                "kind":"combobox", "id":"quality", "text":"High", "action":"QualityToggle",
+                "rect":{"x":10,"y":10,"width":70,"height":10}
+            }]
+        });
+        let tree = UiTree::from_json(value.clone()).unwrap();
+        assert_eq!(serde_json::to_value(tree).unwrap()["children"][0]["expanded"], false);
+        value["children"][0]["expanded"] = true.into();
+        let tree = UiTree::from_json(value.clone()).unwrap();
+        let serialized = serde_json::to_value(tree).unwrap();
+        assert_eq!(serialized["children"][0]["expanded"], true);
+        assert_eq!(serialized["children"][0]["action"], "QualityToggle");
+        value["children"][0]["action"] = "".into();
+        assert!(UiTree::from_json(value.clone()).is_err());
+        value["children"][0]["kind"] = "text".into();
+        assert!(UiTree::from_json(value).unwrap_err().contains("expanded on combobox"));
     }
 
     #[test]
@@ -1124,14 +1213,15 @@ mod tests {
                 "rect": {"x": 0, "y": 80, "width": 100, "height": 20},
                 "children": [
                     {"kind": "image", "id": "logo", "asset": "asset://ui/logo", "fit": "contain", "alt": "Unone", "rect": {"x": 5, "y": 85, "width": 10, "height": 10}},
-                    {"kind": "button", "id": "save", "text": "Save", "action": "Save", "rect": {"x": 20, "y": 85, "width": 20, "height": 10}}
+                    {"kind": "button", "id": "save", "text": "Save", "action": "Save", "rect": {"x": 20, "y": 85, "width": 20, "height": 10}},
+                    {"kind": "slider", "id": "volume", "text": "80%", "action": "Setting_music", "rect": {"x": 45, "y": 85, "width": 30, "height": 10}}
                 ]
             }]
         }))
         .unwrap();
         assert!(matches!(tree.children[0], UiNode::Component { .. }));
         assert_eq!(tree.children[0].id(), "toolbar");
-        assert_eq!(tree.children[0].children().len(), 2);
+        assert_eq!(tree.children[0].children().len(), 3);
         assert_eq!(
             serde_json::to_value(tree.children[0].children()[0].clone()).unwrap()["kind"],
             "image"
@@ -1139,6 +1229,10 @@ mod tests {
         assert_eq!(
             serde_json::to_value(tree.children[0].children()[0].clone()).unwrap()["alt"],
             "Unone"
+        );
+        assert_eq!(
+            serde_json::to_value(tree.children[0].children()[2].clone()).unwrap()["kind"],
+            "slider"
         );
     }
 

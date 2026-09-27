@@ -2,6 +2,8 @@
 // inspection and input share one tree. Nothing here changes gameplay or RNG.
 const ease=t=>1-Math.pow(1-Math.max(0,Math.min(1,t)),3);
 const group=raw=>{
+ const field=raw.match(/^(settings_(?:quality|language))(?:_(?:field|value|arrow))?$/);if(field)return field[1];
+ const option=raw.match(/^(settings_(?:quality|language)_option_[a-z_]+?)(?:_(?:label|check|selected))?$/);if(option)return option[1];
  const id=raw.replace(/_hit_(top|bottom)$/, '').replace(/_(tl|t|tr|l|c|r|bl|b|br)$/,'');
  const shopCard=id.match(/^stock_(?:panel|icon|name|desc|cost(?:_icon)?|deploy(?:_icon)?|detail|hit|empty)_(\d+)(?:_plate)?$/);if(shopCard)return 'stock'+shopCard[1];
  const slot=id.match(/^(?:slot_(?:frame_|hit_)?|worn_icon_)(\d+)$/);if(slot)return 'slot'+slot[1];
@@ -42,20 +44,18 @@ export function createUiMotion({reducedMotion=()=>false,now=()=>performance.now(
     copy.set(n.id,n.text);
     if(reduced)return n;
     let dx=0,dy=0,scale=1;
-    const fixed=/^(menu_art|menu_ground|screen_back(?:_|$)|screen_shade|shop_backdrop|shop_window_fill|shop_modal_scrim|shop_detail_shade|shop_detail_fill|shop_detail_modal|town_upgrade_(shade|modal)|gear_detail_(shade|modal)|interior_shade|map_(back|link_|node_|number_|current_ring|cursor_icon))/.test(n.id);
+    const fixed=/^(menu_art|menu_ground|settings_(?:backdrop|shade|window(?:_|$))|screen_back(?:_|$)|screen_shade|shop_backdrop|shop_window_fill|shop_modal_scrim|shop_detail_shade|shop_detail_fill|shop_detail_modal|town_upgrade_(shade|modal)|gear_detail_(shade|modal)|interior_shade|map_(back|link_|node_|number_|current_ring|cursor_icon))/.test(n.id);
     if(fixed)return n;
     if(!battle&&!fixed){const order=Number(g.match(/(?:choice|stock|gear|autoCard)(\d+)/)?.[1]??0),delay=Math.min(order,5)*20;
      const t=ease((age-delay)/220);dy=-(1-t)*1;
      if(/^(title|subtitle|crest|start|town|menu_prologue)/.test(n.id)){dx=-(1-t)*2;dy=0;}
     }
     const born=at-appeared.get(n.id);if(!battle&&!fixed&&born<320&&age>720){dy-=1.2*(1-ease(born/320));active=true;}
-    if(!battle&&n.id==='crest')dy+=Math.sin(at/1100)*.32;
     if(!battle&&n.id==='story_portrait')dy+=Math.sin(at/1400)*.10;
     const pulseAt=punch.get(g);if(pulseAt!==undefined&&at-pulseAt<480){scale+=Math.sin((at-pulseAt)/480*Math.PI)*.025;active=true;}
     const pressAt=press.get(g);if(g===held)scale*=.98;else if(pressAt!==undefined&&at-pressAt<280){scale*=1-.02*(1-ease((at-pressAt)/280));active=true;}
-    if(g===hover&&!held&&tree.children.some(c=>group(c.id)===g&&c.kind==='button'))scale*=1.012;
+    if(g===hover&&!held&&tree.children.some(c=>group(c.id)===g&&(c.kind==='button'||c.kind==='combobox')))scale*=1.012;
     let out={...n,rect:transform(n.rect,dx,dy,scale,boxes.get(g))};
-    if(n.slice)out.slice={...n.slice,pixels_per_unit:n.slice.pixels_per_unit/scale};
     // Only flavor dialogue is typed; prices, choices and controls are complete
     // from the first frame. No wait or input lock accompanies a transition.
     if(n.id==='story_quote'&&born<650){const chars=Array.from(n.text??''),visible=Math.max(1,Math.ceil(chars.length*ease(born/650)));out.text=chars.map((c,i)=>i<visible||c==='\n'?c:/[\u0000-\u007f]/.test(c)?' ':'　').join('');active=true;}

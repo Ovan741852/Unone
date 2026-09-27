@@ -18,7 +18,7 @@ export function mountPanel(api){
     }finally{captureButton.disabled=false;}
   };
   const panel=root.querySelector('.dev-panel'),body=root.querySelector('.dev-body'),nav=root.querySelector('nav'),status=root.querySelector('.dev-status');
-  let active='tools',open=true,selected=null,selectedUi=null,filter='',lastValue=null,tabSignature='',lastBodySignature='',refreshGeneration=0,pausePending=false,paused=false,pickMode=false,uiNodes=[];
+  let active='tools',open=true,selected=null,selectedUi=null,filter='',lastValue=null,tabSignature='',lastBodySignature='',refreshGeneration=0,pausePending=false,paused=false,pickMode=false,uiNodes=[],collapsedUi=new Set(),reservedWidth=-1;
   const outline=el('div',null,'dev-selection-outline');outline.hidden=true;outline.setAttribute('aria-hidden','true');root.append(outline);
   const picker=el('div','點一下遊戲畫面中的 UI 節點','dev-pick-layer');picker.hidden=true;picker.setAttribute('role','button');picker.setAttribute('aria-label','Hierarchy 選取模式');picker.dataset.hint='點擊畫面選取元件 · 不會觸發遊戲';picker.setAttribute('tabindex','0');root.append(picker);
   const builtin=[['tools','遊戲工具'],['hierarchy','Hierarchy'],['console','Console'],['network','Network'],['profile','Profile'],['memory','Memory'],['journal','操作紀錄']];
@@ -29,27 +29,28 @@ export function mountPanel(api){
     const owner=row?.node.kind==='component'?row:uiNodes.find(candidate=>candidate.node.kind==='component'&&candidate.path.every((id,index)=>row?.path[index]===id));
     if(!owner)return null;
     const members=uiNodes.filter(candidate=>owner.path.every((id,index)=>candidate.path[index]===id));
-    const actionNode=members.find(candidate=>candidate.node.kind==='button'&&candidate.node.action);
+    const actionNode=members.find(candidate=>(candidate.node.kind==='button'||candidate.node.kind==='slider'||candidate.node.kind==='combobox')&&candidate.node.action);
     return {owner,members,label:actionNode?.node.text||members.find(candidate=>candidate.node.kind==='text'&&candidate.node.text)?.node.text||'',action:actionNode?.node.action,assets:[...new Set(members.filter(candidate=>candidate.node.kind==='image'&&candidate.node.asset).map(candidate=>candidate.node.asset))]};
   }
   function uiLocator(row){
     const n=row.node,context=componentContext(row);
     return [`UI 節點路徑：${row.path.join(' > ')}`,`資料位置：${row.sourcePath}`,`節點：${n.kind} #${n.id}`,n.text?`顯示文字：${n.text}`:null,n.action?`動作：${n.action}`:null,n.asset?`圖片資產：${n.asset}`:null,context?`所屬元件：${context.owner.node.component??'component'} #${context.owner.node.id}`:null,context?.label?`按鈕文字：${context.label}`:null,context?.action?`按鈕動作：${context.action}`:null,context?.assets.length?`元件圖片：${context.assets.join(', ')}`:null].filter(Boolean).join('\n');
   }
-  async function copyPath(value,label){try{await navigator.clipboard.writeText(value);status.textContent=`已複製 ${label}，可以直接貼給我`;status.dataset.error='false';}catch{status.textContent=`剪貼簿不可用，請從選取節點詳細資料複製：\n${value}`;status.dataset.error='true';}}
+  async function copyText(value,label){try{await navigator.clipboard.writeText(value);status.textContent=`已複製 ${label}，可以直接貼給我`;status.dataset.error='false';}catch{status.textContent=`剪貼簿不可用，請手動複製：\n${value}`;status.dataset.error='true';}}
   function empty(message){body.append(el('p',message,'dev-empty'));}
   function card(label,value,note){const card=el('div',null,'dev-card');card.append(el('small',label),el('strong',value));if(note)card.append(el('p',note));body.append(card);}
   const ms=value=>typeof value==='number'?value.toFixed(2)+' ms':'不可取得';
   const bytes=value=>typeof value==='number'?(value/1048576).toFixed(2)+' MiB':'unavailable';
-  const nodeLabel=(node,row)=>node.kind==='screen'?`${node.id} · ${node.node??'screen'}`:node.kind==='component'?`${node.component==='ui.button'?'按鈕':node.component??'元件'}${componentContext(row)?.label?' · '+componentContext(row).label:''} · ${node.id}`:node.kind==='button'?`${node.text||'按鈕'}${node.action?' · '+node.action:''} · ${node.id}`:node.kind==='text'?`${node.text||'文字'} · ${node.id}`:`${node.alt||'圖片'} · ${node.id}`;
+  const nodeLabel=(node,row)=>node.kind==='screen'?`${node.id} · ${node.node??'screen'}`:node.kind==='component'?`${node.component==='ui.button'?'按鈕':node.component==='ui.slider'?'滑桿':node.component==='ui.combobox'?'下拉選單':node.component==='ui.combobox-popup'?'選項列表':node.component??'元件'}${componentContext(row)?.label?' · '+componentContext(row).label:''} · ${node.id}`:node.kind==='button'?`${node.text||'按鈕'}${node.action?' · '+node.action:''} · ${node.id}`:node.kind==='combobox'?`下拉選單 · ${node.text} · ${node.expanded?'展開':'收合'} · ${node.id}`:node.kind==='slider'?`滑桿控制${node.action?' · '+node.action:''} · ${node.id}`:node.kind==='text'&&/_fill$/.test(node.id)?`滑桿填充插槽 · ${node.id}`:node.kind==='image'&&(/_(handler|thumb)$/.test(node.id))?`滑桿把手 · ${node.id}`:node.kind==='image'&&/_track$/.test(node.id)?`滑桿軌道 · ${node.id}`:node.kind==='text'?`${node.text||'文字'} · ${node.id}`:`${node.alt||'圖片'} · ${node.id}`;
   function indexUi(ui){
     const out=[];let order=0;
-    function visit(node,depth=0,parent=null,path=[],sourcePath='ui',ancestorRails=[],isLast=true){
+    function visit(node,depth=0,parent=null,path=[],sourcePath='ui',ancestorRails=[],isLast=true,ancestorSources=[]){
       if(!node||typeof node!=='object')return null;
-      const row={node,depth,parent,path:[...path,node.id],sourcePath,ancestorRails:[...ancestorRails],isLast,order:order++,rect:node.rect?{...node.rect}:null};out.push(row);
+      const row={node,depth,parent,path:[...path,node.id],sourcePath,ancestorRails:[...ancestorRails],ancestorSources:[...ancestorSources],isLast,order:order++,rect:node.rect?{...node.rect}:null};out.push(row);
       const children=Array.isArray(node.children)?node.children:[];
+      row.hasChildren=children.length>0;
       const childRails=depth===0?ancestorRails:[...ancestorRails,isLast];
-      const childRows=children.map((child,index)=>visit(child,depth+1,node.id,row.path,`${sourcePath}.children[${index}]`,childRails,index===children.length-1)).filter(Boolean);
+      const childRows=children.map((child,index)=>visit(child,depth+1,node.id,row.path,`${sourcePath}.children[${index}]`,childRails,index===children.length-1,[...ancestorSources,sourcePath])).filter(Boolean);
       if(!row.rect&&childRows.length){
         const rects=childRows.map(child=>child.rect).filter(Boolean);
         if(rects.length){const left=Math.min(...rects.map(r=>r.x)),bottom=Math.min(...rects.map(r=>r.y)),right=Math.max(...rects.map(r=>r.x+r.width)),top=Math.max(...rects.map(r=>r.y+r.height));row.rect={x:left,y:bottom,width:right-left,height:top-bottom};}
@@ -57,6 +58,11 @@ export function mountPanel(api){
       return row;
     }
     visit(ui);return out;
+  }
+  function toggleUiRow(row){
+    if(!row?.hasChildren)return;
+    if(collapsedUi.has(row.sourcePath))collapsedUi.delete(row.sourcePath);else collapsedUi.add(row.sourcePath);
+    refresh(true);
   }
   function positionOverlay(row){
     const canvas=document.querySelector('#game'),rect=canvas?.getBoundingClientRect(),box=row?.rect;
@@ -68,16 +74,30 @@ export function mountPanel(api){
     picker.style.left=`${rect.left}px`;picker.style.top=`${rect.top}px`;picker.style.width=`${rect.width}px`;picker.style.height=`${rect.height}px`;
   }
   function setPickMode(value){pickMode=value;picker.hidden=!value;positionPicker();if(value&&document.activeElement!==picker)picker.focus();}
+  function clearUiSelection(){selectedUi=null;outline.hidden=true;setPickMode(false);}
+  function updateReservedSpace(){
+    const reserved=open?Math.ceil(panel.getBoundingClientRect().width+24):0;
+    if(reserved===reservedWidth)return;
+    reservedWidth=reserved;
+    document.documentElement.style.setProperty('--unone-dev-reserved-right',`${reserved}px`);
+    // The stock player has no fixed #stage; constrain its direct canvas/UI to
+    // the same left-side viewport while the right tool column is open.
+    if(!document.querySelector('#stage'))for(const element of document.querySelectorAll('body > #game, body > #ui-layer')){
+      element.style.right=reserved?`${reserved}px`:'';
+      element.style.width=reserved?'auto':'';
+    }
+    requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));
+  }
   function selectUiAt(event){
     const rect=document.querySelector('#game')?.getBoundingClientRect();if(!rect)return;
     const x=(event.clientX-rect.left)/rect.width*100,y=(1-(event.clientY-rect.top)/rect.height)*100;
-    const priority=row=>row.node.kind==='component'&&row.node.component==='ui.button'?0:row.node.kind==='button'?1:row.node.kind==='text'?2:row.node.kind==='image'?3:4;
+    const priority=row=>row.node.kind==='component'&&row.node.component==='ui.button'?0:(row.node.kind==='button'||row.node.kind==='combobox')?1:row.node.kind==='slider'?2:row.node.kind==='text'?3:row.node.kind==='image'?4:5;
     const hit=uiNodes.filter(row=>row.rect&&x>=row.rect.x&&x<=row.rect.x+row.rect.width&&y>=row.rect.y&&y<=row.rect.y+row.rect.height).sort((a,b)=>priority(a)-priority(b)||a.rect.width*a.rect.height-b.rect.width*b.rect.height||b.order-a.order)[0];
     if(!hit){status.textContent='這個位置沒有 UI 節點';return;}
     selectedUi=hit.node.id;active='hierarchy';filter='';status.textContent=`已選取 ${hit.node.kind} · ${hit.node.id}；可繼續點畫面選其他元件`;
     setPickMode(true);refresh(true);
   }
-  function setOpen(value){open=value;panel.hidden=!open;root.querySelector('.dev-launch').setAttribute('aria-expanded',String(open));setPickMode(open&&active==='hierarchy');if(open)refresh(true);}
+  function setOpen(value){open=value;panel.hidden=!open;root.querySelector('.dev-launch').setAttribute('aria-expanded',String(open));updateReservedSpace();if(open)setPickMode(active==='hierarchy');else clearUiSelection();if(open)refresh(true);}
   root.querySelector('.dev-launch').onclick=()=>setOpen(!open);root.querySelector('.dev-close').onclick=()=>setOpen(false);
   root.querySelector('[data-method="pause"]').onclick=async event=>{const button=event.currentTarget;if(pausePending)return;pausePending=true;button.disabled=true;try{const result=await api.request({method:'pause',paused:!paused});if(result.ok){paused=result.value.paused;status.textContent=paused?'模擬已暫停':'模擬繼續中';status.dataset.error='false';}else{status.textContent=result.diagnostics.map(d=>d.explanation).join('\n');status.dataset.error='true';}}finally{pausePending=false;button.disabled=false;refresh(true);}};
   root.querySelector('[data-method="step"]').onclick=()=>send({method:'step',count:1});
@@ -114,7 +134,7 @@ export function mountPanel(api){
     root.querySelector('[data-method="bloom"]').textContent=p.renderer?.bloom?'Bloom ON':'Bloom OFF';
     root.querySelector('.dev-summary').textContent=`${p.runtime.counts.entities} entities · Lua ${ms(p.runtime.phases.find(v=>v.name==='script')?.mean_ms)} · `+(p.host==='native'?`render ${ms(p.renderer?.render_ms)}`:`${p.renderer?.draw_calls??'—'} Three draws`);
     const tabs=[...builtin,...tools.tabs.map(t=>['game:'+t.id,t.label])],signature=JSON.stringify(tabs);
-    if(signature!==tabSignature){tabSignature=signature;nav.replaceChildren();for(const [id,label] of tabs){const button=el('button',label);button.dataset.tab=id;button.onclick=()=>{active=id;selected=null;filter='';setPickMode(open&&active==='hierarchy');refresh(true);};nav.append(button);}}
+    if(signature!==tabSignature){tabSignature=signature;nav.replaceChildren();for(const [id,label] of tabs){const button=el('button',label);button.dataset.tab=id;button.onclick=()=>{if(active==='hierarchy'&&id!=='hierarchy')clearUiSelection();active=id;selected=null;filter='';setPickMode(open&&active==='hierarchy');refresh(true);};nav.append(button);}}
     for(const button of nav.children)button.setAttribute('aria-current',String(button.dataset.tab===active));
     const method=active==='tools'||active.startsWith('game:')?'tools.list':active;
     const response=await api.request({method});if(generation!==refreshGeneration||!open)return; if(!response.ok){status.textContent=JSON.stringify(response.diagnostics);return;}
@@ -126,20 +146,27 @@ export function mountPanel(api){
     if(method==='tools.list'){renderTools(value);return;}
     if(method==='hierarchy'){
       const entities=Array.isArray(value.entities)?value.entities:Object.values(value.entities??{});
-      const controls=el('div',null,'dev-hierarchy-controls'),input=document.createElement('input');input.placeholder='搜尋 ID、文字、元件、動作或資產';input.className='dev-filter';input.setAttribute('aria-label','搜尋 Hierarchy 節點');input.value=filter;input.oninput=async()=>{filter=input.value;await refresh(true);const next=body.querySelector('.dev-filter');next?.focus();next?.setSelectionRange(filter.length,filter.length);};controls.append(input,el('p','左鍵選取節點；右鍵複製路徑。點遊戲畫面選元件時不會執行遊戲操作。','dev-hierarchy-hint'));body.append(controls);
-      const entityGroup=el('details',null,'dev-hierarchy-section');entityGroup.open=true;entityGroup.append(el('summary',`場景物件 · ${entities.length}`));
+      const controls=el('div',null,'dev-hierarchy-controls'),input=document.createElement('input');input.placeholder='搜尋 ID、文字、元件、動作或資產';input.className='dev-filter';input.setAttribute('aria-label','搜尋 Hierarchy 節點');input.value=filter;input.oninput=async()=>{filter=input.value;await refresh(true);const next=body.querySelector('.dev-filter');next?.focus();next?.setSelectionRange(filter.length,filter.length);};controls.append(input,el('p','左鍵選取節點；右鍵選取並複製元件 ID。點遊戲畫面選元件時不會執行遊戲操作。','dev-hierarchy-hint'));body.append(controls);
+      const hierarchy=el('details',null,'dev-hierarchy-root');hierarchy.open=true;hierarchy.append(el('summary','遊戲場景'));
       for(const entity of entities.filter(e=>String(e.id).toLowerCase().includes(filter.toLowerCase()))){
-        const row=el('div',null,'dev-tree-row'),button=el('button',String(entity.id),'dev-tree-node');button.dataset.nodeId=String(entity.id);button.style.setProperty('--depth','0');button.title='右鍵複製場景物件路徑';button.setAttribute('aria-pressed',String(selected===entity.id));button.onclick=()=>{selected=entity.id;selectedUi=null;outline.hidden=true;status.textContent=`已選取場景物件 · ${entity.id}`;status.dataset.error='false';refresh(true);};button.oncontextmenu=event=>{event.preventDefault();void copyPath(`場景物件路徑：scene.entities[${JSON.stringify(String(entity.id))}]\n物件 ID：${entity.id}`,'場景物件路徑');};
-        const components=Object.keys(entity).filter(key=>key!=='id');row.append(button,el('small',components.join(' · ')||'無元件'));entityGroup.append(row);
+        const row=el('div',null,'dev-tree-row'),kind=el('span','3D','dev-node-kind'),button=el('button',String(entity.id),'dev-tree-node');row.style.setProperty('--depth','0');row.dataset.depth='0';row.dataset.last='true';button.dataset.nodeId=String(entity.id);button.title='右鍵選取並複製場景物件 ID';button.setAttribute('aria-pressed',String(selected===entity.id));button.onclick=()=>{selected=entity.id;selectedUi=null;outline.hidden=true;status.textContent=`已選取場景物件 · ${entity.id}`;status.dataset.error='false';refresh(true);};button.oncontextmenu=event=>{event.preventDefault();selected=entity.id;selectedUi=null;outline.hidden=true;void copyText(String(entity.id),'場景物件 ID');refresh(true);};
+        const components=Object.keys(entity).filter(key=>key!=='id');row.append(kind,button,el('small',components.join(' · ')||'無元件'));hierarchy.append(row);
       }
-      if(selected){const entity=entities.find(e=>String(e.id)===selected);const detail=el('details',null,'dev-selection-detail');detail.open=true;detail.append(el('summary',`物件詳細 · ${selected}`));if(entity){const facts=el('dl',null,'dev-facts');for(const key of Object.keys(entity).filter(key=>key!=='id')){facts.append(el('dt',key),el('dd',JSON.stringify(entity[key])));}detail.append(facts,json(entity));}else detail.append(el('p','物件已離開場景。'));entityGroup.append(detail);}
-      body.append(entityGroup);
-      uiNodes=indexUi(value.ui);const visibleNodes=uiNodes.filter(row=>{const n=row.node,context=componentContext(row);const haystack=[n.id,n.kind,n.component,n.text,n.action,n.asset,n.alt,nodeLabel(n,row),context?.label,context?.action,...(context?.assets??[])].filter(Boolean).join(' ').toLowerCase();return haystack.includes(filter.toLowerCase());});
-      const uiGroup=el('details',null,'dev-hierarchy-section');uiGroup.open=true;uiGroup.append(el('summary',`介面節點 · ${uiNodes.length}`));
-      if(!value.ui)uiGroup.append(el('p','目前畫面沒有 UI 節點。','dev-empty'));
-      for(const row of visibleNodes){const node=row.node,line=el('div',null,'dev-tree-row');line.style.setProperty('--depth',String(Math.min(row.depth,12)));line.dataset.depth=String(Math.min(row.depth,12));line.dataset.last=String(row.isLast);for(let level=0;level<row.ancestorRails.length;level++)if(row.ancestorRails[level]){const rail=el('i',null,'dev-tree-rail');rail.setAttribute('aria-hidden','true');rail.style.setProperty('--guide-level',String(level));line.append(rail);}if(row.depth>0){const branch=el('i',null,'dev-tree-branch');branch.setAttribute('aria-hidden','true');line.append(branch);}const kind=el('span',node.kind.toUpperCase(),'dev-node-kind');const button=el('button',nodeLabel(node,row),'dev-tree-node');button.dataset.nodeId=node.id;button.title='右鍵複製 UI 元件路徑與用途';button.setAttribute('aria-pressed',String(selectedUi===node.id));button.onclick=()=>{selectedUi=node.id;selected=null;positionOverlay(row);status.textContent=`已選取 ${node.kind} · ${node.id}；可繼續點畫面選其他元件`;status.dataset.error='false';refresh(true);};button.oncontextmenu=event=>{event.preventDefault();selectedUi=node.id;selected=null;positionOverlay(row);void copyPath(uiLocator(row),'UI 元件路徑');refresh(true);};line.append(kind,button);uiGroup.append(line);}
-      if(selectedUi){const row=uiNodes.find(entry=>entry.node.id===selectedUi);positionOverlay(row);const detail=el('details',null,'dev-selection-detail');detail.open=true;detail.append(el('summary',`節點詳細 · ${selectedUi}`));if(row){const n=row.node,context=componentContext(row),facts=el('dl',null,'dev-facts');for(const [label,value] of [['類型',n.kind],['名稱',n.component??n.id],['父節點',row.parent??'screen root'],['階層路徑',row.sourcePath],['位置與尺寸',row.rect?`x ${row.rect.x.toFixed(2)}% · y ${row.rect.y.toFixed(2)}% · 寬 ${row.rect.width.toFixed(2)}% · 高 ${row.rect.height.toFixed(2)}%`:'沒有畫面範圍'],['顯示文字',n.text],['動作',n.action],['資產',n.asset],['替代文字',n.alt],['所在按鈕',context?.label],['按鈕動作',context?.action],['按鈕底圖',context?.assets.join(', ')]] )if(value!=null&&value!=='')facts.append(el('dt',label),el('dd',String(value)));const copyButton=el('button','複製路徑與用途','dev-copy-path');copyButton.onclick=()=>copyPath(uiLocator(row),'UI 元件定位資料');const raw=el('details');raw.append(el('summary','原始節點資料'),json(n));detail.append(facts,copyButton,raw);}else detail.append(el('p','節點已從目前畫面移除。'));uiGroup.append(detail);}
-      body.append(uiGroup);positionPicker();if(selectedUi)body.querySelectorAll('.dev-tree-node').forEach(button=>{if(button.dataset.nodeId===selectedUi)button.scrollIntoView({block:'nearest'});});return;
+      if(selected){const entity=entities.find(e=>String(e.id)===selected);const detail=el('details',null,'dev-selection-detail');detail.open=true;detail.append(el('summary',`物件詳細 · ${selected}`));if(entity){const facts=el('dl',null,'dev-facts');for(const key of Object.keys(entity).filter(key=>key!=='id')){facts.append(el('dt',key),el('dd',JSON.stringify(entity[key])));}detail.append(facts,json(entity));}else detail.append(el('p','物件已離開場景。'));hierarchy.append(detail);}
+      uiNodes=indexUi(value.ui);const visibleNodes=uiNodes.filter(row=>{const n=row.node,context=componentContext(row);const haystack=[n.id,n.kind,n.component,n.text,n.action,n.asset,n.alt,nodeLabel(n,row),context?.label,context?.action,...(context?.assets??[])].filter(Boolean).join(' ').toLowerCase();const matches=haystack.includes(filter.toLowerCase());const hiddenByParent=!filter&&row.ancestorSources.some(path=>collapsedUi.has(path));return matches&&!hiddenByParent;});
+      hierarchy.querySelector('summary').textContent=`遊戲場景 · ${entities.length} 個 3D 物件 · ${uiNodes.length} 個介面節點`;
+      if(!value.ui)hierarchy.append(el('p','目前畫面沒有 UI 節點。','dev-empty'));
+      for(const row of visibleNodes){
+        const node=row.node,line=el('div',null,'dev-tree-row');
+        line.style.setProperty('--depth',String(Math.min(row.depth,12)));line.dataset.depth=String(Math.min(row.depth,12));line.dataset.last=String(row.isLast);
+        for(let level=0;level<row.ancestorRails.length;level++)if(row.ancestorRails[level]){const rail=el('i',null,'dev-tree-rail');rail.setAttribute('aria-hidden','true');rail.style.setProperty('--guide-level',String(level));line.append(rail);}
+        if(row.depth>0){const branch=el('i',null,'dev-tree-branch');branch.setAttribute('aria-hidden','true');line.append(branch);}
+        if(row.hasChildren){const collapsed=collapsedUi.has(row.sourcePath),toggle=el('button',collapsed?'▸':'▾','dev-tree-toggle');toggle.type='button';toggle.setAttribute('aria-expanded',String(!collapsed));toggle.setAttribute('aria-label',collapsed?'展開子節點':'收合子節點');toggle.title=collapsed?'展開子節點':'收合子節點';toggle.onclick=event=>{event.stopPropagation();toggleUiRow(row);};line.append(toggle);}
+        else{const spacer=el('span',' ','dev-tree-toggle dev-tree-toggle-spacer');spacer.setAttribute('aria-hidden','true');line.append(spacer);}
+        const kind=el('span',node.kind.toUpperCase(),'dev-node-kind'),button=el('button',nodeLabel(node,row),'dev-tree-node');button.dataset.nodeId=node.id;button.title='右鍵選取並複製元件 ID';button.setAttribute('aria-pressed',String(selectedUi===node.id));button.onclick=()=>{selectedUi=node.id;selected=null;positionOverlay(row);status.textContent=`已選取 ${node.kind} · ${node.id}；可繼續點畫面選其他元件`;status.dataset.error='false';refresh(true);};button.oncontextmenu=event=>{event.preventDefault();selectedUi=node.id;selected=null;positionOverlay(row);void copyText(String(node.id),'UI 元件 ID');refresh(true);};line.append(kind,button);hierarchy.append(line);
+      }
+      if(selectedUi){const row=uiNodes.find(entry=>entry.node.id===selectedUi);positionOverlay(row);const detail=el('details',null,'dev-selection-detail');detail.open=true;detail.append(el('summary',`節點詳細 · ${selectedUi}`));if(row){const n=row.node,context=componentContext(row),facts=el('dl',null,'dev-facts');for(const [label,value] of [['類型',n.kind],['名稱',n.component??n.id],['父節點',row.parent??'screen root'],['階層路徑',row.sourcePath],['位置與尺寸',row.rect?`x ${row.rect.x.toFixed(2)}% · y ${row.rect.y.toFixed(2)}% · 寬 ${row.rect.width.toFixed(2)}% · 高 ${row.rect.height.toFixed(2)}%`:'沒有畫面範圍'],['顯示文字',n.text],['動作',n.action],['展開',n.expanded],['資產',n.asset],['替代文字',n.alt],['所在按鈕',context?.label],['按鈕動作',context?.action],['按鈕底圖',context?.assets.join(', ')]] )if(value!=null&&value!=='')facts.append(el('dt',label),el('dd',String(value)));const copyButton=el('button','複製路徑與用途','dev-copy-path');copyButton.onclick=()=>copyText(uiLocator(row),'UI 元件定位資料');const raw=el('details');raw.append(el('summary','原始節點資料'),json(n));detail.append(facts,copyButton,raw);}else detail.append(el('p','節點已從目前畫面移除。'));hierarchy.append(detail);}
+      body.append(hierarchy);positionPicker();if(selectedUi)body.querySelectorAll('.dev-tree-node').forEach(button=>{if(button.dataset.nodeId===selectedUi)button.scrollIntoView({block:'nearest'});});return;
     }
     if(method==='console'){
       const rows=[...value.game.map(v=>({level:'game',message:v.details?.message??JSON.stringify(v.details),time:'frame '+v.frame})),...value.browser.map(v=>({...v,time:Math.round(v.time_ms)+' ms'}))];
@@ -179,5 +206,8 @@ export function mountPanel(api){
     }
     if(method==='journal'){if(!value.events.length)empty('操作後會記錄方法、參數、frame 與結果。');for(const event of [...value.events].reverse()){const row=el('div',null,'dev-log');row.dataset.level=event.ok?'info':'error';row.append(el('strong',`#${event.sequence} · frame ${event.frame} · ${event.ok?'成功':'失敗'}`),json(event.request));if(!event.ok)row.append(json(event.diagnostics));body.append(row);}}
   }
+  if(typeof ResizeObserver==='function')new ResizeObserver(updateReservedSpace).observe(panel);
+  window.addEventListener('resize',updateReservedSpace);
+  updateReservedSpace();
   refresh();setInterval(()=>refresh(),500);
 }

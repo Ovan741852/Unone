@@ -1,7 +1,11 @@
 // One desktop design space; the complete scene/UI/focus surface scales together.
 export const DESKTOP_VIEWPORT={width:1920,height:1080};
 export function createLandscapeViewport(canvas){
- function resize(){document.documentElement.style.setProperty('--desktop-scale',Math.min(innerWidth/1920,innerHeight/1080));}
+ function resize(){
+  const reserved=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--unone-dev-reserved-right'))||0;
+  const available=Math.max(320,innerWidth-reserved);
+  document.documentElement.style.setProperty('--desktop-scale',Math.min(available/1920,innerHeight/1080));
+ }
  resize();window.addEventListener('resize',resize);
  function toLocal({clientX,clientY}){
   const r=canvas.getBoundingClientRect(),x=(clientX-r.left)/r.width,y=(clientY-r.top)/r.height;

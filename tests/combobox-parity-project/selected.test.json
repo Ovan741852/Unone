@@ -1,0 +1,32 @@
+{
+  "name": "selected",
+  "frames": 3,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Toggle": true
+      }
+    },
+    {},
+    {
+      "actions": {
+        "SelectLow": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "expanded",
+        "equals": false
+      }
+    },
+    {
+      "observation": {
+        "key": "selected",
+        "equals": "Low"
+      }
+    }
+  ]
+}

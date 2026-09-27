@@ -1,0 +1,26 @@
+{
+  "name": "open",
+  "frames": 1,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Toggle": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "expanded",
+        "equals": true
+      }
+    },
+    {
+      "observation": {
+        "key": "selected",
+        "equals": "High"
+      }
+    }
+  ]
+}

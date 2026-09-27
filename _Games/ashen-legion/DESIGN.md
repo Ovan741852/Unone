@@ -1,5 +1,5 @@
 ---
-name: "森林領主 · 精細遊戲介面"
+name: "是的，領主大人 · 精細遊戲介面"
 description: "以榛姨與已核准商店素材為基準的森林手繪 UI 規格"
 colors:
   scene-ink: "#0a1712"
@@ -13,7 +13,7 @@ rounded:
   focus-outline: "4px"
 ---
 
-# Design System: 森林領主
+# Design System: 是的，領主大人
 
 ## Overview
 
@@ -48,13 +48,15 @@ Key Characteristics:
 
 正式 Canvas 與文字量測使用同一字型堆疊，見前言 `typography.body`。現況依賴 Windows 微軟正黑體與系統 fallback；跨裝置完全一致仍需有授權的字型檔，尚未完成。
 
-固定 1920×1080 設計像素：商店正文 22px、名稱／價格 28px、操作 24px；全頁既有驗收底線仍為輔助 14px、主要 16px。`presentation/adaptive-ui.mjs` 保留相容檔名，但不再依視窗改字級或重排。
+全遊戲使用 `presentation/adaptive-ui.mjs` 的共用語意字級：展示標題 56px、頁標題 34px、按鈕 24px、強調文字 24px、數值 28px、正文 22px、輔助文字 20px、獎賞數字 34px，皆以 1920×1080 設計像素為基準。空間不足時可在該角色的最小字級內縮小；不同按鈕的命中區高度不會改變字級。正式 Canvas renderer 將字級隨整個固定畫面縮放，只有文字放不進指定區域時才再收小。
 
 名稱單行，太長可省略但需有完整詳情；卡面保留一句核心效果，最多兩行，整體縮放時也不移除。完整數值、發動條件與限制在詳情。價格與 `12`、`30%` 等連續數值不要拆散。以實際字形量測爆框，不靠字數估算或裁切掩蓋。
 
 ## Layout
 
 正式座標使用 100×100 正規化設計空間，再轉成畫布像素。原始節點是底部起算，UI 組裝 helper 接受頂部起算；寫新轉換時不可混用。邊距與字級需分清 units 與 CSS px。
+
+解析度適配使用 [AI 排版契約](design-v1/AI-LAYOUT-CONTRACT.md)：AI 先依語意、任務、閱讀順序與安全邊界決定 Region／Group／Leaf，再輸出一份畫面配置。Stage 只負責固定比例縮放，runtime 只套用 AI 已解析的結果並驗證 containment、重疊、爆框與命中區；runtime 不從像素距離猜群組，也不把單一遊戲的座標規則硬編成引擎能力。現行主選單的意圖是 `menu_left_panel`：`menu_brand` 將 Logo 與副標視為同一品牌群組，`menu_actions` 只包含三顆操作按鈕，兩組共享左側安全軸。
 
 商店主視窗四周保留背景，不滿版；左側商人、右側四卡水平排列、底部獨立操作列，點卡開完整詳情。精確數值與 `s1…s8` 間距表只在 [商店詳細規格](design-v1/UI-DESIGN-GUIDELINES-20260919.md)維護。
 
