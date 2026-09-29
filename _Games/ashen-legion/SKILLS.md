@@ -1,4 +1,4 @@
-> 最新版本：參考 `RUNTIME-STATUS.md`。下方保留初版技能紀錄；目前已新增裝備／附魔派兵加價、倍率加算、反彈／壽命／速度／連殺與副效果。任何破防均可能抽空，不存在必中保底。
+> 文件狀態：歷史快照，**不是現行數值或技能總數的來源**。`RUNTIME-STATUS.md`、`design-v1/BUILDS-V2.md`、本頁內文年代較早，曾記錄不同版本的派兵費、穿透與技能數。現行兵種／軍備基準以 `main.luau`、`gameplay/armory-loadout.luau` 與 [ARMORY-V1.md](design-v1/ARMORY-V1.md) 為準；跨技能組合現況見 [SKILL-SYSTEM-AUDIT-20260929.md](design-v1/SKILL-SYSTEM-AUDIT-20260929.md)。
 
 # 部隊技能組合
 
