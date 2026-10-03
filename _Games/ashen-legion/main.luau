@@ -1,6 +1,6 @@
 --!strict
 -- All economy, roguelike choices, movement, damage and lotteries run in Unone Luau.
-type SkillSource = {id: string, stacks: number?}
+type SkillSource = {id: string, stacks: number?, gearLevel: number?}
 type Item = {id: number, skill: string, enchant: string?, slot: number, paid: number, [string]: any}
 type Curse = {kind: number, remaining: number}
 type Choice = {id: string, name: string, type: string, desc: string, apply: () -> ()}
@@ -15,9 +15,11 @@ local kinds={"sword","spear","cavalry"}
 local baseCosts={8,20,40};local baseDamage={24,48,90}
 -- Trial economy: apply to the complete deployment quote, including equipment.
 -- These gameplay parameters never live in the renderer or the engine.
-local economyTuning={version="2026-09-12-nearwin-v1",deployScale=.5,awardScale=.5,nearBreak=.7}
+local economyTuning={version="2026-09-27-score-clear-v1",deployScale=.5,awardScale=.5,nearBreak=.7,startingCoins=320,crystalGoldRate=6,fastClearSeconds=60,fastClearCrystalBonus=6,scoreBase=900,scoreStep=240}
 local baseAwardChances={.65,.65,.55,.50,.45}
+local killScores={12,22,80,150,420}
 local baseLife={5,5,8}
+local baseSpeed={8,8,16}
 local WALL_X,WALL_Z=12.5,12.5
 local chapters={"苔光林口","菇冠小徑","橡木渡溪","古榕回廊","琥珀石庭","冠角聖林","森林王座"}
 local floor,min,max,sin,cos,sqrt,abs=math.floor,math.min,math.max,math.sin,math.cos,math.sqrt,math.abs
@@ -99,7 +101,12 @@ local function wornSources(k:number,replacement:Item?): {SkillSource}
  local list:{SkillSource}={}
  for slot,id in ipairs((S.worn and S.worn[k] or {}) :: {number})do
   local item=replacement and replacement.slot==slot and replacement or itemById(id)
-  if item then table.insert(list,{id=item.skill});if item.enchant then table.insert(list,{id=item.enchant})end end
+  if item then
+   -- A forged item carries its tier into the declarative skill source. The
+   -- combat layer applies the per-skill tier delta when a troop is deployed.
+   table.insert(list,{id=item.skill,gearLevel=max(0,(item.level or 1)-1)})
+   if item.enchant then table.insert(list,{id=item.enchant})end
+  end
  end
  return list
 end
@@ -113,7 +120,11 @@ end
 local function costs(k:number,replacement:Item?)
  local extra=3*((S.equipment and S.equipment[k] or 1)-1)+(S.runes and S.runes[k]~=0 and 2 or 0)
  for _,source in ipairs((S.skillSources and S.skillSources[k] or {}) :: {SkillSource})do extra+=(sourcePrices[source.id] or 0)*(source.stacks or 1)end
- for _,source in ipairs(wornSources(k,replacement))do extra+=sourcePrices[source.id] or 0 end
+ for _,source in ipairs(wornSources(k,replacement))do
+  extra+=sourcePrices[source.id] or 0
+  -- Higher-tier gear is stronger, so its deployment surcharge rises gently.
+  extra+=(sourcePrices[source.id] or 0)*.5*(source.gearLevel or 0)
+ end
  local penalty=0;for _,curse in ipairs((S.curses or {}) :: {Curse})do if curse.kind==1 then penalty+=.15 end end
  local rescue=S.coins and S.coins<80 and S.recruitUses and S.recruitUses[S.seat]<3 and sourceCount(k,"recruit",replacement)>0
  local standard=max(2,floor((baseCosts[k]+extra)*(1-S.discount)*(1+penalty)*(rescue and .5 or 1)))
@@ -121,6 +132,12 @@ local function costs(k:number,replacement:Item?)
 end
 local function changeGold(playerId:number,amount:number)
  if playerId==S.seat then S.coins+=amount else S.playerGold[playerId]+=amount end
+end
+local function roundStartingCoins():number
+ return economyTuning.startingCoins+(S.startingCoinsBonus or 0)
+end
+local function crystalGoldRate():number
+ return economyTuning.crystalGoldRate+(S.crystalGoldRateBonus or 0)
 end
 -- Skill sources are declarative: innate, equipment and rune sources compose
 -- identically. Recompose on deployment so later equipment cannot alter a live troop.
@@ -202,12 +219,34 @@ local innateSkills:{{SkillSource}}={{{id="critical"}},{{id="landing_spin"}},{{id
 table.insert(modifierKeys,"legacyGift")
 table.insert(modifierKeys,"guardBequest")
 for _,key in ipairs({"comradeOath","resonantDebt","contactMine","stepOrb","gravityLaw","quickChant","overloadScript","stormPayload","cinderSeal","chainFuse","thunderFan","echoBlade","starfall","soulReturn","plunder","firstborn","marchCapacitor","delayedBloom","thirdPulse","battleElegy","graveBloom","lastEcho","necromancer","flameCloak","phoenixFire","plagueVial","emberTrail","slickOil","rainStrike","stormTouch","oilLegacy"})do table.insert(modifierKeys,key)end
+-- Equipment tier deltas are intentionally data-driven. A tier-2/3 item keeps
+-- the same skill identity while improving its signature number.
+local gearUpgradeBonuses:any={
+ critical={critChance=.05},pierce={pierce=1},landing_spin={spinRadius=.35,spinDamage=.18,flightSpeed=1.5},
+ lightning={lightning=.12},longlife={lifeBonus=.10},haste={speedBonus=.10},heavy={damageBonus=.16,speedBonus=-.04},
+ bounce_power={bouncePower=.08},bounce_life={bounceLife=.12},momentum={momentum=.18},shock={shock=.08},
+ crit_power={critAdd=.12},finisher={finisher=.08},ember_burst={deathBurst=.10},king_hunter={kingDamage=.08},
+ frost_touch={frost=.35},frenzy={frenzy=.18},last_stand={lastStand=.12},heat={heat=.03},distance={distance=.10},
+ third_crit={thirdCrit=1},expire_burst={expireBurst=.10},rebound_charge={reboundCharge=.10},shatter={shatter=.12},
+ ricochet_precision={bounceCrit=.08},hunter_vigor={killLife=.10},piercing_wave={pierceWave=.08},slow_force={slowForce=.10},
+ spin_master={spinMaster=.12},wall_quake={wallQuake=.10},short_fuse={damageBonus=.18,lifeBonus=-.06},wide_blade={areaBonus=.10,areaPenalty=.03},
+ hit_echo={hitEcho=.08},fracture={fracture=.10},solo_hunt={soloHunt=.10},crowd_ring={crowdRing=.10},recruit={recruit=1},
+ rally={rally=.10},rapid={rapid=.10},solitary={solitary=.10},showdown={showdown=.10},sharp={damageBonus=.08},giant={damageBonus=.12},
+ double_pierce={pierce=1},deadly={critAdd=.20},flame_cloak={flameCloak=1},phoenix_fire={phoenixFire=1},plague_vial={plagueVial=1},
+ comrade_oath={comradeOath=1},resonant_debt={resonantDebt=.10},contact_mine={contactMine=1},step_orb={stepOrb=1},gravity_law={gravityLaw=1},
+ quick_chant={quickChant=.10},overload_script={overloadScript=.10},storm_payload={stormPayload=.10},cinder_seal={cinderSeal=.10},
+ chain_fuse={chainFuse=1},thunder_fan={thunderFan=1},echo_blade={echoBlade=.10},starfall={starfall=1},soul_return={soulReturn=.10},
+ plunder={plunder=.10},firstborn={firstborn=.10},march_capacitor={marchCapacitor=.10},delayed_bloom={delayedBloom=.10},third_pulse={thirdPulse=1},
+ battle_elegy={battleElegy=.10},grave_bloom={graveBloom=.10},last_echo={lastEcho=.10},necromancer={necromancer=.10},ember_trail={emberTrail=1},
+ slick_oil={slickOil=.10},rain_strike={rainStrike=.10},storm_touch={stormTouch=.10},oil_legacy={oilLegacy=.10},legacy_gift={legacyGift=1},
+ guard_bequest={guardBequest=.10}
+}
 local function composeSkills(k:number)
  local result:any={awardShifts={},vfxSkills={},_vfxSeen={},pierce=0,critChance=0,critMultiplier=1,landingSpin=false,spinRadius=0,spinDuration=0,spinDamage=0,flightSpeed=0}
  for _,key in ipairs(modifierKeys)do result[key]=0 end
-  local function add(source:any)
-   local definition=skillDefinitions[source.id];assert(definition,"Unknown skill: "..source.id)
-   if not result._vfxSeen[source.id] then result._vfxSeen[source.id]=true;table.insert(result.vfxSkills,source.id)end
+ local function add(source:any)
+  local definition=skillDefinitions[source.id];assert(definition,"Unknown skill: "..source.id)
+  if not result._vfxSeen[source.id] then result._vfxSeen[source.id]=true;table.insert(result.vfxSkills,source.id)end
   local stacks=source.stacks or 1
   if definition.awardShift then local shift=definition.awardShift;table.insert(result.awardShifts,{target=shift.target,delta=shift.delta*stacks})end
   for _,key in ipairs(modifierKeys)do result[key]+=(definition[key] or 0)*stacks end
@@ -221,6 +260,23 @@ local function composeSkills(k:number)
    result.spinDuration=max(result.spinDuration,definition.spinDuration)
    result.spinDamage=max(result.spinDamage,definition.spinDamage)
    result.flightSpeed=max(result.flightSpeed,definition.flightSpeed)
+  end
+  -- Forged tiers are explicit data, so new equipment skills can opt in with
+  -- one small entry instead of scattering upgrade rules through combat code.
+  local tierBonus=source.gearLevel or 0
+  if tierBonus>0 then
+   local bonus=(gearUpgradeBonuses :: any)[source.id]
+   if bonus then
+    for key,value in pairs(bonus)do
+     if key=="pierce" then result.pierce+=value*tierBonus
+     elseif key=="critChance" then result.critChance+=value*tierBonus
+     elseif key=="spinRadius" then result.spinRadius+=value*tierBonus
+     elseif key=="spinDamage" then result.spinDamage+=value*tierBonus
+     elseif key=="spinDuration" then result.spinDuration+=value*tierBonus
+     elseif key=="flightSpeed" then result.flightSpeed+=value*tierBonus
+     elseif table.find(modifierKeys,key) then result[key]+=value*tierBonus end
+    end
+   end
   end
  end
  for _,source in ipairs(innateSkills[k])do add(source)end
@@ -260,7 +316,7 @@ local autoSpecies={
  {id="boar",name="獠牙搬木王",group="boss",label="小王"},
  {id="treant",name="花冠樹靈",group="boss",label="小王"},
  {id="elder",name="古榕守衛",group="boss",label="中王"},
- {id="stag",name="冠角白鹿",group="boss",label="大王 · 最後 30 秒"},
+ {id="stag",name="冠角白鹿",group="boss",label="大王 · 30 秒登場"},
  {id="beetle",name="聚寶甲蟲",group="special",label="共用獎池"},
  {id="wheel",name="金鈴狸",group="special",label="奇遇輪盤"},
 }
@@ -277,12 +333,13 @@ local function reset()
  if skillRuntime then skillRuntime:reset()end
  pendingProcs={}
  local nodes=town.nodes or {}
- local startingCoins=320
- S={phase="menu",round=1,coins=startingCoins,earned=0,spent=0,kills=0,breaks=0,seat=1,selected=1,time=180,roundDuration=180,paused=false,damage=1,discount=0,luck=0,radius=2.9,lifetime=1,equipment={1,1,1},runes={0,0,0},inventory={},offer={},message="",event=0,prize=0,prizeTier=0,lastMonster="",fired=0,won=false,aimX=0,aimZ=0}
+ local startingCoins=economyTuning.startingCoins
+ S={phase="menu",round=1,coins=startingCoins,earned=0,spent=0,kills=0,score=0,targetScore=0,breaks=0,seat=1,selected=1,time=economyTuning.fastClearSeconds,roundDuration=economyTuning.fastClearSeconds,paused=false,damage=1,discount=0,luck=0,radius=2.9,lifetime=1,equipment={1,1,1},runes={0,0,0},inventory={},offer={},message="",event=0,prize=0,prizeTier=0,lastMonster="",fired=0,won=false,aimX=0,aimZ=0}
  monsters={};troops={};effects={};cooldown=0
  S.refunded=0;S.roundRefund=0;S.returnedUnits=0;S.bounces=0;S.expired=0;S.contactDeaths=0
- S.crystalStart=18;S.crystals=S.crystalStart;S.crystalEarned=0;S.crystalSpent=0;S.crystalSold=0
- S.roundCrystalEarned=0;S.crystalProgress=0;S.roundCrystalBonus=0;S.lastCrystalGain=0
+ S.crystalStart=18;S.crystals=S.crystalStart;S.crystalEarned=0;S.crystalSpent=0;S.crystalSold=0;S.crystalExchanged=0
+ S.roundCrystalEarned=0;S.crystalProgress=0;S.roundCrystalBonus=0;S.roundSpeedClearBonus=0;S.speedClear=false;S.lastCrystalGain=0
+ S.startingCoinsBonus=0;S.crystalGoldRateBonus=0;S.crystalGoldRate=economyTuning.crystalGoldRate;S.roundStartCoins=startingCoins;S.roundStarted=false;S.goldIssued=startingCoins*4;S.goldDiscarded=0
  S.arenaHalfExtent=12.5;S.returnedTotal=0;S.lostPaid=0;S.resultElapsed=0;S.townStartMaterials=town.materials
  S.mapElapsed=0;S.mapDuration=1.5;S.mapMoving=false;S.mapFrom=0;S.mapPosition=0
  S.playerGold={startingCoins,startingCoins,startingCoins,startingCoins};S.lotteryMisses=0;S.lotteryResults={};S.poolContributed=0;S.poolPaidOut=0;S.procHits=0;S.streaks={{count=0,time=0},{count=0,time=0},{count=0,time=0},{count=0,time=0}}
@@ -294,10 +351,10 @@ local function reset()
  S.lockEnabled=false;S.autoEnabled=false
  coinsFX={};rewardEvents={};pointerHeld=false
  sparks={};fxSerial=0
- S.hordeCount=0;S.hordeNotice=0;S.hordeAdded=0;S.hordeAt=-1;S.runRecorded=false
+ S.hordeCount=0;S.hordeNotice=0;S.hordeAdded=0;S.hordeAt=-1;S.hordeNext=15;S.runRecorded=false
  S.specialSpawned=false;S.poolWinner=0
  S.runeOwned={{},{},{} };for k=1,3 do for i=1,#runeDefinitions do S.runeOwned[k][i]=false end end;S.balanceVersion=economyTuning.version;S.economyTuning=table.clone(economyTuning);S.awardChances={};for i,p in ipairs(baseAwardChances)do S.awardChances[i]=p*economyTuning.awardScale end;S.beetleAwardChance=.25*economyTuning.awardScale;S.items={};S.worn={{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};S.itemSerial=0;S.equipSlot=5
- S.tech={{},{},{}};S.potions={};S.curses={};S.curseRewards={0,0,0};S.shopSpent=0;S.sold=0;S.stock={};S.location="";S.enchantPending=nil
+ S.tech={{},{},{}};S.potions={};S.curses={};S.curseRewards={0,0,0};S.shopSpent=0;S.sold=0;S.stock={};S.location="";S.enchantPending=nil;S.forgeSelection={};S.forgeResult=""
  S.runeBag={};for i=1,#runeDefinitions do S.runeBag[i]=0 end;S.loadoutReturn="menu"
  S.pendingWheel={};S.chestCount=0;S.chests={};S.chestHold=0;S.chestResult=nil;S.hasteUntil=0;S.critUntil=0;S.roulette=nil;S.freeFired=0;S.wheelSpawned=false;S.playerBuffs={{haste=0,critical=0,pierce=0},{haste=0,critical=0,pierce=0},{haste=0,critical=0,pierce=0},{haste=0,critical=0,pierce=0}}
  S.recruitUses={0,0,0,0};S.roundSpent={0,0,0,0};S.rallyUsed={false,false,false,false};S.rallyUntil={0,0,0,0};S.skillTriggers={};S.vfx={};S.visualSerial=0;S.rankEconomy={{damage=0,attempts=0,earned=0},{damage=0,attempts=0,earned=0},{damage=0,attempts=0,earned=0},{damage=0,attempts=0,earned=0},{damage=0,attempts=0,earned=0}}
@@ -305,7 +362,8 @@ local function reset()
 end
 catalog={
  {id="edge",name="獵神之刃",type="裝備",desc="全軍傷害 +25%",apply=function()S.damage+=.25 end},
- {id="purse",name="渡魂者的贈禮",type="補給",desc="立即獲得 180 金幣",apply=function()S.coins+=180;S.earned+=180 end},
+ {id="purse",name="渡魂者的贈禮",type="經濟技能",desc="每回合起始金幣 +80",apply=function()S.startingCoinsBonus=min(240,S.startingCoinsBonus+80);S.coins+=80;S.goldIssued+=80 end},
+ {id="crystal_exchange",name="低息換金令",type="經濟技能",desc="每枚結晶換金 +4；本次遠征最多 +8",apply=function()S.crystalGoldRateBonus=min(8,S.crystalGoldRateBonus+4);S.crystalGoldRate=crystalGoldRate()end},
  {id="oath",name="軍團誓約",type="契約",desc="派兵費用降低 12%（最多 48%）",apply=function()S.discount=min(.48,S.discount+.12)end},
  {id="fortune",name="命運金枝",type="符文",desc="王的大獎機率 +8%（最多 +32%）",apply=function()S.luck=min(.32,S.luck+.08)end},
  {id="storm",name="風暴槍環",type="裝備",desc="全軍旋轉技能半徑 +0.8，傷害 +10%",apply=function()S.radius+=.8;S.damage+=.1 end},
@@ -439,9 +497,9 @@ local function canStoreItem()
  local stored=0;for _,item in ipairs(S.items)do if not equipped[item.id] then stored+=1 end end
  return stored<12
 end
-local function addItem(def:any,paid:number)
+local function addItem(def:any,paid:number,level:number?,enchant:string?)
  if not canStoreItem() then S.message="裝備庫已滿";return false end
- S.itemSerial+=1;table.insert(S.items,{id=S.itemSerial,name=def.name,slot=def.slot,skill=def.skill,paid=paid})
+ S.itemSerial+=1;table.insert(S.items,{id=S.itemSerial,name=def.name,slot=def.slot,skill=def.skill,paid=paid,level=level or 1,enchant=enchant})
  return true
 end
 local function pay(amount:number)
@@ -451,6 +509,64 @@ end
 local function payCrystals(amount:number)
  if S.crystals<amount then S.message="強化結晶不足：需要 "..amount;return false end
  S.crystals-=amount;S.crystalSpent+=amount;return true
+end
+local function itemEquipped(itemId:number):boolean
+ for _,worn in ipairs((S.worn or {}) :: {{number}})do for _,id in ipairs(worn)do if id==itemId then return true end end end
+ return false
+end
+local function forgeSelectedItems():{Item}
+ local selected:{Item}={}
+ for _,id in ipairs((S.forgeSelection or {}) :: {number})do local item=itemById(id);if item then table.insert(selected,item)end end
+ return selected
+end
+local function forgeHas(itemId:number):boolean
+ for _,id in ipairs((S.forgeSelection or {}) :: {number})do if id==itemId then return true end end
+ return false
+end
+local function forgeSelectionSummary():string
+ local selected=forgeSelectedItems();return #selected.." / 3 件已選"
+end
+local function forgeCanReroll():boolean
+ local selected=forgeSelectedItems();if #selected~=3 then return false end
+ for _,item in ipairs(selected)do if itemEquipped(item.id)then return false end end
+ return true
+end
+local function forgeCanAscend():boolean
+ local selected=forgeSelectedItems();if #selected~=3 then return false end
+ local first=selected[1];if not first or (first.level or 1)>=3 then return false end
+ for i=2,3 do local item=selected[i];if itemEquipped(item.id)or item.name~=first.name or item.skill~=first.skill or (item.level or 1)~=(first.level or 1)then return false end end
+ return not itemEquipped(first.id)
+end
+local function forgeRemoveSelected(selected:{Item})
+ local ids:{[number]:boolean}={};for _,item in ipairs(selected)do ids[item.id]=true end
+ for index=#S.items,1,-1 do if ids[S.items[index].id] then table.remove(S.items,index)end end
+end
+local function forgeToggle(index:number)
+ local item=S.items[index]
+ if not item then return end
+ if itemEquipped(item.id)then S.message="已穿戴的裝備不能送進鐵匠鋪";return end
+ S.forgeSelection=S.forgeSelection or {}
+ for pos,id in ipairs(S.forgeSelection)do if id==item.id then table.remove(S.forgeSelection,pos);return end end
+ if #S.forgeSelection>=3 then S.message="最多選三件裝備";return end
+ table.insert(S.forgeSelection,item.id)
+end
+local function forgeAscend()
+ if not forgeCanAscend()then S.message="需要三件同名、同階且未穿戴的裝備";return end
+ local selected=forgeSelectedItems();local base=selected[1];local nextLevel=(base.level or 1)+1;local paid=0
+ for _,item in ipairs(selected)do paid+=item.paid or 0 end
+ forgeRemoveSelected(selected)
+ local def={name=base.name,slot=base.slot,skill=base.skill}
+ addItem(def,paid,nextLevel,base.enchant)
+ S.forgeSelection={};S.message=base.name.." 合成升階至 Lv."..nextLevel;S.forgeResult="ascend"
+end
+local function forgeReroll()
+ if not forgeCanReroll()then S.message="需要三件未穿戴的裝備";return end
+ local selected=forgeSelectedItems();local level=1;local paid=0
+ for _,item in ipairs(selected)do level=max(level,item.level or 1);paid+=item.paid or 0 end
+ local def=gearCatalog[1+floor(rng()*#gearCatalog)]
+ forgeRemoveSelected(selected)
+ addItem(def,paid,min(3,level))
+ S.forgeSelection={};S.message="三件裝備已重骰：獲得「"..def.name.." · Lv."..min(3,level).."」";S.forgeResult="reroll"
 end
 local function grantCrystals(amount:number)
  S.crystals+=amount;S.crystalEarned+=amount;S.lastCrystalGain=amount
@@ -469,7 +585,7 @@ end
 local function stockShop(keepRefresh:boolean?)
  if not keepRefresh then S.refreshCount=0 end
  S.refreshCost=2*((S.refreshCount or 0)+1)
- S.stock={};S.researchUsed=false;S.enchantUses=0;S.enchantPending=nil
+ S.stock={};S.researchUsed=false;S.enchantUses=0;S.enchantPending=nil;S.forgeSelection={};S.forgeResult=""
  if S.location=="potion" then
   for i,name in ipairs({"疾風藥水","續命藥水","召回藥水"})do table.insert(S.stock,{kind="potion",value=i,name=name,price=({32,48,40})[i]})end
  elseif S.location=="rune" then
@@ -488,7 +604,7 @@ local function stockShop(keepRefresh:boolean?)
  for _,item in ipairs(S.stock)do item.currency=(item.kind=="gear" or item.kind=="rune" or item.kind=="tech")and "crystal" or "gold" end
 end
 local locationEntries={}
-for _,entry in ipairs({{"market","裝備店","結晶買賣裝備；購入後放進背包"},{"potion","藥水攤","花金幣購買，最多攜帶兩瓶"},{"tech","科技研究","7 結晶研究隨機兵種能力；本局生效"},{"enchant","附魔坊","8 結晶試附魔，可保留原詞綴"},{"curse","詛咒契約","承受兩輪代價，之後獲得強化"},{"rune","符文店","結晶買賣符文；整備時再分配給部隊"}})do
+for _,entry in ipairs({{"market","裝備店","結晶買賣裝備；購入後放進背包"},{"forge","鐵匠鋪","三件同名裝備合成升階；任意三件裝備重骰一件"},{"potion","藥水攤","花金幣購買，最多攜帶兩瓶"},{"tech","科技研究","7 結晶研究隨機兵種能力；本局生效"},{"enchant","附魔坊","8 結晶試附魔，可保留原詞綴"},{"curse","詛咒契約","承受兩輪代價，之後獲得強化"},{"rune","符文店","結晶買賣符文；整備時再分配給部隊"}})do
  local id,name,description=entry[1],entry[2],entry[3]
  table.insert(catalog,{id=id,name=name,type="地點",desc=description,apply=function()S.location=id;S.phase="shop";S.shopVisits+=1;stockShop()end})
  locationEntries[#locationEntries+1]=#catalog
@@ -496,7 +612,7 @@ end
 local function offers()
  S.offer={};local pool={}
  for _,id in ipairs(locationEntries)do local place=catalog[id].id
-  if (place~="curse" or S.round<=5) and (place~="enchant" or #S.items>0) then table.insert(pool,id)end
+  if (place~="curse" or S.round<=5) and (place~="enchant" or #S.items>0) and (place~="forge" or #S.items>0) then table.insert(pool,id)end
  end
  while #S.offer<3 do table.insert(S.offer,table.remove(pool,1+floor(rng()*#pool)))end
 end
@@ -510,6 +626,14 @@ local function openLoadout():boolean
  return S.phase=="loadout"
 end
 local function travelToRound()
+ local firstRound=not S.roundStarted
+ if S.roundStarted then
+  S.playerGold[S.seat]=S.coins
+  local discarded=0;for _,gold in ipairs(S.playerGold)do discarded+=gold end
+  S.goldDiscarded+=discarded
+ end
+ local startingCoins=roundStartingCoins()
+ S.coins=startingCoins;S.roundStartCoins=startingCoins;S.playerGold={startingCoins,startingCoins,startingCoins,startingCoins};if not firstRound then S.goldIssued+=startingCoins*4 end;S.roundStarted=true
  S.phase="map";S.paused=false;S.mapMoving=true;S.mapElapsed=0;S.mapFrom=S.round-1;S.mapPosition=S.mapFrom;S.offer={}
 end
 local function addMonster(rank:number,x:number,z:number)
@@ -523,9 +647,9 @@ local function addMonster(rank:number,x:number,z:number)
 end
 local function beginBattle()
  if skillRuntime then skillRuntime:reset()end
- monsters={};troops={};effects={};S.roundDuration=S.round==7 and 240 or 180;S.time=S.roundDuration;S.roundSettled=false;S.roundWinner=nil;S.phase="battle";S.paused=false;S.message="";cooldown=0
+ monsters={};troops={};effects={};S.roundDuration=economyTuning.fastClearSeconds;S.time=S.roundDuration;S.battleSeconds=0;S.score=0;S.targetScore=economyTuning.scoreBase+(S.round-1)*economyTuning.scoreStep;S.roundSettled=false;S.roundWinner=nil;S.phase="battle";S.paused=false;S.message="";cooldown=0
  S.roundRefund=0;S.returnedUnits=0
- S.roundCrystalEarned=0;S.crystalProgress=0;S.roundCrystalBonus=0
+ S.roundCrystalEarned=0;S.crystalProgress=0;S.roundCrystalBonus=0;S.roundSpeedClearBonus=0;S.speedClear=false;S.crystalGoldRate=crystalGoldRate()
  S.targetId=0;S.targetName="";S.presentationDelay=0;S.roundOutro=nil;S.bossSpawned=false
  S.specialSpawned=false;S.wheelSpawned=false;S.recruitUses={0,0,0,0};S.roundSpent={0,0,0,0};S.rallyUsed={false,false,false,false};S.rallyUntil={0,0,0,0}
  -- Readable depth bands across the whole square: small creatures in front,
@@ -535,9 +659,9 @@ local function beginBattle()
   addMonster(i%4==0 and 2 or 1,-10+col*2.85+(rng()-.5)*.8,-9.5+row*5.4+(rng()-.5)*1.1)
  end
  addMonster(3,-6,-4);addMonster(3,6,-5);addMonster(4,0,-8)
- -- One optional surge per round, before the final boss window.
- S.hordeAt=rng()<.7 and (22+rng()*23) or -1
- S.hordeCount=0;S.hordeNotice=0;S.hordeAdded=0
+ -- Fixed beats: first horde at 15s, boss at 30s, second horde at 45s.
+ -- Later hordes repeat every 30s so an uncapped round still has pressure.
+ S.hordeAt=15;S.hordeNext=15;S.hordeCount=0;S.hordeNotice=0;S.hordeAdded=0
 end
 local function effect(x:number,z:number,kind:string,size:number?,direction:number?)
  effects[#effects+1]={x=x,z=z,kind=kind,age=0,size=size or 1,id=fxSerial+1,time=S.rewardClock,direction=direction}
@@ -580,9 +704,9 @@ local function win(tier:number?)
  -- Game-owned outro: payment/refunds happen once on the winning tick. No
  -- animation callback can pay, skip the ceremony or advance the expedition.
  S.phase="celebration";S.won=true;S.autoConfigOpen=false;S.fireRearm=true
- S.roundOutro={eventId=S.event,tier=tier or 3,amount=S.prize,elapsed=0,duration=tier==4 and 6.4 or 3.3,result=S.round==7 and "victory" or "clear"}
+ S.roundOutro={eventId=S.event,tier=tier or S.prizeTier or 1,amount=S.prize,elapsed=0,duration=tier==4 and 6.4 or 3.3,result=S.round==7 and "victory" or "clear"}
  S.presentationDelay=S.roundOutro.duration
- S.message=S.round==7 and "七輪遠征完成，森林回應了你的號令。" or "大王已開出大獎，下一片森林在等你。"
+ S.message=S.round==7 and "七輪遠征完成，森林回應了你的號令。" or "達成通關分數，下一片森林在等你。"
 end
 local function settleSurvivors()
  if skillRuntime then skillRuntime:clear("round_end")end
@@ -593,11 +717,14 @@ local function settleSurvivors()
   S.roundSettled=true
   if S.won then
    S.roundCrystalBonus=6+(S.round-1)*2;grantCrystals(S.roundCrystalBonus)
+   if S.battleSeconds<=economyTuning.fastClearSeconds then
+    S.speedClear=true;S.roundSpeedClearBonus=economyTuning.fastClearCrystalBonus+(S.round-1);grantCrystals(S.roundSpeedClearBonus)
+   end
    town.materials+=30+(S.round==7 and 90 or 0);town.gold=town.materials;town.bestRound=math.max(town.bestRound,S.round);queueChest(S.roundWinner or S.seat)
    for i=#S.curses,1,-1 do local curse=S.curses[i];curse.remaining-=1;if curse.remaining<=0 then S.curseRewards[curse.kind]+=1;table.remove(S.curses,i)end end
   elseif S.phase=="defeat" then
    -- Progress is earned from actual battle time, never from repeatedly opening menus.
-   town.materials+=min(20,floor((S.roundDuration-S.time)/9));town.gold=town.materials;town.bestRound=math.max(town.bestRound,S.round-1);S.message..=" 帶回城鎮建材。"
+   town.materials+=min(20,floor(S.battleSeconds/9));town.gold=town.materials;town.bestRound=math.max(town.bestRound,S.round-1);S.message..=" 帶回城鎮建材。"
   end
   persistProfiles()
  end
@@ -617,8 +744,14 @@ local function recordKill(t:any,m:any,kind:string?,reaction:boolean?)
   t.life+=extra*(t.lifeScale or 1);t.killLifeAdded=(t.killLifeAdded or 0)+extra
   if extra>0 then effect(t.x,t.z,"renew",.6)end
  end
- if t.skills.frenzy<=0 then return end
- local streak=S.streaks[t.playerId or S.seat];streak.count=min(15,streak.count+1);streak.time=2.5
+ local score=killScores[m.rank] or 10
+ if m.special=="beetle" then score=180 elseif m.special=="roulette" then score=90 end
+ score=floor(score*(1+(S.round-1)*.08))
+ S.score+=score;S.lastScoreGain=score
+ if S.score>=S.targetScore and S.phase=="battle" then S.roundWinner=t.playerId or S.seat;win(nil)end
+ if t.skills.frenzy>0 then
+  local streak=S.streaks[t.playerId or S.seat];streak.count=min(15,streak.count+1);streak.time=2.5
+ end
 end
 local function hit(m:any,amount:number,t:any,secondary:boolean?,damageType:string?,reaction:boolean?)
  if not m.alive or S.phase~="battle" then return end
@@ -640,7 +773,7 @@ local function hit(m:any,amount:number,t:any,secondary:boolean?,damageType:strin
    end
   end
   if S.rewardClock<S.rallyUntil[t.playerId or S.seat] then bonus+=.15 end
-  if S.time<=30 then bonus+=min(.75,t.skills.showdown)end
+  if S.bossSpawned then bonus+=min(.75,t.skills.showdown)end
   if inRunSurge and m.damage>=m.guard*.7 then bonus+=min(.6,t.skills.fracture)end
   if t.skills.soloHunt>0 then
    local alone=true;for _,other in ipairs(monsters)do if other.alive and other.id~=m.id and (other.x-m.x)^2+(other.z-m.z)^2<4 then alone=false;break end end
@@ -741,7 +874,7 @@ local function hit(m:any,amount:number,t:any,secondary:boolean?,damageType:strin
  end
  if #coinsFX>420 then for _=1,#coinsFX-420 do table.remove(coinsFX,1)end end
  effect(m.x,m.z,"jackpot",m.scale*2)
- if m.alive and (m.rank<=2 or tier>=3) then m.alive=false;S.kills+=1;recordKill(t,m,damageType,reaction);if m.rank==5 then S.roundWinner=winner;win(tier)end end
+ if m.alive and (m.rank<=2 or tier>=3) then m.alive=false;S.kills+=1;recordKill(t,m,damageType,reaction)end
 end
 -- BEGIN GENERATED SKILL RUNTIME
 -- Game-owned combinations: trigger recipes, payloads and source modifiers.
@@ -1854,7 +1987,7 @@ local function advanceWallCharge(t:any,dt:number)
  end
 end
 local function troopMovementSpeed(t:any,rush:number):number
- local speed=(t.k==3 and 24 or 8)*max(.25,1+t.skills.speedBonus+rush+(S.rewardClock<S.playerBuffs[t.playerId or S.seat].haste and .25 or 0))
+ local speed=baseSpeed[t.k]*max(.25,1+t.skills.speedBonus+rush+(S.rewardClock<S.playerBuffs[t.playerId or S.seat].haste and .25 or 0))
  if t.state=="wall_surge" and (t.wallSurgeRemaining or 0)>0 then speed*=t.wallSurgeSpeed or 1.7 end
  return speed
 end
@@ -1907,21 +2040,21 @@ local function updateCombat(dt:number)
  skillRuntime.composition:beginFrame(troops,monsters)
  S.battleSeconds+=dt;S.time=max(0,S.time-dt);cooldown=max(0,cooldown-dt)
  for _,streak in ipairs(S.streaks)do if streak.count>0 then streak.time-=dt;if streak.time<=0 then streak.count=max(0,streak.count-5);streak.time=1 end end end
- if not S.wheelSpawned and S.time<=S.roundDuration-80 and S.time>45 then
+ if not S.wheelSpawned and S.battleSeconds>=60 then
   S.wheelSpawned=true
   if rng()<.7 then
    addMonster(3,-6,0);local wheel=monsters[#monsters];wheel.special="roulette";wheel.skin="wheel";wheel.name="金鈴狸 · 奇遇轮盤";wheel.escapeAt=S.rewardClock+12;wheel.guard=70;wheel.scale=1.3
    effect(wheel.x,wheel.z,"spawn",1.3)
   end
  end
- if not S.specialSpawned and S.time<=S.roundDuration-45 then
+ if not S.specialSpawned and S.battleSeconds>=90 then
   S.specialSpawned=true;addMonster(4,0,-2)
   local beetle=monsters[#monsters];beetle.name="聚寶甲蟲";beetle.special="beetle";beetle.skin="beetle";beetle.poolGold=80;beetle.contributions={0,0,0,0};beetle.guard=120;beetle.scale=1.9
   effect(beetle.x,beetle.z,"spawn",2)
  end
  S.hordeNotice=max(0,S.hordeNotice-dt)
- if S.hordeAt>=0 and S.roundDuration-S.time>=S.hordeAt then
-  S.hordeAt=S.time>75 and S.roundDuration-S.time+25+rng()*15 or -1;S.hordeCount+=1;S.hordeNotice=3.5
+ if S.hordeNext and S.battleSeconds>=S.hordeNext then
+  S.hordeAt=S.hordeNext;S.hordeNext+=30;S.hordeCount+=1;S.hordeNotice=3.5
   local small=0;for _,m in ipairs(monsters)do if m.alive and m.rank<=2 then small+=1 end end
   S.hordeAdded=min(80,max(0,110-small))
   -- Spread a simultaneous wave across the whole hunting area, not one pile.
@@ -1932,7 +2065,7 @@ local function updateCombat(dt:number)
    effect(x,z,"summon",.45)
   end
  end
- if S.time<=30 and not S.bossSpawned then S.bossSpawned=true;addMonster(5,0,-1);effect(0,-1,"spawn",5)end
+ if S.battleSeconds>=30 and not S.bossSpawned then S.bossSpawned=true;addMonster(5,0,-1);effect(0,-1,"spawn",5)end
  for _,m in ipairs(monsters)do if m.alive then
   if m.escapeAt and S.rewardClock>=m.escapeAt then m.alive=false end
   m.slow=max(0,m.slow-dt);m.flash=max(0,m.flash-dt);m.turn-=dt
@@ -2013,14 +2146,13 @@ local function updateCombat(dt:number)
  if S.phase=="battle" then
   local small=0;for _,m in ipairs(monsters)do if m.alive and m.rank<=2 then small+=1 end end
   if small<32 and frame%45==0 then addMonster(rng()<.2 and 2 or 1,-10.2+rng()*20.4,-9.8+rng()*19.6)end
-  if S.time>30 then
+  if S.battleSeconds<60 or S.score<S.targetScore then
    local minor,middle=0,0;for _,m in ipairs(monsters)do if m.alive then if m.rank==3 then minor+=1 elseif m.rank==4 then middle+=1 end end end
    if minor<2 and frame%720==0 then addMonster(3,-5.9+rng()*11.8,-3)end
    if middle==0 and frame%1200==0 then addMonster(4,3,-3)end
   end
   if #monsters>70 then local living={};for _,m in ipairs(monsters)do if m.alive then living[#living+1]=m end end;monsters=living end
-  if S.time<=0 then S.phase="defeat";S.message="時間耗盡，大王尚未開出大獎。"
-  elseif S.coins<costs(1) and #troops==0 and not skillRuntime:hasPendingDamage()then S.phase="defeat";S.message="金幣耗盡，軍團已無法再出征。"end
+  if S.coins<costs(1) and S.crystals<1 and #troops==0 and not skillRuntime:hasPendingDamage()then S.phase="defeat";S.message="金幣與結晶都耗盡，軍團已無法再出征。"end
  end
  if S.phase~="battle" then settleSurvivors()end
 end
@@ -2084,7 +2216,7 @@ local function publish(api:any)
   S.unitStats[k]={
    damage=baseDamage[k]*S.damage*(1+.3*(S.equipment[k]-1))*(1+skills.damageBonus),
    life=baseLife[k]*(k==3 and S.lifetime or 1)*(1+skills.lifeBonus),
-   speed=(k==3 and 24 or 8)*max(.25,1+skills.speedBonus),
+   speed=baseSpeed[k]*max(.25,1+skills.speedBonus),
    crit=skills.critChance,
    pierce=skills.pierce,
   }
@@ -2110,8 +2242,11 @@ local function publish(api:any)
  S.playerGold[S.seat]=S.coins
  api.observation.set("game",S)
  local allGold=0;for _,gold in ipairs(S.playerGold)do allGold+=gold end
- api.observation.set("crystal_conserved",S.crystals==S.crystalStart+S.crystalEarned+S.crystalSold-S.crystalSpent and S.crystals>=0)
- api.observation.set("economy_conserved",allGold==1280+S.earned+S.refunded+S.sold-S.spent-S.shopSpent)
+ api.observation.set("crystal_conserved",S.crystals==S.crystalStart+S.crystalEarned+S.crystalSold-S.crystalSpent-S.crystalExchanged and S.crystals>=0)
+ api.observation.set("economy_conserved",allGold==S.goldIssued+S.earned+S.refunded+S.sold+S.crystalExchanged-S.spent-S.shopSpent-S.goldDiscarded)
+ api.observation.set("score",S.score);api.observation.set("score_target",S.targetScore)
+ api.observation.set("speed_clear",S.speedClear);api.observation.set("round_start_coins",S.roundStartCoins)
+ api.observation.set("crystal_gold_rate",crystalGoldRate())
  api.observation.set("lottery_misses",S.lotteryMisses)
  local livePaid=0;for _,t in ipairs(troops)do livePaid+=t.paid end
  api.observation.set("deployment_cost_conserved",S.spent==S.lostPaid+S.refunded+livePaid)
@@ -2215,17 +2350,10 @@ local formalPage=1
 local formalScroll=0
 local formalPreviousPhase=""
 local formalMuted=false
--- BEGIN GENERATED UI SKINS
-local formalSkins:any={
- ["control-quiet-v3"]={width=1940,height=412,x=76,y=161,left=80,top=80,right=80,bottom=80,scale=0.12},
- ["shop-window-panel-v2"]={width=1285,height=1224,x=0,y=0,left=360,top=540,right=360,bottom=360,scale=0.2},
- ["shop-card-rare-v2"]={width=940,height=1672,x=0,y=0,left=210,top=360,right=210,bottom=360,scale="width"},
- ["shop-card-epic-v2"]={width=941,height=1672,x=0,y=0,left=210,top=360,right=210,bottom=360,scale="width"},
- ["shop-card-legendary-v2"]={width=941,height=1672,x=0,y=0,left=210,top=360,right=210,bottom=360,scale="width"},
- ["shop-button-primary-v2"]={width=2044,height=484,x=66,y=113,left=300,top=100,right=300,bottom=100,scale="height"},
- ["shop-button-secondary-v2"]={width=1999,height=489,x=49,y=100,left=300,top=100,right=300,bottom=100,scale="height"}
-}
--- END GENERATED UI SKINS
+local settingsSliderDrag=""
+local settingsDropdownOpen=""
+local settingsPointerWasDown=false
+local settingsPointerChanged=false
 -- Authored core-effect summaries; full conditions remain in the skill book.
 local skillSummaries:{[string]:string}={
  pierce="穿透 +1，用盡後消失",landing_spin="落地旋轉斬",critical="爆擊率 +10%",longlife="壽命 +15%",haste="移速 +15%",heavy="減速換取增傷",
@@ -2286,10 +2414,11 @@ local placeLines:{[string]:string}={
  potion="藥師正看著爐火。金幣買下的這一瓶，也許能救回整隊人。",
  tech="學者攤開了新圖紙。研究強化兵種，不會加重派兵費。",
  enchant="鐵匠等你落槌。先穿好裝備；新詞綴不合意，也能保留舊的。",
+ forge="把三件裝備放上砧座。同名合成會升階，任意三件則能重骰。",
  curse="荊棘正在低語。先承受兩輪代價，才能拿到後來的力量。",
 }
-local placePortraits:{[string]:string}={market="quartermaster-v1",rune="portrait-runesmith",potion="portrait-alchemist",tech="portrait-scholar",enchant="portrait-smith",curse="portrait-witch"}
-local placeSpeakers:{[string]:string}={market="榛姨 · 商人",rune="刻印師 · 伊薇",potion="藥師 · 芙蘭",tech="軍械學者 · 瑟恩",enchant="鍛造師 · 布洛克",curse="林巫 · 莫拉"}
+local placePortraits:{[string]:string}={market="quartermaster-v1",rune="portrait-runesmith",potion="portrait-alchemist",tech="portrait-scholar",enchant="portrait-smith",forge="portrait-smith",curse="portrait-witch"}
+local placeSpeakers:{[string]:string}={market="榛姨 · 商人",rune="刻印師 · 伊薇",potion="藥師 · 芙蘭",tech="軍械學者 · 瑟恩",enchant="鍛造師 · 布洛克",forge="鍛造師 · 布洛克",curse="林巫 · 莫拉"}
 local formalReceipt=""
 local formalReceiptUntil=0
 local formalSeenStock:{[number]:boolean}={}
@@ -2309,6 +2438,7 @@ local function runePageForSelection():number
  return max(1,math.ceil(selected/3))
 end
 local function formalInput(api:any)
+ S.uiGearDetail=formalGearDetail>0
  if pressed(api,"UI_mute")then formalMuted=not formalMuted end
  S.audioMuted=formalMuted
  if S.phase=="loadout" and not formalLoadoutWasActive then formalDrawerOpen=true;formalDrawerClosed=false;formalLoadoutWasActive=true
@@ -2325,6 +2455,7 @@ local function formalInput(api:any)
  end
  if formalGearDetail>0 then
   if pressed(api,"GearDetailClose") or pressed(api,"Escape") then formalGearDetail=0 end
+  S.uiGearDetail=formalGearDetail>0
   return
  end
  if pressed(api,"CloseDrawer") then formalDrawerOpen=false;formalDrawerClosed=true;return end
@@ -2334,7 +2465,7 @@ local function formalInput(api:any)
  if S.phase=="loadout" and formalRoute=="gear" then
   for i=1,5 do if pressed(api,"Slot"..i) then S.equipSlot=i;formalDrawerOpen=true;formalDrawerClosed=false end end
  end
- if S.phase~="battle" and S.phase~="celebration" and pressed(api,"Escape")then returnFromLoadout()end
+ if S.phase~="battle" and S.phase~="celebration" and settingsDropdownOpen=="" and pressed(api,"Escape")then returnFromLoadout()end
  if pressed(api,"ReturnFromLoadout")then returnFromLoadout()end
  if pressed(api,"ReturnFromMap") and S.phase=="map" then
   S.phase="choice";S.mapMoving=false;formalRoute="home";formalPage=1
@@ -2354,16 +2485,40 @@ local function formalInput(api:any)
   for i=1,4 do if pressed(api,"Town"..i) then S.townUpgradeIndex=i;S.townUpgradePending=true end end
   for i=5,#townNodeDefs do if pressed(api,"TownNode"..i) then S.townUpgradeIndex=i;S.townUpgradePending=true end end
  end
- for _,route in ipairs({"home","profiles","settings","gear","runes","town","guide","abandon","sell"})do
+  for _,route in ipairs({"home","profiles","settings","gear","runes","town","guide","abandon","sell"})do
   if pressed(api,"UI_"..route)then
    if route=="gear" or route=="runes" then
     if openLoadout()then formalRoute=route;formalPage=route=="runes" and runePageForSelection() or 1;formalScroll=0 end
    elseif route=="home" then returnFromLoadout()
    elseif route=="town" then if S.phase=="menu" then formalRoute="town" end
    elseif route~="sell" or (S.phase=="shop" and (S.location=="market" or S.location=="rune"))then formalRoute=route;formalPage=route=="sell" and S.location=="rune" and runePageForSelection() or 1 end
+   end
   end
- end
- if pressed(api,"UI_page_next")then formalPage+=1 end
+  if S.phase=="menu" and formalRoute=="settings" then
+   local pointer=api.input.getScreenPointerPosition()
+   local down=api.input.isPointerDown()
+   local edge=down and not settingsPointerWasDown
+   local function inside(x:number,y:number,w:number,h:number):boolean
+    return pointer.x>=x and pointer.x<=x+w and pointer.y>=100-y-h and pointer.y<=100-y
+   end
+   local function setSlider(kind:string)
+    local value=min(1,max(0,(pointer.x-47)/22))
+    local stepped=floor(value*20+.5)/20
+    if kind=="music" then if settings.music~=stepped then settings.music=stepped;settingsPointerChanged=true end
+    else if settings.sfx~=stepped then settings.sfx=stepped;settingsPointerChanged=true end end
+   end
+   if settingsSliderDrag~="" then
+    if down then setSlider(settingsSliderDrag) end
+   elseif edge and settingsDropdownOpen=="" then
+   if inside(45.5,27.5,26,10) then settingsSliderDrag="music";setSlider("music")
+   elseif inside(45.5,38.5,26,10) then settingsSliderDrag="sfx";setSlider("sfx") end
+   end
+   if not down then settingsSliderDrag="" end
+   settingsPointerWasDown=down
+  else
+   settingsSliderDrag="";settingsDropdownOpen="";settingsPointerWasDown=false
+  end
+  if pressed(api,"UI_page_next")then formalPage+=1 end
  if pressed(api,"UI_page_prev")then formalPage=max(1,formalPage-1)end
  if S.phase=="shop" and formalRoute~="sell" then
   for i=1,#S.stock do if pressed(api,"ShopDetail"..i)then formalShopDetail=i end end
@@ -2371,6 +2526,7 @@ local function formalInput(api:any)
  if S.phase=="loadout" and formalRoute=="gear" then
   for i=1,#S.items do if pressed(api,"GearDetail"..i)then formalGearDetail=i end end
  end
+ S.uiGearDetail=formalGearDetail>0
 end
 publishFormalUI=function(api:any)
  if S.enchantPending then formalRoute="home" end
@@ -2385,6 +2541,7 @@ publishFormalUI=function(api:any)
  end
  local nodes:{any}={}
  local supplyDetail:any=nil
+ local hidden:{[string]:boolean}={}
  local rootComponents:{any}={}
  local componentStack:{any}={}
  local function beginComponent(id:string,name:string)
@@ -2397,31 +2554,52 @@ publishFormalUI=function(api:any)
   local parent=componentStack[#componentStack]
   table.insert(parent and parent.children or rootComponents,group)
  end
- local hidden:{[string]:boolean}={}
  local function rect(x:number,y:number,w:number,h:number)return {x=x,y=100-y-h,width=w,height=h}end
  local nineSlice:any=nil
- local function img(id:string,asset:string,x:number,y:number,w:number,h:number)
+ local sliceSkins:{[string]:any}={
+  ["texture://ui_settings-field-v5"]={left=76,top=68,right=76,bottom=68,pixels_per_unit=90,source={x=92,y=168,width=1990,height=370}},
+  ["texture://ui_control-quiet-v3"]={left=80,top=80,right=80,bottom=80,pixels_per_unit=75,source={x=76,y=161,width=1940,height=412}},
+  ["texture://ui_shop-window-panel-v2"]={left=360,top=540,right=360,bottom=360,pixels_per_unit=45},
+  ["texture://ui_shop-card-rare-v2"]={left=210,top=360,right=210,bottom=360,card=true,sourceWidth=940},
+  ["texture://ui_shop-card-epic-v2"]={left=210,top=360,right=210,bottom=360,card=true,sourceWidth=941},
+  ["texture://ui_shop-card-legendary-v2"]={left=210,top=360,right=210,bottom=360,card=true,sourceWidth=941},
+   ["texture://ui_shop-button-primary-v2"]={left=300,top=100,right=300,bottom=100,button=true,sourceHeight=484,source={x=66,y=113,width=2044,height=484}},
+ ["texture://ui_settings-slider-rail-v1"]={left=160,top=0,right=160,bottom=0,pixels_per_unit=75,source={x=30,y=214,width=2112,height=287}},
+ ["texture://ui_settings-dropdown-v1"]={left=180,top=32,right=180,bottom=32,pixels_per_unit=75},
+   ["texture://ui_card"]={left=60,top=60,right=60,bottom=60,card=true,sourceWidth=512},
+ }
+ local function img(id:string,asset:string,x:number,y:number,w:number,h:number,fit:string?)
   if nineSlice and string.match(id,"^auto_card_%d+$")then nineSlice(id,"texture://ui_control-quiet-v3",x,y,w,h);return end
   if nineSlice and (asset=="texture://ui_panel" or asset=="texture://ui_card") then
    if id=="screen_back" or string.find(id,"modal") then nineSlice(id,"texture://ui_shop-window-panel-v2",x,y,w,h);return end
    asset="texture://ui_shop-surface"
   end
-  local preserve=string.find(id,"icon") or string.find(id,"crest") or string.find(id,"portrait") or id=="map_lord" or id=="map_back" or id=="map_current_ring" or string.find(id,"map_node_") or string.find(asset,"ui_portrait%-") or string.find(asset,"ui_building%-") or string.find(asset,"ui_icon%-") or string.find(asset,"ui_symbol%-")
-  table.insert(nodes,{kind="image",id=id,asset=asset,fit=id=="menu_art" and "cover" or (preserve and "contain" or "stretch"),rect=rect(x,y,w,h)})
+  local preserve=string.find(id,"icon") or string.find(id,"crest") or string.find(id,"portrait") or string.find(id,"rarity") or string.find(id,"acorn") or string.find(asset,"logo") or id=="map_lord" or id=="map_back" or id=="map_current_ring" or string.find(id,"map_node_") or string.find(asset,"ui_portrait%-") or string.find(asset,"ui_building%-") or string.find(asset,"ui_icon%-") or string.find(asset,"ui_symbol%-") or string.find(asset,"ui_target%-") or string.find(asset,"ui_event%-")
+  if fit and fit~="contain" and fit~="cover" and fit~="stretch" then error("Unknown image fit: "..fit)end
+  local imageFit=fit or (id=="menu_art" and "cover" or (preserve and "contain" or "stretch"))
+  table.insert(nodes,{kind="image",id=id,asset=asset,fit=imageFit,rect=rect(x,y,w,h)})
  end
  nineSlice=function(id:string,prefix:string,x:number,y:number,w:number,h:number,border:number?)
-  -- One texture / one logical Core node. The host owns patch rendering;
-  -- these approved art cut-lines and sizing choices remain game-owned.
-  local window=string.find(prefix,"window")~=nil
-  if window then img(id.."_fill","texture://ui_shop-surface",x+.8,y+2,w-1.6,h-4)end
-  local key=string.gsub(prefix,"texture://ui_","");local data=formalSkins[key]
-  assert(data,"UI_SKIN_MISSING: "..key.."; run build-formal-ui.mjs")
-  local scale=if data.scale=="width" then w*1920/100/data.width elseif data.scale=="height" then h*1080/100/data.height else data.scale*1.2
-  scale=min(scale,w*1920/100/(data.left+data.right+1),h*1080/100/(data.top+data.bottom+1))
-  table.insert(nodes,{kind="image",id=id,asset=prefix,fit="stretch",rect=rect(x,y,w,h),slice={left=data.left,top=data.top,right=data.right,bottom=data.bottom,pixels_per_unit=10.8/scale,source={x=data.x,y=data.y,width=data.width,height=data.height}}})
+  local skin=sliceSkins[prefix]
+  if not skin then error("Unknown nine-slice skin: "..prefix)end
+  local ppu=skin.pixels_per_unit or (skin.card and skin.sourceWidth/(w*16/9)) or (skin.button and skin.sourceHeight/h)
+  local slice={left=skin.left,top=skin.top,right=skin.right,bottom=skin.bottom,pixels_per_unit=ppu}
+  if skin.source then slice.source=skin.source end
+  if string.find(prefix,"window") then img(id.."_fill","texture://ui_shop-surface",x+.8,y+2,w-1.6,h-4)end
+  table.insert(nodes,{kind="image",id=id,asset=prefix,rect=rect(x,y,w,h),slice=slice})
  end
  local function text(id:string,value:any,x:number,y:number,w:number,h:number)
   table.insert(nodes,{kind="text",id=id,text=tostring(value),rect=rect(x,y,w,h)})
+ end
+ local function hitArea(id:string,action:string,x:number,y:number,w:number,h:number)
+  beginComponent(id,"ui.hit-area")
+  table.insert(nodes,{kind="button",id=id,text="",action=action,rect=rect(x,y,w,h)})
+  endComponent()
+ end
+ local function sliderWidget(id:string,action:string,x:number,y:number,w:number,h:number,value:number)
+  -- Keep this leaf semantic-only. The surrounding ui.slider component owns the
+  -- replaceable track, fill and handler slots; the game handles the drag.
+  table.insert(nodes,{kind="slider",id=id,text=floor(value*100).."%",action=action,rect=rect(x,y,w,h)})
  end
  local function wrap(value:string,columns:number):string
   local lines:{string}={};local line:string="";local count=0
@@ -2443,6 +2621,17 @@ publishFormalUI=function(api:any)
  end
  local function skillSummary(id:string):string
   return skillSummaries[id] or string.split(skillDetail(id),"；")[1]
+ end
+ local function forgeSelected(id:number):boolean
+  for _,selectedId in ipairs((S.forgeSelection or {}) :: {number})do if selectedId==id then return true end end
+  return false
+ end
+ local function forgeCardLabel(item:any):string
+  local level=item and (item.level or 1) or 1
+  if not item then return "空的砧座" end
+  if forgeSelected(item.id)then return "已選 · "..level.."階" end
+  if itemEquipped(item.id)then return "已穿戴" end
+  return "放上砧座"
  end
  local function button(id:string,label:string,action:string,x:number,y:number,w:number,h:number,enabled:boolean?,skin:string?)
   local primary=({Start=true,QuickDeploy=true,Deploy=true,Next=true,LaunchExpedition=true,Auto_apply=true,Pause=true,OpenChest=true,ChestDone=true,AcceptEnchant=true})[action]==true
@@ -2469,18 +2658,25 @@ publishFormalUI=function(api:any)
   endComponent()
  end
  local function closeButton(id:string,action:string,x:number?,y:number?)
+ local bx=x or 92;local by=y or 7;local bw=5.5;local bh=6
+  local settingsClose=id=="settings_back"
+  if settingsClose then bw=4;bh=bw*16/9 end
   beginComponent(id,"ui.icon-button")
-  local bx=x or 92;local by=y or 7;local bw=5.5;local bh=6
-  img(id.."_plate","texture://ui_hud-key",bx,by,bw,bh)
-  img(id.."_icon","texture://ui_icon-close",bx+1.25,by+1.15,3,3.7)
+  if settingsClose then
+   nineSlice(id.."_plate","texture://ui_settings-field-v5",bx,by,bw,bh)
+   img(id.."_icon","texture://ui_icon-close",bx+bw/4,by+bh/4,bw/2,bh/2,"contain")
+  else
+   img(id.."_plate","texture://ui_hud-key",bx,by,bw,bh)
+   img(id.."_icon","texture://ui_icon-close",bx+1.25,by+1.15,3,3.7)
+  end
   table.insert(nodes,{kind="button",id=id,text="",action=action,rect=rect(bx,by,bw,bh)})
   endComponent()
  end
  local function resourceBadge(id:string,plate:string,icon:string,value:any,x:number,y:number,w:number)
   beginComponent(id,"ui.resource-badge")
-  img(id.."_plate","texture://ui_hud-"..plate,x,y,w,5.8)
-  img(id.."_icon","texture://ui_icon-"..icon,x+1,y+.95,3.2,3.9)
-  text(id,value,x+4.7,y+1.1,w-5.4,3.5)
+  img(id.."_plate","texture://ui_hud-"..plate,x,y,w,6.5)
+  img(id.."_icon","texture://ui_icon-"..icon,x+1,y+1.3,3.2,3.9)
+  text(id,value,x+4.7,y+1.45,w-5.4,3.5)
   endComponent()
  end
  local function panel(title:string)
@@ -2496,7 +2692,7 @@ publishFormalUI=function(api:any)
   end
   nineSlice("screen_back","texture://ui_shop-window-panel-v2",4,4,92,92)
   text("screen_title",title,38,7.4,24,5)
-  if shopWindow then text("shop_window_title","森林領主 · 榛姨的商店",34,12.6,32,2.8)end
+  if shopWindow then text("shop_window_title","榛姨的商店",34,12.6,32,2.8)end
   -- These are run-only currencies, not balances belonging to a saved estate.
   if S.phase~="menu" then
    resourceBadge("screen_gold","gold","coin",floor(S.coins),64,6.2,10.5)
@@ -2518,7 +2714,7 @@ publishFormalUI=function(api:any)
   img("shopkeeper_back","texture://ui_card",7,25,width,55)
   img("shopkeeper_portrait","texture://ui_"..(portrait or "portrait-merchant"),marketShop and 9 or 10,28,marketShop and 18 or 21,marketShop and 25 or 27)
   text("shopkeeper_name",speaker or "商旅",8,56,marketShop and 21 or 25,4)
-  text("shopkeeper_line",wrap(line,marketShop and 11 or 13),8,61,marketShop and 21 or 25,16)
+  text("shopkeeper_line",line,8,61,marketShop and 21 or 25,16)
   endComponent()
  end
  local function tabs()
@@ -2641,50 +2837,52 @@ end
   end
   -- The top HUD is one timeline: elapsed time, the current countdown, and
   -- the next wave/boss markers share the same visual track.
-  local elapsed=1-S.time/max(1,S.roundDuration)
-  img("timeline_track","texture://ui_timeline-track",7,2,86,9)
-  img("timeline_fill","texture://ui_timeline-fill",7,2,86*max(.02,elapsed),9)
-  text("timeline_time",string.format("%02d:%02d",floor(S.time/60),floor(S.time%60)),43,4.5,14,4)
-  text("timeline_round","第 "..S.round.." / 7 輪",8,10.5,18,2.5)
-  text("timeline_goal",S.bossPresent and "大王已現身 · 大獎／特獎通關" or "大王最後 30 秒登場",67,10.5,26,2.5)
+  local speedDeadline=economyTuning.fastClearSeconds
+  local elapsed=min(1,S.battleSeconds/max(1,speedDeadline))
+  img("timeline_track","texture://ui_timeline-track",20,2,73,9)
+  img("timeline_fill","texture://ui_timeline-fill",20,2,73*max(.02,elapsed),9)
+  text("timeline_time",string.format("%02d:%02d",floor(S.battleSeconds/60),floor(S.battleSeconds%60)),7,4.5,12,4)
+  text("timeline_round","第 "..S.round.." / 7 輪",8,11.5,18,2)
+  text("timeline_goal","分數 "..floor(S.score).." / "..S.targetScore,67,11.5,26,2)
+  text("timeline_speed",S.battleSeconds<=speedDeadline and "60秒速通 · +"..(economyTuning.fastClearCrystalBonus+(S.round-1)).."◆" or "速通獎勵已失去",32,14,39,2)
   local function timelineMarker(id:string,asset:string,at:number,active:boolean)
    if at>=0 and at<=1 then
-    local x=7+86*at-2
-    if active then img(id.."_glow","texture://ui_mote",x-.5,.5,5,5)end
-    img(id,"texture://ui_"..asset,x,1.2,4,4.5)
+    local x=20+73*at-1.7
+    if active then img(id.."_glow","texture://ui_mote",x-.45,6.6,4.3,4.3)end
+    img(id,"texture://ui_"..asset,x,6.8,3.4,3.6)
    end
   end
-  timelineMarker("timeline_wave","icon-attack",S.hordeAt>=0 and S.hordeAt/max(1,S.roundDuration) or -1,S.hordeCount>0)
-  timelineMarker("timeline_wheel","icon-refresh",(S.roundDuration-80)/max(1,S.roundDuration),S.wheelSpawned)
-  timelineMarker("timeline_beetle","icon-coin",(S.roundDuration-45)/max(1,S.roundDuration),S.specialSpawned)
-  timelineMarker("timeline_boss","icon-crown",(S.roundDuration-30)/max(1,S.roundDuration),S.bossSpawned)
+  timelineMarker("timeline_wave_1","event-horde",15/speedDeadline,S.hordeCount>=1)
+  timelineMarker("timeline_boss","target-stag",30/speedDeadline,S.bossSpawned)
+  timelineMarker("timeline_wave_2","event-horde",45/speedDeadline,S.hordeCount>=2)
   img("coins_plate","texture://ui_hud-gold",35,94,18,4.8)
   img("coins_icon","texture://ui_symbol-coin",36.2,94.8,2.1,3)
   text("coins",floor(S.coins),38.5,94.7,12.5,3.2)
   img("crystals_plate","texture://ui_hud-crystal",54,94,15,4.8)
   img("crystals_icon","texture://ui_symbol-crystal",55.2,94.8,2,3)
   text("crystals",S.crystals,57.5,94.7,10,3.2)
+  hudButton("convert_crystal","換+"..crystalGoldRate(),"ConvertCrystal",69.5,94,7.5,4.8,S.crystals>0)
   -- Adjacent icon/caption controls share the action; no transparent hit area
   -- covers text, and the authored icon cannot eat its semantic button's input.
   for k=1,3 do
-   local x=2+(k-1)*8.6
-   img("hud_unit_plate_"..k,"texture://ui_"..(S.selected==k and "hud-active" or "hud-key"),x,82,8,15)
-   img("hud_unit_icon_"..k,"texture://ui_symbol-"..({"sword","spear","cavalry"})[k],x+1.4,83,5.2,6.8)
-   table.insert(nodes,{kind="button",id="hud_unit_"..k,text="",action="Unit"..k,rect=rect(x,82,8,8)})
-   table.insert(nodes,{kind="button",id="hud_unit_caption_"..k,text=unitNames[k].."\n"..costs(k),action="Unit"..k,rect=rect(x,90,8,5)})
+   local x=2+(k-1)*9.5
+   nineSlice("hud_unit_plate_"..k,"texture://ui_"..(S.selected==k and "shop-button-primary-v2" or "control-quiet-v3"),x,90,9,8)
+   img("hud_unit_icon_"..k,"texture://ui_symbol-"..({"sword","spear","cavalry"})[k],x+.35,91.6,3,4.8)
+   table.insert(nodes,{kind="button",id="hud_unit_"..k,text="",action="Unit"..k,rect=rect(x,90,3.4,8)})
+   table.insert(nodes,{kind="button",id="hud_unit_caption_"..k,text=unitNames[k].."\n"..costs(k),action="Unit"..k,rect=rect(x+3.6,90,5.4,8)})
   end
-  img("pause_plate","texture://ui_hud-key",94.5,1.5,4,7.5)
+  nineSlice("pause_plate","texture://ui_control-quiet-v3",94.5,1.5,4,7.5)
   img("pause_icon","texture://ui_symbol-pause",95.2,2.5,2.6,4.3)
   table.insert(nodes,{kind="button",id="pause",text="",action="Pause",rect=rect(94.5,1.5,4,7.5)})
   for i,mode in ipairs({"lock","auto"})do
    local x=77+(i-1)*11;local enabled=mode=="lock" and S.lockEnabled or mode=="auto" and S.autoEnabled
-   img("mode_plate_"..mode,"texture://ui_"..(enabled and "hud-active" or "hud-key"),x,87,10.4,10)
-   img("mode_icon_"..mode,"texture://ui_symbol-"..mode,x+3.5,88,3.4,4.6)
-   table.insert(nodes,{kind="button",id="mode_"..mode,text="",action="Mode_"..mode,rect=rect(x,87,10.4,6.2)})
-   table.insert(nodes,{kind="button",id="mode_label_"..mode,text=string.upper(mode)..(enabled and " · 開" or " · 關"),action="Mode_"..mode,rect=rect(x,93.2,10.4,2.6)})
+   nineSlice("mode_plate_"..mode,"texture://ui_"..(enabled and "shop-button-primary-v2" or "control-quiet-v3"),x,90,10.4,8)
+   img("mode_icon_"..mode,"texture://ui_symbol-"..mode,x+.45,91.6,3,4.8)
+   table.insert(nodes,{kind="button",id="mode_"..mode,text="",action="Mode_"..mode,rect=rect(x,90,3.4,8)})
+   table.insert(nodes,{kind="button",id="mode_label_"..mode,text=string.upper(mode)..(enabled and " 開" or " 關"),action="Mode_"..mode,rect=rect(x+3.6,90,6.8,8)})
   end
   hudButton("auto_settings","選擇目標 · "..autoCount(S.autoTargets).." 種","Auto_settings",77,81.5,21.4,4.5,S.autoEnabled)
-  img("target_plate","texture://ui_hud-target",77,73,21.4,7.5)
+  nineSlice("target_plate","texture://ui_control-quiet-v3",77,73,21.4,7.5)
   local fireHint=S.fired==0 and (S.battleSeconds or 0)<6
   text("target",S.targetName~="" and S.targetName or (S.autoEnabled and "AUTO · 等待指定怪物" or (S.lockEnabled and "LOCK · 點選怪物" or (fireHint and "按住戰場 · 派遣部隊" or "瞄準場內目標"))),78,73.5,19.4,2.6)
   for _,m in ipairs(monsters)do
@@ -2700,7 +2898,7 @@ end
   if S.paused then
    img("outro_pause_back","texture://ui_panel",17,34,66,31)
    text("outro_pause_title","榮耀暫歇",25,39,50,7)
-   button("outro_resume","繼續大獎演出","Pause",30,51,40,9)
+   button("outro_resume","繼續通關演出","Pause",30,51,40,9)
   else
    text("outro_wait","凱旋時刻 · 稍後清點戰利品",20,93,60,3)
   end
@@ -2712,26 +2910,34 @@ end
    button("abandon_confirm","結束遠征","Home",53,59,33,9)
   elseif formalRoute=="guide" then
    text("help_title","掌握這場狩獵",25,22,50,5)
-   local tips={"按住戰場派兵，放開停止。","劍兵碰撞消失；槍兵落地旋斬；騎兵穿透。","碰牆反彈，壽命耗盡消失。","破防只代表一次抽獎，未中獎的怪物留場。","大王最後 30 秒登場，開出大獎才過關。","金幣派兵，結晶強化；倖存部隊返還實付金幣。"}
+   local tips={"按住戰場派兵，放開停止。","劍兵碰撞消失；槍兵落地旋斬；騎兵穿透。","碰牆反彈，壽命耗盡消失。","破防只代表一次抽獎，未中獎的怪物留場。","15 秒獸潮、30 秒大王、45 秒第二波獸潮。","60 秒內達成分數有額外結晶；之後打到通關或資源耗盡。\n結晶可換金，技能能提高匯率與起始金幣。"}
    for i,line in ipairs(tips)do text("help_"..i,line,24,31+(i-1)*7,52,5)end
    closeButton("guide_back","UI_home")
    button("resume","繼續戰鬥","Pause",51,80,25,7)
   else
+  closeButton("pause_close","Pause")
   button("resume","繼續征戰","Pause",32,37,36,9)
   button("guide","作戰指南","UI_guide",32,50,36,8)
   button("quit","結束這趟遠征","UI_abandon",32,63,36,8)
   button("mute",formalMuted and "音效：關" or "音效：開","UI_mute",76,17,16,6)
   end
  elseif S.phase=="menu" and formalRoute=="home" then
+  beginComponent("menu_background","ui.background-layer")
   img("menu_ground","texture://ui_panel",0,0,100,100)
   img("menu_art","texture://ui_expedition-keyart-v2",0,0,100,100)
-  img("crest","texture://ui_crest",18,12,16,20)
-  text("title","森林領主",8,35,32,12)
-  text("subtitle","七輪遠征 · 奪回森林王冠",8,49,32,5)
-  button("start","讀取進度","Start",9,61,34,9)
+  beginComponent("menu_left_panel","ui.layout-region")
+  beginComponent("menu_brand","ui.brand-mark")
+  img("title","texture://ui_game-logo-v1",10,25,34,19.1,"contain")
+  text("subtitle","進軍米爾亞山 · 為信仰與榮耀",9,43,34,4)
+  endComponent()
+  beginComponent("menu_actions","ui.action-group")
+  button("start","讀取進度","Start",9,61,34,9,true,"control-quiet-v3")
   button("settings","系統設定","UI_settings",9,72,34,7)
   button("exit","離開","ExitGame",9,81,34,7)
   if S.exitRequested then text("exit_message","進度已儲存，請關閉遊戲視窗。",8,91,38,4)end
+  endComponent()
+  endComponent()
+  endComponent()
  elseif S.phase=="menu" and formalRoute=="profiles" then
   panel("讀取進度")
   text("profiles_hint","選擇一個札記繼續；空白欄位可建立新進度。",9,17,82,4)
@@ -2758,23 +2964,64 @@ end
   end
   closeButton("profiles_back","UI_home")
  elseif S.phase=="menu" and formalRoute=="settings" then
-  panel("系統設定")
-  text("settings_hint","設定會儲存在目前裝置，下次開啟仍會保留。",9,17,82,4)
-  text("settings_music_label","音樂音量",16,30,28,5)
-  text("settings_music_value",floor((S.settings.music or .7)*100).."%",53,30,17,5)
-  button("settings_music_down","−","Setting_music_down",72,29,8,7)
-  button("settings_music_up","＋","Setting_music_up",82,29,8,7)
-  text("settings_sfx_label","音效音量",16,42,28,5)
-  text("settings_sfx_value",floor((S.settings.sfx or .85)*100).."%",53,42,17,5)
-  button("settings_sfx_down","−","Setting_sfx_down",72,41,8,7)
-  button("settings_sfx_up","＋","Setting_sfx_up",82,41,8,7)
-  text("settings_quality_label","畫質",16,54,28,5)
-  text("settings_quality_value",({low="低",medium="中",high="高"})[S.settings.quality] or "高",53,54,17,5)
-  button("settings_quality","切換","Setting_quality",72,53,18,7)
-  text("settings_language_label","語系",16,66,28,5)
-  text("settings_language_value",S.settings.language or "繁中",53,66,17,5)
-  button("settings_language","切換","Setting_language",72,65,18,7)
-  closeButton("settings_back","UI_home")
+  beginComponent("settings_window","ui.settings-window")
+  img("settings_backdrop","texture://ui_expedition-keyart-v2",0,0,100,100,"cover")
+  img("settings_shade","texture://ui_scene-shade",0,0,100,100)
+  nineSlice("settings_window","texture://ui_shop-window-panel-v2",20,8,60,84)
+  text("settings_title","系統設定",32,14,36,7)
+  img("settings_heading_divider","texture://ui_settings-divider-v5",27,23,46,.8)
+  img("settings_group_divider","texture://ui_settings-divider-v5",27,49.5,46,.8)
+  text("settings_hint","設定自動儲存",27,82,46,4)
+  local function settingsSlider(id:string,label:string,value:number,y:number,kind:string)
+   beginComponent(id,"ui.slider")
+   local normalized=min(1,max(0,value))
+   text(id.."_label",label,27,y,17,7)
+   img(id.."_track","texture://ui_settings-rail-v5",47,y+3,22,1.2)
+   img(id.."_fill","texture://ui_settings-fill-v5",47,y+3.15,max(.001,22*normalized),.9)
+   img(id.."_handler","texture://ui_settings-slider-thumb-v1",44.5+22*normalized,y-1.4,5,10,"contain")
+   sliderWidget(id.."_track_widget","Setting_"..kind,45.5,y-1.5,26,10,value)
+   text(id.."_value",floor(value*100).."%",70,y,6,7)
+   endComponent()
+  end
+  settingsSlider("settings_music","音樂音量",S.settings.music or .7,29,"music")
+  settingsSlider("settings_sfx","音效音量",S.settings.sfx or .85,40,"sfx")
+  local function settingsDropdown(id:string,label:string,value:string,y:number,action:string,expanded:boolean)
+   beginComponent(id,"ui.combobox")
+   text(id.."_label",label,27,y,17,7.5)
+   nineSlice(id.."_field","texture://ui_settings-field-v5",45.5,y,30,7.5)
+   text(id.."_value",value,47,y+.25,24,7)
+   img(id.."_arrow","texture://ui_control-chevron-"..(expanded and "up" or "down"),72,y+2.7,1.8,2.2,"contain")
+   -- This is the input node for the entire field; its visual parts are replaceable.
+   table.insert(nodes,{kind="combobox",id=id,text=value,action=action,expanded=expanded,rect=rect(45.5,y,30,7.5)})
+   endComponent()
+  end
+  if settingsDropdownOpen~="" then
+   table.insert(nodes,{kind="button",id="settings_dropdown_dismiss",text="",action="SettingsDropdownClose",rect=rect(0,0,100,100)})
+  end
+  settingsDropdown("settings_quality","畫質",({low="低",medium="中",high="高"})[S.settings.quality] or "高",54,"Setting_quality",settingsDropdownOpen=="quality")
+  settingsDropdown("settings_language","語系",S.settings.language or "繁中",67,"Setting_language",settingsDropdownOpen=="language")
+  local function dropdownOptions(id:string,options:{any},selected:string,y:number)
+   beginComponent(id.."_options","ui.combobox-popup")
+   nineSlice(id.."_options_plate","texture://ui_settings-field-v5",45.5,y,30,21.5)
+   for index,option in ipairs(options)do
+    local rowY=y+1+(index-1)*6.5
+    local optionId=id.."_option_"..option[1]
+    if selected==option[2] then
+     img(optionId.."_selected","texture://ui_settings-option-v5",46.2,rowY,28.6,6.5)
+     img(optionId.."_check","texture://ui_target-check",72,rowY+1.5,2,3.5,"contain")
+    end
+    text(optionId.."_label",option[3],47,rowY,24,6.5)
+    table.insert(nodes,{kind="button",id=optionId,text="",action=option[4],rect=rect(46.2,rowY,28.6,6.5)})
+   end
+   endComponent()
+  end
+  if settingsDropdownOpen=="quality" then
+   dropdownOptions("settings_quality",{{"low","low","低","Setting_quality_low"},{"medium","medium","中","Setting_quality_medium"},{"high","high","高","Setting_quality_high"}},S.settings.quality,62.5)
+  elseif settingsDropdownOpen=="language" then
+   dropdownOptions("settings_language",{{"zh_tw","繁中","繁體中文","Setting_language_zh_tw"},{"zh_cn","简中","简体中文","Setting_language_zh_cn"},{"en","English","English","Setting_language_en"}},S.settings.language,43.5)
+  end
+  closeButton("settings_back","UI_home",73.5,12)
+  endComponent()
  elseif S.phase=="choice" then
   panel(chapters[S.round].." · 選擇景點")
   button("view_map","查看地圖","ViewMap",77,17,16,6)
@@ -2815,9 +3062,10 @@ end
   text("result_message",S.phase=="victory" and "七站的營火，終於連成了歸途。" or "本關已完成，軍團準備繼續前行。",9,22,82,4)
   text("result_earned","+"..S.earned,9,34,82,9)
   text("result_earned_label","本次遠征累計獲獎金幣",9,29,82,3)
-  text("result_combat","擊殺 "..S.kills.." · 破防 "..S.breaks,9,67,82,3)
+  text("result_combat","分數 "..floor(S.score).." / "..S.targetScore.." · 擊殺 "..S.kills.." · 破防 "..S.breaks,9,67,82,3)
   text("result_refund","倖存返還 "..(S.roundRefund or 0).." 金幣",9,44,82,6)
   text("result_crystals","◆ 本輪開獎結晶 "..S.roundCrystalEarned.." + 通關 "..S.roundCrystalBonus.." · 持有 "..S.crystals,9,51,82,4)
+  text("result_speed",S.speedClear and "60 秒內完成 · 速通結晶 +"..S.roundSpeedClearBonus or "超過 60 秒完成 · 無速通獎勵",9,71,82,3)
   text("result_story",S.phase=="victory" and "七處營火連成歸途。王冠與軍團一起回家。" or "清點回來的士兵。下一處營火已在地圖上等候。",9,76,82,4)
   if S.chestCount>0 then button("chest","按住開啟寶箱 ×"..S.chestCount,"OpenChest",26,56,48,9)end
   if S.chestResult then text("chest_result",S.chestResult,12,68,64,6);button("chest_done","收下","ChestDone",78,68,13,6)end
@@ -2825,7 +3073,7 @@ end
   else closeButton("result_home","ReturnTown")end
  else
   if formalRoute=="town" then img("town_scene","texture://ui_shop-backdrop",0,0,100,100)end
-  panel(S.phase=="loadout" and "部隊裝備" or formalRoute=="town" and "領地建設" or ({market="裝備店",rune="符文店",potion="藥水工坊",tech="軍團研究",enchant="附魔鐵砧",curse="荊棘契約"})[S.location] or "領地與軍備")
+ panel(S.phase=="loadout" and "部隊裝備" or formalRoute=="town" and "領地建設" or ({market="裝備店",forge="鐵匠鋪",rune="符文店",potion="藥水工坊",tech="軍團研究",enchant="附魔鐵砧",curse="荊棘契約"})[S.location] or "領地與軍備")
   if formalRoute~="town" then tabs()end;footer()
  if formalRoute=="town" then
    hidden.screen_gold=true;hidden.screen_crystals=true;hidden.screen_gold_plate=true;hidden.screen_crystals_plate=true
@@ -2866,15 +3114,15 @@ end
   elseif formalRoute=="gear" then
    -- The loadout board is the stable task surface; the inventory is a
    -- closable drawer so choosing a slot never changes the page context.
-   img("loadout_board","texture://ui_loadout-board-v2",14,31,38,54)
+   img("loadout_board","texture://ui_loadout-board-v3",14,31,38,54)
    loadoutUnitButtons(25.5,14,11.2,1,"roster_unit")
    text("troop_quote","本次派兵\n"..costs(S.selected).." 金",15,33,9,7)
-   text("loadout_board_title",unitNames[S.selected].." · 裝備配置",26,33,16,3.5)
+   text("loadout_board_title",unitNames[S.selected].." · 裝備配置",25,36,18,3.5)
    -- Match the reference composition: three body slots on the left and two on the right.
    local slotPositions={{17,37},{17,51},{17,65},{45,43},{45,61}}
    for i,n in ipairs(slotNames)do
     local item=itemById(S.worn[S.selected][i]);local p=slotPositions[i];local x,y=p[1],p[2]
-    img("slot_frame_"..i,"texture://ui_loadout-slot-square-v1",x,y,4.5,8)
+    img("slot_frame_"..i,"texture://ui_loadout-rarity-ring-v1",x-.35,y-.25,5.2,8.5)
     img("slot_part_"..i,"texture://ui_"..slotIcons[i],x+1,y+2,2.5,3.5)
     if item then img("worn_icon_"..i,"texture://ui_gear-"..item.skill,x+.55,y+1.8,3.4,4.4)end
     local shortName=item and truncate(item.name,5) or ""
@@ -2894,20 +3142,21 @@ end
     -- Keep the three-column inventory inside the drawer's authored content
     -- bounds. The old 12.1-unit step put the last 11.5-unit tile at 92.7,
     -- past the inner right edge (91.5) and underneath the frame ornament.
-    local tileW=10.8;local tileStep=11.4
+    local tileW=16;local tileStep=17
     for j=1,6 do
-     local index=matching[formalScroll+j];local item=index and S.items[index];local x=57+((j-1)%3)*tileStep;local y=32+floor((j-1)/3)*15
+     local index=matching[formalScroll+j];local item=index and S.items[index];local x=57+((j-1)%2)*tileStep;local y=32+floor((j-1)/2)*15
      nineSlice("pack_tile_"..j,"texture://ui_control-quiet-v3",x,y,tileW,13.8,.2)
      if item then
-      img("gear_icon_"..j,"texture://ui_gear-"..item.skill,x+1,y+1,3.2,4)
+      img("gear_rarity_"..j,"texture://ui_loadout-rarity-ring-v1",x+.5,y+.5,4.3,5.2)
+      img("gear_icon_"..j,"texture://ui_gear-"..item.skill,x+1.05,y+1.05,3.2,4)
       local holder=nil;for k,worn in ipairs(S.worn)do if worn[item.slot]==item.id then holder=k end end
       local wearing=holder==S.selected
-      -- The tile wraps to two lines now, so the holder disclosure is not cut.
-      text("gear_name_"..j,(holder and not wearing and unitNames[holder].."持有 · " or "")..item.name,x+4.6,y+1,6.1,2.8)
-      text("gear_summary_"..j,skillSummary(item.skill),x+1,y+5.2,9.5,2.6)
-      text("gear_cost_"..j,"派兵 "..costs(S.selected,item).."金",x+1,y+8,9.5,1.5)
-      table.insert(nodes,{kind="button",id="inspect_"..j,text="",action="GearDetail"..index,rect=rect(x,y,tileW,9.5)})
-      compactButton("equip_"..j,wearing and "已裝" or "穿上","Equip"..index,x+5.5,y+9.6,4.5,4.2,not wearing)
+      -- Two wide cards keep the equipment image, name, VFX summary and action readable.
+      text("gear_name_"..j,(holder and not wearing and unitNames[holder].."持有 · " or "")..item.name.." · Lv."..(item.level or 1),x+5.4,y+1,10.1,2.8)
+      text("gear_summary_"..j,skillSummary(item.skill),x+1,y+6.1,14,2.5)
+      text("gear_cost_"..j,"派兵 "..costs(S.selected,item).."金",x+1,y+9,7.5,1.5)
+      table.insert(nodes,{kind="button",id="inspect_"..j,text="",action="GearDetail"..index,rect=rect(x,y,tileW,9.8)})
+      compactButton("equip_"..j,wearing and "已裝" or "穿上","Equip"..index,x+9.2,y+9.6,5.8,3.3,not wearing)
      end
     end
     if maxScroll>0 then
@@ -2922,7 +3171,7 @@ end
     button("drawer_open","選擇裝備","OpenDrawer",61,51,24,6,true,"shop-button-secondary-v2")
    end
   elseif formalRoute=="runes" then
-   img("loadout_board","texture://ui_loadout-board-v2",14,31,38,54)
+   img("loadout_board","texture://ui_loadout-board-v3",14,31,38,54)
    loadoutUnitButtons(25.5,14,11.2,1,"unit")
    text("troop_quote","本次派兵\n"..costs(S.selected).." 金",15,33,9,7)
    text("rune_heading","可用符文",56,21,39,4)
@@ -2937,7 +3186,7 @@ end
     if def then
      local donor=runeHolder(i,S.selected);local active=S.runes[S.selected]==i
      local x=57+((j-1)%2)*19;local y=32+floor((j-1)/2)*20.5
-     img("rune_tile_"..j,"texture://ui_loadout-item-tile-v2",x,y,18,18.5)
+     nineSlice("rune_tile_"..j,"texture://ui_control-quiet-v3",x,y,18,18.5,.2)
      img("rune_icon_"..j,"texture://ui_skill-"..def.icon,x+1,y+1,4.5,4.5)
      text("rune_name_"..j,def.name,x+6,y+1,11,3.5)
      text("rune_desc_"..j,def.effect,x+1,y+6,16,3)
@@ -2963,7 +3212,7 @@ end
      if def then
       img("sale_icon_"..j,"texture://ui_skill-"..def.icon,38,y,7,10)
       text("sale_name_"..j,def.name.." · 背包 "..(S.runeBag[i] or 0).." 枚",47,y+2,28,5)
-      button("sale_"..j,"售 ◆ "..floor(def.price*.5),"SellRune"..i,77,y+2,16,6,(S.runeBag[i] or 0)>0)
+      button("sale_"..j,"售 "..floor(def.price*.5).." 結晶","SellRune"..i,77,y+2,16,6,(S.runeBag[i] or 0)>0)
      end
     end
     button("sale_prev","上一頁","UI_page_prev",37,84,12,7,formalPage>1);button("sale_next","下一頁","UI_page_next",50,84,12,7,formalPage<pages)
@@ -2975,7 +3224,7 @@ end
       text("sale_name_"..j,item.name,x+9,y,18,4)
       local holder=nil;for k,worn in ipairs(S.worn)do if worn[item.slot]==item.id then holder=k end end
       text("sale_status_"..j,holder and unitNames[holder].."穿戴中" or "可出售",x+9,y+5,18,3)
-      button("sale_"..j,holder and "請先卸下" or "售 ◆ "..floor(item.paid*.5),"Sell"..index,x,y+12,27,6,holder==nil)
+      button("sale_"..j,holder and "請先卸下" or "售 "..floor(item.paid*.5).." 結晶","Sell"..index,x,y+12,27,6,holder==nil)
      end
     end
     if #S.items==0 then text("sale_empty","背包目前沒有裝備。",39,43,50,6)end
@@ -2993,7 +3242,7 @@ end
     text("enchant_current",item and ("目前詞綴 · "..(item.enchant and skillDetail(item.enchant) or "無")) or "先在部隊配置穿上裝備，再回來附魔。",52,52,39,7)
     text("enchant_cost","每次消耗 8 結晶 · 每處最多兩次",39,64,52,4)
     -- The offer state owns the action row; no disabled plate may stay beneath it.
-    if S.enchantPending==nil then button("enchant_roll","試附魔","Enchant",47,71,30,8,item~=nil and S.enchantUses<2)end
+    if S.enchantPending==nil then button("enchant_roll","試附魔","Enchant",47,71,30,8,item~=nil and S.enchantUses<2,"shop-button-primary-v2")end
     text("enchant_chances","普通 70% · 精良 25% · 史詩 5%",39,81,52,3)
     if S.enchantPending then
      img("enchant_reveal_back","texture://ui_card",36,37,57,39)
@@ -3002,6 +3251,31 @@ end
      text("enchant_reveal_name",skillDetail(S.enchantPending.skill),51,49,38,8)
      button("enchant_accept","採用新詞綴","AcceptEnchant",40,65,23,7)
      button("enchant_keep","保留原詞綴","KeepEnchant",66,65,23,7)
+    end
+   elseif S.location=="forge" then
+    local pageCount=max(1,math.ceil(#S.items/6));formalPage=min(formalPage,pageCount)
+    text("forge_heading","選三件放上鐵砧",37,19,55,4)
+    text("forge_recipe","同名同階 ×3 → 升階　　任意裝備 ×3 → 重骰",37,23.5,55,3.5)
+    for j=1,6 do
+     local index=(formalPage-1)*6+j;local item=S.items[index];local col=(j-1)%3;local row=floor((j-1)/3);local x=37+col*18.5;local y=28+row*22
+     nineSlice("forge_item_panel_"..j,"texture://ui_card",x,y,17.2,20.5)
+     if item then
+      img("forge_item_icon_"..j,"texture://ui_gear-"..item.skill,x+1.3,y+1.4,4.8,6.7)
+      text("forge_item_name_"..j,item.name.." · Lv."..(item.level or 1),x+6.4,y+1.5,9.7,5)
+      text("forge_item_state_"..j,forgeCardLabel(item),x+1.3,y+9.2,14.5,3.5)
+      button("forge_select_"..j,forgeSelected(item.id) and "取消選取" or itemEquipped(item.id) and "已穿戴" or "選取","ForgeSelect"..index,x+1.3,y+14.2,14.5,4.6,not itemEquipped(item.id))
+     else
+      text("forge_item_empty_"..j,"空的砧座",x+2,y+8,13,4)
+     end
+    end
+    text("forge_selection",forgeSelectionSummary(),37,73.5,20,4)
+    local ascend=forgeCanAscend();local reroll=forgeCanReroll()
+    button("forge_ascend",ascend and "同名合成升階" or "同名 ×3 升階","ForgeAscend",57,73,16.5,6,ascend,"shop-button-primary-v2")
+    button("forge_reroll",reroll and "任意三件重骰" or "任意 ×3 重骰","ForgeReroll",75,73,16.5,6,reroll,"shop-button-secondary-v2")
+    if pageCount>1 then
+     button("forge_prev","‹","UI_page_prev",57,82,7,5,formalPage>1)
+     text("forge_page",formalPage.." / "..pageCount,65,82.5,10,3.5)
+     button("forge_next","›","UI_page_next",76,82,7,5,formalPage<pageCount)
     end
    else
     local isMarket=S.location=="market"
@@ -3020,9 +3294,9 @@ end
        img("stock_icon_"..j,"texture://ui_gear-"..item.skill,x+3.25,y+8.5,8.25,12)
        text("stock_name_"..j,item.name,x+2,y+21,10.75,4)
        text("stock_desc_"..j,skillSummary(item.skill),x+2,y+26,10.75,8)
-       img("stock_cost_icon_"..j,"texture://ui_icon-crystal",x+2,y+36.5,2,3.5)
-       text("stock_cost_"..j,item.price,x+4.2,y+35,2.8,6.5)
-       text("stock_deploy_"..j,"派兵費\n+"..(item.deployExtra or 0),x+7.75,y+35,5,6.5)
+       img("stock_cost_icon_"..j,"texture://ui_icon-crystal",x+1.6,y+36.1,2,3.5)
+       text("stock_cost_"..j,item.price,x+3.9,y+36,2.6,3.6)
+       text("stock_deploy_"..j,"派兵費 +"..(item.deployExtra or 0),x+6.9,y+36,6.9,3.6)
        text("stock_detail_"..j,item.sold and "已取得" or "查看詳情",x+1.75,y+42,11.25,5.5)
        -- One action across the entire card; added after its decorative nodes.
        table.insert(nodes,{kind="button",id="stock_hit_"..j,text="",action="ShopDetail"..index,rect=rect(x,y,14.75,51)})
@@ -3083,7 +3357,7 @@ end
        img("stock_cost_icon_"..j,"texture://ui_"..(item.currency=="crystal" and "icon-crystal" or "icon-coin"),x+8,y+33,3,4)
        text("stock_cost_"..j,item.price,x+12,y+33,8,4)
        local allowed=not item.sold and funds>=item.price and (item.kind~="gear" or #S.items<24) and (item.kind~="rune" or runeCopies(item.value)<3) and (item.kind~="potion" or #S.potions<2) and (item.kind~="tech" or not S.researchUsed)
-       button("buy_"..j,item.sold and "已取得 · 詳情" or "查看詳情","ShopDetail"..index,x+2,y+40,23,7,true)
+       button("buy_"..j,item.sold and "已取得 · 詳情" or "查看詳情","ShopDetail"..index,x+2,y+40,23,7,true,"shop-button-primary-v2")
        if index==formalShopDetail then supplyDetail={item=item,name=displayName,index=index,description=desc,icon=icon,allowed=allowed}end
       else
        text("stock_empty_"..j,"本頁沒有其他物資",x+3,y+20,21,5)
@@ -3097,7 +3371,7 @@ end
    end
    if S.location~="market" then
     local notice=(formalReceipt~="" and frame<formalReceiptUntil) and formalReceipt or S.message
-    if notice~="" then for _,node in ipairs(nodes)do if node.id=="shopkeeper_line" then node.text=wrap(notice,13)end end end
+    if notice~="" then for _,node in ipairs(nodes)do if node.id=="shopkeeper_line" then node.text=notice end end end
    end
   end
  end
@@ -3111,7 +3385,7 @@ end
   img("shop_detail_price_icon","texture://ui_"..(item.currency=="crystal" and "icon-crystal" or "icon-coin"),46,32,3,4)
   text("shop_detail_price",item.price,50,32,10,4)
   text("shop_detail_effect",supplyDetail.description,25,45,50,23)
-  button("shop_detail_buy",item.sold and "已取得" or supplyDetail.allowed and "確認買入" or "目前無法購買","Buy"..supplyDetail.index,26,74,23,7,supplyDetail.allowed)
+  button("shop_detail_buy",item.sold and "已取得" or supplyDetail.allowed and "確認買入" or "目前無法購買","Buy"..supplyDetail.index,26,74,23,7,supplyDetail.allowed,"shop-button-primary-v2")
   closeButton("shop_detail_close","ShopDetailClose",71,16)
  end
  if formalGearDetail>0 and S.phase=="loadout" then
@@ -3128,14 +3402,18 @@ end
    end
    nodes=backdrop
    img("gear_detail_shade","texture://ui_scene-shade",0,0,100,100)
-   nineSlice("gear_detail_modal","texture://ui_shop-window-panel-v2",18,12,64,76)
-   img("gear_detail_icon","texture://ui_gear-"..item.skill,25,24,12,20)
-   text("gear_detail_title",item.name,40,24,34,5)
+   nineSlice("gear_detail_modal","texture://ui_shop-window-panel-v2",20,10,60,80)
+   img("gear_detail_acorn","texture://ui_loadout-acorn-emblem-v1",47,11,6,7)
+   img("gear_detail_rim","texture://ui_loadout-rarity-ring-v1",25,23,16,21)
+   img("gear_detail_icon","texture://ui_gear-"..item.skill,28,27,10,14)
+   text("gear_detail_title",item.name,44,23,30,5)
    local holder=nil;for k,worn in ipairs(S.worn)do if worn[item.slot]==item.id then holder=k end end
-   text("gear_detail_quote",(holder and unitNames[holder].."穿戴中" or "存放在行囊").."\n穿戴後派兵費 "..costs(S.selected,item).." 金幣",40,33,34,5)
-   text("gear_detail_effect",skillDetail(item.skill)..(item.enchant and "\n附魔："..skillDetail(item.enchant) or ""),25,47,50,19)
-   button("gear_detail_equip",holder and holder~=S.selected and "轉交此裝備" or "穿戴此裝備","Equip"..formalGearDetail,26,74,23,7,S.worn[S.selected][item.slot]~=item.id)
-   closeButton("gear_detail_close","GearDetailClose",71,16)
+   text("gear_detail_quote",(holder and unitNames[holder].."穿戴中" or "存放在行囊").."\n穿戴後派兵費 "..costs(S.selected,item).." 金幣",44,31,30,6)
+   text("gear_detail_level","裝備階級 · Lv."..(item.level or 1).." / 3",44,39,30,4)
+   text("gear_detail_effect",skillDetail(item.skill)..(item.enchant and "\n附魔："..skillDetail(item.enchant) or ""),25,49,50,16)
+   text("gear_detail_recipe",(item.level or 1)>=3 and "已達最高階" or "鐵匠鋪：三件同名同階裝備可合成升階",25,66,50,5)
+   button("gear_detail_equip",holder and holder~=S.selected and "轉交此裝備" or "穿戴此裝備","Equip"..formalGearDetail,27,75,28,7,S.worn[S.selected][item.slot]~=item.id)
+   closeButton("gear_detail_close","GearDetailClose",75,13)
   end
  end
  if S.phase=="battle" and S.autoConfigOpen then
@@ -3171,7 +3449,8 @@ end
     if #node.children>0 then
      local left=math.huge;local bottom=math.huge;local right=-math.huge;local top=-math.huge
      for _,child in ipairs(node.children)do local r=child.rect;left=min(left,r.x);bottom=min(bottom,r.y);right=math.max(right,r.x+r.width);top=math.max(top,r.y+r.height)end
-     node.rect={x=left,y=bottom,width=right-left,height=top-bottom};table.insert(out,node)
+     node.rect={x=left,y=bottom,width=right-left,height=top-bottom}
+     table.insert(out,node)
     end
    elseif not hidden[node.id] and not hidden[string.gsub(node.id,"_hit_[a-z]+$","")] then table.insert(out,node)end
   end
@@ -3256,16 +3535,23 @@ function Game.update(api:any,dt:number)
    S.profiles=profiles;S.town=town;S.activeProfile=activeProfile;S.deleteCandidate=0;persistProfiles()
   elseif pressed(api,"CancelDelete") then S.deleteCandidate=0 end
  end
- if S.phase=="menu" and formalRoute=="settings" then
-  local changed=false
-  if pressed(api,"Setting_music_down") then settings.music=max(0,settings.music-.1);changed=true end
-  if pressed(api,"Setting_music_up") then settings.music=min(1,settings.music+.1);changed=true end
-  if pressed(api,"Setting_sfx_down") then settings.sfx=max(0,settings.sfx-.1);changed=true end
-  if pressed(api,"Setting_sfx_up") then settings.sfx=min(1,settings.sfx+.1);changed=true end
-  if pressed(api,"Setting_quality") then local order={"low","medium","high"};local index=table.find(order,settings.quality) or 3;settings.quality=order[index%#order+1];changed=true end
-  if pressed(api,"Setting_language") then local order={"繁中","简中","English"};local index=table.find(order,settings.language) or 1;settings.language=order[index%#order+1];changed=true end
-  if changed then S.settings=settings;persistProfiles() end
- end
+  if S.phase=="menu" and formalRoute=="settings" then
+   local changed=settingsPointerChanged;settingsPointerChanged=false
+   if pressed(api,"SettingsDropdownClose") or (pause and settingsDropdownOpen~="") then settingsDropdownOpen="";pause=false end
+   if pressed(api,"Setting_music_down") then settings.music=max(0,settings.music-.1);changed=true end
+   if pressed(api,"Setting_music_up") then settings.music=min(1,settings.music+.1);changed=true end
+   if pressed(api,"Setting_sfx_down") then settings.sfx=max(0,settings.sfx-.1);changed=true end
+   if pressed(api,"Setting_sfx_up") then settings.sfx=min(1,settings.sfx+.1);changed=true end
+   if pressed(api,"Setting_quality") then settingsDropdownOpen=settingsDropdownOpen=="quality" and "" or "quality" end
+   if pressed(api,"Setting_language") then settingsDropdownOpen=settingsDropdownOpen=="language" and "" or "language" end
+   local qualityChoice=nil
+   for _,choice in ipairs({"low","medium","high"})do if pressed(api,"Setting_quality_"..choice)then qualityChoice=choice end end
+   if qualityChoice then settings.quality=qualityChoice;settingsDropdownOpen="";changed=true end
+   local languageChoice=nil
+   for _,choice in ipairs({{"zh_tw","繁中"},{"zh_cn","简中"},{"en","English"}})do if pressed(api,"Setting_language_"..choice[1])then languageChoice=choice[2] end end
+   if languageChoice then settings.language=languageChoice;settingsDropdownOpen="";changed=true end
+   if changed then S.settings=settings;persistProfiles() end
+  end
  local autoHandled=autoInput(api,pause);if autoHandled then pause=false end
  -- Local player stays at the assigned cannon. UI/debug actions cannot change seats.
  for i=1,3 do if pressed(api,"Unit"..i) or pressed(api,"Digit"..i) then S.selected=i end end
@@ -3320,6 +3606,11 @@ function Game.update(api:any,dt:number)
   for i=1,#runeDefinitions do if pressed(api,"SellRune"..i) and S.location=="rune" and S.runeBag[i]>0 then
    local value=floor(runePrices[i]*.5);S.runeBag[i]-=1;S.crystals+=value;S.crystalSold+=value
   end end
+  if S.location=="forge" then
+   for i=1,#S.items do if pressed(api,"ForgeSelect"..i) then forgeToggle(i) end end
+   if pressed(api,"ForgeAscend") then forgeAscend() end
+   if pressed(api,"ForgeReroll") then forgeReroll() end
+  end
   for i=1,#S.stock do if pressed(api,"Buy"..i)then
    local item=S.stock[i]
    if item and not item.sold then
@@ -3400,6 +3691,9 @@ function Game.update(api:any,dt:number)
   end
  end
  if pause and S.phase=="battle" then S.paused=not S.paused end
+ if pressed(api,"ConvertCrystal") and S.phase=="battle" and not S.paused and not autoHandled and S.crystals>0 then
+  local rate=crystalGoldRate();S.crystals-=1;S.crystalExchanged+=1;S.coins+=rate;S.message="結晶換金：+"..rate.." 金幣"
+ end
  if S.phase=="battle" and not S.paused and not autoHandled then
   targeting(api)
   updateCombat(dt)

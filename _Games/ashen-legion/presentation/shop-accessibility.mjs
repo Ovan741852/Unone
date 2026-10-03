@@ -8,6 +8,7 @@ export function createShopAccessibility({canvas,stage,onAction,onHold=()=>{}}){
  root.append(status,description);canvas.append(root);
  const ring=document.createElement('div');ring.dataset.shopFocus='';ring.hidden=true;
  Object.assign(ring.style,{position:'absolute',pointerEvents:'none',zIndex:'5',outline:'3px solid #ffe197',outlineOffset:'3px',boxShadow:'0 0 0 3px #192219',borderRadius:'4px'});stage.append(ring);
+ const lists=new Map();
  const buttons=new Map();let rects=new Map(),wasModal=false,returnId='',active=false,keyboard=false,closeAction='',heldAction='';
  const releaseHold=()=>{if(heldAction){onHold(heldAction,false);heldAction=''}};
  const assign=(el,key,value)=>{if(el.getAttribute(key)!==value)el.setAttribute(key,value)};
@@ -25,7 +26,18 @@ export function createShopAccessibility({canvas,stage,onAction,onHold=()=>{}}){
   if(['Space','Enter'].includes(event.code)&&event.target.dataset.action==='OpenChest'){
    event.preventDefault();if(!heldAction){heldAction='OpenChest';onHold(heldAction,true)}return;
   }
-  if(event.code==='Escape'){event.preventDefault();onAction(closeAction||'Escape');}
+  if(event.code==='Escape'){event.preventDefault();event.stopPropagation();onAction(closeAction||'Escape');return;}
+  if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){
+   const id=event.target.dataset.shopControl,owner=id?.split('_option_')[0];
+   const combo=buttons.get(owner);
+   if(combo?.getAttribute('role')==='combobox'){
+    event.preventDefault();event.stopPropagation();
+    if(combo.getAttribute('aria-expanded')!=='true'){onAction(combo.dataset.action);return;}
+    const options=[...buttons.entries()].filter(([key])=>key.startsWith(owner+'_option_')).map(([,button])=>button);
+    const index=options.indexOf(event.target),next=event.key==='Home'?0:event.key==='End'?options.length-1:Math.max(0,Math.min(options.length-1,index+(event.key==='ArrowUp'?-1:1)));
+    options[next]?.focus();return;
+   }
+  }
   if(event.key==='Tab'&&wasModal){
    const targets=[...buttons.values()].filter(b=>!b.disabled),index=targets.indexOf(document.activeElement);
    if(targets.length&&(event.shiftKey&&index<=0||!event.shiftKey&&index===targets.length-1)){
@@ -39,9 +51,10 @@ export function createShopAccessibility({canvas,stage,onAction,onHold=()=>{}}){
   active=nodes.length>0;root.hidden=!active;
   if(!active){buttons.forEach(b=>b.remove());buttons.clear();rects.clear();wasModal=false;focusRing();return;}
   const kind=by.has('shop_detail_title')?'shop':by.has('town_upgrade_title')?'town':by.has('gear_detail_title')?'gear':by.has('delete_warning')?'delete':by.has('enchant_reveal_name')?'enchant':by.has('abandon_warning')?'abandon':game.autoConfigOpen?'auto':'';
+  const expandedCombo=nodes.find(n=>n.kind==='combobox'&&n.expanded);
   const modal=!!kind,title=by.get(kind+'_detail_title')?.text??by.get('town_upgrade_title')?.text;
-  closeAction=({shop:'ShopDetailClose',gear:'GearDetailClose',town:'TownUpgradeCancel',delete:'CancelDelete',enchant:'KeepEnchant',abandon:'UI_home',auto:'Auto_cancel'})[kind]??'';
-  const modalIds={shop:['shop_detail_close','shop_detail_buy'],gear:['gear_detail_close','gear_detail_equip'],town:['town_upgrade_cancel','town_upgrade_confirm'],delete:['delete_cancel','delete_confirm'],enchant:['enchant_keep','enchant_accept'],abandon:['abandon_cancel','abandon_confirm']};
+  closeAction=({shop:'ShopDetailClose',gear:'GearDetailClose',town:'TownUpgradeCancel',delete:'CancelDelete',enchant:'KeepEnchant',abandon:'UI_home',auto:'Auto_cancel'})[kind]??(expandedCombo?'SettingsDropdownClose':'');
+  const modalIds={shop:['shop_detail_close','shop_detail_buy','shop_detail_cancel'],gear:['gear_detail_close','gear_detail_equip'],town:['town_upgrade_cancel','town_upgrade_confirm'],delete:['delete_cancel','delete_confirm'],enchant:['enchant_keep','enchant_accept'],abandon:['abandon_cancel','abandon_confirm']};
   const first=modalIds[kind]?.[0]??(kind==='auto'?'auto_cancel':'');
   assign(root,'role',modal?'dialog':'group');assign(root,'aria-label',kind==='shop'?`裝備詳情：${title}`:title??by.get('screen_title')?.text??by.get('title')?.text??'森林領主');
   if(modal)assign(root,'aria-modal','true');else root.removeAttribute('aria-modal');
@@ -52,7 +65,7 @@ export function createShopAccessibility({canvas,stage,onAction,onHold=()=>{}}){
    setText(status,`${by.get('map_stage')?.text??''}。${by.get('map_current_title')?.text??''}。${game.mapMoving?'行軍中，抵達後自動展開景點。':'已抵達，可以選擇景點。'}`);
    setText(description,`旅程依序前進，地圖編號不是可選路線。${by.get('map_next')?.text??''}。`);
   }
-  const seen=new Set(),generic=nodes.filter(n=>{if(n.kind!=='button'||/_hit_(top|bottom)$/.test(n.id)||seen.has(n.action))return false;seen.add(n.action);return true}).sort((a,b)=>(b.rect.y+b.rect.height)-(a.rect.y+a.rect.height)||a.rect.x-b.rect.x).map(n=>n.id);
+  const seen=new Set(),generic=nodes.filter(n=>{if(!['button','combobox'].includes(n.kind)||n.id==='settings_dropdown_dismiss'||/_hit_(top|bottom)$/.test(n.id)||seen.has(n.action))return false;seen.add(n.action);return true}).sort((a,b)=>(b.rect.y+b.rect.height)-(a.rect.y+a.rect.height)||a.rect.x-b.rect.x).map(n=>n.id);
   const ids=modalIds[kind]??(by.has('shop_window_title')?['tab_home','tab_sell',...Array.from({length:4},(_,i)=>'stock_hit_'+(i+1)),'refresh','ready','quick_deploy']:generic);
   const focusedId=document.activeElement?.dataset.shopControl;
   if(kind==='shop'&&!wasModal){
@@ -66,6 +79,18 @@ export function createShopAccessibility({canvas,stage,onAction,onHold=()=>{}}){
    if(!button){button=document.createElement('button');button.type='button';button.dataset.shopControl=id;button.addEventListener('click',()=>{if(!button.disabled&&button.dataset.action!=='OpenChest')onAction(button.dataset.action)});buttons.set(id,button);root.append(button);}
    const action=node.action??(id==='refresh'?by.get('refresh_content_hit')?.action:undefined);
    button.disabled=!action;button.dataset.action=action??'';
+   if(node.kind==='combobox'){
+    assign(button,'role','combobox');assign(button,'aria-haspopup','listbox');assign(button,'aria-expanded',String(node.expanded));
+    assign(button,'aria-controls',id+'_accessible_options');
+   }else{button.removeAttribute('role');button.removeAttribute('aria-haspopup');button.removeAttribute('aria-expanded');button.removeAttribute('aria-controls');}
+   if(id.includes('_option_')&&by.get(id.split('_option_')[0])?.kind==='combobox'){
+    const owner=id.split('_option_')[0];let list=lists.get(owner);
+    if(!list){list=document.createElement('div');list.id=owner+'_accessible_options';list.setAttribute('role','listbox');list.setAttribute('aria-label',by.get(owner+'_label')?.text??owner);root.append(list);lists.set(owner,list);}
+    if(button.parentElement!==list)list.append(button);
+    assign(button,'role','option');assign(button,'aria-selected',String(by.has(id+'_check')));
+   }
+
+
    let label=node.text;
    if(id==='tab_gear')label='裝備分頁';
    if(id==='tab_runes')label='符文分頁';
@@ -78,9 +103,13 @@ export function createShopAccessibility({canvas,stage,onAction,onHold=()=>{}}){
    if(/^choice_\d+$/.test(id)){const i=id.split('_')[1];label=`${by.get('choice_name_'+i)?.text}，${by.get('choice_desc_'+i)?.text.replaceAll('\n','')}。拜訪此處`;}
    if(/^town_\d+$/.test(id)){const i=id.split('_')[1];label=`${by.get('town_name_'+i)?.text}，${by.get('town_effect_'+i)?.text}，建材 ${by.get('town_cost_'+i)?.text}。查看研究條件`;}
    if(/^profile_(create|load|delete)_\d+$/.test(id))label=`札記 ${id.split('_').at(-1)}，${node.text}`;
-   if(/^settings_(quality|language)$/.test(id))label=`${by.get(id+'_label')?.text}，目前 ${by.get(id+'_value')?.text}，${node.text}`;
+   if(/^settings_(quality|language)_option_/.test(id))label=by.get(id+'_label')?.text;
+   if(/^settings_(quality|language)$/.test(id))label=`${by.get(id+'_label')?.text}，目前 ${by.get(id+'_value')?.text}`;
    if(/^inspect_\d+$/.test(id))label=`${by.get('gear_name_'+id.split('_')[1])?.text}，查看裝備詳情`;
    if(/^equip_\d+$/.test(id))label=`${by.get('gear_name_'+id.split('_')[1])?.text}，${node.text}`;
+   if(/^forge_select_\d+$/.test(id)){const i=id.split('_').at(-1);label=`${by.get('forge_item_name_'+i)?.text??'裝備'}，${node.text}`;}
+   if(id==='forge_ascend')label=`同名裝備合成升階，${node.text}`;
+   if(id==='forge_reroll')label=`任意三件裝備重骰，${node.text}`;
    if(id.startsWith('stock_hit_')){const i=id.split('_').at(-1),item=Object.values(game.stock??{})[Number(i)-1];label=item?`${item.name}，${by.get('stock_desc_'+i)?.text.replaceAll('\n','')??''}，售價 ${item.price} 結晶，派兵費增加 ${item.deployExtra??0} 金幣${item.sold?'，已取得':''}。查看詳情`:'查看商品詳情';}
    if(id==='quick_deploy')label='直接出戰，使用目前配裝；新買裝備需先穿戴';
    if(id==='refresh')label=`重骰商品，消耗 ${game.refreshCost??2} 結晶${action?'':'，結晶不足'}`;
@@ -97,12 +126,13 @@ export function createShopAccessibility({canvas,stage,onAction,onHold=()=>{}}){
    nextRects.set(id,{x,y,width:Math.max(...parts.map(r=>r.x+r.width))-x,height:Math.max(...parts.map(r=>r.y+r.height))-y});
   }
   for(const [id,button]of buttons)if(!ids.includes(id)||!by.has(id)){button.remove();buttons.delete(id);}
+  for(const [id,list]of lists)if(!by.get(id)?.expanded){list.remove();lists.delete(id);}
   rects=nextRects;
   if(heldAction&&![...buttons.values()].some(b=>b.dataset.action===heldAction))releaseHold();
   if(modal&&!wasModal)buttons.get(first)?.focus();
   else if(!modal&&wasModal)(buttons.get(returnId)??[...buttons.values()].find(b=>!b.disabled))?.focus();
   else if(focusedId&&buttons.get(focusedId)?.disabled)buttons.get(first)?.focus();
-  else if(focusedId&&!buttons.has(focusedId))([...buttons.values()].find(b=>!b.disabled))?.focus();
+  else if(focusedId&&!buttons.has(focusedId))(buttons.get(focusedId.split('_option_')[0])??[...buttons.values()].find(b=>!b.disabled))?.focus();
   wasModal=modal;focusRing();
  }
  return {sync,dispose(){releaseHold();window.removeEventListener('blur',releaseHold);document.removeEventListener('keydown',onKeyboard,true);document.removeEventListener('pointerdown',onPointer,true);root.remove();ring.remove()}};

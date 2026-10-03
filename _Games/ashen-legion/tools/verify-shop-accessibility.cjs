@@ -4,7 +4,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const uiPoint=require('./ui-test-pointer.cjs');
 (async()=>{
  const browser=await chromium.launch({channel:'msedge',headless:true});
- const report={ok:false,checks:[],errors:[]},out=process.env.GAME_TEST_EVIDENCE?path.resolve(process.env.GAME_TEST_EVIDENCE):path.resolve(__dirname,'../tests/shop-layout');
+ const report={ok:false,checks:[],errors:[]},out=path.resolve(__dirname,'../tests/shop-layout');
  try{
   const page=await browser.newPage({viewport:{width:1280,height:720},hasTouch:true});
   page.on('pageerror',e=>report.errors.push(e.message));
@@ -30,7 +30,7 @@ const uiPoint=require('./ui-test-pointer.cjs');
   assert.ok(report.accessibilityTree.some(n=>n.role==='button'&&n.name.includes('查看詳情')),'Native accessibility tree must expose cards');
   assert.ok(report.accessibilityTree.some(n=>n.role==='button'&&n.name.includes('重骰')),'Native accessibility tree must expose reroll');
   await page.keyboard.press('Enter');await page.waitForTimeout(350);assert.equal(await modal(),true);assert.equal(await focused(),'shop_detail_close');
-  await page.keyboard.press('Shift+Tab');assert.equal(await focused(),'shop_detail_buy');
+  await page.keyboard.press('Shift+Tab');assert.equal(await focused(),'shop_detail_cancel');
   await page.keyboard.press('Tab');assert.equal(await focused(),'shop_detail_close');
   await page.keyboard.press('Tab');assert.equal(await focused(),'shop_detail_buy');
   await page.screenshot({path:path.join(out,'keyboard-focus-desktop.png')});

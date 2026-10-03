@@ -1,4 +1,6 @@
-# 森林領主 · Unone 漁機肉鴿
+# 是的，領主大人 · Unone 漁機肉鴿
+
+故事與世界觀設定見 [STORY.md](STORY.md)。
 
 私人 GitHub 倉庫、Git LFS 與獨立 clone 的引擎依賴，見 [REPOSITORY.md](REPOSITORY.md)。
 

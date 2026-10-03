@@ -1605,6 +1605,11 @@
       "source": "assets/formal-ui/expedition-keyart-v2.png"
     },
     {
+      "id": "texture://ui_game-logo-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/game-logo-v1.png"
+    },
+    {
       "id": "texture://ui_portrait-lord-v2",
       "kind": "texture2d",
       "source": "assets/formal-ui/portrait-lord-v2.png"
@@ -1630,9 +1635,99 @@
       "source": "assets/formal-ui/shop-window-panel-v2.png"
     },
     {
+      "id": "texture://ui_shop-window-panel-v2-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-tl.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-t.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-tr.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-l.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-c.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-r.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-bl.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-b.png"
+    },
+    {
+      "id": "texture://ui_shop-window-panel-v2-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-window-panel-v2-br.png"
+    },
+    {
       "id": "texture://ui_shop-card-rare-v2",
       "kind": "texture2d",
       "source": "assets/formal-ui/shop-card-rare-v2.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-tl.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-t.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-tr.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-l.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-c.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-r.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-bl.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-b.png"
+    },
+    {
+      "id": "texture://ui_shop-card-rare-v2-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-rare-v2-br.png"
     },
     {
       "id": "texture://ui_shop-card-epic-v2",
@@ -1640,9 +1735,99 @@
       "source": "assets/formal-ui/shop-card-epic-v2.png"
     },
     {
+      "id": "texture://ui_shop-card-epic-v2-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-tl.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-t.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-tr.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-l.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-c.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-r.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-bl.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-b.png"
+    },
+    {
+      "id": "texture://ui_shop-card-epic-v2-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-epic-v2-br.png"
+    },
+    {
       "id": "texture://ui_shop-card-legendary-v2",
       "kind": "texture2d",
       "source": "assets/formal-ui/shop-card-legendary-v2.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-tl.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-t.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-tr.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-l.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-c.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-r.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-bl.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-b.png"
+    },
+    {
+      "id": "texture://ui_shop-card-legendary-v2-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-card-legendary-v2-br.png"
     },
     {
       "id": "texture://ui_shop-button-primary-v2",
@@ -1650,14 +1835,159 @@
       "source": "assets/formal-ui/shop-button-primary-v2.png"
     },
     {
+      "id": "texture://ui_shop-button-primary-v2-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-tl.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-t.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-tr.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-l.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-c.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-r.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-bl.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-b.png"
+    },
+    {
+      "id": "texture://ui_shop-button-primary-v2-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-primary-v2-br.png"
+    },
+    {
       "id": "texture://ui_shop-button-secondary-v2",
       "kind": "texture2d",
       "source": "assets/formal-ui/shop-button-secondary-v2.png"
     },
     {
+      "id": "texture://ui_shop-button-secondary-v2-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-tl.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-t.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-tr.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-l.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-c.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-r.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-bl.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-b.png"
+    },
+    {
+      "id": "texture://ui_shop-button-secondary-v2-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/shop-button-secondary-v2-br.png"
+    },
+    {
+      "id": "texture://ui_control-chevron-down",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-chevron-down.svg"
+    },
+    {
+      "id": "texture://ui_control-chevron-up",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-chevron-up.svg"
+    },
+    {
       "id": "texture://ui_control-quiet-v3",
       "kind": "texture2d",
       "source": "assets/formal-ui/control-quiet-v3.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-tl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-tl.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-t",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-t.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-tr",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-tr.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-l",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-l.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-c",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-c.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-r",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-r.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-bl",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-bl.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-b",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-b.png"
+    },
+    {
+      "id": "texture://ui_control-quiet-v3-br",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/control-quiet-v3-br.png"
     },
     {
       "id": "texture://ui_loadout-board-v1",
@@ -1668,6 +1998,21 @@
       "id": "texture://ui_loadout-board-v2",
       "kind": "texture2d",
       "source": "assets/formal-ui/loadout-board-v2.png"
+    },
+    {
+      "id": "texture://ui_loadout-board-v3",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/loadout-board-v3.png"
+    },
+    {
+      "id": "texture://ui_loadout-acorn-emblem-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/loadout-acorn-emblem-v1.png"
+    },
+    {
+      "id": "texture://ui_loadout-rarity-ring-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/loadout-rarity-ring-v1.png"
     },
     {
       "id": "texture://ui_loadout-slot-empty-v1",
@@ -1738,6 +2083,56 @@
       "id": "texture://ui_target-wheel",
       "kind": "texture2d",
       "source": "assets/formal-ui/target-wheel.png"
+    },
+    {
+      "id": "texture://ui_event-horde",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/event-horde.png"
+    },
+    {
+      "id": "texture://ui_settings-slider-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/settings-slider-v1.png"
+    },
+    {
+      "id": "texture://ui_settings-slider-thumb-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/settings-slider-thumb-v1.png"
+    },
+    {
+      "id": "texture://ui_settings-dropdown-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/settings-dropdown-v1.png"
+    },
+    {
+      "id": "texture://ui_settings-slider-rail-v1",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/settings-slider-rail-v1.png"
+    },
+    {
+      "id": "texture://ui_settings-field-v5",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/settings-field-v5.png"
+    },
+    {
+      "id": "texture://ui_settings-rail-v5",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/settings-rail-v5.svg"
+    },
+    {
+      "id": "texture://ui_settings-fill-v5",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/settings-fill-v5.svg"
+    },
+    {
+      "id": "texture://ui_settings-divider-v5",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/settings-divider-v5.svg"
+    },
+    {
+      "id": "texture://ui_settings-option-v5",
+      "kind": "texture2d",
+      "source": "assets/formal-ui/settings-option-v5.svg"
     }
   ]
 }

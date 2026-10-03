@@ -3,13 +3,15 @@ import {fileURLToPath} from 'node:url';
 import {join} from 'node:path';
 import {createRequire} from 'node:module';
 import {storybookUI} from './storybook-ui.mjs';
-import {skins} from '../presentation/ui-components.mjs';
-import skinData from '../presentation/ui-skin-data.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url)),dir=join(root,'assets/formal-ui');mkdirSync(dir,{recursive:true});
 // Publish complete files atomically; Windows asset watchers can briefly hold handles.
 function writeFileSync(path,data){const pending=path+'.ui-pending';for(let attempt=0;attempt<12;attempt++){try{writeNative(pending,data);renameSync(pending,path);return;}catch(error){if(attempt===11)throw error;Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,50);}}}
 const require=createRequire(import.meta.url);
-const {chromium}=require('C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+// Resolve Playwright from PLAYWRIGHT_MODULE, then the pinned Codex runtime,
+// then a normal install. Unchanged on the machine that pinned it.
+const playwrightCandidates=[process.env.PLAYWRIGHT_MODULE,'C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright','playwright'].filter(Boolean);
+const {chromium}=(()=>{const tried=[];for(const id of playwrightCandidates){try{return require(id);}catch(error){tried.push(id+': '+error.code);}}
+ throw Error('Playwright not found. Set PLAYWRIGHT_MODULE. Tried '+tried.join('; '));})();
 const panel=`<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="512" viewBox="0 0 1024 512"><path d="M0 0H1024V512H0Z" fill="#101d18" fill-opacity=".97"/><path d="M8 25L25 8H999L1016 25V487L999 504H25L8 487Z" fill="none" stroke="#d9bb75" stroke-width="3"/><path d="M18 36L36 18H988L1006 36V476L988 494H36L18 476Z" fill="none" stroke="#6d7753"/><g fill="#d9bb75"><path d="M8 8H75L52 22H22V54L8 76ZM1016 8H949L972 22H1002V54L1016 76ZM8 504H75L52 490H22V458L8 436ZM1016 504H949L972 490H1002V458L1016 436Z"/><path d="M485 8L512 28L539 8L512 16ZM485 504L512 484L539 504L512 496Z"/></g><path d="M30 58L210 30L48 160ZM970 344L810 480L994 454Z" fill="#26382a" opacity=".45"/></svg>`;
 const plate=color=>`<svg xmlns="http://www.w3.org/2000/svg" width="512" height="128"><path d="M1 15L18 1H493L511 16V112L494 127H18L1 112Z" fill="${color}" stroke="#d3b572" stroke-width="2"/><path d="M8 23L23 8H486L504 23V105L488 120H23L8 105Z" fill="none" stroke="#070f0c" stroke-width="4"/><path d="M15 32L29 19H130L15 61ZM497 65L383 109H482L497 95Z" fill="#d8c18a" opacity=".13"/></svg>`;
 const crest=`<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><path d="M128 9L229 59L214 177L128 247L42 177L27 59Z" fill="#0c1e17" stroke="#d7b86b" stroke-width="7"/><path d="M128 29L209 70L196 166L128 221Z" fill="#456043"/><path d="M128 29L47 70L60 166L128 221Z" fill="#243d2e"/><path d="M62 81L83 99L94 58L128 89L162 58L173 99L194 81L178 133H78Z" fill="#edcc81" stroke="#111c13" stroke-width="5"/><path d="M81 145H175L167 170H144V203H112V170H89Z" fill="#b23f2c" stroke="#111c13" stroke-width="5"/><path d="M120 148H136V198H120Z" fill="#f3d996"/></svg>`;
@@ -75,16 +77,19 @@ try{const page=await browser.newPage({viewport:{width:1100,height:600}});for(con
 const manifest=JSON.parse(readFileSync(join(root,'assets.json'),'utf8'));manifest.assets=manifest.assets.filter(a=>!a.id.startsWith('texture://ui_'));
 for(const name of inputs.map(x=>x[0]))manifest.assets.push({id:'texture://ui_'+name,kind:'texture2d',source:'assets/formal-ui/'+name+'.png'});
 for(const name of ['expedition-keyart-v1','quartermaster-v1','expedition-keyart-v2','portrait-lord-v2'])manifest.assets.push({id:'texture://ui_'+name,kind:'texture2d',source:'assets/formal-ui/'+name+'.png'});
+manifest.assets.push({id:'texture://ui_game-logo-v1',kind:'texture2d',source:'assets/formal-ui/game-logo-v1.png'});
 // Ivy has her own portrait; rune and military research are different people.
 manifest.assets.push({id:'texture://ui_portrait-runesmith',kind:'texture2d',source:'assets/formal-ui/characters-v1/portrait-runesmith.png'});
 for(const name of ['forest-map-v2','map-waypoint-v2'])manifest.assets.push({id:'texture://ui_'+name,kind:'texture2d',source:'assets/formal-ui/map-v2/'+name+'.png'});
 const generatedShopAssets=['shop-window-panel-v2','shop-card-rare-v2','shop-card-epic-v2','shop-card-legendary-v2','shop-button-primary-v2','shop-button-secondary-v2','control-quiet-v3'];
-for(const name of generatedShopAssets)if(existsSync(join(dir,name+'.png')))manifest.assets.push({id:'texture://ui_'+name,kind:'texture2d',source:'assets/formal-ui/'+name+'.png'});
-const loadoutAssets=['loadout-board-v1','loadout-board-v2','loadout-slot-empty-v1','loadout-item-tile-v1','loadout-item-tile-v2','shop-close-v2'];
+const generatedShopSlices=['tl','t','tr','l','c','r','bl','b','br'];
+for(const name of generatedShopAssets)if(existsSync(join(dir,name+'.png'))){manifest.assets.push({id:'texture://ui_'+name,kind:'texture2d',source:'assets/formal-ui/'+name+'.png'});for(const slice of generatedShopSlices)if(existsSync(join(dir,`${name}-${slice}.png`)))manifest.assets.push({id:'texture://ui_'+name+'-'+slice,kind:'texture2d',source:'assets/formal-ui/'+name+'-'+slice+'.png'});}
+const loadoutAssets=['loadout-board-v1','loadout-board-v2','loadout-board-v3','loadout-acorn-emblem-v1','loadout-rarity-ring-v1','loadout-slot-empty-v1','loadout-item-tile-v1','loadout-item-tile-v2','shop-close-v2'];
 for(const name of loadoutAssets)if(existsSync(join(dir,name+'.png')))manifest.assets.push({id:'texture://ui_'+name,kind:'texture2d',source:'assets/formal-ui/'+name+'.png'});
 for(const creature of JSON.parse(readFileSync(join(root,'assets/creatures/manifest.json'),'utf8')).filter(c=>c.rank>0))manifest.assets.push({id:'texture://ui_target-'+creature.id,kind:'texture2d',source:'assets/formal-ui/target-'+creature.id+'.png'});
+manifest.assets.push({id:'texture://ui_event-horde',kind:'texture2d',source:'assets/formal-ui/event-horde.png'});
 // Keep approved ImageGen artwork authoritative across subsequent SVG/theme builds.
-for(const imgenPath of [join(root,'design-v1/hazel-imgen-manifest.json'),join(root,'design-v1/hazel-transparent-manifest.json'),join(root,'design-v1/hazel-character-manifest.json'),join(root,'design-v1/expedition-map-manifest.json'),join(root,'design-v1/desktop-ui-v4-manifest.json')])if(existsSync(imgenPath)){
+for(const imgenPath of [join(root,'design-v1/hazel-imgen-manifest.json'),join(root,'design-v1/hazel-transparent-manifest.json'),join(root,'design-v1/hazel-character-manifest.json'),join(root,'design-v1/expedition-map-manifest.json'),join(root,'design-v1/desktop-ui-v4-manifest.json'),join(root,'design-v1/battle-hud-art-manifest.json')])if(existsSync(imgenPath)){
  const art=JSON.parse(readFileSync(imgenPath,'utf8')),seen=new Set();
  for(const entry of art.entries){
   if(!entry.runtime||!existsSync(join(root,entry.runtime)))throw Error('Missing approved artwork for '+entry.id+' in '+imgenPath);
@@ -97,10 +102,6 @@ for(const imgenPath of [join(root,'design-v1/hazel-imgen-manifest.json'),join(ro
  }
 }
 writeFileSync(join(root,'assets.json'),JSON.stringify(manifest,null,2)+'\n');
-const uiPath=join(root,'ui/formal-ui.luau');
-const luaSkins=Object.entries(skinData).map(([name,d])=>` [${JSON.stringify(name)}]={width=${d.width},height=${d.height},x=${d.trim[0]},y=${d.trim[1]},left=${d.borders[0]},top=${d.borders[1]},right=${d.borders[2]},bottom=${d.borders[3]},scale=${JSON.stringify(skins[name].scale)}}`).join(',\n');
-const uiSource=readFileSync(uiPath,'utf8').replace(/-- BEGIN GENERATED UI SKINS[\s\S]*?-- END GENERATED UI SKINS/,`-- BEGIN GENERATED UI SKINS\nlocal formalSkins:any={\n${luaSkins}\n}\n-- END GENERATED UI SKINS`);
-writeFileSync(uiPath,uiSource);
 let main=readFileSync(join(root,'main.luau'),'utf8').replace(/\r\n/g,'\n');
 if(!main.includes('local publishFormalUI:'))main=main.replace('local Game={}','local publishFormalUI:((any)->())?=nil\nlocal Game={}');
 main=main.replace(/-- BEGIN FORMAL UI[\s\S]*?-- END FORMAL UI\n/g,'');
