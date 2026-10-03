@@ -784,12 +784,23 @@ pub struct AssetArchiveEntry {
 
 fn build_bundle_archive(mut entries: Vec<(String, Vec<u8>)>) -> Result<Vec<u8>, String> {
     entries.sort_by(|left, right| left.0.cmp(&right.0));
-    if entries.windows(2).any(|window| window[0].0 == window[1].0) {
-        return Err("The asset bundle contains a duplicate source path".to_string());
+    let mut unique: Vec<(String, Vec<u8>)> = Vec::with_capacity(entries.len());
+    for (path, bytes) in entries {
+        if let Some((previous_path, previous_bytes)) = unique.last() {
+            if previous_path == &path {
+                if previous_bytes != &bytes {
+                    return Err(format!(
+                        "The asset bundle source path '{path}' resolved to conflicting contents"
+                    ));
+                }
+                continue;
+            }
+        }
+        unique.push((path, bytes));
     }
     let mut payload = Vec::new();
-    let mut files = Vec::with_capacity(entries.len());
-    for (path, bytes) in entries {
+    let mut files = Vec::with_capacity(unique.len());
+    for (path, bytes) in unique {
         let offset = payload.len() as u64;
         let size_bytes = bytes.len() as u64;
         files.push(AssetArchiveEntry {
@@ -2047,7 +2058,8 @@ mod tests {
 
     use super::{
         BUNDLE_ARCHIVE_MAGIC, BundleFetcher, BundleManager, BundleManifest, BundleSpec,
-        BundleVerifier, pack_project, read_asset_from_archive, validate_bundle_manifest,
+        BundleVerifier, build_bundle_archive, pack_project, read_asset_from_archive,
+        validate_bundle_manifest,
     };
 
     #[test]
@@ -2188,7 +2200,7 @@ mod tests {
         fs::write(dir.path().join("assets/bird.svg"), b"<svg>bird</svg>").unwrap();
         fs::write(
             dir.path().join("assets/manifest.json"),
-            br#"{"version":1,"assets":[{"id":"asset://bird","source":"assets/bird.svg","kind":"texture2d","bundle":"content"}]}"#,
+            br#"{"version":1,"assets":[{"id":"asset://bird","source":"assets/bird.svg","kind":"texture2d","bundle":"content"},{"id":"asset://bird-alias","source":"assets/bird.svg","kind":"texture2d","bundle":"content"}]}"#,
         )
         .unwrap();
 
@@ -2209,6 +2221,7 @@ mod tests {
         let header: serde_json::Value =
             serde_json::from_slice(&first_bytes[header_start..header_start + header_len]).unwrap();
         assert_eq!(header["version"], 1);
+        assert_eq!(header["files"].as_array().unwrap().len(), 1);
         assert_eq!(header["files"][0]["path"], "assets/bird.svg");
 
         let second = pack_project(dir.path(), None);
@@ -2217,6 +2230,32 @@ mod tests {
         assert_eq!(second.manifest_version, 1);
         assert!(!second.manifest_changed);
         assert_eq!(first_bytes, fs::read(content).unwrap());
+    }
+
+    #[test]
+    fn asset_archive_deduplicates_same_bytes_but_rejects_path_collisions() {
+        let archive = build_bundle_archive(vec![
+            ("assets/bird.svg".to_string(), b"same asset".to_vec()),
+            ("assets/bird.svg".to_string(), b"same asset".to_vec()),
+        ])
+        .unwrap();
+        let header_len_offset = BUNDLE_ARCHIVE_MAGIC.len();
+        let header_len = u32::from_le_bytes(
+            archive[header_len_offset..header_len_offset + 4]
+                .try_into()
+                .unwrap(),
+        ) as usize;
+        let header_start = header_len_offset + 4;
+        let header: serde_json::Value =
+            serde_json::from_slice(&archive[header_start..header_start + header_len]).unwrap();
+        assert_eq!(header["files"].as_array().unwrap().len(), 1);
+
+        let error = build_bundle_archive(vec![
+            ("assets/bird.svg".to_string(), b"first".to_vec()),
+            ("assets/bird.svg".to_string(), b"different".to_vec()),
+        ])
+        .unwrap_err();
+        assert!(error.contains("conflicting contents"));
     }
 
     #[test]
