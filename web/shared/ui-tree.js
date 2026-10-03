@@ -19,6 +19,7 @@ export function createUiTree(layer, { resolveAsset = null } = {}) {
   }
 
   function appendNode(node, parent, generation) {
+    if (node.kind === 'scroll_view') throw Error('UI_HOST_CAPABILITY_UNSUPPORTED: scroll_view requires the Canvas scroll host, not the legacy DOM renderer');
     if (node.kind === "component") {
       const group = document.createElement("div");
       group.className = "unone-ui-component";

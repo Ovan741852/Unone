@@ -88,6 +88,13 @@
             "null"
           ]
         },
+        "expanded": {
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "fit": {
           "anyOf": [
             {
@@ -138,6 +145,17 @@
           "default": null,
           "description": "Absolute placement in the design space. Use it when the layout is not\nedge relative, such as a ring laid out with trigonometry."
         },
+        "scroll": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiScroll"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "size": {
           "anyOf": [
             {
@@ -164,6 +182,16 @@
           "type": [
             "string",
             "null"
+          ]
+        },
+        "viewport": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiViewport"
+            },
+            {
+              "type": "null"
+            }
           ]
         }
       },
@@ -240,6 +268,45 @@
       ],
       "type": "object"
     },
+    "UiScroll": {
+      "additionalProperties": false,
+      "description": "Scroll content is local, top-left, y-down, in the same axis units as rect.\nOnly the viewport uses the containing space. No implicit flow layout.",
+      "properties": {
+        "axis": {
+          "default": "vertical",
+          "type": "string"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "reset_key": {
+          "default": "",
+          "type": "string"
+        },
+        "virtual_items": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiVirtualItems"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "wheel_rect": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiRect"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
     "UiSlice": {
       "additionalProperties": false,
       "description": "Source borders are pixels; pixels_per_unit converts them to vertical design\nunits (one unit = 1% of viewport height). This preserves corners across DPI\nand aspect ratios. Source is an optional atlas/trim region, in source pixels.",
@@ -281,6 +348,94 @@
         "right",
         "bottom",
         "pixels_per_unit"
+      ],
+      "type": "object"
+    },
+    "UiViewport": {
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "format": "double",
+          "type": "number"
+        },
+        "left": {
+          "format": "double",
+          "type": "number"
+        },
+        "top": {
+          "format": "double",
+          "type": "number"
+        },
+        "width": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "left",
+        "top",
+        "width",
+        "height"
+      ],
+      "type": "object"
+    },
+    "UiVirtualItems": {
+      "additionalProperties": false,
+      "properties": {
+        "column_width": {
+          "format": "double",
+          "type": "number"
+        },
+        "columns": {
+          "format": "uint",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "first": {
+          "description": "Inclusive, one-based materialized range. Empty data uses (0, 0).",
+          "format": "uint",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "gap_x": {
+          "format": "double",
+          "type": "number"
+        },
+        "gap_y": {
+          "format": "double",
+          "type": "number"
+        },
+        "keys": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "last": {
+          "format": "uint",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "revision": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "row_height": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "keys",
+        "row_height",
+        "column_width",
+        "columns",
+        "gap_x",
+        "gap_y",
+        "revision",
+        "first",
+        "last"
       ],
       "type": "object"
     }
@@ -332,6 +487,6 @@
     "max_layout_comparisons": 1000000,
     "max_layout_findings": 1024,
     "max_string_bytes": 8388608,
-    "version": 2
+    "version": 3
   }
 }

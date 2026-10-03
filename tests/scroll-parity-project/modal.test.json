@@ -1,0 +1,1 @@
+{"name":"scroll-modal","frames":1,"seed":42,"input":{"Modal":true},"assertions":[{"observation":{"key":"modal","equals":true}}]}

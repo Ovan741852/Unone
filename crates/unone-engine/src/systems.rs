@@ -513,7 +513,7 @@ fn descriptors() -> Vec<SystemDescriptor> {
             SystemStatus::Available,
             true,
             true,
-            vec!["api.ui.setRoot", "api.ui.inspect"],
+            vec!["api.ui.setRoot", "api.ui.inspect", "api.ui.scrollView", "api.ui.virtualList", "api.ui.virtualGrid"],
             vec!["ui"],
             "When disabled, api.ui reports SYSTEM_DISABLED and the host receives no UI tree.",
             "Headless simulations or games whose host builds the UI independently.",

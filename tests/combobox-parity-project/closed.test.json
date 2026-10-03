@@ -1,0 +1,22 @@
+{
+  "name": "closed",
+  "frames": 1,
+  "seed": 42,
+  "input_sequence": [
+    {}
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "expanded",
+        "equals": false
+      }
+    },
+    {
+      "observation": {
+        "key": "selected",
+        "equals": "High"
+      }
+    }
+  ]
+}

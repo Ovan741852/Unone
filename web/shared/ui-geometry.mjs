@@ -20,7 +20,7 @@ export function uiUsage(tree){
   for(const v of Object.values(n))if(typeof v==='string')bytes+=encoder.encode(v).length;
   if(bytes>UI_CONTRACT.max_string_bytes)throw Error(`UI_STRING_LIMIT: ${path}; used=${bytes}, limit=${UI_CONTRACT.max_string_bytes}`);
   const before=out.logical_nodes;
-  if(n.kind==='component')for(const [i,c]of (n.children??[]).entries())visit(c,`${path}.children[${i}]`,depth+1);
+  if(n.kind==='component'||n.kind==='scroll_view')for(const [i,c]of (n.children??[]).entries())visit(c,`${path}.children[${i}]`,depth+1);
   else{out.leaf_nodes++;out.render_regions_upper_bound+=n.slice?9:1;}
   return out.logical_nodes-before+1;
  }

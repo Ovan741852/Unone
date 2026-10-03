@@ -1,0 +1,6 @@
+{
+ "name":"ScrollParity",
+ "systems":{"physics2d":false,"physics3d":false},
+ "entry_script":"main.luau",
+ "test_files":["initial.test.json","modal.test.json","filter.test.json","empty.test.json"]
+}

@@ -34,7 +34,7 @@ impl PointerRouter {
         let Some(hit) = hit else {
             return false;
         };
-        let action = if let UiNode::Button { id, action, .. } = hit {
+        let action = if let UiNode::Button { id, action, .. } | UiNode::ComboBox { id, action, .. } = hit {
             Some((id.clone(), action.clone()))
         } else {
             None
@@ -72,7 +72,7 @@ impl PointerRouter {
                 a.as_ref()
                     .filter(|(node, action)| {
                         !nodes.iter().any(
-                            |n| matches!(n,UiNode::Button{id,action:a,..}if id==node&&a==action),
+                            |n| matches!(n,UiNode::Button{id,action:a,..}|UiNode::ComboBox{id,action:a,..}if id==node&&a==action),
                         )
                     })
                     .map(|_| *id)
@@ -446,6 +446,9 @@ impl Surface {
         let Some(tree) = tree else {
             return Ok(());
         };
+        if leaves(tree).iter().any(|n| matches!(n, UiNode::ScrollView { .. })) {
+            return Err("UI_HOST_CAPABILITY_UNSUPPORTED: scroll_view currently requires the Web scroll host; native scrolling is not implemented".into());
+        }
         let limit = 8192.min(device.limits().max_texture_dimension_2d);
         let width = width.clamp(1, limit);
         let height = height.clamp(1, limit);

@@ -254,6 +254,16 @@ pub struct EngineRuntime {
 }
 
 impl EngineRuntime {
+    /// UI-only work: no Game.update, input consumption or world-frame advance.
+    /// renderItem is a pure view callback, never a gameplay callback.
+    pub fn ui_request(&mut self, request: serde_json::Value) -> Result<(), String> {
+        if !self.systems.is_enabled("ui") { return Err("UI_SYSTEM_DISABLED".into()); }
+        let ui = self.api.get::<Table>("ui").map_err(|e| e.to_string())?;
+        let render = ui.get::<Function>("_materialize").map_err(|e| e.to_string())?;
+        let request = bindings::value::json_to_lua(&self.lua, request).map_err(|e| e.to_string())?;
+        render.call::<bool>(request).map_err(|e| e.to_string())?;
+        Ok(())
+    }
     #[cfg(feature = "dev-tools")]
     pub fn check(project_root: impl AsRef<Path>) -> EngineResult<CheckReport> {
         let (config, paths) = match ProjectPaths::discover(project_root) {
@@ -2077,6 +2087,76 @@ function Game.update(api, _dt) publish(api) end
 return Game
 "#;
 
+    #[test]
+    fn virtual_ui_materializes_without_a_game_tick_and_rejects_stale_work() {
+        let source = r#"
+local Game={}
+local items={}
+for i=1,10000 do items[i]={id='key_'..i,name='Item '..i} end
+function Game.start(api)
+ local list=api.ui.virtualList({id='list',viewport={left=10,top=10,width=80,height=70},
+  items=items,key='id',rowHeight=4,gapY=.5,
+  renderItem=function(item,index,key)
+   return {{kind='button',id='row_'..key,text=item.name,action='Inspect_'..key,
+    rect={x=0,y=0,width=80,height=4}}}
+  end})
+ api.ui.setRoot({kind='screen',id='s',node='list',children={list}})
+end
+function Game.update(api,dt)
+ api.observation.set('sample',api.random.nextFloat())
+end
+return Game
+"#;
+        let dir = tempdir().unwrap();
+        write_project_with_systems(dir.path(), source, r#"{"ui":true,"random":true}"#);
+        let mut runtime = EngineRuntime::load(dir.path()).unwrap();
+        let mut baseline = EngineRuntime::load(dir.path()).unwrap();
+        let before = runtime.observe();
+        let json = serde_json::to_value(before.ui.as_ref().unwrap()).unwrap();
+        let node = &json["children"][0];
+        assert_eq!(node["rect"]["y"].as_f64(), Some(20.0));
+        assert_eq!(node["scroll"]["virtual_items"]["keys"].as_array().unwrap().len(), 10000);
+        assert!(node["children"].as_array().unwrap().len() < 20);
+        let revision = node["scroll"]["virtual_items"]["revision"].clone();
+        runtime.ui_request(serde_json::json!({"id":"list","revision":revision,"first":9982,"last":10000})).unwrap();
+        let after = runtime.observe();
+        assert_eq!(after.frame, before.frame);
+        assert_eq!(after.observations, before.observations);
+        let ui = serde_json::to_value(after.ui.as_ref().unwrap()).unwrap();
+        assert_eq!(ui["children"][0]["children"][0]["children"][0]["id"], "row_key_9982");
+        runtime.ui_request(serde_json::json!({"id":"list","revision":0,"first":1,"last":20})).unwrap();
+        assert_eq!(runtime.observe().ui, after.ui);
+        assert!(runtime.ui_request(serde_json::json!({"id":"list","revision":revision,"first":1,"last":10000})).unwrap_err().contains("UI_VIRTUAL_RANGE"));
+        assert_eq!(runtime.observe().ui, after.ui);
+        assert_eq!(runtime.tick().unwrap().observations["sample"], baseline.tick().unwrap().observations["sample"]);
+    }
+
+    #[test]
+    fn scroll_helpers_cover_empty_data_nested_views_and_fail_loudly() {
+        let source = r#"
+local Game={}
+function Game.start(api)
+ local function empty() return {{kind='text',id='never',text='',rect={x=0,y=0,width=1,height=1}}} end
+ local list=api.ui.virtualList({id='empty',viewport={left=0,top=0,width=10,height=10},items={},key='id',rowHeight=4,renderItem=empty})
+ local nested=api.ui.scrollView({id='nested',viewport={left=2,top=110,width=10,height=10},content={}})
+ local outer=api.ui.scrollView({id='outer',viewport={left=10,top=10,width=80,height=70},content={nested,list}})
+ api.ui.setRoot({kind='screen',id='s',node='empty',children={outer}})
+ assert(not pcall(function()api.ui.scrollView({id='bad',viewport={x=0,y=0,width=10,height=10}})end))
+ assert(not pcall(function()api.ui.scrollView({id='bad',viewport={left=0,top=0,width=10,height=10},contentHeight=10})end))
+ assert(not pcall(function()api.ui.virtualGrid({id='bad',viewport={left=0,top=0,width=10,height=10},items={},key='id',columns=2,columnWidth=10,rowHeight=4,renderItem=empty})end))
+ assert(not pcall(function()api.ui.virtualList({id='bad',viewport={left=0,top=0,width=10,height=10},items={{id='x'},{id='x'}},key='id',rowHeight=4,renderItem=empty})end))
+end
+function Game.update(api,dt)end
+return Game
+"#;
+        let dir = tempdir().unwrap();
+        write_project_with_systems(dir.path(), source, r#"{"ui":true}"#);
+        let ui = EngineRuntime::load(dir.path()).unwrap().observe().ui.unwrap();
+        let json = serde_json::to_value(ui).unwrap();
+        assert_eq!(json["children"][0]["children"][0]["rect"]["y"].as_f64(), Some(110.0));
+        assert_eq!(json["children"][0]["children"][1]["scroll"]["virtual_items"]["keys"], serde_json::json!([]));
+    }
+
     const NESTED_COMPONENT_UI_SCRIPT: &str = r#"
 local Game = {}
 function Game.start(api)
@@ -2837,7 +2917,7 @@ local Game = {}
 function Game.start(api)
     api.ui.setRoot({
         kind = "screen", id = "screen", node = "intro",
-        children = {{ kind = "slider", id = "volume", rect = { x = 0, y = 0, width = 1, height = 1 }, text = "" }},
+        children = {{ kind = "not_a_ui_kind", id = "volume", rect = { x = 0, y = 0, width = 1, height = 1 }, text = "" }},
     })
 end
 function Game.update(_api, _dt) end

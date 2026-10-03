@@ -1074,6 +1074,14 @@
         "name": {
           "type": "string"
         },
+        "overlap_policy": {
+          "default": null,
+          "description": "Project-relative exact image-behind-control overlap policy for this preview.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "seed": {
           "default": 42,
           "format": "uint64",

@@ -8,6 +8,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/particles.js",
         "shared/ui-tree.js",
         "shared/canvas-ui.mjs",
+        "shared/ui-scroll.mjs",
         "shared/ui-contract.mjs",
         "shared/ui-geometry.mjs",
         "shared/host-input.js",
@@ -158,6 +159,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             || (path == "shared/audio-playback.js" && !settings.is_enabled("audio"))
             || (path == "shared/ui-tree.js" && !settings.is_enabled("ui"))
             || (path == "shared/canvas-ui.mjs" && !settings.is_enabled("ui"))
+            || (path == "shared/ui-scroll.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-contract.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-geometry.mjs" && !settings.is_enabled("ui"))
             || (path == "renderer/particles.js" && !settings.is_enabled("particle"))
@@ -198,8 +200,11 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
                 text = replace_required(
                     text,
                     "import {createCanvasUi,loadCanvasFont} from '../shared/canvas-ui.mjs';",
-                    "const createCanvasUi = () => ({draw(){},pointer(){return false},releaseAll(){},setFont(){}}); const loadCanvasFont = async () => {};",
+                    "const createCanvasUi = () => ({draw(){},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){}}); const loadCanvasFont = async () => {};",
                 )?;
+                text = replace_required(text,
+                    "import {createUiScrollHost} from '../shared/ui-scroll.mjs';",
+                    "const createUiScrollHost = () => ({draw:s=>s,pointer:()=>false,cancel(){},dispose(){}});")?;
             }
             if !settings.is_enabled("audio") {
                 text = replace_required(
@@ -256,7 +261,12 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
         files.push((format!("web/{path}"), bytes));
     }
     if development {
-        for path in ["main.js", "api.js", "panel.js", "panel.css"] {
+        if config.asset_manifest.is_some() {
+            let usage = unone_engine::asset_usages(project, None);
+            ensure!(usage.ok, "ASSET_USAGE_INDEX_FAILED: {:?}", usage.diagnostics);
+            files.push(("content/asset-usages.json".into(), serde_json::to_vec(&usage.value)?));
+        }
+        for path in ["main.js", "api.js", "asset-usages.js", "panel.js", "panel.css"] {
             files.push((
                 format!("web/developer/{path}"),
                 fs::read(repo.join("web/developer").join(path))?,

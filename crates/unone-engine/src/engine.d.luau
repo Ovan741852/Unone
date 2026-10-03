@@ -153,8 +153,29 @@ export type UiAnchor =
 
 export type UiApi = {
     setRoot: (root: ObservationValue) -> (),
+    -- Helpers return a real scroll_view node. Content is local top-left/y-down;
+    -- viewport uses explicit left/top; never pass a stage x/y rect here.
+    scrollView: (options: UiScrollOptions) -> any,
+    virtualList: (options: UiVirtualOptions) -> any,
+    virtualGrid: (options: UiVirtualGridOptions) -> any,
     -- Actual host ceilings and the last valid tree's node/subtree usage.
     inspect: () -> ObservationValue,
+}
+export type UiRect = {x: number, y: number, width: number, height: number}
+export type UiViewport = {left: number, top: number, width: number, height: number}
+export type UiScrollOptions = {
+    id: string, viewport: UiViewport, content: {any}?,
+    axis: ("vertical" | "horizontal" | "both")?, enabled: boolean?,
+    resetKey: string?, wheelRect: UiViewport?,
+}
+export type UiVirtualOptions = {
+    id: string, viewport: UiViewport, items: {any}, key: string | ((any, number) -> string),
+    rowHeight: number, gapY: number?,
+    renderItem: (any, number, string) -> {any},
+    enabled: boolean?, resetKey: string?, wheelRect: UiViewport?,
+}
+export type UiVirtualGridOptions = UiVirtualOptions & {
+    columns: number, columnWidth: number, gapX: number?,
 }
 
 -- One source texture and one node. Border pixels / pixels_per_unit become

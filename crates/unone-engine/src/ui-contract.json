@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "default_max_nodes": 2048,
   "host_max_nodes": 16384,
   "max_component_depth": 16,

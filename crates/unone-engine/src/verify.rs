@@ -245,10 +245,7 @@ fn tests_step(project_root: &Path, paths: &ProjectPaths, required: bool) -> Veri
         );
     }
     let tests = EngineRuntime::run_tests(project_root);
-    let suite_passed = tests
-        .value
-        .as_ref()
-        .is_some_and(|report| report.passed);
+    let suite_passed = tests.value.as_ref().is_some_and(|report| report.passed);
     let summary = match tests.value.as_ref() {
         Some(report) => {
             let passed = report.cases.iter().filter(|case| case.passed).count();
@@ -258,25 +255,26 @@ fn tests_step(project_root: &Path, paths: &ProjectPaths, required: bool) -> Veri
     };
     let mut diagnostics = tests.diagnostics;
     if let Some(report) = tests.value.as_ref()
-        && !report.passed {
-            let failed_cases = report
-                .cases
-                .iter()
-                .filter(|case| !case.passed)
-                .map(|case| {
-                    serde_json::json!({
-                        "name": &case.name,
-                        "failures": &case.failures,
-                    })
+        && !report.passed
+    {
+        let failed_cases = report
+            .cases
+            .iter()
+            .filter(|case| !case.passed)
+            .map(|case| {
+                serde_json::json!({
+                    "name": &case.name,
+                    "failures": &case.failures,
                 })
-                .collect::<Vec<_>>();
-            let mut diagnostic = Diagnostic::error(
-                "TEST_ASSERTIONS_FAILED",
-                "A deterministic test assertion failed",
-                "The test runner completed, but one or more declared assertions did not match the observed world. Fix the assertion or the game behavior before activation.",
-            );
-            diagnostic.facts = serde_json::json!({ "failed_cases": failed_cases });
-            diagnostics.push(diagnostic);
+            })
+            .collect::<Vec<_>>();
+        let mut diagnostic = Diagnostic::error(
+            "TEST_ASSERTIONS_FAILED",
+            "A deterministic test assertion failed",
+            "The test runner completed, but one or more declared assertions did not match the observed world. Fix the assertion or the game behavior before activation.",
+        );
+        diagnostic.facts = serde_json::json!({ "failed_cases": failed_cases });
+        diagnostics.push(diagnostic);
     }
     step(
         "tests",
@@ -383,11 +381,15 @@ fn layout_step(
     };
     let frames = preview.map(|preview| preview.frames).unwrap_or(1);
     let seed = preview.map(|preview| preview.seed).unwrap_or(42);
+    let policy_arg = preview
+        .and_then(|preview| preview.overlap_policy.as_deref())
+        .map(|path| format!(" --overlap-policy {path}"))
+        .unwrap_or_default();
     let command = match preview.and_then(|preview| preview.input_sequence.as_deref()) {
         Some(sequence) => format!(
-            "game ui preview --strict --frames {frames} --seed {seed} --input-sequence {sequence}"
+            "game ui preview --strict --frames {frames} --seed {seed} --input-sequence {sequence}{policy_arg}"
         ),
-        None => format!("game ui preview --strict --frames {frames} --seed {seed}"),
+        None => format!("game ui preview --strict --frames {frames} --seed {seed}{policy_arg}"),
     };
     let command = command.as_str();
     let mut sequence = Vec::new();
@@ -449,11 +451,32 @@ fn layout_step(
             Vec::new(),
         );
     };
-    let report = layout::inspect(
+    let mut report = layout::inspect(
         &tree,
         layout::DEFAULT_LAYOUT_COLS,
         layout::DEFAULT_LAYOUT_ROWS,
     );
+    if let Some(path) = preview.and_then(|preview| preview.overlap_policy.as_deref()) {
+        let policy = std::fs::read_to_string(root.join(path))
+            .map_err(|error| error.to_string())
+            .and_then(|text| {
+                serde_json::from_str::<serde_json::Value>(&text).map_err(|error| error.to_string())
+            })
+            .and_then(|policy| layout::apply_overlap_policy(&mut report, &policy));
+        if let Err(error) = policy {
+            return step(
+                &name,
+                command,
+                resolve_status(false, required),
+                "the declared art overlap policy could not be applied",
+                vec![Diagnostic::error(
+                    "UI_OVERLAP_POLICY_INVALID",
+                    "Could not apply the layout overlap policy declared for this preview",
+                    format!("{path}: {error}"),
+                )],
+            );
+        }
+    }
     let diagnostics = report
         .findings
         .iter()
@@ -703,9 +726,11 @@ return Game
         assert!(!result.ok, "a failed assertion must block activation");
         assert_eq!(tests.status, StepStatus::Failed);
         assert!(tests.summary.contains("0/1 deterministic cases passed"));
-        assert!(tests
-            .diagnostics
-            .iter()
-            .any(|diagnostic| diagnostic.code == "TEST_ASSERTIONS_FAILED"));
+        assert!(
+            tests
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == "TEST_ASSERTIONS_FAILED")
+        );
     }
 }

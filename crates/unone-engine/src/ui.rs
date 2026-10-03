@@ -232,6 +232,53 @@ pub struct UiRect {
     pub height: f64,
 }
 
+#[derive(Debug, Clone, Copy, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+struct UiViewport { left: f64, top: f64, width: f64, height: f64 }
+
+/// Scroll content is local, top-left, y-down, in the same axis units as rect.
+/// Only the viewport uses the containing space. No implicit flow layout.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct UiScroll {
+    #[serde(default = "vertical_axis")]
+    pub axis: String,
+    #[serde(default = "enabled_scroll")]
+    pub enabled: bool,
+    #[serde(default)]
+    pub reset_key: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub wheel_rect: Option<UiRect>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub virtual_items: Option<UiVirtualItems>,
+}
+fn vertical_axis() -> String { "vertical".into() }
+fn enabled_scroll() -> bool { true }
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct UiVirtualItems {
+    #[serde(deserialize_with = "virtual_keys")]
+    pub keys: Vec<String>,
+    pub row_height: f64,
+    pub column_width: f64,
+    pub columns: usize,
+    pub gap_x: f64,
+    pub gap_y: f64,
+    pub revision: u32,
+    /// Inclusive, one-based materialized range. Empty data uses (0, 0).
+    pub first: usize,
+    pub last: usize,
+}
+fn virtual_keys<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Vec<String>, D::Error> {
+    let value = serde_json::Value::deserialize(d)?;
+    if value.as_object().is_some_and(|o| o.is_empty()) { return Ok(Vec::new()); }
+    serde_json::from_value(value).map_err(serde::de::Error::custom)
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(tag = "kind")]
 pub enum UiNode {
@@ -265,6 +312,28 @@ pub enum UiNode {
         #[serde(skip_serializing_if = "Option::is_none")]
         alt: Option<String>,
     },
+    /// A semantic slider input. The leaf owns no artwork: put it inside a
+    /// reusable slider component beside stable `track`, `fill`, and `handler`
+    /// image nodes. The host/game can replace those visual slots while Core
+    /// preserves the identity, action, value text, and input policy boundary.
+    #[serde(rename = "slider")]
+    Slider {
+        id: String,
+        rect: UiRect,
+        text: String,
+        action: String,
+    },
+    /// A skinnable selection field. Hosts route the whole rect to `action`;
+    /// selected text and expanded state remain controlled by the UI author.
+    /// Put field/value/arrow/popup visuals beside it in a reusable component.
+    #[serde(rename = "combobox")]
+    ComboBox {
+        id: String,
+        rect: UiRect,
+        text: String,
+        action: String,
+        expanded: bool,
+    },
     /// A reusable semantic component instance. Core owns the tree boundary and
     /// validates its children, while the host decides how the component is
     /// styled. Children retain the same screen design space as the existing
@@ -274,6 +343,13 @@ pub enum UiNode {
         id: String,
         rect: UiRect,
         component: String,
+        children: Vec<UiNode>,
+    },
+    #[serde(rename = "scroll_view")]
+    ScrollView {
+        id: String,
+        rect: UiRect,
+        scroll: UiScroll,
         children: Vec<UiNode>,
     },
 }
@@ -294,7 +370,10 @@ impl UiNode {
             Self::Text { id, .. }
             | Self::Button { id, .. }
             | Self::Image { id, .. }
-            | Self::Component { id, .. } => id,
+            | Self::Slider { id, .. }
+            | Self::ComboBox { id, .. }
+            | Self::Component { id, .. }
+            | Self::ScrollView { id, .. } => id,
         }
     }
 
@@ -303,7 +382,10 @@ impl UiNode {
             Self::Text { rect, .. }
             | Self::Button { rect, .. }
             | Self::Image { rect, .. }
-            | Self::Component { rect, .. } => rect,
+            | Self::Slider { rect, .. }
+            | Self::ComboBox { rect, .. }
+            | Self::Component { rect, .. }
+            | Self::ScrollView { rect, .. } => rect,
         }
     }
 
@@ -312,20 +394,26 @@ impl UiNode {
             Self::Text { rect, .. }
             | Self::Button { rect, .. }
             | Self::Image { rect, .. }
-            | Self::Component { rect, .. } => rect,
+            | Self::Slider { rect, .. }
+            | Self::ComboBox { rect, .. }
+            | Self::Component { rect, .. }
+            | Self::ScrollView { rect, .. } => rect,
         }
     }
 
     pub fn text_mut(&mut self) -> Option<&mut String> {
         match self {
-            Self::Text { text, .. } | Self::Button { text, .. } => Some(text),
-            Self::Image { .. } | Self::Component { .. } => None,
+            Self::Text { text, .. }
+            | Self::Button { text, .. }
+            | Self::Slider { text, .. }
+            | Self::ComboBox { text, .. } => Some(text),
+            Self::Image { .. } | Self::Component { .. } | Self::ScrollView { .. } => None,
         }
     }
 
     pub fn children(&self) -> &[UiNode] {
         match self {
-            Self::Component { children, .. } => children,
+            Self::Component { children, .. } | Self::ScrollView { children, .. } => children,
             _ => &[],
         }
     }
@@ -334,7 +422,7 @@ impl UiNode {
         if self.id() == id {
             return Some(self);
         }
-        if let Self::Component { children, .. } = self {
+        if let Self::Component { children, .. } | Self::ScrollView { children, .. } = self {
             for child in children {
                 if let Some(found) = child.find_mut(id) {
                     return Some(found);
@@ -351,6 +439,9 @@ impl UiNode {
                     child.leaf_nodes(output);
                 }
             }
+            // Legacy render/layout backends must not mistake local content for
+            // stage coordinates. The scroll viewport is an explicit capability.
+            Self::ScrollView { .. } => output.push(self),
             _ => output.push(self),
         }
     }
@@ -388,6 +479,8 @@ struct RawUiNode {
     /// edge relative, such as a ring laid out with trigonometry.
     #[serde(default)]
     rect: Option<UiRect>,
+    #[serde(default)]
+    viewport: Option<UiViewport>,
     /// Edge-relative placement, resolved by the engine against the host's real
     /// viewport shape so a screen keeps its proportions on any aspect.
     #[serde(default)]
@@ -414,6 +507,10 @@ struct RawUiNode {
     component: Option<String>,
     #[serde(default)]
     children: Option<Vec<RawUiNode>>,
+    #[serde(default)]
+    expanded: Option<bool>,
+    #[serde(default)]
+    scroll: Option<UiScroll>,
 }
 
 /// Anchored offsets and sizes are in vertical units: percent of the viewport
@@ -521,7 +618,7 @@ impl UiTree {
         fn count(node: &UiNode, out: &mut UiUsage) -> usize {
             out.logical_nodes += 1;
             match node {
-                UiNode::Component { children, .. } => {
+                UiNode::Component { children, .. } | UiNode::ScrollView { children, .. } => {
                     1 + children.iter().map(|n| count(n, out)).sum::<usize>()
                 }
                 _ => {
@@ -559,11 +656,10 @@ impl UiTree {
     }
     /// Validate the UI representation the engine understands.
     ///
-    /// Text, button, image and reusable component nodes share one deterministic
-    /// design-space contract. Component children may nest, but they do not
-    /// introduce local coordinates or implicit layout; this keeps the Core
-    /// boundary inspectable while allowing reusable templates to be published
-    /// without flattening away their source identity.
+    /// Ordinary stage nodes use the design-space contract. Components preserve
+    /// their containing coordinate space and introduce no layout. ScrollView is
+    /// the explicit exception: its content uses non-negative local top-left
+    /// coordinates, while its viewport uses the containing space.
     pub fn from_json(value: serde_json::Value) -> Result<Self, String> {
         Self::from_json_for_viewport(value, UI_REFERENCE_ASPECT)
     }
@@ -628,6 +724,10 @@ impl UiTree {
                         bytes += s.len();
                     }
                 }
+                if let Some(keys) = n["scroll"]["virtual_items"]["keys"].as_array() {
+                    if keys.len() > 100_000 { return Err(format!("UI_VIRTUAL_ITEM_LIMIT: {path}; maximum 100000 keys")); }
+                    bytes += keys.iter().filter_map(|k| k.as_str()).map(str::len).sum::<usize>();
+                }
             }
             if bytes > ui_contract().max_string_bytes {
                 return Err(format!(
@@ -655,7 +755,7 @@ impl UiTree {
         let mut node_count = 0;
         let mut children = Vec::with_capacity(raw.children.len());
         for raw_node in raw.children {
-            children.push(parse_node(raw_node, aspect, &mut ids, &mut node_count, 1)?);
+            children.push(parse_node(raw_node, aspect, &mut ids, &mut node_count, 1, false)?);
         }
 
         Ok(Self {
@@ -674,6 +774,7 @@ fn parse_node(
     ids: &mut BTreeSet<String>,
     node_count: &mut usize,
     depth: usize,
+    local: bool,
 ) -> Result<UiNode, String> {
     if raw_node.kind == "component" && depth > ui_contract().max_component_depth {
         return Err(format!(
@@ -690,14 +791,32 @@ fn parse_node(
         ));
     }
     *node_count += 1;
+    if raw_node.expanded.is_some() && raw_node.kind != "combobox" {
+        return Err(format!("ui.setRoot node '{}' only supports expanded on combobox", raw_node.id));
+    }
     if raw_node.slice.is_some() && raw_node.kind != "image" {
         return Err(format!(
             "UI_SLICE_INVALID: node '{}' is not an image",
             raw_node.id
         ));
     }
-    let rect = resolve_rect(&raw_node, aspect)?;
-    validate_rect(rect)?;
+    let rect = if let Some(v) = raw_node.viewport {
+        if raw_node.kind != "scroll_view" || raw_node.rect.is_some() || raw_node.anchor.is_some()
+            || raw_node.size.is_some() || raw_node.pivot.is_some() || raw_node.offset.is_some() {
+            return Err(format!("UI_SCROLL_VIEWPORT: '{}' uses viewport={{left,top,width,height}} only, not rect/anchor", raw_node.id));
+        }
+        UiRect { x: v.left, y: if local { v.top } else { 100.0-v.top-v.height }, width: v.width, height: v.height }
+    } else { resolve_rect(&raw_node, aspect)? };
+    if local {
+        if raw_node.anchor.is_some() { return Err(format!("UI_SCROLL_LOCAL_RECT: '{}' needs a local rect, not a stage anchor", raw_node.id)); }
+        if [rect.x, rect.y, rect.width, rect.height].iter().any(|v| !v.is_finite())
+            || rect.x < 0.0 || rect.y < 0.0 || rect.width <= 0.0 || rect.height <= 0.0 {
+            return Err(format!("UI_SCROLL_LOCAL_RECT: '{}' needs finite non-negative x/y and positive width/height", raw_node.id));
+        }
+    } else { validate_rect(rect)?; }
+    if raw_node.scroll.is_some() && raw_node.kind != "scroll_view" {
+        return Err(format!("UI_SCROLL_KIND: '{}' only accepts scroll on scroll_view", raw_node.id));
+    }
     let id = raw_node.id;
     match raw_node.kind.as_str() {
         "text" => {
@@ -734,6 +853,38 @@ fn parse_node(
             })?;
             ensure_non_empty("button action", &action)?;
             Ok(UiNode::Button {
+                id,
+                rect,
+                text: raw_node.text.unwrap_or_default(),
+                action,
+            })
+        }
+        "slider" | "combobox" => {
+            let kind = raw_node.kind.as_str();
+            if raw_node.asset.is_some()
+                || raw_node.fit.is_some()
+                || raw_node.alt.is_some()
+                || raw_node.component.is_some()
+                || raw_node.children.is_some()
+            {
+                return Err(format!(
+                    "ui.setRoot {kind} node '{id}' only accepts text, action, placement and combobox expanded"
+                ));
+            }
+            let action = raw_node.action.ok_or_else(|| {
+                format!("ui.setRoot {kind} node '{id}' requires a non-empty action")
+            })?;
+            ensure_non_empty("widget action", &action)?;
+            if kind == "combobox" {
+                return Ok(UiNode::ComboBox {
+                    id,
+                    rect,
+                    text: raw_node.text.unwrap_or_default(),
+                    action,
+                    expanded: raw_node.expanded.unwrap_or(false),
+                });
+            }
+            Ok(UiNode::Slider {
                 id,
                 rect,
                 text: raw_node.text.unwrap_or_default(),
@@ -795,7 +946,7 @@ fn parse_node(
             let children = raw_node.children.unwrap_or_default();
             let mut parsed_children = Vec::with_capacity(children.len());
             for child in children {
-                parsed_children.push(parse_node(child, aspect, ids, node_count, depth + 1)?);
+                parsed_children.push(parse_node(child, aspect, ids, node_count, depth + 1, local)?);
             }
             Ok(UiNode::Component {
                 id,
@@ -804,8 +955,44 @@ fn parse_node(
                 children: parsed_children,
             })
         }
+        "scroll_view" => {
+            if raw_node.text.is_some() || raw_node.action.is_some() || raw_node.asset.is_some()
+                || raw_node.fit.is_some() || raw_node.alt.is_some() || raw_node.component.is_some() {
+                return Err(format!("UI_SCROLL_FIELDS: '{id}' accepts placement, scroll and children only"));
+            }
+            let scroll = raw_node.scroll.ok_or_else(|| format!("UI_SCROLL_SPEC: '{id}' requires scroll"))?;
+            if !matches!(scroll.axis.as_str(), "vertical" | "horizontal" | "both") {
+                return Err(format!("UI_SCROLL_AXIS: '{id}' expected vertical, horizontal or both"));
+            }
+            if let Some(r) = scroll.wheel_rect {
+                if local { return Err(format!("UI_SCROLL_WHEEL_RECT: nested '{id}' uses its viewport only")); }
+                validate_rect(r)?;
+            }
+            if let Some(v) = &scroll.virtual_items {
+                let mut keys = BTreeSet::new();
+                if scroll.axis != "vertical" || v.columns == 0 || v.columns > 1024
+                    || [v.row_height, v.column_width].iter().any(|n| !n.is_finite() || *n <= 0.0)
+                    || [v.gap_x, v.gap_y].iter().any(|n| !n.is_finite() || *n < 0.0)
+                    || v.column_width * v.columns as f64 + v.gap_x * (v.columns - 1) as f64 > rect.width + 1e-8
+                    || !(v.keys.len().div_ceil(v.columns.max(1)) as f64 * (v.row_height + v.gap_y)).is_finite()
+                    || v.keys.len() > 100_000 || v.keys.iter().any(|k| k.trim().is_empty() || !keys.insert(k))
+                    || (v.keys.is_empty() && (v.first != 0 || v.last != 0))
+                    || (!v.keys.is_empty() && (v.first == 0 || v.first > v.last || v.last > v.keys.len())) {
+                    return Err(format!("UI_VIRTUAL_SPEC: '{id}' needs unique stable keys, positive cell size, fitting columns and a valid inclusive range"));
+                }
+                let expected = if v.keys.is_empty() { 0 } else { v.last - v.first + 1 };
+                if raw_node.children.as_ref().map_or(0, Vec::len) != expected {
+                    return Err(format!("UI_VIRTUAL_WINDOW: '{id}' needs one wrapper per materialized item ({expected})"));
+                }
+            }
+            let mut children = Vec::new();
+            for child in raw_node.children.unwrap_or_default() {
+                children.push(parse_node(child, aspect, ids, node_count, depth + 1, true)?);
+            }
+            Ok(UiNode::ScrollView { id, rect, scroll, children })
+        }
         kind => Err(format!(
-            "ui.setRoot node '{id}' has unsupported kind '{kind}'; use text, button, image or component"
+            "ui.setRoot node '{id}' has unsupported kind '{kind}'; use text, button, slider, combobox, image, component or scroll_view"
         )),
     }
 }
@@ -943,6 +1130,27 @@ mod tests {
                 .unwrap_err()
                 .contains("UI_SLICE_FIT_CONFLICT")
         );
+    }
+
+    #[test]
+    fn combobox_preserves_controlled_state_and_requires_action() {
+        let mut value = serde_json::json!({
+            "kind":"screen", "id":"settings", "node":"settings", "children":[{
+                "kind":"combobox", "id":"quality", "text":"High", "action":"QualityToggle",
+                "rect":{"x":10,"y":10,"width":70,"height":10}
+            }]
+        });
+        let tree = UiTree::from_json(value.clone()).unwrap();
+        assert_eq!(serde_json::to_value(tree).unwrap()["children"][0]["expanded"], false);
+        value["children"][0]["expanded"] = true.into();
+        let tree = UiTree::from_json(value.clone()).unwrap();
+        let serialized = serde_json::to_value(tree).unwrap();
+        assert_eq!(serialized["children"][0]["expanded"], true);
+        assert_eq!(serialized["children"][0]["action"], "QualityToggle");
+        value["children"][0]["action"] = "".into();
+        assert!(UiTree::from_json(value.clone()).is_err());
+        value["children"][0]["kind"] = "text".into();
+        assert!(UiTree::from_json(value).unwrap_err().contains("expanded on combobox"));
     }
 
     #[test]
@@ -1124,14 +1332,15 @@ mod tests {
                 "rect": {"x": 0, "y": 80, "width": 100, "height": 20},
                 "children": [
                     {"kind": "image", "id": "logo", "asset": "asset://ui/logo", "fit": "contain", "alt": "Unone", "rect": {"x": 5, "y": 85, "width": 10, "height": 10}},
-                    {"kind": "button", "id": "save", "text": "Save", "action": "Save", "rect": {"x": 20, "y": 85, "width": 20, "height": 10}}
+                    {"kind": "button", "id": "save", "text": "Save", "action": "Save", "rect": {"x": 20, "y": 85, "width": 20, "height": 10}},
+                    {"kind": "slider", "id": "volume", "text": "80%", "action": "Setting_music", "rect": {"x": 45, "y": 85, "width": 30, "height": 10}}
                 ]
             }]
         }))
         .unwrap();
         assert!(matches!(tree.children[0], UiNode::Component { .. }));
         assert_eq!(tree.children[0].id(), "toolbar");
-        assert_eq!(tree.children[0].children().len(), 2);
+        assert_eq!(tree.children[0].children().len(), 3);
         assert_eq!(
             serde_json::to_value(tree.children[0].children()[0].clone()).unwrap()["kind"],
             "image"
@@ -1139,6 +1348,10 @@ mod tests {
         assert_eq!(
             serde_json::to_value(tree.children[0].children()[0].clone()).unwrap()["alt"],
             "Unone"
+        );
+        assert_eq!(
+            serde_json::to_value(tree.children[0].children()[2].clone()).unwrap()["kind"],
+            "slider"
         );
     }
 

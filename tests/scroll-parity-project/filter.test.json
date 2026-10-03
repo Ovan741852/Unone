@@ -1,0 +1,1 @@
+{"name":"scroll-filter","frames":2,"seed":42,"input":{"Filter":true},"assertions":[{"observation":{"key":"count","equals":5000}}]}

@@ -55,6 +55,12 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             Ok(())
         })?,
     )?;
+    let helpers: Table = lua.load(include_str!("scroll.luau")).set_name("@engine/ui-scroll")
+        .call(ui_api.get::<mlua::Function>("setRoot")?)?;
+    for name in ["scrollView", "virtualList", "virtualGrid", "setRoot"] {
+        ui_api.set(name, helpers.get::<mlua::Function>(name)?)?;
+    }
+    ui_api.set("_materialize", helpers.get::<mlua::Function>("request")?)?;
     Ok(ui_api)
 }
 

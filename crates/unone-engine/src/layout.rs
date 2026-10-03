@@ -147,12 +147,20 @@ fn node_parts(node: &UiNode) -> (&str, &str, &UiRect, &str, Option<&str>, Option
             text,
             action,
         } => ("button", id, rect, text, Some(action), None),
+        UiNode::Slider {
+            id,
+            rect,
+            text,
+            action,
+        } => ("slider", id, rect, text, Some(action), None),
+        UiNode::ComboBox { id, rect, text, action, .. } => ("combobox", id, rect, text, Some(action), None),
         UiNode::Image {
             id, rect, asset, ..
         } => ("image", id, rect, "", None, Some(asset)),
         UiNode::Component { .. } => {
             unreachable!("component nodes are expanded before layout inspection")
         }
+        UiNode::ScrollView { id, rect, .. } => ("scroll_view", id, rect, "", None, None),
     }
 }
 
@@ -264,6 +272,7 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
             "text_fit assumes a 16:9 viewport and a 0.5 character advance, so it is a              measurement to read, never a pass/fail"
                 .to_string(),
             "structure only: this says nothing about whether the screen looks good".to_string(),
+            "scroll_view is inspected as a viewport only; local/virtual content requires the Web clipped projection and scroll diagnostics".to_string(),
         ],
     }
 }

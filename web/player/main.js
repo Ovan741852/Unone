@@ -1,5 +1,6 @@
 import {createThreeRenderer} from '../renderer/three.js';
 import {createCanvasUi,loadCanvasFont} from '../shared/canvas-ui.mjs';
+import {createUiScrollHost} from '../shared/ui-scroll.mjs';
 import {createHostInput} from '../shared/host-input.js';
 import {createAsyncScheduler} from '../shared/async-scheduler.mjs';
 import {createRuntimeBackend} from '../shared/runtime-backend.mjs';
@@ -18,7 +19,9 @@ const input=createHostInput(),uiRenderer=createCanvasUi(uiCanvas,{onAction:({act
  requireAssetEncoding(asset,'image');
  return new URL(`content/${asset.source}`,document.baseURI).href;
 }});
-const renderUi=snapshot=>uiRenderer.draw(snapshot);
+const uiScroll=createUiScrollHost({canvas,stage:document.querySelector('#ui-layer'),onAction:action=>input.queueAction(action),
+ requestWindow:async request=>{acceptSnapshot(await backend.request({kind:'ui',request}));draw();},requestRender:()=>{if(snapshot&&renderer)draw();},onDiagnostic:fail});
+const renderUi=snapshot=>uiRenderer.draw(uiScroll.draw(snapshot));
 let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null;
 let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=null;
 let saved,key,projectPayload;
@@ -46,7 +49,7 @@ async function advance(){
  /* PROFILE_POST_TICK */
 }
 function tickOnce(){if(tickFlight)return tickFlight;tickFlight=advance().finally(()=>{tickFlight=null;});return tickFlight;}
-async function setPaused(value){frozen=value;manualInput=null;uiRenderer.releaseAll();input.releaseAll();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
+async function setPaused(value){frozen=value;manualInput=null;uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
 async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.restored_save=JSON.parse(saved??'null');acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:'42'}),{reset:true});audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();await setPaused(wasPaused);}
@@ -71,11 +74,12 @@ async function start(){
  window.addEventListener('resize',()=>{backend.request({kind:'aspect',value:canvas.clientWidth/canvas.clientHeight}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);});
 }
 function pointer(event,down,kind){if(!snapshot)return;const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height;const normalized={position:worldFromPointer(canvas,event,snapshot),screen_position:{x:x*100,y:(1-y)*100},down};input.updatePointer(normalized,kind);}
-function routeUi(e,kind){const r=canvas.getBoundingClientRect();return uiRenderer.pointer({kind,pointerId:e.pointerId,x:(e.clientX-r.left)/r.width*100,y:100-(e.clientY-r.top)/r.height*100});}
+function routeUi(e,kind){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=100-(e.clientY-r.top)/r.height*100;return uiScroll.pointer(e,kind,uiRenderer.hitTest(x,y))||uiRenderer.pointer({kind,pointerId:e.pointerId,x,y});}
 canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);audio?.unlock();if(!routeUi(e,'down'))pointer(e,true,'edge');});
 canvas.addEventListener('pointermove',e=>{if(!routeUi(e,'move'))pointer(e,Boolean(e.buttons),'move');});canvas.addEventListener('pointerup',e=>{if(!routeUi(e,'up'))pointer(e,false,'edge');});canvas.addEventListener('pointercancel',e=>{routeUi(e,'cancel');uiRenderer.releaseAll();input.releaseAll();});
 window.addEventListener('keydown',e=>input.setHeld(e.code,true));window.addEventListener('keyup',e=>input.setHeld(e.code,false));window.addEventListener('blur',()=>{uiRenderer.releaseAll();input.releaseAll();});
 window.addEventListener('unone-host-pause',()=>{uiRenderer.releaseAll();input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
-window.addEventListener('pagehide',()=>{scheduler?.stop();backend?.close();});
+window.addEventListener('pagehide',()=>{uiScroll.dispose();scheduler?.stop();backend?.close();});
+canvas.addEventListener('lostpointercapture',e=>uiScroll.pointer(e,'cancel'));
 start().catch(fail);

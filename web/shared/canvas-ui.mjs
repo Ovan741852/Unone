@@ -1,37 +1,47 @@
 // Official non-DOM UI projection. DOM is used only for the canvas/font host;
 // game controls, hit testing and visual layering are not DOM elements.
 import {uiUsage,slicePatches} from './ui-geometry.mjs';
+import {projectScrollTree} from './ui-scroll.mjs';
+const actionNode=n=>n.kind==='button'||n.kind==='combobox';
 const inside=(r,x,y)=>x>=r.x&&y>=r.y&&x<r.x+r.width&&y<r.y+r.height;
+const hit=(n,x,y)=>inside(n.rect,x,y)&&(!n.clip||inside(n.clip,x,y));
 export function flattenUi(tree){
   uiUsage(tree);
   const leaves=[];
   function walk(nodes,depth){
     for(const n of nodes??[]){
       if(n.kind==='component'){walk(n.children,depth+1);continue;}
-      if(!['text','button','image'].includes(n.kind))throw Error(`UI_NODE_UNSUPPORTED: ${n.kind}`);
+      if(!['text','button','image','slider','combobox'].includes(n.kind))throw Error(`UI_NODE_UNSUPPORTED: ${n.kind}`);
       if(!n.rect||!['x','y','width','height'].every(k=>Number.isFinite(n.rect[k]))||n.rect.width<=0||n.rect.height<=0)throw Error(`UI_RECT_INVALID: ${n.id}`);
+      if(n.clip&&(!['x','y','width','height'].every(k=>Number.isFinite(n.clip[k]))||n.clip.width<=0||n.clip.height<=0))throw Error(`UI_CLIP_INVALID: ${n.id}`);
       leaves.push(n);
     }
   }
-  walk(tree?.children,0);return leaves;
+  walk(projectScrollTree(tree).tree?.children,0);return leaves;
 }
 export function createUiPointerRouter({onAction=()=>{}}={}){
   let nodes=[];const captured=new Map(),holds=new Map();
   function release(id,phase){const c=captured.get(id);if(!c)return false;captured.delete(id);
     if(c.action){const count=(holds.get(c.action)??1)-1;if(count>0)holds.set(c.action,count);else{holds.delete(c.action);onAction({action:c.action,phase,nodeId:c.id,pointerId:id});}}return true;}
   return {
-    setTree(tree){nodes=flattenUi(tree);for(const [pointer,c]of captured)if(c.action&&!nodes.some(n=>n.id===c.id&&n.kind==='button'&&n.action===c.action)){release(pointer,'cancel');captured.set(pointer,{id:c.id,action:null});}},
+    setTree(tree){nodes=flattenUi(tree);for(const [pointer,c]of captured)if(c.action&&!nodes.some(n=>n.id===c.id&&actionNode(n)&&n.action===c.action)){release(pointer,'cancel');captured.set(pointer,{id:c.id,action:null});}},
     pointer({kind,pointerId=0,x,y}){
       if(kind==='cancel'||kind==='up')return release(pointerId,kind);
       if(captured.has(pointerId))return true;
       if(kind!=='down')return false;
-      const node=[...nodes].reverse().find(n=>inside(n.rect,x,y));if(!node)return false;
-      const action=node.kind==='button'?node.action:null;captured.set(pointerId,{id:node.id,action});
+      const node=[...nodes].reverse().find(n=>hit(n,x,y));
+      // Images and text are visual-only. Let pointer input fall through to the
+      // game canvas so game-owned gestures such as slider dragging can read the
+      // same screen pointer. Semantic buttons and combobox fields capture UI pointer streams.
+      // Semantic sliders are intentionally passthrough: the game settings
+      // layer owns the drag value while the widget remains visible to hierarchy.
+      if(!node||!actionNode(node))return false;
+      const action=actionNode(node)?node.action:null;captured.set(pointerId,{id:node.id,action});
       if(action){const count=holds.get(action)??0;holds.set(action,count+1);if(!count)onAction({action,phase:'down',nodeId:node.id,pointerId});}
       return true;
     },
     releaseAll(){for(const id of [...captured.keys()])release(id,'cancel');},
-    hitTest(x,y){const n=[...nodes].reverse().find(n=>inside(n.rect,x,y));return n?{nodeId:n.id,action:n.kind==='button'?n.action:null}:null;},
+    hitTest(x,y){const n=[...nodes].reverse().find(n=>hit(n,x,y));return n?{nodeId:n.id,action:actionNode(n)?n.action:null}:null;},
     get capturedPointers(){return [...captured.keys()];},
   };
 }
@@ -60,10 +70,16 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
     }catch(error){const value={code:String(error.message).split(':')[0],node:node.id,asset:node.asset,message:error.message};diagnostics.set(node.id,value);onDiagnostic(value);}
     finally{ctx.restore();}
   }
-  function text(node,x,y,w,h){if(!node.text)return;const lines=String(node.text).split('\n');let size=Math.max(1,Math.min(h/(lines.length*1.2),h*0.72));
-    ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();ctx.fillStyle=textColor;ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.font=`${size}px ${fontFamily}`;const longest=Math.max(...lines.map(l=>ctx.measureText(l).width),1);size*=Math.min(1,w/longest);ctx.font=`${size}px ${fontFamily}`;
-    lines.forEach((line,i)=>ctx.fillText(line,x+w/2,y+h/2+(i-(lines.length-1)/2)*size*1.2));ctx.restore();
+  function text(node,x,y,w,h,scale=1){if(!node.text)return;const lines=String(node.text).split('\n');
+    const lh=Number.isFinite(node.lineHeight)&&node.lineHeight>0?node.lineHeight:1.2;
+    const align=node.align==='start'||node.align==='end'?node.align:'center';
+    const pad=align==='center'?0:Math.min(w*0.05,14*scale);
+    const requested=Number.isFinite(node.fontSize)&&node.fontSize>0?node.fontSize*scale:Infinity;
+    let size=Math.max(1,Math.min(requested,h/(lines.length*lh),h*0.72));
+    ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();ctx.fillStyle=textColor;ctx.textAlign=align==='start'?'left':align==='end'?'right':'center';ctx.textBaseline='middle';
+    ctx.font=`${size}px ${fontFamily}`;const longest=Math.max(...lines.map(l=>ctx.measureText(l).width),1);size*=Math.min(1,(w-pad*2)/longest);ctx.font=`${size}px ${fontFamily}`;
+    const anchorX=align==='start'?x+pad:align==='end'?x+w-pad:x+w/2;
+    lines.forEach((line,i)=>ctx.fillText(line,anchorX,y+h/2+(i-(lines.length-1)/2)*size*lh));ctx.restore();
   }
   return {
     draw(snapshot,{width=canvas.clientWidth??canvas.width,height=canvas.clientHeight??canvas.height,dpr=globalThis.devicePixelRatio??1}={}){
@@ -76,7 +92,9 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
         for(const [id,d]of diagnostics)if(d.node)diagnostics.delete(id);}
       if(!dirty)return;dirty=false;const started=performance.now();renderRegions=0;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,bw,bh);
       for(const node of nodes){const r=node.rect,x=r.x*bw/100,y=(100-r.y-r.height)*bh/100,w=r.width*bw/100,h=r.height*bh/100;
-        if(node.kind==='image')image(node,x,y,w,h);else {text(node,x,y,w,h);renderRegions++;}}
+        const c=node.clip;
+        if(c){if(r.x>=c.x+c.width||r.x+r.width<=c.x||r.y>=c.y+c.height||r.y+r.height<=c.y)continue;ctx.save();ctx.beginPath();ctx.rect(c.x*bw/100,(100-c.y-c.height)*bh/100,c.width*bw/100,c.height*bh/100);ctx.clip();}
+        try{if(node.kind==='image')image(node,x,y,w,h);else if(node.kind==='slider'||node.kind==='combobox'){renderRegions++;}else {text(node,x,y,w,h,bw/width);renderRegions++;}}finally{if(c)ctx.restore();}}
       renderMs=performance.now()-started;
     },
     pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,

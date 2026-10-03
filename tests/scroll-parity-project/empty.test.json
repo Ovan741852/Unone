@@ -1,0 +1,1 @@
+{"name":"scroll-empty","frames":2,"seed":42,"input":{"Empty":true},"assertions":[{"observation":{"key":"count","equals":0}}]}

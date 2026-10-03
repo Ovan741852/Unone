@@ -713,6 +713,24 @@ pub extern "C" fn unone_web_observation_ptr() -> *const u8 {
     OUTPUT.with(|output| output.borrow().as_ptr())
 }
 
+/// UI-only virtual window request; never ticks the simulation.
+/// # Safety
+/// pointer must reference length readable JSON bytes during this call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_web_ui_request(pointer: *const u8, length: usize) -> i32 {
+    if pointer.is_null() || length > 4096 { write_error("UI_REQUEST_INVALID"); return -1; }
+    let request = match serde_json::from_slice(unsafe { std::slice::from_raw_parts(pointer, length) }) {
+        Ok(value) => value, Err(e) => { write_error(e.to_string()); return -1; }
+    };
+    RUNTIME.with(|r| match r.borrow_mut().as_mut() {
+        Some(runtime) => match runtime.ui_request(request) {
+            Ok(()) => write_runtime_snapshot(runtime),
+            Err(e) => { write_error(e); -1 }
+        },
+        None => { write_error("RUNTIME_NOT_LOADED"); -1 }
+    })
+}
+
 #[unsafe(no_mangle)]
 pub extern "C" fn unone_web_observation_len() -> usize {
     OUTPUT.with(|output| output.borrow().len())
