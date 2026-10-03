@@ -3,6 +3,7 @@ import concurrent.futures
 import http.client
 import importlib.util
 import json
+import tempfile
 import threading
 import time
 import unittest
@@ -66,6 +67,64 @@ class BridgeTests(unittest.TestCase):
             self.assertEqual(self.request("POST", "command", value, self.auth)[0], 400)
         self.assertEqual(self.request("POST", "result", {"id": [], "ok": True}, self.auth)[0], 400)
         self.assertEqual(self.request("GET", "health", headers=self.auth)[0], 200)
+
+    def test_codex_status_and_structured_operations_are_authenticated(self):
+        self.assertEqual(self.request("GET", "codex/status")[0], 401)
+        status, body, _ = self.request("GET", "codex/status", headers=self.auth)
+        self.assertEqual(status, 200)
+        self.assertEqual(body["provider"], "codex-cli")
+        self.assertIn("ready", body)
+        for operation in ("shell", "imagegen", "arbitrary"):
+            code, result, _ = self.request("POST", "codex/generate", {"operation": operation, "context": {}}, self.auth)
+            self.assertEqual(code, 400)
+            self.assertEqual(result["error"], "CODEX_OPERATION_NOT_ALLOWED")
+
+    def test_codex_json_schemas_preserve_tree_depth_and_prompt_boundaries(self):
+        plan_schema = atelier._output_schema("plan", {})
+        self.assertEqual(plan_schema["required"], ["planning"])
+        panel_schema = atelier._output_schema("panel_plan", {})
+        self.assertEqual(panel_schema["properties"]["panels"]["items"]["properties"]["rect"]["required"], ["x", "y", "width", "height"])
+        tree = atelier._output_schema("panel_children", {"user_request": "add a label"})
+        self.assertIn("panel_update", tree["required"])
+        self.assertIn("children", tree["properties"])
+        self.assertEqual(tree["properties"]["panel_update"]["required"], ["name", "purpose", "type", "variant", "rect"])
+        allowed_types = tree["properties"]["panel_update"]["properties"]["type"]["enum"]
+        self.assertIn("image", allowed_types)
+        self.assertIn("label", allowed_types)
+        self.assertIn(None, allowed_types)
+        def assert_strict_objects(schema):
+            if isinstance(schema, dict):
+                if "object" in (schema.get("type") if isinstance(schema.get("type"), list) else [schema.get("type")]):
+                    self.assertEqual(set(schema.get("properties", {})), set(schema.get("required", [])))
+                for value in schema.values():
+                    assert_strict_objects(value)
+            elif isinstance(schema, list):
+                for value in schema:
+                    assert_strict_objects(value)
+        assert_strict_objects(tree)
+        prompt = atelier._codex_prompt("panel_children", {"user_request": "make a card"})
+        self.assertIn("never invent, assume, or add business rules", prompt)
+        self.assertIn("Every supported node kind may own children", prompt)
+        with self.assertRaises(atelier.CodexError):
+            atelier._codex_prompt("panel_children", {"large": "x" * atelier.MAX_CODEX_INPUT})
+
+    def test_image_import_validates_auth_type_signature_and_only_serves_generated_names(self):
+        png = b"\x89PNG\r\n\x1a\n" + b"test-image-payload"
+        with tempfile.TemporaryDirectory(prefix="atelier-image-test-") as temporary_root:
+            self.server.root = Path(temporary_root)
+            self.assertEqual(self.request("POST", "assets/import", headers={"Content-Type": "image/png"}, raw=png)[0], 401)
+            self.assertEqual(self.request("POST", "assets/import", headers={**self.auth, "Content-Type": "image/jpeg"}, raw=png)[0], 415)
+            self.assertEqual(self.request("POST", "assets/import", headers={**self.auth, "Content-Type": "image/png"}, raw=b"not-an-image")[0], 400)
+            status, body, _ = self.request("POST", "assets/import", headers={**self.auth, "Content-Type": "image/png"}, raw=png)
+            self.assertEqual(status, 201)
+            self.assertRegex(body["asset_url"], r"^/Unone/web/frame-atelier/assets/imported/asset-[0-9a-f]{32}\.png$")
+            served, actual_bytes, headers = self.request("GET", body["asset_url"])
+            self.assertEqual(served, 200)
+            self.assertEqual(actual_bytes, png)
+            self.assertEqual(next(value for key, value in headers.items() if key.lower() == "content-type"), "image/png")
+            self.assertEqual(self.request("GET", "/Unone/web/frame-atelier/assets/imported/anything.png")[0], 404)
+            webp = b"RIFF" + (12).to_bytes(4, "little") + b"WEBP" + b"test"
+            self.assertEqual(self.request("POST", "assets/import", headers={**self.auth, "Content-Type": "image/webp"}, raw=webp)[0], 201)
 
     def test_command_poll_result_round_trip_is_not_redelivered(self):
         with concurrent.futures.ThreadPoolExecutor() as pool:

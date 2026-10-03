@@ -1,6 +1,4 @@
 const STORAGE_KEY = "unone-frame-atelier-editor-v3";
-const OLLAMA_URL = "http://127.0.0.1:11435";
-const OLLAMA_MODEL = "gemma4:e4b";
 const HOST_API_URL = "/api/frame-atelier";
 const PROFILES = {
   desktop: { label: "電腦", width: 1920, height: 1080 },
@@ -89,9 +87,11 @@ let state = loadState();
 let toastTimer = 0;
 let drawing = null;
 let pointerEdit = null;
-let gemmaConnection = "checking";
-let gemmaConnectionCheck = null;
+let codexConnection = "checking";
+let codexConnectionCheck = null;
+let codexVersion = "";
 let aiBusy = false;
+let aiFeedback = { text: "", state: "" };
 const collapsedTreeIds = new Set();
 let suppressPaletteClickUntil = 0;
 let hostSession = null;
@@ -112,8 +112,149 @@ function showToast(message) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 2400);
 }
+function setAIFeedback(text, state) {
+  aiFeedback = { text, state };
+}
+function diffValue(item, field, snapshot) {
+  if (field === "type") return TYPE_NAMES[item.type] || item.type || "—";
+  if (field === "parentId") return snapshot.elements.find((node) => node.id === item.parentId)?.name || "畫布";
+  if (field === "visible") return item.visible === false ? "隱藏" : "顯示";
+  if (field === "layoutMode") return LAYOUT_NAMES[item.layoutMode] || item.layoutMode || "—";
+  if (field === "rects") {
+    const rect = item.rects?.[snapshot.profile] || item.rects?.desktop;
+    return rect ? `x ${rect.x} · y ${rect.y} · ${rect.width} × ${rect.height}%` : "—";
+  }
+  const value = item[field];
+  if (value === undefined || value === "") return "—";
+  return String(value).replace(/\s+/g, " ").slice(0, 72);
+}
+function renderReviewPreview(target, snapshot, changes, side) {
+  const profile = PROFILES[snapshot.profile] || PROFILES.desktop;
+  const stageFrame = document.createElement("div");
+  const stage = document.createElement("div");
+  const previewScene = document.createElement("div");
+  const markerLayer = document.createElement("div");
+  stageFrame.className = "ai-review-stage-frame";
+  stage.className = "ai-review-stage";
+  previewScene.className = "scene ai-review-scene";
+  markerLayer.className = "ai-review-markers";
+  stage.style.width = profile.width + "px";
+  stage.style.height = profile.height + "px";
+  stage.style.setProperty("--button-color", snapshot.project?.buttonStyle?.color || DEFAULT_BUTTON_STYLE.color);
+  stage.style.setProperty("--button-radius", (Number(snapshot.project?.buttonStyle?.radius) || 0) + "px");
+
+  const reviewKinds = new Map();
+  if (side === "before") changes.removed.forEach((item) => reviewKinds.set(item.id, "removed"));
+  if (side === "after") changes.added.forEach((item) => reviewKinds.set(item.id, "added"));
+  changes.updated.forEach(({ before: oldItem, after: newItem }) => {
+    const moved = oldItem.parentId !== newItem.parentId || JSON.stringify(oldItem.rects) !== JSON.stringify(newItem.rects);
+    reviewKinds.set(newItem.id, moved ? "moved" : "updated");
+  });
+
+  const liveState = state;
+  try {
+    state = { ...liveState, ...clone(snapshot), elements: snapshot.elements.map(clone), selectedId: null };
+    state.elements.filter((item) => !getElement(item.parentId)).forEach((item, index) => {
+      previewScene.append(renderSceneNode(item, index + 1));
+    });
+    const labels = { added: "新增", removed: "移除", moved: "位置", updated: "修改" };
+    previewScene.querySelectorAll(".scene-node").forEach((node) => {
+      const kind = reviewKinds.get(node.dataset.nodeId);
+      if (!kind) return;
+      node.classList.add("review-node", "review-node-" + kind);
+      node.dataset.reviewKind = kind;
+      node.dataset.reviewLabel = labels[kind];
+      if (getElement(node.dataset.nodeId)?.visible === false) node.classList.add("review-node-hidden");
+    });
+  } finally {
+    state = liveState;
+  }
+
+  stage.append(previewScene);
+  stageFrame.append(stage);
+  target.dataset.profile = snapshot.profile || "desktop";
+  target.style.aspectRatio = profile.width + " / " + profile.height;
+  target.replaceChildren(stageFrame, markerLayer);
+  const markers = [];
+  previewScene.querySelectorAll(".scene-node.review-node").forEach((node) => {
+    const marker = document.createElement("div");
+    marker.className = "ai-review-marker ai-review-marker-" + node.dataset.reviewKind;
+    marker.dataset.reviewLabel = node.dataset.reviewLabel;
+    marker.dataset.nodeId = node.dataset.nodeId;
+    marker.title = `${node.dataset.reviewLabel}：${node.getAttribute("aria-label") || node.dataset.nodeId}`;
+    markerLayer.append(marker);
+    markers.push({ node, marker });
+  });
+  const fit = () => {
+    const scale = Math.min(target.clientWidth / profile.width, target.clientHeight / profile.height);
+    if (Number.isFinite(scale) && scale > 0) {
+      stageFrame.style.width = profile.width * scale + "px";
+      stageFrame.style.height = profile.height * scale + "px";
+      stage.style.transform = "scale(" + scale + ")";
+      const targetBounds = target.getBoundingClientRect();
+      markers.forEach(({ node, marker }) => {
+        const bounds = node.getBoundingClientRect();
+        const x = bounds.left - targetBounds.left;
+        const y = bounds.top - targetBounds.top;
+        Object.assign(marker.style, {
+          left: x + "px",
+          top: y + "px",
+          width: bounds.width + "px",
+          height: bounds.height + "px",
+        });
+        marker.classList.toggle("is-near-top", y < 15);
+      });
+    }
+  };
+  fit();
+  return fit;
+}
+function requestAIReview(changes, before, after) {
+  const dialog = $("#ai-review-dialog");
+  const summary = $("#ai-review-summary");
+  const list = $("#ai-review-list");
+  const movedCount = changes.updated.filter(({ before: oldItem, after: newItem }) =>
+    oldItem.parentId !== newItem.parentId || JSON.stringify(oldItem.rects) !== JSON.stringify(newItem.rects)).length;
+  const updatedCount = changes.updated.length - movedCount;
+  summary.textContent = `左側 Before 是目前畫布，右側 After 是提案；新增 ${changes.added.length}、位置／尺寸 ${movedCount}、其他修改 ${updatedCount}、移除 ${changes.removed.length}。尚未套用。`;
+  const fieldNames = [["name", "名稱"], ["type", "類型"], ["parentId", "父節點"], ["text", "文字"], ["placeholder", "提示文字"], ["purpose", "用途"], ["assetUrl", "圖片素材"], ["visible", "顯示"], ["checked", "勾選"], ["value", "數值"], ["variant", "樣式"], ["background", "底色"], ["layoutMode", "排列"], ["gap", "間距"], ["padding", "內距"], ["columns", "欄數"], ["order", "順序"], ["contentLength", "內容長度"], ["rects", "位置／尺寸"]];
+  const rows = [
+    ...changes.added.map((item) => {
+      const parent = after.elements.find((node) => node.id === item.parentId)?.name || "畫布";
+      const content = [item.text && `內容：${item.text}`, item.placeholder && `提示：${item.placeholder}`, item.purpose && `用途：${item.purpose}`, item.visible === false && "預設隱藏"].filter(Boolean).join(" · ");
+      return `<li><strong>新增：${escapeHTML(item.name)}</strong>（${escapeHTML(TYPE_NAMES[item.type] || item.type)}；父節點：${escapeHTML(parent)}；位置／尺寸：${escapeHTML(diffValue(item, "rects", after))}${content ? "；" + escapeHTML(content.slice(0, 160)) : ""}）</li>`;
+    }),
+    ...changes.updated.map(({ before: oldItem, after: newItem }) => {
+      const fields = fieldNames.filter(([key]) => JSON.stringify(oldItem[key]) !== JSON.stringify(newItem[key]));
+      const details = fields.slice(0, 6).map(([key, label]) => `<li>${label}：<del>${escapeHTML(diffValue(oldItem, key, before))}</del> → <ins>${escapeHTML(diffValue(newItem, key, after))}</ins></li>`).join("");
+      return `<li><strong>修改：${escapeHTML(newItem.name)}</strong><ul>${details || "<li>屬性有更新</li>"}</ul></li>`;
+    }),
+    ...changes.removed.map((item) => `<li><strong>移除：${escapeHTML(item.name)}</strong>（${escapeHTML(TYPE_NAMES[item.type] || item.type)}）</li>`),
+  ];
+  const limit = 60;
+  list.innerHTML = rows.length ? `<ul>${rows.slice(0, limit).join("")}</ul>` : "<p>沒有元件差異。</p>";
+  if (rows.length > limit) list.insertAdjacentHTML("beforeend", `<p>另有 ${rows.length - limit} 項差異未展開。</p>`);
+  $("#ai-review-details").open = false;
+  if (typeof dialog.showModal !== "function") return Promise.resolve(window.confirm(summary.textContent + "\n\n" + rows.map((row) => row.replace(/<[^>]+>/g, " ")).join("\n")));
+  dialog.returnValue = "";
+  return new Promise((resolve) => {
+    let observer;
+    dialog.addEventListener("close", () => {
+      observer?.disconnect();
+      resolve(dialog.returnValue === "apply");
+    }, { once: true });
+    dialog.showModal();
+    const beforeFit = renderReviewPreview($("#ai-review-before"), before, changes, "before");
+    const afterFit = renderReviewPreview($("#ai-review-after"), after, changes, "after");
+    if (typeof ResizeObserver === "function") {
+      observer = new ResizeObserver(() => { beforeFit(); afterFit(); });
+      observer.observe($("#ai-review-before"));
+      observer.observe($("#ai-review-after"));
+    }
+  });
+}
 function historySnapshot(source = state) {
-  const fields = ["id", "type", "name", "parentId", "purpose", "text", "placeholder", "variant", "checked", "visible", "background", "value", "layoutMode", "gap", "padding", "columns", "contentLength", "order", "rects", "prefabId", "sourceId", "instanceGroupId", "sharedKey", "aiId", "aiRole"];
+  const fields = ["id", "type", "name", "parentId", "purpose", "text", "placeholder", "assetUrl", "variant", "checked", "visible", "background", "value", "layoutMode", "gap", "padding", "columns", "contentLength", "order", "rects", "prefabId", "sourceId", "instanceGroupId", "sharedKey", "aiId", "aiRole"];
   return {
     project: { id: source.project.id, name: source.project.name, buttonStyle: clone(source.project.buttonStyle), prefabs: (source.project.prefabs || []).map(({ id, name }) => ({ id, name })) },
     profile: source.profile,
@@ -253,7 +394,7 @@ function childElements(parentId) {
     .sort((a, b) => (Number.isFinite(Number(a.item.order)) ? Number(a.item.order) : a.index) - (Number.isFinite(Number(b.item.order)) ? Number(b.item.order) : b.index) || a.index - b.index)
     .map(({ item }) => item);
 }
-function isParentNode(element) { return ["panel", "container", "scrollview"].includes(element?.type); }
+function canHaveChildren(element) { return Boolean(element && Object.prototype.hasOwnProperty.call(TYPE_NAMES, element.type)); }
 function scrollContentLength(element) { return Math.max(100, Math.min(500, Number(element?.contentLength) || 180)); }
 function layoutRects(parent) {
   const children = childElements(parent.id);
@@ -339,10 +480,14 @@ function relativeRect(absolute, parent) {
     height: absolute.height / outer.height * 100,
   }, parent?.type === "scrollview" ? scrollContentLength(parent) : 100);
 }
-function setParent(element, parentId) {
+function canAssignParent(element, parentId) {
   const parent = parentId ? getElement(parentId) : null;
-  if (parentId && (!parent || !isParentNode(parent) || parent.id === element.id || isDescendant(parent.id, element.id))) return false;
-  rememberUndo();
+  return !parentId || Boolean(canHaveChildren(parent) && parent.id !== element.id && !isDescendant(parent.id, element.id));
+}
+function setParent(element, parentId, recordUndo = true) {
+  if (!canAssignParent(element, parentId)) return false;
+  const parent = parentId ? getElement(parentId) : null;
+  if (recordUndo) rememberUndo();
   const bounds = absoluteRect(element);
   element.parentId = parent?.id || null;
   setRect(element, relativeRect(bounds, parent));
@@ -367,6 +512,7 @@ function newElement(type, options = {}) {
     checked: options.checked ?? true, visible: options.visible !== false, background: options.background || "",
     layoutMode: options.layoutMode || "free", gap: Number(options.gap ?? 3), padding: Number(options.padding ?? 4), columns: Number(options.columns ?? 3),
     value: Math.max(0, Math.min(100, Number(options.value ?? 68))), contentLength: scrollContentLength({ contentLength: options.contentLength }),
+    assetUrl: options.assetUrl || "",
     ...(options.order !== undefined ? { order: Number(options.order) } : siblingOrder !== undefined ? { order: siblingOrder } : {}),
     aiId: options.aiId || "", aiRole: options.aiRole || "", sharedKey: options.sharedKey || "",
     prefabId: options.prefabId || "", sourceId: options.sourceId || "", instanceGroupId: options.instanceGroupId || "",
@@ -393,11 +539,11 @@ function findOpenRect(parent, width, height) {
 function createElement(type, options = {}) {
   const hasExplicitParent = Object.prototype.hasOwnProperty.call(options, "parentId");
   const selected = getElement(state.selectedId);
-  const selectedParent = isParentNode(selected) ? selected : getElement(selected?.parentId);
+  const selectedParent = canHaveChildren(selected) ? selected : getElement(selected?.parentId);
   const parent = hasExplicitParent
     ? (options.parentId ? getElement(options.parentId) : null)
-    : (isParentNode(selectedParent) ? selectedParent : null);
-  if (parent && !isParentNode(parent)) return;
+    : (canHaveChildren(selectedParent) ? selectedParent : null);
+  if (parent && !canHaveChildren(parent)) return;
   const defaults = {
     container: { width: 44, height: 36, name: "排列容器" },
     panel: { width: 44, height: 36, name: "新 Panel" },
@@ -446,6 +592,8 @@ function renderSelectionBadge() {
 }
 function nodeFace(element) {
   const text = escapeHTML(element.text || element.name);
+  const assetUrl = typeof element.assetUrl === "string" && /^\/Unone\/web\/frame-atelier\/assets\/imported\/asset-[0-9a-f]{32}\.(?:png|webp)$/.test(element.assetUrl)
+    ? element.assetUrl : "";
   if (element.type === "panel") {
     return '<div class="node-face">' + (element.variant === "strong" ? "" : '<span class="node-title">' + escapeHTML(element.name) + '</span><span class="node-subtitle">' + escapeHTML(element.purpose || "") + '</span>') + '</div>';
   }
@@ -462,9 +610,8 @@ function nodeFace(element) {
   if (element.type === "button") return '<div class="node-face">' + text + '</div>';
   if (element.type === "checkbox") return '<div class="node-face"><span class="checkbox-box">' + (element.checked ? "✓" : "") + '</span><span>' + text + '</span></div>';
   if (element.type === "input") return '<div class="node-face">' + escapeHTML(element.placeholder || "請輸入…") + '</div>';
-  if (element.type === "image" && element.variant === "watermark") return '<div class="node-face image-symbol-face"><svg class="image-symbol image-watermark" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.1 11.5V5.7a1.4 1.4 0 0 1 2.8 0v5.1V4.8a1.4 1.4 0 0 1 2.8 0v6V6a1.4 1.4 0 0 1 2.8 0v5.3V8.2a1.4 1.4 0 0 1 2.8 0v7.2a5.4 5.4 0 0 1-5.4 5.4h-2.1a5 5 0 0 1-4.2-2.2l-3-4.4a1.7 1.7 0 0 1 2.5-2.3l1.8 1.7z"/></svg></div>';
-  if (element.type === "image" && element.variant === "icon") return '<div class="node-face image-symbol-face"><svg class="image-symbol image-item-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.5 8 4.3v10.4l-8 4.3-8-4.3V6.8l8-4.3Z"/><path d="m8 9 4-2.1L16 9v5.7l-4 2.2-4-2.2V9Z"/></svg></div>';
-  if (element.type === "image") return '<div class="node-face"><span class="image-placeholder">✦</span><span class="image-caption">' + escapeHTML(element.name) + '</span></div>';
+  if (element.type === "image" && assetUrl) return '<div class="node-face image-asset-face"><img class="image-asset" src="' + escapeHTML(assetUrl) + '" alt="" draggable="false"></div>';
+  if (element.type === "image") return '<div class="node-face image-empty-face"><span class="image-placeholder">尚未選圖</span></div>';
   return '<div class="node-face">' + text + '</div>';
 }
 function isAutoLayoutChild(element) {
@@ -511,7 +658,7 @@ function renderScene() {
   scene.replaceChildren();
   const roots = state.elements.filter((item) => !getElement(item.parentId));
   roots.forEach((element, index) => scene.append(renderSceneNode(element, index + 1)));
-  if (!roots.length) scene.innerHTML = '<div class="empty-scene-hint"><strong>從容器或 Panel 開始</strong><span>拖入元件、框選畫布，或用下方語音／文字描述</span></div>';
+  if (!roots.length) scene.innerHTML = '<div class="empty-scene-hint"><strong>從任一元件開始</strong><span>元件可以包含子元件；選取後再安排階層與位置</span></div>';
 }
 function renderTreeRows(parentId = null, depth = 0) {
   return childElements(parentId).map((element) => {
@@ -540,7 +687,7 @@ function renderPrefabs() {
     : '<p class="prefab-empty">選取一組元件，從右側存成可重用元件。</p>';
 }
 function parentOptions(element) {
-  const parents = state.elements.filter((candidate) => isParentNode(candidate) && candidate.id !== element.id && !isDescendant(candidate.id, element.id));
+  const parents = state.elements.filter((candidate) => canHaveChildren(candidate) && candidate.id !== element.id && !isDescendant(candidate.id, element.id));
   return '<option value="">畫布根層</option>' + parents.map((parent) => '<option value="' + escapeHTML(parent.id) + '"' + (parent.id === element.parentId ? " selected" : "") + '>' + escapeHTML(parent.name) + '</option>').join("");
 }
 function renderInspector() {
@@ -554,6 +701,7 @@ function renderInspector() {
   const parent = getElement(element.parentId);
   const autoLayout = isAutoLayoutChild(element);
   const maxY = parent?.type === "scrollview" ? scrollContentLength(parent) : 100;
+  const parentTypeField = '<label class="field-label">元件類型<select data-field="type">' + Object.entries(TYPE_NAMES).map(([type, label]) => '<option value="' + type + '"' + (element.type === type ? " selected" : "") + '>' + label + '</option>').join("") + '</select></label><p class="field-note">所有元件都能包含子元件；只有 Container 會自動排列。</p>' + (element.type === "image" ? '<p class="field-note">圖片會顯示在子元件下方。</p>' : '');
   const backgroundField = element.type === "panel"
     ? '<label class="field-label">面板底色<input data-field="background" type="color" value="' + escapeHTML(element.background || "#17252b") + '"></label>'
     : "";
@@ -570,10 +718,13 @@ function renderInspector() {
     ? '<label class="field-label check-property"><span>預設勾選</span><input data-field="checked" type="checkbox"' + (element.checked ? " checked" : "") + '></label>'
     : "";
   const visibilityField = '<label class="field-label check-property"><span>在畫布顯示</span><input data-field="visible" type="checkbox"' + (element.visible !== false ? " checked" : "") + '></label>';
-  const imageVariantField = element.type === "image"
-    ? '<label class="field-label">圖片呈現<select data-field="variant"><option value="secondary"' + (element.variant === "secondary" ? " selected" : "") + '>一般圖片</option><option value="icon"' + (element.variant === "icon" ? " selected" : "") + '>置中圖示</option><option value="watermark"' + (element.variant === "watermark" ? " selected" : "") + '>浮水印</option></select></label>'
+  const projectImageAssets = [...new Map(state.elements
+    .filter((item) => item.type === "image" && /^\/Unone\/web\/frame-atelier\/assets\/imported\/asset-[0-9a-f]{32}\.(?:png|webp)$/.test(item.assetUrl || ""))
+    .map((item) => [item.assetUrl, item.name]))];
+  const imageAssetField = element.type === "image"
+    ? '<div class="image-source-field"><div class="field-group-heading"><span>圖片來源</span></div><label class="field-label">使用專案既有圖片<select data-field="assetUrl"' + (projectImageAssets.length ? "" : " disabled") + '><option value="" disabled' + (element.assetUrl ? "" : " selected") + '>' + (projectImageAssets.length ? '選擇已匯入圖片' : '目前專案沒有圖片') + '</option>' + projectImageAssets.map(([url, name]) => '<option value="' + escapeHTML(url) + '"' + (element.assetUrl === url ? " selected" : "") + '>' + escapeHTML(name) + '</option>').join("") + '</select></label><div class="image-import-field"><p class="field-note">新圖可在 Codex 對話用 ImageGen 生成後匯入，也可選本機圖片。</p><button class="inspector-action secondary" type="button" data-action="import-image">匯入新圖片</button></div></div>'
     : "";
-  const purposeField = isParentNode(element)
+  const purposeField = canHaveChildren(element)
     ? '<label class="field-label">用途說明<textarea data-field="purpose" rows="2" placeholder="這個節點負責什麼？">' + escapeHTML(element.purpose) + '</textarea></label>'
     : "";
   const layoutField = element.type === "container"
@@ -590,8 +741,8 @@ function renderInspector() {
   const linked = element.prefabId
     ? '<div class="linked-note">這是共用元件的連結實例。文字與外觀變更會同步到其他實例；大小可個別調整。</div>'
     : "";
-  const panelAction = isParentNode(element)
-    ? '<button class="inspector-action ai-panel-action" type="button" data-action="decompose">✳ Gemma 拆解這個容器</button>'
+  const panelAction = canHaveChildren(element)
+    ? '<button class="inspector-action ai-panel-action" type="button" data-action="decompose">✳ Codex 拆解子元件</button>'
     : "";
   const geometryFields = autoLayout
     ? '<label class="field-label">寬<input data-field="width" type="number" min="1" max="100" step="0.1" value="' + rect.width.toFixed(1) + '"></label><label class="field-label">高<input data-field="height" type="number" min="1" max="100" step="0.1" value="' + rect.height.toFixed(1) + '"></label>'
@@ -607,9 +758,10 @@ function renderInspector() {
   inspector.innerHTML =
     '<div class="inspector-form">' +
       '<label class="field-label">名稱<input data-field="name" value="' + escapeHTML(element.name) + '" maxlength="48"></label>' +
-      textField + purposeField + layoutField + progressField + scrollField + placeholderField + visibilityField + checkField + imageVariantField + variantField + backgroundField +
+      parentTypeField +
+      textField + purposeField + layoutField + progressField + scrollField + placeholderField + visibilityField + checkField + imageAssetField + variantField + backgroundField +
       '<hr class="inspector-separator">' +
-      '<label class="field-label">父節點<select data-field="parentId">' + parentOptions(element) + '</select></label>' +
+      '<label class="field-label">父節點<select data-field="parentId">' + parentOptions(element) + '</select></label><p class="field-note">位置以父節點為基準；選「畫布根層」則不受其他元件限制。</p>' +
       (autoLayout ? '<p class="field-note">位置由 Container 自動排列；可調整大小與順序。</p>' : '') + orderControls +
       '<div class="field-group-heading"><span>位置與大小</span><span class="unit-label">' + (parent?.type === "scrollview" ? '相對於捲動內容 %' : '相對於父節點 %') + '</span></div>' +
       '<div class="geometry-grid">' +
@@ -658,22 +810,24 @@ function updateFooter() {
 }
 function renderAIDock() {
   const target = getElement(state.selectedId);
-  const scoped = isParentNode(target);
+  const scoped = canHaveChildren(target);
   const dock = $(".ai-dock");
+  const status = $("#ai-status");
+  const connectionText = codexConnection === "offline" ? "Codex CLI 未就緒" : codexConnection === "checking" ? "正在檢查 Codex CLI…" : "Codex CLI" + (codexVersion ? " " + codexVersion.replace(/^codex-cli\s*/i, "") : "") + " 已登入";
   $("#ai-dock-title").textContent = scoped ? "修改「" + target.name + "」" : "描述整個介面";
-  $("#ai-status").textContent = aiBusy ? "Gemma 4 正在處理…" : gemmaConnection === "offline" ? "Gemma 4 未連線" : gemmaConnection === "checking" ? "正在檢查 Gemma 4…" : "Gemma 4 已連線";
-  $("#ai-status").dataset.state = gemmaConnection;
-  $("#ai-status").title = gemmaConnection === "offline" ? "輸入可以保留，但 AI 不會產生結果；啟動本機 Ollama Gemma 4 後按重試連線。" : "Ollama Gemma 4 本機模型服務狀態";
-  dock.dataset.gemmaState = gemmaConnection;
-  $("#ai-retry").hidden = gemmaConnection !== "offline" || aiBusy;
-  $("#ai-submit").disabled = aiBusy || gemmaConnection !== "online";
-  document.querySelectorAll('[data-action="decompose"]').forEach((button) => { button.disabled = aiBusy || gemmaConnection !== "online"; });
-  $("#ai-prompt").placeholder = gemmaConnection === "offline"
-    ? "Gemma 4 未連線；描述會保留在這裡，連線後再送出。"
+  status.textContent = aiBusy ? aiFeedback.text || "AI 正在處理…" : codexConnection !== "online" ? connectionText : aiFeedback.text || connectionText;
+  status.dataset.state = aiBusy ? "busy" : codexConnection !== "online" ? codexConnection : aiFeedback.state || "online";
+  status.title = aiBusy ? "Codex CLI 正在分兩階段整理需求並產生結構；尚未確認的變更不會套用。" : aiFeedback.text || (codexConnection === "offline" ? "輸入會保留；確認本機已安裝並登入 Codex CLI，再按重新偵測。" : "結構生成使用本機 Codex CLI 登入，不呼叫 Gemma 或 API key。");
+  dock.dataset.codexState = codexConnection;
+  $("#ai-retry").hidden = codexConnection !== "offline" || aiBusy;
+  $("#ai-submit").disabled = aiBusy || codexConnection !== "online";
+  document.querySelectorAll('[data-action="decompose"]').forEach((button) => { button.disabled = aiBusy || codexConnection !== "online"; });
+  $("#ai-prompt").placeholder = codexConnection === "offline"
+    ? "Codex CLI 未就緒；描述會保留在這裡，登入後按重新偵測。"
     : scoped
-      ? "例如：這是道具卡片，上方放 Icon，下方放名稱與說明"
+      ? "描述要如何修改此元件或它底下的子元件"
       : "描述整個畫面，例如：做一個英雄裝備頁面，重點是快速比較裝備";
-  $("#ai-submit-label").textContent = aiBusy ? "AI 處理中…" : gemmaConnection !== "online" ? (gemmaConnection === "checking" ? "檢查連線…" : "未連線") : scoped ? "修改此容器" : "安排畫面";
+  $("#ai-submit-label").textContent = aiBusy ? "AI 處理中…" : codexConnection !== "online" ? (codexConnection === "checking" ? "檢查 CLI…" : "CLI 未就緒") : scoped ? "修改此元件" : "安排畫面";
 }
 function renderAll() {
   $("#project-name").value = state.project.name;
@@ -711,7 +865,7 @@ function updateElementStyle(element) {
   if (face) face.outerHTML = nodeFace(element);
 }
 function updateSharedValue(element, key, value) {
-  const keys = ["name", "text", "purpose", "placeholder", "variant", "checked", "visible", "background"];
+  const keys = ["name", "text", "purpose", "placeholder", "assetUrl", "variant", "checked", "visible", "background", "type"];
   if (!element.prefabId && !element.sharedKey) return;
   const same = (item) => item !== element && ((element.prefabId && item.prefabId === element.prefabId && item.sourceId === element.sourceId) || (element.sharedKey && item.sharedKey === element.sharedKey));
   for (const item of state.elements.filter(same)) {
@@ -745,6 +899,7 @@ function handleInspectorInput(event) {
   if (!field) return;
   if (!element && field !== "button-color" && field !== "button-radius") return;
   if (field === "parentId") return;
+  if (field === "type") return;
   if (["x", "y", "width", "height"].includes(field)) {
     const rect = { ...getRect(element), [field]: Number(event.target.value) };
     setRect(element, rect);
@@ -773,8 +928,26 @@ function handleInspectorChange(event) {
   const field = event.target.dataset.field;
   const element = getElement(state.selectedId);
   if (!field || !element) return;
+  if (field === "type") {
+    const type = event.target.value;
+    if (!canHaveChildren({ type }) || type === element.type) return;
+    rememberUndo();
+    element.type = type;
+    updateSharedValue(element, "type", type);
+    markUnsaved();
+    renderAll();
+    return;
+  }
+  if (field === "assetUrl" && element.assetUrl !== event.target.value) {
+    rememberUndo();
+    element.assetUrl = event.target.value;
+    updateSharedValue(element, field, element.assetUrl);
+    updateElementStyle(element);
+    markUnsaved();
+    return;
+  }
   if (field === "parentId") {
-    if (!setParent(element, event.target.value || null)) showToast("請選擇有效的容器節點");
+    if (!setParent(element, event.target.value || null)) showToast("請選擇有效的父節點");
     return;
   }
   if (["x", "y", "width", "height"].includes(field)) {
@@ -792,7 +965,7 @@ function updateGlobalButtonStyle(field, value) {
 function getNodeElement(id) { return scene.querySelector('[data-node-id="' + CSS.escape(id) + '"]'); }
 function nearestParentForNode(node) {
   let element = node ? getElement(node.dataset.nodeId) : null;
-  while (element && !isParentNode(element)) element = getElement(element.parentId);
+  while (element && !canHaveChildren(element)) element = getElement(element.parentId);
   return element;
 }
 function beginPointerEdit(event) {
@@ -999,8 +1172,8 @@ function insertPrefab(prefabId) {
   const prefab = state.project.prefabs.find((item) => item.id === prefabId);
   if (!prefab) return;
   const selected = getElement(state.selectedId);
-  const selectedParent = isParentNode(selected) ? selected : getElement(selected?.parentId);
-  const parent = isParentNode(selectedParent) ? selectedParent : null;
+  const selectedParent = canHaveChildren(selected) ? selected : getElement(selected?.parentId);
+  const parent = canHaveChildren(selectedParent) ? selectedParent : null;
   const templateRoot = prefab.nodes.find((item) => item.id === prefab.rootId);
   if (!templateRoot) return;
   rememberUndo();
@@ -1053,6 +1226,12 @@ function renderCanvasSelection() {
 function handleInspectorAction(action) {
   const element = getElement(state.selectedId);
   if (!element) return;
+  if (action === "import-image" && element.type === "image") {
+    const picker = $("#image-asset-file");
+    picker.dataset.targetId = element.id;
+    picker.click();
+    return;
+  }
   if (action === "duplicate") duplicateElement(element.id);
   if (action === "order-up") moveChildOrder(element.id, -1);
   if (action === "order-down") moveChildOrder(element.id, 1);
@@ -1090,172 +1269,80 @@ function requestedContainerPurpose(identity, instruction) {
   }
   return instruction.trim().slice(0, 160);
 }
-async function requestGemma(messages, { format, maxTokens }) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 60000);
-  try {
-    const body = { model: OLLAMA_MODEL, stream: false, think: false, options: { temperature: 0.2, num_predict: maxTokens }, messages };
-    if (format) body.format = format;
-    const response = await fetch(OLLAMA_URL + "/api/chat", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body), signal: controller.signal,
-    });
-    if (!response.ok) throw new Error("OLLAMA_HTTP_" + response.status);
-    const envelope = await response.json();
-    const content = envelope?.message?.content;
-    if (typeof content !== "string" || !content.trim()) throw new Error("OLLAMA_EMPTY_CONTENT");
-    return content;
-  } finally {
-    clearTimeout(timeout);
+async function requestCodex(operation, context) {
+  const response = await hostRequest("codex/generate", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ operation, context }),
+  });
+  const envelope = await response.json();
+  if (!envelope?.ok || !envelope.result || typeof envelope.result !== "object") {
+    throw new Error(envelope?.error || "CODEX_OUTPUT_INVALID");
   }
+  return envelope.result;
 }
-async function callGemma(payload) {
-  const rectSchema = {
-    type: "object", additionalProperties: false,
-    properties: {
-      x: { type: "number", minimum: 0, maximum: 100 },
-      y: { type: "number", minimum: 0, maximum: 100 },
-      width: { type: "number", minimum: 1, maximum: 100 },
-      height: { type: "number", minimum: 1, maximum: 100 },
-    },
-    required: ["x", "y", "width", "height"],
-  };
-  const nodeSchema = (depth = 0) => {
-    const properties = {
-      id: { type: "string", maxLength: 64 },
-      role: { type: "string", enum: ["container", "panel", "scrollview", "button", "label", "text", "checkbox", "input", "image", "icon", "illustration", "progress", "progressbar", "scroll", "scroll_view", "layout", "layout_group"] },
-      label: { type: "string", maxLength: 48 }, text: { type: "string", maxLength: 80 }, purpose: { type: "string", maxLength: 120 }, rect: rectSchema,
-      visible: { type: "boolean" }, variant: { type: "string", enum: ["primary", "secondary", "strong", "quiet", "icon", "watermark"] },
-      layout: {
-        type: "object", additionalProperties: false,
-        properties: {
-          mode: { type: "string", enum: ["free", "horizontal", "vertical", "grid", "overlay"] },
-          gap: { type: "number", minimum: 0, maximum: 20 }, padding: { type: "number", minimum: 0, maximum: 20 },
-        },
-        required: ["mode", "gap", "padding"],
-      },
-    };
-    if (depth < 4) properties.children = { type: "array", maxItems: 12, items: nodeSchema(depth + 1) };
-    return { type: "object", additionalProperties: false, properties, required: ["id", "role", "label", "purpose", "rect"] };
-  };
-  const outputSchema = payload.stage === "panel_plan"
-    ? {
-        type: "object", additionalProperties: false,
-        properties: {
-          analysis: { type: "string", maxLength: 160 },
-          panels: {
-            type: "array", minItems: 1, maxItems: 6,
-            items: {
-              type: "object", additionalProperties: false,
-              properties: {
-                id: { type: "string", maxLength: 48 }, label: { type: "string", maxLength: 48 },
-                purpose: { type: "string", maxLength: 160 },
-                role: { type: "string", enum: ["header", "navigation", "content", "support", "actions", "status"] },
-                rect: rectSchema,
-              },
-              required: ["id", "label", "purpose", "role", "rect"],
-            },
-          },
-        },
-        required: ["analysis", "panels"],
-      }
-    : {
-        type: "object", additionalProperties: false,
-        properties: {
-          analysis: { type: "string", maxLength: 160 },
-          panel_update: {
-            type: "object", additionalProperties: false,
-            properties: {
-              name: { type: "string", maxLength: 48 }, purpose: { type: "string", maxLength: 200 },
-              type: { type: "string", enum: ["container", "panel"] },
-              variant: { type: "string", enum: ["primary", "secondary", "strong", "quiet"] },
-              rect: rectSchema,
-            },
-            required: payload.user_request ? ["name", "purpose"] : [],
-          },
-          children: { type: "array", maxItems: 12, items: nodeSchema() },
-          container_layout: {
-            type: "object", additionalProperties: false,
-            properties: {
-              mode: { type: "string", enum: ["free", "horizontal", "vertical", "grid", "overlay"] },
-              gap: { type: "number", minimum: 0, maximum: 20 }, padding: { type: "number", minimum: 0, maximum: 20 },
-            },
-            required: ["mode", "gap", "padding"],
-          },
-        },
-        required: payload.user_request ? ["analysis", "panel_update", "children"] : ["analysis", "children"],
-      };
-  const scope = payload.stage === "panel_plan" ? "畫面主要區塊" : "所選節點的巢狀子元件";
-  const visualPrinciples = "Follow general visual-design principles only: give user-stated emphasis a clear hierarchy; align related elements consistently; use spacing to show grouping; size and proportion elements according to their role and content; leave breathing room for readability; fit the canvas; avoid accidental overlap, clipping, and decoration without purpose. These are flexible visual guidelines, not fixed templates. Functional and domain-specific behavior must come only from the user's explicit request or supplied project data; never invent, assume, or add business rules.";
-  const planPrompt = "你是 UI 規劃助手。第一階段只整理需求，不輸出 JSON，也不描述隱藏思考。請用使用者的語言，最多 6 行，列出目標、視覺排列、樹狀父子關係、使用者明確指定的功能／狀態，以及可重用的既有節點。" + visualPrinciples + " 層級要依畫面容納關係展開到必要深度，不要把同一元件的子孫攤平；功能與狀態只照使用者明確提出的內容整理，不推測、不增補。名稱優先沿用使用者指定的識別字。不得漏掉框體、比例或排列，也不可新增需求以外內容。";
-  $("#ai-status").textContent = "Gemma 4 · 1/2 整理需求…";
-  const planning = await requestGemma([
-    { role: "system", content: planPrompt },
-    { role: "user", content: JSON.stringify(payload) },
-  ], { maxTokens: 256 });
-
-  $("#ai-status").textContent = "Gemma 4 · 2/2 生成 JSON…";
-  const jsonInstructions = payload.stage === "panel_plan"
-    ? "Generate only the major screen panels from the original request and the organized plan. Keep panel rectangles in 0-100 percentages."
-    : "Generate the selected node update and its full nested child tree from the original request and organized plan. Respect the requested parent-child groups; never flatten descendants into siblings. Reuse existing node IDs exactly when reusing or moving nodes. Represent functional behavior and visual states only when explicitly requested by the user or present in project data; do not infer domain conventions, invent states, or add business rules. Use visibility properties only to encode an explicitly requested initial visual state. Use container_layout for the selected container and layout on nested containers when needed. Preserve the selected node's type, style, and rectangle unless the user explicitly requests changing that selected node itself; a size or appearance request for a descendant must only affect that descendant. Use concise labels in the user's language, preserve explicit identifiers exactly, and keep each purpose to one short sentence. Do not copy the whole request into purpose or visible text. Keep local rectangles within 0-100.";
-  const content = await requestGemma([
-    { role: "system", content: "You are a precise UI hierarchy and layout assistant. " + visualPrinciples + " " + jsonInstructions },
-    { role: "user", content: JSON.stringify({ ...payload, organized_plan: planning }) },
-  ], { format: outputSchema, maxTokens: payload.stage === "panel_plan" ? 768 : 1024 });
-  const result = JSON.parse(content);
-  if (!result || typeof result !== "object" || Array.isArray(result)) throw new Error("OLLAMA_INVALID_JSON_RESULT");
-  result.analysis = "整理：" + planning.trim() + (result.analysis ? "\nJSON摘要：" + result.analysis : "");
-  return { ...result, planning, provider: "ollama/" + OLLAMA_MODEL };
-}
-async function checkGemmaConnection() {
-  if (gemmaConnectionCheck) return gemmaConnectionCheck;
-  gemmaConnection = "checking";
+async function callCodex(payload) {
+  setAIFeedback("1/2 正在整理需求…", "busy");
   renderAIDock();
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 3000);
-  gemmaConnectionCheck = (async () => {
+  const planningResult = await requestCodex("plan", payload);
+  const planning = String(planningResult.planning || "").trim();
+  if (!planning) throw new Error("CODEX_PLANNING_EMPTY");
+  setAIFeedback("2/2 正在產生介面結構…", "busy");
+  renderAIDock();
+  const operation = payload.stage === "panel_plan" ? "panel_plan" : "panel_children";
+  const result = await requestCodex(operation, { ...payload, organized_plan: planning });
+  result.analysis = "整理：" + planning + (result.analysis ? "\n結構摘要：" + result.analysis : "");
+  return { ...result, planning, provider: "codex-cli" };
+}
+async function checkCodexConnection(force = false) {
+  if (codexConnectionCheck) return codexConnectionCheck;
+  codexConnection = "checking";
+  renderAIDock();
+  codexConnectionCheck = (async () => {
     try {
-      const response = await fetch(OLLAMA_URL + "/api/tags", { cache: "no-store", signal: controller.signal });
-      if (!response.ok) throw new Error("OLLAMA_TAGS_HTTP_" + response.status);
-      const data = await response.json();
-      gemmaConnection = data.models?.some((model) => model.name === OLLAMA_MODEL) ? "online" : "offline";
+      const response = await hostRequest("codex/status", { cache: force ? "no-store" : "default" });
+      const status = await response.json();
+      codexVersion = String(status.version || "");
+      codexConnection = status.ready ? "online" : "offline";
     } catch {
-      gemmaConnection = "offline";
+      codexVersion = "";
+      codexConnection = "offline";
     } finally {
-      clearTimeout(timeout);
-      gemmaConnectionCheck = null;
+      codexConnectionCheck = null;
       renderAIDock();
     }
-    return gemmaConnection === "online";
+    return codexConnection === "online";
   })();
-  return gemmaConnectionCheck;
+  return codexConnectionCheck;
 }
-function reportGemmaUnavailable({ prompt = "", action, target, response = "Ollama Gemma 4 本機服務沒有回應；這次指令未送達，畫布未變更。" }) {
-  gemmaConnection = "offline";
+function reportCodexUnavailable({ prompt = "", action, target, response = "本機 Codex CLI 未安裝或未登入；這次指令未送達，畫布未變更。" }) {
+  codexConnection = "offline";
   aiBusy = false;
+  setAIFeedback("Codex CLI 未就緒 · 畫布未變更", "error");
   renderAll();
-  $("#canvas-message").textContent = "Gemma 4 未連線；畫布未變更，描述已保留";
-  showToast("Gemma 4 未連線；畫布沒有更動，描述已保留。啟動 Ollama 後按「重試連線」。");
+  $("#canvas-message").textContent = "Codex CLI 未就緒；畫布未變更，描述已保留";
+  showToast("Codex CLI 未安裝或未登入；畫布沒有更動，描述已保留。登入後按「重新偵測」。");
   recordAIHistory({
     before: historySnapshot(), source: "ai", action, prompt, response,
     provider: "unavailable", status: "error",
     target: target ? { id: target.id, type: target.type, name: target.name } : undefined,
   });
 }
-async function reportGemmaFailure({ prompt = "", action, target, error }) {
+async function reportCodexFailure({ prompt = "", action, target, error }) {
   aiBusy = false;
-  await checkGemmaConnection();
-  const connected = gemmaConnection === "online";
+  await checkCodexConnection(true);
+  const connected = codexConnection === "online";
+  const cause = error?.message === "CODEX_REQUEST_TIMED_OUT" ? "回應逾時" : error?.message === "CODEX_LOGIN_REQUIRED" ? "登入狀態失效" : "回應失敗";
   const message = connected
-    ? "Gemma 4 回應逾時或格式不完整；畫布未變更，描述已保留。"
-    : "Gemma 4 未連線；畫布未變更，描述已保留。";
+    ? `Codex CLI ${cause}；畫布未變更，描述已保留。`
+    : "Codex CLI 未就緒；畫布未變更，描述已保留。";
+  setAIFeedback("未完成 · 畫布未變更，描述已保留", "error");
   renderAll();
   $("#canvas-message").textContent = message;
   showToast(message);
   recordAIHistory({
     before: historySnapshot(), source: "ai", action, prompt,
     response: String(error?.message || message).slice(0, 500),
-    provider: connected ? "ollama/" + OLLAMA_MODEL : "unavailable", status: "error",
+    provider: connected ? "codex-cli" : "unavailable", status: "error",
     target: target ? { id: target.id, type: target.type, name: target.name } : undefined,
   });
 }
@@ -1276,44 +1363,40 @@ async function planPanels(prompt) {
   const requirement = prompt.trim();
   if (!requirement) { showToast("先描述畫面要做什麼"); return; }
   aiBusy = true;
+  setAIFeedback("正在安排介面…", "busy");
   renderAIDock();
   $("#canvas-message").textContent = "先安排畫面區塊；要拆內容時選取 Panel";
   const profile = currentProfile();
   const brief = { title: state.project.name, goal: requirement, emphasis: "", systems: "" };
   let result;
   try {
-    if (gemmaConnection !== "online" && !await checkGemmaConnection()) {
-      reportGemmaUnavailable({ prompt: requirement, action: "plan_panels" });
+    if (codexConnection !== "online" && !await checkCodexConnection()) {
+      reportCodexUnavailable({ prompt: requirement, action: "plan_panels" });
       return;
     }
-    result = await callGemma({
+    result = await callCodex({
       stage: "panel_plan",
       project: { name: state.project.name, platform: state.profile === "mobile" ? "mobile app" : "desktop game" },
       brief,
       board: { width: profile.width, height: profile.height, ratio: profile.width + ":" + profile.height },
     });
   } catch (error) {
-    await reportGemmaFailure({ prompt: requirement, action: "plan_panels", error });
+    await reportCodexFailure({ prompt: requirement, action: "plan_panels", error });
     return;
   }
   if (!Array.isArray(result?.panels) || !result.panels.length) {
     aiBusy = false;
+    setAIFeedback("未完成 · 沒有可用結果，畫布未變更", "error");
     renderAIDock();
-    showToast("Gemma 有回應，但沒有可用的 Panel；畫面未變更，描述已保留。");
-    recordAIHistory({ before: historySnapshot(), source: "ai", action: "plan_panels", prompt: requirement, response: "模型回覆未包含有效的 panels。", provider: result?.provider || "ollama/" + OLLAMA_MODEL, status: "error" });
+    showToast("Codex 有回應，但沒有可用的 Panel；畫面未變更，描述已保留。");
+    recordAIHistory({ before: historySnapshot(), source: "ai", action: "plan_panels", prompt: requirement, response: "模型回覆未包含有效的 panels。", provider: result?.provider || "codex-cli", status: "error" });
     return;
   }
   const panels = result.panels;
   if (state.profile === "mobile") arrangeMobilePanels(panels);
-  const alreadyHasScene = state.elements.length > 0;
-  if (alreadyHasScene && !window.confirm("將 AI 規劃的 Panel 加到目前畫面，不會刪除現有元件。要繼續嗎？")) {
-    aiBusy = false;
-    renderAIDock();
-    recordAIHistory({ before: historySnapshot(), source: "ai", action: "plan_panels", prompt: requirement, response: result.analysis || result.summary, provider: result.provider || "unreported", status: "cancelled" });
-    return;
-  }
   const historyBefore = historySnapshot();
-  rememberUndo();
+  const originalState = state;
+  state = clone(originalState);
   const created = [];
   for (const panel of panels.slice(0, 6)) {
     const rect = clampRect(panel.rect || { x: 5, y: 10, width: 40, height: 30 });
@@ -1330,26 +1413,45 @@ async function planPanels(prompt) {
     created.push(element);
   }
   if (created.length) state.selectedId = created[0].id;
+  const candidateState = state;
+  const candidateSnapshot = historySnapshot(candidateState);
+  const changes = diffHistory(historyBefore, candidateSnapshot);
+  state = originalState;
+  setAIFeedback("等待確認 · 檢視變更差異", "review");
+  renderAll();
+  if (!await requestAIReview(changes, historyBefore, candidateSnapshot)) {
+    aiBusy = false;
+    setAIFeedback("已取消 · 畫布未變更", "done");
+    renderAll();
+    showToast("已捨棄 AI 提案；畫布未變更。");
+    recordAIHistory({ before: historyBefore, source: "ai", action: "plan_panels", prompt: requirement, response: result.analysis || result.summary, provider: result.provider || "unreported", status: "cancelled" });
+    return;
+  }
+  rememberUndo();
+  state = candidateState;
   markUnsaved();
   aiBusy = false;
+  setAIFeedback("完成 · 已新增 " + created.length + " 個 Panel", "done");
   renderAll();
   $("#ai-prompt").value = "";
-  showToast("已加入 " + created.length + " 個 Panel；可逐一選取並交給 Gemma 拆元件");
+  showToast("已加入 " + created.length + " 個 Panel；可逐一選取並交給 Codex 拆解元件");
   recordAIHistory({ before: historyBefore, source: "ai", action: "plan_panels", prompt: requirement, response: result.analysis || result.summary, provider: result.provider || "unreported", status: created.length ? "applied" : "no_change" });
 }
 async function decomposePanel(panelId, userRequest = "") {
   const panel = getElement(panelId);
-  if (!isParentNode(panel)) return;
-  if (gemmaConnection !== "online" && !await checkGemmaConnection()) {
-    reportGemmaUnavailable({ prompt: userRequest, action: userRequest ? "modify_container" : "decompose_container", target: panel });
+  if (!canHaveChildren(panel)) return;
+  if (codexConnection !== "online" && !await checkCodexConnection()) {
+    reportCodexUnavailable({ prompt: userRequest, action: userRequest ? "modify_container" : "decompose_container", target: panel });
     return;
   }
   aiBusy = true;
+  setAIFeedback("正在拆解所選元件…", "busy");
   renderAIDock();
   const button = inspector.querySelector('[data-action="decompose"]');
-  if (button) { button.disabled = true; button.textContent = "Gemma 正在拆這個容器…"; }
-  $("#ai-status").textContent = "只分析「" + panel.name + "」…";
-  const siblings = state.elements.filter(isParentNode);
+  if (button) { button.disabled = true; button.textContent = "Codex 正在整理子元件…"; }
+  setAIFeedback("正在分析所選元件…", "busy");
+  renderAIDock();
+  const siblings = state.elements.filter(canHaveChildren);
   const requestPanel = {
     id: panel.aiId || panel.id, label: panel.name, kind: panel.type, purpose: panel.purpose,
     rect: displayRect(panel), layout: panel.type === "container" ? { mode: panel.layoutMode || "free", gap: panel.gap, padding: panel.padding, columns: panel.columns } : undefined,
@@ -1357,13 +1459,13 @@ async function decomposePanel(panelId, userRequest = "") {
   };
   let result;
   try {
-    result = await callGemma({
+    result = await callCodex({
       stage: "panel_children",
       project: { name: state.project.name, platform: state.profile === "mobile" ? "mobile app" : "desktop game" },
       board: { width: currentProfile().width, height: currentProfile().height },
-      brief: { title: state.project.name, goal: userRequest || "只拆解這個容器的子元件；依容器用途安排必要的層級與排列，不延伸到其他容器或自行新增需求。" },
+      brief: { title: state.project.name, goal: userRequest || "只拆解這個元件的子元件；依元件用途安排必要的層級與排列，不延伸到其他元件或自行新增需求。" },
       user_request: userRequest,
-      scope: { operation: userRequest ? "modify_selected_node" : "decompose_selected_node", target_id: panel.aiId || panel.id, preserve_existing_children: true, do_not_modify_other_panels: true },
+      scope: { operation: userRequest ? "modify_selected_node" : "decompose_selected_node", target_id: panel.aiId || panel.id, preserve_existing_children: true, do_not_modify_other_nodes: true },
       panel: requestPanel,
       panels: siblings.map((item) => ({ id: item.aiId || item.id, parentId: item.parentId || null, label: item.name, kind: item.type, purpose: item.purpose, rect: displayRect(item) })),
       component_types: Object.keys(TYPE_NAMES),
@@ -1372,7 +1474,7 @@ async function decomposePanel(panelId, userRequest = "") {
       output_contract: { panel_update: "Optional {name,purpose,type,variant,rect} for the selected node", children: "Recursive nodes with id,role,label,purpose,rect,visible,variant,layout,children; preserve parent-child nesting and reuse IDs", container_layout: "Optional {mode,gap,padding} for the selected container", preserve_existing_children: true },
     });
   } catch (error) {
-    await reportGemmaFailure({ prompt: userRequest, action: userRequest ? "modify_container" : "decompose_container", target: panel, error });
+    await reportCodexFailure({ prompt: userRequest, action: userRequest ? "modify_container" : "decompose_container", target: panel, error });
     return;
   }
   result ||= {};
@@ -1381,7 +1483,7 @@ async function decomposePanel(panelId, userRequest = "") {
   const nextName = String(panelUpdate.name || identity || panel.name).trim().slice(0, 48);
   const nextPurpose = String(panelUpdate.purpose || (identity ? requestedContainerPurpose(identity, userRequest) : panel.purpose)).trim();
   const metadataChanged = Boolean(userRequest) && (nextName !== panel.name || nextPurpose !== panel.purpose);
-  const nextType = ["container", "panel"].includes(panelUpdate.type) ? panelUpdate.type : panel.type;
+  const nextType = canHaveChildren({ type: panelUpdate.type }) ? panelUpdate.type : panel.type;
   const nextVariant = panelUpdate.variant || panel.variant;
   const parentStyleChanged = nextType !== panel.type || nextVariant !== panel.variant;
   const parentNode = getElement(panel.parentId);
@@ -1393,53 +1495,65 @@ async function decomposePanel(panelId, userRequest = "") {
   const requestedLayout = result.container_layout;
   const layoutMode = typeof requestedLayout === "string" ? requestedLayout : requestedLayout?.mode;
   const stackFromInstruction = userRequest && /上方|下方|上面|下面|上.*下|above|below|top.*bottom/.test(userRequest);
-  const groupThenLabel = children.some((item) => isParentNode({ type: roleToType(item.role) })) && children.some((item) => ["label", "text"].includes(item.role));
-  const nextLayout = LAYOUT_NAMES[layoutMode] ? layoutMode : stackFromInstruction || groupThenLabel ? "vertical" : "";
-  const layoutChanged = isParentNode(panel) && Boolean(nextLayout) && panel.layoutMode !== nextLayout;
+  const groupThenLabel = children.some((item) => ["container", "layout", "layout_group"].includes(item.role)) && children.some((item) => ["label", "text"].includes(item.role));
+  const nextLayout = nextType === "container" ? (LAYOUT_NAMES[layoutMode] ? layoutMode : stackFromInstruction || groupThenLabel ? "vertical" : "") : "";
+  const layoutChanged = nextType === "container" && Boolean(nextLayout) && panel.layoutMode !== nextLayout;
+  const validateChildren = (items, depth = 1) => {
+    if (depth > 5) throw new Error("AI_HIERARCHY_TOO_DEEP");
+    for (const item of items) {
+      const type = roleToType(item.role);
+      if ((item.children?.length || 0) && !canHaveChildren({ type })) throw new Error("AI_NESTED_CHILDREN_REQUIRE_VALID_NODE");
+      validateChildren(item.children || [], depth + 1);
+    }
+  };
+  try {
+    validateChildren(children);
+  } catch {
+    const before = historySnapshot();
+    aiBusy = false;
+    setAIFeedback("未完成 · AI 結構無效，畫布未變更", "error");
+    renderAll();
+    showToast("AI 回傳的元件階層無法套用；畫布未變更，描述已保留。");
+    recordAIHistory({ before, source: "ai", action: userRequest ? "modify_container" : "decompose_container", prompt: userRequest, response: "AI 回傳的元件階層不符合編輯器結構。", provider: result.provider || "codex-cli", status: "error", target: { id: panel.id, type: panel.type, name: panel.name } });
+    return;
+  }
+  const historyBefore = historySnapshot();
+  const originalState = state;
+  state = clone(originalState);
+  const workingPanel = getElement(panel.id);
   const existingById = new Map();
   const indexSubtree = (parentId) => childElements(parentId).forEach((item) => {
     existingById.set(item.id, item);
     if (item.aiId) existingById.set(item.aiId, item);
     indexSubtree(item.id);
   });
-  indexSubtree(panel.id);
-  const validateChildren = (items, depth = 1) => {
-    if (depth > 5) throw new Error("AI_HIERARCHY_TOO_DEEP");
-    for (const item of items) {
-      const type = roleToType(item.role);
-      if ((item.children?.length || 0) && !isParentNode({ type })) throw new Error("AI_NESTED_CHILDREN_REQUIRE_CONTAINER");
-      validateChildren(item.children || [], depth + 1);
-    }
-  };
-  validateChildren(children);
+  indexSubtree(workingPanel.id);
   const used = new Set();
   const additions = [];
   const updates = [];
-  const wouldChange = children.length || layoutChanged || metadataChanged || parentStyleChanged || panelRectChanged;
-  const historyBefore = historySnapshot();
-  if (wouldChange) rememberUndo();
-  if (metadataChanged) {
-    panel.name = nextName;
-    panel.purpose = nextPurpose;
-  }
-  panel.type = nextType;
-  panel.variant = nextVariant;
-  if (panelRectChanged) setRect(panel, nextPanelRect, state.profile);
-  if (layoutChanged) {
-    panel.layoutMode = nextLayout;
-    if (Number.isFinite(Number(requestedLayout?.gap))) panel.gap = Math.max(0, Math.min(20, Number(requestedLayout.gap)));
-    if (Number.isFinite(Number(requestedLayout?.padding))) panel.padding = Math.max(0, Math.min(20, Number(requestedLayout.padding)));
-  }
+  try {
+    if (metadataChanged) {
+      workingPanel.name = nextName;
+      workingPanel.purpose = nextPurpose;
+    }
+    workingPanel.type = nextType;
+    updateSharedValue(workingPanel, "type", nextType);
+    workingPanel.variant = nextVariant;
+    if (panelRectChanged) setRect(workingPanel, nextPanelRect, state.profile);
+    if (layoutChanged) {
+      workingPanel.layoutMode = nextLayout;
+      if (Number.isFinite(Number(requestedLayout?.gap))) workingPanel.gap = Math.max(0, Math.min(20, Number(requestedLayout.gap)));
+      if (Number.isFinite(Number(requestedLayout?.padding))) workingPanel.padding = Math.max(0, Math.min(20, Number(requestedLayout.padding)));
+    }
   const applyChildren = (parent, items, depth = 1) => items.forEach((child, order) => {
     const type = roleToType(child.role);
     const label = String(child.label || "子元件").trim().slice(0, 48);
     let element = child.id ? existingById.get(child.id) : null;
     if (element && used.has(element.id)) element = null;
     if (!element) element = childElements(parent.id).find((candidate) => !used.has(candidate.id) && candidate.type === type && candidate.name.trim().toLowerCase() === label.toLowerCase()) || null;
-    if (element && !isParentNode({ type }) && childElements(element.id).length && !(child.children?.length)) throw new Error("AI_CANNOT_REPLACE_PARENT_WITH_LEAF");
     const maxHeight = parent.type === "scrollview" ? scrollContentLength(parent) : 100;
     const rect = clampRect(child.rect || (element ? getRect(element) : { x: 8, y: 8, width: 84, height: 84 }), maxHeight);
-    const visible = child.visible === undefined ? element?.visible !== false : child.visible !== false;
+    const visible = child.visible == null ? element?.visible !== false : child.visible !== false;
     const variant = child.variant || element?.variant || "secondary";
     let changed = !element;
     if (element) {
@@ -1449,6 +1563,7 @@ async function decomposePanel(panelId, userRequest = "") {
         || element.aiRole !== (child.role || element.aiRole) || Object.keys(rect).some((key) => Math.abs(rect[key] - beforeRect[key]) > 0.01)
         || (Number.isFinite(Number(element.order)) && Number(element.order) !== order);
       element.parentId = parent.id;
+      if (element.type !== type) updateSharedValue(element, "type", type);
       element.type = type;
       element.name = label;
       element.text = child.text ?? (element.text || (["label", "button"].includes(type) ? label : ""));
@@ -1472,7 +1587,7 @@ async function decomposePanel(panelId, userRequest = "") {
       additions.push(element);
     }
     used.add(element.id);
-    if (isParentNode(element)) {
+    if (canHaveChildren(element)) {
       const childLayout = child.layout;
       if (childLayout && LAYOUT_NAMES[childLayout.mode]) {
         element.layoutMode = childLayout.mode;
@@ -1482,16 +1597,44 @@ async function decomposePanel(panelId, userRequest = "") {
       applyChildren(element, child.children || [], depth + 1);
     }
   });
-  applyChildren(panel, children);
-  state.selectedId = panel.id;
+    applyChildren(workingPanel, children);
+    state.selectedId = workingPanel.id;
+  } catch {
+    state = originalState;
+    aiBusy = false;
+    setAIFeedback("未完成 · AI 提案無法套用，畫布未變更", "error");
+    renderAll();
+    showToast("AI 提案無法安全套用；畫布未變更，描述已保留。");
+    recordAIHistory({ before: historyBefore, source: "ai", action: userRequest ? "modify_container" : "decompose_container", prompt: userRequest, response: "AI 提案無法安全套用。", provider: result.provider || "codex-cli", status: "error", target: { id: panel.id, type: panel.type, name: panel.name } });
+    return;
+  }
   const changed = additions.length || updates.length || layoutChanged || metadataChanged || parentStyleChanged || panelRectChanged;
-  if (changed) markUnsaved();
+  const candidateState = state;
+  const candidateSnapshot = historySnapshot(candidateState);
+  const changes = diffHistory(historyBefore, candidateSnapshot);
+  state = originalState;
+  if (changed) {
+    setAIFeedback("等待確認 · 檢視變更差異", "review");
+    renderAll();
+    if (!await requestAIReview(changes, historyBefore, candidateSnapshot)) {
+      aiBusy = false;
+      setAIFeedback("已取消 · 畫布未變更", "done");
+      renderAll();
+      showToast("已捨棄 AI 提案；畫布未變更。");
+      recordAIHistory({ before: historyBefore, source: "ai", action: userRequest ? "modify_container" : "decompose_container", prompt: userRequest, response: result.analysis || result.summary, provider: result.provider || "unreported", status: "cancelled", target: { id: panel.id, type: panel.type, name: panel.name } });
+      return;
+    }
+    rememberUndo();
+    state = candidateState;
+    markUnsaved();
+  }
   aiBusy = false;
+  setAIFeedback(changed ? "完成 · 新增 " + additions.length + "／修改 " + updates.length + " 個元件" : "完成 · 畫布未變更", "done");
   renderAll();
   if (!changed) {
     showToast("沒有新增內容；目前子元件已足夠或需要更具體的描述。");
   } else {
-    showToast("已更新「" + panel.name + "」：新增 " + additions.length + "、修改 " + updates.length + " 個子元件；其他 Panel 保持不變。");
+    showToast("已更新「" + getElement(panel.id).name + "」：新增 " + additions.length + "、修改 " + updates.length + " 個子元件；其他 Panel 保持不變。");
   }
   if (userRequest && changed) $("#ai-prompt").value = "";
   recordAIHistory({
@@ -1568,7 +1711,7 @@ async function importProjectFile(file) {
       const parent = byId.get(element.parentId);
       const seen = new Set([element.id]);
       let current = parent;
-      let invalid = Boolean(element.parentId && !isParentNode(parent));
+      let invalid = Boolean(element.parentId && !canHaveChildren(parent));
       while (current && !invalid) {
         if (seen.has(current.id)) { invalid = true; break; }
         seen.add(current.id);
@@ -1646,15 +1789,19 @@ async function command(name, payload = {}) {
   if (name === "select_element" || name === "select_frame") { selectElement(payload.id); return inspectState(); }
   if (name === "add_element" || name === "add_frame") {
     const element = createElement(payload.type || "panel", { ...payload, rect: payload.rect || payload.rects?.[state.profile] });
-    return element ? inspectState() : Promise.reject(new Error("PARENT_MUST_BE_A_CONTAINER_NODE"));
+    return element ? inspectState() : Promise.reject(new Error("PARENT_MUST_BE_A_VALID_NODE"));
   }
   if (name === "update_element" || name === "update_frame") {
     const element = getElement(payload.id) || getElement(state.selectedId);
     if (!element) throw new Error("ELEMENT_NOT_FOUND");
+    if (payload.parentId !== undefined && !canAssignParent(element, payload.parentId || null)) throw new Error("INVALID_PARENT");
     if (payload.type !== undefined && (!Object.prototype.hasOwnProperty.call(TYPE_NAMES, payload.type)
-      || (!isParentNode({ type: payload.type }) && childElements(element.id).length))) throw new Error("INVALID_NODE_TYPE");
+      || (!canHaveChildren({ type: payload.type }) && childElements(element.id).length))) throw new Error("INVALID_NODE_TYPE");
     rememberUndo();
-    if (payload.type !== undefined) element.type = payload.type;
+    if (payload.type !== undefined) {
+      element.type = payload.type;
+      updateSharedValue(element, "type", payload.type);
+    }
     for (const key of ["name", "text", "purpose", "placeholder", "variant", "background", "checked", "visible", "layoutMode", "gap", "padding", "columns", "value", "contentLength", "order"]) {
       if (payload[key] !== undefined) {
         const value = ["gap", "padding", "columns", "value", "contentLength", "order"].includes(key) ? Number(payload[key]) : key === "visible" ? payload[key] !== false : payload[key];
@@ -1663,7 +1810,7 @@ async function command(name, payload = {}) {
       }
     }
     if (payload.rect) setRect(element, payload.rect);
-    if (payload.parentId !== undefined) setParent(element, payload.parentId);
+    if (payload.parentId !== undefined && (payload.parentId || null) !== (element.parentId || null)) setParent(element, payload.parentId || null, false);
     markUnsaved();
     renderAll();
     return inspectState();
@@ -1697,8 +1844,53 @@ async function hostRequest(path, options = {}) {
     headers: { ...options.headers, Authorization: "Bearer " + token },
   });
   if (response.status === 401) hostSession = null;
-  if (!response.ok) throw new Error("FRAME_ATELIER_REQUEST_FAILED");
+  if (!response.ok) {
+    const failure = await response.json().catch(() => ({}));
+    throw new Error(failure.error || "FRAME_ATELIER_REQUEST_FAILED");
+  }
   return response;
+}
+async function importImageAsset(file, targetId) {
+  if (!file || !["image/png", "image/webp"].includes(file.type)) throw new Error("IMAGE_FORMAT_NOT_SUPPORTED");
+  if (file.size < 1 || file.size > 8 * 1024 * 1024) throw new Error("IMAGE_SIZE_INVALID");
+  if (getElement(targetId)?.type !== "image") throw new Error("IMAGE_TARGET_NOT_AVAILABLE");
+  if (typeof createImageBitmap === "function") {
+    let bitmap;
+    try {
+      bitmap = await createImageBitmap(file);
+      if (bitmap.width > 8192 || bitmap.height > 8192 || bitmap.width * bitmap.height > 32_000_000) throw new Error("IMAGE_DIMENSIONS_INVALID");
+    } catch (error) {
+      if (error instanceof Error && error.message === "IMAGE_DIMENSIONS_INVALID") throw error;
+      throw new Error("IMAGE_CONTENT_INVALID");
+    } finally {
+      bitmap?.close();
+    }
+  }
+  const response = await hostRequest("assets/import", {
+    method: "POST", headers: { "Content-Type": file.type }, body: file,
+  });
+  const result = await response.json();
+  const element = getElement(targetId);
+  if (!element || element.type !== "image" || typeof result.asset_url !== "string") throw new Error("IMAGE_TARGET_NOT_AVAILABLE");
+  rememberUndo();
+  element.assetUrl = result.asset_url;
+  updateSharedValue(element, "assetUrl", result.asset_url);
+  markUnsaved();
+  renderAll();
+  showToast("圖片已匯入並套用到「" + element.name + "」");
+}
+function handleImageAssetFile(file, targetId) {
+  if (!file) return;
+  importImageAsset(file, targetId).catch((error) => {
+    const messages = {
+      IMAGE_FORMAT_NOT_SUPPORTED: "只支援 PNG 或 WebP 圖片。",
+      IMAGE_SIZE_INVALID: "圖片需大於 0 且小於 8 MB。",
+      IMAGE_DIMENSIONS_INVALID: "圖片尺寸過大，請使用 8192 px 以內、總像素不超過 3200 萬的圖片。",
+      IMAGE_CONTENT_INVALID: "無法讀取圖片內容，請確認是有效的 PNG／WebP。",
+      IMAGE_TARGET_NOT_AVAILABLE: "原本選取的圖片元件已不存在，畫布未變更。",
+    };
+    showToast(messages[error?.message] || "圖片匯入失敗；畫布未變更。請確認本機編輯器仍在執行後再試。");
+  });
 }
 function syncHostState() {
   if (!window.frameAtelier?.inspect) return;
@@ -1839,14 +2031,14 @@ tree.addEventListener("dragstart", (event) => {
 });
 tree.addEventListener("dragover", (event) => {
   const row = event.target.closest(".tree-row");
-  if (!row || !isParentNode(getElement(row.dataset.id))) return;
+  if (!row || !canHaveChildren(getElement(row.dataset.id))) return;
   event.preventDefault();
   row.classList.add("is-drop-target");
 });
 tree.addEventListener("dragleave", (event) => event.target.closest(".tree-row")?.classList.remove("is-drop-target"));
 tree.addEventListener("drop", (event) => {
   const row = event.target.closest(".tree-row");
-  if (!row || !isParentNode(getElement(row.dataset.id))) return;
+  if (!row || !canHaveChildren(getElement(row.dataset.id))) return;
   event.preventDefault();
   const value = event.dataTransfer.getData("text/plain");
   if (value.startsWith("tree:")) {
@@ -1896,20 +2088,20 @@ $("#button-radius").addEventListener("input", (event) => {
 });
 function submitAIPrompt() {
   if (aiBusy) return;
-  if (gemmaConnection !== "online") {
-    showToast(gemmaConnection === "checking" ? "正在檢查 Gemma 4 連線；描述會保留。" : "Gemma 4 未連線；描述已保留，連線後再送出。請先按「重試連線」。");
+  if (codexConnection !== "online") {
+    showToast(codexConnection === "checking" ? "正在檢查 Codex CLI；描述會保留。" : "Codex CLI 未就緒；描述已保留，登入後按「重新偵測」。");
     return;
   }
   const prompt = $("#ai-prompt").value.trim();
   if (!prompt) { showToast("先說明想新增或修改什麼"); return; }
   const selected = getElement(state.selectedId);
-  if (isParentNode(selected)) decomposePanel(selected.id, prompt);
+  if (canHaveChildren(selected)) decomposePanel(selected.id, prompt);
   else planPanels(prompt);
 }
 $("#ai-submit").addEventListener("click", submitAIPrompt);
 $("#ai-retry").addEventListener("click", async () => {
-  if (await checkGemmaConnection()) showToast("Gemma 4 已連線，可以送出指令了。");
-  else showToast("Gemma 4 仍未連線；啟動本機 Ollama 後再試。輸入內容會保留。");
+  if (await checkCodexConnection(true)) showToast("Codex CLI 已登入，可以送出結構生成指令。");
+  else showToast("Codex CLI 未就緒；確認已安裝並登入。輸入內容會保留。");
 });
 $("#ai-prompt").addEventListener("keydown", (event) => {
   if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); submitAIPrompt(); }
@@ -1918,6 +2110,12 @@ $("#voice-input").addEventListener("click", beginVoiceInput);
 $("#export-project").addEventListener("click", exportProject);
 $("#import-project").addEventListener("click", () => $("#project-file").click());
 $("#project-file").addEventListener("change", (event) => importProjectFile(event.currentTarget.files?.[0]));
+$("#image-asset-file").addEventListener("change", (event) => {
+  const picker = event.currentTarget;
+  handleImageAssetFile(picker.files?.[0], picker.dataset.targetId);
+  picker.value = "";
+  delete picker.dataset.targetId;
+});
 $("#reset-project").addEventListener("click", () => {
   if (!window.confirm("還原成 Yes Sir 範例？目前畫布內容會被取代。建議先匯出專案。")) return;
   rememberUndo();
@@ -1958,4 +2156,4 @@ resizeObserver.observe(canvasScroll);
 $("#button-color").value = state.project.buttonStyle.color;
 renderAll();
 save();
-void checkGemmaConnection();
+void checkCodexConnection();

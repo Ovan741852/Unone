@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "checks": [
+    "Panel can be converted to an Image parent without losing children; imported image renders beneath nested components",
+    "Image source offers project reuse or new-image import after Codex ImageGen; no misleading display-style selector",
+    "Existing project image can be selected and reused on a second image node",
+    "Nested equipment-slot tree, overlay alignment, independent image visibility, and layer eye toggling",
+    "A root leaf can switch to Image and then accept nested child elements",
+    "Label and Button can own children; parent choices expose all node kinds while cyclic parenting is rejected",
+    "Codex two-stage progress/completion feedback; left-before/right-after visual review highlights additions, keeps proposed edits unapplied until confirmation, and preserves apply/reject behavior",
+    "Authenticated inspect, add, update, history through legacy inspect command, visible offline warning, disabled AI submission, preserved prompt, unchanged canvas, collapsible tree rows, cascading deletion with undo, visible history and reload persistence",
+    "Cross-origin mutation and unauthenticated polling rejected"
+  ],
+  "errors": [],
+  "history_bounds_after_reload": {
+    "top": 957,
+    "bottom": 1000,
+    "parentTop": 60,
+    "parentBottom": 1000,
+    "height": 43
+  }
+}

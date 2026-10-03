@@ -30,22 +30,23 @@ the active desktop/mobile profile, elements with parent IDs and per-profile
 rectangles, reusable prefabs, and a semantic unone_ui tree.
 
 Generic node kinds are `container`, `panel`, `scrollview`, `progressbar`,
-`button`, `label`, `image`, `input`, and `checkbox`. `panel`, `container`, and
-`scrollview` can own children. A Container's `layoutMode` is one of `free`,
-`horizontal`, `vertical`, `grid`, or `overlay`; `gap`, `padding`, and `columns`
-configure its layout. Children in automatic layouts use their `order` value
+`button`, `label`, `image`, `input`, and `checkbox`. Every node kind can own
+children; `parentId` describes hierarchy independently from visual type, and
+children are positioned relative to their parent. A visual node renders behind
+its children. Container's `layoutMode` is one of `free`, `horizontal`,
+`vertical`, `grid`, or `overlay`; `gap`, `padding`, and `columns` configure its
+automatic child layout. Children in automatic layouts use their `order` value
 and preferred width/height; the snapshot's `rect` is the resulting preview
 rectangle and `preferred_rect` preserves the authored size. ScrollView has a
 vertical content area controlled by `contentLength`. ProgressBar uses a
 0–100 `value`.
 
 Every node has a `visible` flag; `update_element` accepts `{id, visible}` and
-the layer tree has an eye toggle. Image nodes can use `variant: "icon"` or
-`variant: "watermark"` for clean overlay previews. A container can arrange
-siblings while a child Panel owns overlaid image states. AI decomposition may
-return nested `children` (up to five levels); existing IDs can be reused when
-nodes move within the selected subtree. Initial visibility is preview state;
-runtime game logic still decides which equipment state is active.
+the layer tree has an eye toggle. Image nodes reference imported project assets
+and may contain children rendered over the image. AI decomposition may return
+nested `children` (up to five levels); existing IDs can be reused when nodes
+move within the selected subtree. Initial visibility is preview state; runtime
+logic still decides which state is active.
 
 Lists, inventory slots, cards, and other product/game-specific patterns are
 not engine node kinds. Build them from generic containers and visual nodes,
@@ -72,8 +73,8 @@ For older local bridges that allow `inspect` but not `get_change_history`, use
 The command can optionally filter by `targetId`; pass `allProjects: true` to
 include other projects kept in this browser's local history.
 
-The current local model is Ollama `gemma4:e4b` at `127.0.0.1:11435`.
-Panel planning and selected-panel decomposition are separate requests; a
-decomposition receives the full panel list and component registry to reduce
-repeated content. The editor stores drafts locally and keeps working when
-Ollama is not running.
+Structure planning and selected-node decomposition are separate requests; a
+decomposition receives the current hierarchy and component registry to reduce
+repeated content. Structure generation uses the authenticated local Codex CLI;
+image assets are generated in Codex with ImageGen and imported into the editor.
+The editor stores drafts locally and keeps working when Codex CLI is not ready.

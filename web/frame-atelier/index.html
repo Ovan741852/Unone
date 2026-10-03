@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#15191d" />
     <title>Frame Atelier · Unone</title>
-    <link rel="stylesheet" href="./style.css?v=18" />
+    <link rel="stylesheet" href="./style.css?v=27" />
   </head>
   <body>
     <div class="app-shell" data-unone-app="frame-atelier">
@@ -27,6 +27,7 @@
           <button class="top-button" id="import-project" type="button">匯入專案</button>
           <button class="top-button" id="export-project" type="button">匯出專案</button>
           <input id="project-file" type="file" accept=".json,application/json" hidden />
+          <input id="image-asset-file" type="file" accept="image/png,image/webp" hidden />
         </div>
       </header>
 
@@ -116,7 +117,7 @@
           <section class="ai-dock" aria-label="AI 新增元件">
             <div class="ai-dock-brand">
               <span class="ai-spark">✳</span>
-              <span class="ai-dock-copy"><strong id="ai-dock-title">描述整個介面</strong><span class="ai-status-row"><small id="ai-status" role="status" aria-live="polite">正在檢查 Gemma 4…</small><button class="ai-retry" id="ai-retry" type="button" hidden>重試連線</button></span></span>
+              <span class="ai-dock-copy"><strong id="ai-dock-title">描述整個介面</strong><span class="ai-status-row"><small id="ai-status" role="status" aria-live="polite">正在檢查 Codex CLI…</small><button class="ai-retry" id="ai-retry" type="button" hidden>重新偵測</button></span></span>
             </div>
             <button class="mic-button" id="voice-input" type="button" title="語音輸入" aria-label="語音輸入">◖</button>
             <label class="sr-only" for="ai-prompt">描述要新增的畫面，或修改選取的容器</label>
@@ -146,8 +147,41 @@
           </details>
         </aside>
       </div>
+      <dialog id="ai-review-dialog" aria-labelledby="ai-review-title" aria-describedby="ai-review-summary">
+        <form method="dialog">
+          <header class="ai-review-dialog-heading">
+            <h2 id="ai-review-title">AI 變更預覽</h2>
+            <button type="submit" value="cancel" aria-label="關閉變更預覽">關閉</button>
+          </header>
+          <p id="ai-review-summary"></p>
+          <div class="ai-review-legend" aria-label="差異圖例">
+            <span data-review-kind="added"><i></i>新增</span>
+            <span data-review-kind="moved"><i></i>位置／尺寸</span>
+            <span data-review-kind="updated"><i></i>其他修改</span>
+            <span data-review-kind="removed"><i></i>移除</span>
+          </div>
+          <div class="ai-review-visuals">
+            <section class="ai-review-side" aria-labelledby="ai-review-before-title">
+              <header><h3 id="ai-review-before-title">Before <span>變更前</span></h3></header>
+              <div id="ai-review-before" class="ai-review-canvas"></div>
+            </section>
+            <section class="ai-review-side" aria-labelledby="ai-review-after-title">
+              <header><h3 id="ai-review-after-title">After <span>提案後</span></h3></header>
+              <div id="ai-review-after" class="ai-review-canvas"></div>
+            </section>
+          </div>
+          <details id="ai-review-details">
+            <summary>需要時再看逐項文字明細</summary>
+            <div id="ai-review-list" aria-live="polite"></div>
+          </details>
+          <footer>
+            <button type="submit" value="cancel">捨棄變更</button>
+            <button id="ai-review-apply" type="submit" value="apply">套用變更</button>
+          </footer>
+        </form>
+      </dialog>
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </div>
-    <script type="module" src="./main.js?v=29"></script>
+    <script type="module" src="./main.js?v=40"></script>
   </body>
 </html>
