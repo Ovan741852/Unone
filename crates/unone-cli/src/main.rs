@@ -10,7 +10,7 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use unone_engine::{
     AssetSpec, BundleManager, Camera3DData, EngineResult, EngineRuntime, InputFrame, Vec2, Vec3,
-    WorldSnapshot, api_describe, api_search_result, describe_asset, init_asset_manifest,
+    WorldSnapshot, api_describe, api_search_result, asset_usages, describe_asset, init_asset_manifest,
     init_project, inspect_assets, inspect_assets_strict, inspect_project, inspect_systems,
     pack_project, read_asset, search_systems, set_system,
 };
@@ -238,6 +238,11 @@ enum AssetCommand {
     Describe {
         #[arg(long, help = "Declared asset id, for example asset://characters/hero")]
         id: String,
+    },
+    /// Find source usages across project pages and templates without executing scripts.
+    Usages {
+        #[arg(long, help = "Declared asset id or primary source path; omit to build the complete source index")]
+        id: Option<String>,
     },
     /// Read one declared asset out of the active bundle generation.
     Read {
@@ -546,6 +551,7 @@ fn run() -> Result<ExitCode> {
             AssetCommand::Describe { id } => {
                 print_result(describe_asset(&cli.project, &id), cli.json)
             }
+            AssetCommand::Usages { id } => print_result(asset_usages(&cli.project, id.as_deref()), cli.json),
             AssetCommand::Read { id, file, output } => print_result(
                 read_asset(&cli.project, &id, file.as_deref(), output.as_deref()),
                 cli.json,

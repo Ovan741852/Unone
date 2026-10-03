@@ -6,6 +6,8 @@ mod api;
 mod asset;
 #[cfg(feature = "dev-tools")]
 mod asset_workflow;
+#[cfg(feature = "dev-tools")]
+mod asset_usage;
 mod audio;
 #[cfg(feature = "physics2d")]
 mod broadphase;
@@ -59,6 +61,8 @@ pub use asset_workflow::{
     AssetDescribeReference, AssetDescribeReport, AssetPublicationReport, AssetReferenceScope,
     AssetWorkflowAction, describe_asset,
 };
+#[cfg(feature = "dev-tools")]
+pub use asset_usage::{AssetUsageIndex, AssetUsageFile, AssetUsageReference, AssetUsageScope, asset_usages};
 pub use audio::{
     AudioBus, AudioCategory, AudioConfig, AudioEvent, AudioEventKind, AudioLoop, AudioOptions,
     AudioPhase, IMPLEMENTED_AUDIO_RULES, MAX_LIVE_AUDIO_LOOPS,

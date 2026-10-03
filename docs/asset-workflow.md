@@ -109,6 +109,8 @@ provides the actual inspection and selection rules:
 game --project <game-root> --json asset inspect
 game --project <game-root> --json asset inspect --strict
 game --project <game-root> --json asset describe --id <asset-id>
+game --project <game-root> --json asset usages --id <asset-id-or-primary-source-path>
+game --project <game-root> --json asset usages
 game --project <game-root> --json asset read --id <asset-id>
 game --project <game-root> --json asset read --id <asset-id> --file <declared-companion>
 game --project <game-root> --json bundle pack
@@ -132,7 +134,7 @@ Read the step's `TEST_ASSERTIONS_FAILED` diagnostic and `failed_cases` facts to
 repair the assertion or the game behavior; do not infer success from the
 runner's outer `ok` envelope alone.
 
-The corresponding MCP tools are `unone_asset_inspect`, `unone_asset_describe`,
+The corresponding MCP tools are `unone_asset_inspect`, `unone_asset_describe`, `unone_asset_usages`,
 `unone_asset_read`, `unone_asset_init`, `unone_project_sync`,
 `unone_bundle_pack`, `unone_bundle_inspect`, and `unone_bundle_install`. Use `tools/list` as the
 authority for available tools and parameters; do not infer capability from a
@@ -149,7 +151,7 @@ freshness, and ordered next actions into one `EngineResult`. `ok` means only tha
 the query completed; do not turn false or unknown freshness into true.
 
 The serialized shape of `AssetDescribeReport` currently includes `project_root`, `asset`,
-`authoring`, `references`, `reference_scope`, `active`, `publication`, and
+`authoring`, `references`, `reference_scope`, `usages`, `active`, `publication`, and
 `required_next_actions`. The manifest fields under `authoring` are `manifest_path` and
 `manifest_json_pointer`. Each file entry identifies the primary/companion role,
 existence, readable size/hash, `shared_with_asset_ids`, and a structured diagnostic
@@ -157,8 +159,53 @@ when needed. Reference fields retain the main-scene path, `json_pointer`, ID,
 entity, component, and actual array index for `sprite`, `mesh3d`, and `animation`. This is
 not arbitrary string search or a complete impact analysis for the selected asset.
 `reference_scope` explicitly marks `main_scene_only` and states that IDs dynamically
-created or selected by Luau are not inspected; do not treat unreferenced as
-safe to delete.
+created or selected by Luau are not resolved by that legacy section. The separate
+`usages` section adds project source evidence below; neither section proves safe deletion.
+
+### `asset usages`: project-wide source evidence
+
+`game asset usages [--id <asset-id-or-primary-source-path>]` and MCP
+`unone_asset_usages` share one bounded engine index. Omitting `id` returns the index
+for all declared assets, without running a game, ticking, or writing files. Supplying
+an ID or primary source path includes same-primary-file aliases. `asset describe`
+includes this query under `usages`, keeping its legacy static `references` contract intact.
+
+- `assets`: declared ID → primary source path.
+- `source_files`: project-relative path, SHA256, `entry` or `authoring_candidate` role.
+- `references`: matching IDs, path, 1-based Luau line/character column, kind and source
+  excerpt. JSON references use a JSON pointer, with line/column 0 (not guessed).
+- `asset_field`: syntactic asset field evidence; it does not prove the containing
+  page executes. `literal`, `template_prefix`, `source_path` and `template_call` are candidates.
+  Template names are derived from declared IDs, not game-specific naming conventions.
+  `template_call` lists one-hop same-file named-helper calls with `via`, including
+  callers that omit a default skin. This is conservative lexical dependency evidence,
+  not resolved argument flow or binding proof; overridden skins may still be candidates.
+- `unresolved`: project-wide dynamic asset assignments/interpolated strings and
+  undeclared asset literals. These are NOT attributed to the queried asset.
+- `scope`: scan completion, issues, exclusions and limitations. `runtime_complete`
+  is always false. Failed reads, syntax/escape limitations and exhausted bounds are
+  visible, never disguised as zero usages.
+
+Discovery covers `.luau`/`.lua`, `scene.json`/`*.scene.json`, `ui.json`/`*.ui.json`.
+Hidden, generated, dependency, test and asset directories are excluded. Configured
+entry/job/main-scene files are always included, even in an excluded directory.
+Paths are checked against the project root; directory symlinks are not traversed.
+Limits: 512 files, 2 MiB/file, 16 MiB total and 20,000 evidence sites. Comments are
+excluded, ordinary escaped and long-bracket strings are supported. Arbitrary
+concatenation/data flow, JS/presentation sources and external modules are not resolved.
+Entry bundles and authoring sources can repeat evidence and are labeled separately.
+Zero matches never authorizes deletion.
+
+Development Web exports include a content-addressed `content/asset-usages.json`;
+production exports do not add it. The developer API exposes `assets` and
+`asset.usages` (`id` required). The panel's **資產用途** tab searches IDs and source
+filenames; **反查此圖片用途** on a Hierarchy image/component opens the same query.
+Live references include node/component paths or entity components and the query
+frame. Source references include copyable file/line/pointer evidence. Use a source
+hash to identify the exported version; re-export after source edits. Live evidence
+only covers published nodes, not unvisited pages or unmaterialized virtual items.
+
+### `asset describe`: active state and next actions
 
 The scope of `active` is `native_local`. It reports the generation, active
 manifest entry, verified status and size/hash for each primary/companion, structured

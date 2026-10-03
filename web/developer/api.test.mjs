@@ -1,6 +1,28 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createDeveloperAPI} from './api.js';
+test('asset usages join cached source evidence with live nodes, aliases and nearest component without ticking',async()=>{
+ let loads=0,ticks=0,core=0;
+ const source={version:1,project_root:'fixture',assets:{'texture://button':'button.png','texture://alias':'button.png'},references:[{asset_ids:['texture://alias'],path:'ui/other.luau',line:7,kind:'literal',evidence:'other page'}],unresolved:[{path:'main.luau',line:9,kind:'dynamic_asset_expression'}],source_files:[],scope:{scan_complete:true,runtime_complete:false}};
+ const snapshot={world:{frame:3,entities:[],ui:{id:'screen',kind:'screen',children:[{id:'outer',kind:'component',children:[{id:'button',kind:'component',component:'ui.button',children:[{id:'plate',kind:'image',asset:'texture://button'}]}]}]}}};
+ const api=createDeveloperAPI({getAssetUsageIndex:async()=>{loads++;return source;},getSnapshot:()=>snapshot,tick:()=>ticks++,coreRequest:()=>core++},{});
+ assert.equal((await api.request({method:'asset.usages',id:''})).ok,false);assert.equal(loads,0);
+ const report=await api.request({method:'asset.usages',id:'texture://button'});
+ assert.equal(report.ok,true);assert.deepEqual(report.effects,[]);assert.equal(report.value.live[0].component_id,'button');
+ assert.equal(report.value.references[0].line,7);assert.equal(report.value.unresolved.length,1);
+ assert.equal((await api.request({method:'asset.usages',id:'button.png'})).value.live.length,1);
+ assert.equal((await api.request({method:'assets'})).value.assets.length,2);assert.equal(loads,1);assert.equal(ticks,0);assert.equal(core,0);
+ snapshot.world.ui.children=[];
+ assert.equal((await api.request({method:'asset.usages',id:'texture://button'})).value.live.length,0);
+ assert.equal((await api.request({method:'journal'})).value.events.length,1); // invalid request only; reads are not journal mutations
+});
+test('missing or invalid source indexes preserve live evidence and retry rather than claiming zero usage',async()=>{
+ let loads=0;
+ const api=createDeveloperAPI({getSnapshot:()=>({world:{frame:0,ui:{id:'picture',asset:'texture://live'}}}),getAssetUsageIndex:async()=>{loads++;if(loads===1)throw Error('re-export required');return {version:2};}},{});
+ const first=(await api.request({method:'asset.usages',id:'texture://live'})).value;
+ assert.equal(first.live.length,1);assert.match(first.source_error,/re-export/);assert.equal(first.scope,null);
+ const second=(await api.request({method:'assets'})).value;assert.equal(second.assets[0].id,'texture://live');assert.match(second.source_error,/格式/);assert.equal(loads,2);
+});
 test('memory collection is explicit, bounded labels and typed options reach Core',async()=>{
  const commands=[];const api=createDeveloperAPI({coreRequest:async request=>{commands.push(request);return {samples:[]};},getSnapshot:()=>({world:{frame:0}})},{});
  assert.equal((await api.request({method:'memory.sample',label:'idle',collect:'yes'})).ok,false);

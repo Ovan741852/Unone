@@ -1,13 +1,14 @@
 // One structured API for the human panel, browser agents and automation.
+import {createAssetUsageReader} from './asset-usages.js';
 export const methods = {
   describe:[], jobs:[], snapshot:[], observations:[], hierarchy:[], console:[], network:[], profile:[], 'profile.start':['sampling'], 'profile.stop':[], memory:[],
   'tools.list':[], 'tools.invoke':['id','revision','value'], pause:['paused'], step:['count'],
   input:['frame'], bloom:['enabled'], journal:[], screenshot:['max_width','max_height'],
-  'instances.transport':['mode'], restart:[],
+  'instances.transport':['mode'], restart:[], assets:[], 'asset.usages':['id'],
   'memory.sample':['label','collect','warmup'], 'memory.report':[], 'memory.reset':[],
 };
 export const requestSchema={type:'object',additionalProperties:false,required:['method'],properties:{
-  method:{type:'string',enum:Object.keys(methods)},id:{type:'string'},revision:{type:'integer',minimum:0},
+  method:{type:'string',enum:Object.keys(methods)},id:{type:'string',minLength:1,maxLength:1024},revision:{type:'integer',minimum:0},
   value:{type:'boolean'},paused:{type:'boolean'},sampling:{type:'boolean'},count:{type:'integer',minimum:1,maximum:120},
   frame:{type:'object'},enabled:{type:'boolean'},max_width:{type:'integer',minimum:16,maximum:2048},max_height:{type:'integer',minimum:16,maximum:2048},
   mode:{type:'string',enum:['json','memory']},
@@ -16,6 +17,7 @@ export const requestSchema={type:'object',additionalProperties:false,required:['
 const fail=(code,message)=>{const e=new Error(message);e.code=code;throw e;};
 const clone=value=>JSON.parse(JSON.stringify(value));
 export function createDeveloperAPI(host,telemetry){
+  const assetReader=createAssetUsageReader(host);
   const journal=[];let sequence=0;
   async function core(request={method:'snapshot'}){
     if(host.coreRequest)return host.coreRequest(request);
@@ -55,6 +57,11 @@ export function createDeveloperAPI(host,telemetry){
           value=host.capture({max_width,max_height});break;
         }
         case 'hierarchy':value={entities:host.getSnapshot().world.entities,ui:host.getSnapshot().world.ui??null,note:'Entities are flat roots: this runtime has no entity parenting contract.'};break;
+        case 'assets':value=await assetReader.assets();break;
+        case 'asset.usages':{
+          if(typeof input.id!=='string'||!input.id.trim()||input.id.length>1024)fail('DEVELOPER_REQUEST_INVALID','id must be a declared asset id or primary source path, 1..1024 characters');
+          value=await assetReader.usages(input.id);break;
+        }
         case 'tools.list':value=(await core({method:'tools'})).tools;break;
         case 'console':value={game:(await core()).logs,browser:telemetry.console(),retention:200};break;
         case 'network':value={resources:telemetry.network(),note:'Resource timings only; no request bodies/headers or arbitrary network interception. Zero transfer size may mean cache or restricted timing.'};break;

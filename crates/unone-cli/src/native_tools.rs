@@ -208,6 +208,10 @@ fn serve(
                 "text/javascript",
                 include_bytes!("../../../web/developer/api.js"),
             )),
+            "/asset-usages.js" => Some((
+                "text/javascript",
+                include_bytes!("../../../web/developer/asset-usages.js"),
+            )),
             "/panel.js" => Some((
                 "text/javascript",
                 include_bytes!("../../../web/developer/panel.js"),

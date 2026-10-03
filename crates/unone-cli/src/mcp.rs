@@ -8,7 +8,7 @@ use anyhow::Result;
 use serde_json::{Map, Value, json};
 use unone_engine::{
     AssetSpec, BundleManager, Diagnostic, EngineResult, EngineRuntime, InputFrame, api_describe,
-    api_search_result, describe_asset, init_asset_manifest, init_project, inspect_assets,
+    api_search_result, asset_usages, describe_asset, init_asset_manifest, init_project, inspect_assets,
     inspect_assets_strict, inspect_project, inspect_systems, pack_project, platform_capabilities,
     read_asset, search_systems, set_system,
 };
@@ -234,6 +234,7 @@ fn tool_names() -> Vec<&'static str> {
         "unone_project_prepare_inspect",
         "unone_asset_inspect",
         "unone_asset_describe",
+        "unone_asset_usages",
         "unone_asset_read",
         "unone_asset_init",
         "unone_verify",
@@ -365,13 +366,21 @@ fn tool_definitions() -> Vec<Value> {
         tool(
             "unone_asset_describe",
             "Describe one asset workflow",
-            "Read one declared asset's manifest location, primary and companion authoring files, static main-scene references, native-local active generation state, publication freshness, and ordered next actions. This is a focused read-only query; it does not edit files, pack bundles, install content, or inspect dynamic Luau asset ids.",
+            "Read one asset's authoring files, legacy static main-scene references, project-wide usages evidence, native-local publication freshness and next actions. usages distinguishes syntactic references, literal/template candidates and unresolved dynamic sites; it never proves runtime completeness or safe deletion. Read-only; no scripts executed.",
             object_schema(json!({
                 "properties": {
                     "id": {"type": "string", "description": "Declared asset id, for example asset://characters/hero."}
                 },
                 "required": ["id"]
             })),
+            true,
+            true,
+        ),
+        tool(
+            "unone_asset_usages",
+            "Find asset usages across project sources",
+            "Read-only bounded Luau/Lua and JSON source index with files, line/column or JSON pointer, source hashes, syntactic asset fields, literal/template candidates, same-file aliases and project-wide unresolved dynamic sites. Optional id accepts a declared asset id or primary source path; omit for the complete index. Generated/dependency/test directories are excluded and the scan scope/issues are explicit. No script execution, no reachability proof, no safe-delete inference.",
+            object_schema(json!({"properties":{"id":{"type":"string","minLength":1,"description":"Declared asset id or primary source path. Omit for all assets."}}})),
             true,
             true,
         ),
@@ -743,6 +752,10 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
         },
         "unone_asset_describe" => match required_string(arguments, "id") {
             Ok(id) => tool_result(describe_asset(project, &id)),
+            Err(diagnostic) => argument_error(*diagnostic),
+        },
+        "unone_asset_usages" => match optional_string(arguments, "id") {
+            Ok(id) => tool_result(asset_usages(project, id.as_deref())),
             Err(diagnostic) => argument_error(*diagnostic),
         },
         "unone_asset_read" => {
@@ -1257,7 +1270,7 @@ mod tests {
             &mut state,
         )
         .unwrap();
-        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), 33);
+        assert_eq!(listed["result"]["tools"].as_array().unwrap().len(), tool_definitions().len());
     }
 
     #[test]
@@ -1309,6 +1322,9 @@ mod tests {
         assert_eq!(names.first(), Some(&"unone_session"));
         assert_eq!(names.last(), Some(&"unone_bundle_install"));
         assert!(names.contains(&"unone_asset_describe"));
+        assert!(names.contains(&"unone_asset_usages"));
+        let usages = tools.iter().find(|tool| tool["name"] == "unone_asset_usages").unwrap();
+        assert_eq!(usages["annotations"]["readOnlyHint"], true);
         assert!(names.contains(&"unone_project_sync"));
         assert!(names.contains(&"unone_project_prepare_inspect"));
         assert!(names.contains(&"unone_platform_snapshot"));

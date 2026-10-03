@@ -24,6 +24,8 @@ pub struct AssetDescribeReport {
     pub authoring: AssetAuthoringReport,
     pub references: Vec<AssetDescribeReference>,
     pub reference_scope: AssetReferenceScope,
+    /// Project source evidence is separate from the legacy main-scene-only references.
+    pub usages: Option<crate::asset_usage::AssetUsageIndex>,
     pub active: AssetActiveReport,
     pub publication: AssetPublicationReport,
     pub required_next_actions: Vec<AssetWorkflowAction>,
@@ -233,6 +235,11 @@ pub fn describe_asset(
         authoring,
         references,
         reference_scope,
+        usages: {
+            let result = crate::asset_usage::asset_usages(&root, Some(asset_id));
+            diagnostics.extend(result.diagnostics);
+            result.value
+        },
         active: active_comparison.report,
         publication,
         required_next_actions,

@@ -8,4 +8,13 @@
 #unone-developer .dev-tree-branch::after{content:"";position:absolute;top:50%;left:0;width:8px;border-top:1px solid #7ee0c755}
 #unone-developer .dev-tree-row[data-last="true"] .dev-tree-branch{bottom:50%}
 #unone-developer .dev-tree-row[data-depth="0"] .dev-tree-branch{display:none}
-#unone-developer .dev-node-kind,#unone-developer .dev-tree-node{position:relative;z-index:1}
+#unone-developer .dev-node-kind,#unone-developer .dev-tree-node{position:relative;z-index:1}#unone-developer .dev-tree-toggle{position:relative;z-index:1;flex:0 0 22px;width:22px;min-height:26px;padding:3px 0;text-align:center;color:#9bd8c6;background:transparent;border-color:transparent;font:14px/1 ui-monospace,monospace}#unone-developer .dev-tree-toggle:hover{border-color:#497a6c;background:#1b3a37}#unone-developer .dev-tree-toggle-spacer{display:block;pointer-events:none;opacity:0}
+:root{--unone-dev-reserved-right:0px}#stage{left:calc((100% - var(--unone-dev-reserved-right,0px))/2)!important}#unone-developer .dev-launch[aria-expanded=true]{visibility:hidden;pointer-events:none}
+.dev-asset-detail h3,.dev-body>h3{font-size:14px;margin:16px 0 8px;overflow-wrap:anywhere}
+.dev-asset-actions{display:flex;flex-wrap:wrap;gap:8px}
+.dev-asset-reference{display:grid;gap:4px;padding:9px 0;border-bottom:1px solid var(--line);min-width:0}
+#unone-developer .dev-asset-reference button{text-align:start;overflow-wrap:anywhere;background:transparent;border-color:transparent}
+#unone-developer .dev-asset-reference button[aria-pressed=true]{background:#26473f;color:#b2f7d9;border-color:#497a6c}
+.dev-asset-reference small{color:#abc4d0;overflow-wrap:anywhere}
+.dev-asset-reference code{font:11px/1.6 ui-monospace,monospace;color:#afd1dc;white-space:pre-wrap;overflow-wrap:anywhere}
+.dev-asset-warning{color:#e9cc89;overflow-wrap:anywhere}
