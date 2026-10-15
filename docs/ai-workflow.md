@@ -5,6 +5,78 @@ play sessions and measured replay experiments, see [developer sessions](develope
 
 This is the minimum workflow for an AI or human operating Unone. The CLI and `game mcp` are Developer Protocol clients; MCP is only a thin stdio adapter and does not reimplement engine logic in another layer.
 
+## Default presentation route
+
+Build game presentation with the official Unone player. With a portable SDK,
+run `game --project <game-root> --json project preflight --target web`, then
+`game --project <game-root> --json project prepare --target web --output <new-directory>`
+for the synchronized export and launch descriptor. Direct
+`export platform --target web` is also available; source developers use
+[player build and export](player-export.md).
+Inspect target capabilities and presentation settings before choosing an effect.
+Do not create a game-owned canvas/WebGL/OpenGL/WebGPU renderer just to display
+the runtime's snapshots. Replacing the official renderer is an explicit project
+choice, not an implied part of using custom shaders.
+
+Start exhaust, sparks, explosions, trails, smoke and auras with scene
+`particle_effects` and `api.particle.*`; use [Particle Lab](native-particles.md)
+to preview the declaration at a fixed frame and seed. Use
+[shader materials](shader-materials.md) for custom shader resources and
+`api.shader.*` for their parameters. GPU resource creation and
+draw scheduling stay inside the engine presentation layer. When an effect needs
+an unsupported feature, identify that gap before proposing a reusable engine
+extension.
+
+Use headless tests for gameplay and deterministic particle state, then inspect
+the actual exported player's images, effects, shaders and input. Record the
+selected renderer and tested target when reporting completion. Headless gates
+alone do not certify a screen.
+
+### Renderer selection and replacement
+
+The starter's `player.presentation.json` selects the official player:
+
+```json
+{ "renderer_mode": "official", "bloom": true }
+```
+
+Omitting `renderer_mode` also selects `official`; ordinary games need no renderer
+module. Do not set `renderer_module` or `renderer_files` in official mode. A
+custom shader material or particle definition still uses official mode.
+
+Renderer replacement must be an explicitly selected extension mode for a stated
+project requirement. Declare the choice and its complete file inventory:
+
+```json
+{
+  "renderer_mode": "custom",
+  "renderer_module": "presentation/renderer.mjs",
+  "renderer_files": [
+    "presentation/renderer.mjs",
+    "presentation/shaders.mjs"
+  ]
+}
+```
+
+Paths are relative to the game project. Include the entry module and every local
+import/asset it needs in `renderer_files`; export copies this explicit inventory.
+The module exports `createRenderer(canvas, options)` and returns the player
+renderer contract (`draw`, `ready`, `metrics`, `setBloom`, `dispose`). The official player
+shell still owns runtime, input, save, UI and audio. Native targets reject custom
+renderers. The manifest records the choice and validates the interface; it cannot
+prove that a custom renderer follows every engine
+presentation contract. Report custom mode and its actual visual acceptance scope
+when handing off the game.
+
+`project preflight` checks target/runtime, project systems and presentation
+compatibility without creating output or opening a GPU surface. Export records
+`renderer_mode` and `renderer` (`three-webgl` or `custom-module` for Web);
+the running Web player repeats the choice in `playerMetrics` and
+`document.body.dataset.playerRenderer`. These labels make the selected route
+reviewable. They are declarations, not proof that a particular sprite, particle
+or shader was drawn. Combine them with evidence from the actual exported player;
+`verify` and replay digests alone do not prove official GPU usage.
+
 ## -0. MCP stdio (optional)
 
 When an MCP host is required, build the CLI binary first, then start it with a fixed project:
@@ -57,22 +129,37 @@ bin/game.exe --project D:/Projects/Unone_Games/<game-output> --json project init
 `project init` accepts only a nonexistent or truly empty output directory and a non-empty name; it rejects even a directory containing only `.git` or `GAME_PLAN.md`. Keep the game plan and engine package outside the output, and run git init only after the project is successfully created. There is no force, overwrite, or merge mode. `..` paths and symlink/junction/reparse roots or ancestors are rejected; ordinary `.` and paths containing spaces or Unicode are allowed.
 This protects against path misuse in a single-writer scenario; it is not a filesystem transaction that defends against another process maliciously replacing an ancestor between the check and the write. Do not run multiple writers against the same output.
 
-Only five game-side files are created:
+Seven game-side files are created:
 
 | File | Purpose |
 |---|---|
+| AGENTS.md | Official-player, declarative-particle and engine-shader authoring defaults |
 | project.unone.json | Declares the script, scene, and two tests |
-| scripts/main.luau | Inlines strict EngineApi types; holding Right moves example by dt |
-| scenes/main.scene.json | Image-free, non-rigidbody example with initial x/y=0 |
+| player.presentation.json | Explicit official renderer selection and presentation defaults |
+| scripts/main.luau | Inlines strict EngineApi types; holding Right moves example by dt; particle API guidance |
+| scenes/main.scene.json | Image-free, non-rigidbody example with initial x/y=0 and an inline particle definition |
 | tests/bootstrap-idle.test.json | 60 frames / seed42, no input, position stays at 0 |
 | tests/bootstrap-input.test.json | 60 frames / seed42, Right produces x=1, y=0 |
 
-This is a headless onboarding smoke, not gameplay acceptance. The game may replace `example`, `Right`, and the demonstration tests; when removing `example`, replace the demonstration tests as well. Do not treat a green bootstrap as a game test or claim that the screen is correct because the starter has no images. init does not create art, UI, save, an asset manifest, or a bundle, and does not implicitly pack or install.
+The demonstration tests are headless onboarding checks, not gameplay or visual
+acceptance. The game may replace `example`, `Right`, the particle definition and
+the demonstration tests; when removing `example`, replace the demonstration
+tests as well. Do not treat a green bootstrap as a game test or claim that the
+screen is correct because the starter has no images. Init does not create art,
+UI, save, an asset manifest or a bundle, and does not implicitly pack or install.
+Use its official-player instructions and export actions to reach a playable
+visual build.
 
 The result includes absolute `root`, path-sorted `files[{path,role}]`,
 `workflow_scope=new_unmodified_scaffold`, and `suggested_next_actions`.
 Each action is `{executable,argv,reason,prerequisites}`: the logical executable is `game`, resolved inside a package to `bin/game.exe`; pass argv directly as a subprocess argument list, without constructing a shell command. `prerequisites` contains zero-based indexes of earlier actions.
-For an unmodified starter, the order is verify → bundle pack → bundle install --all → bundle inspect. After adding assets, follow [asset-workflow.md](asset-workflow.md): prepare bytes, declare them, pack, then use the aggregated `verify` entry point (whose assets step already performs strict inspection) before installing.
+For an unmodified starter, the suggested actions are verify → search particle
+APIs → search shader APIs → list systems → Web preflight → Web prepare. Follow
+the reported prerequisites; prepare composes synchronization and export rather
+than requiring a second hand-assembled publication sequence. After adding
+assets, follow [asset-workflow.md](asset-workflow.md): prepare bytes, declare them,
+pack, then use the aggregated `verify` entry point (whose assets step already
+performs strict inspection) before installing.
 
 A partial write does not delete files or roll back automatically: diagnostic facts for `phase`, `failed_path`, `created_files` (`complete` distinguishes complete from partial), `created_directories`, and `effects` describe what was actually created. Inspect the record and handle it as the author; a later init rejects the remaining content rather than resuming.
 The author can be an AI. On a write failure, report the diagnostic and resolve the disk or permission cause. If the game plan allows it, preserve the failed output and retry in another completely new output directory; ask the user when the specified output cannot be changed.
@@ -263,9 +350,36 @@ Declaring both forms, or declaring neither, is rejected. Headless tests use a 16
 
 Use `api.save.set(value)`/`api.save.get()` only when GAME_PLAN requires persistence. The game defines the payload version and migration; the engine provides JSON-like transport, and the host owns file/platform storage. Do not treat observation as save data or add save slots, cloud sync, or a game-specific schema to the engine.
 
-## 3.5 Skeletal animation and effects (Spine / Effekseer)
+## 3.4 Declarative particles (default visual-effects path)
 
-These two systems are disabled by default and have status `host_required`. The engine provides semantic state, while the dedicated `web/presentation` host connects to the Spine/Effekseer runtimes; the generic Web runner, native preview, and Android host do not gain these presentation capabilities automatically. This is not cross-platform acceptance evidence. Enable them when needed:
+Search by the intended effect before choosing an implementation:
+
+```powershell
+game --project <game-root> --json api search "explosion"
+game --project <game-root> --json api describe particle.play
+game --project <game-root> --json api describe particle.play_batch
+```
+
+Keep `systems.particle` enabled and declare the effect under scene
+`particle_effects`. Luau selects the effect, origin and seed with
+`api.particle.play`; `move` changes the origin for future births, `finish` lets
+existing particles fade out, and `stop` cancels immediately. `play_batch` shares
+one handle across static origins; inspect the API contract before selecting it
+for a moving trail. The engine samples emissions deterministically and the
+official Web/native players render the samples. Use the
+[particle guide](native-particles.md), generated schema and Particle Lab presets
+for authored shapes, timing, color, size and blend settings.
+
+## 3.5 Skeletal animation and external effects (Spine / Effekseer)
+
+These two systems are disabled by default and have status `host_required`. Use
+them when the game needs external Spine/Effekseer assets. For effects authored
+directly as scene data, use the built-in particle system above. The dedicated
+`web/presentation` host connects to both external runtimes; release Web export
+also supports the declared legacy SKFE 1500 Effekseer subset described in
+[player export](player-export.md). The generic Web runner, native preview and
+native Android player do not gain these external runtimes automatically. This
+is not cross-platform acceptance evidence. Enable them when needed:
 
 ```powershell
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/slot-machine --json systems set --id spine --enabled true
@@ -282,7 +396,11 @@ Tests can use `{"animation": {"entity": "reel-3", "equals": {...}}}` and `{"effe
 
 To see them play, use `web/presentation/`: first run `scripts/build-web-live.ps1`, start `python -m http.server 8001` from `D:/Projects`, and open `http://127.0.0.1:8001/Unone/web/presentation/?project=/Unone_Games/slot-machine/`. It plays the same snapshot with spine-webgl and Effekseer for WebGL; native preview and the Android host currently do not render them. Vendored runtime and licensing requirements are documented in `web/vendor/README.md` (Spine requires a license; Effekseer is MIT).
 
-The engine does not evaluate skeletons, blend animations, report whether an animation has completed, simulate particles, or contain Spine/Effekseer code. If the game needs to settle only after an animation finishes, it must calculate that from fixed frames itself.
+Core does not evaluate Spine skeletons, blend their animations, report external
+animation completion, or simulate Effekseer's particles. Those tasks belong to
+the external host runtimes. Core does simulate its own declarative particles;
+the two effect paths have different contracts. If gameplay must settle after an
+external animation, define that timing in Luau using fixed frames.
 
 ## 3.6 Sound
 

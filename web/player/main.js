@@ -1,4 +1,5 @@
 import {createThreeRenderer} from '../renderer/three.js';
+import {createPlayerRenderer,createRendererDisposer} from '../shared/renderer-selection.mjs';
 import {createCanvasUi,loadCanvasFont} from '../shared/canvas-ui.mjs';
 import {createUiScrollHost} from '../shared/ui-scroll.mjs';
 import {createHostInput} from '../shared/host-input.js';
@@ -27,7 +28,8 @@ let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=
 let saved,key,projectPayload;
 /* PROFILE_INIT */
 const metrics={};
-function fail(error){scheduler?.stop();/* PROFILE_ERROR */status.textContent=String(error?.message??error);document.body.dataset.playerError=status.textContent;console.error(error);}
+const disposeRenderer=createRendererDisposer();
+function fail(error){scheduler?.stop();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}/* PROFILE_ERROR */status.textContent=String(error?.message??error);document.body.dataset.playerError=status.textContent;console.error(error);}
 async function json(path){const r=await fetch(new URL(path,document.baseURI),{cache:'no-store'});if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${path} (${r.status})`);return r.json();}
 function acceptSnapshot(value,{reset=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
 function draw(){
@@ -64,7 +66,8 @@ async function start(){
  project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
  interpolator=createPresentationInterpolator({enabled:presentation.interpolation??false,instanceBatches:presentation.interpolate_instances??[]});
  acceptSnapshot(await backend.request({kind:'load',payload:project,seed:'42'}),{reset:true});
- renderer=await createThreeRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}});
+ renderer=await createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer});
+ metrics.renderer_mode=presentation.renderer_mode??'official';metrics.renderer=metrics.renderer_mode==='official'?'three-webgl':'custom-module';metrics.renderer_module=presentation.renderer_module??null;document.body.dataset.playerRenderer=metrics.renderer_mode;
  audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',document.baseURI)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));
  draw();await renderer.ready();draw();await new Promise(requestAnimationFrame);
  metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';saved=JSON.stringify(snapshot.save_payload);
@@ -80,6 +83,6 @@ canvas.addEventListener('pointermove',e=>{if(!routeUi(e,'move'))pointer(e,Boolea
 window.addEventListener('keydown',e=>input.setHeld(e.code,true));window.addEventListener('keyup',e=>input.setHeld(e.code,false));window.addEventListener('blur',()=>{uiRenderer.releaseAll();input.releaseAll();});
 window.addEventListener('unone-host-pause',()=>{uiRenderer.releaseAll();input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
-window.addEventListener('pagehide',()=>{uiScroll.dispose();scheduler?.stop();backend?.close();});
+window.addEventListener('pagehide',()=>{uiScroll.dispose();scheduler?.stop();try{disposeRenderer(renderer);}catch(error){console.error(error);}backend?.close();});
 canvas.addEventListener('lostpointercapture',e=>uiScroll.pointer(e,'cancel'));
 start().catch(fail);

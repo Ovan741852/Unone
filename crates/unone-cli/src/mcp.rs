@@ -341,7 +341,7 @@ fn tool_definitions() -> Vec<Value> {
         tool(
             "unone_project_init",
             "Initialize project scaffold",
-            "Create a five-file headless starter: project config, strict Luau script, example scene, and idle/input tests. Root must be new or truly empty, including no .git or plan file; links and parent traversal are rejected. May create missing parent directories. Returns actual files/effects and next actions for the unmodified starter; no implicit pack/install. Partial failure reports created files/directories without deleting them; retry does not resume or overwrite. Starter tests are not game acceptance.",
+            "Create a seven-file official-player starter: project config, strict Luau script, scene with declarative particles, player presentation, authoring instructions, and idle/input tests. Root must be new or truly empty, including no .git or plan file; links and parent traversal are rejected. May create missing parent directories. Returns actual files/effects and next actions for the unmodified starter; no implicit pack/install. Partial failure reports created files/directories without deleting them; retry does not resume or overwrite. Starter tests are not game acceptance.",
             object_schema(json!({
                 "properties": {
                     "name": {"type": "string", "description": "Project name written to project.unone.json."}

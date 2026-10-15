@@ -108,6 +108,28 @@ separate from decodability. Mesh3D declarations do not imply a universal importe
 
 Still unfinished: general module/package composition, entity lifecycle, prefabs,
 navigation, networking, broad mesh/material importing and mature 3D physics.
-Audio already has core semantics and Web playback; Native/Android playback remains
-unfinished. Spine remains external. Effekseer and a future AI-native particle
-backend are intended alternatives; the new particle format is not implemented.
+Audio has core semantics, Web Audio playback and a native `rodio/cpal` adapter for
+Windows and NativeActivity hosts. Device availability, decoding and audible
+output must still be verified on the selected host; a passing replay is not audio
+output evidence.
+
+[Declarative native particles](native-particles.md) are implemented: scene
+`particle_effects` definitions and seeded `api.particle.*` calls produce
+fixed-frame particle samples in core. The official Web Three and native wgpu
+players render them. "Native" names the built-in particle system; it does not
+mean a native-OS-only effect path. The older Android Canvas/JNI smoke host does
+not provide that renderer.
+
+Spine and Effekseer remain external-runtime adapters. The dedicated
+`web/presentation/` host supports both; release Web export additionally supports
+the declared legacy SKFE 1500 Effekseer subset. Native wgpu export rejects these
+external systems instead of implying parity. These limitations do not apply to
+the built-in declarative particle system.
+
+[Shader materials](shader-materials.md) are an engine-owned WebGL presentation
+extension for 2D sprites: scene definitions carry fragment source and uniform
+defaults, entity bindings select material IDs, and `api.shader.*` changes
+bindings/parameters. Core validates and publishes this state; the official
+renderer owns GPU compilation and resources. Native export rejects declarations
+and WebGPU rejects active bindings until those backends implement the contract.
+Headless replay coverage does not certify GLSL compilation or pixels.

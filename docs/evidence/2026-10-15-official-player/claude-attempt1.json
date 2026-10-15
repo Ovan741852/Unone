@@ -1,0 +1,7 @@
+{
+  "version": "2.1.280",
+  "exit_code": 1,
+  "base": "29a77f42943fab33eb55a0ca7050df33878628e7",
+  "command": "claude -p --tools Read,Grep,Glob --allowedTools Read,Grep,Glob --permission-mode plan --no-session-persistence --output-format json --max-turns 8",
+  "diff_sha256": "0244bb018981cba5577498239ec90b2cfeacfa6b75811d78b32b8d3bfe90c4d3"
+}

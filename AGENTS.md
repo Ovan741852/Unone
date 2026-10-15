@@ -3,11 +3,44 @@
 ## Branching policy
 
 This project does not use feature branches. Develop directly on the
-default branch (`master`). Do not create, switch to, or push new
+default branch (`main`). Do not create, switch to, or push new
 branches unless the user explicitly asks for one.
 
 This applies to all coding agents working in this repo, including
 Claude Code and Codex.
+
+## Default game presentation
+
+Use the official Unone player for game presentation. Start with
+`game platform snapshot`, inspect the project's presentation settings, and
+follow [the AI workflow](docs/ai-workflow.md) and [player export](docs/player-export.md).
+A passing headless replay does not prove that a player rendered the game.
+Validate the exported official player on the requested target before reporting
+visual completion.
+
+For exhaust, sparks, explosions, trails, smoke and auras, first search
+`game api search "explosion"` / `game api search "particle"`, describe the matching
+APIs, and use scene `particle_effects` with `api.particle.*`. Inspect
+[Particle Lab and the declarative format](docs/native-particles.md) before
+implementing an effect from scratch. Keep the particle system enabled when the
+game uses it. Effekseer is an optional external-asset path with host-specific
+requirements, not the default answer to every effect request.
+
+Game code declares presentation and uses engine APIs. GPU contexts, draw calls,
+shader compilation, material resources and renderer lifetime belong to the
+engine's presentation layer. Custom shaders must use the engine's supported
+shader interface; a shader request does not authorize writing a replacement
+renderer. If a required shader feature is unsupported, report the specific gap
+and extend the reusable engine interface rather than silently adding game-owned
+WebGL/OpenGL/WebGPU plumbing.
+
+Replace the official renderer only as an explicitly selected extension mode for
+a stated project requirement. Declare `renderer_mode: "custom"`, `renderer_module` and the complete
+`renderer_files` inventory in `player.presentation.json`; see the
+[selection contract](docs/ai-workflow.md#renderer-selection-and-replacement).
+Do not infer renderer replacement from "make it look better", "use shaders", a browser
+target, or an example of a low-level graphics API. Preserve and report the
+chosen renderer and its visual verification scope in the handoff.
 
 ## Engine versus gameplay ownership
 

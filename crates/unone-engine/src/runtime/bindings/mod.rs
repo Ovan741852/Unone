@@ -12,6 +12,7 @@ mod jobs;
 mod physics;
 mod presentation;
 mod state;
+mod shader;
 pub(super) mod value;
 
 pub(super) fn build_api(
@@ -20,6 +21,7 @@ pub(super) fn build_api(
     systems: &SystemSettings,
 ) -> mlua::Result<Table> {
     let api = lua.create_table()?;
+    api.set("shader", shader::bind(lua, state)?)?;
     #[cfg(feature = "jobs")]
     api.set("jobs",disable_if_off(lua,systems,"jobs",jobs::bind(lua,state)?)?)?;
     #[cfg(not(feature = "jobs"))]

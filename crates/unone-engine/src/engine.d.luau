@@ -280,7 +280,15 @@ export type JobsApi = {
     cancel: (handle: string) -> (),
     reset: () -> (),
 }
+export type ShaderUniform = number | {number}
+export type ShaderApi = {
+    setMaterial: (entityId: string, materialId: string) -> (),
+    clearMaterial: (entityId: string) -> (),
+    setUniform: (materialId: string, name: string, value: ShaderUniform) -> (),
+}
+
 export type EngineApi = {
+    shader: ShaderApi,
     jobs: JobsApi,
     instances3d: Instances3DApi,
     debug: DebugApi,

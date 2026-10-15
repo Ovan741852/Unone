@@ -1,6 +1,6 @@
 //! Export-host identities. Game Luau and declared assets stay project-owned;
 //! each host only says which presentation it can draw and how it is packaged.
-use anyhow::{Result, bail, ensure};
+use anyhow::{Context, Result, bail, ensure};
 use serde_json::{Value, json};
 use std::path::Path;
 
@@ -47,6 +47,9 @@ const NATIVE_DECODERS: &[&str] = &[
 const NATIVE_EXPORT_BLOCKED: &[&str] = &["spine", "effekseer"];
 const NATIVE_RUNTIME_BLOCKED: &[&str] = &["spine", "effekseer"];
 const WEB_PRESENTATION_KEYS: &[&str] = &[
+    "renderer_mode",
+    "renderer_module",
+    "renderer_files",
     "ui",
     "bloom",
     "show_performance",
@@ -72,6 +75,7 @@ const CATALOG: &[Host] = &[
             "ui",
             "audio",
             "particle",
+            "shader_materials",
             "spine",
             "effekseer",
             "bloom",
@@ -220,6 +224,11 @@ pub enum JobMode {
 #[derive(Default, serde::Deserialize, serde::Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct PresentationSettings {
+    /// Official player is the default. Replacing its renderer is an explicit
+    /// Web-host extension, never an implicit consequence of a shader/effect.
+    pub renderer_mode: RendererMode,
+    pub renderer_module: Option<String>,
+    pub renderer_files: Vec<String>,
     pub ui: PresentationUi,
     pub bloom: bool,
     pub show_performance: bool,
@@ -227,6 +236,35 @@ pub struct PresentationSettings {
     pub job_policy: JobPolicy,
     pub interpolation: bool,
     pub interpolate_instances: Vec<String>,
+}
+#[derive(Debug, Default, serde::Deserialize, serde::Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum RendererMode {
+    #[default]
+    Official,
+    Custom,
+}
+
+impl PresentationSettings {
+    pub fn validate_renderer(&self) -> Result<()> {
+        match self.renderer_mode {
+            RendererMode::Official => ensure!(
+                self.renderer_module.is_none() && self.renderer_files.is_empty(),
+                "RENDERER_REPLACEMENT_NOT_DECLARED: renderer_module/renderer_files require explicit renderer_mode: custom; use engine particle and shader APIs with the official renderer by default"
+            ),
+            RendererMode::Custom => {
+                let module = self.renderer_module.as_deref().filter(|v| !v.trim().is_empty())
+                    .context("RENDERER_MODULE_REQUIRED: renderer_mode custom requires a project-relative .js/.mjs renderer_module")?;
+                ensure!(module.ends_with(".js") || module.ends_with(".mjs"),
+                    "RENDERER_MODULE_INVALID: renderer_module must be a .js/.mjs ES module exporting createRenderer");
+                ensure!(self.renderer_files.iter().any(|path| path == module),
+                    "RENDERER_FILES_INCOMPLETE: renderer_files must explicitly include renderer_module and all its local imports/assets");
+                let unique: std::collections::BTreeSet<_> = self.renderer_files.iter().collect();
+                ensure!(unique.len() == self.renderer_files.len(), "RENDERER_FILES_DUPLICATE: renderer_files must contain unique project-relative paths");
+            }
+        }
+        Ok(())
+    }
 }
 #[derive(Default, serde::Deserialize, serde::Serialize)]
 #[serde(default, deny_unknown_fields)]
@@ -298,7 +336,9 @@ pub fn load_presentation(project: &Path) -> Result<Option<PresentationSettings>>
     if !path.is_file() {
         return Ok(None);
     }
-    Ok(Some(serde_json::from_slice(&std::fs::read(&path)?)?))
+    let presentation: PresentationSettings = serde_json::from_slice(&std::fs::read(&path)?)?;
+    presentation.validate_renderer()?;
+    Ok(Some(presentation))
 }
 
 /// Native wgpu shares Luau/assets and UI fonts. Bloom is a renderer primitive
@@ -318,6 +358,9 @@ pub fn native_wgpu_export_gate(
     let Some(presentation) = presentation else {
         return Ok(());
     };
+    presentation.validate_renderer()?;
+    ensure!(presentation.renderer_mode == RendererMode::Official,
+        "HOST_RENDERER_UNSUPPORTED: renderer_mode custom is a Web-only extension; native wgpu requires the official renderer");
     let mut keys = Vec::new();
     if presentation.show_performance {
         keys.push("show_performance");
@@ -345,6 +388,34 @@ pub fn native_wgpu_export_gate(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn renderer_defaults_official_and_replacement_requires_explicit_declaration() {
+        let default: PresentationSettings = serde_json::from_value(json!({})).unwrap();
+        assert_eq!(default.renderer_mode, RendererMode::Official);
+        default.validate_renderer().unwrap();
+        for value in [
+            json!({"renderer_module":"render.mjs"}),
+            json!({"renderer_files":["render.mjs"]}),
+            json!({"renderer_mode":"custom"}),
+            json!({"renderer_mode":"custom","renderer_module":"render.mjs"}),
+            json!({"renderer_mode":"custom","renderer_module":"render.html","renderer_files":["render.html"]}),
+            json!({"renderer_mode":"custom","renderer_module":"render.mjs","renderer_files":["render.mjs","render.mjs"]}),
+        ] {
+            let presentation: PresentationSettings = serde_json::from_value(value).unwrap();
+            assert!(presentation.validate_renderer().is_err());
+        }
+        assert!(serde_json::from_value::<PresentationSettings>(json!({"renderer_mode":"automatic"})).is_err());
+        assert!(serde_json::from_value::<PresentationSettings>(json!({"renderer":"custom"})).is_err());
+        let custom: PresentationSettings = serde_json::from_value(json!({
+            "renderer_mode":"custom", "renderer_module":"render.mjs", "renderer_files":["render.mjs"]
+        })).unwrap();
+        custom.validate_renderer().unwrap();
+        let settings = unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([
+            ("spine".into(), false), ("effekseer".into(), false),
+        ])).unwrap();
+        assert!(native_wgpu_export_gate(&settings, Some(&custom)).unwrap_err().to_string().contains("HOST_RENDERER_UNSUPPORTED"));
+    }
 
     #[test]
     fn catalog_ids_are_unique_and_inspect_shape_is_uniform() {

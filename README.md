@@ -9,6 +9,15 @@ Unone is an AI-native **3D game engine prototype with 2D workflows**: Rust owns 
 
 The current contract boundaries and host limitations are recorded in [Runtime contracts](docs/runtime-contracts.md). 3D transforms, cameras and presentation are an existing direction; mature 3D physics and a universal asset importer remain unfinished.
 
+**For AI-authored games, use the official player by default.** Start effects with
+the built-in [declarative particle system and Particle Lab](docs/native-particles.md):
+scene JSON defines emissions and Luau uses `api.particle.*` to control them.
+Custom shaders use [engine shader materials](docs/shader-materials.md), with GPU resources owned by
+the presentation layer. Replacing the renderer requires an explicit project
+choice. Follow the [AI workflow](docs/ai-workflow.md) and
+[player export guide](docs/player-export.md); passing a headless test is only
+gameplay evidence, so inspect the exported player before claiming visual completion.
+
 [ScrollView / VirtualList / VirtualGrid](docs/ui-scroll.md) provide Web clipped
 scroll content and fixed-cell virtualization. The guide covers the local
 coordinate rule, stable keys, UI-only materialization and unsupported native hosts.
@@ -96,7 +105,7 @@ powershell -File scripts/install-luau-analyze.ps1
 cargo test --workspace
 ```
 
-Then make a game. The starter is five files and passes its own gates:
+Then make a game. The starter is seven files and passes its own gates:
 
 ```powershell
 # The engine refuses a project path containing '..', so resolve it first.
@@ -137,8 +146,9 @@ Commands below run from your repository checkout. Use `--project <path>` to sele
 ## Current executable vertical slice
 
 New games use the existing `game --project <new-or-empty-directory> --json project init --name <name>`.
-It creates a five-file headless starter, including idle and Right-input tests, and returns
-next-step argv that can be passed directly to a subprocess. Keep the game plan and engine
+It creates a seven-file starter, including official-player authoring instructions,
+presentation settings, a declarative particle definition, idle and Right-input
+tests, and next-step argv that can be passed directly to a subprocess. Keep the game plan and engine
 package outside the output directory; run git init only after init succeeds. Passing the
 starter does not mean the game is complete; replace it with your own gameplay and tests.
 The complete write, failure, and scene-input contracts are in the [AI development workflow](docs/ai-workflow.md).
@@ -209,6 +219,7 @@ The broader acceptance matrix belongs to the separate validation suite and is no
 
 Release player/export: [build and measurements](docs/player-export.md).
 Native 3D particle JSON, API and preview: [particle v1](docs/native-particles.md).
+Custom WebGL sprite shaders through scene declarations and Luau: [shader materials](docs/shader-materials.md).
 Reference-game capability probe: [_Games/dragon-tycoon3](_Games/dragon-tycoon3/README.md).
 
 AI-directed optimization: [measured results](docs/legion-fall-optimization.md), [profiling API](docs/profiling.md), [instance memory transport](docs/instance-memory-transport.md), [optional Luau jobs](docs/jobs.md).

@@ -137,6 +137,8 @@ fn assert_init_success(result: &Value, root: &Path, name: &str) {
     assert_eq!(result["diagnostics"], json!([]));
 
     let mut expected_effects = vec![
+        ("created_file", path_text(&root.join("AGENTS.md"))),
+        ("created_file", path_text(&root.join("player.presentation.json"))),
         ("created_directory", path_text(&root.join("scenes"))),
         (
             "created_file",
@@ -163,6 +165,8 @@ fn assert_init_success(result: &Value, root: &Path, name: &str) {
     assert_eq!(result["effects"], json!(expected_effects));
 
     let expected_files = [
+        ("AGENTS.md", "authoring_instructions"),
+        ("player.presentation.json", "player_presentation"),
         ("project.unone.json", "project_config"),
         ("scenes/main.scene.json", "main_scene"),
         ("scripts/main.luau", "entry_script"),
@@ -198,7 +202,7 @@ fn assert_init_success(result: &Value, root: &Path, name: &str) {
     let actions = result["value"]["suggested_next_actions"]
         .as_array()
         .expect("init result should list next actions");
-    assert_eq!(actions.len(), 4);
+    assert_eq!(actions.len(), 6);
     for (index, action) in actions.iter().enumerate() {
         assert_eq!(action["executable"], "game");
         assert_eq!(action["argv"][0], "--project");
@@ -209,11 +213,7 @@ fn assert_init_success(result: &Value, root: &Path, name: &str) {
         assert_eq!(action["argv"][2], "--json");
         assert_eq!(
             action["prerequisites"],
-            if index == 0 {
-                json!([])
-            } else {
-                json!([index - 1])
-            }
+            match index { 4 => json!([0]), 5 => json!([0,4]), _ => json!([]) }
         );
         assert!(!action["reason"].as_str().unwrap_or_default().is_empty());
     }
@@ -246,6 +246,11 @@ fn normalize_init_root(result: &Value, root: &Path) -> (Value, Vec<String>) {
         fields.push(format!(
             "/value/suggested_next_actions/{index}/argv/{project_index}"
         ));
+        if let Some(output_index) = argv.iter().position(|argument| argument == "--output").map(|i| i + 1) {
+            assert_eq!(argv[output_index], path_text(&root.join("dist/player")));
+            argv[output_index] = json!("<ROOT>/dist/player");
+            fields.push(format!("/value/suggested_next_actions/{index}/argv/{output_index}"));
+        }
     }
 
     let effects = normalized["effects"]
@@ -333,6 +338,9 @@ fn project_init_and_pointer_input_transport_contract() {
             "/value/suggested_next_actions/1/argv/1",
             "/value/suggested_next_actions/2/argv/1",
             "/value/suggested_next_actions/3/argv/1",
+            "/value/suggested_next_actions/4/argv/1",
+            "/value/suggested_next_actions/5/argv/1",
+            "/value/suggested_next_actions/5/argv/8",
             "/effects/0",
             "/effects/1",
             "/effects/2",
@@ -341,6 +349,8 @@ fn project_init_and_pointer_input_transport_contract() {
             "/effects/5",
             "/effects/6",
             "/effects/7",
+            "/effects/8",
+            "/effects/9",
         ]
     );
     assert_eq!(cli_normalized_fields, mcp_normalized_fields);

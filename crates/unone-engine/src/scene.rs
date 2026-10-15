@@ -110,6 +110,22 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
     if let Some(physics) = &scene.physics3d {
         physics.validate(scene).map_err(|message|scene_error(source,"SCENE_PHYSICS3D_INVALID","Invalid 3D physics",message))?;
     }
+    if scene.shader_materials.len() > crate::shader::MAX_SHADER_MATERIALS {
+        return Err(scene_error(source, "SHADER_DEFINITION_INVALID", "Too many shader materials", "At most 64 materials may be declared"));
+    }
+    for (id, definition) in &scene.shader_materials {
+        if !crate::shader::valid_identifier(id) {
+            return Err(scene_error(source, "SHADER_DEFINITION_INVALID", "Invalid shader material id", "Shader material IDs must be ASCII identifiers of at most 64 bytes"));
+        }
+        definition.validate().map_err(|message| scene_error(source, "SHADER_DEFINITION_INVALID", "Invalid shader material", message))?;
+    }
+    for entity in &scene.entities {
+        if let Some(material) = &entity.shader_material
+            && (entity.sprite.is_none() || !scene.shader_materials.contains_key(material))
+        {
+            return Err(scene_error(source, "SHADER_MATERIAL_REFERENCE_INVALID", "Invalid shader assignment", format!("Entity '{}' needs a sprite and a declared shader material '{}'", entity.id, material)));
+        }
+    }
     for (id, definition) in &scene.particle_effects {
         if id.trim().is_empty() {
             return Err(scene_error(

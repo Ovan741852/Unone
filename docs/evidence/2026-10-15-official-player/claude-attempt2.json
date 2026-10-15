@@ -1,0 +1,19 @@
+{
+  "version": "2.1.280",
+  "exit_code": 124,
+  "base": "29a77f42943fab33eb55a0ca7050df33878628e7",
+  "diff_sha256": "96d2cd82f95ba16a96c0055620334459ef06a12add4a7d7b92616ca51b2832fd",
+  "command": [
+    "-p",
+    "--tools",
+    "",
+    "--permission-mode",
+    "plan",
+    "--no-session-persistence",
+    "--output-format",
+    "json",
+    "--max-turns",
+    "1",
+    "--disable-slash-commands"
+  ]
+}

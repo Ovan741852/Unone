@@ -567,6 +567,12 @@
           },
           "description": "Visual-only 2D scale applied to the sprite's declared size."
         },
+        "shader_material": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "sprite": {
           "anyOf": [
             {
@@ -601,6 +607,61 @@
         "id"
       ],
       "type": "object"
+    },
+    "ShaderMaterialDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "fragment": {
+          "description": "GLSL ES 1.00 function: vec4 unoneShade(vec2 uv, vec4 color).",
+          "type": "string"
+        },
+        "uniforms": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ShaderUniform"
+          },
+          "default": {},
+          "type": "object"
+        }
+      },
+      "required": [
+        "fragment"
+      ],
+      "type": "object"
+    },
+    "ShaderUniform": {
+      "anyOf": [
+        {
+          "format": "double",
+          "type": "number"
+        },
+        {
+          "items": {
+            "format": "double",
+            "type": "number"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        {
+          "items": {
+            "format": "double",
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "type": "array"
+        },
+        {
+          "items": {
+            "format": "double",
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        }
+      ]
     },
     "Shape3D": {
       "oneOf": [
@@ -953,6 +1014,13 @@
         }
       ],
       "default": null
+    },
+    "shader_materials": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ShaderMaterialDefinition"
+      },
+      "default": {},
+      "type": "object"
     }
   },
   "title": "SceneFile",

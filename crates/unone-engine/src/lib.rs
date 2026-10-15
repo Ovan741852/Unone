@@ -1,3 +1,5 @@
+mod shader;
+pub use shader::{ShaderMaterialDefinition, ShaderUniform};
 mod mesh;
 pub use mesh::{MeshAsset, MeshLod, validate_mesh_geometry};
 #[cfg(feature = "dev-tools")]

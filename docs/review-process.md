@@ -50,6 +50,11 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-15: official-player defaults, declarative-effect discovery, explicit
+  renderer replacement and engine-owned sprite shaders. Independent agent and
+  actual GPU/player validation completed; both Claude CLI attempts failed to
+  complete and their raw results are preserved:
+  [record](reviews/2026-10-15-official-player-shader-boundary.md).
 - 2026-09-05: Claude 2.1.206 reported an expired OAuth session. Attempts 17-27
   were stopped after roughly 60-70 seconds without output, so were not completed
   reviews. Version 2.1.260 completed review 28:

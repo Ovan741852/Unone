@@ -1,3 +1,4 @@
+import {createShaderMaterials} from './shader-materials.js';
 import { createParticleRenderer } from "./particles.js?build=particle-texture-colorbins-v1";
 import { meshGeometry, validateMesh } from "./mesh.js";
 import {createInstanceRenderer} from './instances3d.js';
@@ -87,6 +88,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   camera.position.z = 10;
   const geometry = new THREE.PlaneGeometry(1, 1);
   const records = new Map();
+  const shaderMaterials = createShaderMaterials(THREE, renderer, backend);
   const textureRecords = new Map();
   const specsOf = () => new Map((options.getAssetManifest?.()?.assets ?? []).map((asset) => [String(asset.id), asset]));
   const presentationHooks = new Set();
@@ -214,6 +216,7 @@ export async function createThreeRenderer(canvas, options = {}) {
         record.material.color.copy(colorFor(entity, THREE));
         record.material.needsUpdate = true;
       }
+      record.mesh.material = shaderMaterials.assign(entity, record.material, world);
       record.mesh.renderOrder = Number(sprite.layer ?? 0);
       alive.add(id);
     }
@@ -221,6 +224,7 @@ export async function createThreeRenderer(canvas, options = {}) {
       if (alive.has(id)) continue;
       record.mesh.visible = false;
     }
+    shaderMaterials.retain(new Set([...alive].filter(id => Boolean(world.entities[id]?.shader_material))));
     let activeCamera = camera;
     if (world.camera3d) {
       const c = world.camera3d; camera3d.position.set(c.position.x,c.position.y,c.position.z);
@@ -264,6 +268,8 @@ export async function createThreeRenderer(canvas, options = {}) {
   }
 
   function clearTextures() {
+    shaderMaterials.clear();
+    for (const record of records.values()) record.mesh.material = record.material;
     instances.clear();
     for (const mesh of meshes3d.values()) {
       scene.remove(mesh);
@@ -287,7 +293,11 @@ export async function createThreeRenderer(canvas, options = {}) {
     disposeHooks.length = 0;
     presentationHooks.clear();
     particles.dispose();
+    shaderMaterials.dispose();
     clearTextures();
+    for (const record of records.values()) { root.remove(record.mesh); record.material.dispose(); }
+    records.clear();
+    geometry.dispose();
     window.removeEventListener("resize", resize);
     renderer.dispose?.();
   }
@@ -311,7 +321,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     resetMeasurements:()=>bloom?.resetMeasurements(),
     implementation: "three.js",
     backend,
-      metrics: () => ({instances:instances.count,...instances.metrics(),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
+      metrics: () => ({shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 

@@ -361,6 +361,8 @@ pub struct SceneFile {
     #[cfg_attr(feature = "dev-tools", schemars(default))]
     pub particle_effects: BTreeMap<String, crate::ParticleDefinition>,
     #[cfg_attr(feature = "dev-tools", schemars(default))]
+    pub shader_materials: BTreeMap<String, crate::ShaderMaterialDefinition>,
+    #[cfg_attr(feature = "dev-tools", schemars(default))]
     pub entities: Vec<SceneEntity>,
     #[cfg_attr(feature = "dev-tools", schemars(default))]
     pub physics: PhysicsSettings,
@@ -405,6 +407,9 @@ impl Serialize for SceneFile {
         }
         if !self.particle_effects.is_empty() {
             object.insert("particle_effects".into(), serde_json::to_value(&self.particle_effects).map_err(S::Error::custom)?);
+        }
+        if !self.shader_materials.is_empty() {
+            object.insert("shader_materials".into(), serde_json::to_value(&self.shader_materials).map_err(S::Error::custom)?);
         }
         object.insert("entities".into(), serde_json::to_value(&self.entities).map_err(S::Error::custom)?);
         object.insert("physics".into(), serde_json::to_value(&self.physics).map_err(S::Error::custom)?);
@@ -467,6 +472,8 @@ struct SceneFileWire {
     #[serde(default)]
     particle_effects: BTreeMap<String, crate::ParticleDefinition>,
     #[serde(default)]
+    shader_materials: BTreeMap<String, crate::ShaderMaterialDefinition>,
+    #[serde(default)]
     entities: Vec<SceneEntity>,
     #[serde(default)]
     physics: PhysicsSettings,
@@ -487,6 +494,7 @@ impl<'de> Deserialize<'de> for SceneFile {
         Ok(Self {
             physics3d: wire.physics3d,
             particle_effects: wire.particle_effects,
+            shader_materials: wire.shader_materials,
             entities: wire.entities,
             physics: wire.physics,
             camera,
@@ -672,6 +680,8 @@ pub struct SceneEntity {
     pub transform3d: Option<Transform3DData>,
     #[serde(default)]
     pub sprite: Option<SpriteData>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shader_material: Option<String>,
     #[serde(default)]
     pub mesh3d: Option<Mesh3DData>,
     #[serde(default)]
@@ -767,6 +777,8 @@ pub struct EntitySnapshot {
     pub scale: Vec2,
     pub transform3d: Option<Transform3DData>,
     pub sprite: Option<SpriteData>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shader_material: Option<String>,
     pub mesh3d: Option<Mesh3DData>,
     pub rigidbody: Option<RigidBodySnapshot>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -794,6 +806,8 @@ pub struct RigidBodySnapshot {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct WorldSnapshot {
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub shader_materials: BTreeMap<String, crate::ShaderMaterialDefinition>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub jobs: Option<serde_json::Value>,
     #[serde(skip_serializing_if = "BTreeMap::is_empty")]
@@ -842,6 +856,7 @@ pub(crate) struct EntityState {
     pub scale: Vec2,
     pub transform3d: Option<Transform3DData>,
     pub sprite: Option<SpriteData>,
+    pub shader_material: Option<String>,
     pub mesh3d: Option<Mesh3DData>,
     pub rigidbody: Option<RigidBodyState>,
     pub animation: Option<AnimationState>,
@@ -867,6 +882,7 @@ pub(crate) struct RigidBodyState {
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct World {
+    pub shader_materials: BTreeMap<String, crate::ShaderMaterialDefinition>,
     pub instances3d: BTreeMap<String, crate::instances3d::InstanceBatch3D>,
     #[cfg(feature = "physics3d")]
     pub physics3d: Option<crate::rigid3d::PhysicsWorld3D>,
@@ -907,6 +923,7 @@ impl World {
         #[cfg(feature = "physics3d")]
         let physics3d = scene.physics3d;
         self.particles.definitions = scene.particle_effects;
+        self.shader_materials = scene.shader_materials;
         self.physics = scene.physics;
         self.camera_state = match scene.camera3d {
             Some(camera) => CameraState::from_perspective(camera),
@@ -930,6 +947,7 @@ impl World {
                     scale: entity.scale,
                     transform3d: entity.transform3d,
                     sprite: entity.sprite,
+                    shader_material: entity.shader_material,
                     mesh3d: entity.mesh3d,
                     animation: entity.animation.map(|animation| AnimationState {
                         asset: animation.asset,
@@ -988,6 +1006,7 @@ impl World {
                 scale: default_scale2d(),
                 transform3d: None,
                 sprite: None,
+                shader_material: None,
                 mesh3d: None,
                 rigidbody: None,
                 animation: None,
@@ -1020,6 +1039,7 @@ impl World {
                                 }
                             }),
                             sprite: entity.sprite.clone(),
+                            shader_material: entity.shader_material.clone(),
                             mesh3d: entity.mesh3d.clone(),
                             rigidbody: entity.rigidbody.as_ref().map(|body| RigidBodySnapshot {
                                 body_type: body.body_type,
@@ -1062,6 +1082,7 @@ impl World {
             }
         });
         WorldSnapshot {
+            shader_materials: self.shader_materials.clone(),
             jobs: None,
             instances3d: self.instances3d.clone(),
             #[cfg(feature = "physics3d")]
@@ -1886,6 +1907,7 @@ mod tests {
             scale: Vec2 { x: 1.0, y: 1.0 },
             transform3d: None,
             sprite: None,
+                shader_material: None,
             mesh3d: None,
             rigidbody: Some(rigidbody),
             animation: None,
@@ -1894,6 +1916,7 @@ mod tests {
 
     fn world_with(entities: BTreeMap<String, EntityState>) -> World {
         World {
+            shader_materials: BTreeMap::new(),
             instances3d: BTreeMap::new(),
             physics3d: None,
             frame: 0,

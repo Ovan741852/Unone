@@ -59,18 +59,134 @@ pub fn search(query: &str) -> Vec<ApiDescriptor> {
     if normalized.is_empty() {
         return descriptors();
     }
-    let terms: Vec<&str> = normalized.split_whitespace().collect();
-    descriptors()
+    if let Some(exact) = descriptors().into_iter().find(|api| api.name.eq_ignore_ascii_case(&normalized)) {
+        return vec![exact];
+    }
+    // Intent aliases are scoped to a capability family: searching for "fire"
+    // should discover particle authoring, not every API containing "Fire a ...".
+    // All meaningful terms must match so natural-language filler does not turn
+    // a multi-word request into an unrelated OR search.
+    let words: Vec<&str> = normalized
+        .split(|c: char| !(c.is_alphanumeric() || c == '_' || c == '.'))
+        .filter(|word| !word.is_empty())
+        .collect();
+    if words.is_empty() {
+        return Vec::new();
+    }
+    let terms: Vec<&str> = words
+        .iter()
+        .copied()
+        .filter(|word| !is_search_filler(word))
+        .collect();
+    let terms = if terms.is_empty() { &words } else { &terms };
+    let mut ranked: Vec<_> = descriptors()
         .into_iter()
-        .filter(|descriptor| {
-            let searchable = format!(
-                "{} {} {} {}",
-                descriptor.name, descriptor.category, descriptor.purpose, descriptor.when_to_use
-            )
-            .to_ascii_lowercase();
-            terms.iter().any(|term| searchable.contains(term))
+        .filter_map(|descriptor| {
+            if descriptor.name.eq_ignore_ascii_case(&normalized) {
+                return Some((1000, descriptor));
+            }
+            let score = terms.iter().try_fold(0, |total, term| {
+                search_term_score(&descriptor, term).map(|score| total + score)
+            })?;
+            Some((score, descriptor))
         })
+        .collect();
+    ranked.sort_by(|(a, _), (b, _)| b.cmp(a));
+    ranked
+        .into_iter()
+        .map(|(_, descriptor)| descriptor)
         .collect()
+}
+
+fn is_search_filler(word: &str) -> bool {
+    matches!(
+        word,
+        "a" | "an"
+            | "and"
+            | "api"
+            | "can"
+            | "do"
+            | "for"
+            | "how"
+            | "i"
+            | "in"
+            | "is"
+            | "make"
+            | "my"
+            | "of"
+            | "the"
+            | "to"
+            | "use"
+            | "with"
+    )
+}
+
+fn search_term_score(descriptor: &ApiDescriptor, term: &str) -> Option<u32> {
+    let visual_intent = matches!(
+        term,
+        "vfx"
+            | "effect"
+            | "effects"
+            | "particle"
+            | "particles"
+            | "explosion"
+            | "explosions"
+            | "thruster"
+            | "thrusters"
+            | "exhaust"
+            | "fire"
+            | "flame"
+            | "flames"
+            | "spark"
+            | "sparks"
+            | "smoke"
+            | "trail"
+            | "trails"
+            | "aura"
+            | "auras"
+            | "粒子"
+            | "特效"
+            | "粒子特效"
+            | "爆炸"
+            | "尾焰"
+            | "火焰"
+            | "火花"
+            | "煙霧"
+            | "烟雾"
+            | "軌跡"
+            | "轨迹"
+            | "光環"
+            | "光环"
+    );
+    if visual_intent {
+        return if descriptor.name.starts_with("particle.") {
+            // Play is the entry point with authoring and preview guidance.
+            Some(if descriptor.name == "particle.play" {
+                200
+            } else {
+                150
+            })
+        } else if descriptor.name.starts_with("effect.") {
+            Some(100)
+        } else if descriptor.name.starts_with("shader.")
+            && matches!(term, "vfx" | "effect" | "effects")
+        {
+            Some(50)
+        } else {
+            None
+        };
+    }
+    if term == "effekseer" {
+        return descriptor.name.starts_with("effect.").then_some(200);
+    }
+    [
+        (&descriptor.name, 80),
+        (&descriptor.category, 60),
+        (&descriptor.purpose, 40),
+        (&descriptor.when_to_use, 20),
+    ]
+    .into_iter()
+    .find_map(|(text, score)| text.to_ascii_lowercase().contains(term).then_some(score))
 }
 
 /// Search the public engine API and attach the shared no-match guidance.
@@ -330,11 +446,77 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["entity.getTransform3D", "entity.setTransform3D"],
         ),
         descriptor(
+            "shader.setMaterial",
+            "shader",
+            "Assign a declared custom fragment material to a 2D sprite through the official renderer.",
+            "For shader effects, shields, hit flashes, glow, distortion, and custom sprite shading without accessing WebGL. Declare scene.shader_materials first; see docs/shader-materials.md and game schema shader.",
+            "WebGL sprite materials only; native and WebGPU must report SHADER_BACKEND_UNSUPPORTED. Use particle APIs for trails, sparks and explosions. Custom shader source is trusted author content, not a security sandbox.",
+            vec![
+                parameter("entityId", "string", "Entity with a 2D sprite."),
+                parameter("materialId", "string", "Key in scene.shader_materials."),
+            ],
+            "nil",
+            vec!["Update the entity material selection"],
+            "Selection is deterministic snapshot state; the engine renderer owns GPU compilation and resource lifetime.",
+            vec![
+                "SHADER_MATERIAL_UNKNOWN",
+                "SHADER_TARGET_UNSUPPORTED",
+                "SHADER_COMPILE_FAILED (host)",
+            ],
+            "api.shader.setMaterial(\"ship\", \"shield\")",
+            vec!["shader.setUniform", "shader.clearMaterial", "particle.play"],
+        ),
+        descriptor(
+            "shader.setUniform",
+            "shader",
+            "Update a declared float or vector uniform on a shared shader material.",
+            "For game-controlled shader parameters; see docs/shader-materials.md. The material definition declares uniform names, types and initial values.",
+            "Does not create resources, change shader source, expose a GPU context or alter gameplay collision. A shared material uniform affects all assigned sprites.",
+            vec![
+                parameter("materialId", "string", "Declared shader material ID."),
+                parameter(
+                    "name",
+                    "string",
+                    "Declared uniform name; unone_ and gl_ prefixes are reserved.",
+                ),
+                parameter(
+                    "value",
+                    "number | {number}",
+                    "Finite f32-compatible scalar or array of 2, 3 or 4 numbers, retaining its declared width.",
+                ),
+            ],
+            "nil",
+            vec!["Update shader material uniform state"],
+            "Updates are fixed-tick snapshot state. Built-in unone_time and unone_frame derive from simulation time, not wall time.",
+            vec![
+                "SHADER_MATERIAL_UNKNOWN",
+                "SHADER_UNIFORM_UNKNOWN",
+                "SHADER_UNIFORM_INVALID",
+                "SHADER_UNIFORM_TYPE",
+            ],
+            "api.shader.setUniform(\"shield\", \"strength\", 0.75)",
+            vec!["shader.setMaterial", "shader.clearMaterial"],
+        ),
+        descriptor(
+            "shader.clearMaterial",
+            "shader",
+            "Restore a sprite's standard engine material.",
+            "When a temporary custom sprite shader should end.",
+            "Does not remove the material definition or change its shared uniforms.",
+            vec![parameter("entityId", "string", "Entity ID.")],
+            "nil",
+            vec!["Clear the entity material selection"],
+            "The official renderer releases unused custom material resources on its next draw.",
+            vec!["ENTITY_UNKNOWN"],
+            "api.shader.clearMaterial(\"ship\")",
+            vec!["shader.setMaterial"],
+        ),
+        descriptor(
             "particle.play",
             "particle",
-            "Play a seeded native 3D particle definition.",
-            "For editable JSON effects, deterministic previews and replay.",
-            "Use effect APIs for Effekseer assets.",
+            "Play a seeded native declarative JSON particle definition in the official player.",
+            "Default for explosions, thrusters, fire, sparks, smoke, trails and auras. Author scene particle_effects; see docs/native-particles.md and docs/particle.schema.json. Preview exact frames and presets in /web/particle-lab/ (Particle Lab).",
+            "Use effect.spawn only for external Effekseer assets; do not replace the renderer to implement ordinary particle effects.",
             vec![
                 parameter("effect", "string", "Scene particle_effects key."),
                 parameter("position", "Vec3", "World-space emission origin."),
@@ -349,7 +531,14 @@ fn descriptors() -> Vec<ApiDescriptor> {
                 "Particle capacity exceeded",
             ],
             "local handle = api.particle.play(\"spark\", {x=0,y=0,z=0}, 42)",
-            vec!["particle.stop"],
+            vec![
+                "particle.move",
+                "particle.finish",
+                "particle.play_batch",
+                "particle.stats",
+                "particle.stop",
+                "effect.spawn",
+            ],
         ),
         descriptor(
             "particle.move",
@@ -853,9 +1042,9 @@ fn descriptors() -> Vec<ApiDescriptor> {
         descriptor(
             "effect.spawn",
             "presentation",
-            "Create an effect instance in world coordinates and return its handle.",
-            "When a one-shot presentation such as a win, explosion, or hit is needed; the engine stores only a semantic event, while the host's Effekseer runtime simulates and renders it.",
-            "Do not use it to carry game-rule results; effects do not affect world state, and the engine neither simulates particles nor determines whether an effect has finished.",
+            "Create an external Effekseer effect instance in world coordinates and return its handle.",
+            "For existing Effekseer assets; the engine stores the semantic event while the official player's Effekseer runtime simulates and renders it. For native declarative JSON explosions, fire, sparks and trails, prefer particle.play; see docs/native-particles.md and Particle Lab at /web/particle-lab/.",
+            "Do not use it to carry game-rule results. This Effekseer API does not simulate its external particles or determine completion; the separate native particle APIs do simulate deterministic particles.",
             vec![
                 parameter("asset", "string", "The effect asset id."),
                 parameter(
@@ -875,14 +1064,19 @@ fn descriptors() -> Vec<ApiDescriptor> {
                 "system 'effekseer' is not enabled",
             ],
             "local handle = api.effect.spawn(\"effekseer://win\", {x = 0.0, y = 1.0})",
-            vec!["effect.stop", "animation.play"],
+            vec![
+                "effect.stop",
+                "particle.play",
+                "particle.play_batch",
+                "animation.play",
+            ],
         ),
         descriptor(
             "effect.stop",
             "presentation",
-            "Remove an effect instance.",
-            "When a looping effect must end early or presentation must be cleared during a scene change.",
-            "The engine does not remove effects automatically; the game still decides when to stop a one-shot effect after playback.",
+            "Remove an external Effekseer effect instance.",
+            "When a looping Effekseer effect must end early or presentation must be cleared during a scene change.",
+            "Effekseer instances are not removed automatically; the game decides when to stop them. For native particles use particle.finish or particle.stop, which have authored lifetime semantics.",
             vec![parameter(
                 "handle",
                 "string",
@@ -893,7 +1087,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "The effects in the next observation no longer include this handle.",
             vec!["system 'effekseer' is not enabled"],
             "api.effect.stop(handle)",
-            vec!["effect.spawn"],
+            vec!["effect.spawn", "particle.finish", "particle.stop"],
         ),
         descriptor(
             "audio.play",
@@ -1275,29 +1469,62 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["ui.setRoot"],
         ),
         descriptor(
-            "ui.scrollView", "ui", "Create a reusable scroll_view node with measured local content and clipped rendering/input.",
+            "ui.scrollView",
+            "ui",
+            "Create a reusable scroll_view node with measured local content and clipped rendering/input.",
             "Use for authored finite content. See docs/ui-scroll.md for coordinates, lifecycle and Web host integration.",
             "Not automatic responsive layout or a gameplay loop. Native/legacy DOM hosts currently reject this capability explicitly.",
-            vec![parameter("options", "UiScrollOptions", "id, viewport, content; optional axis, enabled, resetKey, wheelRect. Content rects are local top-left/y-down; only viewport is in its containing space.")],
-            "UiNode; insert into ui.setRoot children.", vec!["Construct UI node only"], "Host scroll does not advance gameplay.",
+            vec![parameter(
+                "options",
+                "UiScrollOptions",
+                "id, viewport, content; optional axis, enabled, resetKey, wheelRect. Content rects are local top-left/y-down; only viewport is in its containing space.",
+            )],
+            "UiNode; insert into ui.setRoot children.",
+            vec!["Construct UI node only"],
+            "Host scroll does not advance gameplay.",
             vec!["Do not put stage-space rects in content or hand-author contentHeight/maxScroll."],
-            "local view = api.ui.scrollView({id='help',viewport={left=10,top=10,width=80,height=80},content={}})", vec!["ui.virtualList", "ui.virtualGrid", "ui.setRoot"],
+            "local view = api.ui.scrollView({id='help',viewport={left=10,top=10,width=80,height=80},content={}})",
+            vec!["ui.virtualList", "ui.virtualGrid", "ui.setRoot"],
         ),
         descriptor(
-            "ui.virtualList", "ui", "Build only the visible fixed-height rows of a Lua data source.",
-            "Long vertical lists; docs/ui-scroll.md defines stable keys and UI-pure renderItem callbacks.", "Not variable-height rows; use scrollView for small irregular content.",
-            vec![parameter("options", "UiVirtualOptions", "id, viewport, items, key field/function, rowHeight, renderItem; optional gapY, enabled, resetKey, wheelRect.")],
-            "scroll_view UiNode with virtual_items metadata and bounded materialized children.", vec!["Register Lua view callback"], "Host requests invoke renderItem, never Game.update. Callback must not mutate gameplay or consume RNG.",
-            vec!["Keys must be unique strings, not positional array indices; return non-empty arrays of local rect nodes."],
-            "local view = api.ui.virtualList({id='rows',viewport={left=10,top=10,width=80,height=80},items=items,key='id',rowHeight=8,renderItem=renderRow})", vec!["ui.virtualGrid", "ui.scrollView"],
+            "ui.virtualList",
+            "ui",
+            "Build only the visible fixed-height rows of a Lua data source.",
+            "Long vertical lists; docs/ui-scroll.md defines stable keys and UI-pure renderItem callbacks.",
+            "Not variable-height rows; use scrollView for small irregular content.",
+            vec![parameter(
+                "options",
+                "UiVirtualOptions",
+                "id, viewport, items, key field/function, rowHeight, renderItem; optional gapY, enabled, resetKey, wheelRect.",
+            )],
+            "scroll_view UiNode with virtual_items metadata and bounded materialized children.",
+            vec!["Register Lua view callback"],
+            "Host requests invoke renderItem, never Game.update. Callback must not mutate gameplay or consume RNG.",
+            vec![
+                "Keys must be unique strings, not positional array indices; return non-empty arrays of local rect nodes.",
+            ],
+            "local view = api.ui.virtualList({id='rows',viewport={left=10,top=10,width=80,height=80},items=items,key='id',rowHeight=8,renderItem=renderRow})",
+            vec!["ui.virtualGrid", "ui.scrollView"],
         ),
         descriptor(
-            "ui.virtualGrid", "ui", "Build a visible fixed-cell vertical grid using the same scroll core as virtualList.",
-            "Large icon/item libraries with explicitly authored column count and cell size.", "Not masonry, automatic breakpoints or a responsive layout solver.",
-            vec![parameter("options", "UiVirtualGridOptions", "virtualList options plus columns, columnWidth and optional gapX; columns must fit viewport width.")],
-            "scroll_view UiNode with virtual_items metadata.", vec!["Register Lua view callback"], "UI-only visible-window materialization; no simulation step.",
-            vec!["rowHeight means cell height, excluding gapY; return cell-local nodes without their row/column translation."],
-            "local view = api.ui.virtualGrid({id='icons',viewport={left=10,top=10,width=80,height=80},items=items,key='id',columns=8,columnWidth=9,rowHeight=16,gapX=1,renderItem=renderIcon})", vec!["ui.virtualList", "ui.scrollView"],
+            "ui.virtualGrid",
+            "ui",
+            "Build a visible fixed-cell vertical grid using the same scroll core as virtualList.",
+            "Large icon/item libraries with explicitly authored column count and cell size.",
+            "Not masonry, automatic breakpoints or a responsive layout solver.",
+            vec![parameter(
+                "options",
+                "UiVirtualGridOptions",
+                "virtualList options plus columns, columnWidth and optional gapX; columns must fit viewport width.",
+            )],
+            "scroll_view UiNode with virtual_items metadata.",
+            vec!["Register Lua view callback"],
+            "UI-only visible-window materialization; no simulation step.",
+            vec![
+                "rowHeight means cell height, excluding gapY; return cell-local nodes without their row/column translation.",
+            ],
+            "local view = api.ui.virtualGrid({id='icons',viewport={left=10,top=10,width=80,height=80},items=items,key='id',columns=8,columnWidth=9,rowHeight=16,gapX=1,renderItem=renderIcon})",
+            vec!["ui.virtualList", "ui.scrollView"],
         ),
         descriptor(
             "save.set",
@@ -1589,7 +1816,121 @@ fn descriptor(
 mod tests {
     use std::path::Path;
 
-    use super::{api_search_result, descriptors, search, typings};
+    use super::{api_search_result, describe, descriptors, search, typings};
+
+    #[test]
+    fn visual_intents_discover_native_particles_before_external_effects() {
+        for query in [
+            "vfx",
+            "explosion",
+            "thruster",
+            "fire",
+            "sparks",
+            "smoke",
+            "粒子特效",
+            "爆炸",
+            "尾焰",
+            "how do I make thruster fire?",
+        ] {
+            let matches = search(query);
+            assert_eq!(
+                matches.first().map(|api| api.name.as_str()),
+                Some("particle.play"),
+                "{query}"
+            );
+            assert_eq!(
+                matches
+                    .iter()
+                    .filter(|api| api.name.starts_with("particle."))
+                    .count(),
+                6,
+                "{query}"
+            );
+            assert!(
+                matches.iter().all(|api| api.name.starts_with("particle.")
+                    || api.name.starts_with("effect.")
+                    || (query == "vfx" && api.name.starts_with("shader."))),
+                "unrelated visual search results for {query}"
+            );
+            let native_last = matches
+                .iter()
+                .rposition(|api| api.name.starts_with("particle."))
+                .unwrap();
+            let external_first = matches
+                .iter()
+                .position(|api| api.name.starts_with("effect."))
+                .unwrap();
+            assert!(native_last < external_first, "{query}");
+        }
+    }
+
+    #[test]
+    fn exact_api_and_explicit_effekseer_queries_keep_their_intent() {
+        assert_eq!(
+            search(" PARTICLE.PLAY ")
+                .iter()
+                .map(|api| api.name.as_str())
+                .collect::<Vec<_>>(),
+            vec!["particle.play"]
+        );
+        assert_eq!(
+            search("effect.spawn")
+                .iter()
+                .map(|api| api.name.as_str())
+                .collect::<Vec<_>>(),
+            vec!["effect.spawn"]
+        );
+        let external = search("Effekseer explosion");
+        assert!(!external.is_empty());
+        assert!(external.iter().all(|api| api.name.starts_with("effect.")));
+        // An unrelated word must not broaden the query to every position API.
+        assert!(search("unfindable position").is_empty());
+        assert!(search("???").is_empty());
+    }
+
+    #[test]
+    fn generic_effect_words_preserve_explicit_shader_intent() {
+        for query in ["shader effects", "custom shader effects", "shader vfx"] {
+            let matches = search(query);
+            assert!(!matches.is_empty(), "{query}");
+            assert_eq!(matches[0].name, "shader.setMaterial", "{query}");
+            assert!(
+                matches.iter().all(|api| api.name.starts_with("shader.")),
+                "{query}"
+            );
+        }
+        // Specific exhaust/impact queries still guide ordinary effect authoring
+        // to native particles before the external Effekseer integration.
+        assert!(
+            search("thruster fire")
+                .iter()
+                .all(|api| !api.name.starts_with("shader."))
+        );
+    }
+
+    #[test]
+    fn native_and_external_effect_descriptions_explain_authoring_and_ownership() {
+        let native = describe("particle.play").unwrap();
+        assert!(native.purpose.contains("declarative JSON"));
+        assert!(native.when_to_use.contains("docs/native-particles.md"));
+        assert!(native.when_to_use.contains("docs/particle.schema.json"));
+        assert!(native.when_to_use.contains("/web/particle-lab/"));
+        assert!(native.related_apis.contains(&"effect.spawn".to_string()));
+
+        let external = describe("effect.spawn").unwrap();
+        assert!(external.purpose.contains("external Effekseer"));
+        assert!(external.related_apis.contains(&"particle.play".to_string()));
+        assert!(
+            external
+                .when_not_to_use
+                .contains("separate native particle APIs do simulate")
+        );
+        assert!(
+            !external
+                .when_not_to_use
+                .contains("engine neither simulates particles")
+        );
+    }
 
     #[test]
     fn empty_query_is_the_complete_index_without_empty_warning() {

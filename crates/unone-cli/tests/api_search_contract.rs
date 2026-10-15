@@ -205,12 +205,50 @@ fn assert_all_action_readiness(result: &Value) {
 #[test]
 fn cli_and_mcp_unpacked_results_have_parity_for_no_match_and_full_index() {
     let project_root = unique_fixture_root("parity");
-    for query in ["攻擊", "", "position"] {
+    for query in [
+        "攻擊",
+        "",
+        "position",
+        "explosion",
+        "粒子特效",
+        "particle.play",
+        "Effekseer explosion",
+    ] {
         assert_eq!(
             cli_search(&project_root, query),
             mcp_search(&project_root, query),
             "CLI and MCP EngineResult mismatch for query {query:?}"
         );
+    }
+}
+
+#[test]
+fn visual_search_guides_cli_and_mcp_to_native_particle_authoring() {
+    let project_root = unique_fixture_root("visual discovery");
+    for query in ["explosion", "thruster fire", "粒子特效"] {
+        let result = cli_search(&project_root, query);
+        assert_eq!(result, mcp_search(&project_root, query));
+        assert_eq!(result["ok"], true);
+        assert_eq!(result["diagnostics"], json!([]));
+        let matches = result["value"]["matches"].as_array().unwrap();
+        assert_eq!(matches[0]["name"], "particle.play");
+        assert!(
+            matches[0]["when_to_use"]
+                .as_str()
+                .unwrap()
+                .contains("/web/particle-lab/")
+        );
+        assert!(
+            matches[0]["related_apis"]
+                .as_array()
+                .unwrap()
+                .contains(&json!("effect.spawn"))
+        );
+        assert!(matches.iter().any(|api| api["name"] == "effect.spawn"));
+        assert!(matches.iter().all(|api| {
+            let name = api["name"].as_str().unwrap();
+            name.starts_with("particle.") || name.starts_with("effect.")
+        }));
     }
 }
 
@@ -251,7 +289,11 @@ fn no_match_contract_has_fixed_facts_and_discovery_actions() {
     assert_all_action_readiness(&result);
     assert_eq!(full_index["ready"], true);
     assert_eq!(full_index["executable"], "game");
-    assert!(action_argv(full_index).iter().any(|argument| argument.is_empty()));
+    assert!(
+        action_argv(full_index)
+            .iter()
+            .any(|argument| argument.is_empty())
+    );
 
     let systems = suggested_action(&result, "list_systems");
     assert_eq!(systems["ready"], false);
@@ -342,7 +384,11 @@ fn nonexistent_project_keeps_search_global_and_blocks_only_systems_action() {
 
     let full_index = suggested_action(&no_match, "search_api_index");
     assert_eq!(full_index["ready"], true);
-    assert!(action_argv(full_index).iter().any(|argument| argument.is_empty()));
+    assert!(
+        action_argv(full_index)
+            .iter()
+            .any(|argument| argument.is_empty())
+    );
     let systems = suggested_action(&no_match, "list_systems");
     assert_eq!(systems["ready"], false);
     assert!(systems["executable"].is_null());
@@ -433,10 +479,12 @@ fn full_index_action_executes_with_a_true_empty_query_from_an_unrelated_cwd() {
     assert_eq!(full_result["value"]["query"], "");
     assert_eq!(full_result["diagnostics"], json!([]));
     assert_eq!(full_result["value"]["suggested_next_actions"], json!([]));
-    assert!(!full_result["value"]["matches"]
-        .as_array()
-        .expect("full-index result should contain matches")
-        .is_empty());
+    assert!(
+        !full_result["value"]["matches"]
+            .as_array()
+            .expect("full-index result should contain matches")
+            .is_empty()
+    );
 }
 
 #[test]

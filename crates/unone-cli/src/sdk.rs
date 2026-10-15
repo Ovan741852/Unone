@@ -411,6 +411,7 @@ pub(crate) fn preflight(
     // exporters append, while still keeping preflight read-only.
     crate::export::append_presentation(project, &mut files)?;
     if selection.host.family == "native-wgpu" {
+        crate::export::native_shader_gate(&files)?;
         crate::hosts::native_wgpu_export_gate(
             &settings,
             crate::hosts::load_presentation(project)?.as_ref(),
@@ -664,6 +665,7 @@ fn native_export_staged(
     ensure!(!development, "NATIVE_DEVELOPMENT_VARIANT_UNAVAILABLE");
     ensure!(!output.exists(), "SDK_OUTPUT_EXISTS");
     let (config, settings, assets, mut files) = crate::export::content(project)?;
+    crate::export::native_shader_gate(&files)?;
     crate::hosts::native_wgpu_export_gate(
         &settings,
         crate::hosts::load_presentation(project)?.as_ref(),
@@ -677,7 +679,7 @@ fn native_export_staged(
             files.push((name.clone(), fs::read(safe(runtime, name)?)?));
         }
     }
-    let report = json!({"version":1,"project":config.name,"target":host.id,"family":host.family,"profile":"release","renderer":host.renderer,"presentation":host.presentation,"dev_tools":false,"preview_tools":false,"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":hash(b)})).collect::<Vec<_>>()});
+    let report = json!({"version":1,"project":config.name,"target":host.id,"family":host.family,"profile":"release","renderer_mode":"official","renderer":host.renderer,"presentation":host.presentation,"dev_tools":false,"preview_tools":false,"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":hash(b)})).collect::<Vec<_>>()});
     std::fs::create_dir_all(output)?;
     for (path, bytes) in &files {
         let p = output.join(path);

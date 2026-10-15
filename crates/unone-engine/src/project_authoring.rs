@@ -236,9 +236,13 @@ fn scaffold_script() -> String {
 
 -- Game code starts here. Rules, numbers, ViewModels and save schemas are
 -- game-owned; the engine only provides the API declared above.
+-- Presentation defaults to the official player. Author scene particle_effects
+-- and use api.particle for VFX; use api.shader for custom materials.
+-- Discover contracts with `game api search particle` / `game api search shader`.
 local Game = {{}}
 
-function Game.start(_api: EngineApi)
+function Game.start(api: EngineApi)
+    api.particle.play(\"starter_sparks\", {{x = 0, y = 0, z = 0}}, 42)
 end
 
 function Game.update(api: EngineApi, dt: number)
@@ -435,6 +439,7 @@ fn init_artifacts(name: &str) -> Vec<InitFileSpec> {
         "name": name,
         "entry_script": "scripts/main.luau",
         "main_scene": "scenes/main.scene.json",
+        "systems": {"particle": true},
         "test_files": [
             "tests/bootstrap-idle.test.json",
             "tests/bootstrap-input.test.json",
@@ -444,6 +449,16 @@ fn init_artifacts(name: &str) -> Vec<InitFileSpec> {
     config_bytes.push(b'\n');
 
     let mut files = vec![
+        InitFileSpec {
+            project_relative_path: "AGENTS.md",
+            role: "authoring_instructions",
+            bytes: b"# Game authoring contract\n\nUse Unone's official player and renderer by default. Keep gameplay in Luau and use engine APIs for presentation. Do not obtain a WebGL/OpenGL context or write a separate browser host for an ordinary game.\n\nBefore adding effects, run `game api search particle`, `game api describe particle.play`, `game api search shader`, and `game systems list --json`. Author scene `particle_effects` for explosions, thrusters, sparks, smoke, trails and auras. Keep the particle system enabled when using these effects. Custom shaders go through scene `shader_materials` and `api.shader.*`; the engine owns GPU compilation and rendering. Use presentation Bloom when appropriate.\n\n`player.presentation.json` selects `renderer_mode: official`. Replace the renderer only as an explicitly selected extension for a stated project requirement, never merely to add effects or shaders: select `renderer_mode: custom`, set `renderer_module`, and list the entry plus local dependencies in `renderer_files`. This trusted Web extension is not a sandbox and does not claim official renderer coverage. Report the selected mode in validation.\n\nRun verify for the scaffold, then `game project preflight --target web` and `game project prepare --target web --output <new-output-directory>` to obtain an official player export and launch descriptor. Inspect SDK availability if preflight reports a missing runtime. The starter tests only check onboarding and movement; add game-specific acceptance and inspect rendered output before delivery.\n".to_vec(),
+        },
+        InitFileSpec {
+            project_relative_path: "player.presentation.json",
+            role: "player_presentation",
+            bytes: json_bytes(serde_json::json!({"renderer_mode": "official", "bloom": true})),
+        },
         InitFileSpec {
             project_relative_path: "project.unone.json",
             role: "project_config",
@@ -458,6 +473,19 @@ fn init_artifacts(name: &str) -> Vec<InitFileSpec> {
             project_relative_path: "scenes/main.scene.json",
             role: "main_scene",
             bytes: json_bytes(serde_json::json!({
+                "particle_effects": {"starter_sparks": {
+                    "version": 1,
+                    "duration_frames": 120,
+                    "emitters": [{
+                        "id": "sparks", "count": 1, "interval_frames": 6, "lifetime_frames": 30,
+                        "velocity_min": {"x": -0.6, "y": 0.3, "z": 0.0},
+                        "velocity_max": {"x": 0.6, "y": 0.9, "z": 0.0},
+                        "size_start": 0.18, "size_end": 0.01,
+                        "color_start": [1.0, 0.65, 0.12, 1.0],
+                        "color_end": [1.0, 0.12, 0.0, 0.0],
+                        "additive": true,
+                    }],
+                }},
                 "entities": [{
                     "id": "example",
                     "transform": {"x": 0.0, "y": 0.0},
@@ -951,55 +979,22 @@ fn init_failure<T: Serialize>(
 
 fn suggested_next_actions(root: &Path) -> Vec<ProjectInitAction> {
     let project = path_string(root);
+    let action = |arguments: &[&str], reason: &str, prerequisites: Vec<usize>| {
+        ProjectInitAction {
+            executable: "game".to_string(),
+            argv: [vec!["--project".to_string(), project.clone(), "--json".to_string()],
+                arguments.iter().map(|v| v.to_string()).collect()].concat(),
+            reason: reason.to_string(),
+            prerequisites,
+        }
+    };
     vec![
-        ProjectInitAction {
-            executable: "game".to_string(),
-            argv: vec![
-                "--project".to_string(),
-                project.clone(),
-                "--json".to_string(),
-                "verify".to_string(),
-            ],
-            reason: "First verify the newly generated, unmodified five-file starter; this only confirms the onboarding smoke test.".to_string(),
-            prerequisites: Vec::new(),
-        },
-        ProjectInitAction {
-            executable: "game".to_string(),
-            argv: vec![
-                "--project".to_string(),
-                project.clone(),
-                "--json".to_string(),
-                "bundle".to_string(),
-                "pack".to_string(),
-            ],
-            reason: "Create the bundle only after verify; init does not implicitly pack or activate a bundle.".to_string(),
-            prerequisites: vec![0],
-        },
-        ProjectInitAction {
-            executable: "game".to_string(),
-            argv: vec![
-                "--project".to_string(),
-                project.clone(),
-                "--json".to_string(),
-                "bundle".to_string(),
-                "install".to_string(),
-                "--all".to_string(),
-            ],
-            reason: "Activate every bundle declared by the manifest after packing; this step remains explicit.".to_string(),
-            prerequisites: vec![1],
-        },
-        ProjectInitAction {
-            executable: "game".to_string(),
-            argv: vec![
-                "--project".to_string(),
-                project,
-                "--json".to_string(),
-                "bundle".to_string(),
-                "inspect".to_string(),
-            ],
-            reason: "Inspect the active bundle after installation; after adding assets, return to the existing pack → verify/strict → install workflow.".to_string(),
-            prerequisites: vec![2],
-        },
+        action(&["verify"], "Verify the unmodified official-player starter; these movement smoke tests are not game acceptance or renderer evidence.", vec![]),
+        action(&["api", "search", "particle"], "Discover declarative particle APIs before implementing explosions, thrusters, sparks, smoke or trails.", vec![]),
+        action(&["api", "search", "shader"], "Discover the engine-owned shader API; custom materials do not require replacing the renderer.", vec![]),
+        action(&["systems", "list"], "Inspect available engine systems before disabling or reimplementing them; this starter enables native particles.", vec![]),
+        action(&["project", "preflight", "--target", "web"], "Read-only discovery of a compatible official player runtime; inspect the SDK if no installed runtime is available.", vec![0]),
+        action(&["project", "prepare", "--target", "web", "--output", &path_string(&root.join("dist/player"))], "Verify, synchronize declared assets and export the official player with a trusted launch descriptor. Use a fresh output directory on later prepares; renderer replacement must be an explicitly selected extension for a stated project requirement.", vec![0, 4]),
     ]
 }
 
@@ -1091,7 +1086,7 @@ mod tests {
     };
 
     #[test]
-    fn init_creates_the_five_file_starter_and_structured_actions() {
+    fn init_creates_official_player_starter_and_structured_actions() {
         let directory = tempdir().expect("temp project directory");
         let result = init(directory.path(), "ai-smoke");
         assert!(result.ok, "{:?}", result.diagnostics);
@@ -1108,6 +1103,8 @@ mod tests {
                 .map(|file| (file.path.as_str(), file.role.as_str()))
                 .collect::<Vec<_>>(),
             vec![
+                ("AGENTS.md", "authoring_instructions"),
+                ("player.presentation.json", "player_presentation"),
                 ("project.unone.json", "project_config"),
                 ("scenes/main.scene.json", "main_scene"),
                 ("scripts/main.luau", "entry_script"),
@@ -1116,7 +1113,7 @@ mod tests {
             ]
         );
         assert_eq!(report.workflow_scope, "new_unmodified_scaffold");
-        assert_eq!(report.suggested_next_actions.len(), 4);
+        assert_eq!(report.suggested_next_actions.len(), 6);
         assert_eq!(report.suggested_next_actions[0].executable, "game");
         assert_eq!(
             report.suggested_next_actions[0].argv,
@@ -1131,9 +1128,11 @@ mod tests {
             report.suggested_next_actions[0].prerequisites,
             Vec::<usize>::new()
         );
-        assert_eq!(report.suggested_next_actions[1].prerequisites, vec![0]);
-        assert_eq!(report.suggested_next_actions[2].prerequisites, vec![1]);
-        assert_eq!(report.suggested_next_actions[3].prerequisites, vec![2]);
+        assert!(report.suggested_next_actions[1].prerequisites.is_empty());
+        assert!(report.suggested_next_actions[2].prerequisites.is_empty());
+        assert_eq!(report.suggested_next_actions[4].prerequisites, vec![0]);
+        assert_eq!(report.suggested_next_actions[5].prerequisites, vec![0, 4]);
+        assert_eq!(report.suggested_next_actions[5].argv[3..7], ["project", "prepare", "--target", "web"]);
         assert!(
             result
                 .effects
@@ -1146,6 +1145,13 @@ mod tests {
         )
         .unwrap();
         assert_eq!(config.entry_script, "scripts/main.luau");
+        assert_eq!(config.systems.get("particle"), Some(&true));
+        let presentation: serde_json::Value = serde_json::from_slice(&fs::read(directory.path().join("player.presentation.json")).unwrap()).unwrap();
+        assert_eq!(presentation["renderer_mode"], "official");
+        assert_eq!(presentation["bloom"], true);
+        let instructions = fs::read_to_string(directory.path().join("AGENTS.md")).unwrap();
+        assert!(instructions.contains("explicitly selected extension"));
+        assert!(instructions.contains("api.shader"));
         assert_eq!(config.main_scene.as_deref(), Some("scenes/main.scene.json"));
         assert_eq!(
             config.test_files,
@@ -1160,12 +1166,15 @@ mod tests {
         assert!(script.contains("export type EngineApi"));
         assert!(script.contains("api.input.isDown(\"Right\")"));
         assert!(script.contains("position.x += dt"));
+        assert!(script.contains("api.particle.play(\"starter_sparks\""));
 
         let scene: serde_json::Value = serde_json::from_str(
             &fs::read_to_string(directory.path().join("scenes/main.scene.json")).unwrap(),
         )
         .unwrap();
         assert_eq!(scene["entities"][0]["id"], "example");
+        let definition: crate::ParticleDefinition = serde_json::from_value(scene["particle_effects"]["starter_sparks"].clone()).unwrap();
+        definition.validate().unwrap();
         assert_eq!(
             scene["entities"][0]["transform"],
             serde_json::json!({"x": 0.0, "y": 0.0})
@@ -1216,6 +1225,12 @@ mod tests {
     fn generated_bootstrap_tests_run_and_wrong_movement_amount_fails() {
         let directory = tempdir().expect("temp project directory");
         assert!(init(directory.path(), "runtime-smoke").ok);
+
+        let runtime = crate::runtime::EngineRuntime::load_with_seed(directory.path(), 42)
+            .expect("starter loads through the engine runtime");
+        let snapshot = runtime.observe();
+        assert!(!snapshot.particles.is_empty(), "declarative starter effect is played by the engine");
+        assert!(snapshot.particle_effects.contains_key("starter_sparks"));
 
         let tests = crate::runtime::EngineRuntime::run_tests(directory.path());
         assert!(tests.ok, "{:?}", tests.diagnostics);
@@ -1413,7 +1428,7 @@ mod tests {
         assert_eq!(facts["phase"], "create_file");
         assert_eq!(
             facts["failed_path"],
-            serde_json::json!(path_string(&canonical_root.join("project.unone.json")))
+            serde_json::json!(path_string(&canonical_root.join("AGENTS.md")))
         );
         assert!(facts["created_files"].as_array().unwrap().is_empty());
         assert_eq!(facts["created_directories"].as_array().unwrap().len(), 4);
@@ -1447,26 +1462,18 @@ mod tests {
         let canonical_root = fs::canonicalize(&root).unwrap();
         let created_files = facts["created_files"].as_array().unwrap();
         assert_eq!(created_files.len(), 2);
-        assert_eq!(
-            created_files[0]["project_relative_path"],
-            "project.unone.json"
-        );
+        assert_eq!(created_files[0]["project_relative_path"], "AGENTS.md");
         assert_eq!(created_files[0]["complete"], true);
-        assert_eq!(
-            created_files[1]["project_relative_path"],
-            "scenes/main.scene.json"
-        );
+        assert_eq!(created_files[1]["project_relative_path"], "player.presentation.json");
         assert_eq!(created_files[1]["complete"], false);
 
-        let config_path = canonical_root.join("project.unone.json");
-        let scene_path = canonical_root.join("scenes/main.scene.json");
-        assert!(
-            serde_json::from_slice::<serde_json::Value>(&fs::read(&config_path).unwrap()).is_ok()
-        );
+        let config_path = canonical_root.join("AGENTS.md");
+        let scene_path = canonical_root.join("player.presentation.json");
+        assert!(fs::read_to_string(&config_path).unwrap().contains("official player"));
         let partial_scene = fs::read(&scene_path).unwrap();
         let expected_scene = super::init_artifacts("fault")
             .into_iter()
-            .find(|file| file.project_relative_path == "scenes/main.scene.json")
+            .find(|file| file.project_relative_path == "player.presentation.json")
             .unwrap()
             .bytes;
         assert!(!partial_scene.is_empty());

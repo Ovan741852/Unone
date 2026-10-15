@@ -383,11 +383,9 @@ fn named_helpers(tokens: &[Token]) -> Vec<(String, usize, usize)> {
                         .then_some((name, i)),
                 ));
             }
-            "if" => {
-                // Expression-if has no matching end; keep it out of statement blocks.
-                if i == 0 || !matches!(tokens[i - 1].value.as_str(), "=" | "(" | "," | "return") {
-                    stack.push(("if", None));
-                }
+            // Expression-if has no matching end; keep it out of statement blocks.
+            "if" if i == 0 || !matches!(tokens[i - 1].value.as_str(), "=" | "(" | "," | "return") => {
+                stack.push(("if", None));
             }
             "for" | "while" => {
                 stack.push(("loop", None));
@@ -401,10 +399,8 @@ fn named_helpers(tokens: &[Token]) -> Vec<(String, usize, usize)> {
                 }
             }
             "repeat" => stack.push(("repeat", None)),
-            "until" => {
-                if stack.last().is_some_and(|(kind, _)| *kind == "repeat") {
-                    stack.pop();
-                }
+            "until" if stack.last().is_some_and(|(kind, _)| *kind == "repeat") => {
+                stack.pop();
             }
             "end" => {
                 if let Some((_, Some((name, start)))) = stack.pop() {

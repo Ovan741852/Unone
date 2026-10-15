@@ -786,15 +786,15 @@ fn build_bundle_archive(mut entries: Vec<(String, Vec<u8>)>) -> Result<Vec<u8>, 
     entries.sort_by(|left, right| left.0.cmp(&right.0));
     let mut unique: Vec<(String, Vec<u8>)> = Vec::with_capacity(entries.len());
     for (path, bytes) in entries {
-        if let Some((previous_path, previous_bytes)) = unique.last() {
-            if previous_path == &path {
-                if previous_bytes != &bytes {
-                    return Err(format!(
-                        "The asset bundle source path '{path}' resolved to conflicting contents"
-                    ));
-                }
-                continue;
+        if let Some((previous_path, previous_bytes)) = unique.last()
+            && previous_path == &path
+        {
+            if previous_bytes != &bytes {
+                return Err(format!(
+                    "The asset bundle source path '{path}' resolved to conflicting contents"
+                ));
             }
+            continue;
         }
         unique.push((path, bytes));
     }

@@ -220,7 +220,7 @@ enum ProjectCommand {
         #[arg(long)]
         development: bool,
     },
-    /// Create a five-file headless starter with two tests and next actions in a new or truly empty directory.
+    /// Create an official-player starter with declarative particles, authoring instructions and two movement smoke tests in a new or truly empty directory.
     Init {
         #[arg(long, help = "Project name written to project.unone.json")]
         name: String,

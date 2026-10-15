@@ -26,6 +26,12 @@ use winit::{
     window::{Window, WindowId},
 };
 type R<T> = Result<T, String>;
+pub(crate) fn ensure_shader_backend(snapshot: &WorldSnapshot) -> R<()> {
+    if !snapshot.shader_materials.is_empty() {
+        return Err("SHADER_BACKEND_UNSUPPORTED: GLSL sprite shader materials require the official WebGL player; native wgpu does not implement this contract".into());
+    }
+    Ok(())
+}
 const NATIVE_RENDERER: &str = "wgpu-native-instanced";
 const READY_CONTRACT: &str = "unone.native-ready.v1";
 
@@ -98,10 +104,12 @@ impl Package {
             .ok_or_else(|| format!("NATIVE_FILE_MISSING: {path}"))
     }
     fn runtime(&self, seed: u64) -> R<EngineRuntime> {
-        HostProject::parse(self.get("content/project.json")?)
+        let runtime = HostProject::parse(self.get("content/project.json")?)
             .map_err(|e| e.explanation)?
             .into_runtime(seed)
-            .map_err(|e| e.explanation)
+            .map_err(|e| e.explanation)?;
+        ensure_shader_backend(&runtime.observe())?;
+        Ok(runtime)
     }
 }
 #[derive(Default, Deserialize)]
@@ -809,6 +817,23 @@ mod telemetry_tests {
                 "process_id"
             ])
         );
+    }
+
+    #[test]
+    fn native_runtime_rejects_shader_resources_instead_of_silently_ignoring_them() {
+        let make = |scene| super::Package {
+            files: std::collections::BTreeMap::from([("content/project.json".into(), serde_json::to_vec(&serde_json::json!({
+                "config":{"name":"native-shader-gate","entry_script":"main.luau"},
+                "script":"return {start=function(api) end,update=function(api,dt) end}",
+                "scene":scene
+            })).unwrap())]),
+            digest: "fixture".into(),
+        };
+        assert!(make(serde_json::json!({"entities":[]})).runtime(42).is_ok());
+        let error = make(serde_json::json!({"entities":[],"shader_materials":{"tint":{
+            "fragment":"vec4 unoneShade(vec2 uv,vec4 color){return color;}"
+        }}})).runtime(42).err().expect("native shader gate");
+        assert!(error.contains("SHADER_BACKEND_UNSUPPORTED"));
     }
 
     #[test]

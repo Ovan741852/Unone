@@ -10,7 +10,17 @@ Each task provides only:
 2. One immutable engine package: `bin/game.exe`, the co-located `bin/luau-analyze.exe`, `docs/engine.d.luau`, CLI/MCP operation documentation, `asset-workflow.md`, `project.schema.json`／`scene.schema.json`／`test.schema.json`, a Web runner/wasm host, and the required engine decision documents. Before handoff, run `powershell -File scripts/verify-ai-engine-package.ps1 -PackagePath .`; package contents become read-only after creation, and the manifest hash must also pass.
 3. One clean game output directory. Do not use another validation game's code as a template, and do not modify engine source directly.
 
-The game owns gameplay rules, values, data catalogs, the ViewModel, View tree, hit-testing, save schema/migration, and content. The engine owns only the fixed tick, input, ECS/world primitives, Luau execution/reload, observation/UI/save transport, bundle integrity, and the platform host boundary.
+The game owns gameplay rules, values, data catalogs, the ViewModel, View tree,
+hit-testing, save schema/migration, content and declarative presentation
+resources. The engine owns the fixed tick, input, ECS/world primitives, Luau
+execution/reload, observation/UI/save transport, bundle integrity and official
+player rendering. Use scene `particle_effects` and `api.particle.*` for authored
+effects; custom sprite shaders use scene `shader_materials` and `api.shader.*`.
+GPU contexts, compilation and draw calls remain inside the engine renderer.
+Renderer replacement requires an explicitly selected extension mode for a stated
+project requirement and `player.presentation.json` configuration; a shader or
+effects request alone does not select it. See the
+[renderer selection contract](ai-workflow.md#renderer-selection-and-replacement).
 
 ## First action: learn the engine
 
@@ -50,7 +60,23 @@ result contract and must stage artifacts before the game activates them.
 
 An initially empty project has no UI tree, so this bootstrap list does not require an additional `ui preview --strict`. Create a View tree and use preview according to the UI section only when GAME_PLAN explicitly requires UI; add save to the game and tests only when save／restore is required.
 
-`project init` produces a five-file headless starter: config, a strict script, an example scene, and two idle/input tests. It accepts only a nonexistent or genuinely empty directory (a `.git` directory or a game-plan file also makes it non-empty) and never overwrites. Keep the game plan and engine package outside the output; run `git init` only after successful initialization. See [ai-workflow.md](ai-workflow.md#0-先建立或取得專案與-api-語意) for complete result fields, partial-failure handling, and the next-step contract. The example tests prove only the starter and do not count toward gameplay acceptance; replace them when replacing the example. Use the package's project／scene／test schemas and engine.d.luau; do not guess scale or APIs. Resolve logical executable `game` to the package's `bin/game.exe`, pass argv unchanged to the subprocess without shell interpolation, and locate the official analyzer automatically in the same directory.
+`project init` produces a seven-file starter: authoring `AGENTS.md`, project
+config, official-player presentation settings, a strict script, an example scene
+with a declarative particle definition, and two idle/input tests. It accepts
+only a nonexistent or genuinely empty directory (a `.git` directory or a
+game-plan file also makes it non-empty) and never overwrites. Keep the game plan
+and engine package outside the output; run `git init` only after successful
+initialization. See
+[ai-workflow.md](ai-workflow.md#0-create-or-obtain-the-project-and-api-semantics)
+for complete result fields, partial-failure handling and the next-step contract.
+The example tests prove only the starter and do not count toward gameplay or
+visual acceptance; replace them when replacing the example. Use the package's
+project/scene/test schemas and engine.d.luau; do not guess scale or APIs. Resolve
+logical executable `game` to the package's `bin/game.exe`, pass argv unchanged
+to the subprocess without shell interpolation, and locate the official analyzer
+automatically in the same directory. The suggested actions lead through API
+discovery and systems inspection to `project preflight` and `project prepare`
+for the official player.
 
 Minimal test-file example (the complete schema remains `docs/test.schema.json`):
 
@@ -102,7 +128,11 @@ The subagent may report only its own game as ready_for_review; it must not mark 
   targeted diagnosis, not duplicate mandatory gates.
 - A deterministic game test covering the game plan's smallest complete loop, failure path, and required input replay; add save restore only when the game plan requires persistence.
 - bundle pack and bundle inspect, including the hashes, dependencies, and sizes of the project/script/scene/asset-manifest/content bundle.
-- Source and packaged-bundle smoke tests with the generic Web runner; when UI/assets are required, verify semantic state and resolved asset count instead of substituting screenshots for state assertions.
+- Source and packaged-bundle smoke tests, plus the exported official player;
+  when UI/assets are required, verify semantic state and resolved asset count
+  alongside the rendered output. Report `renderer_mode` from the export/player.
+  A declared mode or a passing headless `verify` does not prove that the official
+  GPU path drew the required content.
 - Actual Web host evidence for the capabilities required by this game plan.
   Native/Android validation is deferred in the current Web-first slice; list it
   as not tested, not as a blocker for a Web-only task or as a completed platform.

@@ -6,6 +6,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/bloom.js",
         "renderer/effekseer.js",
         "renderer/particles.js",
+        "renderer/shader-materials.js",
         "shared/ui-tree.js",
         "shared/canvas-ui.mjs",
         "shared/ui-scroll.mjs",
@@ -26,6 +27,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/job-worker.js",
         "shared/instance-transfer.mjs",
         "shared/presentation-interpolation.mjs",
+        "shared/renderer-selection.mjs",
         "shared/profile-window.js",
         "vendor/three/three.player.min.js",
         "vendor/three/LICENSE",
@@ -149,7 +151,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             project.display()
         );
     }
-    append_presentation(project, &mut files)?;
+    let presentation = append_presentation(project, &mut files)?;
     files.push((
         "runtime/runtime.json".into(),
         serde_json::to_vec(&manifest)?,
@@ -175,7 +177,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             if !settings.is_enabled("particle") {
                 text = replace_required(
                     text,
-                    "import { createParticleRenderer } from \"./particles.js\";",
+                    "import { createParticleRenderer } from \"./particles.js?build=particle-texture-colorbins-v1\";",
                     "const createParticleRenderer = () => ({draw(){}, clear(){}, dispose(){}, count:0});",
                 )?;
             }
@@ -300,7 +302,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             "export destination collision: {path}"
         );
     }
-    let report = json!({"version":1,"project":config.name,"release_root":release_root,"cache_policy":{"index.html":"no-cache, must-revalidate","releases/":"public, max-age=31536000, immutable","deployment":"publish complete generation before index; retain old generations for open clients","legacy_aliases":"unversioned files retained for existing CLI inspection tools; browser entry uses only release_root"},"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer":"three-webgl","total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
+    let report = json!({"version":1,"project":config.name,"release_root":release_root,"cache_policy":{"index.html":"no-cache, must-revalidate","releases/":"public, max-age=31536000, immutable","deployment":"publish complete generation before index; retain old generations for open clients","legacy_aliases":"unversioned files retained for existing CLI inspection tools; browser entry uses only release_root"},"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer_mode":presentation.renderer_mode,"renderer_module":presentation.renderer_module,"renderer":if presentation.renderer_mode == crate::hosts::RendererMode::Official {"three-webgl"} else {"custom-module"},"total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
     // All validation and reads finish first. Remove only our newly created tree on write failure.
     fs::create_dir_all(output)?;
     let write = (|| -> Result<()> {
@@ -346,7 +348,33 @@ mod tests {
         files.clear();append_presentation(dir.path(),&mut files).unwrap();
         assert!(files.iter().any(|(p,b)|p=="content/font.ttf"&&b==b"fixture-font-bytes"));
         fs::write(dir.path().join("player.presentation.json"),br#"{"ui":{"font_source":"font.ttf"}}"#).unwrap();
-        assert!(append_presentation(dir.path(),&mut vec![]).unwrap_err().to_string().contains("UI_FONT_FAMILY_REQUIRED"));
+        assert!(append_presentation(dir.path(),&mut vec![]).err().unwrap().to_string().contains("UI_FONT_FAMILY_REQUIRED"));
+    }
+    #[test]
+    fn custom_renderer_packaging_is_explicit_safe_and_hashed_with_generation() {
+        let dir = tempfile::tempdir().unwrap();
+        fs::create_dir(dir.path().join("host")).unwrap();
+        fs::write(dir.path().join("host/render.mjs"), b"export const createRenderer = () => ({})").unwrap();
+        let declaration = |files: Value| json!({"renderer_mode":"custom", "renderer_module":"host/render.mjs", "renderer_files":files});
+        fs::write(dir.path().join("player.presentation.json"), serde_json::to_vec(&declaration(json!(["host/render.mjs"]))).unwrap()).unwrap();
+        let mut files = vec![];
+        let presentation = append_presentation(dir.path(), &mut files).unwrap();
+        assert_eq!(presentation.renderer_mode, crate::hosts::RendererMode::Custom);
+        assert!(files.iter().any(|(path, _)| path == "content/host/render.mjs"));
+        let (root, _) = seal_web_generation(&mut files, "<head></head>").unwrap();
+        assert!(files.iter().any(|(path, _)| path == &format!("{root}content/host/render.mjs")));
+        for invalid in ["../secret", "C:/secret", "/secret", "host\\render.mjs", "host//render.mjs", "host/./render.mjs", "host/%2e%2e/render.mjs", "render.mjs?query", "render.mjs#fragment"] {
+            fs::write(dir.path().join("player.presentation.json"), serde_json::to_vec(&declaration(json!(["host/render.mjs", invalid]))).unwrap()).unwrap();
+            assert!(append_presentation(dir.path(), &mut vec![]).is_err(), "{invalid}");
+        }
+    }
+    #[test]
+    fn native_export_rejects_shader_declarations_instead_of_dropping_them() {
+        let files = |scene: Value| vec![("content/project.json".to_string(), serde_json::to_vec(&json!({"scene":scene})).unwrap())];
+        native_shader_gate(&files(json!({}))).unwrap();
+        native_shader_gate(&files(json!({"shader_materials":{}}))).unwrap();
+        let error = native_shader_gate(&files(json!({"shader_materials":{"glow":{}}}))).unwrap_err();
+        assert!(error.to_string().contains("HOST_SHADER_UNSUPPORTED"));
     }
     #[test]
     fn mesh_contract_rejects_bad_topology_uvs_and_unknown_fields() {
@@ -387,15 +415,37 @@ mod tests {
 }
 
 /// Shared validated host payload and asset bytes for all player exporters.
-pub(crate) fn append_presentation(project:&Path, files:&mut Vec<(String,Vec<u8>)>)->Result<()> {
+pub(crate) fn append_presentation(project:&Path, files:&mut Vec<(String,Vec<u8>)>)->Result<crate::hosts::PresentationSettings> {
     let presentation = crate::hosts::load_presentation(project)?.unwrap_or_default();
+    presentation.validate_renderer()?;
+    for path in &presentation.renderer_files {
+        validate_renderer_file_path(path)?;
+        push_unique_content_file(files, format!("content/{path}"), fs::read(inside(project, path)?)?)?;
+    }
     ensure!(presentation.job_policy.max_workers<=4 && presentation.job_policy.memory_budget_mb<=1024,"JOB_POLICY_INVALID: max_workers must be 0..4 and memory_budget_mb 0..1024");
     if let Some(path)=&presentation.ui.font_source {
         ensure!(presentation.ui.font_family.as_ref().is_some_and(|f|!f.trim().is_empty()),"UI_FONT_FAMILY_REQUIRED: specify the packaged font's family name");
         let name=format!("content/{path}");
         if !files.iter().any(|(p,_)|p==&name){files.push((name,fs::read(inside(project,path)?)?));}
     }
-    files.push(("content/presentation.json".into(),serde_json::to_vec(&presentation)?));
+    push_unique_content_file(files, "content/presentation.json".into(), serde_json::to_vec(&presentation)?)?;
+    Ok(presentation)
+}
+
+fn validate_renderer_file_path(path: &str) -> Result<()> {
+    ensure!(!path.is_empty() && !path.contains(['\\', ':', '%', '?', '#']) && !path.chars().any(char::is_control)
+        && !path.starts_with('/') && path.split('/').all(|part| !part.is_empty() && part != "." && part != ".."),
+        "RENDERER_PATH_INVALID: custom renderer files must use safe project-relative forward-slash paths: {path}");
+    Ok(())
+}
+
+/// Initial engine-owned custom shader API executes on the WebGL2 player only.
+/// Native exports must report the gap instead of silently dropping the effect.
+pub(crate) fn native_shader_gate(files: &[(String, Vec<u8>)]) -> Result<()> {
+    let Some((_, bytes)) = files.iter().find(|(path, _)| path == "content/project.json") else { return Ok(()); };
+    let payload: Value = serde_json::from_slice(bytes)?;
+    ensure!(payload["scene"]["shader_materials"].as_object().is_none_or(|materials| materials.is_empty()),
+        "HOST_SHADER_UNSUPPORTED: scene.shader_materials currently requires the official WebGL2 player; native wgpu custom shaders are not implemented. Export --target web or remove custom shader declarations");
     Ok(())
 }
 

@@ -1683,6 +1683,7 @@ impl Renderer {
         if self.ui.draw(encoder,view){self.draws+=1;}
     }
     pub fn render(&mut self, s: &WorldSnapshot) -> R<bool> {
+        crate::ensure_shader_backend(s)?;
         let started = std::time::Instant::now();
         self.prepare(s)?;
         self.ui.prepare(&self.device,&self.queue,s.ui.as_ref(),self.config.width,self.config.height)?;
