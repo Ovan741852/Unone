@@ -232,6 +232,131 @@ pub struct UiRect {
     pub height: f64,
 }
 
+/// Shared UI styling uses vertical design units (one unit is 1% of viewport
+/// height), including horizontal padding and letter spacing. Styles are local
+/// to one leaf: components do not create implicit style inheritance.
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct UiInsets {
+    #[serde(default)]
+    pub left: f64,
+    #[serde(default)]
+    pub top: f64,
+    #[serde(default)]
+    pub right: f64,
+    #[serde(default)]
+    pub bottom: f64,
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum UiTextAlign { Start, Center, End }
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum UiVerticalAlign { Top, Middle, Bottom }
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum UiTextWrap { None, Word }
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum UiTextOverflow { Clip, Ellipsis }
+
+/// Platform-neutral style data. Fonts name installed host families, not files
+/// or URLs. An explicit font_size is never inferred from the node's box and is
+/// never silently shrunk to fit it. A styled text leaf defaults to font_size=2,
+/// weight=400, line_height=1.2, centered/middle, no-wrap and clipped overflow.
+/// Absence of the entire style object preserves the legacy presentation path.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct UiStyle {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub font_family: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub font_size: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub font_weight: Option<u16>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub line_height: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub letter_spacing: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub color: Option<[f64; 4]>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text_align: Option<UiTextAlign>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vertical_align: Option<UiVerticalAlign>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub wrap: Option<UiTextWrap>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub overflow: Option<UiTextOverflow>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub padding: Option<UiInsets>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub background: Option<[f64; 4]>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub border_color: Option<[f64; 4]>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub border_width: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub border_radius: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opacity: Option<f64>,
+}
+
+impl UiStyle {
+    pub fn validate(&self) -> Result<(), String> {
+        let range = |name: &str, value: Option<f64>, min: f64, max: f64, inclusive_min: bool| {
+            if value.is_some_and(|v| !v.is_finite() || v > max || if inclusive_min { v < min } else { v <= min }) {
+                Err(format!("UI_STYLE_INVALID: {name} must be finite and {} {min} and <= {max}", if inclusive_min { ">=" } else { ">" }))
+            } else { Ok(()) }
+        };
+        if self.font_family.as_ref().is_some_and(|name| name.trim().is_empty()
+            || name.len() > 256 || name.chars().any(char::is_control)
+            || name.contains("://") || name.contains([';', '{', '}'])) {
+            return Err("UI_STYLE_INVALID: font_family must name installed font families (1..256 bytes), not a URL or stylesheet".into());
+        }
+        range("font_size", self.font_size, 0.0, 100.0, false)?;
+        if self.font_weight.is_some_and(|weight| !(100..=900).contains(&weight)) {
+            return Err("UI_STYLE_INVALID: font_weight must be an integer from 100 to 900".into());
+        }
+        range("line_height", self.line_height, 0.5, 4.0, true)?;
+        range("letter_spacing", self.letter_spacing, -10.0, 10.0, true)?;
+        range("border_width", self.border_width, 0.0, 100.0, true)?;
+        range("border_radius", self.border_radius, 0.0, 100.0, true)?;
+        range("opacity", self.opacity, 0.0, 1.0, true)?;
+        if let Some(padding) = self.padding {
+            for (name, value) in [("padding.left", padding.left), ("padding.top", padding.top), ("padding.right", padding.right), ("padding.bottom", padding.bottom)] {
+                range(name, Some(value), 0.0, 100.0, true)?;
+            }
+        }
+        for (name, color) in [("color", self.color), ("background", self.background), ("border_color", self.border_color)] {
+            if color.is_some_and(|rgba| rgba.iter().any(|v| !v.is_finite() || !(0.0..=1.0).contains(v))) {
+                return Err(format!("UI_STYLE_INVALID: {name} must contain four finite RGBA values in 0..1"));
+            }
+        }
+        if self.overflow == Some(UiTextOverflow::Ellipsis) && self.wrap == Some(UiTextWrap::Word) {
+            return Err("UI_STYLE_INVALID: ellipsis requires wrap=none (or omitted wrap)".into());
+        }
+        Ok(())
+    }
+
+    fn has_text_fields(&self) -> bool {
+        self.font_family.is_some() || self.font_size.is_some() || self.font_weight.is_some()
+            || self.line_height.is_some() || self.letter_spacing.is_some() || self.color.is_some()
+            || self.text_align.is_some() || self.vertical_align.is_some() || self.wrap.is_some()
+            || self.overflow.is_some()
+    }
+}
+
 #[derive(Debug, Clone, Copy, Deserialize)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
@@ -287,6 +412,8 @@ pub enum UiNode {
         id: String,
         rect: UiRect,
         text: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        style: Option<UiStyle>,
     },
     #[serde(rename = "button")]
     Button {
@@ -294,6 +421,8 @@ pub enum UiNode {
         rect: UiRect,
         text: String,
         action: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        style: Option<UiStyle>,
     },
     /// A host-rendered texture. The asset field is a stable asset id, not a
     /// project-relative path; the host resolves the id through the verified
@@ -311,6 +440,8 @@ pub enum UiNode {
         /// image alt text; Core does not interpret or localize it.
         #[serde(skip_serializing_if = "Option::is_none")]
         alt: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        style: Option<UiStyle>,
     },
     /// A semantic slider input. The leaf owns no artwork: put it inside a
     /// reusable slider component beside stable `track`, `fill`, and `handler`
@@ -322,6 +453,8 @@ pub enum UiNode {
         rect: UiRect,
         text: String,
         action: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        style: Option<UiStyle>,
     },
     /// A skinnable selection field. Hosts route the whole rect to `action`;
     /// selected text and expanded state remain controlled by the UI author.
@@ -333,6 +466,16 @@ pub enum UiNode {
         text: String,
         action: String,
         expanded: bool,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        style: Option<UiStyle>,
+    },
+    /// A decorative box with no input, text, image, or child ownership.
+    #[serde(rename = "panel")]
+    Panel {
+        id: String,
+        rect: UiRect,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        style: Option<UiStyle>,
     },
     /// A reusable semantic component instance. Core owns the tree boundary and
     /// validates its children, while the host decides how the component is
@@ -372,6 +515,7 @@ impl UiNode {
             | Self::Image { id, .. }
             | Self::Slider { id, .. }
             | Self::ComboBox { id, .. }
+            | Self::Panel { id, .. }
             | Self::Component { id, .. }
             | Self::ScrollView { id, .. } => id,
         }
@@ -384,6 +528,7 @@ impl UiNode {
             | Self::Image { rect, .. }
             | Self::Slider { rect, .. }
             | Self::ComboBox { rect, .. }
+            | Self::Panel { rect, .. }
             | Self::Component { rect, .. }
             | Self::ScrollView { rect, .. } => rect,
         }
@@ -396,6 +541,7 @@ impl UiNode {
             | Self::Image { rect, .. }
             | Self::Slider { rect, .. }
             | Self::ComboBox { rect, .. }
+            | Self::Panel { rect, .. }
             | Self::Component { rect, .. }
             | Self::ScrollView { rect, .. } => rect,
         }
@@ -407,7 +553,15 @@ impl UiNode {
             | Self::Button { text, .. }
             | Self::Slider { text, .. }
             | Self::ComboBox { text, .. } => Some(text),
-            Self::Image { .. } | Self::Component { .. } | Self::ScrollView { .. } => None,
+            Self::Image { .. } | Self::Panel { .. } | Self::Component { .. } | Self::ScrollView { .. } => None,
+        }
+    }
+
+    pub fn style(&self) -> Option<&UiStyle> {
+        match self {
+            Self::Text { style, .. } | Self::Button { style, .. } | Self::Image { style, .. }
+            | Self::Slider { style, .. } | Self::ComboBox { style, .. } | Self::Panel { style, .. } => style.as_ref(),
+            Self::Component { .. } | Self::ScrollView { .. } => None,
         }
     }
 
@@ -511,6 +665,8 @@ struct RawUiNode {
     expanded: Option<bool>,
     #[serde(default)]
     scroll: Option<UiScroll>,
+    #[serde(default)]
+    style: Option<UiStyle>,
 }
 
 /// Anchored offsets and sizes are in vertical units: percent of the viewport
@@ -629,6 +785,11 @@ impl UiTree {
                         } else {
                             1
                         };
+                    if let Some(style) = node.style() {
+                        out.render_regions_upper_bound += usize::from(style.background.is_some());
+                        out.render_regions_upper_bound += usize::from(style.border_color.is_some()
+                            && style.border_width.is_some_and(|width| width > 0.0));
+                    }
                     1
                 }
             }
@@ -724,6 +885,9 @@ impl UiTree {
                         bytes += s.len();
                     }
                 }
+                if let Some(family) = n["style"]["font_family"].as_str() {
+                    bytes += family.len();
+                }
                 if let Some(keys) = n["scroll"]["virtual_items"]["keys"].as_array() {
                     if keys.len() > 100_000 { return Err(format!("UI_VIRTUAL_ITEM_LIMIT: {path}; maximum 100000 keys")); }
                     bytes += keys.iter().filter_map(|k| k.as_str()).map(str::len).sum::<usize>();
@@ -817,6 +981,15 @@ fn parse_node(
     if raw_node.scroll.is_some() && raw_node.kind != "scroll_view" {
         return Err(format!("UI_SCROLL_KIND: '{}' only accepts scroll on scroll_view", raw_node.id));
     }
+    if let Some(style) = &raw_node.style {
+        if matches!(raw_node.kind.as_str(), "component" | "scroll_view") {
+            return Err(format!("UI_STYLE_INVALID: '{}' is a container; apply style to its leaves or a panel (styles do not inherit)", raw_node.id));
+        }
+        style.validate().map_err(|error| format!("{error}; node={}", raw_node.id))?;
+        if matches!(raw_node.kind.as_str(), "image" | "panel") && style.has_text_fields() {
+            return Err(format!("UI_STYLE_INVALID: '{}' has no text; typography fields require text, button, slider or combobox", raw_node.id));
+        }
+    }
     let id = raw_node.id;
     match raw_node.kind.as_str() {
         "text" => {
@@ -828,13 +1001,14 @@ fn parse_node(
                 || raw_node.children.is_some()
             {
                 return Err(format!(
-                    "ui.setRoot text node '{id}' only accepts text and placement"
+                    "ui.setRoot text node '{id}' only accepts text, optional style and placement"
                 ));
             }
             Ok(UiNode::Text {
                 id,
                 rect,
                 text: raw_node.text.unwrap_or_default(),
+                style: raw_node.style,
             })
         }
         "button" => {
@@ -845,7 +1019,7 @@ fn parse_node(
                 || raw_node.children.is_some()
             {
                 return Err(format!(
-                    "ui.setRoot button node '{id}' only accepts text, action and placement"
+                    "ui.setRoot button node '{id}' only accepts text, action, optional style and placement"
                 ));
             }
             let action = raw_node.action.ok_or_else(|| {
@@ -857,6 +1031,7 @@ fn parse_node(
                 rect,
                 text: raw_node.text.unwrap_or_default(),
                 action,
+                style: raw_node.style,
             })
         }
         "slider" | "combobox" => {
@@ -868,7 +1043,7 @@ fn parse_node(
                 || raw_node.children.is_some()
             {
                 return Err(format!(
-                    "ui.setRoot {kind} node '{id}' only accepts text, action, placement and combobox expanded"
+                    "ui.setRoot {kind} node '{id}' only accepts text, action, optional style, placement and combobox expanded"
                 ));
             }
             let action = raw_node.action.ok_or_else(|| {
@@ -882,6 +1057,7 @@ fn parse_node(
                     text: raw_node.text.unwrap_or_default(),
                     action,
                     expanded: raw_node.expanded.unwrap_or(false),
+                    style: raw_node.style,
                 });
             }
             Ok(UiNode::Slider {
@@ -889,6 +1065,7 @@ fn parse_node(
                 rect,
                 text: raw_node.text.unwrap_or_default(),
                 action,
+                style: raw_node.style,
             })
         }
         "image" => {
@@ -898,7 +1075,7 @@ fn parse_node(
                 || raw_node.children.is_some()
             {
                 return Err(format!(
-                    "ui.setRoot image node '{id}' only accepts asset, fit, alt and placement"
+                    "ui.setRoot image node '{id}' only accepts asset, fit, alt, optional style and placement"
                 ));
             }
             let asset = raw_node
@@ -926,7 +1103,16 @@ fn parse_node(
                 }),
                 slice: raw_node.slice,
                 alt: raw_node.alt,
+                style: raw_node.style,
             })
+        }
+        "panel" => {
+            if raw_node.text.is_some() || raw_node.action.is_some() || raw_node.asset.is_some()
+                || raw_node.fit.is_some() || raw_node.alt.is_some() || raw_node.component.is_some()
+                || raw_node.children.is_some() {
+                return Err(format!("ui.setRoot panel node '{id}' only accepts style and placement"));
+            }
+            Ok(UiNode::Panel { id, rect, style: raw_node.style })
         }
         "component" => {
             if raw_node.text.is_some()
@@ -992,7 +1178,7 @@ fn parse_node(
             Ok(UiNode::ScrollView { id, rect, scroll, children })
         }
         kind => Err(format!(
-            "ui.setRoot node '{id}' has unsupported kind '{kind}'; use text, button, slider, combobox, image, component or scroll_view"
+            "ui.setRoot node '{id}' has unsupported kind '{kind}'; use text, button, slider, combobox, image, panel, component or scroll_view"
         )),
     }
 }
@@ -1393,6 +1579,7 @@ mod tests {
                 height: 1.0,
             },
             text: "hello".to_string(),
+            style: None,
         };
     }
 }

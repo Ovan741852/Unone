@@ -1,0 +1,46 @@
+{
+  "renderer_mode": "official",
+  "bloom": true,
+  "runtime_backend": "main",
+  "interpolation": false,
+  "ui": {
+    "font_family": "Noto Sans TC",
+    "fonts": [
+      {
+        "source": "fonts/NotoSansTC-400.ttf",
+        "family": "Noto Sans TC",
+        "weight": 400
+      },
+      {
+        "source": "fonts/NotoSansTC-600.ttf",
+        "family": "Noto Sans TC",
+        "weight": 600
+      },
+      {
+        "source": "fonts/NotoSansTC-700.ttf",
+        "family": "Noto Sans TC",
+        "weight": 700
+      },
+      {
+        "source": "fonts/a36a2df94698fcef.ttf",
+        "family": "Barlow Condensed",
+        "weight": 400
+      },
+      {
+        "source": "fonts/501f76ca195ed91f.ttf",
+        "family": "Barlow Condensed",
+        "weight": 600
+      },
+      {
+        "source": "fonts/d02cbe275f68b2e0.ttf",
+        "family": "Barlow Condensed",
+        "weight": 700
+      },
+      {
+        "source": "fonts/7d286d2b26f4813e.ttf",
+        "family": "Share Tech Mono",
+        "weight": 400
+      }
+    ]
+  }
+}

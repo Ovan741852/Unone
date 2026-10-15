@@ -1,7 +1,8 @@
 // Official non-DOM UI projection. DOM is used only for the canvas/font host;
 // game controls, hit testing and visual layering are not DOM elements.
-import {uiUsage,slicePatches} from './ui-geometry.mjs';
+import {uiUsage} from './ui-geometry.mjs';
 import {projectScrollTree} from './ui-scroll.mjs';
+import {paintUiBox,paintUiText,paintUiImage,clipUiBox,createUiOpacityPainter,presentationFontFaces} from './ui-style.mjs';
 const actionNode=n=>n.kind==='button'||n.kind==='combobox';
 const inside=(r,x,y)=>x>=r.x&&y>=r.y&&x<r.x+r.width&&y<r.y+r.height;
 const hit=(n,x,y)=>inside(n.rect,x,y)&&(!n.clip||inside(n.clip,x,y));
@@ -11,7 +12,7 @@ export function flattenUi(tree){
   function walk(nodes,depth){
     for(const n of nodes??[]){
       if(n.kind==='component'){walk(n.children,depth+1);continue;}
-      if(!['text','button','image','slider','combobox'].includes(n.kind))throw Error(`UI_NODE_UNSUPPORTED: ${n.kind}`);
+      if(!['text','button','image','slider','combobox','panel'].includes(n.kind))throw Error(`UI_NODE_UNSUPPORTED: ${n.kind}`);
       if(!n.rect||!['x','y','width','height'].every(k=>Number.isFinite(n.rect[k]))||n.rect.width<=0||n.rect.height<=0)throw Error(`UI_RECT_INVALID: ${n.id}`);
       if(n.clip&&(!['x','y','width','height'].every(k=>Number.isFinite(n.clip[k]))||n.clip.width<=0||n.clip.height<=0))throw Error(`UI_CLIP_INVALID: ${n.id}`);
       leaves.push(n);
@@ -29,7 +30,7 @@ export function createUiPointerRouter({onAction=()=>{}}={}){
       if(kind==='cancel'||kind==='up')return release(pointerId,kind);
       if(captured.has(pointerId))return true;
       if(kind!=='down')return false;
-      const node=[...nodes].reverse().find(n=>hit(n,x,y));
+      const node=[...nodes].reverse().find(n=>actionNode(n)&&hit(n,x,y));
       // Images and text are visual-only. Let pointer input fall through to the
       // game canvas so game-owned gestures such as slider dragging can read the
       // same screen pointer. Semantic buttons and combobox fields capture UI pointer streams.
@@ -41,16 +42,23 @@ export function createUiPointerRouter({onAction=()=>{}}={}){
       return true;
     },
     releaseAll(){for(const id of [...captured.keys()])release(id,'cancel');},
-    hitTest(x,y){const n=[...nodes].reverse().find(n=>hit(n,x,y));return n?{nodeId:n.id,action:actionNode(n)?n.action:null}:null;},
+    hitTest(x,y){const reversed=[...nodes].reverse(),n=reversed.find(n=>actionNode(n)&&hit(n,x,y))??reversed.find(n=>n.kind!=='panel'&&hit(n,x,y));return n?{nodeId:n.id,action:actionNode(n)?n.action:null}:null;},
     get capturedPointers(){return [...captured.keys()];},
   };
 }
 function imageLoad(url){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(Error(`UI_IMAGE_LOAD_FAILED: ${url}`));image.src=url;});}
-export async function loadCanvasFont(family,url){
-  const font=new FontFace(family,`url(${JSON.stringify(String(url))})`);await font.load();document.fonts.add(font);return font;
+export async function loadCanvasFont(family,url,weight=400){
+  try{const font=new FontFace(family,`url(${JSON.stringify(String(url))})`,{weight:String(weight)});await font.load();document.fonts.add(font);return font;}
+  catch(error){throw Error(`UI_FONT_LOAD_FAILED: ${family} ${weight}: ${String(error?.message??error)}`);}
 }
-export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff'}={}){
+export async function loadPresentationFonts(ui={},resolveSource=source=>source){
+  const loaded=[];
+  try{for(const face of presentationFontFaces(ui))loaded.push(await loadCanvasFont(face.family,resolveSource(face.source),face.weight));return loaded;}
+  catch(error){for(const font of loaded)document.fonts.delete(font);throw error;}
+}
+export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff',createSurface=()=>canvas.ownerDocument?.createElement('canvas')??new OffscreenCanvas(1,1)}={}){
   const ctx=canvas.getContext('2d');if(!ctx)throw Error('UI_CANVAS_2D_UNAVAILABLE');
+  const opacityPainter=createUiOpacityPainter(createSurface);
   const router=createUiPointerRouter({onAction}),assets=new Map();let previous=null,dirty=true,disposed=false,nodes=[],generation=0;
   const diagnostics=new Map();let usage=null,renderMs=null,renderRegions=0;
   const reportError=(id,error)=>{const value={code:'UI_ASSET_FAILED',asset:id,message:String(error?.message??error)};diagnostics.set(id,value);onDiagnostic(value);};
@@ -61,14 +69,11 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
       .catch(error=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){entry.state='failed';reportError(id,error);dirty=true;requestRender();}});
     return entry;
   }
-  function image(node,x,y,w,h){const e=ensureAsset(node.asset);if(!e.image)return;const img=e.image,iw=img.naturalWidth??img.width,ih=img.naturalHeight??img.height;
-    ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();
+  function image(node,x,y,w,h,target=ctx){const e=ensureAsset(node.asset);if(!e.image)return;
     try {
-      if(node.slice){if(node.fit&&node.fit!=='stretch')throw Error('UI_SLICE_FIT_CONFLICT: omit fit or use stretch');for(const [s,d]of slicePatches(node.slice,iw,ih,w,h,canvas.height)){ctx.drawImage(img,s.x,s.y,s.width,s.height,x+d.x,y+d.y,d.width,d.height);renderRegions++;}}
-      else {if(node.fit==='stretch')ctx.drawImage(img,x,y,w,h);else {const s=node.fit==='cover'?Math.max(w/iw,h/ih):Math.min(w/iw,h/ih);ctx.drawImage(img,x+(w-iw*s)/2,y+(h-ih*s)/2,iw*s,ih*s);}renderRegions++;}
+      renderRegions+=paintUiImage(target,node,e.image,{x,y,width:w,height:h,viewportHeight:canvas.height});
       diagnostics.delete(node.id);
     }catch(error){const value={code:String(error.message).split(':')[0],node:node.id,asset:node.asset,message:error.message};diagnostics.set(node.id,value);onDiagnostic(value);}
-    finally{ctx.restore();}
   }
   function text(node,x,y,w,h,scale=1){if(!node.text)return;const lines=String(node.text).split('\n');
     const lh=Number.isFinite(node.lineHeight)&&node.lineHeight>0?node.lineHeight:1.2;
@@ -94,13 +99,26 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
       for(const node of nodes){const r=node.rect,x=r.x*bw/100,y=(100-r.y-r.height)*bh/100,w=r.width*bw/100,h=r.height*bh/100;
         const c=node.clip;
         if(c){if(r.x>=c.x+c.width||r.x+r.width<=c.x||r.y>=c.y+c.height||r.y+r.height<=c.y)continue;ctx.save();ctx.beginPath();ctx.rect(c.x*bw/100,(100-c.y-c.height)*bh/100,c.width*bw/100,c.height*bh/100);ctx.clip();}
-        try{if(node.kind==='image')image(node,x,y,w,h);else if(node.kind==='slider'||node.kind==='combobox'){renderRegions++;}else {text(node,x,y,w,h,bw/width);renderRegions++;}}finally{if(c)ctx.restore();}}
+        try{
+          if(node.style){opacityPainter.paint(ctx,node.style.opacity??1,{x,y,width:w,height:h},target=>{
+            target.save();
+            try{
+              clipUiBox(target,node.style,x,y,w,h,bh/100);paintUiBox(target,node.style,x,y,w,h,bh/100,'background');
+              if(node.kind==='image')image(node,x,y,w,h,target);
+              else {if(node.kind!=='panel')paintUiText(target,node,{x,y,width:w,height:h,viewportHeight:bh,fontFamily,textColor});renderRegions++;}
+              paintUiBox(target,node.style,x,y,w,h,bh/100,'border');
+            }finally{target.restore();}
+          });}
+          else if(node.kind==='image')image(node,x,y,w,h);
+          else if(['panel','slider','combobox'].includes(node.kind)){renderRegions++;}
+          else {text(node,x,y,w,h,bw/width);renderRegions++;}
+        }finally{if(c)ctx.restore();}}
       renderMs=performance.now()-started;
     },
     pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,
     setFont(family){fontFamily=family;dirty=true;},
     invalidateAssets(){generation++;for(const e of assets.values())e.image?.close?.();assets.clear();diagnostics.clear();dirty=true;},
-    report(){return {backend:'canvas2d',nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; load a licensed font with loadCanvasFont for reproducible CJK coverage.','Rectangular hit testing, not per-pixel alpha. No scrolling/editable input/shaping parity guarantee with native.']};},
-    dispose(){router.releaseAll();disposed=true;generation++;for(const e of assets.values())e.image?.close?.();assets.clear();},
+    report(){return {backend:'canvas2d',nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Editable input/shaping parity with native is not guaranteed.']};},
+    dispose(){router.releaseAll();disposed=true;generation++;for(const e of assets.values())e.image?.close?.();assets.clear();opacityPainter.dispose();},
   };
 }

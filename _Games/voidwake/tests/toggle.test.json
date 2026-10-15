@@ -1,0 +1,176 @@
+{
+  "name": "held-autofire-toggle-cannot-repeat",
+  "frames": 31,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Start": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    },
+    {
+      "actions": {
+        "AutoFire": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "autoFire",
+        "equals": false
+      }
+    },
+    {
+      "observation": {
+        "key": "fired",
+        "equals": 0
+      }
+    }
+  ]
+}

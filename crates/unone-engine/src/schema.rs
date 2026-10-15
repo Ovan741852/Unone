@@ -60,6 +60,25 @@ pub fn contract_schema(name: &str) -> Option<Value> {
         value["$defs"]["UiBudget"]["properties"]["max_nodes"]["maximum"] =
             serde_json::json!(contract.host_max_nodes);
         value["properties"]["children"]["maxItems"] = serde_json::json!(contract.host_max_nodes);
+        for field in ["font_size", "border_width", "border_radius"] {
+            value["$defs"]["UiStyle"]["properties"][field]["maximum"] = serde_json::json!(100);
+            let bound = if field == "font_size" { "exclusiveMinimum" } else { "minimum" };
+            value["$defs"]["UiStyle"]["properties"][field][bound] = serde_json::json!(0);
+        }
+        for (field, minimum, maximum) in [("font_weight", 100.0, 900.0), ("line_height", 0.5, 4.0), ("letter_spacing", -10.0, 10.0), ("opacity", 0.0, 1.0)] {
+            value["$defs"]["UiStyle"]["properties"][field]["minimum"] = serde_json::json!(minimum);
+            value["$defs"]["UiStyle"]["properties"][field]["maximum"] = serde_json::json!(maximum);
+        }
+        for field in ["left", "top", "right", "bottom"] {
+            value["$defs"]["UiInsets"]["properties"][field]["minimum"] = serde_json::json!(0);
+            value["$defs"]["UiInsets"]["properties"][field]["maximum"] = serde_json::json!(100);
+        }
+        for field in ["color", "background", "border_color"] {
+            value["$defs"]["UiStyle"]["properties"][field]["items"]["minimum"] = serde_json::json!(0);
+            value["$defs"]["UiStyle"]["properties"][field]["items"]["maximum"] = serde_json::json!(1);
+        }
+        value["$defs"]["UiStyle"]["properties"]["font_family"]["minLength"] = serde_json::json!(1);
+        value["$defs"]["UiStyle"]["properties"]["font_family"]["maxLength"] = serde_json::json!(256);
     }
     value["$id"] = serde_json::json!(format!("https://unone.dev/schema/{name}.schema.json"));
     value["$comment"] = serde_json::json!(

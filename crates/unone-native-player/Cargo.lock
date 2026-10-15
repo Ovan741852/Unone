@@ -3145,6 +3145,8 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
+ "unicode-script",
+ "unicode-segmentation",
  "unone-engine",
  "wgpu",
  "winit",

@@ -11,7 +11,7 @@ let playwright;try{playwright=require(process.env.UNONE_PLAYWRIGHT_MODULE||'play
  if(process.env.UNONE_PLAYWRIGHT_MODULE)throw error;
  playwright=require('C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 }
-const modules=new Map(['ui-tree.js','ui-contract.mjs','ui-geometry.mjs'].map(n=>['/'+n,readFileSync(new URL('../web/shared/'+n,import.meta.url))]));
+const modules=new Map(['ui-tree.js','ui-contract.mjs','ui-geometry.mjs','ui-style.mjs'].map(n=>['/'+n,readFileSync(new URL('../web/shared/'+n,import.meta.url))]));
 const server=createServer((req,res)=>{
  if(modules.has(req.url)){res.setHeader('Content-Type','text/javascript');res.end(modules.get(req.url));return;}
  res.setHeader('Content-Type','text/html');res.end('<style>#layer{position:relative;width:300px;height:100px}.unone-ui-node{position:absolute}</style><div id="layer"></div>');

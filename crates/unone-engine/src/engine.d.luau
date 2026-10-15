@@ -152,7 +152,10 @@ export type UiAnchor =
     | "bottom_left" | "bottom" | "bottom_right"
 
 export type UiApi = {
-    setRoot: (root: ObservationValue) -> (),
+    setRoot: (root: UiScreen) -> (),
+    -- Current host width/height ratio, also used by anchored placement.
+    -- Read-only environment data; selecting a layout remains game code.
+    getViewport: () -> {aspect: number},
     -- Helpers return a real scroll_view node. Content is local top-left/y-down;
     -- viewport uses explicit left/top; never pass a stage x/y rect here.
     scrollView: (options: UiScrollOptions) -> any,
@@ -162,6 +165,54 @@ export type UiApi = {
     inspect: () -> ObservationValue,
 }
 export type UiRect = {x: number, y: number, width: number, height: number}
+-- Every style length uses vertical units (1 = 1% of viewport height).
+-- Styles belong to one leaf, with no implicit inheritance. An explicit
+-- font_size does not change when its box changes and never silently shrinks.
+export type UiColor = {number} -- exactly four RGBA values, each in 0..1
+export type UiInsets = {left: number?, top: number?, right: number?, bottom: number?}
+export type UiStyle = {
+    font_family: string?, font_size: number?, font_weight: number?,
+    line_height: number?, letter_spacing: number?, color: UiColor?,
+    text_align: ("start" | "center" | "end")?,
+    vertical_align: ("top" | "middle" | "bottom")?,
+    wrap: ("none" | "word")?, overflow: ("clip" | "ellipsis")?,
+    padding: UiInsets?, background: UiColor?, border_color: UiColor?,
+    border_width: number?, border_radius: number?, opacity: number?,
+}
+export type UiPlacement = {
+    rect: UiRect?, anchor: UiAnchor?, pivot: UiAnchor?,
+    offset: {x: number?, y: number?}?, size: {width: number, height: number}?,
+}
+export type UiTextNode = UiPlacement & {
+    kind: "text", id: string, text: string?, style: UiStyle?,
+}
+export type UiButtonNode = UiPlacement & {
+    kind: "button", id: string, text: string?, action: string, style: UiStyle?,
+}
+export type UiSliderNode = UiPlacement & {
+    kind: "slider", id: string, text: string?, action: string, style: UiStyle?,
+}
+export type UiComboBoxNode = UiPlacement & {
+    kind: "combobox", id: string, text: string?, action: string,
+    expanded: boolean?, style: UiStyle?,
+}
+-- Image and panel styles accept box fields; typography requires a text leaf.
+export type UiImageNode = UiPlacement & {
+    kind: "image", id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
+    alt: string?, slice: UiSlice?, style: UiStyle?,
+}
+export type UiPanelNode = UiPlacement & {kind: "panel", id: string, style: UiStyle?}
+export type UiComponentNode = UiPlacement & {
+    kind: "component", id: string, component: string, children: {UiNode}?,
+}
+export type UiScrollNode = UiPlacement & {
+    kind: "scroll_view", id: string, viewport: UiViewport?,
+    scroll: {axis: string?, enabled: boolean?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
+    children: {UiNode}?,
+}
+export type UiNode = UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
+    | UiImageNode | UiPanelNode | UiComponentNode | UiScrollNode
+export type UiScreen = {kind: "screen", id: string, node: string, children: {UiNode}, budget: UiBudget?}
 export type UiViewport = {left: number, top: number, width: number, height: number}
 export type UiScrollOptions = {
     id: string, viewport: UiViewport, content: {any}?,

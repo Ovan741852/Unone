@@ -1,0 +1,37 @@
+{
+  "name": "pause-freezes-simulation-and-clears-fire",
+  "frames": 180,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Start": true
+      }
+    },
+    {
+      "actions": {
+        "Pause": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "phase",
+        "equals": "paused"
+      }
+    },
+    {
+      "observation": {
+        "key": "time",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "fired",
+        "equals": 0
+      }
+    }
+  ]
+}

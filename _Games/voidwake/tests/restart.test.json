@@ -1,0 +1,199 @@
+{
+  "name": "restart-resets-position-clock-and-run-progress",
+  "frames": 32,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Start": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "Restart": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "phase",
+        "equals": "playing"
+      }
+    },
+    {
+      "observation": {
+        "key": "time",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "player_x",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "kills",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "upgradesInstalled",
+        "equals": 0
+      }
+    }
+  ]
+}

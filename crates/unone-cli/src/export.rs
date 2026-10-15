@@ -9,6 +9,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/shader-materials.js",
         "shared/ui-tree.js",
         "shared/canvas-ui.mjs",
+        "shared/ui-style.mjs",
         "shared/ui-scroll.mjs",
         "shared/ui-contract.mjs",
         "shared/ui-geometry.mjs",
@@ -161,6 +162,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             || (path == "shared/audio-playback.js" && !settings.is_enabled("audio"))
             || (path == "shared/ui-tree.js" && !settings.is_enabled("ui"))
             || (path == "shared/canvas-ui.mjs" && !settings.is_enabled("ui"))
+            || (path == "shared/ui-style.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-scroll.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-contract.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-geometry.mjs" && !settings.is_enabled("ui"))
@@ -201,8 +203,8 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             if !settings.is_enabled("ui") {
                 text = replace_required(
                     text,
-                    "import {createCanvasUi,loadCanvasFont} from '../shared/canvas-ui.mjs';",
-                    "const createCanvasUi = () => ({draw(){},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){}}); const loadCanvasFont = async () => {};",
+                    "import {createCanvasUi,loadPresentationFonts} from '../shared/canvas-ui.mjs';",
+                    "const createCanvasUi = () => ({draw(){},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){}}); const loadPresentationFonts = async () => {};",
                 )?;
                 text = replace_required(text,
                     "import {createUiScrollHost} from '../shared/ui-scroll.mjs';",
@@ -351,6 +353,40 @@ mod tests {
         assert!(append_presentation(dir.path(),&mut vec![]).err().unwrap().to_string().contains("UI_FONT_FAMILY_REQUIRED"));
     }
     #[test]
+    fn shared_font_catalog_packages_faces_rejects_invalid_entries_and_hashes_bytes() {
+        let dir = tempfile::tempdir().unwrap();
+        fs::create_dir(dir.path().join("fonts")).unwrap();
+        fs::write(dir.path().join("fonts/regular.ttf"), b"regular-font").unwrap();
+        fs::write(dir.path().join("fonts/bold.otf"), b"bold-font").unwrap();
+        let catalog = json!({"ui":{"fonts":[
+            {"family":"Fixture UI","source":"fonts/regular.ttf"},
+            {"family":"Fixture UI","source":"fonts/bold.otf","weight":700}
+        ]}});
+        fs::write(dir.path().join("player.presentation.json"), serde_json::to_vec(&catalog).unwrap()).unwrap();
+        let mut first = vec![];
+        append_presentation(dir.path(), &mut first).unwrap();
+        assert_eq!(first.iter().filter(|(path,_)|path.starts_with("content/fonts/")).count(),2);
+        assert!(first.iter().any(|(path,bytes)|path=="content/fonts/bold.otf"&&bytes==b"bold-font"));
+        let html = "<head><title>Font fixture</title></head>";
+        let hash = seal_web_generation(&mut first, html).unwrap().0;
+        fs::write(dir.path().join("fonts/bold.otf"), b"updated-bold-font").unwrap();
+        let mut second = vec![];
+        append_presentation(dir.path(), &mut second).unwrap();
+        assert_ne!(hash, seal_web_generation(&mut second, html).unwrap().0);
+        for (ui, code) in [
+            (json!({"fonts":[{"family":"Fixture","source":"fonts/regular.ttf"},{"family":"Fixture","source":"fonts/bold.otf"}]}),"UI_FONT_DUPLICATE"),
+            (json!({"fonts":[{"family":"Fixture","source":"fonts/regular.ttf","weight":99}]}),"UI_FONT_WEIGHT_INVALID"),
+            (json!({"fonts":[{"family":"Fixture","source":"fonts/regular.woff2"}]}),"UI_FONT_FORMAT_UNSUPPORTED"),
+            (json!({"fonts":[{"family":"Fixture","source":"../outside.ttf"}]}),"UI_FONT_PATH_INVALID"),
+            (json!({"fonts":[{"family":"Fixture","source":"fonts%2fregular.ttf"}]}),"UI_FONT_PATH_INVALID"),
+            (json!({"fonts":[{"family":"","source":"fonts/regular.ttf"}]}),"UI_FONT_FAMILY_INVALID"),
+            (json!({"font_source":"fonts/regular.ttf","font_family":"Fixture","fonts":[{"family":"Fixture","source":"fonts/bold.otf"}]}),"UI_FONT_DUPLICATE"),
+        ] {
+            fs::write(dir.path().join("player.presentation.json"), serde_json::to_vec(&json!({"ui":ui})).unwrap()).unwrap();
+            assert!(append_presentation(dir.path(), &mut vec![]).err().unwrap().to_string().contains(code),"expected {code}");
+        }
+    }
+    #[test]
     fn custom_renderer_packaging_is_explicit_safe_and_hashed_with_generation() {
         let dir = tempfile::tempdir().unwrap();
         fs::create_dir(dir.path().join("host")).unwrap();
@@ -418,18 +454,29 @@ mod tests {
 pub(crate) fn append_presentation(project:&Path, files:&mut Vec<(String,Vec<u8>)>)->Result<crate::hosts::PresentationSettings> {
     let presentation = crate::hosts::load_presentation(project)?.unwrap_or_default();
     presentation.validate_renderer()?;
+    presentation.ui.validate_fonts()?;
     for path in &presentation.renderer_files {
         validate_renderer_file_path(path)?;
         push_unique_content_file(files, format!("content/{path}"), fs::read(inside(project, path)?)?)?;
     }
     ensure!(presentation.job_policy.max_workers<=4 && presentation.job_policy.memory_budget_mb<=1024,"JOB_POLICY_INVALID: max_workers must be 0..4 and memory_budget_mb 0..1024");
     if let Some(path)=&presentation.ui.font_source {
-        ensure!(presentation.ui.font_family.as_ref().is_some_and(|f|!f.trim().is_empty()),"UI_FONT_FAMILY_REQUIRED: specify the packaged font's family name");
-        let name=format!("content/{path}");
-        if !files.iter().any(|(p,_)|p==&name){files.push((name,fs::read(inside(project,path)?)?));}
+        append_font(project, path, files)?;
+    }
+    for face in &presentation.ui.fonts {
+        append_font(project, &face.source, files)?;
     }
     push_unique_content_file(files, "content/presentation.json".into(), serde_json::to_vec(&presentation)?)?;
     Ok(presentation)
+}
+
+fn append_font(project: &Path, path: &str, files: &mut Vec<(String, Vec<u8>)>) -> Result<()> {
+    ensure!(!path.is_empty() && !path.contains(['\\', ':', '%', '?', '#']) && !path.chars().any(char::is_control)
+        && !path.starts_with('/') && path.split('/').all(|part| !part.is_empty() && part != "." && part != ".."),
+        "UI_FONT_PATH_INVALID: fonts must use safe project-relative forward-slash paths: {path}");
+    let bytes = fs::read(inside(project, path)?)?;
+    ensure!(!bytes.is_empty(), "UI_FONT_EMPTY: packaged font must not be empty: {path}");
+    push_unique_content_file(files, format!("content/{path}"), bytes)
 }
 
 fn validate_renderer_file_path(path: &str) -> Result<()> {

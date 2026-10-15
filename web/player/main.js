@@ -1,6 +1,6 @@
 import {createThreeRenderer} from '../renderer/three.js';
 import {createPlayerRenderer,createRendererDisposer} from '../shared/renderer-selection.mjs';
-import {createCanvasUi,loadCanvasFont} from '../shared/canvas-ui.mjs';
+import {createCanvasUi,loadPresentationFonts} from '../shared/canvas-ui.mjs';
 import {createUiScrollHost} from '../shared/ui-scroll.mjs';
 import {createHostInput} from '../shared/host-input.js';
 import {createAsyncScheduler} from '../shared/async-scheduler.mjs';
@@ -61,7 +61,8 @@ async function setTransport(mode){const value=await backend.request({kind:'trans
 async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.restored_save=JSON.parse(saved??'null');acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:'42'}),{reset:true});audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();await setPaused(wasPaused);}
 async function start(){
  const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);projectPayload=project;uiAssetManifest=assets;
- if(presentation.ui?.font_source){await loadCanvasFont(presentation.ui.font_family,new URL('content/'+presentation.ui.font_source,document.baseURI));uiRenderer.setFont(presentation.ui.font_family);}
+ await loadPresentationFonts(presentation.ui,source=>new URL('content/'+source,document.baseURI));
+ if(presentation.ui?.font_family??presentation.ui?.fonts?.[0]?.family)uiRenderer.setFont(presentation.ui.font_family??presentation.ui.fonts[0].family);
  const runtimeURL=new URL(document.querySelector('meta[name="unone-runtime"]').content,document.baseURI).href;
  const kind=new URLSearchParams(location.search).get('backend')??presentation.runtime_backend??'main';
  backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy});metrics.runtime_ready_ms=performance.now()-window.playerBoot;
@@ -87,6 +88,6 @@ canvas.addEventListener('pointermove',e=>{if(!routeUi(e,'move'))pointer(e,Boolea
 window.addEventListener('keydown',e=>input.setHeld(e.code,true));window.addEventListener('keyup',e=>input.setHeld(e.code,false));window.addEventListener('blur',()=>{uiRenderer.releaseAll();input.releaseAll();});
 window.addEventListener('unone-host-pause',()=>{uiRenderer.releaseAll();input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
-window.addEventListener('pagehide',()=>{uiScroll.dispose();scheduler?.stop();try{disposeRenderer(renderer);}catch(error){console.error(error);}backend?.close();});
+window.addEventListener('pagehide',()=>{uiScroll.dispose();uiRenderer.dispose?.();scheduler?.stop();try{disposeRenderer(renderer);}catch(error){console.error(error);}backend?.close();});
 canvas.addEventListener('lostpointercapture',e=>uiScroll.pointer(e,'cancel'));
 start().catch(fail);

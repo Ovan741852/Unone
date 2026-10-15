@@ -59,7 +59,10 @@ pub fn search(query: &str) -> Vec<ApiDescriptor> {
     if normalized.is_empty() {
         return descriptors();
     }
-    if let Some(exact) = descriptors().into_iter().find(|api| api.name.eq_ignore_ascii_case(&normalized)) {
+    if let Some(exact) = descriptors()
+        .into_iter()
+        .find(|api| api.name.eq_ignore_ascii_case(&normalized))
+    {
         return vec![exact];
     }
     // Intent aliases are scoped to a capability family: searching for "fire"
@@ -105,6 +108,8 @@ fn is_search_filler(word: &str) -> bool {
             | "and"
             | "api"
             | "can"
+            | "change"
+            | "adjust"
             | "do"
             | "for"
             | "how"
@@ -113,15 +118,175 @@ fn is_search_filler(word: &str) -> bool {
             | "is"
             | "make"
             | "my"
+            | "need"
             | "of"
             | "the"
+            | "please"
+            | "set"
             | "to"
             | "use"
+            | "using"
+            | "want"
             | "with"
     )
 }
 
 fn search_term_score(descriptor: &ApiDescriptor, term: &str) -> Option<u32> {
+    let ui_style_intent = matches!(
+        term,
+        "font"
+            | "fonts"
+            | "typography"
+            | "typeface"
+            | "font_family"
+            | "font_size"
+            | "font_weight"
+            | "line_height"
+            | "letter_spacing"
+            | "text_align"
+            | "vertical_align"
+            | "border_color"
+            | "border_width"
+            | "border_radius"
+            | "text"
+            | "label"
+            | "labels"
+            | "layout"
+            | "style"
+            | "styles"
+            | "styling"
+            | "alignment"
+            | "align"
+            | "wrap"
+            | "wrapping"
+            | "color"
+            | "colour"
+            | "background"
+            | "border"
+            | "borders"
+            | "padding"
+            | "spacing"
+            | "ellipsis"
+            | "overflow"
+            | "opacity"
+            | "rounded"
+            | "radius"
+            | "weight"
+            | "size"
+            | "line"
+            | "height"
+            | "component"
+            | "components"
+            | "reusable"
+            | "shared"
+            | "skinning"
+            | "control"
+            | "controls"
+            | "widget"
+            | "widgets"
+            | "字體"
+            | "字体"
+            | "字級"
+            | "字号"
+            | "排版"
+            | "樣式"
+            | "样式"
+            | "文字"
+            | "文字換行"
+            | "文字换行"
+            | "換行"
+            | "换行"
+            | "對齊"
+            | "对齐"
+            | "顏色"
+            | "颜色"
+            | "邊框"
+            | "边框"
+            | "內距"
+            | "内距"
+            | "行距"
+            | "字距"
+            | "共用元件"
+            | "元件"
+            | "組件"
+            | "组件"
+            | "共用组件"
+            | "共用"
+            | "共享"
+            | "共用ui元件"
+            | "共用ui組件"
+            | "共用ui组件"
+            | "共享ui元件"
+            | "共享ui組件"
+            | "共享ui组件"
+            | "ui元件"
+            | "ui組件"
+            | "ui组件"
+    ) || [
+        "字體",
+        "字体",
+        "字級",
+        "字号",
+        "排版",
+        "樣式",
+        "样式",
+        "文字換行",
+        "文字换行",
+        "對齊",
+        "对齐",
+        "邊框",
+        "边框",
+        "內距",
+        "内距",
+        "共用元件",
+        "共用组件",
+    ]
+    .iter()
+    .any(|alias| term.contains(alias));
+    if ui_style_intent {
+        let ui_score = match descriptor.name.as_str() {
+            "ui.setRoot" => Some(200),
+            "ui.inspect" => Some(100),
+            "ui.getViewport" if term == "layout" || term == "排版" => Some(80),
+            _ => None,
+        };
+        if ui_score.is_some() {
+            return ui_score;
+        }
+        // Shared visual terms may also describe world APIs. Keep those normal
+        // matches available: e.g. "entity size" must not become UI-only.
+        if !matches!(
+            term,
+            "color"
+                | "colour"
+                | "background"
+                | "opacity"
+                | "radius"
+                | "weight"
+                | "size"
+                | "line"
+                | "height"
+        ) {
+            return None;
+        }
+    }
+    if matches!(
+        term,
+        "responsive"
+            | "viewport"
+            | "aspect"
+            | "portrait"
+            | "landscape"
+            | "螢幕比例"
+            | "直向"
+            | "橫向"
+    ) {
+        return match descriptor.name.as_str() {
+            "ui.getViewport" => Some(200),
+            "ui.setRoot" => Some(100),
+            _ => None,
+        };
+    }
     let visual_intent = matches!(
         term,
         "vfx"
@@ -1430,29 +1595,45 @@ fn descriptors() -> Vec<ApiDescriptor> {
         descriptor(
             "ui.setRoot",
             "ui",
-            "Publish the declarative UI tree composed by the game for observation by the host renderer, AI, and tests. Stage rect axes are 0..100 and y points up: y=0 is the bottom. Exception: scrollView/virtualList/virtualGrid helpers accept viewport left/top and local top-left/y-down content; see docs/ui-scroll.md.",
-            "When a Web or native host must display a text/button screen composed from the game's ViewModel.",
-            "Do not treat it as a complete UI framework; it contains no layout engine, binding registry, platform widgets, input routing, or game rules. The ViewModel, content, action meaning, and flow remain game-owned. Core accepts reusable component structure, but component styling and template authoring remain outside the runtime.",
+            "Publish a declarative UI tree with reusable font, typography, alignment, wrapping, RGBA color, padding, background, border and opacity styles. Stage rect axes are 0..100 and y points up: y=0 is the bottom. Scroll helpers use local top-left/y-down content; see docs/ui-scroll.md.",
+            "For official Web and native player UI: text, styled buttons, image skins and decorative panels composed from the game's ViewModel. Reuse the existing component tree through Luau helper functions; component is a node kind, not api.ui.component(). Start with docs/ui-styling.md and game schema ui; package fonts in presentation.ui.fonts instead of drawing text with game-owned DOM or GPU code.",
+            "No automatic layout, CSS, platform widgets, data binding or game rules. The game authors rectangles, semantic grouping, ViewModels, reusable components, content and action meanings. Styles are local to leaves and never inherited from components. Use ui.getViewport for authored responsive choices.",
             vec![parameter(
                 "root",
-                "UiTree",
-                "A screen root with text, button, slider, combobox, image, component and scroll_view children. Optional budget.max_nodes overrides the default within the host safety ceiling (query ui.inspect). Image slice={left,top,right,bottom,pixels_per_unit,source?} uses one asset and one logical node; source/borders are source pixels, destination borders are vertical design units. Slice replaces fit: omit fit or use stretch. Ordinary stage rects fit 0..100; scroll content is non-negative local top-left/y-down and may extend beyond 100.",
+                "UiScreen",
+                "A screen root with text, button, slider, combobox, image, panel, component and scroll_view children. Leaf style supports font_family/font_size/font_weight/line_height/letter_spacing/color/text_align/vertical_align/wrap/overflow/padding/background/border_color/border_width/border_radius/opacity; image and panel allow only box fields. Font sizes, padding, letter spacing and borders use vertical design units (1 unit = 1% viewport height); a styled leaf defaults to font_size=2 and never auto-shrinks. Omit style for legacy text fitting. Optional budget.max_nodes overrides the default (query ui.inspect). Image slice uses source-pixel borders and vertical-unit destination borders; slice replaces fit. Stage rects fit 0..100; scroll content uses non-negative local top-left/y-down coordinates.",
             )],
             "(): no additional data on success.",
             vec!["Replace the game-owned UI tree for the current frame"],
-            "The latest tree is immediately visible in observe, the run report, test assertions, and Web/native host snapshots; the engine validates only schema, coordinates, and count limits.",
+            "The latest validated tree is immediately visible in observations and Web/native host snapshots. Validation covers schema, style bounds, coordinates and node budgets; host glyph metrics are presentation and do not change simulation state.",
             vec![
                 "root kind must be screen",
-                "child kind supports text, button, slider (action + optional value text), combobox (action + optional selected text + expanded boolean, default false), image (stable asset:// or texture:// id + fit + optional alt), component (name + children), or scroll_view (prefer the scrollView/virtualList/virtualGrid helpers); skinned controls expose semantic/action nodes inside game-authored component skins; a skinned slider may expose stable track, fill, handler and semantic nodes, while a skinned combobox exposes field, value, arrow, popup and option nodes with selection and popup state controlled by the UI author",
+                "child kind supports text, button, slider (action + optional value text), combobox (action + optional selected text + expanded boolean, default false), image (stable asset:// or texture:// id + fit + optional alt), panel (decorative box with optional style, no text/action/children), component (name + children), or scroll_view (prefer the scrollView/virtualList/virtualGrid helpers); skinned controls expose semantic/action nodes inside game-authored component skins; a skinned slider may expose stable track, fill, handler and semantic nodes, while a skinned combobox exposes field, value, arrow, popup and option nodes with selection and popup state controlled by the UI author",
                 "node ids must be globally unique; all rects finite, dimensions positive; stage rects fit 0..100, local scroll content uses non-negative x/y with no anchors",
+                "UI_STYLE_INVALID: RGBA outside 0..1, out-of-range style values, unsupported typography on image/panel, style inheritance on containers, or wrap=word combined with overflow=ellipsis; unknown fields are structural errors that name the unsupported field",
             ],
-            "api.ui.setRoot({ kind = \"screen\", id = \"dialogue\", node = \"intro\", children = { { kind = \"image\", id = \"logo\", asset = \"asset://ui/logo\", fit = \"contain\", rect = { x = 10, y = 80, width = 20, height = 10 } }, { kind = \"component\", id = \"toolbar\", component = \"ui.toolbar\", rect = { x = 0, y = 0, width = 100, height = 20 }, children = {} } } })",
+            "api.ui.setRoot({kind=\"screen\",id=\"menu\",node=\"settings\",children={{kind=\"text\",id=\"title\",text=\"Settings\",rect={x=10,y=75,width=80,height=12},style={font_size=4,font_weight=700,text_align=\"start\",vertical_align=\"middle\",color={0.9,0.95,1,1}}}}})",
             vec![
                 "ui.inspect",
+                "ui.getViewport",
                 "ui.scrollView",
                 "observation.set",
                 "input.getScreenPointerPosition",
             ],
+        ),
+        descriptor(
+            "ui.getViewport",
+            "ui",
+            "Read the host-reported viewport aspect ratio for game-authored responsive UI composition.",
+            "Choose portrait or landscape arrangements, readable typography and semantic groups in Luau. See docs/ui-styling.md. The host reports the actual stage aspect; headless callers may set it through the runtime viewport boundary.",
+            "This does not choose rectangles, reflow content, add a layout solver or report device pixels. The game owns layout policy; do not use font raster metrics as simulation input.",
+            vec![],
+            "{aspect:number}; width divided by height.",
+            vec!["Read-only host viewport observation"],
+            "Reads the current runtime viewport aspect without advancing a frame or mutating the UI tree.",
+            vec![],
+            "local viewport = api.ui.getViewport(); local compact = viewport.aspect < 1; api.observation.set(\"compact_ui\", compact)",
+            vec!["ui.setRoot", "ui.inspect"],
         ),
         descriptor(
             "ui.inspect",
@@ -1817,6 +1998,73 @@ mod tests {
     use std::path::Path;
 
     use super::{api_search_result, describe, descriptors, search, typings};
+
+    #[test]
+    fn typography_and_box_intents_discover_official_ui_authoring() {
+        for query in [
+            "font",
+            "font size",
+            "font weight",
+            "typography",
+            "text alignment",
+            "text wrapping",
+            "border padding",
+            "background color",
+            "component styling",
+            "reusable components",
+            "shared UI controls",
+            "how do I change font size",
+            "字體",
+            "字級 排版 樣式",
+            "文字換行",
+            "顏色 邊框 內距",
+            "共用元件",
+            "共用 UI 元件",
+            "字體大小與排版",
+            "共用UI元件",
+            "共用UI組件",
+            "UI元件",
+            "共享UI组件",
+            "font_size",
+            "font_family",
+            "font_weight",
+            "line_height",
+            "text_align",
+            "vertical_align",
+            "letter_spacing",
+            "border_color",
+            "border_width",
+            "border_radius",
+            "overflow",
+        ] {
+            let found = search(query);
+            assert_eq!(
+                found.first().map(|api| api.name.as_str()),
+                Some("ui.setRoot"),
+                "{query}"
+            );
+            assert!(
+                found.iter().all(|api| api.name.starts_with("ui.")),
+                "{query}"
+            );
+            assert!(found[0].when_to_use.contains("docs/ui-styling.md"));
+            assert!(found[0].related_apis.contains(&"ui.getViewport".to_owned()));
+        }
+        for query in ["viewport", "responsive", "portrait", "螢幕比例"] {
+            assert_eq!(search(query)[0].name, "ui.getViewport", "{query}");
+        }
+        assert_eq!(search("ui.setRoot").len(), 1);
+        assert_eq!(search("ui.getViewport").len(), 1);
+        assert!(
+            search("ECS元件").is_empty(),
+            "UI alias matching must not capture unrelated component queries"
+        );
+        assert!(
+            search("entity size")
+                .iter()
+                .any(|api| api.name == "entity.getTransform2D")
+        );
+    }
 
     #[test]
     fn visual_intents_discover_native_particles_before_external_effects() {

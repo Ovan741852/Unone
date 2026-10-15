@@ -320,7 +320,7 @@ enum UiCommand {
         rows: usize,
         #[arg(long, help = "Turn structural layout findings into a failing gate")]
         strict: bool,
-        #[arg(long, help = "Explicit per-screen background-image overlap intents (JSON)")]
+        #[arg(long, help = "Explicit per-screen background-image or panel overlap intents (JSON)")]
         overlap_policy: Option<PathBuf>,
     },
 }

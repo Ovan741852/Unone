@@ -1,0 +1,452 @@
+{
+  "name": "held-dash-and-burst-trigger-once-per-press",
+  "frames": 61,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Start": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true,
+        "Space": true,
+        "Burst": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "burstCount",
+        "equals": 1
+      }
+    },
+    {
+      "observation": {
+        "key": "dashCount",
+        "equals": 1
+      }
+    },
+    {
+      "observation": {
+        "key": "finiteState",
+        "equals": true
+      }
+    }
+  ]
+}

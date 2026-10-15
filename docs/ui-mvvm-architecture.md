@@ -1,10 +1,17 @@
 # UI Manager / MVVM 架構提案
 
+Current scope (2026-10-15): [ADR 0038](decisions/0038-shared-ui-styling.md)
+extends the existing Core UI transport with shared typed font/box styles and a
+decorative panel primitive. Use [the implemented style API](ui-styling.md) on
+existing component leaves. This supersedes the earlier blanket "no new UI
+primitive" restriction; it does not add MVVM, a manager, reactive bindings,
+game-specific widgets or automatic layout to Core. The architecture proposal
+below remains guidance for game/SDK responsibility and future lifecycle work.
+
 這是建立在 [ADR 0004](decisions/0004-mvvm-presentation-boundary.md) 上的
 UI 專用提案。四層是責任分法，不代表每個小畫面都必須建立四個檔案或四個
-plugin。**Unone Core 在此方向凍結，不再加入 MVVM、UI Manager 或新的 UI
-primitive**；所有新增能力都必須在 Plugin SDK、Luau 或 host adapter 完成，
-最後投影到既有 Core UI transport。
+plugin。MVVM、UI Manager 與遊戲元件行為仍由 Plugin SDK、Luau 或 host adapter
+承擔，最後投影到共用 Core UI transport。
 
 ## 四層各自做什麼
 

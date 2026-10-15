@@ -1,0 +1,257 @@
+{
+  "version": 1,
+  "screens": {
+    "menu": [],
+    "playing": [
+      {
+        "behind": "hull_track",
+        "front": "hull_fill",
+        "reason": "The reusable StatBar fill deliberately covers its matching background track inside the same component."
+      },
+      {
+        "behind": "shield_track",
+        "front": "shield_fill",
+        "reason": "The reusable StatBar fill deliberately covers its matching background track inside the same component."
+      }
+    ],
+    "paused": [
+      {
+        "behind": "modal_shade",
+        "front": "brand",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "comms",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "sound",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "header_rule",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "paused_title",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "paused_copy",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "resume",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "abandon",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "footer_rule",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "footer",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "engine_mark",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      }
+    ],
+    "upgrade": [
+      {
+        "behind": "modal_shade",
+        "front": "brand",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "comms",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "sound",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "header_rule",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "upgrade_title",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "upgrade_copy",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "choice_plate_1",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "rarity_1",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "choice_name_1",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "choice_desc_1",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "select_1",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "choice_plate_2",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "rarity_2",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "choice_name_2",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "choice_desc_2",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "select_2",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "choice_plate_3",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "rarity_3",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "choice_name_3",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "choice_desc_3",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "select_3",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "footer_rule",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "footer",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "modal_shade",
+        "front": "engine_mark",
+        "reason": "The authored full-screen modal shade is deliberately behind this contained modal/header/footer leaf."
+      },
+      {
+        "behind": "choice_plate_1",
+        "front": "rarity_1",
+        "reason": "The reusable UpgradeCard panel is deliberately behind its contained label or install action."
+      },
+      {
+        "behind": "choice_plate_1",
+        "front": "choice_name_1",
+        "reason": "The reusable UpgradeCard panel is deliberately behind its contained label or install action."
+      },
+      {
+        "behind": "choice_plate_1",
+        "front": "choice_desc_1",
+        "reason": "The reusable UpgradeCard panel is deliberately behind its contained label or install action."
+      },
+      {
+        "behind": "choice_plate_1",
+        "front": "select_1",
+        "reason": "The reusable UpgradeCard panel is deliberately behind its contained label or install action."
+      },
+      {
+        "behind": "choice_plate_2",
+        "front": "rarity_2",
+        "reason": "The reusable UpgradeCard panel is deliberately behind its contained label or install action."
+      },
+      {
+        "behind": "choice_plate_2",
+        "front": "choice_name_2",
+        "reason": "The reusable UpgradeCard panel is deliberately behind its contained label or install action."
+      },
+      {
+        "behind": "choice_plate_2",
+        "front": "choice_desc_2",
+        "reason": "The reusable UpgradeCard panel is deliberately behind its contained label or install action."
+      },
+      {
+        "behind": "choice_plate_2",
+        "front": "select_2",
+        "reason": "The reusable UpgradeCard panel is deliberately behind its contained label or install action."
+      },
+      {
+        "behind": "choice_plate_3",
+        "front": "rarity_3",
+        "reason": "The reusable UpgradeCard panel is deliberately behind its contained label or install action."
+      },
+      {
+        "behind": "choice_plate_3",
+        "front": "choice_name_3",
+        "reason": "The reusable UpgradeCard panel is deliberately behind its contained label or install action."
+      },
+      {
+        "behind": "choice_plate_3",
+        "front": "choice_desc_3",
+        "reason": "The reusable UpgradeCard panel is deliberately behind its contained label or install action."
+      },
+      {
+        "behind": "choice_plate_3",
+        "front": "select_3",
+        "reason": "The reusable UpgradeCard panel is deliberately behind its contained label or install action."
+      }
+    ]
+  }
+}

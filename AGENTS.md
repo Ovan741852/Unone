@@ -60,6 +60,14 @@ to ask the user for permission before every routine change.
 
 ## AI-first layout decisions
 
+Use the existing official UI leaves and `component` tree for reusable controls.
+Before inventing game-owned HTML/GPU UI or a second widget transport, search
+`game api search "font size"` / `"text alignment"` / `"border padding"` and read
+[the shared typography and style contract](docs/ui-styling.md). Extend existing
+component leaves with typed styles and declare licensed faces in
+`presentation.ui.fonts`. Use `api.ui.getViewport()` for game-authored responsive
+choices. A font/style request does not authorize replacing the official player.
+
 For UI layout, responsive grouping, hierarchy and visual composition, default to
 semantic AI reasoning rather than mechanical coordinate rules. Infer groups from
 task, role, reading order, interaction focus, lifecycle and safe-area constraints;

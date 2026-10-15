@@ -50,6 +50,11 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-15: shared official UI typography/styles, font catalogs, component
+  discovery and the Voidwake source example. Independent reviews and actual
+  player checks completed; the bounded Claude CLI attempt timed out without a
+  response and is recorded as incomplete:
+  [record](reviews/2026-10-15-shared-ui-styling.md).
 - 2026-10-15: official-player defaults, declarative-effect discovery, explicit
   renderer replacement and engine-owned sprite shaders. Independent agent and
   actual GPU/player validation completed; both Claude CLI attempts failed to

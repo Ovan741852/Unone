@@ -1,0 +1,20 @@
+{
+  "command": [
+    "claude",
+    "-p",
+    "--tools",
+    "",
+    "--permission-mode",
+    "plan",
+    "--no-session-persistence",
+    "--output-format",
+    "json",
+    "--max-turns",
+    "1",
+    "--disable-slash-commands"
+  ],
+  "exit_code": 124,
+  "duration_seconds": 150.09,
+  "diff_sha256": "569f66e38d7ca3e370466f9c1309f17b0b7108cc8d76f40b548ca1dc7acbb94d",
+  "base": "0027ce408580b68b2578fb73aa239179d31b186e"
+}

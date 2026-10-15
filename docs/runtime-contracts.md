@@ -133,3 +133,11 @@ bindings/parameters. Core validates and publishes this state; the official
 renderer owns GPU compilation and resources. Native export rejects declarations
 and WebGPU rejects active bindings until those backends implement the contract.
 Headless replay coverage does not certify GLSL compilation or pixels.
+
+[Official UI typography and styles](ui-styling.md) extend existing component
+leaves with typed font, text and box presentation data. Web Canvas2D and native
+CPU-raster/wgpu hosts own font catalogs and painting; Core validates/observes
+data. Game Luau owns reusable component composition, themes and responsive
+placement, with `ui.getViewport` exposing the current aspect. Styles do not add
+an automatic layout engine, MVVM or game-owned renderer. Native scrolling remains
+unsupported; installed fallback fonts can differ and need target visual checks.

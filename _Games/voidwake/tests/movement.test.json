@@ -1,0 +1,326 @@
+{
+  "name": "right-input-moves-authoritative-player",
+  "frames": 61,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Start": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    },
+    {
+      "actions": {
+        "KeyD": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "movedRight",
+        "equals": true
+      }
+    },
+    {
+      "observation": {
+        "key": "finiteState",
+        "equals": true
+      }
+    }
+  ]
+}

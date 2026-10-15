@@ -31,13 +31,19 @@ test('reverse leaf order, cancellation and multiple fingers share action safely'
  const events=[],r=createUiPointerRouter({onAction:e=>events.push(e)});r.setTree({children:[{kind:'component',id:'c',children:[button]}]});
  r.pointer({kind:'down',pointerId:1,x:2,y:2});r.pointer({kind:'down',pointerId:2,x:2,y:2});r.pointer({kind:'up',pointerId:1});assert.equal(events.length,1);
  r.setTree({children:[]});assert.equal(events[1].phase,'cancel');assert.equal(r.pointer({kind:'move',pointerId:2,x:90,y:90}),true);assert.equal(r.pointer({kind:'up',pointerId:2}),true);assert.equal(r.capturedPointers.length,0);
- r.setTree({children:[button,{kind:'image',id:'cover',rect,asset:'cover'}]});assert.equal(r.hitTest(10,10).action,null);assert.equal(r.pointer({kind:'down',x:10,y:10}),false);
+ r.setTree({children:[button,{kind:'image',id:'cover',rect,asset:'cover'}]});assert.equal(r.hitTest(10,10).action,'OpenChest');assert.equal(r.pointer({kind:'down',x:10,y:10}),true);r.releaseAll();
  assert.equal(r.pointer({kind:'down',pointerId:2,x:90,y:90}),false);
 });
 test('semantic slider stays in hierarchy while pointer input passes through to settings logic',()=>{
  const r=createUiPointerRouter();const slider={kind:'slider',id:'settings_music_track_widget',action:'Setting_music',rect};
  r.setTree({children:[slider]});assert.deepEqual(r.hitTest(10,10),{nodeId:slider.id,action:null});
  assert.equal(r.pointer({kind:'down',x:10,y:10}),false);assert.deepEqual(r.capturedPointers,[]);
+});
+test('decorative text, image and panel captions pass through to the topmost semantic control',()=>{
+ const r=createUiPointerRouter(),label={kind:'text',id:'caption',rect,text:'Continue'},image={kind:'image',id:'ornament',rect,asset:'art'},panel={kind:'panel',id:'box',rect};
+ r.setTree({children:[button,label,image,panel]});assert.equal(r.hitTest(10,10).action,'OpenChest');assert.equal(r.pointer({kind:'down',x:10,y:10}),true);r.releaseAll();
+ r.setTree({children:[label,image,panel]});assert.equal(r.hitTest(10,10).action,null);assert.equal(r.pointer({kind:'down',x:10,y:10}),false);
+ r.setTree({children:[button,{...button,id:'top',action:'Other'},label]});assert.equal(r.hitTest(10,10).action,'Other');
 });
 test('Canvas has transparent buttons, draws loaded images in leaf order and reports failures',async()=>{
  const calls=[],ctx={setTransform(){},clearRect(){},save(){},restore(){},beginPath(){},rect(){},clip(){},drawImage:()=>calls.push('image'),fillText:t=>calls.push(t),measureText:t=>({width:t.length*10})};

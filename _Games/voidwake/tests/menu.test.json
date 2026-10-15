@@ -1,0 +1,34 @@
+{
+  "name": "menu-does-not-simulate-or-fire",
+  "frames": 60,
+  "seed": 42,
+  "input_sequence": [
+    {}
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "phase",
+        "equals": "menu"
+      }
+    },
+    {
+      "observation": {
+        "key": "time",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "fired",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "finiteState",
+        "equals": true
+      }
+    }
+  ]
+}

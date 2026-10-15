@@ -350,6 +350,25 @@ Declaring both forms, or declaring neither, is rejected. Headless tests use a 16
 
 Use `api.save.set(value)`/`api.save.get()` only when GAME_PLAN requires persistence. The game defines the payload version and migration; the engine provides JSON-like transport, and the host owns file/platform storage. Do not treat observation as save data or add save slots, cloud sync, or a game-specific schema to the engine.
 
+## 3.3.1 Official UI components, typography and style discovery
+
+The official UI already has reusable `component` trees and shared text, button,
+image, slider and combobox leaves. Extend these leaves with typed `style`; do not
+introduce a competing game-owned HTML/GPU UI system. Search `game api search
+"font size"`, `"component styling"`, `"共用元件"` or `"字體"`, describe `ui.setRoot`,
+and inspect `game schema ui` before authoring. The
+[current typography/style guide](ui-styling.md) covers units, defaults, font
+catalogs, component examples and target limits.
+
+An explicit styled font size is measured in vertical design units and does not
+auto-shrink to the rectangle. Styles are local to existing component leaves;
+component is a node kind, not an `api.ui.component()` factory. Reusable themed
+controls are Luau functions returning that typed tree. `api.ui.getViewport()`
+exposes the current aspect for game-authored portrait/landscape choices without
+adding automatic placement. Refresh `game api typings` when upgrading a project.
+Inspect the exported official player's typography at the target sizes; headless
+tree validation does not prove glyph coverage, visual hierarchy or font metrics.
+
 ## 3.4 Declarative particles (default visual-effects path)
 
 Search by the intended effect before choosing an implementation:
@@ -514,7 +533,13 @@ Each declaration becomes an independent `layout:<name>` gate. **Each step lists 
 
 There is currently one finding: `UI_NODES_OVERLAP` (two node rects intersect; the diagram marks the intersection with `#` and reports the overlapping design-space units). For a project with UI, `--strict` turns it into `ok=false` and a non-zero exit code; use it for handoff and release. A project without UI is `not_applicable` in `verify`; running `ui preview --strict` directly may still return `UI_TREE_NOT_PUBLISHED`, and you do not need to add UI for that reason. The finding includes a recommendation for **which axis and direction to move**, not just that two boxes intersect.
 
-The node table also includes `text fit`: an estimate of how many times the text occupies the declared width. It assumes a 16:9 viewport and a 0.5 character-width ratio, so it is a **measurement, not a verdict**. Above 1.0 means the host may need to shrink, wrap, or clip the text and is worth reviewing, but the engine does not fail the check for it. The entry conditions for adding a rule are in Decision 0029.
+The node table also includes `text fit`: a rough estimate of how many times the
+text occupies the declared width. It assumes a 16:9 viewport and 0.5 character
+advance, uses explicit styled font size/letter spacing/padding when present, and
+otherwise uses legacy box height. It does not measure host fonts or wrapping and
+is never a pass/fail verdict. Above 1.0 calls for visual review and an authored
+size/wrap/clip choice; styled text never auto-shrinks. The entry conditions for
+adding a rule are in Decision 0029.
 
 It checks only **structure**: no overlap and enough room. It does not, and is not intended to, judge whether the screen looks good. The world layer (sprites and entity positions) does not yet have a corresponding textual check.
 

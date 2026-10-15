@@ -1,0 +1,73 @@
+{
+  "name": "VOIDWAKE · 深空餘燼",
+  "entry_script": "main.luau",
+  "main_scene": "scene.json",
+  "asset_manifest": "assets.json",
+  "systems": {
+    "camera2d": true,
+    "camera3d": false,
+    "random": true,
+    "ui": true,
+    "save": false,
+    "physics2d": false,
+    "physics3d": false,
+    "audio": true,
+    "particle": true,
+    "jobs": false,
+    "spine": false,
+    "effekseer": false
+  },
+  "test_files": [
+    "tests/menu.test.json",
+    "tests/start.test.json",
+    "tests/movement.test.json",
+    "tests/fire.test.json",
+    "tests/pause.test.json",
+    "tests/restart.test.json",
+    "tests/ability.test.json",
+    "tests/toggle.test.json",
+    "tests/sector-draft.test.json",
+    "tests/upgrade.test.json"
+  ],
+  "audio": {
+    "categories": {
+      "sfx": {
+        "volume": 0.55
+      },
+      "ambience": {
+        "exclusive": true,
+        "volume": 0.3
+      }
+    }
+  },
+  "ui_previews": [
+    {
+      "name": "menu",
+      "frames": 1,
+      "seed": 42,
+      "overlap_policy": "tests/ui-overlap-policy.json"
+    },
+    {
+      "name": "playing",
+      "frames": 1,
+      "seed": 42,
+      "input_sequence": "tests/ui-playing.input.json",
+      "overlap_policy": "tests/ui-overlap-policy.json"
+    },
+    {
+      "name": "paused",
+      "frames": 2,
+      "seed": 42,
+      "input_sequence": "tests/ui-paused.input.json",
+      "overlap_policy": "tests/ui-overlap-policy.json"
+    },
+    {
+      "name": "upgrade",
+      "frames": 2500,
+      "seed": 42,
+      "input_sequence": "tests/ui-upgrade.input.json",
+      "overlap_policy": "tests/ui-overlap-policy.json"
+    }
+  ],
+  "bundle_manifest": ".unone/bundles/manifest.json"
+}

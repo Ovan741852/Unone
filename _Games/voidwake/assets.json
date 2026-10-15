@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "texture://voidwake/nebula",
+      "kind": "texture2d",
+      "source": "assets/nebula.png",
+      "bundle": "content"
+    },
+    {
+      "id": "texture://voidwake/player",
+      "kind": "texture2d",
+      "source": "assets/player.png",
+      "bundle": "content"
+    },
+    {
+      "id": "texture://voidwake/enemy",
+      "kind": "texture2d",
+      "source": "assets/enemy.png",
+      "bundle": "content"
+    },
+    {
+      "id": "texture://voidwake/boss",
+      "kind": "texture2d",
+      "source": "assets/boss.png",
+      "bundle": "content"
+    },
+    {
+      "id": "texture://voidwake/asteroid",
+      "kind": "texture2d",
+      "source": "assets/asteroid.png",
+      "bundle": "content"
+    },
+    {
+      "id": "texture://voidwake/explosion",
+      "kind": "texture2d",
+      "source": "assets/explosion.png",
+      "bundle": "content"
+    },
+    {
+      "id": "audio://voidwake/shot",
+      "kind": "audio",
+      "source": "assets/audio/shot.wav",
+      "bundle": "content"
+    },
+    {
+      "id": "audio://voidwake/explosion",
+      "kind": "audio",
+      "source": "assets/audio/explosion.wav",
+      "bundle": "content"
+    },
+    {
+      "id": "audio://voidwake/hit",
+      "kind": "audio",
+      "source": "assets/audio/hit.wav",
+      "bundle": "content"
+    },
+    {
+      "id": "audio://voidwake/dash",
+      "kind": "audio",
+      "source": "assets/audio/dash.wav",
+      "bundle": "content"
+    },
+    {
+      "id": "audio://voidwake/upgrade",
+      "kind": "audio",
+      "source": "assets/audio/upgrade.wav",
+      "bundle": "content"
+    },
+    {
+      "id": "audio://voidwake/click",
+      "kind": "audio",
+      "source": "assets/audio/click.wav",
+      "bundle": "content"
+    },
+    {
+      "id": "audio://voidwake/hum",
+      "kind": "audio",
+      "source": "assets/audio/hum.wav",
+      "bundle": "content"
+    },
+    {
+      "id": "texture://voidwake/ui-panel",
+      "kind": "texture2d",
+      "source": "assets/ui-panel.png",
+      "bundle": "content"
+    }
+  ]
+}

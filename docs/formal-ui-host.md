@@ -10,23 +10,56 @@ by a shared configurable budget. See [authoring, diagnostics and verification](u
 Native still CPU-rasterizes changed UI before GPU composition; a larger capacity
 is not a guarantee that thousands of changing panels redraw at 60 FPS.
 
-`web/shared/canvas-ui.mjs` renders `text`, `image`, transparent `button`, and nested `component` leaves into one Canvas2D surface. It creates no DOM game controls. The native player draws the same leaves into a CPU-rasterized texture composited by wgpu after the world. Rectangles are resolved screen coordinates, 0–100, y-up; component wrappers do not transform them again.
+`web/shared/canvas-ui.mjs` renders text, buttons, image skins, semantic controls,
+decorative panels and nested `component` leaves into one Canvas2D surface. It
+creates no DOM game controls. Native draws the same supported leaves into a
+CPU-rasterized texture composited by wgpu after the world. Rectangles are resolved
+screen coordinates, 0–100, y-up; component wrappers do not transform them again.
+The [shared typography and box style contract](ui-styling.md) extends these
+existing leaves; game/SDK component functions remain the composition boundary.
 
-Portable artwork includes PNG and the native static SVG subset. Native now accepts `.svg` shapes, paths, gradients, internal references, masks/clips and inline presentation attributes; it renders at the current surface resolution. Script, animation, foreignObject, nested images, stylesheet elements and external references fail with an asset/source-specific diagnostic. SVG is limited to 8 MiB and 10000 XML nodes. This is not complete browser SVG/CSS compatibility. JPEG/WebP still need PNG companions; 3D mesh textures remain PNG-only. Image fit supports contain, cover and stretch. Buttons draw text only: use a preceding image leaf for artwork. The SDK checks the selected runtime's `ui.images: ["png", "svg-static"]` declaration before allowing SVG native export.
+Portable artwork includes PNG and the native static SVG subset. Native accepts
+`.svg` shapes, paths, gradients, internal references, masks/clips and inline
+presentation attributes at the current surface resolution. Script, animation,
+foreignObject, nested images, stylesheet elements and external references fail
+with an asset/source-specific diagnostic. SVG is limited to 8 MiB and 10000 XML
+nodes; it is not complete browser SVG/CSS. JPEG/WebP UI images need PNG companions.
+Image fit supports contain, cover and stretch. Existing buttons can now paint a
+typed background/border as well as text; image skins and nine-slice still compose
+beside semantic controls. The SDK checks the selected runtime's image capability
+declaration before allowing native SVG export.
 
-Both hosts hit-test rectangles in reverse leaf order. Image/text leaves shield the world too; transparent pixels still block within their rectangle. This is not alpha-aware hit testing. Keep ornamental rectangles tight. Captured pointer release/movement cannot fall through after a screen transition. Semantic down/up edges survive taps between frames, and multiple pointers holding one action release it only after the final pointer releases. Native world pointer mapping follows Web Camera2D; game-specific 3D ground-plane raycasts remain gameplay policy.
+Both hosts route pointer actions to interactive rectangles in reverse leaf order.
+Text, image and decorative panel leaves pass through to a button/combobox behind
+them; without an interactive hit they do not capture world input. Hit regions
+are rectangular, including transparent or rounded corners, rather than
+alpha-aware. Captured release/movement cannot fall through after a screen
+transition. Semantic down/up edges survive taps between frames, and multiple
+pointers holding one action release it only after the final release. Native
+world pointer mapping follows Web Camera2D; game-specific 3D ground-plane raycasts
+remain gameplay policy. Scroll content has its separate Web routing contract.
 
 Native limits: camera3d is still required by the existing world renderer; audio/effect event presentation and whole-game/mobile UI acceptance are separate work. The native surface clamps to 8192 pixels per edge and the device texture limit. It rerasterizes/uploads only when tree or size changes, but a changing full-screen UI can be expensive: native reports `ui_raster` CPU time and upload bytes. These are not GPU timing or leak proofs.
 
 ## Fonts
 
-Hosts use installed fonts by default; glyph availability and exact text metrics differ. For a licensed project font, set the project's `player.presentation.json` (exported as `content/presentation.json`):
+Hosts use installed fonts by default; glyph availability and exact metrics can
+differ. Declare licensed project fonts in `player.presentation.json` (exported
+as `content/presentation.json`):
 
 ```json
-{"ui":{"font_source":"fonts/game.ttf","font_family":"Game UI"}}
+{"ui":{"font_family":"Game UI","fonts":[{"family":"Game UI","source":"fonts/body.ttf","weight":400},{"family":"Game UI","source":"fonts/semibold.ttf","weight":600}]}}
 ```
 
-Export copies the file into the content package. Web registers a FontFace; native loads it into its font database. The family must match the font's family name. Font redistribution rights belong to the project. Web shrinks text to fit width/height; native sizes by height and clips overflow, so text layout still requires visual acceptance on each target.
+Export copies declared TTF/OTF files; Web waits for FontFace loading and native
+registers the same family/weight aliases in its font database. Catalog family
+names can differ from internal metadata. The older `font_source` declaration
+remains supported; native reports unsupported font formats explicitly. Styled
+leaves have explicit font size, weight, line height, spacing, color, alignment,
+wrapping and clipping/ellipsis controls. A fixed size never shrinks to fit.
+Unstyled leaves retain legacy fitting behavior. Font rights belong to the
+project, and glyph fallback/rasterizer differences still require target visual
+acceptance. See [defaults, limits and examples](ui-styling.md).
 
 ## Intentional art overlaps without disabling strict checks
 
@@ -36,7 +69,14 @@ Export copies the file into the content package. Web registers a FontFace; nativ
 {"version":1,"screens":{"menu":[{"behind":"start_art","front":"start_button","reason":"PNG artwork beneath transparent input target"}]}}
 ```
 
-MCP `unone_ui_preview` accepts the same object as `overlap_policy`. The screen key is the root UI ID. Only an existing overlapping pair with an image behind the foreground node is waived. Missing/stale pairs, reversed order, empty reasons and unknown fields fail. Button–button overlap remains a failure. Approved pairs are retained in `allowed_overlaps` as `UI_INTENTIONAL_ART_OVERLAP`; remaining findings still determine readability.
+MCP `unone_ui_preview` accepts the same object as `overlap_policy`. The screen key
+is the root UI ID. Only an existing overlapping pair with an earlier image or
+decorative panel behind the foreground node is waived. Missing/stale pairs,
+reversed order, empty reasons and unknown fields fail. Text/button and
+button/button collisions cannot be waived by this artwork policy. Approved pairs
+remain in `allowed_overlaps` as `UI_INTENTIONAL_ART_OVERLAP`; remaining findings
+still determine readability. A panel's background is not a reason to disable
+unrelated overlap checks.
 
 ## Build and acceptance
 

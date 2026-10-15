@@ -177,6 +177,17 @@
           ],
           "default": null
         },
+        "style": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiStyle"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "text": {
           "default": null,
           "type": [
@@ -238,6 +249,41 @@
         "stretch"
       ],
       "type": "string"
+    },
+    "UiInsets": {
+      "additionalProperties": false,
+      "description": "Shared UI styling uses vertical design units (one unit is 1% of viewport\nheight), including horizontal padding and letter spacing. Styles are local\nto one leaf: components do not create implicit style inheritance.",
+      "properties": {
+        "bottom": {
+          "default": 0.0,
+          "format": "double",
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        "left": {
+          "default": 0.0,
+          "format": "double",
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        "right": {
+          "default": 0.0,
+          "format": "double",
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        "top": {
+          "default": 0.0,
+          "format": "double",
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "type": "object"
     },
     "UiRect": {
       "additionalProperties": false,
@@ -350,6 +396,206 @@
         "pixels_per_unit"
       ],
       "type": "object"
+    },
+    "UiStyle": {
+      "additionalProperties": false,
+      "description": "Platform-neutral style data. Fonts name installed host families, not files\nor URLs. An explicit font_size is never inferred from the node's box and is\nnever silently shrunk to fit it. A styled text leaf defaults to font_size=2,\nweight=400, line_height=1.2, centered/middle, no-wrap and clipped overflow.\nAbsence of the entire style object preserves the legacy presentation path.",
+      "properties": {
+        "background": {
+          "items": {
+            "format": "double",
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "border_color": {
+          "items": {
+            "format": "double",
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "border_radius": {
+          "format": "double",
+          "maximum": 100,
+          "minimum": 0,
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "border_width": {
+          "format": "double",
+          "maximum": 100,
+          "minimum": 0,
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "color": {
+          "items": {
+            "format": "double",
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "font_family": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "font_size": {
+          "exclusiveMinimum": 0,
+          "format": "double",
+          "maximum": 100,
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "font_weight": {
+          "format": "uint16",
+          "maximum": 900.0,
+          "minimum": 100.0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "letter_spacing": {
+          "format": "double",
+          "maximum": 10.0,
+          "minimum": -10.0,
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "line_height": {
+          "format": "double",
+          "maximum": 4.0,
+          "minimum": 0.5,
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "opacity": {
+          "format": "double",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "overflow": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiTextOverflow"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "padding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiInsets"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "text_align": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiTextAlign"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "vertical_align": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiVerticalAlign"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "wrap": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiTextWrap"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "UiTextAlign": {
+      "enum": [
+        "start",
+        "center",
+        "end"
+      ],
+      "type": "string"
+    },
+    "UiTextOverflow": {
+      "enum": [
+        "clip",
+        "ellipsis"
+      ],
+      "type": "string"
+    },
+    "UiTextWrap": {
+      "enum": [
+        "none",
+        "word"
+      ],
+      "type": "string"
+    },
+    "UiVerticalAlign": {
+      "enum": [
+        "top",
+        "middle",
+        "bottom"
+      ],
+      "type": "string"
     },
     "UiViewport": {
       "additionalProperties": false,

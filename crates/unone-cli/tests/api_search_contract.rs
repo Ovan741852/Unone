@@ -253,6 +253,57 @@ fn visual_search_guides_cli_and_mcp_to_native_particle_authoring() {
 }
 
 #[test]
+fn typography_search_guides_cli_and_mcp_to_the_same_official_ui_contract() {
+    let project_root = unique_fixture_root("ui typography discovery");
+    for query in [
+        "font size",
+        "text alignment",
+        "border padding",
+        "component styling",
+        "字體 字級 排版 樣式",
+        "共用元件",
+        "共用UI元件",
+        "共用UI組件",
+        "UI元件",
+        "共享UI组件",
+        "font_size",
+        "font_family",
+        "text_align",
+        "letter_spacing",
+        "border_radius",
+    ] {
+        let result = cli_search(&project_root, query);
+        assert_eq!(result, mcp_search(&project_root, query));
+        assert_eq!(result["ok"], true);
+        assert_eq!(result["diagnostics"], json!([]));
+        let entry = &result["value"]["matches"][0];
+        assert_eq!(entry["name"], "ui.setRoot");
+        assert!(
+            entry["when_to_use"]
+                .as_str()
+                .unwrap()
+                .contains("docs/ui-styling.md")
+        );
+        assert!(
+            entry["parameters"][0]["meaning"]
+                .as_str()
+                .unwrap()
+                .contains("font_size=2")
+        );
+        assert!(
+            entry["related_apis"]
+                .as_array()
+                .unwrap()
+                .contains(&json!("ui.getViewport"))
+        );
+    }
+    assert_eq!(
+        cli_search(&project_root, "responsive")["value"]["matches"][0]["name"],
+        "ui.getViewport"
+    );
+}
+
+#[test]
 fn no_match_contract_has_fixed_facts_and_discovery_actions() {
     let project_root = unique_fixture_root("no-match");
     let result = cli_search(&project_root, "攻擊");

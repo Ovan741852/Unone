@@ -1,0 +1,44 @@
+{
+  "name": "surviving-sector-opens-three-technology-choices",
+  "frames": 2500,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Start": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "phase",
+        "equals": "upgrade"
+      }
+    },
+    {
+      "observation": {
+        "key": "sector",
+        "equals": 1
+      }
+    },
+    {
+      "observation": {
+        "key": "choiceCount",
+        "equals": 3
+      }
+    },
+    {
+      "observation": {
+        "key": "upgradesInstalled",
+        "equals": 0
+      }
+    },
+    {
+      "observation": {
+        "key": "finiteState",
+        "equals": true
+      }
+    }
+  ]
+}

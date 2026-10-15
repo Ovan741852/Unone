@@ -1,0 +1,12 @@
+[
+  {
+    "actions": {
+      "Start": true
+    }
+  },
+  {
+    "actions": {
+      "Pause": true
+    }
+  }
+]

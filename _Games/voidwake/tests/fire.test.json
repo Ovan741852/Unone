@@ -1,0 +1,35 @@
+{
+  "name": "pointer-fire-emits-one-ballistic-volley",
+  "frames": 2,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Start": true
+      }
+    },
+    {
+      "pointer": {
+        "down": true,
+        "position": {
+          "y": -400,
+          "x": 0
+        }
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "fired",
+        "equals": 1
+      }
+    },
+    {
+      "observation": {
+        "key": "phase",
+        "equals": "playing"
+      }
+    }
+  ]
+}

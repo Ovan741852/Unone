@@ -271,6 +271,41 @@ impl PresentationSettings {
 pub struct PresentationUi {
     pub font_source: Option<String>,
     pub font_family: Option<String>,
+    pub fonts: Vec<PresentationFontFace>,
+}
+
+#[derive(serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct PresentationFontFace {
+    pub family: String,
+    pub source: String,
+    #[serde(default = "default_font_weight")]
+    pub weight: u16,
+}
+
+fn default_font_weight() -> u16 { 400 }
+
+impl PresentationUi {
+    pub fn validate_fonts(&self) -> Result<()> {
+        let mut faces = std::collections::BTreeSet::new();
+        if self.font_source.is_some() {
+            let family = self.font_family.as_deref().filter(|value| !value.trim().is_empty())
+                .context("UI_FONT_FAMILY_REQUIRED: specify the packaged font's family name")?;
+            faces.insert((family, 400));
+        }
+        ensure!(self.fonts.len() + usize::from(self.font_source.is_some()) <= 32,
+            "UI_FONT_LIMIT: at most 32 font faces may be packaged, including font_source");
+        for face in &self.fonts {
+            ensure!(!face.family.trim().is_empty() && face.family.len() <= 128 && !face.family.chars().any(char::is_control),
+                "UI_FONT_FAMILY_INVALID: family must contain 1..128 UTF-8 bytes without control characters");
+            ensure!((100..=900).contains(&face.weight), "UI_FONT_WEIGHT_INVALID: weight must be an integer from 100 to 900");
+            let extension = std::path::Path::new(&face.source).extension().and_then(|value| value.to_str()).unwrap_or_default();
+            ensure!(extension.eq_ignore_ascii_case("ttf") || extension.eq_ignore_ascii_case("otf"),
+                "UI_FONT_FORMAT_UNSUPPORTED: ui.fonts supports shared TTF/OTF faces");
+            ensure!(faces.insert((&face.family, face.weight)), "UI_FONT_DUPLICATE: family and weight must identify a unique packaged face");
+        }
+        Ok(())
+    }
 }
 #[derive(Default, serde::Deserialize, serde::Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -338,6 +373,7 @@ pub fn load_presentation(project: &Path) -> Result<Option<PresentationSettings>>
     }
     let presentation: PresentationSettings = serde_json::from_slice(&std::fs::read(&path)?)?;
     presentation.validate_renderer()?;
+    presentation.ui.validate_fonts()?;
     Ok(Some(presentation))
 }
 
@@ -415,6 +451,20 @@ mod tests {
             ("spine".into(), false), ("effekseer".into(), false),
         ])).unwrap();
         assert!(native_wgpu_export_gate(&settings, Some(&custom)).unwrap_err().to_string().contains("HOST_RENDERER_UNSUPPORTED"));
+    }
+
+    #[test]
+    fn font_catalog_limit_counts_the_legacy_face() {
+        let catalog: Vec<_> = (0..32).map(|index| json!({
+            "family": format!("Fixture {index}"), "source": format!("fonts/{index}.ttf")
+        })).collect();
+        let mut ui: PresentationUi = serde_json::from_value(json!({"fonts":catalog})).unwrap();
+        ui.validate_fonts().unwrap();
+        ui.font_source = Some("legacy.ttf".into());
+        ui.font_family = Some("Legacy".into());
+        assert!(ui.validate_fonts().unwrap_err().to_string().contains("UI_FONT_LIMIT"));
+        ui.fonts.pop();
+        ui.validate_fonts().unwrap();
     }
 
     #[test]

@@ -1,0 +1,835 @@
+{
+  "ok": true,
+  "fonts": true,
+  "cases": [
+    {
+      "dpr": 1,
+      "width": 360,
+      "height": 240,
+      "scenario": "wrapped",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        360,
+        240
+      ],
+      "dom": [
+        360,
+        240
+      ],
+      "size": 14.399999999999999,
+      "lines": [
+        {
+          "text": "Readable UI typography: 字體與排版API",
+          "width": 285.13371337890624
+        },
+        {
+          "text": "Words and 長句自然換行。",
+          "width": 184.75163330078124
+        }
+      ],
+      "contentWidth": 336,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        9,
+        20,
+        33,
+        242
+      ],
+      "border": [
+        9,
+        20,
+        33,
+        242
+      ]
+    },
+    {
+      "dpr": 1,
+      "width": 360,
+      "height": 240,
+      "scenario": "ellipsis",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        360,
+        240
+      ],
+      "dom": [
+        360,
+        240
+      ],
+      "size": 14.399999999999999,
+      "lines": [
+        {
+          "text": "A label that stays at its declared size even w…",
+          "width": 335.40922607421874
+        }
+      ],
+      "contentWidth": 336,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        9,
+        20,
+        33,
+        242
+      ],
+      "border": [
+        9,
+        20,
+        33,
+        242
+      ]
+    },
+    {
+      "dpr": 1,
+      "width": 360,
+      "height": 240,
+      "scenario": "box",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        360,
+        240
+      ],
+      "dom": [
+        360,
+        240
+      ],
+      "size": 4.8,
+      "lines": [
+        {
+          "text": "A label that stays at its declared size even when it exceeds its bounds.",
+          "width": 155.01046752929688
+        }
+      ],
+      "contentWidth": 336,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        9,
+        20,
+        33,
+        242
+      ],
+      "border": [
+        9,
+        20,
+        33,
+        242
+      ]
+    },
+    {
+      "dpr": 1,
+      "width": 360,
+      "height": 240,
+      "scenario": "opacity",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        360,
+        240
+      ],
+      "dom": [
+        360,
+        240
+      ],
+      "size": 4.8,
+      "lines": [
+        {
+          "text": "A label that stays at its declared size even when it exceeds its bounds.",
+          "width": 155.01046752929688
+        }
+      ],
+      "contentWidth": 336,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        0,
+        0,
+        255,
+        128
+      ],
+      "border": [
+        255,
+        0,
+        0,
+        128
+      ]
+    },
+    {
+      "dpr": 1,
+      "width": 240,
+      "height": 360,
+      "scenario": "wrapped",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        240,
+        360
+      ],
+      "dom": [
+        240,
+        360
+      ],
+      "size": 21.6,
+      "lines": [
+        {
+          "text": "Readable UI",
+          "width": 132.77504821777345
+        },
+        {
+          "text": "typography: 字體",
+          "width": 185.52221008300782
+        },
+        {
+          "text": "與排版API",
+          "width": 102.88071533203124
+        },
+        {
+          "text": "Words and 長句自",
+          "width": 188.5678338623047
+        },
+        {
+          "text": "然換行。",
+          "width": 88.0199365234375
+        }
+      ],
+      "contentWidth": 204,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        9,
+        20,
+        33,
+        242
+      ],
+      "border": [
+        16,
+        61,
+        77,
+        245
+      ]
+    },
+    {
+      "dpr": 1,
+      "width": 240,
+      "height": 360,
+      "scenario": "ellipsis",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        240,
+        360
+      ],
+      "dom": [
+        240,
+        360
+      ],
+      "size": 21.6,
+      "lines": [
+        {
+          "text": "A label that stay…",
+          "width": 197.08628173828126
+        }
+      ],
+      "contentWidth": 204,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        9,
+        20,
+        33,
+        242
+      ],
+      "border": [
+        16,
+        61,
+        77,
+        245
+      ]
+    },
+    {
+      "dpr": 1,
+      "width": 240,
+      "height": 360,
+      "scenario": "box",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        240,
+        360
+      ],
+      "dom": [
+        240,
+        360
+      ],
+      "size": 7.2,
+      "lines": [
+        {
+          "text": "A label that stays at its declared size even when it exceeds its bounds.",
+          "width": 232.5158233642578
+        }
+      ],
+      "contentWidth": 204,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        9,
+        20,
+        33,
+        242
+      ],
+      "border": [
+        16,
+        61,
+        77,
+        245
+      ]
+    },
+    {
+      "dpr": 1,
+      "width": 240,
+      "height": 360,
+      "scenario": "opacity",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        240,
+        360
+      ],
+      "dom": [
+        240,
+        360
+      ],
+      "size": 7.2,
+      "lines": [
+        {
+          "text": "A label that stays at its declared size even when it exceeds its bounds.",
+          "width": 232.5158233642578
+        }
+      ],
+      "contentWidth": 204,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        0,
+        0,
+        255,
+        128
+      ],
+      "border": [
+        255,
+        0,
+        0,
+        128
+      ]
+    },
+    {
+      "dpr": 1,
+      "interaction": {
+        "captured": true,
+        "hit": {
+          "nodeId": "action",
+          "action": "Continue"
+        },
+        "passthrough": true,
+        "fontFailure": true
+      },
+      "fontReport": {
+        "faces": [
+          {
+            "family": "\"Fixture UI\"",
+            "weight": "400",
+            "status": "loaded"
+          },
+          {
+            "family": "\"Fixture UI\"",
+            "weight": "700",
+            "status": "loaded"
+          }
+        ],
+        "regular": 125.71199035644531,
+        "bold": 127.31999206542969,
+        "tracking": [
+          {
+            "text": "ABC",
+            "plain": 47.47196960449219,
+            "tracked": 53.47196960449219
+          },
+          {
+            "text": "A",
+            "plain": 15.383987426757812,
+            "tracked": 15.383987426757812
+          },
+          {
+            "text": "中文測",
+            "plain": 72,
+            "tracked": 78
+          },
+          {
+            "text": "👩‍🚀!",
+            "plain": 41.83311462402344,
+            "tracked": 44.83311462402344
+          }
+        ]
+      }
+    },
+    {
+      "dpr": 2,
+      "width": 360,
+      "height": 240,
+      "scenario": "wrapped",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        720,
+        480
+      ],
+      "dom": [
+        720,
+        480
+      ],
+      "size": 28.799999999999997,
+      "lines": [
+        {
+          "text": "Readable UI typography: 字體與排版API",
+          "width": 570.268037109375
+        },
+        {
+          "text": "Words and 長句自然換行。",
+          "width": 369.50360229492185
+        }
+      ],
+      "contentWidth": 672,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        9,
+        20,
+        33,
+        242
+      ],
+      "border": [
+        9,
+        20,
+        33,
+        242
+      ]
+    },
+    {
+      "dpr": 2,
+      "width": 360,
+      "height": 240,
+      "scenario": "ellipsis",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        720,
+        480
+      ],
+      "dom": [
+        720,
+        480
+      ],
+      "size": 28.799999999999997,
+      "lines": [
+        {
+          "text": "A label that stays at its declared size even w…",
+          "width": 670.8193676757812
+        }
+      ],
+      "contentWidth": 672,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        9,
+        20,
+        33,
+        242
+      ],
+      "border": [
+        9,
+        20,
+        33,
+        242
+      ]
+    },
+    {
+      "dpr": 2,
+      "width": 360,
+      "height": 240,
+      "scenario": "box",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        720,
+        480
+      ],
+      "dom": [
+        720,
+        480
+      ],
+      "size": 9.6,
+      "lines": [
+        {
+          "text": "A label that stays at its declared size even when it exceeds its bounds.",
+          "width": 310.0213623046875
+        }
+      ],
+      "contentWidth": 672,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        9,
+        20,
+        33,
+        242
+      ],
+      "border": [
+        9,
+        20,
+        33,
+        242
+      ]
+    },
+    {
+      "dpr": 2,
+      "width": 360,
+      "height": 240,
+      "scenario": "opacity",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        720,
+        480
+      ],
+      "dom": [
+        720,
+        480
+      ],
+      "size": 9.6,
+      "lines": [
+        {
+          "text": "A label that stays at its declared size even when it exceeds its bounds.",
+          "width": 310.0213623046875
+        }
+      ],
+      "contentWidth": 672,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        0,
+        0,
+        255,
+        128
+      ],
+      "border": [
+        255,
+        0,
+        0,
+        128
+      ]
+    },
+    {
+      "dpr": 2,
+      "width": 240,
+      "height": 360,
+      "scenario": "wrapped",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        480,
+        720
+      ],
+      "dom": [
+        480,
+        720
+      ],
+      "size": 43.2,
+      "lines": [
+        {
+          "text": "Readable UI",
+          "width": 265.55018798828127
+        },
+        {
+          "text": "typography: 字體",
+          "width": 371.04451171875
+        },
+        {
+          "text": "與排版API",
+          "width": 205.76149169921874
+        },
+        {
+          "text": "Words and 長句自",
+          "width": 377.13575927734377
+        },
+        {
+          "text": "然換行。",
+          "width": 176.03993408203124
+        }
+      ],
+      "contentWidth": 408,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        9,
+        20,
+        33,
+        242
+      ],
+      "border": [
+        16,
+        61,
+        77,
+        245
+      ]
+    },
+    {
+      "dpr": 2,
+      "width": 240,
+      "height": 360,
+      "scenario": "ellipsis",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        480,
+        720
+      ],
+      "dom": [
+        480,
+        720
+      ],
+      "size": 43.2,
+      "lines": [
+        {
+          "text": "A label that stay…",
+          "width": 394.172685546875
+        }
+      ],
+      "contentWidth": 408,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        9,
+        20,
+        33,
+        242
+      ],
+      "border": [
+        16,
+        61,
+        77,
+        245
+      ]
+    },
+    {
+      "dpr": 2,
+      "width": 240,
+      "height": 360,
+      "scenario": "box",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        480,
+        720
+      ],
+      "dom": [
+        480,
+        720
+      ],
+      "size": 14.4,
+      "lines": [
+        {
+          "text": "A label that stays at its declared size even when it exceeds its bounds.",
+          "width": 465.0322265625
+        }
+      ],
+      "contentWidth": 408,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        9,
+        20,
+        33,
+        242
+      ],
+      "border": [
+        16,
+        61,
+        77,
+        245
+      ]
+    },
+    {
+      "dpr": 2,
+      "width": 240,
+      "height": 360,
+      "scenario": "opacity",
+      "mismatch": 0,
+      "maxDelta": 0,
+      "diffRows": [],
+      "canvas": [
+        480,
+        720
+      ],
+      "dom": [
+        480,
+        720
+      ],
+      "size": 14.4,
+      "lines": [
+        {
+          "text": "A label that stays at its declared size even when it exceeds its bounds.",
+          "width": 465.0322265625
+        }
+      ],
+      "contentWidth": 408,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "center": [
+        0,
+        0,
+        255,
+        128
+      ],
+      "border": [
+        255,
+        0,
+        0,
+        128
+      ]
+    },
+    {
+      "dpr": 2,
+      "interaction": {
+        "captured": true,
+        "hit": {
+          "nodeId": "action",
+          "action": "Continue"
+        },
+        "passthrough": true,
+        "fontFailure": true
+      },
+      "fontReport": {
+        "faces": [
+          {
+            "family": "\"Fixture UI\"",
+            "weight": "400",
+            "status": "loaded"
+          },
+          {
+            "family": "\"Fixture UI\"",
+            "weight": "700",
+            "status": "loaded"
+          }
+        ],
+        "regular": 125.71199035644531,
+        "bold": 127.31999206542969,
+        "tracking": [
+          {
+            "text": "ABC",
+            "plain": 47.47196960449219,
+            "tracked": 53.47196960449219
+          },
+          {
+            "text": "A",
+            "plain": 15.383987426757812,
+            "tracked": 15.383987426757812
+          },
+          {
+            "text": "中文測",
+            "plain": 72,
+            "tracked": 78
+          },
+          {
+            "text": "👩‍🚀!",
+            "plain": 41.83311462402344,
+            "tracked": 44.83311462402344
+          }
+        ]
+      }
+    }
+  ],
+  "errors": []
+}

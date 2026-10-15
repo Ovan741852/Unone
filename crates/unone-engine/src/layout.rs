@@ -51,10 +51,11 @@ pub struct LayoutNode {
     pub text: String,
     pub action: Option<String>,
     pub asset: Option<String>,
-    /// Roughly how much of the declared width the label needs, if the host sizes
-    /// text to the box height. Above 1.0 means the host must shrink, wrap or
-    /// clip it. This rests on assumed font metrics, so it is a measurement for
-    /// the reader, not a verdict.
+    /// Roughly how much of the declared content width the label needs. Styled
+    /// nodes use their explicit or fixed default font size; legacy nodes use
+    /// box height. Above 1.0 suggests overflow under the assumed font metrics;
+    /// the host obeys the declared wrapping/clipping and never resizes a styled
+    /// font automatically. This is a measurement for the reader, not a verdict.
     pub text_fit: f64,
 }
 
@@ -74,7 +75,7 @@ pub struct LayoutReport {
 }
 
 /// Explicit per-screen art layering. Never permits a button to hide another
-/// interactive node: the earlier/background node must be an image.
+/// interactive node: the earlier/background node must be an image or panel.
 pub fn apply_overlap_policy(
     report: &mut LayoutReport,
     policy: &serde_json::Value,
@@ -114,8 +115,8 @@ pub fn apply_overlap_policy(
             .iter()
             .position(|n| n.id == pair.front)
             .ok_or_else(|| format!("UI_OVERLAP_UNKNOWN_NODE: {}", pair.front))?;
-        if behind >= front || report.nodes[behind].kind != "image" {
-            return Err("UI_OVERLAP_POLICY_UNSAFE: behind must be an earlier image; button/button and occluding images cannot be exempted".into());
+        if behind >= front || !matches!(report.nodes[behind].kind.as_str(), "image" | "panel") {
+            return Err("UI_OVERLAP_POLICY_UNSAFE: behind must be an earlier image or panel; interactive/text pairs and later occluding backgrounds cannot be exempted".into());
         }
         let ids = vec![pair.behind.clone(), pair.front.clone()];
         let finding = report
@@ -140,23 +141,26 @@ pub fn apply_overlap_policy(
 
 fn node_parts(node: &UiNode) -> (&str, &str, &UiRect, &str, Option<&str>, Option<&str>) {
     match node {
-        UiNode::Text { id, rect, text } => ("text", id, rect, text, None, None),
+        UiNode::Text { id, rect, text, .. } => ("text", id, rect, text, None, None),
         UiNode::Button {
             id,
             rect,
             text,
             action,
+            ..
         } => ("button", id, rect, text, Some(action), None),
         UiNode::Slider {
             id,
             rect,
             text,
             action,
+            ..
         } => ("slider", id, rect, text, Some(action), None),
         UiNode::ComboBox { id, rect, text, action, .. } => ("combobox", id, rect, text, Some(action), None),
         UiNode::Image {
             id, rect, asset, ..
         } => ("image", id, rect, "", None, Some(asset)),
+        UiNode::Panel { id, rect, .. } => ("panel", id, rect, "", None, None),
         UiNode::Component { .. } => {
             unreachable!("component nodes are expanded before layout inspection")
         }
@@ -170,10 +174,12 @@ fn overlap(left: &UiRect, right: &UiRect) -> Option<(f64, f64)> {
     (x > 0.01 && y > 0.01).then_some((x, y))
 }
 
-/// Design-space width the text needs if the host fits it to the box height.
-fn needed_width(text: &str, rect: &UiRect) -> f64 {
-    let characters = text.chars().count() as f64;
-    characters * CHARACTER_ADVANCE * rect.height / ASSUMED_ASPECT
+/// Approximate width; styled font sizing is independent of the node height.
+fn needed_width(text: &str, rect: &UiRect, style: Option<&crate::UiStyle>) -> f64 {
+    let characters = text.lines().map(|line| line.chars().count()).max().unwrap_or(0) as f64;
+    let font_size = style.map_or(rect.height, |style| style.font_size.unwrap_or(2.0));
+    let spacing = style.and_then(|style| style.letter_spacing).unwrap_or(0.0);
+    (characters * CHARACTER_ADVANCE * font_size + (characters - 1.0).max(0.0) * spacing).max(0.0) / ASSUMED_ASPECT
 }
 
 /// Inspect one UI tree: draw it, and report what is structurally wrong.
@@ -194,7 +200,9 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
         let text_fit = if text.is_empty() || rect.width <= 0.0 {
             0.0
         } else {
-            (needed_width(text, rect) / rect.width * 100.0).round() / 100.0
+            let padding = node.style().and_then(|style| style.padding).unwrap_or_default();
+            let content_width = (rect.width - (padding.left + padding.right) / ASSUMED_ASPECT).max(f64::EPSILON);
+            (needed_width(text, rect, node.style()) / content_width * 100.0).round() / 100.0
         };
         nodes.push(LayoutNode {
             id: id.to_string(),
@@ -269,7 +277,7 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
         readable: findings.is_empty(),
         findings,
         assumptions: vec![
-            "text_fit assumes a 16:9 viewport and a 0.5 character advance, so it is a              measurement to read, never a pass/fail"
+            "text_fit assumes a 16:9 viewport and a 0.5 character advance; it uses explicit font_size/letter_spacing/padding when declared, otherwise legacy box height; it does not measure host fonts or wrapping and is never a pass/fail"
                 .to_string(),
             "structure only: this says nothing about whether the screen looks good".to_string(),
             "scroll_view is inspected as a viewport only; local/virtual content requires the Web clipped projection and scroll diagnostics".to_string(),
@@ -404,6 +412,27 @@ mod tests {
         assert_eq!(report.findings.len(), 1);
         assert!(!report.readable);
         assert!(super::apply_overlap_policy(&mut report,&serde_json::json!({"version":1,"screens":{"menu":[{"behind":"start","front":"other","reason":"cannot waive button overlap"}]}})).is_err());
+    }
+
+    #[test]
+    fn panel_layers_require_explicit_policy_and_cannot_hide_text_or_controls() {
+        let tree = UiTree::from_json(serde_json::json!({"kind":"screen","id":"menu","node":"menu","children":[
+            {"kind":"panel","id":"surface","rect":{"x":0,"y":0,"width":50,"height":50},"style":{"background":[0,0,0,0.8]}},
+            {"kind":"text","id":"title","text":"Title","rect":{"x":5,"y":30,"width":30,"height":10}},
+            {"kind":"button","id":"button","action":"Start","text":"Start","rect":{"x":5,"y":5,"width":30,"height":10}},
+            {"kind":"panel","id":"late","rect":{"x":5,"y":30,"width":30,"height":10}}
+        ]})).unwrap();
+        let mut report = inspect(&tree, 16, 8);
+        assert!(!report.readable);
+        super::apply_overlap_policy(&mut report, &serde_json::json!({"version":1,"screens":{"menu":[
+            {"behind":"surface","front":"title","reason":"decorative panel behind heading"},
+            {"behind":"surface","front":"button","reason":"decorative panel behind action"}
+        ]}})).unwrap();
+        assert_eq!(report.allowed_overlaps.len(), 2);
+        assert!(!report.readable, "later panel still obscures title");
+        for pair in [serde_json::json!({"behind":"late","front":"title","reason":"unsafe order"}), serde_json::json!({"behind":"title","front":"late","reason":"text cannot be waived"})] {
+            assert!(super::apply_overlap_policy(&mut report, &serde_json::json!({"version":1,"screens":{"menu":[pair]}})).unwrap_err().contains("UI_OVERLAP_POLICY_UNSAFE"));
+        }
     }
     use super::{DEFAULT_LAYOUT_COLS, DEFAULT_LAYOUT_ROWS, inspect};
     use crate::ui::UiTree;

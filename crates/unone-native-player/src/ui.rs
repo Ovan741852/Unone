@@ -2,7 +2,11 @@
 use crate::{Package, R};
 use base64::Engine;
 use std::collections::{BTreeMap, VecDeque};
-use unone_engine::{UiNode, UiTree};
+use unicode_script::{Script, UnicodeScript};
+use unicode_segmentation::UnicodeSegmentation;
+use unone_engine::{
+    UiNode, UiStyle, UiTextAlign, UiTextOverflow, UiTextWrap, UiTree, UiVerticalAlign,
+};
 
 fn leaves(tree: &UiTree) -> Vec<&UiNode> {
     let mut out = Vec::new();
@@ -28,17 +32,22 @@ impl PointerRouter {
         let hit = tree.and_then(|t| {
             leaves(t).into_iter().rev().find(|n| {
                 let r = n.rect();
-                x >= r.x && y >= r.y && x < r.x + r.width && y < r.y + r.height
+                matches!(n, UiNode::Button { .. } | UiNode::ComboBox { .. })
+                    && x >= r.x
+                    && y >= r.y
+                    && x < r.x + r.width
+                    && y < r.y + r.height
             })
         });
         let Some(hit) = hit else {
             return false;
         };
-        let action = if let UiNode::Button { id, action, .. } | UiNode::ComboBox { id, action, .. } = hit {
-            Some((id.clone(), action.clone()))
-        } else {
-            None
-        };
+        let action =
+            if let UiNode::Button { id, action, .. } | UiNode::ComboBox { id, action, .. } = hit {
+                Some((id.clone(), action.clone()))
+            } else {
+                None
+            };
         if let Some((_, a)) = &action {
             let n = self.holds.entry(a.clone()).or_default();
             if *n == 0 {
@@ -105,6 +114,156 @@ struct Rasterizer {
     options: resvg::usvg::Options<'static>,
     family: String,
 }
+
+fn load_font(
+    options: &mut resvg::usvg::Options<'_>,
+    package: &Package,
+    path: &str,
+    alias: Option<(&str, u16)>,
+) -> R<()> {
+    if !crate::safe(path) {
+        return Err("UI_FONT_PATH_INVALID".into());
+    }
+    let bytes = package.get(&format!("content/{path}"))?;
+    if !(bytes.starts_with(b"\0\x01\0\0")
+        || bytes.starts_with(b"OTTO")
+        || (alias.is_none() && bytes.starts_with(b"ttcf")))
+    {
+        return Err(format!(
+            "UI_FONT_FORMAT_UNSUPPORTED: {path}; package a TTF or OTF font"
+        ));
+    }
+    let db = options.fontdb_mut();
+    let ids = db.load_font_source(resvg::usvg::fontdb::Source::Binary(std::sync::Arc::new(
+        bytes.to_vec(),
+    )));
+    if ids.is_empty() {
+        return Err(format!("UI_FONT_INVALID: {path}; no readable font faces"));
+    }
+    if let Some((family, weight)) = alias {
+        for id in ids {
+            let mut face = db.face(id).expect("just loaded font face").clone();
+            face.families = vec![(
+                family.to_owned(),
+                resvg::usvg::fontdb::Language::English_UnitedStates,
+            )];
+            face.weight = resvg::usvg::fontdb::Weight(weight);
+            db.remove_face(id);
+            db.push_face_info(face);
+        }
+    }
+    Ok(())
+}
+
+fn rgba(color: [f64; 4]) -> String {
+    format!(
+        "rgb({},{},{})",
+        color[0] * 255.,
+        color[1] * 255.,
+        color[2] * 255.
+    )
+}
+
+fn text_tag(text: &str, family: &str, size: f64, weight: u16, spacing: f64) -> String {
+    format!(
+        "<text x='0' y='0' xml:space='preserve' font-family='{}' font-size='{size}' font-weight='{weight}' letter-spacing='{spacing}'>{}</text>",
+        escape(family),
+        escape(text)
+    )
+}
+
+/// Use the same shaped text that resvg will rasterize, including fallback faces
+/// and spacing, rather than estimating line width from character count.
+fn measure_text(
+    options: &resvg::usvg::Options<'_>,
+    text: &str,
+    family: &str,
+    size: f64,
+    weight: u16,
+    spacing: f64,
+) -> R<f64> {
+    if text.is_empty() {
+        return Ok(0.);
+    }
+    let source = format!(
+        "<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'>{}</svg>",
+        text_tag(text, family, size, weight, spacing)
+    );
+    let tree = resvg::usvg::Tree::from_str(&source, options)
+        .map_err(|e| format!("UI_TEXT_LAYOUT_FAILED: {e}"))?;
+    Ok(tree
+        .root()
+        .children()
+        .first()
+        .map_or(0., |node| node.bounding_box().width() as f64))
+}
+
+fn fit_prefix<F: FnMut(&str) -> R<f64>>(text: &str, width: f64, measure: &mut F) -> R<usize> {
+    let ends: Vec<_> = text
+        .grapheme_indices(true)
+        .map(|(at, g)| at + g.len())
+        .collect();
+    let (mut low, mut high) = (0, ends.len());
+    while low < high {
+        let mid = (low + high).div_ceil(2);
+        if measure(&text[..ends[mid - 1]])? <= width {
+            low = mid;
+        } else {
+            high = mid - 1;
+        }
+    }
+    Ok(if low == 0 { 0 } else { ends[low - 1] })
+}
+
+fn wrap_lines<F: FnMut(&str) -> R<f64>>(
+    text: &str,
+    width: f64,
+    wrap: bool,
+    measure: &mut F,
+) -> R<Vec<String>> {
+    let mut out = Vec::new();
+    for paragraph in text.split('\n') {
+        let mut rest = paragraph.trim_end_matches('\r');
+        if !wrap || rest.is_empty() {
+            out.push(rest.to_owned());
+            continue;
+        }
+        while !rest.is_empty() {
+            let fit = fit_prefix(rest, width, measure)?;
+            if fit == rest.len() {
+                out.push(rest.trim_end().to_owned());
+                break;
+            }
+            let fit = if fit == 0 {
+                rest.graphemes(true).next().unwrap().len()
+            } else {
+                fit
+            };
+            let cjk = |text: &str| {
+                text.chars().any(|c| {
+                    matches!(
+                        c.script(),
+                        Script::Han | Script::Hiragana | Script::Katakana | Script::Hangul
+                    )
+                })
+            };
+            let boundary = rest[..fit]
+                .grapheme_indices(true)
+                .rev()
+                .find_map(|(at, g)| {
+                    let end = at + g.len();
+                    (g.chars().any(char::is_whitespace)
+                        || cjk(g)
+                        || cjk(rest[end..].graphemes(true).next().unwrap_or("")))
+                    .then_some(end)
+                });
+            let end = boundary.unwrap_or(fit);
+            out.push(rest[..end].trim_end().to_owned());
+            rest = rest[end..].trim_start();
+        }
+    }
+    Ok(out)
+}
 // Deliberately static, self-contained SVG. Reject features that would otherwise
 // disappear silently or resolve outside the hash-verified content package.
 fn validate_svg(bytes: &[u8], options: &resvg::usvg::Options<'_>) -> R<()> {
@@ -168,20 +327,37 @@ impl Rasterizer {
     fn new(package: &Package) -> R<Self> {
         let mut options = resvg::usvg::Options::default();
         options.image_href_resolver.resolve_string = Box::new(|_, _| None);
-        options.fontdb_mut().load_system_fonts();
         let presentation: serde_json::Value =
             serde_json::from_slice(package.get("content/presentation.json")?)
                 .map_err(|e| e.to_string())?;
         if let Some(path) = presentation["ui"]["font_source"].as_str() {
-            if !crate::safe(path) {
-                return Err("UI_FONT_PATH_INVALID".into());
-            }
-            options
-                .fontdb_mut()
-                .load_font_data(package.get(&format!("content/{path}"))?.to_vec());
+            load_font(&mut options, package, path, None)?;
         }
+        if let Some(fonts) = presentation["ui"]["fonts"].as_array() {
+            let mut pairs = std::collections::BTreeSet::new();
+            for font in fonts {
+                let family = font["family"]
+                    .as_str()
+                    .filter(|s| !s.trim().is_empty())
+                    .ok_or("UI_FONT_INVALID: fonts[].family is required")?;
+                let source = font["source"]
+                    .as_str()
+                    .ok_or("UI_FONT_INVALID: fonts[].source is required")?;
+                let weight = font
+                    .get("weight")
+                    .and_then(serde_json::Value::as_u64)
+                    .unwrap_or(400);
+                if !(100..=900).contains(&weight) || !pairs.insert((family.to_owned(), weight)) {
+                    return Err("UI_FONT_INVALID: catalog family/weight pairs must be unique; weights are integers from 100 to 900".into());
+                }
+                load_font(&mut options, package, source, Some((family, weight as u16)))?;
+            }
+        }
+        // Project faces take precedence over installed fonts with the same name.
+        options.fontdb_mut().load_system_fonts();
         let family = presentation["ui"]["font_family"]
             .as_str()
+            .or_else(|| presentation["ui"]["fonts"][0]["family"].as_str())
             .unwrap_or("sans-serif")
             .to_owned();
         let assets: serde_json::Value = serde_json::from_slice(package.get("content/assets.json")?)
@@ -235,6 +411,80 @@ impl Rasterizer {
             family,
         })
     }
+
+    fn styled_text(
+        &self,
+        svg: &mut String,
+        text: &str,
+        style: &UiStyle,
+        rect: [f64; 4],
+        unit: f64,
+    ) -> R<()> {
+        if text.is_empty() {
+            return Ok(());
+        }
+        if self.options.fontdb.faces().next().is_none() {
+            return Err(
+                "UI_FONT_UNAVAILABLE: package a licensed font via presentation.ui.fonts".into(),
+            );
+        }
+        let [x, y, w, h] = rect;
+        if w <= 0. || h <= 0. {
+            return Ok(());
+        }
+        let family = style.font_family.as_deref().unwrap_or(&self.family);
+        let size = style.font_size.unwrap_or(2.) * unit;
+        let weight = style.font_weight.unwrap_or(400);
+        let spacing = style.letter_spacing.unwrap_or(0.) * unit;
+        let line_height = size * style.line_height.unwrap_or(1.2);
+        let mut measure =
+            |value: &str| measure_text(&self.options, value, family, size, weight, spacing);
+        let mut lines = wrap_lines(text, w, style.wrap == Some(UiTextWrap::Word), &mut measure)?;
+        if style.overflow == Some(UiTextOverflow::Ellipsis) {
+            for line in &mut lines {
+                if measure(line)? > w {
+                    let ellipsis = "…";
+                    if measure(ellipsis)? > w {
+                        line.clear();
+                        continue;
+                    }
+                    let mut fit = fit_prefix(line, w - measure(ellipsis)?, &mut measure)?;
+                    // Kerning can make a combined suffix differ from isolated widths.
+                    while fit > 0 && measure(&format!("{}…", &line[..fit]))? > w {
+                        fit = line[..fit]
+                            .grapheme_indices(true)
+                            .next_back()
+                            .map_or(0, |(at, _)| at);
+                    }
+                    *line = format!("{}…", line[..fit].trim_end());
+                }
+            }
+        }
+        let block_height = lines.len() as f64 * line_height;
+        let top = match style.vertical_align.unwrap_or(UiVerticalAlign::Middle) {
+            UiVerticalAlign::Top => y,
+            UiVerticalAlign::Middle => y + (h - block_height) / 2.,
+            UiVerticalAlign::Bottom => y + h - block_height,
+        };
+        let (tx, anchor) = match style.text_align.unwrap_or(UiTextAlign::Center) {
+            UiTextAlign::Start => (x, "start"),
+            UiTextAlign::Center => (x + w / 2., "middle"),
+            UiTextAlign::End => (x + w, "end"),
+        };
+        let color = style.color.unwrap_or([1., 1., 1., 1.]);
+        for (index, line) in lines.iter().enumerate() {
+            let cy = top + line_height * (index as f64 + 0.5);
+            *svg += &format!(
+                "<text x='{tx}' y='{cy}' xml:space='preserve' text-anchor='{anchor}' dominant-baseline='central' font-family='{}' font-size='{size}' font-weight='{weight}' letter-spacing='{spacing}' fill='{}' fill-opacity='{}'>{}</text>",
+                escape(family),
+                rgba(color),
+                color[3],
+                escape(line)
+            );
+        }
+        Ok(())
+    }
+
     fn draw(&self, tree: &UiTree, width: u32, height: u32) -> R<Vec<u8>> {
         let mut svg = format!(
             "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='{width}' height='{height}'>"
@@ -246,8 +496,29 @@ impl Rasterizer {
             let y = (100. - r.y - r.height) * height as f64 / 100.;
             let w = r.width * width as f64 / 100.;
             let h = r.height * height as f64 / 100.;
+            let unit = height as f64 / 100.;
+            let style = node.style();
+            let opacity = style.and_then(|s| s.opacity).unwrap_or(1.);
+            let radius =
+                (style.and_then(|s| s.border_radius).unwrap_or(0.) * unit).min(w.min(h) / 2.);
             svg += &format!(
-                "<defs><clipPath id='c{index}'><rect x='{x}' y='{y}' width='{w}' height='{h}'/></clipPath></defs><g clip-path='url(#c{index})'>"
+                "<defs><clipPath id='c{index}'><rect x='{x}' y='{y}' width='{w}' height='{h}' rx='{radius}'/></clipPath></defs><g opacity='{opacity}' clip-path='url(#c{index})'>"
+            );
+            if let Some(color) = style.and_then(|s| s.background) {
+                svg += &format!(
+                    "<rect x='{x}' y='{y}' width='{w}' height='{h}' rx='{radius}' fill='{}' fill-opacity='{}'/>",
+                    rgba(color),
+                    color[3]
+                );
+            }
+            let padding = style.and_then(|s| s.padding).unwrap_or_default();
+            let (cx, cy) = (x + padding.left * unit, y + padding.top * unit);
+            let (cw, ch) = (
+                (w - (padding.left + padding.right) * unit).max(0.),
+                (h - (padding.top + padding.bottom) * unit).max(0.),
+            );
+            svg += &format!(
+                "<defs><clipPath id='t{index}'><rect x='{cx}' y='{cy}' width='{cw}' height='{ch}'/></clipPath></defs><g clip-path='url(#t{index})'>"
             );
             match node {
                 UiNode::Image {
@@ -261,7 +532,13 @@ impl Rasterizer {
                     if let Some(slice) = slice {
                         let (iw, ih) = self.image_sizes[asset];
                         let patches = slice
-                            .patches(iw, ih, w, h, height as f64)
+                            .patches(
+                                iw,
+                                ih,
+                                cw.max(f64::EPSILON),
+                                ch.max(f64::EPSILON),
+                                height as f64,
+                            )
                             .map_err(|e| format!("{e}; node={id}; asset={asset}"))?;
                         let image_id = if let Some(index) = defined_images.get(asset) {
                             *index
@@ -276,8 +553,8 @@ impl Rasterizer {
                         for (s, d) in patches {
                             svg += &format!(
                                 "<svg x='{}' y='{}' width='{}' height='{}' viewBox='{} {} {} {}' preserveAspectRatio='none' overflow='hidden'><use xlink:href='#slice{image_id}'/></svg>",
-                                x + d.x,
-                                y + d.y,
+                                cx + d.x,
+                                cy + d.y,
                                 d.width,
                                 d.height,
                                 s.x,
@@ -286,20 +563,21 @@ impl Rasterizer {
                                 s.height
                             );
                         }
-                        svg += "</g>";
-                        continue;
+                    } else {
+                        let aspect = match fit {
+                            unone_engine::UiImageFit::Stretch => "none",
+                            unone_engine::UiImageFit::Cover => "xMidYMid slice",
+                            _ => "xMidYMid meet",
+                        };
+                        svg += &format!(
+                            "<image x='{cx}' y='{cy}' width='{cw}' height='{ch}' preserveAspectRatio='{aspect}' xlink:href='{uri}'/>"
+                        );
                     }
-                    let aspect = match fit {
-                        unone_engine::UiImageFit::Stretch => "none",
-                        unone_engine::UiImageFit::Cover => "xMidYMid slice",
-                        _ => "xMidYMid meet",
-                    };
-                    svg += &format!(
-                        "<image x='{x}' y='{y}' width='{w}' height='{h}' preserveAspectRatio='{aspect}' xlink:href='{uri}'/>"
-                    );
                 }
                 UiNode::Text { text, .. } | UiNode::Button { text, .. } => {
-                    if !text.is_empty() {
+                    if let Some(style) = style {
+                        self.styled_text(&mut svg, text, style, [cx, cy, cw, ch], unit)?;
+                    } else if !text.is_empty() {
                         if self.options.fontdb.faces().next().is_none() {
                             return Err("UI_FONT_UNAVAILABLE: package a licensed font via presentation.ui.font_source".into());
                         }
@@ -318,7 +596,31 @@ impl Rasterizer {
                         }
                     }
                 }
+                UiNode::Slider { text, .. } | UiNode::ComboBox { text, .. } => {
+                    if let Some(style) = style {
+                        self.styled_text(&mut svg, text, style, [cx, cy, cw, ch], unit)?;
+                    }
+                }
                 _ => {}
+            }
+            svg += "</g>";
+            let border_width =
+                (style.and_then(|s| s.border_width).unwrap_or(0.) * unit).min(w.min(h));
+            if border_width > 0. {
+                let color = style
+                    .and_then(|s| s.border_color)
+                    .unwrap_or([1., 1., 1., 1.]);
+                let inset = border_width / 2.;
+                svg += &format!(
+                    "<rect x='{}' y='{}' width='{}' height='{}' rx='{}' fill='none' stroke='{}' stroke-opacity='{}' stroke-width='{border_width}'/>",
+                    x + inset,
+                    y + inset,
+                    w - border_width,
+                    h - border_width,
+                    (radius - inset).max(0.),
+                    rgba(color),
+                    color[3]
+                );
             }
             svg += "</g>";
         }
@@ -335,9 +637,9 @@ impl Rasterizer {
         let mut pixels = pixmap.take();
         for p in pixels.chunks_exact_mut(4) {
             let a = p[3] as u16;
-            if a > 0 {
-                for c in &mut p[..3] {
-                    *c = ((*c as u16 * 255 + a / 2) / a).min(255) as u8;
+            for c in &mut p[..3] {
+                if let Some(value) = (*c as u16 * 255 + a / 2).checked_div(a) {
+                    *c = value.min(255) as u8;
                 }
             }
         }
@@ -446,7 +748,10 @@ impl Surface {
         let Some(tree) = tree else {
             return Ok(());
         };
-        if leaves(tree).iter().any(|n| matches!(n, UiNode::ScrollView { .. })) {
+        if leaves(tree)
+            .iter()
+            .any(|n| matches!(n, UiNode::ScrollView { .. }))
+        {
             return Err("UI_HOST_CAPABILITY_UNSUPPORTED: scroll_view currently requires the Web scroll host; native scrolling is not implemented".into());
         }
         let limit = 8192.min(device.limits().max_texture_dimension_2d);
@@ -549,6 +854,175 @@ impl Surface {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn empty_package(presentation: serde_json::Value) -> Package {
+        Package {
+            digest: String::new(),
+            files: BTreeMap::from([
+                ("content/assets.json".into(), br#"{"assets":[]}"#.to_vec()),
+                (
+                    "content/presentation.json".into(),
+                    serde_json::to_vec(&presentation).unwrap(),
+                ),
+            ]),
+        }
+    }
+
+    #[test]
+    fn styled_panel_opacity_border_radius_and_noninteractive_input() {
+        let raster = Rasterizer::new(&empty_package(serde_json::json!({}))).unwrap();
+        let tree = UiTree::from_json(serde_json::json!({"kind":"screen","id":"settings","node":"settings","children":[
+            {"kind":"button","id":"apply","text":"","action":"Apply","rect":{"x":10,"y":10,"width":80,"height":80}},
+            {"kind":"panel","id":"card","rect":{"x":10,"y":10,"width":80,"height":80},"style":{"background":[0,0,1,1],"border_color":[1,0,0,1],"border_width":4,"border_radius":10,"opacity":0.5}},
+            {"kind":"text","id":"caption","text":"","rect":{"x":10,"y":10,"width":80,"height":80}}
+        ]})).unwrap();
+        for (w, h) in [(200, 100), (400, 200)] {
+            let pixels = raster.draw(&tree, w, h).unwrap();
+            let p = |x: u32, y: u32| &pixels[((y * w + x) * 4) as usize..][..4];
+            assert!(p(w / 2, h / 2)[2] > 250 && (126..=129).contains(&p(w / 2, h / 2)[3]));
+            assert!(p(w / 2, h / 10 + h / 50)[0] > 250, "inside border");
+            assert_eq!(p(w / 10, h / 10)[3], 0, "rounded corner clips paint");
+        }
+        let mut pointer = PointerRouter::default();
+        assert!(pointer.down(Some(&tree), 1, 50., 50.));
+        assert_eq!(
+            pointer.next_edge(),
+            Some(("Apply".into(), true)),
+            "visual leaves do not hide a semantic button"
+        );
+        let decorative = UiTree::from_json(serde_json::json!({"kind":"screen","id":"status","node":"status","children":[{"kind":"panel","id":"p","rect":{"x":0,"y":0,"width":100,"height":100}}]})).unwrap();
+        assert!(
+            !pointer.down(Some(&decorative), 2, 50., 50.),
+            "decorations do not consume world input"
+        );
+    }
+
+    #[test]
+    fn font_catalog_aliases_and_styled_typography_pixels() {
+        let mut system = resvg::usvg::Options::default();
+        system.fontdb_mut().load_system_fonts();
+        let Some(bytes) = system.fontdb.faces().find_map(|face| {
+            system
+                .fontdb
+                .with_face_data(face.id, |bytes, _| {
+                    (bytes.starts_with(b"\0\x01\0\0") || bytes.starts_with(b"OTTO"))
+                        .then(|| bytes.to_vec())
+                })
+                .flatten()
+        }) else {
+            eprintln!(
+                "native font pixel fixture requires an installed TTF/OTF; box and invalid-format tests are independent"
+            );
+            return;
+        };
+        let mut package = empty_package(
+            serde_json::json!({"ui":{"fonts":[{"family":"FixtureFont","source":"fonts/body.ttf","weight":600}]}}),
+        );
+        package.files.insert("content/fonts/body.ttf".into(), bytes);
+        let raster = Rasterizer::new(&package).unwrap();
+        assert_eq!(
+            raster.family, "FixtureFont",
+            "first catalog family is the shared default"
+        );
+        assert!(
+            raster.options.fontdb.faces().any(|f| f
+                .families
+                .iter()
+                .any(|(name, _)| name == "FixtureFont")
+                && f.weight.0 == 600)
+        );
+        let tree = |height: u32, align: &str| {
+            UiTree::from_json(serde_json::json!({"kind":"screen","id":"reading","node":"reading","children":[{"kind":"text","id":"heading","text":"Reading room","rect":{"x":0,"y":0,"width":100,"height":height},"style":{"font_family":"FixtureFont","font_weight":600,"font_size":8,"text_align":"start","vertical_align":align,"color":[0,1,0,1],"padding":{"left":3,"right":3,"top":2,"bottom":2}}}]})).unwrap()
+        };
+        let bounds = |pixels: &[u8], w: u32| {
+            let lit: Vec<_> = pixels
+                .chunks_exact(4)
+                .enumerate()
+                .filter(|(_, p)| p[3] > 64)
+                .map(|(at, _)| (at as u32 % w, at as u32 / w))
+                .collect();
+            assert!(!lit.is_empty());
+            (
+                lit.iter().map(|p| p.0).min().unwrap(),
+                lit.iter().map(|p| p.1).min().unwrap(),
+                lit.iter().map(|p| p.0).max().unwrap(),
+                lit.iter().map(|p| p.1).max().unwrap(),
+            )
+        };
+        let a = raster.draw(&tree(40, "middle"), 400, 200).unwrap();
+        let b = raster.draw(&tree(80, "middle"), 400, 200).unwrap();
+        let (aa, bb) = (bounds(&a, 400), bounds(&b, 400));
+        assert_eq!(
+            aa.2 - aa.0,
+            bb.2 - bb.0,
+            "explicit font size is independent of text rectangle height"
+        );
+        assert_eq!(aa.3 - aa.1, bb.3 - bb.1);
+        assert!(
+            a.chunks_exact(4)
+                .filter(|p| p[3] > 64)
+                .all(|p| p[0] == 0 && p[1] > 250 && p[2] == 0)
+        );
+        let top = bounds(&raster.draw(&tree(80, "top"), 400, 200).unwrap(), 400);
+        let bottom = bounds(&raster.draw(&tree(80, "bottom"), 400, 200).unwrap(), 400);
+        assert!(
+            top.1 < bottom.1,
+            "vertical alignment changes position without resizing text"
+        );
+        let measure = |text: &str| measure_text(&raster.options, text, "FixtureFont", 16., 600, 0.);
+        assert!(measure("Wide text").unwrap() > measure("text").unwrap());
+        let mut measure = measure;
+        assert!(
+            wrap_lines(
+                "alpha beta gamma",
+                measure("alpha beta").unwrap(),
+                true,
+                &mut measure
+            )
+            .unwrap()
+            .len()
+                >= 2
+        );
+        eprintln!(
+            "native styled font fixture rendered: same glyph bounds {:?}/{:?}; top {:?}; bottom {:?}",
+            aa, bb, top, bottom
+        );
+    }
+
+    #[test]
+    fn paragraph_breaks_preserve_graphemes_and_cjk_word_boundaries() {
+        let mut measure = |text: &str| Ok(text.graphemes(true).count() as f64);
+        assert_eq!(
+            fit_prefix("e\u{301}👩‍🚀Z", 2., &mut measure).unwrap(),
+            "e\u{301}👩‍🚀".len(),
+            "never split grapheme clusters"
+        );
+        assert_eq!(
+            wrap_lines("alpha 中文文字", 8., true, &mut measure).unwrap(),
+            vec!["alpha 中文", "文字"],
+            "mixed Latin/CJK fills the same word-wrap boundary as Web"
+        );
+        assert_eq!(
+            wrap_lines("one two three", 8., true, &mut measure).unwrap(),
+            vec!["one two", "three"]
+        );
+    }
+
+    #[test]
+    fn font_catalog_rejects_unsupported_or_invalid_sources() {
+        for (bytes, code) in [
+            (b"wOF2fake".to_vec(), "UI_FONT_FORMAT_UNSUPPORTED"),
+            (b"\0\x01\0\0fake".to_vec(), "UI_FONT_INVALID"),
+        ] {
+            let mut package = empty_package(
+                serde_json::json!({"ui":{"fonts":[{"family":"Fixture","source":"font.ttf","weight":400}]}}),
+            );
+            package.files.insert("content/font.ttf".into(), bytes);
+            let err = Rasterizer::new(&package).err().unwrap();
+            assert!(err.contains(code), "{err}");
+        }
+    }
+
     #[test]
     fn nine_slice_pixels_and_budget_benchmark() {
         let colors = [

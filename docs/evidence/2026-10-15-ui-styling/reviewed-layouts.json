@@ -1,0 +1,38 @@
+[
+  {
+    "screen": "menu",
+    "exit": 0,
+    "ok": true,
+    "readable": true,
+    "findings": 0,
+    "allowed_overlaps": 0,
+    "diagnostics": []
+  },
+  {
+    "screen": "playing",
+    "exit": 0,
+    "ok": true,
+    "readable": true,
+    "findings": 0,
+    "allowed_overlaps": 2,
+    "diagnostics": []
+  },
+  {
+    "screen": "paused",
+    "exit": 0,
+    "ok": true,
+    "readable": true,
+    "findings": 0,
+    "allowed_overlaps": 11,
+    "diagnostics": []
+  },
+  {
+    "screen": "upgrade",
+    "exit": 0,
+    "ok": true,
+    "readable": true,
+    "findings": 0,
+    "allowed_overlaps": 36,
+    "diagnostics": []
+  }
+]

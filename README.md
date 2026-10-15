@@ -18,6 +18,12 @@ choice. Follow the [AI workflow](docs/ai-workflow.md) and
 [player export guide](docs/player-export.md); passing a headless test is only
 gameplay evidence, so inspect the exported player before claiming visual completion.
 
+[Official UI typography and styling](docs/ui-styling.md) extend the existing
+text/button/image controls and reusable `component` tree with named font catalogs,
+explicit type sizes, alignment, wrapping, colors, padding, borders and decorative
+panels. Core validates data; official Web/native hosts paint it. Game Luau owns
+component composition, themes, screen flow and responsive placement.
+
 [ScrollView / VirtualList / VirtualGrid](docs/ui-scroll.md) provide Web clipped
 scroll content and fixed-cell virtualization. The guide covers the local
 coordinate rule, stable keys, UI-only materialization and unsupported native hosts.

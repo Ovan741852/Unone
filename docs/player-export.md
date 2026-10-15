@@ -20,6 +20,8 @@ input, save, viewport, ticking and observation with the developer host.
 interpolation) and shared UI/font settings. Native wgpu packages the UI/font
 settings and fails closed on web-only keys. Host identities and capability tables live in `game sdk inspect --json`;
 see [portable SDK](portable-sdk.md).
+For shared UI fonts, declare named/weighted TTF or OTF faces in `ui.fonts` and
+use typed styles on the existing UI leaves; see [typography and styling](ui-styling.md).
 
 From the repository root:
 
@@ -67,7 +69,7 @@ For a local emulator on the LAN, the measurement server supports an explicit
 `python scripts/serve-export.py <export> --port 8187 --gzip --bind 192.168.0.100`.
 
 Supported presentation: Three.js WebGL primitive boxes/spheres, textured
-[static mesh JSON](static-mesh.md), image sprites, DOM UI, Web Audio, and native
+[static mesh JSON](static-mesh.md), image sprites, official Canvas UI, Web Audio, and native
 3D particles, [legacy SKFE 1500 Effekseer and optional Bloom](sphere-sweeps-and-bloom.md).
 Other mesh encodings, Spine and unsupported Effekseer encodings fail export.
 The Effekseer JS/WASM is included only when declared by the game.

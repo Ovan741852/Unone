@@ -1,0 +1,2623 @@
+{
+  "camera": {
+    "position": {
+      "x": 0,
+      "y": 0
+    },
+    "view_height": 900,
+    "zoom": 1
+  },
+  "shader_materials": {
+    "nebula_grade": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float dust = 0.5 + 0.5 * sin(uv.x * 16.0 + uv.y * 7.0 + unone_time * 0.12);\n float edge = smoothstep(0.12, 0.72, length((uv - vec2(0.5)) * vec2(0.85, 1.0)));\n vec3 graded = color.rgb * exposure * mix(vec3(0.90, 1.04, 1.10), sectorTint, 0.16);\n graded += color.rgb * dust * 0.025;\n return vec4(graded * (1.0 - edge * 0.20), color.a);\n}",
+      "uniforms": {
+        "exposure": 1.25,
+        "sectorTint": [
+          1,
+          0.9,
+          0.75
+        ]
+      }
+    },
+    "player_hull": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 1,
+        "impact": 0,
+        "tint": [
+          0.1,
+          0.75,
+          1
+        ]
+      }
+    },
+    "enemy_hull_01": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_02": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_03": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_04": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_05": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_06": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_07": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_08": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_09": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_10": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_11": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_12": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_13": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_14": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_15": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_16": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_17": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_18": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_19": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_20": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_21": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_22": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_23": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_24": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_25": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_26": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_27": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "enemy_hull_28": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.1,
+        "impact": 0,
+        "tint": [
+          1,
+          0.12,
+          0.025
+        ]
+      }
+    },
+    "boss_hull": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float nearby = max(max(texture2D(unone_texture, uv + vec2(0.004, 0.0)).a, texture2D(unone_texture, uv - vec2(0.004, 0.0)).a), max(texture2D(unone_texture, uv + vec2(0.0, 0.004)).a, texture2D(unone_texture, uv - vec2(0.0, 0.004)).a));\n float rim = max(0.0, nearby - color.a);\n float pulse = 0.80 + 0.20 * sin(unone_time * 3.0);\n vec3 lit = color.rgb * 1.30 + tint * (rim * strength * 1.7 * pulse + color.a * strength * 0.035);\n lit = mix(lit, vec3(2.3, 1.45, 0.65), min(1.0, impact) * 0.72);\n return vec4(lit, max(color.a, rim * strength * 0.65));\n}",
+      "uniforms": {
+        "strength": 0.4,
+        "impact": 0,
+        "tint": [
+          1,
+          0.24,
+          0.025
+        ]
+      }
+    },
+    "asteroid_grade": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * vec3(0.84, 0.92, 1.02), color.a); }",
+      "uniforms": {}
+    },
+    "detonation_01": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_02": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_03": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_04": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_05": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_06": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_07": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_08": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_09": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_10": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_11": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_12": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_13": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_14": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_15": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    },
+    "detonation_16": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "uniforms": {
+        "opacity": 1,
+        "heat": 1
+      }
+    }
+  },
+  "particle_effects": {
+    "ion_exhaust_0": {
+      "version": 1,
+      "duration_frames": 30,
+      "emitters": [
+        {
+          "id": "ion",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 17,
+          "size_start": 10,
+          "size_end": 0.3,
+          "color_start": [
+            0.35,
+            0.85,
+            1,
+            0.85
+          ],
+          "color_end": [
+            0.02,
+            0.18,
+            0.7,
+            0
+          ],
+          "additive": true,
+          "spread": {
+            "x": 0.8,
+            "y": 0.8,
+            "z": 0
+          },
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": -1,
+            "z": 0
+          },
+          "cone_angle_degrees": 12,
+          "speed_min": 65,
+          "speed_max": 105,
+          "sprite_shape": "soft_circle",
+          "size_easing": "ease_out"
+        }
+      ]
+    },
+    "ion_exhaust_1": {
+      "version": 1,
+      "duration_frames": 30,
+      "emitters": [
+        {
+          "id": "ion",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 17,
+          "size_start": 10,
+          "size_end": 0.3,
+          "color_start": [
+            0.35,
+            0.85,
+            1,
+            0.85
+          ],
+          "color_end": [
+            0.02,
+            0.18,
+            0.7,
+            0
+          ],
+          "additive": true,
+          "spread": {
+            "x": 0.8,
+            "y": 0.8,
+            "z": 0
+          },
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.707107,
+            "y": -0.707107,
+            "z": 0
+          },
+          "cone_angle_degrees": 12,
+          "speed_min": 65,
+          "speed_max": 105,
+          "sprite_shape": "soft_circle",
+          "size_easing": "ease_out"
+        }
+      ]
+    },
+    "ion_exhaust_2": {
+      "version": 1,
+      "duration_frames": 30,
+      "emitters": [
+        {
+          "id": "ion",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 17,
+          "size_start": 10,
+          "size_end": 0.3,
+          "color_start": [
+            0.35,
+            0.85,
+            1,
+            0.85
+          ],
+          "color_end": [
+            0.02,
+            0.18,
+            0.7,
+            0
+          ],
+          "additive": true,
+          "spread": {
+            "x": 0.8,
+            "y": 0.8,
+            "z": 0
+          },
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 12,
+          "speed_min": 65,
+          "speed_max": 105,
+          "sprite_shape": "soft_circle",
+          "size_easing": "ease_out"
+        }
+      ]
+    },
+    "ion_exhaust_3": {
+      "version": 1,
+      "duration_frames": 30,
+      "emitters": [
+        {
+          "id": "ion",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 17,
+          "size_start": 10,
+          "size_end": 0.3,
+          "color_start": [
+            0.35,
+            0.85,
+            1,
+            0.85
+          ],
+          "color_end": [
+            0.02,
+            0.18,
+            0.7,
+            0
+          ],
+          "additive": true,
+          "spread": {
+            "x": 0.8,
+            "y": 0.8,
+            "z": 0
+          },
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.707107,
+            "y": 0.707107,
+            "z": 0
+          },
+          "cone_angle_degrees": 12,
+          "speed_min": 65,
+          "speed_max": 105,
+          "sprite_shape": "soft_circle",
+          "size_easing": "ease_out"
+        }
+      ]
+    },
+    "ion_exhaust_4": {
+      "version": 1,
+      "duration_frames": 30,
+      "emitters": [
+        {
+          "id": "ion",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 17,
+          "size_start": 10,
+          "size_end": 0.3,
+          "color_start": [
+            0.35,
+            0.85,
+            1,
+            0.85
+          ],
+          "color_end": [
+            0.02,
+            0.18,
+            0.7,
+            0
+          ],
+          "additive": true,
+          "spread": {
+            "x": 0.8,
+            "y": 0.8,
+            "z": 0
+          },
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          },
+          "cone_angle_degrees": 12,
+          "speed_min": 65,
+          "speed_max": 105,
+          "sprite_shape": "soft_circle",
+          "size_easing": "ease_out"
+        }
+      ]
+    },
+    "ion_exhaust_5": {
+      "version": 1,
+      "duration_frames": 30,
+      "emitters": [
+        {
+          "id": "ion",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 17,
+          "size_start": 10,
+          "size_end": 0.3,
+          "color_start": [
+            0.35,
+            0.85,
+            1,
+            0.85
+          ],
+          "color_end": [
+            0.02,
+            0.18,
+            0.7,
+            0
+          ],
+          "additive": true,
+          "spread": {
+            "x": 0.8,
+            "y": 0.8,
+            "z": 0
+          },
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.707107,
+            "y": 0.707107,
+            "z": 0
+          },
+          "cone_angle_degrees": 12,
+          "speed_min": 65,
+          "speed_max": 105,
+          "sprite_shape": "soft_circle",
+          "size_easing": "ease_out"
+        }
+      ]
+    },
+    "ion_exhaust_6": {
+      "version": 1,
+      "duration_frames": 30,
+      "emitters": [
+        {
+          "id": "ion",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 17,
+          "size_start": 10,
+          "size_end": 0.3,
+          "color_start": [
+            0.35,
+            0.85,
+            1,
+            0.85
+          ],
+          "color_end": [
+            0.02,
+            0.18,
+            0.7,
+            0
+          ],
+          "additive": true,
+          "spread": {
+            "x": 0.8,
+            "y": 0.8,
+            "z": 0
+          },
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 12,
+          "speed_min": 65,
+          "speed_max": 105,
+          "sprite_shape": "soft_circle",
+          "size_easing": "ease_out"
+        }
+      ]
+    },
+    "ion_exhaust_7": {
+      "version": 1,
+      "duration_frames": 30,
+      "emitters": [
+        {
+          "id": "ion",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 17,
+          "size_start": 10,
+          "size_end": 0.3,
+          "color_start": [
+            0.35,
+            0.85,
+            1,
+            0.85
+          ],
+          "color_end": [
+            0.02,
+            0.18,
+            0.7,
+            0
+          ],
+          "additive": true,
+          "spread": {
+            "x": 0.8,
+            "y": 0.8,
+            "z": 0
+          },
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.707107,
+            "y": -0.707107,
+            "z": 0
+          },
+          "cone_angle_degrees": 12,
+          "speed_min": 65,
+          "speed_max": 105,
+          "sprite_shape": "soft_circle",
+          "size_easing": "ease_out"
+        }
+      ]
+    },
+    "rail_bolts": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "glow",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 2,
+          "size_start": 16,
+          "size_end": 16,
+          "color_start": [
+            0.06,
+            0.56,
+            1,
+            0.5
+          ],
+          "color_end": [
+            0.06,
+            0.56,
+            1,
+            0.5
+          ],
+          "additive": true
+        },
+        {
+          "id": "core",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 2,
+          "size_start": 7,
+          "size_end": 7,
+          "color_start": [
+            0.7,
+            0.98,
+            1,
+            1
+          ],
+          "color_end": [
+            0.7,
+            0.98,
+            1,
+            1
+          ],
+          "additive": true,
+          "sprite_shape": "diamond"
+        }
+      ]
+    },
+    "hostile_bolts": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "glow",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 2,
+          "size_start": 21,
+          "size_end": 21,
+          "color_start": [
+            1,
+            0.12,
+            0.01,
+            0.62
+          ],
+          "color_end": [
+            1,
+            0.12,
+            0.01,
+            0.62
+          ],
+          "additive": true
+        },
+        {
+          "id": "core",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 2,
+          "size_start": 8,
+          "size_end": 8,
+          "color_start": [
+            1,
+            0.65,
+            0.2,
+            1
+          ],
+          "color_end": [
+            1,
+            0.65,
+            0.2,
+            1
+          ],
+          "additive": true,
+          "sprite_shape": "diamond"
+        }
+      ]
+    },
+    "salvage_xp": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "halo",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 2,
+          "size_start": 24,
+          "size_end": 24,
+          "color_start": [
+            0.03,
+            0.5,
+            0.75,
+            0.35
+          ],
+          "color_end": [
+            0.03,
+            0.5,
+            0.75,
+            0.35
+          ],
+          "additive": true
+        },
+        {
+          "id": "crystal",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 2,
+          "size_start": 12,
+          "size_end": 12,
+          "color_start": [
+            0.15,
+            0.95,
+            1,
+            0.95
+          ],
+          "color_end": [
+            0.15,
+            0.95,
+            1,
+            0.95
+          ],
+          "additive": true,
+          "sprite_shape": "diamond"
+        }
+      ]
+    },
+    "salvage_repair": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "halo",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 2,
+          "size_start": 29,
+          "size_end": 29,
+          "color_start": [
+            0.12,
+            0.9,
+            0.4,
+            0.4
+          ],
+          "color_end": [
+            0.12,
+            0.9,
+            0.4,
+            0.4
+          ],
+          "additive": true
+        },
+        {
+          "id": "repair",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 2,
+          "size_start": 14,
+          "size_end": 14,
+          "color_start": [
+            0.3,
+            1,
+            0.55,
+            1
+          ],
+          "color_end": [
+            0.3,
+            1,
+            0.55,
+            1
+          ],
+          "additive": true,
+          "sprite_shape": "diamond"
+        }
+      ]
+    },
+    "impact_sparks": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "sparks",
+          "count": 8,
+          "interval_frames": 999,
+          "lifetime_frames": 16,
+          "size_start": 5,
+          "size_end": 0.5,
+          "color_start": [
+            1,
+            0.8,
+            0.35,
+            1
+          ],
+          "color_end": [
+            1,
+            0.12,
+            0.02,
+            0
+          ],
+          "additive": true,
+          "velocity_min": {
+            "x": -140,
+            "y": -140,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 140,
+            "y": 140,
+            "z": 0
+          },
+          "sprite_shape": "streak",
+          "angular_velocity": 4
+        },
+        {
+          "id": "flash",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 7,
+          "size_start": 28,
+          "size_end": 0,
+          "color_start": [
+            0.6,
+            0.85,
+            1,
+            0.7
+          ],
+          "color_end": [
+            0.1,
+            0.25,
+            1,
+            0
+          ],
+          "additive": true
+        }
+      ]
+    },
+    "hull_detonation": {
+      "version": 1,
+      "duration_frames": 8,
+      "emitters": [
+        {
+          "id": "initial_flash",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 9,
+          "size_start": 55,
+          "size_end": 0,
+          "color_start": [
+            1,
+            0.85,
+            0.58,
+            1
+          ],
+          "color_end": [
+            1,
+            0.3,
+            0.03,
+            0
+          ],
+          "additive": true
+        },
+        {
+          "id": "pressure_wave",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 26,
+          "size_start": 18,
+          "size_end": 150,
+          "color_start": [
+            1,
+            0.47,
+            0.1,
+            0.5
+          ],
+          "color_end": [
+            0.6,
+            0.08,
+            0.01,
+            0
+          ],
+          "additive": true,
+          "sprite_shape": "ring",
+          "size_easing": "ease_out"
+        },
+        {
+          "id": "hot_fragments",
+          "count": 28,
+          "interval_frames": 999,
+          "lifetime_frames": 32,
+          "size_start": 7,
+          "size_end": 0.4,
+          "color_start": [
+            1,
+            0.75,
+            0.25,
+            1
+          ],
+          "color_end": [
+            1,
+            0.06,
+            0.01,
+            0
+          ],
+          "additive": true,
+          "velocity_min": {
+            "x": -170,
+            "y": -170,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 170,
+            "y": 170,
+            "z": 0
+          },
+          "sprite_shape": "streak",
+          "angular_velocity": 3
+        },
+        {
+          "id": "afterburn",
+          "count": 18,
+          "interval_frames": 999,
+          "lifetime_frames": 43,
+          "size_start": 4,
+          "size_end": 0.3,
+          "color_start": [
+            1,
+            0.38,
+            0.03,
+            0.8
+          ],
+          "color_end": [
+            0.5,
+            0.01,
+            0.005,
+            0
+          ],
+          "additive": true,
+          "start_delay_frames": 6,
+          "velocity_min": {
+            "x": -85,
+            "y": -85,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 85,
+            "y": 85,
+            "z": 0
+          }
+        }
+      ]
+    },
+    "capital_detonation": {
+      "version": 1,
+      "duration_frames": 8,
+      "emitters": [
+        {
+          "id": "initial_flash",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 9,
+          "size_start": 132,
+          "size_end": 0,
+          "color_start": [
+            1,
+            0.85,
+            0.58,
+            1
+          ],
+          "color_end": [
+            1,
+            0.3,
+            0.03,
+            0
+          ],
+          "additive": true
+        },
+        {
+          "id": "pressure_wave",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 26,
+          "size_start": 43.199999999999996,
+          "size_end": 360,
+          "color_start": [
+            1,
+            0.47,
+            0.1,
+            0.5
+          ],
+          "color_end": [
+            0.6,
+            0.08,
+            0.01,
+            0
+          ],
+          "additive": true,
+          "sprite_shape": "ring",
+          "size_easing": "ease_out"
+        },
+        {
+          "id": "hot_fragments",
+          "count": 28,
+          "interval_frames": 999,
+          "lifetime_frames": 32,
+          "size_start": 16.8,
+          "size_end": 0.4,
+          "color_start": [
+            1,
+            0.75,
+            0.25,
+            1
+          ],
+          "color_end": [
+            1,
+            0.06,
+            0.01,
+            0
+          ],
+          "additive": true,
+          "velocity_min": {
+            "x": -408,
+            "y": -408,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 408,
+            "y": 408,
+            "z": 0
+          },
+          "sprite_shape": "streak",
+          "angular_velocity": 3
+        },
+        {
+          "id": "afterburn",
+          "count": 18,
+          "interval_frames": 999,
+          "lifetime_frames": 43,
+          "size_start": 9.6,
+          "size_end": 0.3,
+          "color_start": [
+            1,
+            0.38,
+            0.03,
+            0.8
+          ],
+          "color_end": [
+            0.5,
+            0.01,
+            0.005,
+            0
+          ],
+          "additive": true,
+          "start_delay_frames": 6,
+          "velocity_min": {
+            "x": -204,
+            "y": -204,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 204,
+            "y": 204,
+            "z": 0
+          }
+        }
+      ]
+    },
+    "emp_discharge": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "phase_wave",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 49,
+          "size_start": 15,
+          "size_end": 660,
+          "color_start": [
+            0.3,
+            0.9,
+            1,
+            0.75
+          ],
+          "color_end": [
+            0.08,
+            0.3,
+            1,
+            0
+          ],
+          "additive": true,
+          "sprite_shape": "ring",
+          "size_easing": "ease_out"
+        },
+        {
+          "id": "ion_flash",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 22,
+          "size_start": 90,
+          "size_end": 220,
+          "color_start": [
+            0.2,
+            0.8,
+            1,
+            0.5
+          ],
+          "color_end": [
+            0.01,
+            0.12,
+            0.7,
+            0
+          ],
+          "additive": true
+        },
+        {
+          "id": "arcs",
+          "count": 24,
+          "interval_frames": 999,
+          "lifetime_frames": 32,
+          "size_start": 5,
+          "size_end": 0.4,
+          "color_start": [
+            0.45,
+            0.95,
+            1,
+            1
+          ],
+          "color_end": [
+            0.04,
+            0.2,
+            1,
+            0
+          ],
+          "additive": true,
+          "velocity_min": {
+            "x": -280,
+            "y": -280,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 280,
+            "y": 280,
+            "z": 0
+          },
+          "sprite_shape": "diamond"
+        }
+      ]
+    },
+    "phase_dash": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "phase_wave",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 20,
+          "size_start": 16,
+          "size_end": 120,
+          "color_start": [
+            0.22,
+            0.85,
+            1,
+            0.7
+          ],
+          "color_end": [
+            0.02,
+            0.25,
+            1,
+            0
+          ],
+          "additive": true,
+          "sprite_shape": "ring"
+        },
+        {
+          "id": "ions",
+          "count": 12,
+          "interval_frames": 999,
+          "lifetime_frames": 20,
+          "size_start": 6,
+          "size_end": 0,
+          "color_start": [
+            0.4,
+            0.9,
+            1,
+            0.8
+          ],
+          "color_end": [
+            0.02,
+            0.2,
+            1,
+            0
+          ],
+          "additive": true,
+          "velocity_min": {
+            "x": -100,
+            "y": -100,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 100,
+            "y": 100,
+            "z": 0
+          }
+        }
+      ]
+    },
+    "muzzle_flash": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "muzzle",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 5,
+          "size_start": 19,
+          "size_end": 2,
+          "color_start": [
+            0.55,
+            0.95,
+            1,
+            0.9
+          ],
+          "color_end": [
+            0.03,
+            0.4,
+            1,
+            0
+          ],
+          "additive": true
+        }
+      ]
+    }
+  },
+  "entities": [
+    {
+      "id": "nebula",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/nebula",
+        "size": {
+          "x": 2800,
+          "y": 1575
+        },
+        "layer": -1000,
+        "visible": true
+      },
+      "shader_material": "nebula_grade"
+    },
+    {
+      "id": "player",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/player",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "layer": 20,
+        "visible": true
+      },
+      "shader_material": "player_hull"
+    },
+    {
+      "id": "rock_01",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_02",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_03",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_04",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_05",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_06",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_07",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_08",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_09",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_10",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_11",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_12",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_13",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_14",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_15",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_16",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_17",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_18",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "rock_19",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/asteroid",
+        "size": {
+          "x": 100,
+          "y": 100
+        },
+        "layer": 3,
+        "visible": false
+      },
+      "shader_material": "asteroid_grade"
+    },
+    {
+      "id": "hostile_01",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_01"
+    },
+    {
+      "id": "hostile_02",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_02"
+    },
+    {
+      "id": "hostile_03",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_03"
+    },
+    {
+      "id": "hostile_04",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_04"
+    },
+    {
+      "id": "hostile_05",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_05"
+    },
+    {
+      "id": "hostile_06",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_06"
+    },
+    {
+      "id": "hostile_07",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_07"
+    },
+    {
+      "id": "hostile_08",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_08"
+    },
+    {
+      "id": "hostile_09",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_09"
+    },
+    {
+      "id": "hostile_10",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_10"
+    },
+    {
+      "id": "hostile_11",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_11"
+    },
+    {
+      "id": "hostile_12",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_12"
+    },
+    {
+      "id": "hostile_13",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_13"
+    },
+    {
+      "id": "hostile_14",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_14"
+    },
+    {
+      "id": "hostile_15",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_15"
+    },
+    {
+      "id": "hostile_16",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_16"
+    },
+    {
+      "id": "hostile_17",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_17"
+    },
+    {
+      "id": "hostile_18",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_18"
+    },
+    {
+      "id": "hostile_19",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_19"
+    },
+    {
+      "id": "hostile_20",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_20"
+    },
+    {
+      "id": "hostile_21",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_21"
+    },
+    {
+      "id": "hostile_22",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_22"
+    },
+    {
+      "id": "hostile_23",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_23"
+    },
+    {
+      "id": "hostile_24",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_24"
+    },
+    {
+      "id": "hostile_25",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_25"
+    },
+    {
+      "id": "hostile_26",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_26"
+    },
+    {
+      "id": "hostile_27",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_27"
+    },
+    {
+      "id": "hostile_28",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/enemy",
+        "size": {
+          "x": 68,
+          "y": 68
+        },
+        "layer": 15,
+        "visible": false
+      },
+      "shader_material": "enemy_hull_28"
+    },
+    {
+      "id": "boss",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/boss",
+        "size": {
+          "x": 210,
+          "y": 210
+        },
+        "layer": 16,
+        "visible": false
+      },
+      "shader_material": "boss_hull"
+    },
+    {
+      "id": "detonation_01",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_01"
+    },
+    {
+      "id": "detonation_02",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_02"
+    },
+    {
+      "id": "detonation_03",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_03"
+    },
+    {
+      "id": "detonation_04",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_04"
+    },
+    {
+      "id": "detonation_05",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_05"
+    },
+    {
+      "id": "detonation_06",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_06"
+    },
+    {
+      "id": "detonation_07",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_07"
+    },
+    {
+      "id": "detonation_08",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_08"
+    },
+    {
+      "id": "detonation_09",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_09"
+    },
+    {
+      "id": "detonation_10",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_10"
+    },
+    {
+      "id": "detonation_11",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_11"
+    },
+    {
+      "id": "detonation_12",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_12"
+    },
+    {
+      "id": "detonation_13",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_13"
+    },
+    {
+      "id": "detonation_14",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_14"
+    },
+    {
+      "id": "detonation_15",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_15"
+    },
+    {
+      "id": "detonation_16",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/explosion",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 30,
+        "visible": false
+      },
+      "shader_material": "detonation_16"
+    }
+  ]
+}

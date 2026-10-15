@@ -1,0 +1,128 @@
+{
+  "ok": true,
+  "baseline": "0027ce408580b68b2578fb73aa239179d31b186e",
+  "workspace": {
+    "test_ignored": 3,
+    "test_passed": 391,
+    "strict_clippy_passed": true
+  },
+  "native_ui": {
+    "scope": "CPU raster and UI unit tests; no native GPU game acceptance",
+    "passed": 24,
+    "ignored_existing_gpu": 1
+  },
+  "web_ui": {
+    "font_catalog": true,
+    "real_browser_cases": 18,
+    "ok": true,
+    "errors": []
+  },
+  "source_example_verify": {
+    "steps": [
+      {
+        "status": "passed",
+        "name": "types"
+      },
+      {
+        "status": "passed",
+        "name": "assets"
+      },
+      {
+        "status": "passed",
+        "name": "layout:menu"
+      },
+      {
+        "status": "passed",
+        "name": "layout:playing"
+      },
+      {
+        "status": "passed",
+        "name": "layout:paused"
+      },
+      {
+        "status": "passed",
+        "name": "layout:upgrade"
+      },
+      {
+        "status": "passed",
+        "name": "tests"
+      }
+    ],
+    "passed": 7,
+    "ok": true,
+    "failed": 0
+  },
+  "actual_game_browser": {
+    "particles": 60,
+    "ok": true,
+    "errors": [],
+    "checks": [
+      "production official player boots with actual game WASM",
+      "semantic launch and keyboard movement",
+      "pointer firing and camera-relative stationary cursor",
+      "keyboard pulse and dodge",
+      "raw-key auto-fire mapping",
+      "scene shaders, native particles and semantic HUD present",
+      "pause freezes gameplay",
+      "official audio mute control",
+      "abandon confirmation can cancel",
+      "actual renderer reports shader and particle drawing",
+      "no browser or GPU compiler errors"
+    ],
+    "bloom": true,
+    "shader_materials": 24
+  },
+  "actual_wasm": {
+    "semantic_assertions": 27,
+    "ok": true,
+    "runtime_sha256": "af60a3b769713d7022b3417e44207fa77ea9b03bba20ffa1c38441a051ab5c96",
+    "checks": [
+      "menu",
+      "official semantic UI",
+      "original imagegen scene sprite",
+      "engine shader state",
+      "official ambience loop",
+      "native particle samples",
+      "engine dash audio",
+      "start",
+      "held movement",
+      "dash cooldown",
+      "burst cooldown",
+      "auto toggle",
+      "world y-up pointer aim/fire",
+      "pause freeze",
+      "resume",
+      "restart",
+      "abandon",
+      "raw official keyboard actions",
+      "official sound mixer",
+      "same-seed deterministic replay",
+      "different-seed content"
+    ],
+    "game_script_sha256": "037d3c0e853b14d48b54513a2aa0417e44c5759c8471faa4df8610f1770caf49",
+    "frames": 1501
+  },
+  "exported_native_wasm_parity": {
+    "negative_audio_omission_detected": true,
+    "cases": 10,
+    "ok": true
+  },
+  "manual_portrait": {
+    "screens": [
+      "menu",
+      "playing",
+      "paused"
+    ],
+    "height": 844,
+    "viewport_restored": true,
+    "width": 390
+  },
+  "claude_review": {
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "exit_code": 124,
+    "timeout_seconds": 150,
+    "version": "2.1.280",
+    "complete": false
+  }
+}

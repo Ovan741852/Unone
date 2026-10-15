@@ -461,7 +461,7 @@ fn tool_definitions() -> Vec<Value> {
                     "cols": {"type": "integer", "minimum": 16, "maximum": 400, "description": "Grid columns; defaults to 96."},
                     "rows": {"type": "integer", "minimum": 8, "maximum": 200, "description": "Grid rows; defaults to 48."},
                     "strict": {"type": "boolean", "default": false, "description": "Turn layout findings into ok=false."}
-                    ,"overlap_policy":{"type":"object","description":"version:1, screens:{screen:[{behind,front,reason}]}; only earlier background images may be exempted."}
+                    ,"overlap_policy":{"type":"object","description":"version:1, screens:{screen:[{behind,front,reason}]}; only earlier background images or panels may be exempted."}
                 }
             })),
             true,
