@@ -99,14 +99,18 @@ function aspectOf(canvas) {
   return width / height;
 }
 
+/** Project a retained 0..100, y-up screen pointer against the current camera. */
+export function projectScreenPointer(canvas, screen, snapshot) {
+  return viewToWorld(screen, worldOf(snapshot).camera, aspectOf(canvas));
+}
+
 export function worldFromPointer(canvas, event, snapshot) {
-  const world = worldOf(snapshot);
   const rect = canvas.getBoundingClientRect();
   const view = {
     x: ((event.clientX - rect.left) / rect.width) * 100,
     y: (1 - (event.clientY - rect.top) / rect.height) * 100,
   };
-  return viewToWorld(view, world.camera, aspectOf(canvas));
+  return projectScreenPointer(canvas, view, snapshot);
 }
 
 function colorFor(entity) {

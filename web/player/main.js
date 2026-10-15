@@ -8,7 +8,7 @@ import {createRuntimeBackend} from '../shared/runtime-backend.mjs';
 import {createPresentationInterpolator} from '../shared/presentation-interpolation.mjs';
 import {createAudioPlayback} from '../shared/audio-playback.js';
 import {requireAssetEncoding} from '../shared/asset-encoding.js';
-import {worldFromPointer} from '../shared/webgpu-snapshot.js';
+import {worldFromPointer,projectScreenPointer} from '../shared/webgpu-snapshot.js';
 /* PROFILE_IMPORT */
 /* DEVELOPER_IMPORT */
 const canvas=document.querySelector('#game'),status=document.querySelector('#status');
@@ -24,7 +24,7 @@ const uiScroll=createUiScrollHost({canvas,stage:document.querySelector('#ui-laye
  requestWindow:async request=>{acceptSnapshot(await backend.request({kind:'ui',request}));draw();},requestRender:()=>{if(snapshot&&renderer)draw();},onDiagnostic:fail});
 const renderUi=snapshot=>uiRenderer.draw(uiScroll.draw(snapshot));
 let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null;
-let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=null;
+let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=null,hasWorldPointer=false;
 let saved,key,projectPayload;
 /* PROFILE_INIT */
 const metrics={};
@@ -40,7 +40,11 @@ function draw(){
  /* PROFILE_FRAME */
 }
 async function advance(){
- const began=performance.now(),frame=manualInput??input.consumeFrame();manualInput=null;
+ const began=performance.now(),browserInput=manualInput==null,frame=manualInput??input.consumeFrame();manualInput=null;
+ // The camera may follow a moving entity while the physical mouse stays still.
+ // Reproject the consumed screen sample, preserving queued down/up edges and
+ // leaving developer-supplied world coordinates untouched.
+ if(browserInput&&hasWorldPointer)frame.pointer={...frame.pointer,position:projectScreenPointer(canvas,frame.pointer.screen_position,snapshot)};
  /* PROFILE_INPUT */
  const nextSnapshot=await backend.request({kind:'tick',input:frame});
  /* PROFILE_TICK_END */
@@ -76,7 +80,7 @@ async function start(){
  scheduler.start();
  window.addEventListener('resize',()=>{backend.request({kind:'aspect',value:canvas.clientWidth/canvas.clientHeight}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);});
 }
-function pointer(event,down,kind){if(!snapshot)return;const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height;const normalized={position:worldFromPointer(canvas,event,snapshot),screen_position:{x:x*100,y:(1-y)*100},down};input.updatePointer(normalized,kind);}
+function pointer(event,down,kind){if(!snapshot)return;const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height;const normalized={position:worldFromPointer(canvas,event,snapshot),screen_position:{x:x*100,y:(1-y)*100},down};input.updatePointer(normalized,kind);hasWorldPointer=true;}
 function routeUi(e,kind){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=100-(e.clientY-r.top)/r.height*100;return uiScroll.pointer(e,kind,uiRenderer.hitTest(x,y))||uiRenderer.pointer({kind,pointerId:e.pointerId,x,y});}
 canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);audio?.unlock();if(!routeUi(e,'down'))pointer(e,true,'edge');});
 canvas.addEventListener('pointermove',e=>{if(!routeUi(e,'move'))pointer(e,Boolean(e.buttons),'move');});canvas.addEventListener('pointerup',e=>{if(!routeUi(e,'up'))pointer(e,false,'edge');});canvas.addEventListener('pointercancel',e=>{routeUi(e,'cancel');uiRenderer.releaseAll();input.releaseAll();});
