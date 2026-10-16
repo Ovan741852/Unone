@@ -3,6 +3,7 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import test from 'node:test';
 import {createHostInput} from './host-input.js';
+import {createUiPointerRouter} from './canvas-ui.mjs';
 import {projectScreenPointer,worldFromPointer} from './webgpu-snapshot.js';
 
 const source=readFileSync(new URL('../player/main.js',import.meta.url),'utf8');
@@ -101,4 +102,36 @@ test('developer manual world input bypasses projection and does not drain browse
  await tick();
  assert.equal(frames[1].pointer.position.x,286);
  assert.equal(frames[1].pointer.down,true);
+});
+
+test('official player routes complete slider streams into semantic frames without world pointer edges',()=>{
+ const listeners=new Map(),input=createHostInput(),router=createUiPointerRouter({onSlider:event=>input.queueSliderInteraction(event)});
+ router.setTree({children:[{kind:'slider',id:'volume',action:'Volume',rect:{x:20,y:40,width:60,height:20},drag:{axis:'horizontal',reverse:false,enabled:true,track_rect:{x:25,y:45,width:50,height:2},hit_rect:{x:20,y:40,width:60,height:20}}}]});
+ const context=vm.createContext({input,snapshot:snapshot(),hasWorldPointer:false,worldFromPointer,audio:null,
+  canvas:{...canvas,addEventListener:(kind,fn)=>listeners.set(kind,fn),setPointerCapture:()=>{}},
+  uiRenderer:router,uiScroll:{pointer:()=>false}});
+ const routeSource=source.slice(source.indexOf('function routeUi('),source.indexOf("window.addEventListener('keydown'"));
+ const lostSource=source.split('\n').find(line=>line.startsWith("canvas.addEventListener('lostpointercapture'"));
+ vm.runInContext(pointerSource+'\n'+routeSource+'\n'+lostSource,context);
+ const event=(x,y,pointerId=4)=>({pointerId,clientX:100+x/100*1440,clientY:50+(100-y)/100*900,buttons:1});
+ listeners.get('pointerdown')(event(50,46));listeners.get('pointermove')(event(99,99));listeners.get('pointerup')(event(99,99));
+ assert.deepEqual(input.consumeFrame().ui_sliders,{volume:{phase:'start',ratio:.5}});
+ assert.deepEqual(input.consumeFrame().ui_sliders,{volume:{phase:'drag',ratio:1}});
+ assert.deepEqual(input.consumeFrame().ui_sliders,{volume:{phase:'end',ratio:1}});
+ assert.equal(input.pendingPointerFrames.length,0);assert.equal(context.hasWorldPointer,false);assert.equal(input.pointer.down,false);
+ listeners.get('pointerdown')(event(50,46));listeners.get('lostpointercapture')(event(50,46));
+ assert.equal(input.consumeFrame().ui_sliders.volume.phase,'start');assert.equal(input.consumeFrame().ui_sliders.volume.phase,'cancel');
+ router.setTree({children:[
+  {kind:'slider',id:'volume',action:'Volume',rect:{x:20,y:40,width:60,height:20},drag:{axis:'horizontal',reverse:false,enabled:true,track_rect:{x:25,y:45,width:50,height:2},hit_rect:{x:20,y:40,width:60,height:20}}},
+  {kind:'slider',id:'gain',action:'Gain',rect:{x:80,y:40,width:20,height:20},drag:{axis:'horizontal',reverse:false,enabled:true,track_rect:{x:82,y:45,width:16,height:2},hit_rect:{x:80,y:40,width:20,height:20}}},
+ ]});
+ listeners.get('pointerdown')(event(50,46));listeners.get('pointerdown')(event(90,46,5));input.consumeFrame();
+ listeners.get('pointercancel')(event(90,46,5));listeners.get('pointermove')(event(75,46));
+ assert.deepEqual(input.consumeFrame().ui_sliders,{gain:{phase:'cancel',ratio:.5},volume:{phase:'drag',ratio:1}});
+ listeners.get('pointerup')(event(75,46));assert.equal(input.consumeFrame().ui_sliders.volume.phase,'end');
+ listeners.get('pointerdown')(event(50,46));input.consumeFrame();
+ listeners.get('pointerdown')(event(10,10,6));listeners.get('pointercancel')(event(10,10,6));
+ assert.equal(input.consumeFrame().pointer.down,false);
+ listeners.get('pointermove')(event(25,46));assert.equal(input.consumeFrame().ui_sliders.volume.phase,'drag');
+ listeners.get('pointerup')(event(25,46));assert.equal(input.consumeFrame().ui_sliders.volume.phase,'end');
 });

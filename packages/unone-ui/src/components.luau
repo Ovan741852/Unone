@@ -25,10 +25,13 @@ local leafFields: {[string]: Fields} = {
 }
 local componentFields: Fields = {id=true,component=true,children=true,surface=true}
 local screenFields: Fields = {id=true,node=true,children=true,budget=true}
-local scrollFields: Fields = {id=true,viewport=true,content=true,axis=true,enabled=true,resetKey=true,wheelRect=true}
+local sliderOptions: Fields = {id=true,value=true,min=true,max=true,step=true,axis=true,reverse=true}
+local sliderViewFields: Fields = {rect=true,text=true,style=true,trackRect=true,hitPadding=true,enabled=true,action=true}
+local rectFields: Fields = {x=true,y=true,width=true,height=true}
+local scrollFields: Fields = {id=true,viewport=true,content=true,axis=true,enabled=true,inertia=true,deceleration=true,resetKey=true,wheelRect=true}
 local virtualFields: Fields = {
     id=true,viewport=true,items=true,key=true,renderItem=true,rowHeight=true,gapY=true,
-    enabled=true,resetKey=true,wheelRect=true,
+    enabled=true,inertia=true,deceleration=true,resetKey=true,wheelRect=true,
 }
 local virtualGridFields = table.clone(virtualFields)
 virtualGridFields.columns = true
@@ -48,7 +51,10 @@ local function fields(value: any, allowed: Fields, path: string)
     for key in pairs(value) do
         if type(key)~="string" or not allowed[key] then
             local hint = ""
-            if key=="onClick" or key=="onPress" or key=="onChange" or key=="onclick" then
+            if (path=="slider" and (key=="value" or key=="min" or key=="max" or key=="step"))
+                or (string.sub(path,1,12)=="createSlider" and (key=="onChange" or key=="onClick" or key=="onPress")) then
+                hint = "; use createSlider({id=...,value=...,min=...,max=...,step=...}), publish control.view({rect=...}), and call control.update(api.input) once in Game.update; no callbacks"
+            elseif key=="onClick" or key=="onPress" or key=="onChange" or key=="onclick" then
                 hint = "; declare action='Meaning' and read api.input.wasPressed(action) once per press or api.input.isDown(action) while held; no UI callbacks or automatic value binding"
             elseif key=="placement" then
                 hint = "; flatten placement fields into the props: rect or anchor+size, with optional pivot/offset"
@@ -142,6 +148,24 @@ local function identifier(instanceId: string, role: string): string
     return instanceId.."/"..escaped
 end
 
+local function finite(value: any, label: string): number
+    assert(type(value)=="number" and value==value and math.abs(value)<math.huge,
+        "UI_SLIDER_NUMBER: "..label.." must be finite")
+    return value
+end
+
+local function sliderRect(value: any, label: string): any
+    fields(value,rectFields,label)
+    local result = {}
+    for _, key in ipairs({"x","y","width","height"}) do
+        result[key] = finite(value[key],label.."."..key)
+    end
+    assert(result.width>0 and result.height>0,"UI_SLIDER_RECT: "..label.." must have positive width and height")
+    assert(math.abs(result.x+result.width)<math.huge and math.abs(result.y+result.height)<math.huge,
+        "UI_SLIDER_RECT: "..label.." bounds must be finite")
+    return result
+end
+
 local function makeKit(theme: any?): any
     if theme~=nil then
         fields(theme,themeFields,"theme")
@@ -163,6 +187,107 @@ local function makeKit(theme: any?): any
     kit.text = function(props: any): any return leaf("text",props) end
     kit.button = function(props: any): any return leaf("button",props) end
     kit.slider = function(props: any): any return leaf("slider",props) end
+    -- The official control owns numeric/gesture state, while the host owns
+    -- hit testing in the fully projected/clipped stage or scroll space.
+    -- view remains pure so virtual materialization never advances interaction.
+    kit.createSlider = function(options: any): any
+        available()
+        fields(options,sliderOptions,"createSlider")
+        identifier(options.id,"control")
+        assert(#options.id<=1024,"UI_SLIDER_ID: id must be at most 1024 UTF-8 bytes")
+        local id = options.id
+        local minimum = if options.min==nil then 0 else finite(options.min,"min")
+        local maximum = if options.max==nil then 1 else finite(options.max,"max")
+        assert(maximum>minimum and maximum-minimum<math.huge,
+            "UI_SLIDER_RANGE: max must exceed min with a finite range")
+        local step = if options.step==nil then nil else finite(options.step,"step")
+        assert(step==nil or step>0,"UI_SLIDER_STEP: step must be positive")
+        local axis = if options.axis==nil then "horizontal" else options.axis
+        assert(axis=="horizontal" or axis=="vertical","UI_SLIDER_AXIS: axis must be horizontal or vertical")
+        assert(options.reverse==nil or type(options.reverse)=="boolean","UI_SLIDER_REVERSE: reverse must be boolean")
+        local reverse = options.reverse==true
+        local function normalize(candidate: any): number
+            local number = math.clamp(finite(candidate,"value"),minimum,maximum)
+            local stepSize = step
+            -- A non-divisible step still permits both exact endpoints.
+            if number==minimum or number==maximum or stepSize==nil then return number end
+            local steps = (number-minimum)/stepSize
+            -- Beyond integer precision a step is smaller than the representable
+            -- value interval; preserving the value also avoids overflow.
+            if steps<4503599627370496 then
+                number = math.clamp(minimum+math.floor(steps+0.5)*stepSize,minimum,maximum)
+            end
+            return number
+        end
+        local value = normalize(options.value)
+        local dragging, blocked = false, false
+        local control: any = {}
+        control.getValue = function(): number return value end
+        control.setValue = function(candidate: number)
+            value = normalize(candidate)
+            dragging = false
+            blocked = true
+        end
+        control.cancel = function()
+            dragging = false
+            blocked = true
+        end
+        control.view = function(props: any): any
+            available()
+            fields(props,sliderViewFields,"createSlider.view")
+            local rect = sliderRect(props.rect,"createSlider.view.rect")
+            local track = if props.trackRect==nil then copy(rect) else sliderRect(props.trackRect,"createSlider.view.trackRect")
+            local padding = if props.hitPadding==nil then 0.65 else finite(props.hitPadding,"hitPadding")
+            assert(padding>=0,"UI_SLIDER_PADDING: hitPadding must be non-negative")
+            assert(props.enabled==nil or type(props.enabled)=="boolean","UI_SLIDER_ENABLED: enabled must be boolean")
+            local action = if props.action==nil then id else props.action
+            assert(type(action)=="string" and string.find(action,"%S")~=nil,"UI_SLIDER_ACTION: action must be a non-empty string")
+            local x, y = math.min(rect.x,track.x-padding), math.min(rect.y,track.y-padding)
+            local hitRect = {x=x,y=y,
+                width=math.max(rect.x+rect.width,track.x+track.width+padding)-x,
+                height=math.max(rect.y+rect.height,track.y+track.height+padding)-y}
+            finite(hitRect.x,"hit_rect.x");finite(hitRect.y,"hit_rect.y")
+            finite(hitRect.width,"hit_rect.width");finite(hitRect.height,"hit_rect.height")
+            local node = leaf("slider",{id=id,text=props.text,action=action,rect=rect,style=props.style})
+            node.drag = {axis=axis,reverse=reverse,track_rect=track,hit_rect=hitRect,enabled=props.enabled~=false}
+            return node
+        end
+        control.update = function(input: any): any
+            assert(type(input)=="table",
+                "UI_SLIDER_INPUT: pass api.input to control.update once in Game.update")
+            local getInteraction: (string) -> any = input.getSliderInteraction
+            assert(type(getInteraction)=="function",
+                "UI_SLIDER_INPUT: pass api.input to control.update once in Game.update")
+            local before = value
+            local started, released, cancelled = false, false, false
+            local interaction = getInteraction(id)
+            if interaction~=nil then
+                assert(type(interaction)=="table","UI_SLIDER_INTERACTION: interaction must be a table")
+                local phase = interaction.phase
+                assert(phase=="start" or phase=="drag" or phase=="end" or phase=="cancel",
+                    "UI_SLIDER_INTERACTION: unsupported interaction phase")
+                if phase=="start" then
+                    blocked = false
+                    dragging = true
+                    started = true
+                end
+                if phase=="cancel" then
+                    cancelled = dragging and not blocked
+                    dragging = false
+                    blocked = true
+                elseif not blocked and dragging then
+                    local ratio = finite(interaction.ratio,"interaction.ratio")
+                    assert(ratio>=0 and ratio<=1,"UI_SLIDER_INTERACTION: ratio must be in 0..1")
+                    -- The host already applied axis/reverse in projected space.
+                    value = normalize(if ratio==1 then maximum else minimum+(maximum-minimum)*ratio)
+                    if phase=="end" then dragging = false; released = true end
+                end
+            end
+            return {value=value,changed=value~=before,dragging=dragging,
+                started=started,released=released,cancelled=cancelled}
+        end
+        return control
+    end
     kit.combobox = function(props: any): any return leaf("combobox",props) end
     kit.panel = function(props: any): any return leaf("panel",props) end
     kit.image = function(props: any): any return leaf("image",props) end

@@ -22,6 +22,36 @@ test('nested viewports intersect parent clips and disabled collections cannot ac
  source.children[0].scroll.enabled=false;const disabled=projectScrollTree(source).tree;assert.equal(disabled.children.find(n=>n.id==='item').kind,'text');
  const router=createUiPointerRouter();router.setTree(disabled);assert.equal(router.pointer({kind:'down',x:16,y:15}),false);
 });
+test('slider drag track and hit rectangles follow nested local scroll projection without mutating the source',()=>{
+ const slider={kind:'slider',id:'gain',rect:{x:2,y:12,width:15,height:6},drag:{axis:'horizontal',reverse:false,enabled:true,
+  track_rect:{x:3,y:14,width:13,height:1},hit_rect:{x:2,y:12,width:15,height:6}}};
+ const inner=view('inner',{x:5,y:10,width:20,height:30},[slider,leaf('tail',{x:0,y:100,width:10,height:10})]);
+ const outer=view('outer',{x:10,y:10,width:40,height:60},[inner,leaf('outer_tail',{x:0,y:100,width:10,height:10})]);
+ const source=tree([outer]),projected=projectScrollTree(source,new Map([['outer',{y:5}],['inner',{y:8}]])).tree;
+ const gain=projected.children.find(n=>n.id==='gain');
+ assert.deepEqual(gain.rect,{x:17,y:55,width:15,height:6});
+ assert.deepEqual(gain.drag.track_rect,{x:18,y:58,width:13,height:1});
+ assert.deepEqual(gain.drag.hit_rect,gain.rect);assert.deepEqual(gain.clip,{x:15,y:35,width:20,height:30});
+ assert.deepEqual(slider.drag.track_rect,{x:3,y:14,width:13,height:1});
+ const stage=projectScrollTree(tree([{...slider,rect:{x:2,y:50,width:15,height:6}}])).tree.children[0];
+ assert.deepEqual(stage.drag,slider.drag,'stage-space control geometry remains unchanged');
+});
+
+test('disabling a scroll ancestor removes slider drag metadata and cancels its capture',()=>{
+ const gain={kind:'slider',id:'gain',rect:{x:0,y:0,width:20,height:6},drag:{axis:'horizontal',reverse:false,enabled:true,
+  track_rect:{x:0,y:0,width:20,height:6},hit_rect:{x:-.65,y:-.65,width:21.3,height:7.3}}};
+ const source=tree([view('rows',{x:10,y:10,width:30,height:60},[gain])]),events=[];
+ const router=createUiPointerRouter({onSlider:event=>events.push(event)});
+ router.setTree(projectScrollTree(source).tree);
+ assert(router.pointer({kind:'down',pointerId:1,x:15,y:65}));
+ source.children[0].scroll.enabled=false;
+ const disabled=projectScrollTree(source).tree;
+ assert.equal(disabled.children.find(n=>n.id==='gain').drag,undefined);
+ router.setTree(disabled);
+ assert.deepEqual(events.map(e=>e.phase),['start','cancel']);
+ assert(router.pointer({kind:'up',pointerId:1,x:15,y:65}),'cancelled stream remains captured until terminal');
+ assert.equal(router.pointer({kind:'down',pointerId:2,x:15,y:65}),false);
+});
 test('horizontal and both axes clamp independently without artificial overflow',()=>{
  const node=view('scroll',{x:0,y:0,width:50,height:50},[leaf('item',{x:0,y:0,width:120,height:80})],{axis:'both'});
  const r=projectScrollTree(tree([node]),new Map([['scroll',{x:900,y:900}]]));assert.deepEqual(r.views[0].offset,{x:70,y:30});

@@ -110,6 +110,20 @@ pub fn search(query: &str) -> Vec<ApiDescriptor> {
 /// adding an unknown word cannot turn a query into a broad OR search.
 fn ui_authoring_search(terms: &[&str]) -> Option<Vec<ApiDescriptor>> {
     let has = |aliases: &[&str]| terms.iter().any(|term| aliases.contains(term));
+    // A complete numeric control is the default slider route. The old semantic
+    // leaf remains exactly addressable, but does not implement drag/value state.
+    let slider = ["slider", "sliders", "createslider", "slidercomponent", "滑桿", "滑杆", "滑塊", "滑块"];
+    let slider_context = ["ui", "official", "shared", "reusable", "package", "kit", "create", "build", "component", "components", "control", "controls", "widget", "value", "range", "drag", "dragging", "track", "capture", "pointer", "mouse", "touch", "release", "released", "step", "min", "max", "minimum", "maximum", "snap", "disabled", "vertical", "horizontal", "volume", "settings", "update", "change", "changed", "onchange", "interactive", "draggable", "numeric", "number", "set", "get", "read", "adjust", "handle", "thumb", "可", "互動", "互动", "數字", "数字", "控制", "調整", "调整", "讀取", "读取", "變更", "变更", "官方", "共用", "套件", "建立", "元件", "組件", "组件", "拖曳", "拖動", "拖动", "數值", "数值", "範圍", "范围", "步進", "步进", "放開", "放开", "垂直", "水平", "如何", "使用", "滑鼠", "鼠标", "觸控", "触控", "設定", "设置"];
+    if let Some(tokens) = fully_segment_ui_terms(terms, &[&slider[..], &slider_context[..]].concat())
+        && tokens.iter().any(|term| slider.contains(term)) {
+        return Some(["ui.components.createSlider", "input.getSliderInteraction", "ui.components.slider", "ui.components.create"].into_iter().filter_map(describe).collect());
+    }
+    let inertia = ["inertia", "momentum", "deceleration", "friction", "慣性", "惯性", "減速", "减速"];
+    let inertia_context = ["ui", "scroll", "scrollview", "scroll_view", "view", "virtual", "list", "grid", "scrollable", "content", "configure", "configuration", "set", "settings", "drag", "dragging", "enable", "enabled", "decay", "rate", "speed", "捲動", "滾動", "滚动", "清單", "清单", "列表", "容器", "虛擬", "虚拟", "設定", "设置", "參數", "参数", "速度", "開啟", "开启", "如何", "使用"];
+    if let Some(tokens) = fully_segment_ui_terms(terms, &[&inertia[..], &inertia_context[..]].concat())
+        && tokens.iter().any(|term| inertia.contains(term)) {
+        return Some(["ui.components.scrollView", "ui.components.virtualList", "ui.components.virtualGrid", "ui.scrollView"].into_iter().filter_map(describe).collect());
+    }
     let press = ["click", "clicked", "pressed", "press", "onclick", "buttonclick", "buttonpressed", "按鈕點擊", "按钮点击", "點擊", "点击", "按一下", "按下", "按下瞬間", "按下瞬间", "單次觸發", "单次触发"];
     let release = ["release", "released", "放開", "放开", "釋放", "释放"];
     let hold = ["hold", "held", "holding", "長按", "长按", "按住", "持續按住", "持续按住"];
@@ -1813,6 +1827,20 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["input.wasPressed", "input.isDown", "ui.components.button"],
         ),
         descriptor(
+            "input.getSliderInteraction",
+            "input",
+            "Read a non-consuming semantic slider event for this successful simulation tick; prefer the official createSlider control for numeric dragging.",
+            "Advanced control implementations and deterministic tests. Official Web/native hosts hit-test the projected/clipped slider, capture its pointer and normalize its track ratio. Ordinary projects call control.update(api.input) instead of writing pointer geometry.",
+            "Not a persistent value, callback or screen-pointer sample. Do not poll it during virtual renderItem or invent events from local scroll coordinates.",
+            vec![parameter("id", "string", "Stable ID of the slider control published by createSlider().view().")],
+            "UiSliderInteraction? = {phase:'start'|'drag'|'end'|'cancel',ratio:number in 0..1}; nil when no event was delivered this tick.",
+            vec!["Read-only; multiple reads never consume the event"],
+            "The current tick snapshot is stable. Successful ticks consume pending events; a following tick without input has nil, while a failed tick preserves pending events for retry. Hosts retain start/end/cancel order and coalesce adjacent drag samples.",
+            vec!["Use matching 0.3.0 SDK/Core/player templates. ui_sliders frames reject unknown phase, non-finite/out-of-range ratio, blank/oversized ID and more than 256 controls."],
+            "local event = api.input.getSliderInteraction(\"volume\") -- advanced: ordinary code uses volume.update(api.input)",
+            vec!["ui.components.createSlider", "ui.components.slider"],
+        ),
+        descriptor(
             "input.getPointerPosition",
             "input",
             "Read the pointer position converted to world space by the platform adapter.",
@@ -1960,21 +1988,35 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["ui.components.create", "ui.setRoot"],
         ),
         descriptor(
+            "ui.components.createSlider",
+            "ui",
+            "Create the official reusable numeric Slider control with host-owned hit testing/capture and package-owned range, step, value and gesture lifecycle.",
+            "Default for slider, slider drag, slider value, volume slider, 滑桿拖曳 and 滑桿數值. Available on api.ui.components and the themed kit. Declare @unone/ui 0.3.0 and use canonical UiSliderOptions, UiSliderControl, UiSliderViewProps and UiSliderUpdate from game api typings.",
+            "Not a callback, automatic layout or game settings binding. Create once; keep whether/when to apply a setting in the project. Use the low-level slider leaf only when deliberately implementing another control protocol.",
+            vec![parameter("options", "UiSliderOptions", "id and finite value required; min=0, max=1 (max>min), optional positive step snaps relative to min, both endpoints reachable; axis='horizontal'|'vertical' (default horizontal), reverse=false.")],
+            "UiSliderControl with view(props)->UiSliderNode; update(api.input)->{value,changed,dragging,started,released,cancelled}; getValue(); setValue(value); cancel().",
+            vec!["Own one pure Luau UI control model; no hardware setting or implicit publication"],
+            "Call update(api.input) once per Game.update, then read getValue from any view/readers. view is UI-pure: rect required in its current coordinate space, trackRect defaults to rect, hitPadding defaults to 0.65 normalized UI units, enabled defaults true, optional text/action/style. Hosts project scroll-local rectangles, clip starts, preserve captured outside release and cancel on removal/disable/geometry change. setValue and cancel block the old drag until a new start.",
+            vec!["Do not recreate the model every tick or update it inside view/renderItem. Do not implement contains/pointerWasDown/clamp in each project. view takes explicit rects, not anchor placement. Unknown fields/callbacks fail; value/min/max/step belong in createSlider options, not the low-level slider leaf. Legacy raw slider without drag remains pointer passthrough."],
+            "local volume = api.ui.components.createSlider({id=\"volume\",value=72,min=0,max=100,step=1}); -- Game.update: local change=volume.update(api.input); -- View: volume.view({rect={x=10,y=30,width=80,height=8},text=tostring(volume.getValue())})",
+            vec!["ui.components.create", "ui.components.slider", "input.getSliderInteraction", "ui.setRoot"],
+        ),
+        descriptor(
             "ui.components.create",
             "ui",
             "Create the official @unone/ui shared component kit for every canonical UI control, screen/component composition and existing scroll helpers with project-owned theme styles.",
-            "For UI package, shared components, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.2.0\"} in project.unone.json. See docs/ui-components.md and docs/ui-styling.md. Use canonical EngineApi, UiApi and UiComponentKit types from game api typings; do not replace them with ui:any. The returned themed kit and api.ui.components both expose text/button/slider/combobox/panel/image/component/screen/scrollView/virtualList/virtualGrid, id and composeStyle. Direct module constructors use no theme defaults.",
+            "For UI package, shared components, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.3.0\"} in project.unone.json. See docs/ui-components.md and docs/ui-styling.md. Use canonical EngineApi, UiApi and UiComponentKit types from game api typings; do not replace them with ui:any. The returned themed kit and api.ui.components both expose createSlider/text/button/slider/combobox/panel/image/component/screen/scrollView/virtualList/virtualGrid, id and composeStyle. Prefer createSlider for a complete numeric drag control; slider is the low-level compatibility leaf. Direct module constructors use no theme defaults.",
             "No hardcoded theme, layout, binding, screen manager or business behavior. Themes, content, state, actions and geometry belong to project Luau. Custom factories remain valid. Constructors return the existing UI tree for ui.setRoot.",
             vec![parameter(
                 "theme",
                 "UiComponentsTheme?",
                 "Optional per-kind UiStyle defaults: text, button, panel, image, slider, combobox only. All leaf props use flattened UiPlacement: explicit rect OR anchor+size, plus canonical leaf fields except kind. component takes id, component name, explicit placement, optional children and surface. surface={kind='panel'|'image', asset?,fit?,slice?,alt?,style?} prepends id..'/surface' with background_for={component=id} and the component's unchanged placement. Children retain their authored coordinates and order. screen takes id/node/children and optional budget; scroll helpers retain their existing options and local top-left/y-down content contract.",
             )],
-            "UiComponentKit; text -> UiTextNode, button -> UiButtonNode, slider -> UiSliderNode, combobox -> UiComboBoxNode, panel -> UiPanelNode, image -> UiImageNode, component -> UiComponentNode, screen -> UiScreen; scrollView/virtualList/virtualGrid -> UiNode; id -> string; composeStyle -> UiStyle.",
+            "UiComponentKit; createSlider -> UiSliderControl (create once, update in Game.update, publish view); text -> UiTextNode, button -> UiButtonNode, slider -> UiSliderNode, combobox -> UiComboBoxNode, panel -> UiPanelNode, image -> UiImageNode, component -> UiComponentNode, screen -> UiScreen; scrollView/virtualList/virtualGrid -> UiNode; id -> string; composeStyle -> UiStyle.",
             vec!["Construct pure Luau tables; does not publish UI or mutate props/theme"],
             "No simulation step. Styles are copied; per-leaf overrides win, padding merges by edge and RGBA arrays replace. Generated backgrounds still use the canonical strict scope/overlap validation at setRoot.",
             vec![
-                "UI_PACKAGE_NOT_DECLARED: add runtime_packages: {\"@unone/ui\":\"0.2.0\"} to project.unone.json; info() remains available for discovery.",
+                "UI_PACKAGE_NOT_DECLARED: add runtime_packages: {\"@unone/ui\":\"0.3.0\"} to project.unone.json; info() remains available for discovery.",
                 "Both api.ui.components.button and kit.button exist. api.ui.component and onClick do not exist; publish with ui.setRoot and read semantic action edges with input.wasPressed.",
                 "Author exactly rect OR anchor+size on each node; component children do not become local coordinates. Surface ID id..'/surface' must be globally unique.",
                 "Keep foreground and partial-overlap checks enabled; a surface does not excuse unrelated or protruding content.",
@@ -2072,11 +2114,11 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec![parameter(
                 "options",
                 "UiScrollOptions",
-                "id, viewport, content; optional axis, enabled, resetKey, wheelRect. Content rects are local top-left/y-down; only viewport is in its containing space.",
+                "id, viewport, content; optional axis, enabled, resetKey, wheelRect, inertia=false and deceleration=8 (finite (0,100], exponential velocity decay in s^-1). Content rects are local top-left/y-down; only viewport is in its containing space.",
             )],
             "UiNode; insert into ui.setRoot children.",
             vec!["Construct UI node only"],
-            "Host scroll does not advance gameplay.",
+            "Host scroll and optional release inertia do not advance gameplay. New input, pause, geometry/config changes, reset, disable, unmount and bounds stop motion. No elastic overscroll.",
             vec!["Do not put stage-space rects in content or hand-author contentHeight/maxScroll."],
             "local view = api.ui.scrollView({id='help',viewport={left=10,top=10,width=80,height=80},content={}})",
             vec!["ui.virtualList", "ui.virtualGrid", "ui.setRoot"],
@@ -2090,7 +2132,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec![parameter(
                 "options",
                 "UiVirtualOptions",
-                "id, viewport, items, key field/function, rowHeight, renderItem; optional gapY, enabled, resetKey, wheelRect.",
+                "id, viewport, items, key field/function, rowHeight, renderItem; optional gapY, enabled, resetKey, wheelRect, inertia=false and deceleration=8 s^-1 (finite (0,100]).",
             )],
             "scroll_view UiNode with virtual_items metadata and bounded materialized children.",
             vec!["Register Lua view callback"],
@@ -2346,7 +2388,7 @@ fn ui_component_descriptors() -> Vec<ApiDescriptor> {
     for (method, props, returns, purpose, example) in [
         ("text", "UiComponentTextProps", "UiTextNode", "Construct a typed text leaf; project text, explicit placement and optional typography style.", "local title = api.ui.components.text({id=\"title\",text=\"Settings\",rect={x=10,y=75,width=80,height=12},style={font_size=4}})"),
         ("button", "UiComponentButtonProps", "UiButtonNode", "Create a typed semantic action button; use input.wasPressed(action) for one activation per press.", "local button = api.ui.components.button({id=\"apply\",text=\"Apply\",action=\"ApplySettings\",rect={x=60,y=10,width=30,height=8}})"),
-        ("slider", "UiComponentSliderProps", "UiSliderNode", "Create a typed slider control with a semantic action; the project owns its value and drag mapping.", "local slider = api.ui.components.slider({id=\"volume\",text=\"Volume\",action=\"AdjustVolume\",rect={x=10,y=30,width=80,height=8}})"),
+        ("slider", "UiComponentSliderProps", "UiSliderNode", "Construct a low-level semantic slider leaf. For a complete numeric/drag control, prefer ui.components.createSlider; this compatibility leaf alone does not own value or capture.", "local slider = api.ui.components.slider({id=\"volume\",text=\"Volume\",action=\"AdjustVolume\",rect={x=10,y=30,width=80,height=8}})"),
         ("combobox", "UiComponentComboBoxProps", "UiComboBoxNode", "Create a typed combobox/dropdown control with a semantic action and project-owned expanded state.", "local choice = api.ui.components.combobox({id=\"quality\",text=\"High\",action=\"ChooseQuality\",expanded=false,rect={x=10,y=45,width=40,height=8}})"),
         ("panel", "UiComponentPanelProps", "UiPanelNode", "Construct a decorative panel leaf with box styles and optional explicit background scope.", "local panel = api.ui.components.panel({id=\"paper\",rect={x=10,y=10,width=80,height=80},background_for={screen=true},style={background={0.03,0.05,0.08,1}}})"),
         ("image", "UiComponentImageProps", "UiImageNode", "Construct a typed image leaf with optional fit, nine-slice, box style and background scope.", "local image = api.ui.components.image({id=\"portrait\",asset=\"portrait\",rect={x=10,y=20,width=25,height=30},fit=\"contain\"})"),
@@ -2355,7 +2397,7 @@ fn ui_component_descriptors() -> Vec<ApiDescriptor> {
     ] {
         result.push(descriptor(
             &format!("ui.components.{method}"), "ui", purpose,
-            "Official @unone/ui control entrypoint; declare runtime_packages={\"@unone/ui\":\"0.2.0\"}. The same method exists on the UiComponentKit returned by create(theme?). See docs/ui-components.md; use game api typings for canonical EngineApi, UiApi and UiComponentKit.",
+            "Official @unone/ui control entrypoint; declare runtime_packages={\"@unone/ui\":\"0.3.0\"}. The same method exists on the UiComponentKit returned by create(theme?). See docs/ui-components.md; use game api typings for canonical EngineApi, UiApi and UiComponentKit.",
             "No callbacks, automatic layout, inherited container styles or project behavior. api.ui.component does not exist. Constructors return canonical data; ui.setRoot publishes it.",
             vec![parameter("props", props, "Canonical typed props without kind. Leaf/component placement is flattened rect OR anchor+size. screen uses id/node/children/budget, without placement. Component children retain stage coordinates (0..100, y-up); scroll content uses its documented local top-left/y-down contract. action is a semantic string, never an onClick function.")],
             returns, vec!["Copy authored props and applicable theme styles; no UI publication"],
@@ -2372,12 +2414,12 @@ fn ui_component_descriptors() -> Vec<ApiDescriptor> {
     ] {
         result.push(descriptor(
             &format!("ui.components.{method}"), "ui", purpose,
-            "Declare @unone/ui 0.2.0; the module and themed kit delegate to the same existing scroll helper. Read docs/ui-scroll.md and docs/ui-components.md for coordinates, lifecycle and current Web-only host support. Legacy api.ui.scrollView/virtualList/virtualGrid remain compatible.",
+            "Declare @unone/ui 0.3.0; the module and themed kit delegate to the same existing scroll helper. Read docs/ui-scroll.md and docs/ui-components.md for coordinates, lifecycle and current Web-only host support. Legacy api.ui.scrollView/virtualList/virtualGrid remain compatible.",
             "No theme style for scroll containers, automatic responsive layout, native scroll support or gameplay callback. Virtual renderItem is UI-pure and never advances Game.update or consumes RNG.",
-            vec![parameter("options", options, "The existing scroll helper options unchanged: viewport belongs to its containing space; content uses local top-left/y-down coordinates. Stable item keys and explicit fixed row/cell sizes are required for virtualization.")],
+            vec![parameter("options", options, "Viewport belongs to its containing space; content uses local top-left/y-down coordinates. Optional inertia=false and deceleration=8 (finite (0,100], exponential velocity decay in s^-1) configure Web host-only release motion; no elastic overscroll. Stable item keys and explicit fixed row/cell sizes are required for virtualization.")],
             "UiScrollNode (also a UiNode); preserve registered virtualList/virtualGrid handles when composing a screen/component.",
             vec!["Construct scroll node; virtual helpers register UI-only materialization callbacks"],
-            "Same lifecycle as the corresponding legacy helper; a wrapper does not duplicate a registration or run a simulation tick.",
+            "Same lifecycle as the corresponding legacy helper; a wrapper does not duplicate a registration or run a simulation tick. Inertia is opt-in, uses host time and stops on new interaction, wheel, pause, geometry/config change, reset, disable, unmount or bounds.",
             vec!["Do not clone registered virtual handles, author contentHeight/maxScroll, use stage coordinates in content or mutate gameplay in renderItem. Unsupported hosts report their capability boundary explicitly."],
             example, vec!["ui.components.create", "ui.scrollView", "ui.virtualList", "ui.virtualGrid", "ui.setRoot"],
         ));
@@ -2672,9 +2714,9 @@ mod tests {
             (&["release", "button released", "放開", "放开"][..], "input.wasReleased"),
             (&["hold", "button held", "長按", "长按"][..], "input.isDown"),
             (&["create button", "button component", "建立按鈕", "建立按钮"][..], "ui.components.button"),
-            (&["slider component", "滑桿", "滑杆"][..], "ui.components.slider"),
+            (&["slider component", "slider drag", "slider value", "create interactive slider", "draggable numeric slider", "可拖曳滑桿", "滑桿", "滑杆", "滑桿拖曳", "如何使用滑桿數值"][..], "ui.components.createSlider"),
             (&["combobox", "dropdown", "下拉選單", "下拉选单"][..], "ui.components.combobox"),
-            (&["scrollview", "scroll view", "捲動容器", "滚动容器"][..], "ui.components.scrollView"),
+            (&["scrollview", "scroll view", "捲動容器", "滚动容器", "scroll inertia", "scrollview deceleration", "慣性捲動", "捲動減速設定"][..], "ui.components.scrollView"),
             (&["virtual list", "虛擬清單", "虚拟列表"][..], "ui.components.virtualList"),
             (&["virtual grid", "虛擬網格", "虚拟网格"][..], "ui.components.virtualGrid"),
             (&["UI types", "UI 型別", "UI 类型引导"][..], "ui.components.create"),
@@ -2689,7 +2731,7 @@ mod tests {
         for query in ["button click unfindable", "particle hold", "entity release", "UI package unfindable", "ECS元件"] {
             assert!(search(query).is_empty(), "{query}");
         }
-        for method in ["text", "button", "slider", "combobox", "panel", "image", "component", "screen", "scrollView", "virtualList", "virtualGrid"] {
+        for method in ["text", "button", "slider", "createSlider", "combobox", "panel", "image", "component", "screen", "scrollView", "virtualList", "virtualGrid"] {
             let name = format!("ui.components.{method}");
             let found = search(&name);
             assert_eq!(found.len(), 1, "{name}");

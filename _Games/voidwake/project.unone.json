@@ -1,22 +1,36 @@
 {
-  "name": "VOIDWAKE · 深空餘燼",
-  "runtime_packages": {"@unone/ui":"0.2.0"},
+  "asset_manifest": "assets.json",
+  "audio": {
+    "categories": {
+      "ambience": {
+        "exclusive": true,
+        "volume": 0.3
+      },
+      "sfx": {
+        "volume": 0.55
+      }
+    }
+  },
+  "bundle_manifest": "bundles/manifest.json",
   "entry_script": "main.luau",
   "main_scene": "scene.json",
-  "asset_manifest": "assets.json",
+  "name": "VOIDWAKE · 深空餘燼",
+  "runtime_packages": {
+    "@unone/ui": "0.3.0"
+  },
   "systems": {
+    "audio": true,
     "camera2d": true,
     "camera3d": false,
-    "random": true,
-    "ui": true,
-    "save": false,
+    "effekseer": false,
+    "jobs": false,
+    "particle": true,
     "physics2d": false,
     "physics3d": false,
-    "audio": true,
-    "particle": true,
-    "jobs": false,
+    "random": true,
+    "save": false,
     "spine": false,
-    "effekseer": false
+    "ui": true
   },
   "test_files": [
     "tests/menu.test.json",
@@ -30,45 +44,33 @@
     "tests/sector-draft.test.json",
     "tests/upgrade.test.json"
   ],
-  "audio": {
-    "categories": {
-      "sfx": {
-        "volume": 0.55
-      },
-      "ambience": {
-        "exclusive": true,
-        "volume": 0.3
-      }
-    }
-  },
   "ui_previews": [
     {
+      "frames": 1,
       "name": "menu",
-      "frames": 1,
-      "seed": 42,
-      "overlap_policy": "tests/ui-overlap-policy.json"
+      "overlap_policy": "tests/ui-overlap-policy.json",
+      "seed": 42
     },
     {
-      "name": "playing",
       "frames": 1,
-      "seed": 42,
       "input_sequence": "tests/ui-playing.input.json",
-      "overlap_policy": "tests/ui-overlap-policy.json"
+      "name": "playing",
+      "overlap_policy": "tests/ui-overlap-policy.json",
+      "seed": 42
     },
     {
-      "name": "paused",
       "frames": 2,
-      "seed": 42,
       "input_sequence": "tests/ui-paused.input.json",
-      "overlap_policy": "tests/ui-overlap-policy.json"
+      "name": "paused",
+      "overlap_policy": "tests/ui-overlap-policy.json",
+      "seed": 42
     },
     {
-      "name": "upgrade",
       "frames": 2500,
-      "seed": 42,
       "input_sequence": "tests/ui-upgrade.input.json",
-      "overlap_policy": "tests/ui-overlap-policy.json"
+      "name": "upgrade",
+      "overlap_policy": "tests/ui-overlap-policy.json",
+      "seed": 42
     }
-  ],
-  "bundle_manifest": ".unone/bundles/manifest.json"
+  ]
 }

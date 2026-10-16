@@ -53,6 +53,8 @@ export type Instances3DApi = {
 }
 
 export type InputApi = {
+    -- Current-tick host-projected UI event. Prefer createSlider().update(input).
+    getSliderInteraction: (id: string) -> UiSliderInteraction?,
     isDown: (action: string) -> boolean,
     -- Non-consuming edges for the current simulation tick. Read in update;
     -- multiple reads return the same result. Held actions press only once.
@@ -203,6 +205,35 @@ export type UiButtonNode = UiPlacement & {
 }
 export type UiSliderNode = UiPlacement & {
     kind: "slider", id: string, text: string?, action: string, style: UiStyle?,
+    drag: UiSliderDrag?,
+}
+export type UiSliderInteraction = {phase: "start" | "drag" | "end" | "cancel", ratio: number}
+export type UiSliderDrag = {
+    axis: "horizontal" | "vertical", reverse: boolean, enabled: boolean,
+    track_rect: UiRect, hit_rect: UiRect,
+}
+export type UiSliderOptions = {
+    id: string, value: number, min: number?, max: number?, step: number?,
+    axis: ("horizontal" | "vertical")?, reverse: boolean?,
+    onChange: never?, onClick: never?,
+}
+-- Explicit rects in the node's current stage/scroll space; no duplicate pointer
+-- mapping in projects. Hosts project, clip and capture these together.
+export type UiSliderViewProps = {
+    rect: UiRect, trackRect: UiRect?, hitPadding: number?, enabled: boolean?,
+    text: string?, action: string?, style: UiStyle?,
+    onChange: never?, value: never?,
+}
+export type UiSliderUpdate = {
+    value: number, changed: boolean, dragging: boolean,
+    started: boolean, released: boolean, cancelled: boolean,
+}
+export type UiSliderControl = {
+    view: (props: UiSliderViewProps) -> UiSliderNode,
+    update: (input: InputApi) -> UiSliderUpdate,
+    getValue: () -> number,
+    setValue: (value: number) -> (),
+    cancel: () -> (),
 }
 export type UiComboBoxNode = UiPlacement & {
     kind: "combobox", id: string, text: string?, action: string,
@@ -226,7 +257,7 @@ export type UiComponentNode = UiPlacement & {
 }
 export type UiScrollNode = UiPlacement & {
     kind: "scroll_view", id: string, viewport: UiViewport?,
-    scroll: {axis: string?, enabled: boolean?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
+    scroll: {axis: string?, enabled: boolean?, inertia: boolean?, deceleration: number?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
     children: {UiNode}?,
 }
 export type UiNode = UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
@@ -274,6 +305,8 @@ export type UiComponentScreenProps = {
     id: string, node: string, children: {UiNode}, budget: UiBudget?,
 }
 export type UiComponentKit = {
+    -- Preferred complete numeric slider: reusable state plus semantic host capture.
+    createSlider: (options: UiSliderOptions) -> UiSliderControl,
     text: (props: UiComponentTextProps) -> UiTextNode,
     button: (props: UiComponentButtonProps) -> UiButtonNode,
     slider: (props: UiComponentSliderProps) -> UiSliderNode,
@@ -307,6 +340,7 @@ export type UiScrollOptions = {
     id: string, viewport: UiViewport, content: {UiNode}?,
     axis: ("vertical" | "horizontal" | "both")?, enabled: boolean?,
     resetKey: string?, wheelRect: UiViewport?,
+    inertia: boolean?, deceleration: number?,
 }
 -- Give T your project row type to check keys and render callbacks.
 -- Bare options keep the legacy any default for existing projects.
@@ -315,6 +349,7 @@ export type UiVirtualOptions<T = any> = {
     rowHeight: number, gapY: number?,
     renderItem: (T, number, string) -> {UiNode},
     enabled: boolean?, resetKey: string?, wheelRect: UiViewport?,
+    inertia: boolean?, deceleration: number?,
 }
 export type UiVirtualGridOptions<T = any> = UiVirtualOptions<T> & {
     columns: number, columnWidth: number, gapX: number?,
@@ -512,8 +547,7 @@ local held = false
 local holdTicks = 0
 local totalHeldTicks = 0
 local tick = 0
-local dragging = false
-local pointerWasDown = false
+local volumeControl: UiSliderControl? = nil
 local pressA = false
 local pressB = false
 local releaseA = false
@@ -584,11 +618,6 @@ local function geometry(aspect: number): Geometry
     }
 end
 
-local function contains(rect: UiRect, p: Vec2): boolean
-    return p.x >= rect.x and p.x <= rect.x+rect.width
-        and p.y >= rect.y and p.y <= rect.y+rect.height
-end
-
 local function selectedLabel(): string
     for _, row in ipairs(rows) do
         if row.key == selectedKey then return row.label end
@@ -604,6 +633,8 @@ local function publish(api: EngineApi)
         text=textBase, button=buttonBase, slider=buttonBase,
         combobox=buttonBase, panel=panelBase,
     })
+    local level = volumeControl
+    assert(level, "Volume control must be created in Game.start")
     local function label(id: string, text: string, r: UiRect, style: UiStyle?): UiTextNode
         return ui.text({id=id,text=text,rect=r,style=style})
     end
@@ -645,8 +676,8 @@ local function publish(api: EngineApi)
         label("audio/value",tostring(volume).."%",
             stageRect(ax+aw*0.7,compact and 24 or 31.5,aw*0.3,3.2),
             {font_size=compact and 2.1 or 2.7,font_weight=700,text_align="end",color=palette.mint}),
-        ui.slider({id="audio/level",text="Drag to adjust / 拖曳調整",action="AdjustLevel",
-            rect=g.slider,style={font_size=compact and 1.55 or 1.7,
+        level.view({text="Drag to adjust / 拖曳調整",action="AdjustLevel",
+            rect=g.slider,trackRect=g.sliderTrack,style={font_size=compact and 1.55 or 1.7,
                 text_align="start",color=palette.muted}}),
     }
     -- The visible track and its drag mapping share one authored rectangle.
@@ -697,7 +728,7 @@ local function publish(api: EngineApi)
     local listOptions: UiVirtualOptions<PresetRow> = {
         id="presets/list",viewport=g.list,items=rows,
         key=function(item, _index): string return item.key end,
-        rowHeight=rowHeight,gapY=0.6,resetKey="all-presets",
+        rowHeight=rowHeight,gapY=0.6,resetKey="all-presets",inertia=true,deceleration=8,
         renderItem=function(item, _index, key): {UiNode}
             local isSelected = key == selectedSnapshot
             return {ui.button({id="preset/"..key,text=item.label,action="SelectPreset_"..key,
@@ -767,12 +798,17 @@ local function publish(api: EngineApi)
     api.observation.set("layout",{name=g.name,aspect=aspect,compact=compact,
         slider=g.slider,slider_track=g.sliderTrack,combobox=g.combo,list=g.list,probe=g.probeButton,apply=g.apply,reset=g.reset})
     api.observation.set("preset_count",#rows)
+    -- Read-only delivery evidence; no screen-pointer mapping or capture logic.
+    api.observation.set("ui_input",{world_pointer_down=api.input.isPointerDown()})
     api.observation.set("tick",tick)
 end
 
 function Game.start(api: EngineApi)
     local info = api.ui.components.info()
     api.observation.set("ui_package",{name=info.name,version=info.version,declared=info.declared})
+    volumeControl = api.ui.components.create({slider=buttonBase}).createSlider({
+        id="audio/level",value=volume,min=0,max=100,step=1,
+    })
     publish(api)
 end
 
@@ -800,27 +836,20 @@ function Game.update(api: EngineApi, _dt: number)
     for _, row in ipairs(rows) do
         if api.input.wasPressed("SelectPreset_"..row.key) then selectedKey = row.key end
     end
-    local g = geometry(api.ui.getViewport().aspect)
-    local pointer = api.input.getScreenPointerPosition()
-    local pointerDown = api.input.isPointerDown()
-    -- Both the labelled field and the visible skin start the same project-owned
-    -- gesture. Give the thin track a vertical tolerance without moving its art.
-    local track = g.sliderTrack
-    local trackHit: UiRect = {x=track.x,y=track.y-0.65,width=track.width,height=track.height+1.3}
-    if pointerDown and not pointerWasDown and (contains(g.slider,pointer) or contains(trackHit,pointer)) then
-        dragging = true
-    end
-    if dragging and pointerDown then
-        volume = math.clamp(math.floor((pointer.x-track.x)/track.width*100+0.5),0,100)
-    end
-    if not pointerDown then dragging = false end
-    pointerWasDown = pointerDown
+    local level = volumeControl
+    assert(level, "Volume control must be created in Game.start")
+    local sliderChange = level.update(api.input)
+    volume = sliderChange.value
+    api.observation.set("slider",{value=sliderChange.value,changed=sliderChange.changed,
+        dragging=sliderChange.dragging,started=sliderChange.started,
+        released=sliderChange.released,cancelled=sliderChange.cancelled})
     if api.input.wasPressed("ApplySettings") then
         appliedVolume = volume; appliedQuality = quality; appliedPreset = selectedKey
         applyCount += 1
     end
     if api.input.wasPressed("ResetSettings") then
         volume = 72; quality = "Balanced"; selectedKey = "morning-calm"; expanded = false
+        level.setValue(volume)
         resetCount += 1
     end
     publish(api)

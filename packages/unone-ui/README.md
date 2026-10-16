@@ -1,15 +1,17 @@
 # @unone/ui
 
-Official pure Luau UI constructors, versioned with the portable Unone SDK.
+Official pure Luau UI constructors and controls, versioned with the portable Unone SDK.
 The package returns ordinary existing UI nodes and uses the official player.
-It supplies no colors, fonts, responsive rules, automatic layout or game state.
+It supplies no colors, fonts, responsive rules, automatic layout or application
+rules. Shared control mechanics belong to the package: use `createSlider` for
+numeric values and pointer dragging.
 The [full component guide](../../docs/ui-components.md), style contract and
 canonical strict types accompany the portable SDK's verified package inventory.
 
 Declare the exact installed version in `project.unone.json`:
 
 ```json
-{"runtime_packages":{"@unone/ui":"0.2.0"}}
+{"runtime_packages":{"@unone/ui":"0.3.0"}}
 ```
 
 The SDK includes the manifest and source at `packages/unone-ui/`. The matching
@@ -46,7 +48,8 @@ implementation; they are not documentation-only aliases.
 | --- | --- |
 | `text(props)` | `UiTextNode` |
 | `button(props)` | `UiButtonNode` |
-| `slider(props)` | `UiSliderNode` |
+| `createSlider(options)` | Persistent `UiSliderControl`; preferred interactive numeric slider |
+| `slider(props)` | Low-level compatible `UiSliderNode`; no numeric controller |
 | `combobox(props)` | `UiComboBoxNode` |
 | `panel(props)` | `UiPanelNode` |
 | `image(props)` | `UiImageNode` |
@@ -65,15 +68,28 @@ use their existing data fields and flattened
 accept canonical `background_for`. Plain `UiNode` children, including custom
 components and existing scroll helpers, continue to compose normally.
 
-`slider` takes the same `id`, optional `text`, `action`, `style` and placement
-fields as `button`. `combobox` adds optional `expanded`. These preserve the
-existing declarative control contract: they emit named actions, without storing
-numeric values, selecting options or automatically binding project state.
+For sliders, search `game api search "slider drag"` / `"slider value"` /
+`"滑桿拖曳"` and describe `ui.components.createSlider`. Create a control once
+with `{id="gain",value=72,min=0,max=100,step=1}`; retain it across updates,
+publish `control.view({rect=...,trackRect=...})`, and call
+`control.update(api.input)` once in `Game.update`. Read its `value`/`changed`
+result or `getValue()` to apply the project's setting. The official host handles
+projection, clipping and pointer capture, including scroll-local controls.
+The [complete lifecycle and typed example](../../docs/ui-components.md#interactive-sliders)
+cover defaults, step/endpoints, vertical/reverse direction, hit padding,
+`setValue`/`cancel` and virtual-row purity. `view` produces a node; it does not
+advance input, choose artwork or perform layout.
+
+The low-level `slider(props)` remains compatible with its `id`, optional `text`,
+`action`, `style` and placement fields. It does not accept numeric value props;
+put these on `createSlider(options)`. `combobox` adds optional `expanded`; the
+project still declares its options and selected value.
 Read `api.input.wasPressed("ApplySettings")` in `update` for a once-per-press
 action, `wasReleased` for release and `isDown` for held input. The edge queries
 are read-only, so multiple readers see the same edge. There is no `onClick`,
-`onChange`, DOM event or hidden slider-value callback. Sustained slider state and
-selection rules stay in project Luau; use the existing pointer/action APIs.
+`onChange`, DOM event or hidden slider-value callback. Slider mechanics are
+reusable package behavior; application meanings and selection rules stay in
+project Luau.
 
 `screen` takes `id`, `node`, a dense `children` array and optional `budget`.
 It copies ordinary author data and returns a screen; it does not publish it.
@@ -110,6 +126,12 @@ Ordinary component children keep stage y-up coordinates: components do not
 establish a relative coordinate space. The old `api.ui.scrollView`,
 `api.ui.virtualList` and `api.ui.virtualGrid` remain compatibility paths. Prefer
 the package entry points for new project UI.
+
+Scroll helpers accept `inertia=true` and optional `deceleration=8` for Web drag
+inertia. The default is `inertia=false`; deceleration is exponential velocity
+decay in inverse seconds, finite and in `(0,100]`. Offsets stay clamped, without
+elastic overscroll. Search `"scroll inertia"` / `"捲動慣性"` and read the
+[scroll contract](../../docs/ui-scroll.md) for lifecycle and host limits.
 
 `id(instanceId,role)` returns the instance ID plus `/` plus the role, escaping `%`
 as `%25` and `/` as `%2F` in the role. It uses no counter or array index. Supply

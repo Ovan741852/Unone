@@ -4,8 +4,15 @@ import {uiUsage} from './ui-geometry.mjs';
 import {projectScrollTree} from './ui-scroll.mjs';
 import {paintUiBox,paintUiText,paintUiImage,clipUiBox,createUiOpacityPainter,presentationFontFaces} from './ui-style.mjs';
 const actionNode=n=>n.kind==='button'||n.kind==='combobox';
+const dragNode=n=>n.kind==='slider'&&n.drag;
+const inputNode=n=>actionNode(n)||dragNode(n);
 const inside=(r,x,y)=>x>=r.x&&y>=r.y&&x<r.x+r.width&&y<r.y+r.height;
-const hit=(n,x,y)=>inside(n.rect,x,y)&&(!n.clip||inside(n.clip,x,y));
+const hit=(n,x,y)=>inside(dragNode(n)?n.drag.hit_rect:n.rect,x,y)&&(!n.clip||inside(n.clip,x,y));
+const dragSignature=n=>JSON.stringify([n.rect,n.drag,n.clip,n.action]);
+const sliderRatio=(drag,x,y)=>{
+  const r=drag.track_rect,value=drag.axis==='vertical'?(y-r.y)/r.height:(x-r.x)/r.width;
+  const ratio=Math.max(0,Math.min(1,value));return drag.reverse?1-ratio:ratio;
+};
 export function flattenUi(tree){
   uiUsage(tree);
   const leaves=[];
@@ -15,34 +22,45 @@ export function flattenUi(tree){
       if(!['text','button','image','slider','combobox','panel'].includes(n.kind))throw Error(`UI_NODE_UNSUPPORTED: ${n.kind}`);
       if(!n.rect||!['x','y','width','height'].every(k=>Number.isFinite(n.rect[k]))||n.rect.width<=0||n.rect.height<=0)throw Error(`UI_RECT_INVALID: ${n.id}`);
       if(n.clip&&(!['x','y','width','height'].every(k=>Number.isFinite(n.clip[k]))||n.clip.width<=0||n.clip.height<=0))throw Error(`UI_CLIP_INVALID: ${n.id}`);
+      if(n.drag&&(n.kind!=='slider'||!['horizontal','vertical'].includes(n.drag.axis??'horizontal')||typeof(n.drag.reverse??false)!=='boolean'||typeof(n.drag.enabled??true)!=='boolean'||['track_rect','hit_rect'].some(key=>{const r=n.drag[key];return !r||!['x','y','width','height'].every(k=>Number.isFinite(r[k]))||r.width<=0||r.height<=0;})))throw Error(`UI_SLIDER_DRAG_INVALID: ${n.id}`);
       leaves.push(n);
     }
   }
   walk(projectScrollTree(tree).tree?.children,0);return leaves;
 }
-export function createUiPointerRouter({onAction=()=>{}}={}){
-  let nodes=[];const captured=new Map(),holds=new Map();
+export function createUiPointerRouter({onAction=()=>{},onSlider=()=>{}}={}){
+  let nodes=[];const captured=new Map(),holds=new Map(),sliderOwners=new Map(),released=new Set();
   function release(id,phase){const c=captured.get(id);if(!c)return false;captured.delete(id);
+    if(c.drag){sliderOwners.delete(c.id);onSlider({id:c.id,phase:phase==='up'?'end':'cancel',ratio:c.ratio});}
     if(c.action){const count=(holds.get(c.action)??1)-1;if(count>0)holds.set(c.action,count);else{holds.delete(c.action);onAction({action:c.action,phase,nodeId:c.id,pointerId:id});}}return true;}
   return {
-    setTree(tree){nodes=flattenUi(tree);for(const [pointer,c]of captured)if(c.action&&!nodes.some(n=>n.id===c.id&&actionNode(n)&&n.action===c.action)){release(pointer,'cancel');captured.set(pointer,{id:c.id,action:null});}},
+    setTree(tree){nodes=flattenUi(tree);for(const [pointer,c]of captured){const n=nodes.find(n=>n.id===c.id);
+      if(c.drag?(!dragNode(n??{})||n.drag.enabled===false||dragSignature(n)!==c.signature):c.action&&(!n||!actionNode(n)||n.action!==c.action)){release(pointer,'cancel');captured.set(pointer,{id:c.id,action:null});}}},
     pointer({kind,pointerId=0,x,y}){
-      if(kind==='cancel'||kind==='up')return release(pointerId,kind);
-      if(captured.has(pointerId))return true;
+      if(released.has(pointerId)){if(kind==='down')released.delete(pointerId);else{if(kind==='up'||kind==='cancel')released.delete(pointerId);return true;}}
+      const c=captured.get(pointerId);
+      if(c?.drag&&(kind==='move'||kind==='up')&&Number.isFinite(x)&&Number.isFinite(y)){
+        c.ratio=sliderRatio(c.drag,x,y);if(kind==='move')onSlider({id:c.id,phase:'drag',ratio:c.ratio});
+      }
+      if(kind==='cancel'||kind==='up'){const owned=release(pointerId,kind);if(owned&&kind==='cancel')released.add(pointerId);return owned;}
+      if(c)return true;
       if(kind!=='down')return false;
-      const node=[...nodes].reverse().find(n=>actionNode(n)&&hit(n,x,y));
-      // Images and text are visual-only. Let pointer input fall through to the
-      // game canvas so game-owned gestures such as slider dragging can read the
-      // same screen pointer. Semantic buttons and combobox fields capture UI pointer streams.
-      // Semantic sliders are intentionally passthrough: the game settings
-      // layer owns the drag value while the widget remains visible to hierarchy.
-      if(!node||!actionNode(node))return false;
+      const node=[...nodes].reverse().find(n=>inputNode(n)&&hit(n,x,y));
+      // Old slider leaves remain passthrough. Official model sliders declare
+      // drag geometry, own the complete stream, and never send world pointers.
+      // Decorative leaves do not obscure semantic controls underneath them.
+      if(!node)return false;
+      if(dragNode(node)){
+        if(node.drag.enabled===false||sliderOwners.has(node.id)){captured.set(pointerId,{id:node.id,action:null});return true;}
+        const ratio=sliderRatio(node.drag,x,y);captured.set(pointerId,{id:node.id,drag:node.drag,ratio,signature:dragSignature(node)});sliderOwners.set(node.id,pointerId);
+        onSlider({id:node.id,phase:'start',ratio});return true;
+      }
       const action=actionNode(node)?node.action:null;captured.set(pointerId,{id:node.id,action});
       if(action){const count=holds.get(action)??0;holds.set(action,count+1);if(!count)onAction({action,phase:'down',nodeId:node.id,pointerId});}
       return true;
     },
-    releaseAll(){for(const id of [...captured.keys()])release(id,'cancel');},
-    hitTest(x,y){const reversed=[...nodes].reverse(),n=reversed.find(n=>actionNode(n)&&hit(n,x,y))??reversed.find(n=>n.kind!=='panel'&&hit(n,x,y));return n?{nodeId:n.id,action:actionNode(n)?n.action:null}:null;},
+    releaseAll(){for(const id of [...captured.keys()]){release(id,'cancel');released.add(id);}},
+    hitTest(x,y){const reversed=[...nodes].reverse(),n=reversed.find(n=>inputNode(n)&&hit(n,x,y))??reversed.find(n=>n.kind!=='panel'&&hit(n,x,y));return n?{nodeId:n.id,action:actionNode(n)?n.action:null,...(dragNode(n)?{kind:'slider',sliderDrag:true}:{})}:null;},
     get capturedPointers(){return [...captured.keys()];},
   };
 }
@@ -56,10 +74,10 @@ export async function loadPresentationFonts(ui={},resolveSource=source=>source){
   try{for(const face of presentationFontFaces(ui))loaded.push(await loadCanvasFont(face.family,resolveSource(face.source),face.weight));return loaded;}
   catch(error){for(const font of loaded)document.fonts.delete(font);throw error;}
 }
-export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff',createSurface=()=>canvas.ownerDocument?.createElement('canvas')??new OffscreenCanvas(1,1)}={}){
+export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction,onSlider,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff',createSurface=()=>canvas.ownerDocument?.createElement('canvas')??new OffscreenCanvas(1,1)}={}){
   const ctx=canvas.getContext('2d');if(!ctx)throw Error('UI_CANVAS_2D_UNAVAILABLE');
   const opacityPainter=createUiOpacityPainter(createSurface);
-  const router=createUiPointerRouter({onAction}),assets=new Map();let previous=null,dirty=true,disposed=false,nodes=[],generation=0;
+  const router=createUiPointerRouter({onAction,onSlider}),assets=new Map();let previous=null,dirty=true,disposed=false,nodes=[],generation=0;
   const diagnostics=new Map();let usage=null,renderMs=null,renderRegions=0;
   const reportError=(id,error)=>{const value={code:'UI_ASSET_FAILED',asset:id,message:String(error?.message??error)};diagnostics.set(id,value);onDiagnostic(value);};
   function ensureAsset(id){if(assets.has(id))return assets.get(id);

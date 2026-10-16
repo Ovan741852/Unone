@@ -31,6 +31,13 @@ index. Subcommand `--help` describes the flags accepted by this exact CLI.
 `sdk inspect` verifies the SDK inventory and reports installed runtimes; it does
 not demonstrate rendered pixels.
 
+For numeric sliders, search `slider drag` / `滑桿拖曳` and start with
+`ui.components.createSlider`: create once, call `control.update(api.input)` in
+Game.update and publish `control.view(props)`. The low-level `slider` leaf alone
+does not implement numeric interaction. For release scrolling search
+`scroll inertia` / `慣性捲動`; shared scroll helpers accept `inertia=true` and
+`deceleration=8` (s^-1). Read the bundled UI guides for defaults and host limits.
+
 ## Create, check and prepare a project
 
 Before strict verification, make the official **`luau-analyze` executable**

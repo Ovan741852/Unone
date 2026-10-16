@@ -25,52 +25,30 @@
   "seed": 42,
   "input_sequence": [
     {
-      "pointer": {
-        "position": {
-          "x": 0,
-          "y": 0
-        },
-        "screen_position": {
-          "x": 26,
-          "y": 55.775
-        },
-        "down": true
-      },
-      "actions": {}
+      "ui_sliders": {
+        "audio/level": {
+          "phase": "start",
+          "ratio": 0.5
+        }
+      }
     },
     {
-      "actions": {}
+      "ui_sliders": {
+        "audio/level": {
+          "phase": "end",
+          "ratio": 0.5
+        }
+      }
     },
     {
-      "pointer": {
-        "position": {
-          "x": 0,
-          "y": 0
-        },
-        "screen_position": {
-          "x": 3,
-          "y": 55.775
-        },
-        "down": true
-      },
-      "actions": {}
+      "ui_sliders": {
+        "audio/level": {
+          "phase": "drag",
+          "ratio": 0.9
+        }
+      }
     },
-    {
-      "pointer": {
-        "position": {
-          "x": 0,
-          "y": 0
-        },
-        "screen_position": {
-          "x": 40,
-          "y": 55.775
-        },
-        "down": true
-      },
-      "actions": {}
-    },
-    {
-      "actions": {}
-    }
+    {},
+    {}
   ]
 }

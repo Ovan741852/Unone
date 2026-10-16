@@ -1,0 +1,44 @@
+{
+  "ok": true,
+  "value": {
+    "project": "Aster Observatory",
+    "steps": [
+      {
+        "name": "types",
+        "status": "passed",
+        "summary": "entrypoints [\"start\", \"update\"], strict_mode true",
+        "command": "game check --types",
+        "diagnostics": []
+      },
+      {
+        "name": "assets",
+        "status": "passed",
+        "summary": "0 declared, 0 scene references, ready_for_packaging true",
+        "command": "game asset inspect --strict",
+        "diagnostics": []
+      },
+      {
+        "name": "layout:desktop",
+        "status": "passed",
+        "summary": "0 findings; nodes: night_background, brand, header_rule, station_id, display_title, chinese_title, section_label, intro_paragraph, preset_card/surface, preset_label, preset_mode, preset_values, sound_card/surface, sound_card_index, sound_card_title, sound_card_description, sound_toggle_action, mode_card/surface, mode_card_index, mode_card_title, mode_card_description, mode_1_action, mode_2_action, mode_3_action, level_card/surface, level_card_index, level_card_title, level_card_description, level_value, level_minus_action, level_track, level_fill, level_thumb, level_slider, level_plus_action, reset_action, apply_action, draft_badge, applied_counter, status_line",
+        "command": "game ui preview --strict --frames 1 --seed 42 --overlap-policy tests/desktop-overlaps.json",
+        "diagnostics": []
+      },
+      {
+        "name": "tests",
+        "status": "passed",
+        "summary": "9/9 deterministic cases passed",
+        "command": "game test",
+        "diagnostics": []
+      }
+    ],
+    "passed": 4,
+    "failed": 0,
+    "not_applicable": 0,
+    "step_source": "default"
+  },
+  "diagnostics": [],
+  "effects": [
+    "verify ran 4 gates in the default order: 4 passed, 0 failed, 0 not applicable"
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "ok": true,
+  "value": {
+    "query": "slider drag value",
+    "matches": [
+      {
+        "name": "ui.components.createSlider",
+        "category": "ui",
+        "purpose": "Create the official reusable numeric Slider control with host-owned hit testing/capture and package-owned range, step, value and gesture lifecycle.",
+        "when_to_use": "Default for slider, slider drag, slider value, volume slider, 滑桿拖曳 and 滑桿數值. Available on api.ui.components and the themed kit. Declare @unone/ui 0.3.0 and use canonical UiSliderOptions, UiSliderControl, UiSliderViewProps and UiSliderUpdate from game api typings.",
+        "when_not_to_use": "Not a callback, automatic layout or game settings binding. Create once; keep whether/when to apply a setting in the project. Use the low-level slider leaf only when deliberately implementing another control protocol.",
+        "parameters": [
+          {
+            "name": "options",
+            "type_name": "UiSliderOptions",
+            "meaning": "id and finite value required; min=0, max=1 (max>min), optional positive step snaps relative to min, both endpoints reachable; axis='horizontal'|'vertical' (default horizontal), reverse=false."
+          }
+        ],
+        "returns": "UiSliderControl with view(props)->UiSliderNode; update(api.input)->{value,changed,dragging,started,released,cancelled}; getValue(); setValue(value); cancel().",
+        "side_effects": [
+          "Own one pure Luau UI control model; no hardware setting or implicit publication"
+        ],
+        "frame_semantics": "Call update(api.input) once per Game.update, then read getValue from any view/readers. view is UI-pure: rect required in its current coordinate space, trackRect defaults to rect, hitPadding defaults to 0.65 normalized UI units, enabled defaults true, optional text/action/style. Hosts project scroll-local rectangles, clip starts, preserve captured outside release and cancel on removal/disable/geometry change. setValue and cancel block the old drag until a new start.",
+        "common_errors": [
+          "Do not recreate the model every tick or update it inside view/renderItem. Do not implement contains/pointerWasDown/clamp in each project. view takes explicit rects, not anchor placement. Unknown fields/callbacks fail; value/min/max/step belong in createSlider options, not the low-level slider leaf. Legacy raw slider without drag remains pointer passthrough."
+        ],
+        "example": "local volume = api.ui.components.createSlider({id=\"volume\",value=72,min=0,max=100,step=1}); -- Game.update: local change=volume.update(api.input); -- View: volume.view({rect={x=10,y=30,width=80,height=8},text=tostring(volume.getValue())})",
+        "related_apis": [
+          "ui.components.create",
+          "ui.components.slider",
+          "input.getSliderInteraction",
+          "ui.setRoot"
+        ]
+      },
+      {
+        "name": "input.getSliderInteraction",
+        "category": "input",
+        "purpose": "Read a non-consuming semantic slider event for this successful simulation tick; prefer the official createSlider control for numeric dragging.",
+        "when_to_use": "Advanced control implementations and deterministic tests. Official Web/native hosts hit-test the projected/clipped slider, capture its pointer and normalize its track ratio. Ordinary projects call control.update(api.input) instead of writing pointer geometry.",
+        "when_not_to_use": "Not a persistent value, callback or screen-pointer sample. Do not poll it during virtual renderItem or invent events from local scroll coordinates.",
+        "parameters": [
+          {
+            "name": "id",
+            "type_name": "string",
+            "meaning": "Stable ID of the slider control published by createSlider().view()."
+          }
+        ],
+        "returns": "UiSliderInteraction? = {phase:'start'|'drag'|'end'|'cancel',ratio:number in 0..1}; nil when no event was delivered this tick.",
+        "side_effects": [
+          "Read-only; multiple reads never consume the event"
+        ],
+        "frame_semantics": "The current tick snapshot is stable. Successful ticks consume pending events; a following tick without input has nil, while a failed tick preserves pending events for retry. Hosts retain start/end/cancel order and coalesce adjacent drag samples.",
+        "common_errors": [
+          "Use matching 0.3.0 SDK/Core/player templates. ui_sliders frames reject unknown phase, non-finite/out-of-range ratio, blank/oversized ID and more than 256 controls."
+        ],
+        "example": "local event = api.input.getSliderInteraction(\"volume\") -- advanced: ordinary code uses volume.update(api.input)",
+        "related_apis": [
+          "ui.components.createSlider",
+          "ui.components.slider"
+        ]
+      },
+      {
+        "name": "ui.components.slider",
+        "category": "ui",
+        "purpose": "Construct a low-level semantic slider leaf. For a complete numeric/drag control, prefer ui.components.createSlider; this compatibility leaf alone does not own value or capture.",
+        "when_to_use": "Official @unone/ui control entrypoint; declare runtime_packages={\"@unone/ui\":\"0.3.0\"}. The same method exists on the UiComponentKit returned by create(theme?). See docs/ui-components.md; use game api typings for canonical EngineApi, UiApi and UiComponentKit.",
+        "when_not_to_use": "No callbacks, automatic layout, inherited container styles or project behavior. api.ui.component does not exist. Constructors return canonical data; ui.setRoot publishes it.",
+        "parameters": [
+          {
+            "name": "props",
+            "type_name": "UiComponentSliderProps",
+            "meaning": "Canonical typed props without kind. Leaf/component placement is flattened rect OR anchor+size. screen uses id/node/children/budget, without placement. Component children retain stage coordinates (0..100, y-up); scroll content uses its documented local top-left/y-down contract. action is a semantic string, never an onClick function."
+          }
+        ],
+        "returns": "UiSliderNode",
+        "side_effects": [
+          "Copy authored props and applicable theme styles; no UI publication"
+        ],
+        "frame_semantics": "The module uses no theme defaults; a created kit snapshots its per-kind defaults. No simulation step. component/screen preserve registered virtual view handles; ordinary authored data is copied. Styles and bounds are validated at setRoot.",
+        "common_errors": [
+          "UI_PACKAGE_NOT_DECLARED requires the exact bundled package version. Unknown props such as onClick or nested placement are rejected. Use input.wasPressed for one activation per press; input.isDown deliberately remains true while held."
+        ],
+        "example": "local slider = api.ui.components.slider({id=\"volume\",text=\"Volume\",action=\"AdjustVolume\",rect={x=10,y=30,width=80,height=8}})",
+        "related_apis": [
+          "ui.components.create",
+          "ui.components.info",
+          "ui.setRoot",
+          "input.wasPressed",
+          "input.isDown"
+        ]
+      },
+      {
+        "name": "ui.components.create",
+        "category": "ui",
+        "purpose": "Create the official @unone/ui shared component kit for every canonical UI control, screen/component composition and existing scroll helpers with project-owned theme styles.",
+        "when_to_use": "For UI package, shared components, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.3.0\"} in project.unone.json. See docs/ui-components.md and docs/ui-styling.md. Use canonical EngineApi, UiApi and UiComponentKit types from game api typings; do not replace them with ui:any. The returned themed kit and api.ui.components both expose createSlider/text/button/slider/combobox/panel/image/component/screen/scrollView/virtualList/virtualGrid, id and composeStyle. Prefer createSlider for a complete numeric drag control; slider is the low-level compatibility leaf. Direct module constructors use no theme defaults.",
+        "when_not_to_use": "No hardcoded theme, layout, binding, screen manager or business behavior. Themes, content, state, actions and geometry belong to project Luau. Custom factories remain valid. Constructors return the existing UI tree for ui.setRoot.",
+        "parameters": [
+          {
+            "name": "theme",
+            "type_name": "UiComponentsTheme?",
+            "meaning": "Optional per-kind UiStyle defaults: text, button, panel, image, slider, combobox only. All leaf props use flattened UiPlacement: explicit rect OR anchor+size, plus canonical leaf fields except kind. component takes id, component name, explicit placement, optional children and surface. surface={kind='panel'|'image', asset?,fit?,slice?,alt?,style?} prepends id..'/surface' with background_for={component=id} and the component's unchanged placement. Children retain their authored coordinates and order. screen takes id/node/children and optional budget; scroll helpers retain their existing options and local top-left/y-down content contract."
+          }
+        ],
+        "returns": "UiComponentKit; createSlider -> UiSliderControl (create once, update in Game.update, publish view); text -> UiTextNode, button -> UiButtonNode, slider -> UiSliderNode, combobox -> UiComboBoxNode, panel -> UiPanelNode, image -> UiImageNode, component -> UiComponentNode, screen -> UiScreen; scrollView/virtualList/virtualGrid -> UiNode; id -> string; composeStyle -> UiStyle.",
+        "side_effects": [
+          "Construct pure Luau tables; does not publish UI or mutate props/theme"
+        ],
+        "frame_semantics": "No simulation step. Styles are copied; per-leaf overrides win, padding merges by edge and RGBA arrays replace. Generated backgrounds still use the canonical strict scope/overlap validation at setRoot.",
+        "common_errors": [
+          "UI_PACKAGE_NOT_DECLARED: add runtime_packages: {\"@unone/ui\":\"0.3.0\"} to project.unone.json; info() remains available for discovery.",
+          "Both api.ui.components.button and kit.button exist. api.ui.component and onClick do not exist; publish with ui.setRoot and read semantic action edges with input.wasPressed.",
+          "Author exactly rect OR anchor+size on each node; component children do not become local coordinates. Surface ID id..'/surface' must be globally unique.",
+          "Keep foreground and partial-overlap checks enabled; a surface does not excuse unrelated or protruding content."
+        ],
+        "example": "local ui = api.ui.components.create({button={font_size=2,background={0.1,0.2,0.3,1}}}); local button = ui.button({id=ui.id(\"menu\",\"apply\"),text=\"Apply\",action=\"ApplySettings\",rect={x=60,y=10,width=30,height=8}}); api.ui.setRoot({kind=\"screen\",id=\"settings\",node=\"settings\",children={button}})",
+        "related_apis": [
+          "ui.components.info",
+          "ui.components.composeStyle",
+          "ui.components.id",
+          "ui.setRoot",
+          "ui.getViewport"
+        ]
+      }
+    ],
+    "suggested_next_actions": []
+  },
+  "diagnostics": [],
+  "effects": []
+}

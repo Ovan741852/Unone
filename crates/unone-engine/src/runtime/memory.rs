@@ -140,6 +140,7 @@ mod tests {
         r.tick_with_input(&InputFrame {
             actions: BTreeMap::from([("release".into(), true)]),
             pointer: None,
+            ..InputFrame::default()
         })
         .unwrap();
         let result = r.memory_sample("released", true, false).unwrap();

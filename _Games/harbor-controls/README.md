@@ -3,7 +3,7 @@
 A fresh-context SDK-only author built this UI from an empty project using public
 search/describe/schema/typings commands and the bundled official guides. The
 maintained copy keeps its game-owned design, interaction rules and strict types.
-Every control and surface uses the official `@unone/ui` 0.2.0 kit and player.
+Every control and surface uses the official `@unone/ui` 0.3.0 kit and player.
 
 Audio level, display choice, Apply/Reset, input counters and 120 semantic-key
 presets are project state. They do not change hardware volume/display settings
@@ -45,15 +45,17 @@ the URL above loads and renders.
 
 Nine deterministic cases and two strict preview states cover edges, held input,
 repeat readers, stable keys, visible-track slider capture/clamps, release and
-project model semantics. The labelled slider field and its thin progress track
-start the same project-owned drag; track painting and value mapping share one
-rectangle, with a small vertical hit tolerance. Preset rows support mouse, pen
-and touch content dragging through the shared official scroll controller.
+project model semantics. One persistent official `createSlider` control owns
+range/step/value and drag lifecycle. Its view declares the labelled field and
+thin track together; the project contains no pointer mapping/capture logic.
+Preset rows use the shared scroll controller with `inertia=true,deceleration=8`
+for release motion. The engine default remains inertia off. Mouse, pen and touch
+content dragging use the same host controller.
 Independent real-browser QA also exercises physical pointer/wheel input, option
 selection, long holds, Apply/Reset and three viewport sizes. The fresh author's
 frozen original export remains separate from this maintained copy. Integration
-refreshes the canonical type block and fixes the maintained example's visible
-track hit region; the historical original is unchanged.
+refreshes the canonical type block, adopts the official Slider control and
+enables optional scroll inertia; the historical original is unchanged.
 
 Typography uses installed Segoe UI and Microsoft JhengHei with sans-serif
 fallback. No fonts or images are redistributed. Real Windows browser screenshots

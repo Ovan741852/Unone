@@ -1,0 +1,73 @@
+{
+  "branch": "main",
+  "baseline": "c05af8b14b388ecf559b593aa8f7c5d541e9ce39",
+  "files": [
+    {
+      "path": "packages/unone-ui/src/components.luau",
+      "bytes": 18535,
+      "sha256": "e409d5b8e421b2cc25c92c3131c95582314852306fbded939052cfa96b0d2acf"
+    },
+    {
+      "path": "crates/unone-engine/src/project.rs",
+      "bytes": 16546,
+      "sha256": "6335759922a4ef8a47dde80d45d8d5fabb5a2fe27b37f15efdf86e15cc77584c"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime.rs",
+      "bytes": 127489,
+      "sha256": "dc30f1f45ba75c4aa8ec3063f4eb974467a8c989352c389ec1d12c8143664535"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/input.rs",
+      "bytes": 3230,
+      "sha256": "64eeeb1f32a68429f58bfafb84252a1ddc9276faffa124f88c828af59d627b8b"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/scroll.luau",
+      "bytes": 8591,
+      "sha256": "92e394bd65647e257dcf19f39ee0c324e89a42aded588eb64169ab7844d544ec"
+    },
+    {
+      "path": "crates/unone-engine/src/ui.rs",
+      "bytes": 86253,
+      "sha256": "103dade57ad0e9fe2a9cc1dfa54b7396754da7c8a87ef17230724bac11496be8"
+    },
+    {
+      "path": "web/shared/ui-scroll.mjs",
+      "bytes": 18106,
+      "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+    },
+    {
+      "path": "web/shared/canvas-ui.mjs",
+      "bytes": 12653,
+      "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+    },
+    {
+      "path": "web/shared/host-input.js",
+      "bytes": 5857,
+      "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+    },
+    {
+      "path": "web/player/main.js",
+      "bytes": 10941,
+      "sha256": "b01a30bdfdf252ae9045c116655a902d70fc32eab515fde7ad0200f4b8efc6f6"
+    },
+    {
+      "path": "crates/unone-native-player/src/ui.rs",
+      "bytes": 69013,
+      "sha256": "2b4d8e3dc77358a87fd8935e6c01c8c408b162957e6bfaeea107cca838acfd1f"
+    },
+    {
+      "path": "crates/unone-native-player/src/lib.rs",
+      "bytes": 37807,
+      "sha256": "03a3a73f7de52a0fa6e5afa172ea7bdfa4a118133781c983b2549a0d1186c540"
+    },
+    {
+      "path": "packages/unone-ui/package.unone.json",
+      "bytes": 186,
+      "sha256": "221508925d5ef248c92fb461843f067df302bf1b6900c343e13b64a2091b8886"
+    }
+  ],
+  "review": "Independent Codex read-only source review, followed by final correction checks; no build/test execution by the reviewer.",
+  "schema": "unone.reviewed-source-inventory.v1"
+}

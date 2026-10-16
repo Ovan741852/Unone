@@ -1,7 +1,7 @@
 # ScrollView and virtual collections (Web)
 
 Start with the official [`@unone/ui` package](ui-components.md), declaring
-`"runtime_packages":{"@unone/ui":"0.2.0"}` in `project.unone.json`. Use
+`"runtime_packages":{"@unone/ui":"0.3.0"}` in `project.unone.json`. Use
 `api.ui.components.scrollView` for small, irregular authored content,
 `api.ui.components.virtualList` for long fixed-height rows, or
 `api.ui.components.virtualGrid` for fixed-size cells. The same methods exist on
@@ -14,7 +14,8 @@ The existing `api.ui.scrollView`, `api.ui.virtualList` and `api.ui.virtualGrid`
 entrypoints remain compatible. Package wrappers forward the existing options,
 registration and lifecycle; they add no layout, scroll-container theme style or
 host capability. Search `game api search "scroll view"` / `"virtual list"` /
-`"虛擬清單"` and describe the matching `ui.components.*` entrypoint.
+`"虛擬清單"` / `"scroll inertia"` / `"慣性減速"` and describe the matching
+`ui.components.*` entrypoint.
 Keep canonical `EngineApi`, `UiComponentKit` and `UiNode` types from
 `game api typings`; see the [safe type refresh guide](ui-components.md#keep-the-official-types-when-upgrading).
 
@@ -123,9 +124,49 @@ api.ui.setRoot(ui.screen({id="skill_screen",node="skills",children={grid}}))
   panel's blank area. Nested ScrollViews use their viewport only.
 - Ordinary ScrollView additionally accepts `axis="vertical"` (default),
   `"horizontal"` or `"both"`. Virtual collections are vertical only.
+- `inertia=true`: continue a released mouse, touch or pen content drag with
+  momentum. The default is `false`, preserving immediate-stop behavior.
+- `deceleration=8`: finite exponential velocity decay in **per second** units,
+  greater than 0 and at most 100. It applies only when `inertia=true`; a larger
+  value stops sooner. This is a decay rate, not a 0..1 friction multiplier or a
+  duration in milliseconds. A rate of 8 has a 125 ms time constant; 12 stops
+  more quickly. Helpers and raw `scroll_view` nodes reject invalid values.
 - Removal disposes the host controller and Lua data-source registration.
   Async requests carry a revision; removed/filtered stale requests are ignored.
 - Render, pointer hit regions and keyboard reveal share one clipped projection.
+
+The same settings work on the module and themed-kit constructors, including
+`virtualList` and `virtualGrid`:
+
+```luau
+local help = api.ui.components.scrollView({
+ id="help", viewport={left=10,top=15,width=80,height=70},
+ inertia=true, deceleration=8,
+ content={
+  api.ui.components.text({id="intro",text="Introduction",
+   rect={x=0,y=0,width=80,height=10}}),
+  api.ui.components.text({id="more",text="More",
+   rect={x=0,y=100,width=80,height=10}}),
+ },
+})
+```
+
+Momentum is host presentation state. It uses animation-frame time, leaves game
+state and simulation frames unchanged, and uses the same clipped projection,
+native rails and bounded virtual-row requests as ordinary dragging. Velocity
+decays as `v(t)=v0*exp(-deceleration*t)` and distance is integrated analytically;
+different display rates cover the same path. Offsets clamp at the content
+boundary, with no elastic overscroll or bounce. Release velocity is capped at
+300 stage-axis units per second and settles below 0.5 units per second. A hold
+with no movement for more than 100 ms before release does not coast.
+
+A new pointer press, wheel input over the view, native rail press, keyboard
+navigation, focus reveal or explicit host cancellation stops momentum. Disabling,
+removing or resetting the view, changing its viewport/axis/momentum settings or
+content extent/revision, and resizing the stage also stop it. Re-enabling a view
+does not revive old velocity. A frame gap over 250 ms cancels the coast without
+catch-up; the official player also cancels it when paused or blurred. Normal
+post-release `lostpointercapture` cleanup retains the coast.
 
 ## Web host integration
 
@@ -141,6 +182,10 @@ Route pointercancel/lostpointercapture through `scroll.pointer(event,"cancel")`;
 use `scroll.cancel()` for a whole-surface pause/blur and `dispose()` on removal.
 Normal pointer capture release must not clear the last keyboard scroll owner.
 Do not send a simulation tick to materialize rows.
+The controller owns its animation-frame scheduling while momentum is active.
+Custom hosts may inject `now()` (monotonic milliseconds), `requestFrame(fn)` and
+`cancelFrame(id)` for a host scheduler or deterministic tests; these are host
+adapter options, not Luau node props. A cancelled frame must not be delivered.
 
 Default semantic controls identify themselves with `data-ui-control="node-id"`.
 Hosts using another control projection pass `getFocusedNode(): nodeId?` and
@@ -161,8 +206,8 @@ rails are clipped to ancestor viewports. Primary mouse buttons, pen tips and
 touches can drag content directly. Movement must exceed 8 CSS pixels before
 scrolling starts; smaller movement remains a tap. The deepest enabled view under
 the pointer owns the drag, including its release outside the viewport. A second
-pointer cannot replace that gesture. Sliders retain project-owned drag values,
-combobox fields retain their normal pointer capture, and foreground controls
+pointer cannot replace that gesture. Sliders and combobox fields retain their
+own pointer capture, and foreground controls
 outside the collection retain their normal input.
 
 Buttons inside draggable content activate once on release when the same node
@@ -170,8 +215,8 @@ and action are still under the pointer. A drag never activates its starting row,
 even if it ends there. Use `wasPressed` for row selection; these deferred taps
 do not expose continuous held duration. Buttons outside scroll content keep their
 ordinary down/held/up input. Cancellation, blur, disabling or removing a view
-abandons its pending tap. This release has no momentum, elastic overscroll or
-variable-height measurement.
+abandons its pending tap. Momentum is opt-in as described above; elastic
+overscroll and variable-height measurement are not supported.
 
 ## Images, actions and foreground dialogs
 

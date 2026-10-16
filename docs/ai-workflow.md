@@ -357,31 +357,56 @@ which ships as pure Luau with Core and the portable SDK. Search
 `game api search "UI package"`, `"shared components"`, `"button component"`,
 `"card component"`, `"官方UI套件"`, `"共用元件"` or `"主題樣式"`; describe
 `ui.components.info` and `ui.components.create`. Declare the exact bundled version
-in `project.unone.json`: `"runtime_packages":{"@unone/ui":"0.2.0"}`. `info()` is
+in `project.unone.json`: `"runtime_packages":{"@unone/ui":"0.3.0"}`. `info()` is
 available before declaration and reports the name, version and `declared` flag.
 No npm install, import or filesystem module loader is involved.
 
 `api.ui.components.create(theme?)` returns a typed kit with `text`, `button`,
-`slider`, `combobox`, `panel`, `image`, `component`, `screen`, `scrollView`,
+`createSlider`, low-level `slider`, `combobox`, `panel`, `image`, `component`, `screen`, `scrollView`,
 `virtualList`, `virtualGrid`, `id` and `composeStyle` methods. Every constructor
 also exists directly on `api.ui.components`, without theme defaults; both
 `kit.button(props)` and `api.ui.components.button(props)` are valid. These
 construct existing nodes for `api.ui.setRoot`, which remains the explicit
 publication step. Leaf/component props use explicit flattened `rect` or
 `anchor`+`size` fields. Per-kind theme styles are copied, overrides win, padding
-merges by edge and RGBA arrays replace. The project owns themes, content, state,
+merges by edge and RGBA arrays replace. The project owns themes, content, application state,
 action meanings, screen flow and geometry. Custom Luau factories remain valid.
 
-Search `"create button"` / `"建立按鈕"`, `"slider component"` / `"滑桿"`,
-`"combobox"` / `"下拉選單"` and `"scroll view"` / `"虛擬清單"` for the actual
-constructor descriptors. Search `"button click"` / `"button pressed"` /
+Search `"create button"` / `"建立按鈕"`, `"slider drag"` / `"slider value"` /
+`"滑桿拖曳"` for the button and `ui.components.createSlider` descriptors.
+Search `"combobox"` / `"下拉選單"` and `"scroll view"` / `"虛擬清單"` for the
+corresponding constructors. Search `"button click"` / `"button pressed"` /
 `"按下瞬間"` for `input.wasPressed(action)`, `"release"` / `"放開"` for
 `input.wasReleased(action)`, and `"hold"` / `"長按"` for `input.isDown(action)`.
 Edges compare the current action snapshot to the previous successful tick;
 repeated reads do not consume them. There are no `onClick`/`onChange` function
-props. Slider values, drag mapping, combobox options and model changes remain
-project-owned. Read the [action lifecycle](ui-components.md#read-semantic-actions)
+props. The official `createSlider` control owns numeric clamp/step and drag
+mechanics; the project applies its value to an application setting. Combobox
+options and application model changes remain project-owned. Read the
+[action lifecycle](ui-components.md#read-semantic-actions)
 before inventing callback or event-queue behavior.
+
+Create each `UiSliderControl` once in `Game.start`, retain it, publish its pure
+`view({rect=...,trackRect=...})`, and call `update(api.input)` once per control in
+`Game.update`. Do not recreate controls during rendering or duplicate pointer
+mapping. Hosts project the shared geometry, clip scroll content and capture
+the pointer; this supports local controls inside scroll views as well as stage
+controls. Read `value`, `changed`, `dragging`, `started`, `released` and
+`cancelled` from the update result. Use `getValue()` for repeated reads and
+`setValue` only for explicit external changes/resets; `setValue` and `cancel`
+stop the old held gesture until a new start. Virtual `renderItem` callbacks may
+call only `view`, never input update. See the
+[typed slider lifecycle](ui-components.md#interactive-sliders) for defaults,
+step/endpoints, `axis`, `reverse`, hit-padding units and a complete entry body.
+The low-level `slider(props)` remains a semantic leaf with no numeric controller;
+do not put `value`/`min`/`max`/`step` or callbacks on that leaf.
+
+Search `"scroll inertia"` / `"deceleration"` / `"捲動慣性"` for
+`ui.components.scrollView`. `scrollView`, `virtualList` and `virtualGrid` accept
+`inertia=true,deceleration=8` on the supported Web host. Inertia defaults to
+`false`; deceleration defaults to exponential velocity decay of 8 inverse
+seconds and must be finite in `(0,100]`. There is no elastic overscroll. Follow
+[the scroll contract](ui-scroll.md) for cancellation and host limits.
 
 For font and canonical leaf details, search `"font size"`, `"text alignment"`,
 `"border padding"` or `"字體"`, describe `ui.setRoot`, and inspect `game schema ui`.

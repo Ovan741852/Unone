@@ -109,7 +109,7 @@ pub use performance::{
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{
     AnimationAssertion, AudioAssertion, EffectsAssertion, InputFrame, ObservationAssertion,
-    PointerInput, ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile,
+    PointerInput, SliderInteraction, SliderPhase, ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile,
     ProjectInitReport, ProjectInspectReport, ProjectPaths, TestAssertion, TestSpec, UiAssertion,
     UiPreviewSpec,
 };
@@ -125,7 +125,7 @@ pub use systems::{
     SystemState, SystemStatus, compiled_systems, describe as describe_system,
     search as search_systems,
 };
-pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiBackgroundScope, UiImageFit, UiNode, UiRect, UiTree, UiSlice, UiBudget, UiUsage, UiStyle, UiInsets, UiTextAlign, UiVerticalAlign, UiTextWrap, UiTextOverflow, ui_contract};
+pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiBackgroundScope, UiImageFit, UiNode, UiRect, UiTree, UiSlice, UiBudget, UiUsage, UiStyle, UiInsets, UiTextAlign, UiVerticalAlign, UiTextWrap, UiTextOverflow, UiSliderAxis, UiSliderDrag, ui_contract};
 #[cfg(feature = "dev-tools")]
 pub use verify::{DEFAULT_VERIFY_STEPS, StepStatus, VerifyReport, VerifyStep, verify};
 pub use world::{

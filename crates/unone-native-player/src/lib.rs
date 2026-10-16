@@ -251,8 +251,7 @@ struct App {
 }
 impl App {
     fn reset_input(&mut self) {
-        self.ui_input.release_all();
-        self.ui_input = Default::default();
+        self.ui_input.reset();
         self.host_input = Default::default();
         self.pointer_edges.clear();
         self.world_pointer_owner = None;
@@ -481,7 +480,8 @@ impl ApplicationHandler for App {
                     position.x / size.width.max(1) as f64 * 100.,
                     100. - position.y / size.height.max(1) as f64 * 100.,
                 ];
-                if !self.ui_input.captured(0) && self.world_pointer_owner.is_none_or(|id| id == 0) {
+                if !self.ui_input.move_pointer(0, self.cursor[0], self.cursor[1])
+                    && self.world_pointer_owner.is_none_or(|id| id == 0) {
                     self.world_pointer(
                         self.cursor[0],
                         self.cursor[1],
@@ -506,7 +506,7 @@ impl ApplicationHandler for App {
                         self.world_pointer_owner = Some(0);
                         self.world_pointer(self.cursor[0], self.cursor[1], true, true);
                     }
-                } else if !self.ui_input.up(0) && self.world_pointer_owner == Some(0) {
+                } else if !self.ui_input.up_at(0, self.cursor[0], self.cursor[1]) && self.world_pointer_owner == Some(0) {
                     self.world_pointer_owner = None;
                     self.world_pointer(self.cursor[0], self.cursor[1], false, true);
                 }
@@ -526,13 +526,16 @@ impl ApplicationHandler for App {
                         }
                     }
                     winit::event::TouchPhase::Ended | winit::event::TouchPhase::Cancelled => {
-                        if !self.ui_input.up(id) && self.world_pointer_owner == Some(id) {
+                        let captured = if touch.phase == winit::event::TouchPhase::Cancelled {
+                            self.ui_input.cancel(id)
+                        } else { self.ui_input.up_at(id, x, y) };
+                        if !captured && self.world_pointer_owner == Some(id) {
                             self.world_pointer_owner = None;
                             self.world_pointer(x, y, false, true);
                         }
                     }
                     winit::event::TouchPhase::Moved => {
-                        if self.world_pointer_owner == Some(id) {
+                        if !self.ui_input.move_pointer(id, x, y) && self.world_pointer_owner == Some(id) {
                             self.world_pointer(x, y, true, false);
                         }
                     }
@@ -563,10 +566,15 @@ impl ApplicationHandler for App {
                 }
                 for _ in 0..steps {
                     self.ui_input.reconcile(self.snapshot.ui.as_ref());
+                    if let Some(error) = self.ui_input.take_error() {
+                        self.fail(error, event_loop);
+                        return;
+                    }
                     if let Some((action, down)) = self.ui_input.next_edge() {
                         self.host_input.actions.insert(action, down);
                     }
                     let mut input = self.host_input.clone();
+                    input.ui_sliders = self.ui_input.drain_sliders();
                     if let Some(p) = self.pointer_edges.pop_front() {
                         input.pointer = Some(p);
                     }

@@ -231,3 +231,121 @@ test('a later scroll pointer never takes an earlier outside control or world poi
  }
  assert.equal(host.report()[0].offset.y,40);assert.deepEqual(state.actions,[]);
 });
+
+function fakeClock(){
+ let time=0,next=1;const frames=new Map();
+ return {now:()=>time,requestFrame:fn=>{const id=next++;frames.set(id,fn);return id;},cancelFrame:id=>frames.delete(id),
+  elapse:ms=>{time+=ms;},advance:ms=>{time+=ms;const callbacks=[...frames.values()];frames.clear();for(const callback of callbacks)callback(time);},get pending(){return frames.size;}};
+}
+function fling(host,clock,options={}){
+ host.pointer(pointerEvent(150,350,options),'down');clock.elapse(100);
+ host.pointer(pointerEvent(150,250,options),'move');clock.elapse(10);
+ host.pointer(pointerEvent(150,250,{...options,buttons:0}),'up');
+}
+
+test('momentum is opt-in, uses analytic decay and never dispatches an action or simulation tick',t=>{
+ const clock=fakeClock(),node=view('rows',[button('tail',500)]),{host,state,draw}=harness(t,{...screen([node]),frame:42,observations:{score:7}},clock);
+ fling(host,clock);assert.equal(host.report()[0].offset.y,10);assert.equal(clock.pending,0,'legacy drag stops immediately');
+ const enabled={...node,scroll:{...node.scroll,inertia:true,deceleration:8,reset_key:'opt-in'}};
+ draw({...screen([enabled]),frame:42,observations:{score:7}});fling(host,clock);
+ assert.equal(clock.pending,1);clock.advance(100);
+ assert(Math.abs(host.report()[0].offset.y-(10+100*(1-Math.exp(-.8))/8))<1e-10);
+ assert.equal(state.snapshot.frame,42);assert.deepEqual(state.snapshot.observations,{score:7});assert.deepEqual(state.actions,[]);
+ for(let i=0;i<80&&clock.pending;i++)clock.advance(16);
+ assert.equal(clock.pending,0,'settled momentum stops scheduling frames');
+});
+
+test('equal elapsed time yields equal momentum distance across frame rates and configured deceleration',t=>{
+ const clock=fakeClock(),node=view('rows',[button('tail',500)],{inertia:true,deceleration:8}),{host,draw}=harness(t,screen([node]),clock);
+ const offsets=[];let reset=0;
+ for(const [frames,ms]of [[6,40],[12,20],[24,10]]){
+  draw(screen([{...node,scroll:{...node.scroll,reset_key:String(++reset)}}]));fling(host,clock);
+  for(let i=0;i<frames;i++)clock.advance(ms);offsets.push(host.report()[0].offset.y);
+ }
+ assert(Math.max(...offsets)-Math.min(...offsets)<1e-10);
+ const fast={...node,scroll:{...node.scroll,deceleration:20,reset_key:'fast'}};draw(screen([fast]));fling(host,clock);clock.advance(100);
+ assert(host.report()[0].offset.y<offsets[0],'greater decay stops over a shorter distance');
+});
+
+test('finite tiny deceleration keeps integrating motion instead of scheduling a stationary coast',t=>{
+ const clock=fakeClock(),{host}=harness(t,screen([view('rows',[button('tail',500)],{inertia:true,deceleration:Number.MIN_VALUE})]),clock);
+ fling(host,clock);clock.advance(100);
+ assert(Math.abs(host.report()[0].offset.y-20)<1e-10);
+});
+
+test('mouse, touch and pen momentum clamp at edges, with bounded fast-release velocity',t=>{
+ const clock=fakeClock(),node=view('rows',[button('tail',110)],{inertia:true,deceleration:1}),{host,draw}=harness(t,screen([node]),clock);
+ for(const pointerType of ['mouse','touch','pen']){
+  draw(screen([{...node,scroll:{...node.scroll,reset_key:pointerType}}]));
+  host.pointer(pointerEvent(150,350,{pointerType}),'down');clock.elapse(1);
+  host.pointer(pointerEvent(150,250,{pointerType,buttons:0}),'up');clock.advance(100);
+  assert(Math.abs(host.report()[0].offset.y-(10+300*(1-Math.exp(-.1))))<1e-10,'release sample speed is capped at 300 stage units/s');
+  for(let i=0;i<20&&clock.pending;i++)clock.advance(100);
+  assert.equal(host.report()[0].offset.y,80);assert.equal(clock.pending,0,'edge clamps without bounce or endless frames');
+ }
+});
+
+test('stationary release, long frame and ordinary capture release have explicit momentum behavior',t=>{
+ const clock=fakeClock(),node=view('rows',[button('tail',500)],{inertia:true}),{host,draw}=harness(t,screen([node]),clock);
+ host.pointer(pointerEvent(150,350),'down');clock.elapse(100);host.pointer(pointerEvent(150,250),'move');clock.elapse(101);host.pointer(pointerEvent(150,250,{buttons:0}),'up');
+ assert.equal(clock.pending,0,'holding still for more than 100ms cancels stale release speed');
+ draw(screen([{...node,scroll:{...node.scroll,reset_key:'long-frame'}}]));fling(host,clock);const before=host.report()[0].offset.y;
+ clock.advance(251);assert.equal(host.report()[0].offset.y,before);assert.equal(clock.pending,0,'background pauses do not catch up on resume');
+ draw(screen([{...node,scroll:{...node.scroll,reset_key:'capture'}}]));fling(host,clock);
+ host.pointer({...pointerEvent(),type:'lostpointercapture'},'cancel');assert.equal(clock.pending,1,'normal post-release pointer capture cleanup retains coast');clock.advance(16);assert(host.report()[0].offset.y>10);
+ host.pointer({...pointerEvent(),type:'pointercancel'},'cancel');assert.equal(clock.pending,0);
+});
+
+test('new input, host pause and changing view lifecycle cannot revive old momentum',t=>{
+ const clock=fakeClock(),base=view('rows',[button('tail',500)],{inertia:true,deceleration:8}),{host,canvas,stage,draw,win,state}=harness(t,screen([base]),clock);
+ const changes=[
+  ()=>host.cancel(),()=>win.dispatch('blur'),()=>host.pointer(pointerEvent(900,900),'down'),
+  ()=>wheel(canvas,15,70,10),()=>win.dispatch('keydown',{code:'End'}),()=>stage.children.find(n=>n.dataset.axis==='y').dispatch('pointerdown'),
+  ()=>draw(screen([{...base,scroll:{...base.scroll,enabled:false}}])),
+  ()=>draw(screen([{...base,scroll:{...base.scroll,inertia:false}}])),
+  ()=>draw(screen([{...base,scroll:{...base.scroll,deceleration:12}}])),
+  ()=>draw(screen([{...base,scroll:{...base.scroll,axis:'horizontal'}}])),
+  ()=>draw(screen([{...base,rect:{...base.rect,width:25}}])),
+  ()=>draw(screen([{...base,children:[button('tail',400)]}])),
+  ()=>draw(screen([{...base,scroll:{...base.scroll,reset_key:'reset'}}])),()=>draw(screen([])),
+ ];
+ for(const [index,change]of changes.entries()){
+  draw(screen([{...base,scroll:{...base.scroll,reset_key:'case-'+index}}]));fling(host,clock);assert.equal(clock.pending,1,'case '+index);
+  change();assert.equal(clock.pending,0,'case '+index+' cancels scheduled presentation');
+  const offset=host.report()[0]?.offset.y;clock.advance(16);assert.equal(host.report()[0]?.offset.y,offset,'case '+index+' stays stopped');
+  host.pointer(pointerEvent(900,900,{buttons:0}),'up');
+ }
+ assert.deepEqual(state.actions,[]);
+ draw(screen([base]));fling(host,clock);host.dispose();assert.equal(clock.pending,0);clock.advance(16);
+});
+
+test('momentum follows the enabled axis and the deepest nested viewport',t=>{
+ const clock=fakeClock(),inner=view('inner',[{...button('tail',500),rect:{x:500,y:500,width:10,height:10}}],{inertia:true,axis:'both'});
+ inner.rect={x:2,y:5,width:20,height:30};const outer=view('outer',[inner,button('tail',500)],{inertia:true});
+ const {host,draw}=harness(t,screen([outer]),clock);
+ host.pointer(pointerEvent(250,250),'down');clock.elapse(100);host.pointer(pointerEvent(150,150),'move');clock.elapse(10);host.pointer(pointerEvent(150,150,{buttons:0}),'up');clock.advance(100);
+ assert.deepEqual(host.report()[0].offset,{x:0,y:0});const offset=host.report()[1].offset;assert(offset.x>10&&offset.y>10);
+ const horizontal={...outer,scroll:{...outer.scroll,axis:'horizontal',reset_key:'horizontal'},children:[{...button('tail'),rect:{x:500,y:0,width:10,height:10}}]};
+ draw(screen([horizontal]));host.pointer(pointerEvent(250,250),'down');clock.elapse(100);host.pointer(pointerEvent(150,150),'move');clock.elapse(10);host.pointer(pointerEvent(150,150,{buttons:0}),'up');clock.advance(100);
+ assert(host.report()[0].offset.x>10);assert.equal(host.report()[0].offset.y,0);
+});
+
+test('stage resize stops coast before integrating the next frame',t=>{
+ const clock=fakeClock(),{host,stage}=harness(t,screen([view('rows',[button('tail',500)],{inertia:true})]),clock);
+ fling(host,clock);stage.getBoundingClientRect=()=>({left:0,top:0,width:500,height:1000});clock.advance(16);
+ assert.equal(host.report()[0].offset.y,10);assert.equal(clock.pending,0);
+});
+
+test('an ancestor clip change stops a nested coast even when the inner rect and extent stay unchanged',t=>{
+ const clock=fakeClock(),inner=view('inner',[button('tail',500)],{inertia:true});
+ inner.rect={x:2,y:5,width:20,height:30};
+ const outer=view('outer',[inner]);outer.rect={x:10,y:50,width:30,height:40};
+ const {host,draw}=harness(t,screen([outer]),clock);
+ fling(host,clock);assert.equal(clock.pending,1);
+ const before=host.report()[1];
+ draw(screen([{...outer,rect:{x:10,y:85,width:30,height:5}}]));
+ assert.deepEqual(host.report()[1].viewport,before.viewport);
+ assert.deepEqual(host.report()[1].max,before.max);
+ assert.equal(clock.pending,0,'only the inherited clip changed');
+ clock.advance(16);assert.deepEqual(host.report()[1].offset,before.offset);
+});

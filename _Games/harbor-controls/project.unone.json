@@ -4,7 +4,7 @@
   "main_scene": "scenes/main.scene.json",
   "name": "Harbor Settings",
   "runtime_packages": {
-    "@unone/ui": "0.2.0"
+    "@unone/ui": "0.3.0"
   },
   "systems": {
     "audio": false,

@@ -4,41 +4,26 @@
   "seed": 42,
   "input_sequence": [
     {
-      "pointer": {
-        "position": {
-          "x": 0,
-          "y": 0
-        },
-        "down": true,
-        "screen_position": {
-          "x": 75.0,
-          "y": 28
+      "ui_sliders": {
+        "level_slider": {
+          "phase": "start",
+          "ratio": 0.5
         }
       }
     },
     {
-      "pointer": {
-        "position": {
-          "x": 0,
-          "y": 0
-        },
-        "down": true,
-        "screen_position": {
-          "x": 120.0,
-          "y": 28
+      "ui_sliders": {
+        "level_slider": {
+          "phase": "drag",
+          "ratio": 1
         }
       }
     },
     {
-      "pointer": {
-        "position": {
-          "x": 0,
-          "y": 0
-        },
-        "down": false,
-        "screen_position": {
-          "x": 120.0,
-          "y": 28
+      "ui_sliders": {
+        "level_slider": {
+          "phase": "end",
+          "ratio": 1
         }
       }
     }

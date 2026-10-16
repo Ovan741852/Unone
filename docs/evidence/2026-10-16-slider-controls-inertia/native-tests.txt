@@ -1,0 +1,41 @@
+   Compiling unone-engine v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-engine)
+   Compiling unone-native-player v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-native-player)
+    Finished `release` profile [optimized] target(s) in 42.33s
+     Running unittests src\lib.rs (D:/TSProject/Voidwake/game/tools/build/native\release\deps\unone_native_player-1d350aa425ea65e3.exe)
+
+running 32 tests
+test audio::tests::fade_gain_is_frame_deterministic ... ok
+test lod::tests::malformed_geometry_fails ... ok
+test lod::view_tests::frustum_rejects_offscreen_and_behind_camera ... ok
+test lod::tests::distance_boundaries ... ok
+test audio::tests::verified_pcm_wav_decodes_without_an_output_device ... ok
+test lod::view_tests::vertical_camera_has_nonzero_basis ... ok
+test render::tests::native_texture_decoder_rejects_external_svg_resources ... ok
+test telemetry_tests::gui_executable_path_accepts_a_shallow_runtime ... ok
+test telemetry_tests::gui_executable_path_limit_counts_utf16_code_units ... ok
+test render::tests::native_texture_decoder_accepts_static_svg ... ok
+test telemetry_tests::readiness_declaration_freezes_host_contract ... ok
+test ui::tests::gpu_png_cjk_transparent_button_surface ... ignored, requires a native GPU and installed fonts; run explicitly on a verified host
+test telemetry_tests::timing_window_is_bounded_and_retains_recent_samples ... ok
+test particles::tests::particle_shader_parses_and_validates ... ok
+test render::tests::sprite_shader_parses_and_validates ... ok
+test ui::tests::font_catalog_rejects_unsupported_or_invalid_sources ... ok
+test render::tests::bloom_shader_parses_and_validates ... ok
+test ui::tests::paragraph_breaks_preserve_graphemes_and_cjk_word_boundaries ... ok
+test ui::tests::semantic_slider_captures_clamps_and_keeps_start_drag_end_on_separate_ticks ... ok
+test ui::tests::pointer_short_press_and_removed_button_releases_but_keeps_capture ... ok
+test ui::tests::legacy_slider_remains_passthrough_and_foreground_button_keeps_action_ownership ... ok
+test ui::tests::semantic_slider_pause_reset_preserves_cancel_after_an_already_consumed_start ... ok
+test ui::tests::semantic_slider_disabled_and_second_finger_consume_without_replacing_owner ... ok
+test ui::tests::semantic_slider_reconcile_cancels_geometry_disable_and_removal_without_click_through ... ok
+test ui::tests::semantic_slider_vertical_reverse_and_final_release_coordinates ... ok
+test ui::tests::semantic_slider_queue_coalesces_moves_preserves_edges_and_reports_overflow ... ok
+test sprites::tests::batching_preserves_paint_order_and_handles_visibility_removal_and_growth ... ok
+test telemetry_tests::native_runtime_rejects_shader_resources_instead_of_silently_ignoring_them ... ok
+test ui::tests::styled_panel_opacity_border_radius_and_noninteractive_input ... ok
+test ui::tests::svg_static_validation_and_scaled_pixels ... ok
+test ui::tests::font_catalog_aliases_and_styled_typography_pixels ... ok
+test ui::tests::nine_slice_pixels_and_budget_benchmark ... ok
+
+test result: ok. 31 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 2.88s
+

@@ -134,6 +134,8 @@ struct InputState {
     pressed: BTreeSet<String>,
     released: BTreeSet<String>,
     pointer: PointerState,
+    ui_sliders: BTreeMap<String, crate::project::SliderInteraction>,
+    pending_ui_sliders: BTreeMap<String, crate::project::SliderInteraction>,
 }
 
 // Host writes may arrive several times between ticks. Publish one read-only
@@ -144,6 +146,7 @@ struct InputTick {
     down: BTreeMap<String, bool>,
     previous_pressed: BTreeSet<String>,
     previous_released: BTreeSet<String>,
+    previous_ui_sliders: BTreeMap<String, crate::project::SliderInteraction>,
     committed: bool,
 }
 
@@ -152,17 +155,21 @@ impl InputTick {
         let mut state = input.borrow_mut();
         let pressed = state.down.iter().filter(|(action, down)| **down && !state.previous_down.get(*action).copied().unwrap_or(false)).map(|(action, _)| action.clone()).collect();
         let released = state.previous_down.iter().filter(|(action, down)| **down && !state.down.get(*action).copied().unwrap_or(false)).map(|(action, _)| action.clone()).collect();
+        let sliders = state.pending_ui_sliders.clone();
         Self {
             input: Rc::clone(input),
             down: state.down.clone(),
             previous_pressed: std::mem::replace(&mut state.pressed, pressed),
             previous_released: std::mem::replace(&mut state.released, released),
+            previous_ui_sliders: std::mem::replace(&mut state.ui_sliders, sliders),
             committed: false,
         }
     }
 
     fn commit(mut self) {
-        self.input.borrow_mut().previous_down = std::mem::take(&mut self.down);
+        let mut input = self.input.borrow_mut();
+        input.previous_down = std::mem::take(&mut self.down);
+        input.pending_ui_sliders.clear();
         self.committed = true;
     }
 }
@@ -173,6 +180,7 @@ impl Drop for InputTick {
             let mut input = self.input.borrow_mut();
             input.pressed = std::mem::take(&mut self.previous_pressed);
             input.released = std::mem::take(&mut self.previous_released);
+            input.ui_sliders = std::mem::take(&mut self.previous_ui_sliders);
         }
     }
 }
@@ -864,6 +872,7 @@ impl EngineRuntime {
     ) -> Result<WorldSnapshot, Box<Diagnostic>> {
         frame.validate()?;
         self.input.borrow_mut().down = frame.actions.clone();
+        self.input.borrow_mut().pending_ui_sliders = frame.ui_sliders.clone();
         if let Some(pointer) = &frame.pointer {
             let mut input = self.input.borrow_mut();
             input.pointer.position = pointer.position;
@@ -2202,12 +2211,16 @@ return Game
 local Game={}
 function Game.start(api)
  local function empty() return {{kind='text',id='never',text='',rect={x=0,y=0,width=1,height=1}}} end
- local list=api.ui.virtualList({id='empty',viewport={left=0,top=0,width=10,height=10},items={},key='id',rowHeight=4,renderItem=empty})
+ local list=api.ui.virtualList({id='empty',viewport={left=0,top=0,width=10,height=10},items={},key='id',rowHeight=4,renderItem=empty,inertia=true,deceleration=12})
  local nested=api.ui.scrollView({id='nested',viewport={left=2,top=110,width=10,height=10},content={}})
  local outer=api.ui.scrollView({id='outer',viewport={left=10,top=10,width=80,height=70},content={nested,list}})
  api.ui.setRoot({kind='screen',id='s',node='empty',children={outer}})
  assert(not pcall(function()api.ui.scrollView({id='bad',viewport={x=0,y=0,width=10,height=10}})end))
  assert(not pcall(function()api.ui.scrollView({id='bad',viewport={left=0,top=0,width=10,height=10},contentHeight=10})end))
+ assert(not pcall(function()api.ui.scrollView({id='bad',viewport={left=0,top=0,width=10,height=10},inertia='yes'})end))
+ for _,bad in ipairs({0,-1,101,math.huge,0/0,'8'}) do
+  assert(not pcall(function()api.ui.scrollView({id='bad',viewport={left=0,top=0,width=10,height=10},deceleration=bad})end))
+ end
  assert(not pcall(function()api.ui.virtualGrid({id='bad',viewport={left=0,top=0,width=10,height=10},items={},key='id',columns=2,columnWidth=10,rowHeight=4,renderItem=empty})end))
  assert(not pcall(function()api.ui.virtualList({id='bad',viewport={left=0,top=0,width=10,height=10},items={{id='x'},{id='x'}},key='id',rowHeight=4,renderItem=empty})end))
 end
@@ -2220,6 +2233,10 @@ return Game
         let json = serde_json::to_value(ui).unwrap();
         assert_eq!(json["children"][0]["children"][0]["rect"]["y"].as_f64(), Some(110.0));
         assert_eq!(json["children"][0]["children"][1]["scroll"]["virtual_items"]["keys"], serde_json::json!([]));
+        assert_eq!(json["children"][0]["scroll"]["inertia"], false);
+        assert_eq!(json["children"][0]["scroll"]["deceleration"], 8.0);
+        assert_eq!(json["children"][0]["children"][1]["scroll"]["inertia"], true);
+        assert_eq!(json["children"][0]["children"][1]["scroll"]["deceleration"], 12.0);
     }
 
     const NESTED_COMPONENT_UI_SCRIPT: &str = r#"
@@ -2701,6 +2718,7 @@ return Game
         let active = InputFrame {
             actions,
             pointer: None,
+            ..InputFrame::default()
         };
         let sequence = vec![active; 30]
             .into_iter()
@@ -2741,6 +2759,7 @@ return Game
                 down: true,
                 screen_position: None,
             }),
+            ..InputFrame::default()
         };
 
         let snapshot = runtime.tick_with_input(&frame).unwrap();

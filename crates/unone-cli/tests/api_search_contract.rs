@@ -358,7 +358,7 @@ fn shared_component_search_has_cli_mcp_parity_and_typed_package_guidance() {
                 .unwrap()
                 .contains("docs/ui-components.md")
         );
-        assert!(entry["when_to_use"].as_str().unwrap().contains("0.2.0"));
+        assert!(entry["when_to_use"].as_str().unwrap().contains("0.3.0"));
         assert!(
             entry["returns"]
                 .as_str()
@@ -445,9 +445,9 @@ fn ui_control_and_action_queries_have_precise_cli_mcp_parity() {
         (&["button released", "release", "放開", "放开"][..], "input.wasReleased"),
         (&["button hold", "長按", "长按"][..], "input.isDown"),
         (&["create button", "button component", "建立按鈕", "建立按钮"][..], "ui.components.button"),
-        (&["slider component", "滑桿"][..], "ui.components.slider"),
+        (&["slider component", "slider drag", "slider value", "滑桿", "滑桿拖曳"][..], "ui.components.createSlider"),
         (&["combobox", "下拉選單"][..], "ui.components.combobox"),
-        (&["scroll view", "scrollview"][..], "ui.components.scrollView"),
+        (&["scroll view", "scrollview", "scroll inertia", "scrollview deceleration", "慣性捲動", "捲動減速設定"][..], "ui.components.scrollView"),
         (&["virtual list", "虛擬清單"][..], "ui.components.virtualList"),
         (&["virtual grid", "虛擬網格"][..], "ui.components.virtualGrid"),
         (&["UI types", "UI 型別"][..], "ui.components.create"),
@@ -460,7 +460,7 @@ fn ui_control_and_action_queries_have_precise_cli_mcp_parity() {
             assert_eq!(result["value"]["matches"][0]["name"], expected, "{query}");
         }
     }
-    for name in ["input.isDown", "input.wasPressed", "input.wasReleased", "ui.setRoot", "ui.components.text", "ui.components.button", "ui.components.slider", "ui.components.combobox", "ui.components.panel", "ui.components.image", "ui.components.component", "ui.components.screen", "ui.components.scrollView", "ui.components.virtualList", "ui.components.virtualGrid"] {
+    for name in ["input.getSliderInteraction", "ui.components.createSlider", "input.isDown", "input.wasPressed", "input.wasReleased", "ui.setRoot", "ui.components.text", "ui.components.button", "ui.components.slider", "ui.components.combobox", "ui.components.panel", "ui.components.image", "ui.components.component", "ui.components.screen", "ui.components.scrollView", "ui.components.virtualList", "ui.components.virtualGrid"] {
         let result = cli_search(&project_root, name);
         assert_eq!(result, mcp_search(&project_root, name), "{name}");
         assert_eq!(result["value"]["matches"].as_array().unwrap().len(), 1);

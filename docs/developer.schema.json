@@ -388,6 +388,13 @@
             }
           ],
           "default": null
+        },
+        "ui_sliders": {
+          "additionalProperties": {
+            "$ref": "#/$defs/SliderInteraction"
+          },
+          "description": "Host-projected semantic slider events, consumed once per successful tick.\nValues/ranges remain in the official Luau control, not platform adapters.",
+          "type": "object"
         }
       },
       "type": "object"
@@ -837,6 +844,32 @@
           "type": "object"
         }
       ]
+    },
+    "SliderInteraction": {
+      "additionalProperties": false,
+      "properties": {
+        "phase": {
+          "$ref": "#/$defs/SliderPhase"
+        },
+        "ratio": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "phase",
+        "ratio"
+      ],
+      "type": "object"
+    },
+    "SliderPhase": {
+      "enum": [
+        "start",
+        "drag",
+        "end",
+        "cancel"
+      ],
+      "type": "string"
     },
     "Transform2DData": {
       "additionalProperties": false,

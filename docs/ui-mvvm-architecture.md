@@ -3,17 +3,18 @@
 Current scope (2026-10-16): the implemented official
 [`@unone/ui` package](ui-components.md) is a versioned pure Luau component kit,
 bundled with Core and the portable SDK. Declare
-`"runtime_packages":{"@unone/ui":"0.2.0"}` and discover `ui.components.info` /
+`"runtime_packages":{"@unone/ui":"0.3.0"}` and discover `ui.components.info` /
 `ui.components.create`. Its returned kit constructs existing typed leaves and
 component/screen nodes and all canonical leaf controls, copies per-kind theme
 styles, composes instance IDs and can
 prepend a scoped panel/image surface. It has no manager, binding lifecycle,
 reactive scheduler, hardcoded theme, layout policy or business behavior. Themes,
-content, state, actions and geometry remain project-owned; custom Luau factories
+content, application state, actions and geometry remain project-owned; custom Luau factories
 remain valid. This package is implemented; the manager/reactive architecture
 below remains a proposal.
 
-The module and themed kit share constructor names, including slider, combobox
+The module and themed kit share constructor names, including `createSlider`,
+the low-level slider leaf, combobox
 and the existing scroll helpers. `input.wasPressed` / `wasReleased` are shared
 non-consuming semantic action edges; `isDown` is held state. They replace repeated
 edge bookkeeping, not the project's commands or model rules. Search
@@ -21,6 +22,23 @@ edge bookkeeping, not the project's commands or model rules. Search
 `EngineApi`, `UiApi` and `UiComponentKit` types and use the
 [safe marked-block refresh](ui-components.md#keep-the-official-types-when-upgrading)
 when upgrading. No new manager, reactive binding or automatic layout is implied.
+
+`createSlider` is an implemented shared control, not part of the manager proposal
+below. Its persistent Luau model owns numeric range/step/value and drag state;
+`view` only produces a semantic node. The official host owns projected/clipped
+hit testing and pointer capture, including controls in scroll content. Create
+once, update once in `Game.update`, and publish pure views; virtual `renderItem`
+callbacks must not update input. The application decides how the returned value
+changes its domain model. `setValue`/`cancel` ignore the old held gesture until
+a new start. See [the typed slider lifecycle](ui-components.md#interactive-sliders).
+Search `"slider drag"` / `"滑桿拖曳"` for this implemented API.
+
+Scroll helpers also expose opt-in Web drag inertia through
+`inertia=true,deceleration=8`; the default is no inertia, exponential decay is
+in inverse seconds with a finite range `(0,100]`, and offsets stay clamped
+without elastic overscroll. Search `"scroll inertia"` / `"捲動慣性"` and follow
+[the implemented scroll contract](ui-scroll.md). These shared interaction
+mechanics introduce no application rules or reactive scheduler.
 
 [ADR 0038](decisions/0038-shared-ui-styling.md) extends the Core transport with
 shared font/box styles and a decorative panel primitive. Use the

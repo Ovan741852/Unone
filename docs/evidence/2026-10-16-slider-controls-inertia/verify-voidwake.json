@@ -1,0 +1,65 @@
+{
+  "ok": true,
+  "value": {
+    "project": "VOIDWAKE · 深空餘燼",
+    "steps": [
+      {
+        "name": "types",
+        "status": "passed",
+        "summary": "entrypoints [\"start\", \"update\"], strict_mode true",
+        "command": "game check --types",
+        "diagnostics": []
+      },
+      {
+        "name": "assets",
+        "status": "passed",
+        "summary": "14 declared, 66 scene references, ready_for_packaging true",
+        "command": "game asset inspect --strict",
+        "diagnostics": []
+      },
+      {
+        "name": "layout:menu",
+        "status": "passed",
+        "summary": "0 findings; nodes: brand, comms, sound, header_rule, eyebrow, menu_title, menu_title_accent, menu_story, mission_rule, mission, mission_meta, mission_end, launch, menu_controls, ship_tag, ship_name, ship_class, ship_rule, ship_serial, footer_rule, footer, engine_mark",
+        "command": "game ui preview --strict --frames 1 --seed 42 --overlap-policy tests/ui-overlap-policy.json",
+        "diagnostics": []
+      },
+      {
+        "name": "layout:playing",
+        "status": "passed",
+        "summary": "0 findings; nodes: brand, comms, sound, header_rule, sector, clock, objective, route, salvage, pause, vessel, hull_label, hull_track, hull_fill, hull_value, shield_label, shield_track, shield_fill, shield_value, xp, weapon_status, weapon, auto, burst, dash, flight_hint, footer_rule, footer, engine_mark",
+        "command": "game ui preview --strict --frames 1 --seed 42 --input-sequence tests/ui-playing.input.json --overlap-policy tests/ui-overlap-policy.json",
+        "diagnostics": []
+      },
+      {
+        "name": "layout:paused",
+        "status": "passed",
+        "summary": "0 findings; nodes: modal_shade, brand, comms, sound, header_rule, paused_title, paused_copy, resume, abandon, footer_rule, footer, engine_mark",
+        "command": "game ui preview --strict --frames 2 --seed 42 --input-sequence tests/ui-paused.input.json --overlap-policy tests/ui-overlap-policy.json",
+        "diagnostics": []
+      },
+      {
+        "name": "layout:upgrade",
+        "status": "passed",
+        "summary": "0 findings; nodes: modal_shade, brand, comms, sound, header_rule, upgrade_title, upgrade_copy, choice_plate_1, rarity_1, choice_name_1, choice_desc_1, select_1, choice_plate_2, rarity_2, choice_name_2, choice_desc_2, select_2, choice_plate_3, rarity_3, choice_name_3, choice_desc_3, select_3, footer_rule, footer, engine_mark",
+        "command": "game ui preview --strict --frames 2500 --seed 42 --input-sequence tests/ui-upgrade.input.json --overlap-policy tests/ui-overlap-policy.json",
+        "diagnostics": []
+      },
+      {
+        "name": "tests",
+        "status": "passed",
+        "summary": "10/10 deterministic cases passed",
+        "command": "game test",
+        "diagnostics": []
+      }
+    ],
+    "passed": 7,
+    "failed": 0,
+    "not_applicable": 0,
+    "step_source": "default"
+  },
+  "diagnostics": [],
+  "effects": [
+    "verify ran 7 gates in the default order: 7 passed, 0 failed, 0 not applicable"
+  ]
+}

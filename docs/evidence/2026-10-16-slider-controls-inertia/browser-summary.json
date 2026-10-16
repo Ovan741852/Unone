@@ -1,0 +1,1718 @@
+{
+  "url": "http://127.0.0.1:8344/?sdk=fresh-ui-verified",
+  "phase": "ui-slider-inertia-after",
+  "pass": true,
+  "browser": "Playwright Microsoft Edge channel msedge, headless, isolated production-page contexts",
+  "contract": {
+    "uiPackage": "0.3.0",
+    "slider": "Persistent official createSlider controller; semantic ratio/phase input via Core",
+    "scroll": "inertia=true, deceleration=8; relative timed samples, no exact coast distance assumption"
+  },
+  "assertions": 118,
+  "viewports": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "pass": true,
+      "assertions": 38,
+      "uiPackage": {
+        "declared": true,
+        "name": "@unone/ui",
+        "version": "0.3.0"
+      },
+      "release": [
+        "c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1"
+      ],
+      "slider": {
+        "node": {
+          "action": "AdjustLevel",
+          "drag": {
+            "axis": "horizontal",
+            "enabled": true,
+            "hit_rect": {
+              "height": 8.100000000000001,
+              "width": 37.3,
+              "x": 7.35,
+              "y": 54.9
+            },
+            "reverse": false,
+            "track_rect": {
+              "height": 0.45,
+              "width": 36,
+              "x": 8,
+              "y": 55.55
+            }
+          },
+          "id": "audio/level",
+          "kind": "slider",
+          "rect": {
+            "height": 5,
+            "width": 36,
+            "x": 8,
+            "y": 58
+          },
+          "style": {
+            "background": [
+              0.085,
+              0.133,
+              0.148,
+              1
+            ],
+            "border_color": [
+              0.16,
+              0.23,
+              0.25,
+              1
+            ],
+            "border_radius": 0.65,
+            "border_width": 0.1,
+            "color": [
+              0.57,
+              0.65,
+              0.66,
+              1
+            ],
+            "font_family": "Segoe UI, Microsoft JhengHei, sans-serif",
+            "font_size": 1.7,
+            "font_weight": 600,
+            "letter_spacing": 0.02,
+            "line_height": 1.2,
+            "overflow": "clip",
+            "padding": {
+              "bottom": 0,
+              "left": 1.4,
+              "right": 1.4,
+              "top": 0
+            },
+            "text_align": "start",
+            "vertical_align": "middle",
+            "wrap": "none"
+          },
+          "text": "Drag to adjust / 拖曳調整"
+        },
+        "lineStart": {
+          "startNode": "audio/fill",
+          "start": {
+            "x": 301.824,
+            "y": 398.025
+          },
+          "target": {
+            "x": 234.43200000000002,
+            "y": 398.025
+          }
+        },
+        "at23": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": true,
+          "released": false,
+          "started": false,
+          "value": 23
+        },
+        "worldPointerDuringDrag": false,
+        "outsideHeld": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": true,
+          "released": false,
+          "started": false,
+          "value": 100
+        },
+        "outsideReleased": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": false,
+          "released": false,
+          "started": false,
+          "value": 100
+        },
+        "outsideValue": 100,
+        "returnedValue": 100,
+        "restarted": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": true,
+          "released": false,
+          "started": false,
+          "value": 23
+        },
+        "restartedWorldPointer": false,
+        "final": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": false,
+          "released": false,
+          "started": false,
+          "value": 23
+        }
+      },
+      "scrollDescriptor": {
+        "axis": "vertical",
+        "inertia": true,
+        "deceleration": 8
+      },
+      "drag": {
+        "physicalRow": "preset/morning-balanced",
+        "start": {
+          "x": 1029.6,
+          "y": 400.95000000000005
+        },
+        "end": {
+          "x": 1029.6,
+          "y": 243.45000000000005
+        },
+        "scrollBefore": {
+          "top": 0,
+          "height": 6367,
+          "client": 225,
+          "at": 3832.800000000745
+        },
+        "heldStill": {
+          "top": 158,
+          "height": 6367,
+          "client": 225,
+          "at": 4751.9000000003725
+        },
+        "scrollAfter": {
+          "top": 158,
+          "height": 6367,
+          "client": 225,
+          "at": 4982.700000001118
+        },
+        "presetBefore": "morning-calm",
+        "presetAfter": "morning-calm",
+        "tapSelection": "morning-warm"
+      },
+      "inertia": {
+        "natural": {
+          "gesture": {
+            "row": "preset/evening-balanced",
+            "start": {
+              "x": 1029.6,
+              "y": 373.94999999999993
+            },
+            "end": {
+              "x": 1029.6,
+              "y": 211.94999999999993
+            },
+            "offsetBefore": {
+              "top": 558,
+              "height": 6367,
+              "client": 225,
+              "at": 5763.200000001118
+            },
+            "released": {
+              "top": 721,
+              "height": 6367,
+              "client": 225,
+              "at": 6138.200000001118
+            },
+            "remainingAtRelease": 5421
+          },
+          "samples": [
+            {
+              "top": 721,
+              "height": 6367,
+              "client": 225,
+              "at": 6145
+            },
+            {
+              "top": 750,
+              "height": 6367,
+              "client": 225,
+              "at": 6228.4000000003725
+            },
+            {
+              "top": 766,
+              "height": 6367,
+              "client": 225,
+              "at": 6327
+            },
+            {
+              "top": 773,
+              "height": 6367,
+              "client": 225,
+              "at": 6431.60000000149
+            },
+            {
+              "top": 779,
+              "height": 6367,
+              "client": 225,
+              "at": 6589.4000000003725
+            },
+            {
+              "top": 781,
+              "height": 6367,
+              "client": 225,
+              "at": 6796.800000000745
+            },
+            {
+              "top": 781,
+              "height": 6367,
+              "client": 225,
+              "at": 7108.10000000149
+            },
+            {
+              "top": 781,
+              "height": 6367,
+              "client": 225,
+              "at": 7471.800000000745
+            },
+            {
+              "top": 781,
+              "height": 6367,
+              "client": 225,
+              "at": 7883.60000000149
+            }
+          ],
+          "earlyVelocity": 247.25274725274727,
+          "lateVelocity": 9.643201542894925,
+          "segmentVelocities": [
+            {
+              "start": 6145,
+              "end": 6228.4000000003725,
+              "pixelsPerSecond": 347.72182254041326
+            },
+            {
+              "start": 6228.4000000003725,
+              "end": 6327,
+              "pixelsPerSecond": 162.27180527444676
+            },
+            {
+              "start": 6327,
+              "end": 6431.60000000149,
+              "pixelsPerSecond": 66.9216061175935
+            },
+            {
+              "start": 6431.60000000149,
+              "end": 6589.4000000003725,
+              "pixelsPerSecond": 38.022813688482216
+            },
+            {
+              "start": 6589.4000000003725,
+              "end": 6796.800000000745,
+              "pixelsPerSecond": 9.643201542894925
+            },
+            {
+              "start": 6796.800000000745,
+              "end": 7108.10000000149,
+              "pixelsPerSecond": 0
+            },
+            {
+              "start": 7108.10000000149,
+              "end": 7471.800000000745,
+              "pixelsPerSecond": 0
+            },
+            {
+              "start": 7471.800000000745,
+              "end": 7883.60000000149,
+              "pixelsPerSecond": 0
+            }
+          ]
+        },
+        "newPress": {
+          "gesture": {
+            "row": "preset/evening-quiet",
+            "start": {
+              "x": 1029.6,
+              "y": 363.3499999999999
+            },
+            "end": {
+              "x": 1029.6,
+              "y": 201.3499999999999
+            },
+            "offsetBefore": {
+              "top": 781,
+              "height": 6367,
+              "client": 225,
+              "at": 7913.5
+            },
+            "released": {
+              "top": 943,
+              "height": 6367,
+              "client": 225,
+              "at": 8302.300000000745
+            },
+            "remainingAtRelease": 5199
+          },
+          "coast": {
+            "a": {
+              "top": 946,
+              "height": 6367,
+              "client": 225,
+              "at": 8312.5
+            },
+            "b": {
+              "top": 974,
+              "height": 6367,
+              "client": 225,
+              "at": 8398.800000000745
+            }
+          },
+          "held": [
+            {
+              "top": 981,
+              "height": 6367,
+              "client": 225,
+              "at": 8427.400000000373
+            },
+            {
+              "top": 981,
+              "height": 6367,
+              "client": 225,
+              "at": 8551.5
+            }
+          ],
+          "stopped": [
+            {
+              "top": 981,
+              "height": 6367,
+              "client": 225,
+              "at": 8556.800000000745
+            },
+            {
+              "top": 981,
+              "height": 6367,
+              "client": 225,
+              "at": 8663.300000000745
+            },
+            {
+              "top": 981,
+              "height": 6367,
+              "client": 225,
+              "at": 8849.900000000373
+            }
+          ]
+        },
+        "wheelCancel": {
+          "gesture": {
+            "row": "preset/evening-creative",
+            "start": {
+              "x": 1029.6,
+              "y": 375.75
+            },
+            "end": {
+              "x": 1029.6,
+              "y": 213.75
+            },
+            "offsetBefore": {
+              "top": 981,
+              "height": 6367,
+              "client": 225,
+              "at": 8875
+            },
+            "released": {
+              "top": 1143,
+              "height": 6367,
+              "client": 225,
+              "at": 9232.400000000373
+            },
+            "remainingAtRelease": 4999
+          },
+          "coast": {
+            "a": {
+              "top": 1143,
+              "height": 6367,
+              "client": 225,
+              "at": 9235.300000000745
+            },
+            "b": {
+              "top": 1170,
+              "height": 6367,
+              "client": 225,
+              "at": 9314.60000000149
+            }
+          },
+          "stopped": [
+            {
+              "top": 1344,
+              "height": 6367,
+              "client": 225,
+              "at": 9450.300000000745
+            },
+            {
+              "top": 1344,
+              "height": 6367,
+              "client": 225,
+              "at": 9561.900000000373
+            },
+            {
+              "top": 1344,
+              "height": 6367,
+              "client": 225,
+              "at": 9749.800000000745
+            }
+          ]
+        },
+        "platformPause": {
+          "eventType": "Explicit synthetic platform lifecycle Event: unone-host-pause/unone-host-resume; the flick itself uses physical mouse",
+          "gesture": {
+            "row": "preset/studio-night",
+            "start": {
+              "x": 1029.6,
+              "y": 384.4499999999998
+            },
+            "end": {
+              "x": 1029.6,
+              "y": 222.44999999999982
+            },
+            "offsetBefore": {
+              "top": 1344,
+              "height": 6367,
+              "client": 225,
+              "at": 9763
+            },
+            "released": {
+              "top": 1506,
+              "height": 6367,
+              "client": 225,
+              "at": 10130.200000001118
+            },
+            "remainingAtRelease": 4636
+          },
+          "coast": {
+            "a": {
+              "top": 1506,
+              "height": 6367,
+              "client": 225,
+              "at": 10133.5
+            },
+            "b": {
+              "top": 1535,
+              "height": 6367,
+              "client": 225,
+              "at": 10221.10000000149
+            }
+          },
+          "paused": [
+            {
+              "top": 1539,
+              "height": 6367,
+              "client": 225,
+              "at": 10269.300000000745
+            },
+            {
+              "top": 1539,
+              "height": 6367,
+              "client": 225,
+              "at": 10443.300000000745
+            }
+          ],
+          "resumed": [
+            {
+              "top": 1539,
+              "height": 6367,
+              "client": 225,
+              "at": 10506.200000001118
+            },
+            {
+              "top": 1539,
+              "height": 6367,
+              "client": 225,
+              "at": 10694.700000001118
+            }
+          ]
+        }
+      },
+      "applyCount": 1,
+      "quality": "Studio",
+      "inputProbe": {
+        "held": false,
+        "hold_ticks": 0,
+        "last_press_a": false,
+        "last_press_b": false,
+        "last_release_a": false,
+        "last_release_b": false,
+        "mismatches": 0,
+        "presses": 1,
+        "reader_a_presses": 1,
+        "reader_a_releases": 1,
+        "reader_b_presses": 1,
+        "reader_b_releases": 1,
+        "releases": 1,
+        "total_held_ticks": 22
+      },
+      "frame": [
+        26,
+        626
+      ],
+      "mime": {
+        "javascript": 25,
+        "wasm": 1,
+        "bad": []
+      },
+      "errors": {
+        "console": [],
+        "page": [],
+        "request": [],
+        "http": [],
+        "status": {
+          "status": "",
+          "fatal": null,
+          "renderer": "official"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 1020,
+        "height": 884
+      },
+      "pass": true,
+      "assertions": 38,
+      "uiPackage": {
+        "declared": true,
+        "name": "@unone/ui",
+        "version": "0.3.0"
+      },
+      "release": [
+        "c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1"
+      ],
+      "slider": {
+        "node": {
+          "action": "AdjustLevel",
+          "drag": {
+            "axis": "horizontal",
+            "enabled": true,
+            "hit_rect": {
+              "height": 8.100000000000001,
+              "width": 40.3,
+              "x": 6.35,
+              "y": 54.9
+            },
+            "reverse": false,
+            "track_rect": {
+              "height": 0.45,
+              "width": 39,
+              "x": 7,
+              "y": 55.55
+            }
+          },
+          "id": "audio/level",
+          "kind": "slider",
+          "rect": {
+            "height": 5,
+            "width": 39,
+            "x": 7,
+            "y": 58
+          },
+          "style": {
+            "background": [
+              0.085,
+              0.133,
+              0.148,
+              1
+            ],
+            "border_color": [
+              0.16,
+              0.23,
+              0.25,
+              1
+            ],
+            "border_radius": 0.65,
+            "border_width": 0.1,
+            "color": [
+              0.57,
+              0.65,
+              0.66,
+              1
+            ],
+            "font_family": "Segoe UI, Microsoft JhengHei, sans-serif",
+            "font_size": 1.7,
+            "font_weight": 600,
+            "letter_spacing": 0.02,
+            "line_height": 1.2,
+            "overflow": "clip",
+            "padding": {
+              "bottom": 0,
+              "left": 1.4,
+              "right": 1.4,
+              "top": 0
+            },
+            "text_align": "start",
+            "vertical_align": "middle",
+            "wrap": "none"
+          },
+          "text": "Drag to adjust / 拖曳調整"
+        },
+        "lineStart": {
+          "startNode": "audio/fill",
+          "start": {
+            "x": 214.608,
+            "y": 390.949
+          },
+          "target": {
+            "x": 162.894,
+            "y": 390.949
+          }
+        },
+        "at23": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": true,
+          "released": false,
+          "started": false,
+          "value": 23
+        },
+        "worldPointerDuringDrag": false,
+        "outsideHeld": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": true,
+          "released": false,
+          "started": false,
+          "value": 100
+        },
+        "outsideReleased": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": false,
+          "released": false,
+          "started": false,
+          "value": 100
+        },
+        "outsideValue": 100,
+        "returnedValue": 100,
+        "restarted": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": true,
+          "released": false,
+          "started": false,
+          "value": 23
+        },
+        "restartedWorldPointer": false,
+        "final": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": false,
+          "released": false,
+          "started": false,
+          "value": 23
+        }
+      },
+      "scrollDescriptor": {
+        "axis": "vertical",
+        "inertia": true,
+        "deceleration": 8
+      },
+      "drag": {
+        "physicalRow": "preset/morning-balanced",
+        "start": {
+          "x": 744.6,
+          "y": 393.822
+        },
+        "end": {
+          "x": 744.6,
+          "y": 239.122
+        },
+        "scrollBefore": {
+          "top": 0,
+          "height": 6253,
+          "client": 221,
+          "at": 3151.800000000745
+        },
+        "heldStill": {
+          "top": 155,
+          "height": 6253,
+          "client": 221,
+          "at": 4073.5
+        },
+        "scrollAfter": {
+          "top": 155,
+          "height": 6253,
+          "client": 221,
+          "at": 4303.300000000745
+        },
+        "presetBefore": "morning-calm",
+        "presetAfter": "morning-calm",
+        "tapSelection": "morning-warm"
+      },
+      "inertia": {
+        "natural": {
+          "gesture": {
+            "row": "preset/evening-balanced",
+            "start": {
+              "x": 744.6,
+              "y": 360.3819999999999
+            },
+            "end": {
+              "x": 744.6,
+              "y": 201.2619999999999
+            },
+            "offsetBefore": {
+              "top": 555,
+              "height": 6253,
+              "client": 221,
+              "at": 5066.4000000003725
+            },
+            "released": {
+              "top": 714,
+              "height": 6253,
+              "client": 221,
+              "at": 5474.800000000745
+            },
+            "remainingAtRelease": 5318
+          },
+          "samples": [
+            {
+              "top": 716,
+              "height": 6253,
+              "client": 221,
+              "at": 5484.0999999996275
+            },
+            {
+              "top": 744,
+              "height": 6253,
+              "client": 221,
+              "at": 5571.4000000003725
+            },
+            {
+              "top": 760,
+              "height": 6253,
+              "client": 221,
+              "at": 5671.4000000003725
+            },
+            {
+              "top": 766,
+              "height": 6253,
+              "client": 221,
+              "at": 5774.4000000003725
+            },
+            {
+              "top": 772,
+              "height": 6253,
+              "client": 221,
+              "at": 5935
+            },
+            {
+              "top": 774,
+              "height": 6253,
+              "client": 221,
+              "at": 6154.5
+            },
+            {
+              "top": 774,
+              "height": 6253,
+              "client": 221,
+              "at": 6466.9000000003725
+            },
+            {
+              "top": 774,
+              "height": 6253,
+              "client": 221,
+              "at": 6834.5999999996275
+            },
+            {
+              "top": 774,
+              "height": 6253,
+              "client": 221,
+              "at": 7239.0999999996275
+            }
+          ],
+          "earlyVelocity": 234.91724506046435,
+          "lateVelocity": 9.111617312072893,
+          "segmentVelocities": [
+            {
+              "start": 5484.0999999996275,
+              "end": 5571.4000000003725,
+              "pixelsPerSecond": 320.7331042355216
+            },
+            {
+              "start": 5571.4000000003725,
+              "end": 5671.4000000003725,
+              "pixelsPerSecond": 160
+            },
+            {
+              "start": 5671.4000000003725,
+              "end": 5774.4000000003725,
+              "pixelsPerSecond": 58.25242718446602
+            },
+            {
+              "start": 5774.4000000003725,
+              "end": 5935,
+              "pixelsPerSecond": 37.35990037368567
+            },
+            {
+              "start": 5935,
+              "end": 6154.5,
+              "pixelsPerSecond": 9.111617312072893
+            },
+            {
+              "start": 6154.5,
+              "end": 6466.9000000003725,
+              "pixelsPerSecond": 0
+            },
+            {
+              "start": 6466.9000000003725,
+              "end": 6834.5999999996275,
+              "pixelsPerSecond": 0
+            },
+            {
+              "start": 6834.5999999996275,
+              "end": 7239.0999999996275,
+              "pixelsPerSecond": 0
+            }
+          ]
+        },
+        "newPress": {
+          "gesture": {
+            "row": "preset/evening-quiet",
+            "start": {
+              "x": 744.6,
+              "y": 350.00599999999986
+            },
+            "end": {
+              "x": 744.6,
+              "y": 190.88599999999985
+            },
+            "offsetBefore": {
+              "top": 774,
+              "height": 6253,
+              "client": 221,
+              "at": 7267
+            },
+            "released": {
+              "top": 934,
+              "height": 6253,
+              "client": 221,
+              "at": 7671.800000000745
+            },
+            "remainingAtRelease": 5098
+          },
+          "coast": {
+            "a": {
+              "top": 934,
+              "height": 6253,
+              "client": 221,
+              "at": 7675
+            },
+            "b": {
+              "top": 961,
+              "height": 6253,
+              "client": 221,
+              "at": 7757.300000000745
+            }
+          },
+          "held": [
+            {
+              "top": 968,
+              "height": 6253,
+              "client": 221,
+              "at": 7786.5
+            },
+            {
+              "top": 968,
+              "height": 6253,
+              "client": 221,
+              "at": 7916.700000001118
+            }
+          ],
+          "stopped": [
+            {
+              "top": 968,
+              "height": 6253,
+              "client": 221,
+              "at": 7922
+            },
+            {
+              "top": 968,
+              "height": 6253,
+              "client": 221,
+              "at": 8039.5
+            },
+            {
+              "top": 968,
+              "height": 6253,
+              "client": 221,
+              "at": 8233
+            }
+          ]
+        },
+        "wheelCancel": {
+          "gesture": {
+            "row": "preset/evening-creative",
+            "start": {
+              "x": 744.6,
+              "y": 364.6299999999999
+            },
+            "end": {
+              "x": 744.6,
+              "y": 205.50999999999988
+            },
+            "offsetBefore": {
+              "top": 968,
+              "height": 6253,
+              "client": 221,
+              "at": 8255.700000001118
+            },
+            "released": {
+              "top": 1127,
+              "height": 6253,
+              "client": 221,
+              "at": 8609.900000000373
+            },
+            "remainingAtRelease": 4905
+          },
+          "coast": {
+            "a": {
+              "top": 1130,
+              "height": 6253,
+              "client": 221,
+              "at": 8617.800000000745
+            },
+            "b": {
+              "top": 1152,
+              "height": 6253,
+              "client": 221,
+              "at": 8688.300000000745
+            }
+          },
+          "stopped": [
+            {
+              "top": 1325,
+              "height": 6253,
+              "client": 221,
+              "at": 8832.5
+            },
+            {
+              "top": 1325,
+              "height": 6253,
+              "client": 221,
+              "at": 8937.800000000745
+            },
+            {
+              "top": 1325,
+              "height": 6253,
+              "client": 221,
+              "at": 9132.800000000745
+            }
+          ]
+        },
+        "platformPause": {
+          "eventType": "Explicit synthetic platform lifecycle Event: unone-host-pause/unone-host-resume; the flick itself uses physical mouse",
+          "gesture": {
+            "row": "preset/studio-night",
+            "start": {
+              "x": 744.6,
+              "y": 372.72199999999987
+            },
+            "end": {
+              "x": 744.6,
+              "y": 213.60199999999986
+            },
+            "offsetBefore": {
+              "top": 1325,
+              "height": 6253,
+              "client": 221,
+              "at": 9150.800000000745
+            },
+            "released": {
+              "top": 1484,
+              "height": 6253,
+              "client": 221,
+              "at": 9522.900000000373
+            },
+            "remainingAtRelease": 4548
+          },
+          "coast": {
+            "a": {
+              "top": 1484,
+              "height": 6253,
+              "client": 221,
+              "at": 9526
+            },
+            "b": {
+              "top": 1510,
+              "height": 6253,
+              "client": 221,
+              "at": 9602.599999999627
+            }
+          },
+          "paused": [
+            {
+              "top": 1510,
+              "height": 6253,
+              "client": 221,
+              "at": 9648.099999999627
+            },
+            {
+              "top": 1510,
+              "height": 6253,
+              "client": 221,
+              "at": 9821.300000000745
+            }
+          ],
+          "resumed": [
+            {
+              "top": 1510,
+              "height": 6253,
+              "client": 221,
+              "at": 9884.599999999627
+            },
+            {
+              "top": 1510,
+              "height": 6253,
+              "client": 221,
+              "at": 10073.700000001118
+            }
+          ]
+        }
+      },
+      "applyCount": 1,
+      "quality": "Studio",
+      "inputProbe": {
+        "held": false,
+        "hold_ticks": 0,
+        "last_press_a": false,
+        "last_press_b": false,
+        "last_release_a": false,
+        "last_release_b": false,
+        "mismatches": 0,
+        "presses": 1,
+        "reader_a_presses": 1,
+        "reader_a_releases": 1,
+        "reader_b_presses": 1,
+        "reader_b_releases": 1,
+        "releases": 1,
+        "total_held_ticks": 22
+      },
+      "frame": [
+        25,
+        621
+      ],
+      "mime": {
+        "javascript": 25,
+        "wasm": 1,
+        "bad": []
+      },
+      "errors": {
+        "console": [],
+        "page": [],
+        "request": [],
+        "http": [],
+        "status": {
+          "status": "",
+          "fatal": null,
+          "renderer": "official"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "pass": true,
+      "assertions": 38,
+      "uiPackage": {
+        "declared": true,
+        "name": "@unone/ui",
+        "version": "0.3.0"
+      },
+      "release": [
+        "c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1"
+      ],
+      "slider": {
+        "node": {
+          "action": "AdjustLevel",
+          "drag": {
+            "axis": "horizontal",
+            "enabled": true,
+            "hit_rect": {
+              "height": 5.030000000000001,
+              "width": 85.30000000000001,
+              "x": 7.35,
+              "y": 66.97
+            },
+            "reverse": false,
+            "track_rect": {
+              "height": 0.28,
+              "width": 84,
+              "x": 8,
+              "y": 67.62
+            }
+          },
+          "id": "audio/level",
+          "kind": "slider",
+          "rect": {
+            "height": 3.6,
+            "width": 84,
+            "x": 8,
+            "y": 68.4
+          },
+          "style": {
+            "background": [
+              0.085,
+              0.133,
+              0.148,
+              1
+            ],
+            "border_color": [
+              0.16,
+              0.23,
+              0.25,
+              1
+            ],
+            "border_radius": 0.65,
+            "border_width": 0.1,
+            "color": [
+              0.57,
+              0.65,
+              0.66,
+              1
+            ],
+            "font_family": "Segoe UI, Microsoft JhengHei, sans-serif",
+            "font_size": 1.55,
+            "font_weight": 600,
+            "letter_spacing": 0.02,
+            "line_height": 1.2,
+            "overflow": "clip",
+            "padding": {
+              "bottom": 0,
+              "left": 1.4,
+              "right": 1.4,
+              "top": 0
+            },
+            "text_align": "start",
+            "vertical_align": "middle",
+            "wrap": "none"
+          },
+          "text": "Drag to adjust / 拖曳調整"
+        },
+        "lineStart": {
+          "startNode": "audio/fill",
+          "start": {
+            "x": 149.136,
+            "y": 272.1055999999999
+          },
+          "target": {
+            "x": 106.54799999999999,
+            "y": 272.1055999999999
+          }
+        },
+        "at23": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": true,
+          "released": false,
+          "started": false,
+          "value": 23
+        },
+        "worldPointerDuringDrag": false,
+        "outsideHeld": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": true,
+          "released": false,
+          "started": false,
+          "value": 100
+        },
+        "outsideReleased": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": false,
+          "released": false,
+          "started": false,
+          "value": 100
+        },
+        "outsideValue": 100,
+        "returnedValue": 100,
+        "restarted": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": true,
+          "released": false,
+          "started": false,
+          "value": 23
+        },
+        "restartedWorldPointer": false,
+        "final": {
+          "cancelled": false,
+          "changed": false,
+          "dragging": false,
+          "released": false,
+          "started": false,
+          "value": 23
+        }
+      },
+      "scrollDescriptor": {
+        "axis": "vertical",
+        "inertia": true,
+        "deceleration": 8
+      },
+      "drag": {
+        "physicalRow": "preset/morning-balanced",
+        "start": {
+          "x": 195,
+          "y": 583.6260000000001
+        },
+        "end": {
+          "x": 195,
+          "y": 473.6260000000001
+        },
+        "scrollBefore": {
+          "top": 0,
+          "height": 5565,
+          "client": 115,
+          "at": 3232.199999999255
+        },
+        "heldStill": {
+          "top": 110,
+          "height": 5565,
+          "client": 115,
+          "at": 4246.300000000745
+        },
+        "scrollAfter": {
+          "top": 110,
+          "height": 5565,
+          "client": 115,
+          "at": 4486.199999999255
+        },
+        "presetBefore": "morning-calm",
+        "presetAfter": "morning-calm",
+        "tapSelection": "morning-deep"
+      },
+      "inertia": {
+        "natural": {
+          "gesture": {
+            "row": "preset/evening-clear",
+            "start": {
+              "x": 195,
+              "y": 584.2460000000002
+            },
+            "end": {
+              "x": 195,
+              "y": 459.2460000000002
+            },
+            "offsetBefore": {
+              "top": 510,
+              "height": 5565,
+              "client": 115,
+              "at": 5450.9000000003725
+            },
+            "released": {
+              "top": 635,
+              "height": 5565,
+              "client": 115,
+              "at": 5854
+            },
+            "remainingAtRelease": 4815
+          },
+          "samples": [
+            {
+              "top": 635,
+              "height": 5565,
+              "client": 115,
+              "at": 5857.199999999255
+            },
+            {
+              "top": 658,
+              "height": 5565,
+              "client": 115,
+              "at": 5955.300000000745
+            },
+            {
+              "top": 670,
+              "height": 5565,
+              "client": 115,
+              "at": 6047.5
+            },
+            {
+              "top": 676,
+              "height": 5565,
+              "client": 115,
+              "at": 6149.5
+            },
+            {
+              "top": 681,
+              "height": 5565,
+              "client": 115,
+              "at": 6328.9000000003725
+            },
+            {
+              "top": 682,
+              "height": 5565,
+              "client": 115,
+              "at": 6549.0999999996275
+            },
+            {
+              "top": 682,
+              "height": 5565,
+              "client": 115,
+              "at": 6869.800000000745
+            },
+            {
+              "top": 682,
+              "height": 5565,
+              "client": 115,
+              "at": 7230.0999999996275
+            },
+            {
+              "top": 682,
+              "height": 5565,
+              "client": 115,
+              "at": 7650.0999999996275
+            }
+          ],
+          "earlyVelocity": 183.92012611593782,
+          "lateVelocity": 4.541326067226992,
+          "segmentVelocities": [
+            {
+              "start": 5857.199999999255,
+              "end": 5955.300000000745,
+              "pixelsPerSecond": 234.45463812080158
+            },
+            {
+              "start": 5955.300000000745,
+              "end": 6047.5,
+              "pixelsPerSecond": 130.15184381883915
+            },
+            {
+              "start": 6047.5,
+              "end": 6149.5,
+              "pixelsPerSecond": 58.82352941176471
+            },
+            {
+              "start": 6149.5,
+              "end": 6328.9000000003725,
+              "pixelsPerSecond": 27.870680044535213
+            },
+            {
+              "start": 6328.9000000003725,
+              "end": 6549.0999999996275,
+              "pixelsPerSecond": 4.541326067226992
+            },
+            {
+              "start": 6549.0999999996275,
+              "end": 6869.800000000745,
+              "pixelsPerSecond": 0
+            },
+            {
+              "start": 6869.800000000745,
+              "end": 7230.0999999996275,
+              "pixelsPerSecond": 0
+            },
+            {
+              "start": 7230.0999999996275,
+              "end": 7650.0999999996275,
+              "pixelsPerSecond": 0
+            }
+          ]
+        },
+        "newPress": {
+          "gesture": {
+            "row": "preset/evening-quiet",
+            "start": {
+              "x": 195,
+              "y": 551.5060000000001
+            },
+            "end": {
+              "x": 195,
+              "y": 426.5060000000001
+            },
+            "offsetBefore": {
+              "top": 682,
+              "height": 5565,
+              "client": 115,
+              "at": 7679.0999999996275
+            },
+            "released": {
+              "top": 807,
+              "height": 5565,
+              "client": 115,
+              "at": 8058.0999999996275
+            },
+            "remainingAtRelease": 4643
+          },
+          "coast": {
+            "a": {
+              "top": 810,
+              "height": 5565,
+              "client": 115,
+              "at": 8070.300000000745
+            },
+            "b": {
+              "top": 833,
+              "height": 5565,
+              "client": 115,
+              "at": 8158.699999999255
+            }
+          },
+          "held": [
+            {
+              "top": 838,
+              "height": 5565,
+              "client": 115,
+              "at": 8185.9000000003725
+            },
+            {
+              "top": 838,
+              "height": 5565,
+              "client": 115,
+              "at": 8322
+            }
+          ],
+          "stopped": [
+            {
+              "top": 838,
+              "height": 5565,
+              "client": 115,
+              "at": 8326.099999999627
+            },
+            {
+              "top": 838,
+              "height": 5565,
+              "client": 115,
+              "at": 8448.199999999255
+            },
+            {
+              "top": 838,
+              "height": 5565,
+              "client": 115,
+              "at": 8648.699999999255
+            }
+          ]
+        },
+        "wheelCancel": {
+          "gesture": {
+            "row": "preset/evening-creative",
+            "start": {
+              "x": 195,
+              "y": 581.1860000000001
+            },
+            "end": {
+              "x": 195,
+              "y": 456.18600000000015
+            },
+            "offsetBefore": {
+              "top": 838,
+              "height": 5565,
+              "client": 115,
+              "at": 8669.800000000745
+            },
+            "released": {
+              "top": 965,
+              "height": 5565,
+              "client": 115,
+              "at": 9063.599999999627
+            },
+            "remainingAtRelease": 4485
+          },
+          "coast": {
+            "a": {
+              "top": 965,
+              "height": 5565,
+              "client": 115,
+              "at": 9068.300000000745
+            },
+            "b": {
+              "top": 987,
+              "height": 5565,
+              "client": 115,
+              "at": 9153.199999999255
+            }
+          },
+          "stopped": [
+            {
+              "top": 1156,
+              "height": 5565,
+              "client": 115,
+              "at": 9296.199999999255
+            },
+            {
+              "top": 1156,
+              "height": 5565,
+              "client": 115,
+              "at": 9404.699999999255
+            },
+            {
+              "top": 1156,
+              "height": 5565,
+              "client": 115,
+              "at": 9598
+            }
+          ]
+        },
+        "platformPause": {
+          "eventType": "Explicit synthetic platform lifecycle Event: unone-host-pause/unone-host-resume; the flick itself uses physical mouse",
+          "gesture": {
+            "row": "preset/studio-quiet",
+            "start": {
+              "x": 195,
+              "y": 541.7060000000001
+            },
+            "end": {
+              "x": 195,
+              "y": 416.70600000000013
+            },
+            "offsetBefore": {
+              "top": 1156,
+              "height": 5565,
+              "client": 115,
+              "at": 9616
+            },
+            "released": {
+              "top": 1281,
+              "height": 5565,
+              "client": 115,
+              "at": 9987.5
+            },
+            "remainingAtRelease": 4169
+          },
+          "coast": {
+            "a": {
+              "top": 1281,
+              "height": 5565,
+              "client": 115,
+              "at": 9990.699999999255
+            },
+            "b": {
+              "top": 1304,
+              "height": 5565,
+              "client": 115,
+              "at": 10069.599999999627
+            }
+          },
+          "paused": [
+            {
+              "top": 1304,
+              "height": 5565,
+              "client": 115,
+              "at": 10110.900000000373
+            },
+            {
+              "top": 1304,
+              "height": 5565,
+              "client": 115,
+              "at": 10285
+            }
+          ],
+          "resumed": [
+            {
+              "top": 1304,
+              "height": 5565,
+              "client": 115,
+              "at": 10345.699999999255
+            },
+            {
+              "top": 1304,
+              "height": 5565,
+              "client": 115,
+              "at": 10541.699999999255
+            }
+          ]
+        }
+      },
+      "applyCount": 1,
+      "quality": "Studio",
+      "inputProbe": {
+        "held": false,
+        "hold_ticks": 0,
+        "last_press_a": false,
+        "last_press_b": false,
+        "last_release_a": false,
+        "last_release_b": false,
+        "mismatches": 0,
+        "presses": 1,
+        "reader_a_presses": 1,
+        "reader_a_releases": 1,
+        "reader_b_presses": 1,
+        "reader_b_releases": 1,
+        "releases": 1,
+        "total_held_ticks": 22
+      },
+      "frame": [
+        27,
+        653
+      ],
+      "mime": {
+        "javascript": 25,
+        "wasm": 1,
+        "bad": []
+      },
+      "errors": {
+        "console": [],
+        "page": [],
+        "request": [],
+        "http": [],
+        "status": {
+          "status": "",
+          "fatal": null,
+          "renderer": "official"
+        }
+      }
+    }
+  ],
+  "lifecycle": {
+    "pass": true,
+    "eventType": "Synthetic platform lifecycle events only: window Event unone-host-pause and unone-host-resume. The row pointer gesture remains physical Playwright mouse.",
+    "assertions": [
+      {
+        "pass": true,
+        "message": "Physical row drag activates before platform pause"
+      },
+      {
+        "pass": true,
+        "message": "Still-held movement after pause/resume does not continue the cancelled drag"
+      },
+      {
+        "pass": true,
+        "message": "Cancelled platform drag does not select a row on release"
+      },
+      {
+        "pass": true,
+        "message": "Lifecycle probe has no page, request or console errors"
+      }
+    ],
+    "activatedOffset": {
+      "top": 24,
+      "height": 6367,
+      "client": 225,
+      "at": 1183.5999999996275
+    },
+    "resumedOffset": {
+      "top": 24,
+      "height": 6367,
+      "client": 225,
+      "at": 1353.5
+    },
+    "finalOffset": {
+      "top": 24,
+      "height": 6367,
+      "client": 225,
+      "at": 1948.9000000003725
+    },
+    "presetBefore": "morning-calm",
+    "presetAfter": "morning-calm"
+  },
+  "export": {
+    "root": "D:/TSProject/Voidwake/engine/_Games/harbor-controls/dist/player",
+    "files": 107,
+    "bytes": 7697529,
+    "sha256Unchanged": true,
+    "evidence": [
+      "after-export-before-sha256.json",
+      "after-export-after-sha256.json"
+    ]
+  },
+  "runtimeWasmHashes": [
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/runtime/unone_player.wasm",
+      "bytes": 1772961,
+      "sha256": "63ce77f5e98161152e84243bf88a49491f4d0e9d2067791e5b655873fa22da69"
+    }
+  ],
+  "visualQa": {
+    "reviewedWithViewImage": [
+      "after-1440x900.png",
+      "after-1020x884.png",
+      "after-390x844.png"
+    ],
+    "finding": "All three images explicitly reviewed after the successful production run. Complete desktop/tablet two-column and mobile single-column layouts, 23 percent level, Studio, scrolled virtual rows, Press 1 / Release 1 and apply/reset controls visible. No error overlay. Partial rows at the virtual viewport boundaries are intentionally clipped."
+  },
+  "interpretation": "Natural-coast samples verify continued movement, relative velocity reduction and settling away from content bounds. The configured deceleration 8 is verified from the public descriptor; the browser test does not claim an exact fitted decay coefficient. Synthetic platform events are separately labelled; all primary gestures use physical mouse events.",
+  "constraints": "Only artifacts/ui-slider-inertia/browser files written. Prior frozen evidence untouched. No source/docs/SDK/export/payload changes, no server start/stop, no Cargo or commit. Production WASM observation ptr/len and memory reads only; no input ABI state writes or manual row materialization."
+}

@@ -1,0 +1,53 @@
+{
+  "limits": "No real browser/native device acceptance is inferred from this source review.",
+  "remaining_concrete_findings": [],
+  "reviewer": "Independent Codex subagent web_launch_discovery",
+  "schema": "unone.independent-source-review.v1",
+  "findings": [
+    {
+      "origin": "independent-review",
+      "id": "disabled-scroll-drag",
+      "status": "fixed-and-rechecked",
+      "source": "web/shared/ui-scroll.mjs",
+      "failure": "Disabled scroll converted slider to text but retained drag; canvas rejected it."
+    },
+    {
+      "origin": "independent-review",
+      "id": "padded-hit-origin",
+      "status": "fixed-and-rechecked",
+      "source": "crates/unone-engine/src/ui.rs",
+      "failure": "Default padding produced legal protruding hit bounds that strict track-like validation rejected."
+    },
+    {
+      "origin": "independent-review",
+      "id": "slider-id-protocol-limit",
+      "status": "fixed-and-rechecked",
+      "source": "packages/unone-ui/src/components.luau and crates/unone-engine/src/ui.rs",
+      "failure": "Accepted 1025-byte interactive IDs could not produce a valid InputFrame."
+    },
+    {
+      "origin": "independent-review",
+      "id": "ancestor-clip-coast",
+      "status": "fixed-and-rechecked",
+      "source": "web/shared/ui-scroll.mjs",
+      "failure": "Momentum signature omitted inherited clip; hidden inner view could keep coasting."
+    },
+    {
+      "origin": "package-integration",
+      "id": "virtual-drag-translation",
+      "status": "fixed-and-independently-rechecked",
+      "source": "crates/unone-engine/src/runtime/bindings/scroll.luau",
+      "failure": "Virtual rows translated the leaf but not drag rectangles."
+    },
+    {
+      "origin": "root-after-claude-timeout",
+      "id": "tiny-decay-integral",
+      "status": "fixed-and-independently-rechecked",
+      "source": "web/shared/ui-scroll.mjs",
+      "failure": "Subtraction 1-exp(-x) rounded to zero for legal tiny decay rates."
+    }
+  ],
+  "method": "Bounded read-only source inspection, four finding/reproduction reports, final correction checks, and a later check of the root numerical correction. No build or test execution by this reviewer.",
+  "source_inventory": "reviewed-source-inventory.json",
+  "baseline": "c05af8b14b388ecf559b593aa8f7c5d541e9ce39"
+}

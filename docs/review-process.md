@@ -50,6 +50,13 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-16: official persistent slider models, normalized host input and
+  optional Web scroll inertia. Independent source review corrected boundary,
+  projection, capture metadata and coast lifecycle issues; release, native,
+  Web and actual-player acceptance are recorded. The bounded Claude attempt
+  timed out without output and remains incomplete:
+  [record](reviews/2026-10-16-slider-controls-and-inertia.md).
+
 - 2026-10-16: actual visible-track slider and mouse content-drag failures,
   shared pointer ownership/cancellation, official-player lifecycle integration
   and actual-URL regressions:

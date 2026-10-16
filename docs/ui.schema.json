@@ -99,6 +99,17 @@
             "null"
           ]
         },
+        "drag": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiSliderDrag"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "expanded": {
           "default": null,
           "type": [
@@ -363,8 +374,19 @@
           "default": "vertical",
           "type": "string"
         },
+        "deceleration": {
+          "default": 8.0,
+          "description": "Exponential velocity decay per second, in (0, 100].",
+          "format": "double",
+          "type": "number"
+        },
         "enabled": {
           "default": true,
+          "type": "boolean"
+        },
+        "inertia": {
+          "default": false,
+          "description": "Presentation-only drag momentum; opt in without changing simulation.",
           "type": "boolean"
         },
         "reset_key": {
@@ -435,6 +457,42 @@
         "right",
         "bottom",
         "pixels_per_unit"
+      ],
+      "type": "object"
+    },
+    "UiSliderAxis": {
+      "enum": [
+        "horizontal",
+        "vertical"
+      ],
+      "type": "string"
+    },
+    "UiSliderDrag": {
+      "additionalProperties": false,
+      "description": "Official slider gesture geometry in the same space as its node: stage\ny-up, or scroll-local top-left/y-down before host projection. Hosts map\ntrack coordinates to a clamped ratio and apply reverse exactly once.",
+      "properties": {
+        "axis": {
+          "$ref": "#/$defs/UiSliderAxis",
+          "default": "horizontal"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "hit_rect": {
+          "$ref": "#/$defs/UiRect"
+        },
+        "reverse": {
+          "default": false,
+          "type": "boolean"
+        },
+        "track_rect": {
+          "$ref": "#/$defs/UiRect"
+        }
+      },
+      "required": [
+        "track_rect",
+        "hit_rect"
       ],
       "type": "object"
     },

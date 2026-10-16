@@ -2,11 +2,12 @@
 
 Start reusable controls with the official [`@unone/ui` package](ui-components.md),
 a versioned pure Luau kit bundled with Core and the portable SDK. Declare
-`"runtime_packages":{"@unone/ui":"0.2.0"}` in `project.unone.json`, inspect
+`"runtime_packages":{"@unone/ui":"0.3.0"}` in `project.unone.json`, inspect
 `ui.components.info`, and call `api.ui.components.create(theme?)`. The returned
 kit constructs typed text/button/slider/combobox/panel/image leaves, component
-and screen wrappers, plus the existing scroll helpers through one namespace for
-the existing `api.ui.setRoot` transport. Themes, content, state, action meanings
+and screen wrappers, the `createSlider` numeric control, plus the existing scroll
+helpers through one namespace for the existing `api.ui.setRoot` transport.
+Themes, content, application state, action meanings
 and geometry remain project-owned. Custom Luau factories remain valid.
 The official player owns font loading, glyph shaping and painting.
 See [formal host support](formal-ui-host.md) and [ADR 0038](decisions/0038-shared-ui-styling.md).
@@ -19,6 +20,15 @@ For the canonical leaf contract, search `"font size"`, `"text alignment"`,
 `game schema ui`. `"responsive"` leads to `ui.getViewport`. CLI and MCP share the
 same index. Regenerate strict types with `game api typings` and use a matching
 SDK after upgrading; new projects inline the canonical contract.
+Search `"slider drag"` / `"slider value"` / `"滑桿拖曳"` for
+`ui.components.createSlider`. Its pure `view` uses the themed slider style;
+the persistent control handles numeric values while the official host handles
+projected/clipped pointer capture. Use the
+[typed control lifecycle](ui-components.md#interactive-sliders), including one
+`update(api.input)` per `Game.update`; do not implement pointer mapping in each
+skin or advance input from a virtual `renderItem` callback. `rect`, `trackRect`
+and `hitPadding` use rectangle coordinate units, independently of the vertical
+units used by `UiStyle` lengths. Artwork and layout remain authored explicitly.
 All constructors are also directly callable on `api.ui.components` with no
 theme defaults. `component` is an existing tree node kind;
 `api.ui.components.component(props)` and `kit.component(props)` construct it,
@@ -234,6 +244,13 @@ overlap policies remain available for deliberate layers that do not meet scope
 containment, such as a slider's track/fill/handle skin. They retain their existing
 validation and do not waive foreground text/control collisions; see
 [the host overlap contract](formal-ui-host.md#intentional-art-overlaps-without-disabling-strict-checks).
+
+For a skinned slider, give `control.view` the same `trackRect` used by its art.
+The control combines the labelled field with a padded track hit region;
+`hitPadding` defaults to `0.65` rectangle units and changes input tolerance only.
+Do not enlarge or move the artwork to compensate for a separate project-owned
+hit test. See [interactive sliders](ui-components.md#interactive-sliders) for
+stage/scroll coordinates, vertical/reverse direction and cancellation behavior.
 
 Use the returned viewport aspect to select a game-authored composition:
 

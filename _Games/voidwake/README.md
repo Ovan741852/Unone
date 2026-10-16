@@ -3,7 +3,7 @@
 A top-down space roguelike authored in Luau and presented by the official Unone
 player. Clear three sectors, choose upgrades, and defeat the capital ship.
 
-This example declares the official `@unone/ui` 0.2.0 package and composes its
+This example declares the official `@unone/ui` 0.3.0 package and composes its
 text, button, panel, component and screen constructors through the typed
 `api.ui.components` default kit. `api.input.wasPressed` handles one-shot actions;
 `isDown` remains the held-input query.

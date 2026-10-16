@@ -36,6 +36,31 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
   const pressed = new Set();
   const pointerFrames = [];
   const semanticHeld = new Set(), semanticEdges = [];
+  const sliderEvents = [], sliderActive = new Map(), sliderConsumedActive = new Map();
+  const sliderPhases = new Set(['start', 'drag', 'end', 'cancel']);
+  function cancelSliders() {
+    const active = new Map([...sliderConsumedActive, ...sliderActive]);
+    sliderEvents.length = 0;
+    sliderActive.clear();
+    for (const [id, ratio] of active) sliderEvents.push({id, phase:'cancel', ratio});
+  }
+  function queueSliderInteraction({id, phase, ratio} = {}) {
+    if (!validAction(id) || !sliderPhases.has(phase) || !Number.isFinite(ratio) || ratio < 0 || ratio > 1) {
+      throw new TypeError('UI_SLIDER_INPUT_INVALID: id, phase and finite ratio 0..1 are required');
+    }
+    const last = sliderEvents[sliderEvents.length - 1];
+    if (phase === 'drag' && last?.id === id && last.phase === 'drag') {
+      last.ratio = ratio;
+    } else {
+      if (sliderEvents.length >= 256 || (!sliderActive.has(id) && !sliderConsumedActive.has(id) && new Set([...sliderActive.keys(), ...sliderConsumedActive.keys()]).size >= 256)) {
+        cancelSliders();
+        throw new Error('UI_SLIDER_QUEUE_FULL: release pointers and retry');
+      }
+      sliderEvents.push({id, phase, ratio});
+    }
+    if (phase === 'start' || phase === 'drag') sliderActive.set(id, ratio);
+    else sliderActive.delete(id);
+  }
   function queueActionTransition(action,down){
     if(!validAction(action)||typeof down!=='boolean')throw new TypeError('UI_ACTION_INVALID');
     if(semanticEdges.length>=256){semanticEdges.length=0;semanticHeld.clear();throw new Error('UI_ACTION_QUEUE_FULL: release pointers and retry');}
@@ -71,23 +96,41 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
       [...new Set([...held, ...pressed, ...semanticHeld])].sort().map((action) => [action, true])
     );
     pressed.clear();
-    return { actions, pointer: framePointer };
+    // A quick tap must reach the model as start, then end on separate ticks.
+    // Other slider ids can advance in the same tick, without reordering an id.
+    const sliders = [], consumed = new Set(), remaining = [];
+    for (const event of sliderEvents) {
+      if (consumed.has(event.id)) { remaining.push(event); continue; }
+      consumed.add(event.id);
+      sliders.push([event.id, {phase:event.phase, ratio:event.ratio}]);
+      if (event.phase === 'start' || event.phase === 'drag') sliderConsumedActive.set(event.id, event.ratio);
+      else sliderConsumedActive.delete(event.id);
+    }
+    sliderEvents.splice(0, sliderEvents.length, ...remaining);
+    return { actions, pointer: framePointer, ...(consumed.size ? {ui_sliders:Object.fromEntries(sliders)} : {}) };
+  }
+
+  function releasePointer() {
+    pointer.down = false;
+    pointerFrames.length = 0;
   }
 
   function releaseAll() {
     held.clear();
     pressed.clear();
-    pointer.down = false;
-    pointerFrames.length = 0;
+    releasePointer();
     semanticHeld.clear();semanticEdges.length=0;
+    cancelSliders();
   }
 
   return {
     queueAction,
     queueActionTransition,
+    queueSliderInteraction,
     setHeld,
     updatePointer,
     consumeFrame,
+    releasePointer,
     releaseAll,
     get pointer() {
       return copyPointer(pointer);

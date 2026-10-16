@@ -1,0 +1,225 @@
+{
+  "schema": "unone.slider-inertia-validation.v1",
+  "baseline": "c05af8b14b388ecf559b593aa8f7c5d541e9ce39",
+  "branch": "main",
+  "execution": {
+    "environment": {
+      "CARGO_TARGET_DIR": "D:/TSProject/Voidwake/game/tools/build/native"
+    },
+    "executor": "Main task agent (root)",
+    "evidence_writer": "Independent Codex source-review agent",
+    "writer_ran_build_or_tests": false,
+    "commands": "Exact validation argv supplied by the root executor; output copied without rewriting."
+  },
+  "checks": [
+    {
+      "log": "workspace-tests-verified.txt",
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--release"
+      ],
+      "failed": 0,
+      "name": "workspace-release",
+      "status": "passed",
+      "passed": 472,
+      "ignored": 3
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "log": "clippy.txt",
+      "name": "workspace-clippy"
+    },
+    {
+      "note": "The later final CLI descriptor-text-only rebuild is recorded in final-cli-discovery-build.",
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "unone-cli",
+        "--release"
+      ],
+      "status": "passed",
+      "log": "build-cli-final.txt",
+      "name": "release-cli"
+    },
+    {
+      "log": "native-tests.txt",
+      "status": "passed",
+      "passed": 31,
+      "command": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "crates/unone-native-player/Cargo.toml",
+        "--release",
+        "--lib"
+      ],
+      "ignored": 1,
+      "scope": "Native router/library regressions, not native GUI/device or scroll acceptance.",
+      "name": "native-library",
+      "failed": 0
+    },
+    {
+      "log": "node-tests-final.txt",
+      "command": [
+        "node",
+        "--test",
+        "web/shared/canvas-ui.test.mjs",
+        "web/shared/host-contract.test.mjs",
+        "web/shared/player-pointer.test.mjs",
+        "web/shared/ui-scroll.test.mjs",
+        "web/shared/ui-scroll-host.test.mjs",
+        "web/shared/runtime-core.test.mjs"
+      ],
+      "failed": 0,
+      "name": "web",
+      "status": "passed",
+      "passed": 53
+    },
+    {
+      "log": "build-web-runtime.txt",
+      "status": "passed",
+      "scope": "Production Emscripten runtime built from a dirty working tree; inspect runtime.json and SDK inventory hashes for exact binary identity.",
+      "name": "web-runtime-build"
+    },
+    {
+      "gates": 5,
+      "log": "verify-harbor-controls.json",
+      "status": "passed",
+      "name": "harbor-verify"
+    },
+    {
+      "gates": 4,
+      "log": "verify-observatory-settings.json",
+      "status": "passed",
+      "name": "observatory-verify"
+    },
+    {
+      "gates": 7,
+      "log": "verify-voidwake.json",
+      "status": "passed",
+      "name": "voidwake-verify"
+    },
+    {
+      "log": "prepare-harbor-controls.json",
+      "status": "ready",
+      "name": "harbor-sdk-prepare"
+    },
+    {
+      "log": "prepare-observatory-settings.json",
+      "status": "ready",
+      "name": "observatory-sdk-prepare"
+    },
+    {
+      "log": "prepare-voidwake.json",
+      "status": "ready",
+      "name": "voidwake-sdk-prepare"
+    },
+    {
+      "log": "parity-harbor.txt",
+      "status": "passed",
+      "compared_frames": 9,
+      "name": "harbor-exported-runtime-parity"
+    },
+    {
+      "log": "parity-voidwake.txt",
+      "status": "passed",
+      "compared_frames": 10,
+      "name": "voidwake-exported-runtime-parity"
+    },
+    {
+      "scope": "Physical mouse inputs and separately labelled synthetic lifecycle events at three viewports; no physical native/mobile claim.",
+      "assertions": 118,
+      "status": "passed",
+      "log": "browser-summary.json",
+      "name": "actual-official-player-browser"
+    },
+    {
+      "status": "passed",
+      "scope": "Final API descriptor-text-only correction; executable host/runtime behavior is unchanged.",
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "unone-cli",
+        "--release"
+      ],
+      "name": "final-cli-discovery-build",
+      "log": "build-cli-discovery-final.txt"
+    },
+    {
+      "status": "passed",
+      "scope": "One targeted Engine API unit regression passed: api::tests::ui_authoring_intents_rank_callable_controls_and_non_consuming_edges. Final CLI describe/search JSON is preserved separately; this log is not a second full workspace run.",
+      "name": "final-api-discovery",
+      "log": "api-discovery-final.txt",
+      "passed": 1
+    },
+    {
+      "name": "final-sdk-pack-and-inspect",
+      "logs": [
+        "sdk-pack-final.json",
+        "sdk-inspect-final.json",
+        "sdk-final-inventory-verification.json"
+      ],
+      "sdk_root": "D:/TSProject/UnoneSliderInertia-20261016/sdk-final",
+      "inventory_files": 66,
+      "status": "passed",
+      "all_hashes_match": true
+    },
+    {
+      "status": "ready",
+      "scope": "Final SDK and CLI prepare the same browser-tested c303 generation; final-sdk-export-parity.json preserves byte identity.",
+      "name": "final-sdk-harbor-prepare",
+      "log": "prepare-harbor-final.json"
+    }
+  ],
+  "earlier_results": [
+    {
+      "log": "workspace-tests-initial-schema-failure.txt",
+      "status": "failed",
+      "reason": "Checked-in developer schema was stale after InputFrame transport changes; not counted as a pass.",
+      "name": "workspace-before-schema-refresh"
+    },
+    {
+      "log": "workspace-tests-intermediate-test-error.txt",
+      "status": "failed",
+      "reason": "The new ID rejection test passed an error object to string.find; corrected to tostring(message). This is distinct from runtime ID rejection and the later passing run.",
+      "name": "workspace-before-test-error-conversion"
+    },
+    {
+      "log": "verify-harbor-controls-initial.json",
+      "status": "failed",
+      "reason": "UiSliderUpdate was not directly assignable to observation JsonValue, and a legacy pointer fixture still expected the former project slider input.",
+      "name": "harbor-migration-initial"
+    },
+    {
+      "log": "verify-observatory-settings-initial.json",
+      "status": "failed",
+      "reason": "Two legacy pointer-input level-bound fixtures had not been migrated to semantic slider input.",
+      "name": "observatory-migration-initial"
+    },
+    {
+      "log": "verify-voidwake-initial.json",
+      "status": "passed",
+      "reason": "Retained as the actual initial result; no failure is invented.",
+      "name": "voidwake-initial"
+    }
+  ],
+  "limits": [
+    "The incomplete Claude attempt supplies no approval.",
+    "Source review and release/library tests alone do not prove rendered host output.",
+    "Native scroll views/inertia remain explicitly unsupported."
+  ]
+}

@@ -5,7 +5,8 @@ use std::collections::{BTreeMap, VecDeque};
 use unicode_script::{Script, UnicodeScript};
 use unicode_segmentation::UnicodeSegmentation;
 use unone_engine::{
-    UiNode, UiStyle, UiTextAlign, UiTextOverflow, UiTextWrap, UiTree, UiVerticalAlign,
+    SliderInteraction, SliderPhase, UiNode, UiRect, UiSliderAxis, UiSliderDrag, UiStyle,
+    UiTextAlign, UiTextOverflow, UiTextWrap, UiTree, UiVerticalAlign,
 };
 
 fn leaves(tree: &UiTree) -> Vec<&UiNode> {
@@ -17,11 +18,57 @@ fn leaves(tree: &UiTree) -> Vec<&UiNode> {
 }
 #[derive(Default)]
 pub struct PointerRouter {
-    captures: BTreeMap<u64, Option<(String, String)>>,
+    captures: BTreeMap<u64, Capture>,
     holds: BTreeMap<String, usize>,
     edges: VecDeque<(String, bool)>,
+    slider_events: VecDeque<(String, SliderInteraction)>,
+    slider_active: BTreeMap<String, f64>,
+    slider_consumed_active: BTreeMap<String, f64>,
+    error: Option<String>,
+}
+enum Capture {
+    Action { node: String, action: String },
+    Slider { node: String, rect: UiRect, drag: UiSliderDrag, ratio: f64 },
+    Suppressed,
+}
+fn slider_ratio(drag: &UiSliderDrag, x: f64, y: f64) -> f64 {
+    let r = drag.track_rect;
+    let value = match drag.axis {
+        UiSliderAxis::Horizontal => (x - r.x) / r.width,
+        UiSliderAxis::Vertical => (y - r.y) / r.height,
+    }.clamp(0.0, 1.0);
+    if drag.reverse { 1.0 - value } else { value }
 }
 impl PointerRouter {
+    fn queue_slider(&mut self, node: String, phase: SliderPhase, ratio: f64) {
+        if phase == SliderPhase::Drag
+            && let Some((last_id, last)) = self.slider_events.back_mut()
+            && *last_id == node && last.phase == SliderPhase::Drag
+        {
+            last.ratio = ratio;
+            self.slider_active.insert(node, ratio);
+            return;
+        }
+        let new_id = !self.slider_active.contains_key(&node) && !self.slider_consumed_active.contains_key(&node);
+        let active_count = self.slider_active.keys().chain(self.slider_consumed_active.keys())
+            .collect::<std::collections::BTreeSet<_>>().len();
+        if self.slider_events.len() >= 256 || (new_id && active_count >= 256) {
+            self.reset_sliders();
+            self.error = Some("UI_SLIDER_QUEUE_FULL: release pointers and retry".into());
+            return;
+        }
+        if matches!(phase, SliderPhase::Start | SliderPhase::Drag) { self.slider_active.insert(node.clone(), ratio); }
+        else { self.slider_active.remove(&node); }
+        self.slider_events.push_back((node, SliderInteraction { phase, ratio }));
+    }
+    fn reset_sliders(&mut self) {
+        let mut active = self.slider_consumed_active.clone();
+        active.extend(self.slider_active.iter().map(|(id, ratio)| (id.clone(), *ratio)));
+        self.slider_events.clear();
+        self.slider_active.clear();
+        for (id, ratio) in active { self.slider_events.push_back((id, SliderInteraction { phase: SliderPhase::Cancel, ratio })); }
+    }
+    pub fn take_error(&mut self) -> Option<String> { self.error.take() }
     pub fn captured(&self, id: u64) -> bool {
         self.captures.contains_key(&id)
     }
@@ -31,8 +78,8 @@ impl PointerRouter {
         }
         let hit = tree.and_then(|t| {
             leaves(t).into_iter().rev().find(|n| {
-                let r = n.rect();
-                matches!(n, UiNode::Button { .. } | UiNode::ComboBox { .. })
+                let r = match n { UiNode::Slider { drag: Some(drag), .. } => &drag.hit_rect, _ => n.rect() };
+                matches!(n, UiNode::Button { .. } | UiNode::ComboBox { .. } | UiNode::Slider { drag: Some(_), .. })
                     && x >= r.x
                     && y >= r.y
                     && x < r.x + r.width
@@ -42,27 +89,33 @@ impl PointerRouter {
         let Some(hit) = hit else {
             return false;
         };
-        let action =
-            if let UiNode::Button { id, action, .. } | UiNode::ComboBox { id, action, .. } = hit {
-                Some((id.clone(), action.clone()))
+        if let UiNode::Slider { id: node, rect, drag: Some(drag), .. } = hit {
+            if !drag.enabled || self.captures.values().any(|c| matches!(c, Capture::Slider { node: owner, .. } if owner == node)) {
+                self.captures.insert(id, Capture::Suppressed);
             } else {
-                None
-            };
-        if let Some((_, a)) = &action {
-            let n = self.holds.entry(a.clone()).or_default();
+                let ratio = slider_ratio(drag, x, y);
+                self.captures.insert(id, Capture::Slider { node: node.clone(), rect: *rect, drag: drag.clone(), ratio });
+                self.queue_slider(node.clone(), SliderPhase::Start, ratio);
+            }
+            return true;
+        }
+        if let UiNode::Button { id: node, action, .. } | UiNode::ComboBox { id: node, action, .. } = hit {
+            let n = self.holds.entry(action.clone()).or_default();
             if *n == 0 {
-                self.edges.push_back((a.clone(), true));
+                self.edges.push_back((action.clone(), true));
             }
             *n += 1;
+            self.captures.insert(id, Capture::Action { node: node.clone(), action: action.clone() });
         }
-        self.captures.insert(id, action);
         true
     }
-    pub fn up(&mut self, id: u64) -> bool {
+    fn release(&mut self, id: u64, phase: SliderPhase) -> bool {
         let Some(value) = self.captures.remove(&id) else {
             return false;
         };
-        if let Some((_, a)) = value {
+        if let Capture::Slider { node, ratio, .. } = value {
+            self.queue_slider(node, phase, ratio);
+        } else if let Capture::Action { action: a, .. } = value {
             let n = self.holds.get_mut(&a).unwrap();
             *n -= 1;
             if *n == 0 {
@@ -72,30 +125,73 @@ impl PointerRouter {
         }
         true
     }
+    pub fn up(&mut self, id: u64) -> bool { self.release(id, SliderPhase::End) }
+    pub fn cancel(&mut self, id: u64) -> bool { self.release(id, SliderPhase::Cancel) }
+    pub fn move_pointer(&mut self, id: u64, x: f64, y: f64) -> bool {
+        if let Some(Capture::Slider { node, drag, ratio, .. }) = self.captures.get_mut(&id) {
+            if x.is_finite() && y.is_finite() {
+                *ratio = slider_ratio(drag, x, y);
+                let event = (node.clone(), *ratio);
+                self.queue_slider(event.0, SliderPhase::Drag, event.1);
+            }
+        }
+        self.captured(id)
+    }
+    pub fn up_at(&mut self, id: u64, x: f64, y: f64) -> bool {
+        if x.is_finite() && y.is_finite()
+            && let Some(Capture::Slider { drag, ratio, .. }) = self.captures.get_mut(&id)
+        { *ratio = slider_ratio(drag, x, y); }
+        self.up(id)
+    }
     pub fn reconcile(&mut self, tree: Option<&UiTree>) {
         let nodes = tree.map(leaves).unwrap_or_default();
         let removed: Vec<_> = self
             .captures
             .iter()
-            .filter_map(|(id, a)| {
-                a.as_ref()
-                    .filter(|(node, action)| {
-                        !nodes.iter().any(
-                            |n| matches!(n,UiNode::Button{id,action:a,..}|UiNode::ComboBox{id,action:a,..}if id==node&&a==action),
-                        )
-                    })
-                    .map(|_| *id)
+            .filter_map(|(id, capture)| {
+                let valid = match capture {
+                    Capture::Action { node, action } => nodes.iter().any(
+                        |n| matches!(n,UiNode::Button{id,action:a,..}|UiNode::ComboBox{id,action:a,..}if id==node&&a==action)),
+                    Capture::Slider { node, rect, drag, .. } => nodes.iter().any(
+                        |n| matches!(n,UiNode::Slider{id,rect:r,drag:Some(d),..}if id==node&&r==rect&&d==drag&&d.enabled)),
+                    Capture::Suppressed => true,
+                };
+                (!valid).then_some(*id)
             })
             .collect();
         for id in removed {
-            self.up(id);
-            self.captures.insert(id, None);
+            self.cancel(id);
+            self.captures.insert(id, Capture::Suppressed);
         }
     }
     pub fn release_all(&mut self) {
         for id in self.captures.keys().copied().collect::<Vec<_>>() {
-            self.up(id);
+            self.cancel(id);
         }
+    }
+    /// Drop stale queued presses but deliver cancellation to controls whose
+    /// start/drag has already reached the simulation, even after physical up.
+    pub fn reset(&mut self) {
+        self.slider_events.clear();
+        self.release_all();
+        self.edges.clear();
+        self.holds.clear();
+        self.reset_sliders();
+    }
+    /// At most one transition per control per successful tick. Quick taps
+    /// remain Start then End; adjacent Drag events coalesce before this step.
+    pub fn drain_sliders(&mut self) -> BTreeMap<String, SliderInteraction> {
+        let mut frame = BTreeMap::new();
+        let mut remaining = VecDeque::new();
+        while let Some((id, event)) = self.slider_events.pop_front() {
+            if frame.contains_key(&id) { remaining.push_back((id, event)); continue; }
+            if matches!(event.phase, SliderPhase::Start | SliderPhase::Drag) {
+                self.slider_consumed_active.insert(id.clone(), event.ratio);
+            } else { self.slider_consumed_active.remove(&id); }
+            frame.insert(id, event);
+        }
+        self.slider_events = remaining;
+        frame
     }
     pub fn next_edge(&mut self) -> Option<(String, bool)> {
         self.edges.pop_front()
@@ -1310,5 +1406,160 @@ mod tests {
         p.release_all();
         assert_eq!(p.next_edge(), Some(("Hold".into(), false)));
         assert!(!p.captured(2));
+    }
+
+    fn semantic_slider_tree() -> UiTree {
+        UiTree::from_json(serde_json::json!({"kind":"screen","id":"s","node":"s","children":[
+            {"kind":"slider","id":"gain","action":"AdjustGain","rect":{"x":10,"y":20,"width":50,"height":10},
+             "drag":{"track_rect":{"x":15,"y":24,"width":40,"height":1},"hit_rect":{"x":10,"y":20,"width":50,"height":10}}},
+            {"kind":"slider","id":"other","action":"AdjustOther","rect":{"x":10,"y":50,"width":50,"height":10},
+             "drag":{"track_rect":{"x":15,"y":54,"width":40,"height":1},"hit_rect":{"x":10,"y":50,"width":50,"height":10}}},
+            {"kind":"text","id":"decoration","text":"Gain","rect":{"x":10,"y":20,"width":50,"height":10}}
+        ]})).unwrap()
+    }
+
+    #[test]
+    fn semantic_slider_captures_clamps_and_keeps_start_drag_end_on_separate_ticks() {
+        let tree = semantic_slider_tree();
+        let mut router = PointerRouter::default();
+        assert!(router.down(Some(&tree), 1, 25.0, 25.0));
+        assert!(router.move_pointer(1, 35.0, 25.0));
+        assert!(router.move_pointer(1, 45.0, 80.0));
+        assert!(router.up_at(1, 120.0, -20.0));
+        assert!(!router.captured(1));
+        for (phase, ratio) in [(SliderPhase::Start, 0.25), (SliderPhase::Drag, 0.75), (SliderPhase::End, 1.0)] {
+            assert_eq!(router.drain_sliders().get("gain"), Some(&SliderInteraction { phase, ratio }));
+        }
+        assert!(router.drain_sliders().is_empty());
+        assert!(router.next_edge().is_none(), "semantic sliders never dispatch button actions");
+        assert!(!router.move_pointer(1, 20.0, 25.0));
+    }
+
+    #[test]
+    fn semantic_slider_vertical_reverse_and_final_release_coordinates() {
+        let mut value = serde_json::to_value(semantic_slider_tree()).unwrap();
+        let drag = &mut value["children"][0]["drag"];
+        drag["axis"] = "vertical".into();
+        drag["reverse"] = true.into();
+        drag["track_rect"] = serde_json::json!({"x":24,"y":20,"width":1,"height":40});
+        let tree = UiTree::from_json(value).unwrap();
+        let mut router = PointerRouter::default();
+        assert!(router.down(Some(&tree), 0, 25.0, 25.0));
+        assert_eq!(router.drain_sliders()["gain"].ratio, 0.875);
+        assert!(router.up_at(0, 25.0, 80.0));
+        assert_eq!(router.drain_sliders()["gain"], SliderInteraction { phase: SliderPhase::End, ratio: 0.0 });
+    }
+
+    #[test]
+    fn semantic_slider_disabled_and_second_finger_consume_without_replacing_owner() {
+        let tree = semantic_slider_tree();
+        let mut router = PointerRouter::default();
+        router.down(Some(&tree), 1, 25.0, 25.0);
+        router.down(Some(&tree), 2, 35.0, 25.0);
+        router.move_pointer(2, 55.0, 25.0);
+        router.down(Some(&tree), 3, 35.0, 55.0);
+        let frame = router.drain_sliders();
+        assert_eq!(frame.len(), 2);
+        assert_eq!(frame["gain"].ratio, 0.25);
+        assert_eq!(frame["other"].ratio, 0.5);
+        router.up(1);
+        assert!(router.captured(2));
+        router.up_at(2, 55.0, 25.0);
+        assert_eq!(router.drain_sliders().len(), 1);
+        assert!(router.drain_sliders().is_empty());
+        let mut value = serde_json::to_value(&tree).unwrap();
+        value["children"][0]["drag"]["enabled"] = false.into();
+        let disabled = UiTree::from_json(value).unwrap();
+        assert!(router.down(Some(&disabled), 4, 25.0, 25.0));
+        assert!(router.move_pointer(4, 45.0, 25.0));
+        assert!(router.up_at(4, 45.0, 25.0));
+        assert!(router.drain_sliders().is_empty());
+    }
+
+    #[test]
+    fn semantic_slider_reconcile_cancels_geometry_disable_and_removal_without_click_through() {
+        let tree = semantic_slider_tree();
+        for path in ["track", "hit", "axis", "reverse", "enabled", "rect", "remove"] {
+            let mut router = PointerRouter::default();
+            router.down(Some(&tree), 1, 25.0, 25.0);
+            router.drain_sliders();
+            let mut value = serde_json::to_value(&tree).unwrap();
+            let node = &mut value["children"][0];
+            match path {
+                "track" => node["drag"]["track_rect"]["x"] = 16.into(),
+                "hit" => node["drag"]["hit_rect"]["width"] = 51.into(),
+                "axis" => node["drag"]["axis"] = "vertical".into(),
+                "reverse" => node["drag"]["reverse"] = true.into(),
+                "enabled" => node["drag"]["enabled"] = false.into(),
+                "rect" => node["rect"]["width"] = 51.into(),
+                "remove" => value["children"] = serde_json::json!([]),
+                _ => unreachable!(),
+            }
+            let changed = UiTree::from_json(value).unwrap();
+            router.reconcile(Some(&changed));
+            assert_eq!(router.drain_sliders()["gain"].phase, SliderPhase::Cancel, "{path}");
+            assert!(router.move_pointer(1, 80.0, 80.0), "{path} keeps the abandoned physical stream consumed");
+            assert!(router.up_at(1, 80.0, 80.0));
+            assert!(router.drain_sliders().is_empty());
+        }
+    }
+
+    #[test]
+    fn semantic_slider_pause_reset_preserves_cancel_after_an_already_consumed_start() {
+        let tree = semantic_slider_tree();
+        let mut router = PointerRouter::default();
+        router.down(Some(&tree), 1, 25.0, 25.0);
+        router.drain_sliders();
+        router.up_at(1, 55.0, 25.0);
+        router.reset();
+        assert_eq!(router.drain_sliders()["gain"].phase, SliderPhase::Cancel, "pause does not discard a pending end and leave the Luau control dragging");
+        assert!(router.drain_sliders().is_empty());
+        router.down(Some(&tree), 1, 25.0, 25.0);
+        router.up_at(1, 55.0, 25.0);
+        router.reset();
+        assert!(router.drain_sliders().is_empty(), "an entirely unconsumed tap is discarded on pause");
+        router.down(Some(&tree), 1, 25.0, 25.0);
+        router.drain_sliders();
+        router.cancel(1);
+        assert_eq!(router.drain_sliders()["gain"].phase, SliderPhase::Cancel);
+    }
+
+    #[test]
+    fn semantic_slider_queue_coalesces_moves_preserves_edges_and_reports_overflow() {
+        let mut router = PointerRouter::default();
+        router.queue_slider("one".into(), SliderPhase::Start, 0.0);
+        for i in 0..1000 { router.queue_slider("one".into(), SliderPhase::Drag, i as f64 / 1000.0); }
+        router.queue_slider("one".into(), SliderPhase::End, 1.0);
+        assert_eq!(router.slider_events.len(), 3);
+        assert_eq!(router.drain_sliders()["one"].phase, SliderPhase::Start);
+        assert_eq!(router.drain_sliders()["one"].ratio, 0.999);
+        assert_eq!(router.drain_sliders()["one"].phase, SliderPhase::End);
+        for _ in 0..128 {
+            router.queue_slider("one".into(), SliderPhase::Start, 0.0);
+            router.queue_slider("one".into(), SliderPhase::End, 1.0);
+        }
+        router.queue_slider("one".into(), SliderPhase::Start, 0.0);
+        assert!(router.take_error().unwrap().contains("UI_SLIDER_QUEUE_FULL"));
+        assert!(router.slider_events.len() <= 256);
+        assert!(router.take_error().is_none());
+        for i in 0..257 { router.queue_slider(format!("control-{i}"), SliderPhase::Start, 0.0); }
+        assert!(router.take_error().unwrap().contains("UI_SLIDER_QUEUE_FULL"));
+        assert!(router.drain_sliders().len() <= 256);
+    }
+
+    #[test]
+    fn legacy_slider_remains_passthrough_and_foreground_button_keeps_action_ownership() {
+        let mut value = serde_json::to_value(semantic_slider_tree()).unwrap();
+        value["children"][0].as_object_mut().unwrap().remove("drag");
+        let legacy = UiTree::from_json(value.clone()).unwrap();
+        let mut router = PointerRouter::default();
+        assert!(!router.down(Some(&legacy), 1, 25.0, 25.0));
+        value["children"].as_array_mut().unwrap().push(serde_json::json!({"kind":"button","id":"overlay","action":"Click","text":"","rect":{"x":10,"y":20,"width":50,"height":10}}));
+        let overlay = UiTree::from_json(value).unwrap();
+        assert!(router.down(Some(&overlay), 1, 25.0, 25.0));
+        assert_eq!(router.next_edge(), Some(("Click".into(), true)));
+        assert!(router.up(1));
+        assert_eq!(router.next_edge(), Some(("Click".into(), false)));
+        assert!(router.drain_sliders().is_empty());
     }
 }

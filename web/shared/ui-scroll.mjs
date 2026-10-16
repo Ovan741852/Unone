@@ -20,7 +20,8 @@ export function projectScrollTree(tree,offsets=new Map()){
  const leaves=[],views=[];
  function walk(nodes,space=null,clip=null,enabled=true,owner=null,item=null){
   for(const n of nodes??[]){
-   const r=space?{...n.rect,x:space.x+n.rect.x,y:100-space.top-n.rect.y-n.rect.height}:n.rect;
+   const projectRect=rect=>space?{...rect,x:space.x+rect.x,y:100-space.top-rect.y-rect.height}:rect;
+   const r=projectRect(n.rect),drag=n.drag?{...n.drag,track_rect:projectRect(n.drag.track_rect),hit_rect:projectRect(n.drag.hit_rect)}:undefined;
    if(n.kind==='component'){walk(n.children,space,clip,enabled,owner,item);continue;}
    if(n.kind==='scroll_view'){
     const extent=scrollExtent(n),maxX=n.scroll.axis==='vertical'?0:Math.max(0,extent.width-r.width),maxY=n.scroll.axis==='horizontal'?0:Math.max(0,extent.height-r.height);
@@ -32,14 +33,14 @@ export function projectScrollTree(tree,offsets=new Map()){
     continue;
    }
    const c=intersect(clip,n.clip);if(c&&(c.width<=0||c.height<=0))continue;
-   leaves.push({...n,rect:r,...(c?{clip:c}:{}),...(!enabled&&['button','slider','combobox'].includes(n.kind)?{kind:'text',action:undefined}:{}),...(owner?{scrollOwner:owner}:{}),...(item?{virtualKey:item.key,virtualIndex:item.index,virtualCount:item.count}:{} )});
+   leaves.push({...n,rect:r,...(drag?{drag}:{}),...(c?{clip:c}:{}),...(!enabled&&['button','slider','combobox'].includes(n.kind)?{kind:'text',action:undefined,drag:undefined}:{}),...(owner?{scrollOwner:owner}:{}),...(item?{virtualKey:item.key,virtualIndex:item.index,virtualCount:item.count}:{} )});
   }
  }
  walk(tree?.children);return {tree:tree?{...tree,children:leaves}:tree,views};
 }
 
-export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=async()=>{},onDiagnostic=console.error,requestRender=()=>{},getFocusedNode=()=>document.activeElement?.dataset?.uiControl,focusNode=id=>{const el=[...stage.querySelectorAll('[data-ui-control]')].find(el=>el.dataset.uiControl===id);if(!el)return false;el.focus();return true;}}){
- const states=new Map(),passthrough=new Set(),ignored=new Set();let views=[],projected=null,hovered='',focused='',gesture=null,disposed=false,pendingFocus=null;
+export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=async()=>{},onDiagnostic=console.error,requestRender=()=>{},now=()=>performance.now(),requestFrame=fn=>requestAnimationFrame(fn),cancelFrame=id=>cancelAnimationFrame(id),getFocusedNode=()=>document.activeElement?.dataset?.uiControl,focusNode=id=>{const el=[...stage.querySelectorAll('[data-ui-control]')].find(el=>el.dataset.uiControl===id);if(!el)return false;el.focus();return true;}}){
+ const states=new Map(),passthrough=new Set(),ignored=new Set();let views=[],projected=null,hovered='',focused='',gesture=null,disposed=false,pendingFocus=null,momentum=null,frame=null;
  const point=e=>{const r=stage.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*100,y:100-(e.clientY-r.top)/r.height*100};};
  const ownerAt=p=>[...views].reverse().find(v=>v.enabled&&inside(v.clip,p.x,p.y));
  function makeState(id){
@@ -48,11 +49,34 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
    Object.assign(bar.style,{position:'absolute',zIndex:'7',boxSizing:'border-box',overscrollBehavior:'contain',scrollBehavior:'auto',scrollbarColor:'var(--ui-scroll-thumb, #b4b4b4) var(--ui-scroll-track, #252525)',overflowX:axis==='x'?'scroll':'hidden',overflowY:axis==='y'?'scroll':'hidden'});
    bar.append(content);stage.append(bar);rails[axis]={bar,content,range:0,max:0};
    bar.addEventListener('scroll',()=>{const s=states.get(id),rail=s?.rails[axis];if(!s||bar.hidden||!rail.range)return;s[axis]=(axis==='x'?bar.scrollLeft:bar.scrollTop)/rail.range*rail.max;requestRender();});
-   bar.addEventListener('pointerdown',()=>{focused=id;abandonGesture();});
+   bar.addEventListener('pointerdown',()=>{stopMomentum();focused=id;abandonGesture();});
   }
   return {x:0,y:0,reset:null,rails,pending:false,requested:'',keys:null,pitch:0};
  }
  function setOffset(v,x,y){const s=states.get(v.id);s.x=clamp(x,v.maxX);s.y=clamp(y,v.maxY);for(const axis of ['x','y']){const r=s.rails[axis];if(!r.bar.hidden)r.bar[axis==='x'?'scrollLeft':'scrollTop']=r.max?s[axis]/r.max*r.range:0;}requestRender();}
+ // Host-only presentation motion: no simulation tick, action, or game callback.
+ // Exponential drag integrates analytically, so 30/60/120 Hz cover the same path.
+ const signature=v=>JSON.stringify([v.rect,v.clip,v.maxX,v.maxY,v.node.scroll.axis,v.node.scroll.inertia,v.node.scroll.deceleration??8,v.node.scroll.reset_key,v.node.scroll.virtual_items?.revision]);
+ function stopMomentum(){momentum=null;if(frame!==null)cancelFrame(frame);frame=null;}
+ function coast(){
+  frame=null;const m=momentum;if(!m||disposed)return;
+  const v=views.find(v=>v.id===m.id&&v.enabled),r=stage.getBoundingClientRect(),time=now(),dt=(time-m.time)/1000;
+  if(!v||signature(v)!==m.signature||r.width!==m.width||r.height!==m.height||!Number.isFinite(dt)||dt<=0||dt>.25){stopMomentum();return;}
+  const s=states.get(v.id),exponent=m.deceleration*dt,decay=Math.exp(-exponent);
+  // Keep valid very small decay rates moving: 1-exp(-x) otherwise rounds to 0.
+  const distance=dt*(exponent===0?1:-Math.expm1(-exponent)/exponent);
+  const x=s.x+m.vx*distance,y=s.y+m.vy*distance;
+  m.vx=clamp(x,v.maxX)===x?m.vx*decay:0;m.vy=clamp(y,v.maxY)===y?m.vy*decay:0;m.time=time;
+  setOffset(v,x,y);
+  if(momentum!==m)return;
+  if(Math.hypot(m.vx,m.vy)<.5){stopMomentum();return;}
+  frame=requestFrame(coast);
+ }
+ function startMomentum(v,g){
+  const time=now();if(!v.node.scroll.inertia||time-g.lastMove>100||Math.hypot(g.vx,g.vy)<.5)return;
+  const r=stage.getBoundingClientRect();momentum={id:v.id,vx:g.vx,vy:g.vy,time,deceleration:v.node.scroll.deceleration??8,signature:signature(v),width:r.width,height:r.height};
+  frame=requestFrame(coast);
+ }
  function refresh(v){
   const s=states.get(v.id),virtual=v.node.scroll.virtual_items;if(!virtual||!v.enabled||s.pending||!virtual.keys.length)return;
   const range=virtualWindow(virtual,s.y,v.rect.height),key=[virtual.revision,range.first,range.last].join(':');
@@ -61,18 +85,18 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
  }
  const wheel=e=>{const p=point(e),r=stage.getBoundingClientRect(),scale=e.deltaMode===1?24:e.deltaMode===2?r.height:1,dx=e.deltaX*scale/r.width*100,dy=e.deltaY*scale/r.height*100;
   for(const v of [...views].reverse()){
-   if(!v.enabled||!inside(v.wheelRect,p.x,p.y))continue;const s=states.get(v.id),x=s.x+(v.node.scroll.axis==='horizontal'?(dx||dy):dx),y=s.y+dy;
+   if(!v.enabled||!inside(v.wheelRect,p.x,p.y))continue;stopMomentum();const s=states.get(v.id),x=s.x+(v.node.scroll.axis==='horizontal'?(dx||dy):dx),y=s.y+dy;
    if(clamp(x,v.maxX)===s.x&&clamp(y,v.maxY)===s.y)continue;e.preventDefault();hovered=v.id;focused=v.id;setOffset(v,x,y);return;
   }
  };
  const move=e=>{hovered=ownerAt(point(e))?.id??'';},leave=()=>{hovered='';};
  function scrollToKey(id,key){
   const v=views.find(v=>v.id===id&&v.enabled),items=v?.node.scroll.virtual_items;if(!items)return false;
-  const index=items.keys.indexOf(key);if(index<0)return false;const s=states.get(id),start=Math.floor(index/items.columns)*(items.row_height+items.gap_y),end=start+items.row_height;
+  const index=items.keys.indexOf(key);if(index<0)return false;stopMomentum();const s=states.get(id),start=Math.floor(index/items.columns)*(items.row_height+items.gap_y),end=start+items.row_height;
   setOffset(v,s.x,start<s.y?start:end>s.y+v.rect.height?end-v.rect.height:s.y);focused=id;return true;
  }
  function ensureVisible(id){
-  const n=projected?.children?.find(n=>n.id===id),v=views.find(v=>v.id===n?.scrollOwner&&v.enabled);if(!v)return false;focused=v.id;if(n.virtualKey)return scrollToKey(v.id,n.virtualKey);
+  const n=projected?.children?.find(n=>n.id===id),v=views.find(v=>v.id===n?.scrollOwner&&v.enabled);if(!v)return false;stopMomentum();focused=v.id;if(n.virtualKey)return scrollToKey(v.id,n.virtualKey);
   const s=states.get(v.id),r=n.rect;let x=s.x,y=s.y;if(r.x<v.rect.x)x+=r.x-v.rect.x;else if(r.x+r.width>v.rect.x+v.rect.width)x+=r.x+r.width-v.rect.x-v.rect.width;
   if(top(r)<top(v.rect))y+=top(r)-top(v.rect);else if(top(r)+r.height>top(v.rect)+v.rect.height)y+=top(r)+r.height-top(v.rect)-v.rect.height;setOffset(v,x,y);return true;
  }
@@ -88,11 +112,11 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
   if(node&&['slider','combobox'].includes(node.kind))return;
   if(nodeId&&navigate(nodeId,e.code)){e.preventDefault();e.stopPropagation();return;}
   const v=views.find(v=>v.id===(focused||hovered)&&v.enabled);if(!v||!['PageDown','PageUp','Home','End','ArrowDown','ArrowUp','ArrowLeft','ArrowRight'].includes(e.code))return;
-  const s=states.get(v.id);e.preventDefault();e.stopPropagation();if(e.code==='Home')setOffset(v,0,0);else if(e.code==='End')setOffset(v,v.maxX,v.maxY);
+  stopMomentum();const s=states.get(v.id);e.preventDefault();e.stopPropagation();if(e.code==='Home')setOffset(v,0,0);else if(e.code==='End')setOffset(v,v.maxX,v.maxY);
   else {const horizontal=e.code==='ArrowLeft'||e.code==='ArrowRight'||v.node.scroll.axis==='horizontal',sign=['PageUp','ArrowUp','ArrowLeft'].includes(e.code)?-1:1;setOffset(v,s.x+(horizontal?sign*v.rect.width*.15:0),s.y+(!horizontal?sign*v.rect.height*(e.code.startsWith('Page')?.85:.15):0));}
  };
  const abandonGesture=()=>{if(gesture)ignored.add(gesture.pointer);gesture=null;};
- const cancel=()=>{abandonGesture();passthrough.clear();focused='';pendingFocus=null;};
+ const cancel=()=>{stopMomentum();abandonGesture();passthrough.clear();focused='';pendingFocus=null;};
  canvas.addEventListener('wheel',wheel,{passive:false});canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerleave',leave);window.addEventListener('keydown',keydown,true);window.addEventListener('blur',cancel);
  return {
   draw(snapshot){
@@ -114,17 +138,20 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
      content.style.width=vertical?'1px':Math.min(1e6,Math.max(v.extent.width,v.rect.width)*stage.clientWidth/100)+'px';content.style.height=vertical?Math.min(1e6,Math.max(v.extent.height,v.rect.height)*stage.clientHeight/100)+'px':'1px';
      const rail=s.rails[axis];rail.max=vertical?v.maxY:v.maxX;rail.range=vertical?bar.scrollHeight-bar.clientHeight:bar.scrollWidth-bar.clientWidth;if(!bar.hidden)bar[vertical?'scrollTop':'scrollLeft']=rail.max?s[axis]/rail.max*rail.range:0;}
    }
-   const result=projectScrollTree(tree,states);views=result.views;projected=result.tree;for(const v of views)refresh(v);
+   const result=projectScrollTree(tree,states);views=result.views;projected=result.tree;
+   if(momentum){const v=views.find(v=>v.id===momentum.id&&v.enabled);if(!v||signature(v)!==momentum.signature)stopMomentum();}
+   for(const v of views)refresh(v);
    if(pendingFocus){const {owner,key}=pendingFocus,v=views.find(v=>v.id===owner&&v.enabled);if(!v||!v.node.scroll.virtual_items.keys.includes(key))pendingFocus=null;
     else {const n=projected?.children.find(n=>n.scrollOwner===owner&&n.virtualKey===key&&n.action);if(n)queueMicrotask(()=>{if(!disposed&&pendingFocus?.key===key&&pendingFocus?.owner===owner&&focusNode(n.id))pendingFocus=null;});}}
    return snapshot.world?{...snapshot,world:{...snapshot.world,ui:projected}}:{...snapshot,ui:projected};
   },
   scrollToKey,ensureVisible,reveal:ensureVisible,navigate,isNavigating:()=>!!pendingFocus,
   pointer(e,kind,hit){
+   if(kind==='down')stopMomentum();
    if(passthrough.has(e.pointerId)){if(kind==='up'||kind==='cancel')passthrough.delete(e.pointerId);return false;}
    if(ignored.has(e.pointerId)){if(kind==='down')ignored.delete(e.pointerId);else{if(kind==='up'||kind==='cancel')ignored.delete(e.pointerId);return true;}}
    if(gesture&&gesture.pointer!==e.pointerId){if(kind==='down')ignored.add(e.pointerId);return true;}
-   if(kind==='cancel'){const owned=!!gesture;gesture=null;return owned;}
+   if(kind==='cancel'){const owned=!!gesture;if(owned||e.type==='pointercancel')stopMomentum();gesture=null;return owned;}
    if(!['touch','mouse','pen'].includes(e.pointerType)){if(kind==='down')passthrough.add(e.pointerId);return false;}
    const p=point(e);
    if(kind==='down'){
@@ -136,12 +163,17 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
     // pointer stream. A foreground control outside this scroll projection
     // must also keep its ordinary input even when it overlaps the viewport.
     if(node&&(['slider','combobox'].includes(node.kind)||(node.kind==='button'&&node.scrollOwner!==v.id))){passthrough.add(e.pointerId);return false;}
-    const s=states.get(v.id);gesture={id:v.id,pointer:e.pointerId,x:e.clientX,y:e.clientY,startX:s.x,startY:s.y,moved:false,action:hit?.action,nodeId:hit?.nodeId};focused=v.id;return true;
+    const s=states.get(v.id);gesture={id:v.id,pointer:e.pointerId,x:e.clientX,y:e.clientY,startX:s.x,startY:s.y,lastX:s.x,lastY:s.y,time:now(),lastMove:-Infinity,vx:0,vy:0,moved:false,action:hit?.action,nodeId:hit?.nodeId};focused=v.id;return true;
    }
    if(!gesture)return false;const g=gesture,v=views.find(v=>v.id===g.id&&v.enabled);if(!v){abandonGesture();return true;}
    if(kind==='move'&&e.pointerType!=='touch'&&e.buttons===0){abandonGesture();return true;}
-   if(kind==='move'||kind==='up'){const r=stage.getBoundingClientRect(),dx=g.x-e.clientX,dy=g.y-e.clientY;g.moved||=Math.hypot(dx,dy)>8;if(g.moved)setOffset(v,g.startX+dx/r.width*100,g.startY+dy/r.height*100);}
-   if(kind==='up'){if(!g.moved&&g.action&&g.action===hit?.action&&g.nodeId===hit?.nodeId&&inside(v.clip,p.x,p.y))onAction(g.action);gesture=null;}return true;
+   if(kind==='move'||kind==='up'){const r=stage.getBoundingClientRect(),dx=g.x-e.clientX,dy=g.y-e.clientY;g.moved||=Math.hypot(dx,dy)>8;if(g.moved){
+    setOffset(v,g.startX+dx/r.width*100,g.startY+dy/r.height*100);
+    const s=states.get(v.id),time=now(),dt=(time-g.time)/1000,mx=s.x-g.lastX,my=s.y-g.lastY;
+    if((mx||my)&&dt>0){g.vx=Math.max(-300,Math.min(300,mx/dt));g.vy=Math.max(-300,Math.min(300,my/dt));g.lastMove=time;}
+    g.lastX=s.x;g.lastY=s.y;g.time=time;
+   }}
+   if(kind==='up'){if(!g.moved&&g.action&&g.action===hit?.action&&g.nodeId===hit?.nodeId&&inside(v.clip,p.x,p.y))onAction(g.action);gesture=null;if(g.moved)startMomentum(v,g);}return true;
   },
   cancel,
   report(){return views.map(v=>({id:v.id,enabled:v.enabled,viewport:v.rect,extent:v.extent,offset:{x:states.get(v.id).x,y:states.get(v.id).y},max:{x:v.maxX,y:v.maxY},total:v.node.scroll.virtual_items?.keys.length??null,window:v.node.scroll.virtual_items?{first:v.node.scroll.virtual_items.first,last:v.node.scroll.virtual_items.last}:null,materialized:v.node.children?.length??0}));},

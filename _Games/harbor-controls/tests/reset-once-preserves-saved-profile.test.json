@@ -31,21 +31,22 @@
     },
     {
       "actions": {},
-      "pointer": {
-        "screen_position": {
-          "x": 26.0,
-          "y": 60.0
-        },
-        "position": {
-          "x": 0,
-          "y": 0
-        },
-        "down": true
+      "ui_sliders": {
+        "audio/level": {
+          "phase": "start",
+          "ratio": 0.5
+        }
       }
     },
     {
       "actions": {
         "ApplySettings": true
+      },
+      "ui_sliders": {
+        "audio/level": {
+          "phase": "end",
+          "ratio": 0.5
+        }
       }
     },
     {

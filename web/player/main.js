@@ -14,7 +14,7 @@ import {worldFromPointer,projectScreenPointer} from '../shared/webgpu-snapshot.j
 const canvas=document.querySelector('#game'),status=document.querySelector('#status');
 let uiAssetManifest=null;
 const uiCanvas=document.createElement('canvas');Object.assign(uiCanvas.style,{width:'100%',height:'100%',pointerEvents:'none'});document.querySelector('#ui-layer').replaceChildren(uiCanvas);
-const input=createHostInput(),uiRenderer=createCanvasUi(uiCanvas,{onAction:({action,phase})=>input.queueActionTransition(action,phase==='down'),resolveAsset:assetId=>{
+const input=createHostInput(),uiRenderer=createCanvasUi(uiCanvas,{onAction:({action,phase})=>input.queueActionTransition(action,phase==='down'),onSlider:event=>input.queueSliderInteraction(event),resolveAsset:assetId=>{
  const asset=uiAssetManifest?.assets?.find(candidate=>candidate.id===assetId);
  if(!asset)throw Error(`UI asset ${assetId} is not declared in the active asset manifest`);
  requireAssetEncoding(asset,'image');
@@ -84,10 +84,10 @@ async function start(){
 function pointer(event,down,kind){if(!snapshot)return;const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height;const normalized={position:worldFromPointer(canvas,event,snapshot),screen_position:{x:x*100,y:(1-y)*100},down};input.updatePointer(normalized,kind);hasWorldPointer=true;}
 function routeUi(e,kind){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=100-(e.clientY-r.top)/r.height*100;return uiScroll.pointer(e,kind,uiRenderer.hitTest(x,y))||uiRenderer.pointer({kind,pointerId:e.pointerId,x,y});}
 canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);audio?.unlock();if(!routeUi(e,'down'))pointer(e,true,'edge');});
-canvas.addEventListener('pointermove',e=>{if(!routeUi(e,'move'))pointer(e,Boolean(e.buttons),'move');});canvas.addEventListener('pointerup',e=>{if(!routeUi(e,'up'))pointer(e,false,'edge');});canvas.addEventListener('pointercancel',e=>{routeUi(e,'cancel');uiRenderer.releaseAll();input.releaseAll();});
+canvas.addEventListener('pointermove',e=>{if(!routeUi(e,'move'))pointer(e,Boolean(e.buttons),'move');});canvas.addEventListener('pointerup',e=>{if(!routeUi(e,'up'))pointer(e,false,'edge');});canvas.addEventListener('pointercancel',e=>{if(!routeUi(e,'cancel'))input.releasePointer();});
 window.addEventListener('keydown',e=>input.setHeld(e.code,true));window.addEventListener('keyup',e=>input.setHeld(e.code,false));window.addEventListener('blur',()=>{uiRenderer.releaseAll();input.releaseAll();});
 window.addEventListener('unone-host-pause',()=>{uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
 window.addEventListener('pagehide',()=>{uiScroll.dispose();uiRenderer.dispose?.();scheduler?.stop();try{disposeRenderer(renderer);}catch(error){console.error(error);}backend?.close();});
-canvas.addEventListener('lostpointercapture',e=>uiScroll.pointer(e,'cancel'));
+canvas.addEventListener('lostpointercapture',e=>routeUi(e,'cancel'));
 start().catch(fail);

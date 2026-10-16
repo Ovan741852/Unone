@@ -4,6 +4,14 @@ use std::rc::Rc;
 pub(super) fn input(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let input = Rc::clone(&state.input);
     let input_api = lua.create_table()?;
+    let slider_input = Rc::clone(&input);
+    input_api.set("getSliderInteraction", lua.create_function(move |lua, id: String| {
+        let state = slider_input.borrow();
+        match state.ui_sliders.get(&id) {
+            Some(event) => super::value::json_to_lua(lua, serde_json::to_value(event).map_err(mlua::Error::external)?),
+            None => Ok(mlua::Value::Nil),
+        }
+    })?)?;
     let input_state = Rc::clone(&input);
     input_api.set(
         "isDown",

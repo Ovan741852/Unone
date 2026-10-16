@@ -1,0 +1,63 @@
+{
+  "sdk_root": "D:/TSProject/UnoneSliderInertia-20261016/sdk",
+  "inventory_files": 66,
+  "package_version": "0.3.0",
+  "official_release": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/",
+  "checks": [
+    {
+      "path": "packages/unone-ui/src/components.luau",
+      "sha256": "e409d5b8e421b2cc25c92c3131c95582314852306fbded939052cfa96b0d2acf",
+      "sdk_source_equal": true
+    },
+    {
+      "path": "packages/unone-ui/package.unone.json",
+      "sha256": "221508925d5ef248c92fb461843f067df302bf1b6900c343e13b64a2091b8886",
+      "sdk_source_equal": true
+    },
+    {
+      "path": "docs/engine.d.luau",
+      "sha256": "bac6ffc7af59c35fb889c6942e189bff02b007f21c78e45c295fe65de3527ac8",
+      "sdk_source_equal": true
+    },
+    {
+      "path": "docs/ui-components.md",
+      "sha256": "a771c285bef242c8fb1153d9d475b408c46527355c1b5b4739334e7125ec195f",
+      "sdk_source_equal": true
+    },
+    {
+      "path": "docs/ui-scroll.md",
+      "sha256": "9b48c218b300c8b7aa84fbc802dfeb90df22c4b6d47d2950ec7ecbe2f3c0a35a",
+      "sdk_source_equal": true
+    },
+    {
+      "path": "docs/ui-styling.md",
+      "sha256": "24a906696362ad9971e4f55700b7f829fec469c1a90cbd4f831153be497e28e0",
+      "sdk_source_equal": true
+    },
+    {
+      "path": "docs/decisions/0042-official-slider-input-and-scroll-inertia.md",
+      "sha256": "a60dd38a69870847058debc4c3276918973db4403bfff0034f642a5a4dbf2488",
+      "sdk_source_equal": true
+    },
+    {
+      "path": "web/shared/ui-scroll.mjs",
+      "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71",
+      "source_sdk_export_release_equal": true
+    },
+    {
+      "path": "web/shared/canvas-ui.mjs",
+      "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778",
+      "source_sdk_export_release_equal": true
+    },
+    {
+      "path": "web/shared/host-input.js",
+      "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b",
+      "source_sdk_export_release_equal": true
+    }
+  ],
+  "workspace_passed": 472.0,
+  "workspace_ignored": 3.0,
+  "web_tests_passed": 53,
+  "native_tests_passed": 31,
+  "native_tests_ignored": 1
+}

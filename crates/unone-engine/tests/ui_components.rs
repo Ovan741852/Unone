@@ -10,7 +10,7 @@ fn load(body: &str, declared: bool) -> Result<EngineRuntime, Box<Diagnostic>> {
 fn load_script(source: &str, declared: bool) -> Result<EngineRuntime, Box<Diagnostic>> {
     let mut config = json!({"name":"ui-components","entry_script":"main.luau","systems":{"ui":true}});
     if declared {
-        config["runtime_packages"] = json!({"@unone/ui":"0.2.0"});
+        config["runtime_packages"] = json!({"@unone/ui":"0.3.0"});
     }
     let config: ProjectConfig = serde_json::from_value(config).unwrap();
     EngineRuntime::load_source_project(SourceProject {
@@ -84,13 +84,37 @@ fn observed(body: &str) -> Value {
 }
 
 #[test]
+fn virtual_rows_translate_slider_track_and_hit_geometry_with_the_leaf() {
+    let values = observed(r#"
+local c=api.ui.components
+local items={{id='a'},{id='b'},{id='c'}}
+local controls={}
+for _,item in ipairs(items) do controls[item.id]=c.createSlider({id='slider_'..item.id,value=.5}) end
+local original={rect={x=0,y=0,width=20,height=4},trackRect={x=1,y=1,width=18,height=1},hitPadding=0}
+local list=c.virtualList({id='rows',viewport={left=10,top=10,width=30,height=25},items=items,key='id',rowHeight=10,
+ renderItem=function(item) return {controls[item.id].view(original)} end})
+for index,row in ipairs(list.children) do
+ local n=row.children[1]
+ assert(n.rect.y==(index-1)*10)
+ assert(n.drag.track_rect.y==1+(index-1)*10)
+ assert(n.drag.hit_rect.y==(index-1)*10)
+ assert(n.drag.track_rect.x==1)
+end
+assert(original.rect.y==0 and original.trackRect.y==1)
+api.ui.setRoot(c.screen({id='screen',node='test',children={list}}))
+api.observation.set('translated',true)
+"#);
+    assert_eq!(values["translated"], true);
+}
+
+#[test]
 fn undeclared_projects_can_inspect_metadata_but_cannot_use_the_package() {
     let runtime = load(r#"
 local c=api.ui.components
 local info=c.info()
-assert(info.name=='@unone/ui' and info.version=='0.2.0' and info.declared==false)
+assert(info.name=='@unone/ui' and info.version=='0.3.0' and info.declared==false)
 info.version='changed'
-assert(c.info().version=='0.2.0')
+assert(c.info().version=='0.3.0')
 local calls={function()c.create()end,function()c.id('a','b')end,function()c.composeStyle()end}
 for _,name in ipairs({'text','button','slider','combobox','panel','image','component','screen','scrollView','virtualList','virtualGrid'}) do
     table.insert(calls,function()c[name]({})end)
@@ -98,7 +122,7 @@ end
 for _,call in ipairs(calls) do
     local ok,message=pcall(call)
     assert(not ok and string.find(message,'UI_PACKAGE_NOT_DECLARED',1,true))
-    assert(string.find(message,'runtime_packages',1,true) and string.find(message,'0.2.0',1,true))
+    assert(string.find(message,'runtime_packages',1,true) and string.find(message,'0.3.0',1,true))
 end
 api.observation.set('declared',c.info().declared)
 "#, false).unwrap();

@@ -13,11 +13,13 @@ local function check(s, fields)
  for k in pairs(s.viewport) do assert(k=="left" or k=="top" or k=="width" or k=="height","UI_SCROLL_VIEWPORT: use left/top/width/height, not x/y") end
  assert(type(s.viewport.left)=="number" and type(s.viewport.top)=="number","UI_SCROLL_VIEWPORT: left and top required")
  assert(s.enabled==nil or type(s.enabled)=="boolean","UI_SCROLL_ENABLED: boolean required")
+ assert(s.inertia==nil or type(s.inertia)=="boolean","UI_SCROLL_INERTIA: boolean required")
+ assert(s.deceleration==nil or (type(s.deceleration)=="number" and s.deceleration==s.deceleration and s.deceleration>0 and s.deceleration<=100),"UI_SCROLL_DECELERATION: finite number in (0, 100] per second required")
  assert(s.resetKey==nil or type(s.resetKey)=="string","UI_SCROLL_RESET_KEY: string required")
  positive(s.viewport.width,"viewport.width");positive(s.viewport.height,"viewport.height")
 end
 local function scrollView(s)
- check(s,{id=true,viewport=true,content=true,axis=true,enabled=true,resetKey=true,wheelRect=true})
+ check(s,{id=true,viewport=true,content=true,axis=true,enabled=true,inertia=true,deceleration=true,resetKey=true,wheelRect=true})
  local wheel=nil
  if s.wheelRect then
   local r=s.wheelRect
@@ -26,7 +28,7 @@ local function scrollView(s)
   wheel={x=r.left,y=100-r.top-r.height,width=r.width,height=r.height}
  end
  return {kind="scroll_view",id=s.id,viewport=s.viewport,
-  scroll={axis=s.axis or "vertical",enabled=s.enabled~=false,reset_key=s.resetKey or "",wheel_rect=wheel},
+  scroll={axis=s.axis or "vertical",enabled=s.enabled~=false,inertia=s.inertia or false,deceleration=s.deceleration or 8,reset_key=s.resetKey or "",wheel_rect=wheel},
   children=s.content and #s.content>0 and s.content or nil}
 end
 local function translated(n,x,y)
@@ -37,6 +39,13 @@ local function translated(n,x,y)
  assert(n.rect and not n.anchor,"UI_SCROLL_LOCAL_RECT: renderItem must return local rectangles")
  local out=table.clone(n)
  out.rect={x=n.rect.x+x,y=n.rect.y+y,width=n.rect.width,height=n.rect.height}
+ if n.drag then
+  out.drag=table.clone(n.drag)
+  for _,field in ipairs({"track_rect","hit_rect"}) do
+   local r=n.drag[field]
+   out.drag[field]={x=r.x+x,y=r.y+y,width=r.width,height=r.height}
+  end
+ end
  if n.children and n.kind~="scroll_view" then
   out.children={};for _,child in ipairs(n.children) do table.insert(out.children,translated(child,x,y)) end
  end
@@ -58,7 +67,7 @@ local function materialize(entry,first,last)
 end
 local function virtual(s,grid)
  check(s,{id=true,viewport=true,items=true,key=true,renderItem=true,rowHeight=true,columnWidth=true,
-  columns=true,gapX=true,gapY=true,enabled=true,resetKey=true,wheelRect=true})
+  columns=true,gapX=true,gapY=true,enabled=true,inertia=true,deceleration=true,resetKey=true,wheelRect=true})
  if not grid then assert(s.columns==nil and s.columnWidth==nil and s.gapX==nil,"UI_VIRTUAL_LIST_OPTION: use virtualGrid for columns/columnWidth/gapX") end
  assert(type(s.items)=="table" and type(s.renderItem)=="function","UI_VIRTUAL_SPEC: items and renderItem required")
  assert(type(s.key)=="string" or type(s.key)=="function","UI_VIRTUAL_KEY: key field name or function required; never use array index")
@@ -83,7 +92,7 @@ local function virtual(s,grid)
  if not same then revision+=1 end
  local first=#keys==0 and 0 or (same and math.min(old.first,#keys) or 1)
  local last=#keys==0 and 0 or (same and math.min(old.last,#keys) or math.min(#keys,(math.ceil(positive(s.viewport.height,"viewport.height")/(height+gy))+1)*columns))
- local node=scrollView({id=s.id,viewport=s.viewport,enabled=s.enabled,resetKey=s.resetKey,wheelRect=s.wheelRect})
+ local node=scrollView({id=s.id,viewport=s.viewport,enabled=s.enabled,inertia=s.inertia,deceleration=s.deceleration,resetKey=s.resetKey,wheelRect=s.wheelRect})
  node.scroll.virtual_items={keys=keys,row_height=height,column_width=width,columns=columns,gap_x=gx,gap_y=gy,
   revision=same and old.revision or revision,first=first,last=last}
  local entry={spec=s,node=node,keys=keys,signature=signature,revision=node.scroll.virtual_items.revision,first=first,last=last}

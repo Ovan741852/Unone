@@ -65,13 +65,15 @@ with Core and the SDK. Search `game api search "UI package"` / `"shared componen
 / `"button component"` / `"card component"` / `"官方UI套件"` / `"共用元件"` /
 `"主題樣式"`, describe `ui.components.info` and `ui.components.create`, and read
 [the package contract](docs/ui-components.md). Declare the exact package version
-in `project.unone.json` (`"runtime_packages":{"@unone/ui":"0.2.0"}`). Both
+in `project.unone.json` (`"runtime_packages":{"@unone/ui":"0.3.0"}`). Both
 `api.ui.components` and the themed kit returned by `create` expose typed
-text/button/slider/combobox/panel/image/component/screen constructors plus
+text/button/slider/combobox/panel/image/component/screen constructors, the
+`createSlider` numeric control, plus
 scrollView/virtualList/virtualGrid wrappers. Search `"create button"` /
-`"slider component"` / `"下拉選單"` / `"virtual list"` for the actual methods.
+`"slider drag"` / `"slider value"` / `"滑桿拖曳"` / `"下拉選單"` /
+`"virtual list"` for the actual methods.
 This is not an npm
-module or a new renderer. Keep themes, content, state, action meanings and
+module or a new renderer. Keep themes, content, application state, action meanings and
 geometry in project Luau. Custom factories remain valid.
 
 For button activation search `"button click"` / `"button pressed"` / `"按鈕點擊"`
@@ -79,13 +81,33 @@ For button activation search `"button click"` / `"button pressed"` / `"按鈕點
 `wasReleased(action)` reads release edges and `isDown(action)` reads held state.
 These are non-consuming current-versus-previous-successful-tick snapshots,
 not callback properties or queued platform events. Do not invent `onClick`,
-`input.isActionJustPressed`, slider `value` props or automatic combobox options.
-Use canonical `EngineApi`, `UiApi`, `UiComponentKit` and node/style types from
+`input.isActionJustPressed`, low-level `slider(props).value` or automatic combobox options.
+Use canonical `EngineApi`, `UiApi`, `UiComponentKit`, `UiSliderControl` and node/style types from
 `game api typings`; do not use handwritten `ui:any` stubs. New entry scripts
 mark the canonical block; refresh it with
 `game --project <game-root> api typings --update-script gameplay.luau`, which
 preserves surrounding game code and rejects missing/duplicate/malformed markers.
 Never point `api typings --output` at an existing game entry script.
+
+Use `kit.createSlider({id=...,value=...,min=...,max=...,step=...})` for numeric
+sliders. Create and retain each control once in `Game.start`; publish
+`control.view({rect=...,trackRect=...})`, and call `control.update(api.input)`
+once per `Game.update` to read the value and interaction edges. The official host
+owns projected/clipped hit testing and pointer capture, including scroll-local
+controls; do not duplicate screen-pointer drag mapping in projects. `view` is
+UI-pure and supplies no layout or artwork. Virtual `renderItem` callbacks may
+call only `view`, with persistent controls keyed by item identity. Use
+`setValue` for explicit external changes or resets, and `cancel` to abandon a
+drag; both ignore the old held gesture until a new start. The low-level
+`slider(props)` remains compatible but does not accept value/range props or
+create a numeric controller. See [the complete slider lifecycle](docs/ui-components.md#interactive-sliders).
+
+For optional scroll drag inertia, search `"scroll inertia"` /
+`"捲動慣性"` and use `scrollView`/`virtualList`/`virtualGrid` options
+`inertia=true,deceleration=8`. Defaults are no inertia and exponential decay
+8 inverse seconds; deceleration must be finite and in `(0,100]`. Offsets stay
+clamped without elastic overscroll. Follow [the shared scroll contract](docs/ui-scroll.md)
+and its target-host limits.
 
 For font/style changes search `game api search "font size"` / `"text alignment"`
 / `"border padding"` and read [the shared style contract](docs/ui-styling.md).

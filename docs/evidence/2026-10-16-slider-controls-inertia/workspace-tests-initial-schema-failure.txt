@@ -1,0 +1,472 @@
+   Compiling unone-engine v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-engine)
+   Compiling unone-mobile-ffi v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-mobile-ffi)
+   Compiling unone-cli v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-cli)
+   Compiling unone-web-smoke v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-web-smoke)
+   Compiling unone-mobile-android-smoke v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-mobile-android-smoke)
+   Compiling unone-web-live-smoke v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-web-live-smoke)
+    Finished `release` profile [optimized] target(s) in 1m 42s
+     Running unittests src\main.rs (D:/TSProject/Voidwake/game/tools/build/native\release\deps\game-9417130dc3561847.exe)
+
+running 74 tests
+test capabilities::tests::compile_and_probe_evidence_never_becomes_verified_renderer_state ... ok
+test capabilities::tests::disabled_project_system_is_not_reported_as_currently_verified ... ok
+test assets::tests::reports_source_formats_this_host_cannot_decode ... ok
+test diagnostics_replay::tests::missing_invariant_is_not_a_pass_and_diagnostics_wait_for_end ... ok
+test diagnostics_replay::tests::canonical_vector ... ok
+test assets::tests::decodes_svg_into_premultiplied_rgba ... ok
+test export::content_file_tests::conflicting_references_are_rejected ... ok
+test capabilities::tests::runtime_records_keep_verified_and_pending_states_separate ... ok
+test capabilities::tests::platform_record_separates_current_and_other_target_host_work ... ok
+test export::content_file_tests::identical_references_are_deduplicated ... ok
+test export::tests::mesh_contract_rejects_bad_topology_uvs_and_unknown_fields ... ok
+test export::tests::native_export_rejects_shader_declarations_instead_of_dropping_them ... ok
+test export::tests::package_metadata_gate_uses_generic_exact_versions_and_validates_present_maps ... ok
+test assets::tests::png_color_modes_use_the_same_premultiplied_contract_as_svg ... ok
+test export::tests::web_generation_pins_all_resources_and_changes_on_any_input ... ok
+test hosts::tests::exportable_lookup_keeps_webview_and_ios_out_of_platform_packagers ... ok
+test hosts::tests::catalog_ids_are_unique_and_inspect_shape_is_uniform ... ok
+test hosts::tests::font_catalog_limit_counts_the_legacy_face ... ok
+test hosts::tests::native_gate_rejects_web_only_overlay_and_skeletal_systems ... ok
+test hosts::tests::renderer_defaults_official_and_replacement_requires_explicit_declaration ... ok
+test mcp::tests::bundle_install_arguments_keep_id_false_and_all_false_meanings ... ok
+test mcp::tests::bundle_install_arguments_reject_wrong_types ... ok
+test mcp::tests::initialize_requires_initialized_notification_before_tools ... ok
+test mcp::tests::advertised_argument_contract_rejects_typos_including_no_argument_tools ... ok
+test mcp::tests::run_rejects_conflicting_input_modes_with_semantic_tool_error ... ok
+test export::tests::rejects_parent_paths_and_existing_output ... ok
+test mcp::tests::tool_definitions_are_deterministic_and_semantic ... ok
+test mcp::tests::unknown_method_returns_json_rpc_error ... ok
+test native_capture::tests::capture_limits_keep_aspect_and_fail_on_typos ... ok
+test native_clock::tests::pause_and_stalls_do_not_create_unbounded_catchup ... ok
+test native_clock::tests::refresh_rate_cannot_change_simulation_speed ... ok
+test native_tools::tests::native_profile_windows_are_discoverable_and_do_not_tick ... ok
+test native_tools::tests::native_panel_api_invokes_the_same_lua_registry_and_steps_exactly ... ok
+test mcp::tests::prepare_inspect_rejects_non_desktop_targets_without_touching_the_project ... ok
+test prepare::tests::capability_failure_retains_structured_gaps_and_discovery_in_both_recovery_modes ... ok
+test prepare::tests::existing_output_is_rejected_before_sdk_or_sync_work ... ok
+test prepare::tests::portable_recovery_commands_resolve_the_cli_and_quote_shell_literals ... ok
+test prepare::tests::non_selection_failures_preserve_the_explicit_sdk_in_both_retry_modes ... ok
+test export::tests::both_hosts_package_default_presentation_and_explicit_font ... ok
+test prepare::tests::sdk_runtime_path_limit_counts_utf16_code_units ... ok
+test prepare::tests::sdk_runtime_path_limit_has_actionable_error ... ok
+test prepare::tests::preflight_is_read_only_and_recovery_has_a_concrete_target ... ok
+test capabilities::tests::snapshot_fails_closed_when_project_systems_cannot_be_inspected ... ok
+test sdk::tests::compatible_selection_retains_smallest_runtime_then_id_policy_and_explicit_pin ... ok
+test sdk::tests::legacy_runtime_metadata_remains_usable_without_package_requirements ... ok
+test sdk::tests::package_facts_must_match_between_sdk_and_runtime_descriptor ... ok
+test sdk::tests::package_selection_requires_exact_versions_and_preserves_missing_and_found_evidence ... ok
+test mcp::tests::platform_snapshot_tool_executes_and_returns_the_snapshot_shape ... ok
+test sdk::tests::runtime_target_variant_and_pinned_id_mismatches_are_independent_of_system_gaps ... ok
+test prepare::tests::unsupported_target_is_rejected_before_any_sdk_or_sync_work ... ok
+test prepare::tests::sync_failure_is_never_ready_and_does_not_create_output ... ok
+test sdk::tests::unavailable_runtime_exposes_concrete_capability_gaps_without_changing_requirements ... ok
+test sdk::tests::windows_prepare_accepts_the_declared_native_ready_shape ... ok
+test sdk::tests::windows_prepare_requires_the_native_ready_contract ... ok
+test sdk::tests::traversal_and_unknown_manifest_keys_fail ... ok
+test sdk::tests::unsupported_target_never_creates_output ... ok
+test prepare::tests::runtime_executable_must_be_a_single_hash_verified_exe ... ok
+test sync::tests::missing_project_is_reported_as_pack_failure ... ok
+test prepare::tests::native_launch_uses_verified_sdk_runtime_and_checks_export_copy ... ok
+test export::tests::direct_web_export_rejects_package_mismatch_before_loading_game_or_creating_output ... ok
+test tests::bundle_install_cli_preserves_all_selection_shapes_for_core ... ok
+test tests::cursor_uses_window_pixels_even_when_render_target_is_capped ... ok
+test tests::surface_size_clamps_large_windows_to_device_limit ... ok
+test export::tests::shared_font_catalog_packages_faces_rejects_invalid_entries_and_hashes_bytes ... ok
+test export::tests::custom_renderer_packaging_is_explicit_safe_and_hashed_with_generation ... ok
+test sync::tests::failed_verify_is_reported_without_activation ... ok
+test sync::tests::sync_runs_pack_verify_and_activation_as_one_operation ... ok
+test sync::tests::unchanged_sync_reuses_the_active_generation ... ok
+test assets::tests::loads_verified_active_svg_without_reading_unpacked_source_bytes ... ok
+test sync::tests::failed_assertion_does_not_replace_an_existing_active_generation ... ok
+test sync::tests::a_verified_content_change_creates_a_new_active_generation ... ok
+test export::tests::direct_web_export_accepts_exact_metadata_and_legacy_projects_without_package_requirements ... ok
+test sdk::tests::packed_sdk_contains_documented_ui_tools_without_requiring_them_in_older_sdks ... ok
+test assets::tests::rejects_authoring_metadata_changes_before_host_texture_decode ... ok
+
+test result: ok. 74 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.54s
+
+     Running tests\api_search_contract.rs (D:/TSProject/Voidwake/game/tools/build/native\release\deps\api_search_contract-775b2b515f05af8e.exe)
+
+running 13 tests
+test empty_query_returns_the_full_index_without_empty_warning ... ok
+test no_match_contract_has_fixed_facts_and_discovery_actions ... ok
+test full_index_action_executes_with_a_true_empty_query_from_an_unrelated_cwd ... ok
+test nonexistent_project_keeps_search_global_and_blocks_only_systems_action ... ok
+test invalid_project_keeps_matching_and_full_index_global_but_blocks_no_match_systems ... ok
+test relative_caller_project_is_canonicalized_before_systems_argv_runs_elsewhere ... ok
+test visual_search_guides_cli_and_mcp_to_native_particle_authoring ... ok
+test cli_and_mcp_unpacked_results_have_parity_for_no_match_and_full_index ... ok
+test systems_action_is_bound_to_the_caller_project_across_cwds ... ok
+test typography_search_guides_cli_and_mcp_to_the_same_official_ui_contract ... ok
+test shared_component_search_has_cli_mcp_parity_and_typed_package_guidance ... ok
+test composed_ui_queries_preserve_cli_mcp_parity_and_complete_word_isolation ... ok
+test ui_control_and_action_queries_have_precise_cli_mcp_parity ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.73s
+
+     Running tests\api_typings_update.rs (D:/TSProject/Voidwake/game/tools/build/native\release\deps\api_typings_update-d8f8cef321ee507c.exe)
+
+running 5 tests
+test update_script_conflicts_with_output_and_leaves_both_paths_untouched ... ok
+test explicit_script_refresh_preserves_game_bytes_and_crlf_and_is_idempotent ... ok
+test malformed_or_unmarked_scripts_fail_without_modifying_any_bytes ... ok
+test project_init_uses_the_shared_marked_block_and_existing_typings_modes_are_unchanged ... ok
+test missing_targets_and_unsafe_paths_are_not_created_or_written ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.72s
+
+     Running tests\authoring_transport_contract.rs (D:/TSProject/Voidwake/game/tools/build/native\release\deps\authoring_transport_contract-cfb23c231d94ab70.exe)
+
+running 1 test
+test project_init_and_pointer_input_transport_contract ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.29s
+
+     Running tests\developer_transport_contract.rs (D:/TSProject/Voidwake/game/tools/build/native\release\deps\developer_transport_contract-44be43f61654738f.exe)
+
+running 2 tests
+test jsonl_transport_flushes_each_response_and_keeps_the_session_alive ... ok
+test mcp_transport_preserves_the_same_session_across_tool_calls ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s
+
+     Running tests\diagnostics_replay.rs (D:/TSProject/Voidwake/game/tools/build/native\release\deps\diagnostics_replay-011ad32a55dc0cf0.exe)
+
+running 7 tests
+test bundle_script_entries_do_not_pollute_asset_identity ... ok
+test asset_content_changes_identity_even_when_manifest_does_not ... ok
+test missing_evidence_and_checkpoint_never_prove_absence ... ok
+test rejects_bad_schema_and_versions_and_preserves_capture ... ok
+test real_runtime_reproduces_override_regression_and_never_pads_inputs ... ok
+test parent_termination_kills_infinite_worker_via_job ... ok
+test kills_start_and_restore_hangs_and_separates_unexpected_crashes ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.65s
+
+     Running unittests src\lib.rs (D:/TSProject/Voidwake/game/tools/build/native\release\deps\unone_engine-bd4d6e8a008bae0d.exe)
+
+running 306 tests
+test api::tests::the_type_contract_covers_every_documented_api ... ok
+test api::tests::matching_query_keeps_existing_search_results_without_diagnostic ... ok
+test api::tests::empty_query_is_the_complete_index_without_empty_warning ... ok
+test api::tests::native_and_external_effect_descriptions_explain_authoring_and_ownership ... ok
+test api_typing_authoring::tests::invalid_markers_are_never_guessed_or_partially_replaced ... ok
+test api_typing_authoring::tests::exact_replacement_preserves_unicode_crlf_and_every_outside_byte ... ok
+test asset::encoding_tests::explicit_encoding_requires_exact_companion_descriptors ... ok
+test api::tests::exact_api_and_explicit_effekseer_queries_keep_their_intent ... ok
+test api::tests::no_match_keeps_success_and_has_fixed_discovery_guidance ... ok
+test api::tests::generic_effect_words_preserve_explicit_shader_intent ... ok
+test api::tests::visual_intents_discover_native_particles_before_external_effects ... ok
+test api::tests::scoped_background_intents_discover_composition_without_hiding_world_queries ... ok
+test api::tests::shared_component_queries_discover_the_real_versioned_package_entrypoints ... ok
+test api::tests::typography_and_box_intents_discover_official_ui_authoring ... ok
+test api::tests::composed_ui_queries_consume_known_words_within_one_capability_family ... ok
+test api::tests::ui_authoring_intents_rank_callable_controls_and_non_consuming_edges ... ok
+test api_typing_authoring::tests::partial_staging_write_never_truncates_original_and_cleans_up ... ok
+test api_typing_authoring::tests::staging_refuses_a_missing_or_concurrently_changed_original ... ok
+test asset::tests::rejects_nonportable_asset_source_paths ... ok
+test asset::tests::asset_init_reports_a_manifest_write_when_the_followup_config_write_fails ... ok
+test asset::tests::empty_asset_init_reports_actual_writes_without_inventing_a_describe_id ... ok
+test asset::tests::reports_scene_references_without_inventing_sources ... ok
+test asset::tests::asset_init_creates_contract_and_adds_explicit_declaration ... ok
+test asset_usage::tests::lexer_handles_comments_strings_and_escape_boundaries ... ok
+test asset::tests::companion_path_safety_is_shared_by_inspect_and_pack ... ok
+test asset::tests::rejects_unsupported_manifest_version_and_kind ... ok
+test asset::tests::duplicate_ids_fail_closed_for_manifest_read_and_describe ... ok
+test asset::tests::strict_inspection_turns_unresolved_references_into_a_gate_failure ... ok
+test asset::tests::validates_sources_and_bundle_ids ... ok
+test asset_usage::tests::source_evidence_is_bounded_readonly_and_never_claims_runtime_completeness ... ok
+test asset_workflow::tests::missing_authoring_source_stays_describable_and_blocks_mechanical_actions ... ok
+test asset_workflow::tests::keeps_special_project_paths_and_asset_ids_as_argv_values ... ok
+test audio::tests::a_fade_in_becomes_playing_on_its_own ... ok
+test audio::tests::a_one_shot_exists_only_for_the_frame_it_fired ... ok
+test audio::tests::a_paused_loop_holds_its_place_in_a_fade ... ok
+test audio::tests::a_reserved_rule_is_refused_and_says_what_is_implemented ... ok
+test audio::tests::an_attached_loop_follows_its_entity_and_stops_when_it_is_gone ... ok
+test audio::tests::an_exclusive_category_fades_the_previous_track_out_on_an_exact_frame ... ok
+test audio::tests::an_unknown_rule_is_refused_at_parse_time ... ok
+test audio::tests::bad_values_are_refused_and_change_nothing ... ok
+test audio::tests::bus_levels_are_engine_state_and_only_appear_once_changed ... ok
+test audio::tests::handles_are_ordered_so_the_same_input_reads_the_same ... ok
+test audio::tests::the_loop_limit_is_refused_rather_than_grown_past ... ok
+test broadphase::tests::negative_cells_large_bodies_and_updates_remain_conservative ... ok
+test broadphase::tests::sparse_thousands_have_no_quadratic_candidate_list ... ok
+test bundle::tests::accepts_only_portable_project_relative_bundle_sources ... ok
+test bundle::tests::asset_archive_deduplicates_same_bytes_but_rejects_path_collisions ... ok
+test bundle::tests::detects_tampered_bundle_before_install ... ok
+test asset::tests::reads_declared_asset_from_the_active_generation_and_reports_its_digest ... ok
+test bundle::tests::failed_host_fetch_keeps_previous_active_generation ... ok
+test bundle::tests::host_fetcher_can_install_without_local_source ... ok
+test bundle::tests::incremental_verifier_accepts_multiple_chunks ... ok
+test asset_workflow::tests::describes_selected_references_with_real_indexes_and_shared_paths_readonly ... ok
+test bundle::tests::host_fetcher_installs_url_sources_for_all_roots ... ok
+test bundle::tests::install_report_rejects_unselected_escaping_cache_before_activation ... ok
+test asset_workflow::tests::corrupt_latest_active_record_has_one_diagnostic_and_no_repair_loop ... ok
+test asset::tests::reads_primary_and_companions_with_verified_active_metadata ... ok
+test bundle::tests::missing_bundles_field_is_invalid_while_empty_array_is_empty ... ok
+test bundle::tests::newest_corrupt_formal_generation_is_not_skipped ... ok
+test bundle::tests::installs_verified_bundle_and_dependencies ... ok
+test asset_workflow::tests::metadata_only_asset_spec_change_is_not_reported_as_fresh ... ok
+test bundle::tests::observation_token_includes_manifest_and_active_record_state ... ok
+test bundle::tests::pack_output_collision_protects_missing_declared_tests ... ok
+test bundle::tests::pack_rejects_invalid_main_scene_without_asset_manifest_before_writes ... ok
+test asset_workflow::tests::reports_uninstalled_and_repacked_but_not_activated_as_not_fresh ... ok
+test bundle::tests::pack_output_collision_compares_windows_case_aliases ... ok
+test bundle::tests::pack_output_collision_allows_distinct_outputs_and_repacking ... ok
+test bundle::tests::packs_minimal_project_and_only_increments_version_when_content_changes ... ok
+test bundle::tests::packs_asset_archive_deterministically_and_declares_generated_bundle ... ok
+test bundle::tests::reads_packed_asset_bytes_back_out_of_the_archive ... ok
+test bundle::tests::rejects_archive_content_that_does_not_match_its_entry_digest ... ok
+test bundle::tests::reads_assets_only_from_an_activated_generation ... ok
+test bundle::tests::rejects_archive_reads_that_are_not_declared_or_not_an_archive ... ok
+test bundle::tests::selected_install_requires_exactly_one_root_mode_and_all_is_one_generation ... ok
+test asset::tests::read_requires_verified_reserved_manifest_bundle_before_export ... ok
+test bundle::tests::writing_over_an_existing_file_succeeds_and_keeps_the_new_bytes ... ok
+test canonical_hash::tests::arbitrary_edits_growth_shrink_and_boundaries_match_full_sha256 ... ok
+test developer::tests::diagnosis_preserves_failure_context_without_advancing_or_replaying ... ok
+test asset::tests::read_rejects_every_unpacked_asset_spec_change_before_export ... ok
+test developer::tests::disabled_systems_and_invalid_selectors_are_rejected_before_batch_commit ... ok
+test developer::tests::exact_luau_source_line_is_reported_without_guessing_local_variables ... ok
+test developer::tests::edits_cover_camera_ui_animation_and_effect_handles_and_rollback_together ... ok
+test developer::tests::enact_dry_run_atomic_failure_and_revision_conflict_do_not_mutate ... ok
+test developer::tests::invalid_requests_and_recording_limits_reject_before_mutation ... ok
+test developer::tests::failure_freezes_mutations_but_preserves_partial_state_and_reproduction ... ok
+test bundle::tests::validation_failure_does_not_leave_generated_outputs_or_config_mutation ... ok
+test developer::tests::journal_overflow_is_explicit_and_pagination_does_not_skip_events ... ok
+test developer::tests::native_particle_definition_spawn_and_stop_are_atomic_and_observable ... ok
+test developer::tests::perf_is_read_only_and_reports_measurements_without_a_bottleneck_verdict ... ok
+test developer::tests::snapshots_and_watch_follow_the_same_runtime_without_ticking_on_reads ... ok
+test developer::tests::mixed_inputs_and_enact_round_trip_and_expose_first_divergence ... ok
+test developer::tests::reopening_invalidates_old_session_identity_and_preserves_no_transient_edits ... ok
+test developer::tests::watch_reports_removed_ui_selection_instead_of_losing_the_removal_event ... ok
+test developer::tests::watch_preserves_array_shaped_physics_events_without_treating_them_as_deltas ... ok
+test execution::tests::diagnostic_policy_cannot_claim_native_execution ... ok
+test host::tests::queued_frames_never_resurrect_held_inputs ... ok
+test host::tests::startup_restores_save_and_tick_observation_has_completed_audio_lifecycle ... ok
+test host::tests::typo_payloads_and_nested_input_fail_before_running ... ok
+test instances3d::tests::canonical_json_skips_base64_until_requested ... ok
+test instances3d::tests::from_vec_moves_storage_without_a_second_copy ... ok
+test instances3d::tests::luau_buffer_is_copied_and_invalid_replacement_is_atomic ... ok
+test instances3d::tests::observation_digest_ignores_instance_pose_bytes ... ok
+test instances3d::tests::packed_pose_bytes_are_not_in_canonical_json ... ok
+test instances3d::tests::packed_transforms_reject_invalid_payloads ... ok
+test instances3d::tests::snapshot_clones_share_immutable_encoded_storage ... ok
+test bundle::tests::subset_install_reports_committed_generation_without_unioning_previous_roots ... ok
+test layout::tests::a_clean_screen_reports_no_findings_and_draws_its_boxes ... ok
+test layout::tests::background_declaration_preserves_partial_and_foreground_collisions ... ok
+test instances3d::tests::unchanged_luau_set_keeps_revision ... ok
+test layout::tests::background_inspection_stops_at_the_scroll_coordinate_boundary ... ok
+test layout::tests::background_pair_allowance_preserves_interactive_overlap_gate ... ok
+test layout::tests::background_declarations_do_not_bypass_the_pair_comparison_budget ... ok
+test layout::tests::declared_component_background_reaches_nested_descendants_only ... ok
+test layout::tests::declared_screen_background_covers_later_leaves_with_auditable_evidence ... ok
+test layout::tests::combined_overlap_evidence_overflow_leaves_the_entire_report_unchanged ... ok
+test layout::tests::exact_art_policy_still_supports_partial_pairs_alongside_declared_backgrounds ... ok
+test developer::tests::three_dimensional_edits_replay_and_luau_retains_gameplay_ownership ... ok
+test layout::tests::invalid_duplicate_reason_is_rejected_without_partial_policy_mutation ... ok
+test layout::tests::intentional_background_evidence_is_bounded_without_claiming_a_pass ... ok
+test layout::tests::later_declared_background_cannot_waive_its_occlusion_of_earlier_content ... ok
+test layout::tests::nested_components_are_inspected_by_their_visible_leaves ... ok
+test layout::tests::overlapping_nodes_are_reported_and_marked_in_the_picture ... ok
+test layout::tests::panel_layers_require_explicit_policy_and_cannot_hide_text_or_controls ... ok
+test layout::tests::text_fullness_is_measured_but_never_becomes_a_finding ... ok
+test layout::tests::duplicate_external_pairs_cannot_amplify_evidence_at_the_combined_cap ... ok
+test mesh::tests::lod_typo_and_invalid_order_fail ... ok
+test particle::tests::batch_origins_are_bounded_atomic_and_share_a_handle ... ok
+test particle::tests::capacity_and_unknown_fields_fail_closed ... ok
+test particle::tests::cone_shapes_curves_rotation_and_sprite_shapes_are_sampled ... ok
+test particle::tests::emitter_delay_stages_authored_effect_phases ... ok
+test particle::tests::followed_emitter_leaves_particles_behind_and_finish_keeps_the_fade ... ok
+test particle::tests::sampling_is_seeded_seekable_and_backward_compatible ... ok
+test particle::tests::sphere_and_ring_emitters_stay_inside_authored_shapes ... ok
+test particle::tests::stop_and_expiry_release_world_budget ... ok
+test performance::tests::a_debug_profile_says_so_in_its_own_notes ... ok
+test performance::tests::a_profile_reports_the_costs_a_frame_time_alone_hides ... ok
+test performance::tests::an_empty_run_reports_nothing_rather_than_dividing_by_zero ... ok
+test performance::tests::it_bounds_samples_while_preserving_cumulative_totals_and_maxima ... ok
+test performance::tests::it_counts_frames_that_missed_the_fixed_timestep_budget ... ok
+test performance::tests::it_names_the_phase_that_costs_the_most_and_the_worst_frame ... ok
+test physics3d::tests::query_is_read_only_breaks_ties_and_rejects_invalid_targets ... ok
+test physics3d::tests::sweep_catches_fast_projectile_and_moving_target ... ok
+test layout::tests::large_overlapping_screens_bound_diagnostics_without_claiming_a_pass ... ok
+test layout::tests::typed_and_external_overlap_evidence_share_the_exact_output_cap ... ok
+test diff::tests::a_changed_project_names_the_first_frame_and_the_field ... ok
+test bundle::tests::pack_output_collision_rejects_outputs_sharing_files_or_required_directories ... ok
+test diff::tests::an_unchanged_project_replays_identically ... ok
+test project::authoring::tests::init_rejects_a_file_as_root_without_touching_it ... ok
+test project::authoring::tests::init_create_failure_reports_directories_and_no_files ... ok
+test project::authoring::tests::init_rejects_windows_reparse_roots_and_ancestors ... ok
+test project::authoring::tests::resolver_rejects_dangling_symlink_and_missing_linked_ancestor ... ok
+test project::authoring::tests::resolver_returns_canonical_path_for_existing_contained_directory ... ok
+test project::authoring::tests::init_mid_write_failure_tracks_partial_file_and_retry_is_no_overwrite ... ok
+test project::authoring::tests::init_creates_official_player_starter_and_structured_actions ... ok
+test project::authoring::tests::test_assertions_reject_ambiguous_targets_and_comparators ... ok
+test rigid3d::tests::rigid3d_benchmark ... ignored, manual optimized solver-only performance; not an end-to-end frame-rate claim
+test rigid3d::tests::rigid3d_ccd_stops_fast_ball_at_thin_wall ... ok
+test rigid3d::tests::rigid3d_drop_stacks_sleep_and_impulse_wakes ... ok
+test rigid3d::tests::rigid3d_fixed_and_limited_revolute_joints_hold_and_remove ... ok
+test project::authoring::tests::resolver_returns_safe_missing_leaf_and_rejects_lexical_escape ... ok
+test rigid3d::tests::rigid3d_invalid_contracts_are_errors_before_mutation ... ok
+test rigid3d::tests::rigid3d_kinematic_joint_and_clone_preserve_solver_state ... ok
+test rigid3d::tests::rigid3d_queries_cover_rotated_box_capsule_convex_and_mesh ... ok
+test rigid3d::tests::rigid3d_host_and_lua_enforce_ownership_and_lifecycle ... ok
+test rigid3d::tests::rigid3d_sensor_lifecycle_filter_and_removal ... ok
+test rigid3d::tests::rigid3d_sleeping_fast_path_preserves_removal_exit_and_static_teleport ... ok
+test rigid3d::tests::rigid3d_restitution_and_friction_change_physical_response ... ok
+test runtime::determinism::tests::libraries_are_immutable_but_game_globals_remain_local ... ok
+test runtime::jobs::binary::tests::binary_executor_preserves_every_byte_and_empty_buffer_and_error ... ok
+test runtime::jobs::binary::tests::framing_rejects_truncation_versions_lengths_and_unknown_metadata ... ok
+test runtime::jobs::program_cache::tests::exact_source_lru_is_bounded_and_errors_are_not_cached ... ok
+test runtime::determinism::tests::real_runtime_rejects_ambient_time_and_vm_random_before_start ... ok
+test runtime::jobs::tests::cached_program_keeps_fresh_globals_upvalues_and_current_path ... ok
+test runtime::jobs::tests::cancellation_and_game_reset_reject_late_handles ... ok
+test runtime::jobs::tests::binary_and_inline_match_every_tick_without_json_byte_arrays ... ok
+test runtime::jobs::tests::early_take_unknown_operation_and_wrong_phase_fail_without_silent_success ... ok
+test runtime::jobs::tests::external_executor_matches_inline_with_reversed_completion_order ... ok
+test runtime::jobs::tests::errors_and_memory_budget_fail_at_the_next_barrier ... ok
+test runtime::jobs::tests::native_pool_benchmark ... ignored, manual release-only throughput experiment, not a timing assertion
+test runtime::jobs::tests::file_modules_require_complete_payload_and_preserve_error_location ... ok
+test runtime::jobs::tests::reload_is_transactional_and_profile_totals_freeze ... ok
+test runtime::jobs::tests::schedule_closures_do_not_retain_the_runtime_vm_after_drop ... ok
+test runtime::jobs::tests::real_lua_jobs_copy_input_and_match_inline_replay_every_tick ... ok
+test runtime::jobs::tests::schedules_use_fresh_closures_next_tick_results_and_finite_counts ... ok
+test runtime::jobs::tests::schedule_options_and_callback_failures_are_explicit ... ok
+test runtime::jobs::tests::worker_has_no_world_rng_clock_or_print_and_returns_buffer_only ... ok
+test runtime::jobs::tests::unconsumed_results_and_submission_limits_are_bounded ... ok
+test runtime::memory::tests::collecting_idle_vm_does_not_retain_history_in_lua ... ok
+test runtime::preview::tests::controls_are_inspectable_and_callbacks_are_explicit_between_ticks ... ok
+test runtime::preview::tests::malformed_definitions_and_requests_fail_closed ... ok
+test runtime::profiling::tests::errors_end_sampling_and_typo_is_rejected ... ok
+test runtime::memory::tests::retained_release_warmup_and_bounded_history ... ok
+test runtime::profiling::tests::stopped_window_freezes_heap_and_serialization_counters ... ok
+test bundle::tests::shared_manifest_fixture_has_matching_native_validation_failures ... ok
+test runtime::replay_adapter::tests::ordinary_game_replay_fields_and_metatables_are_not_new_requirements ... ok
+test project::authoring::tests::init_rejects_empty_name_nonempty_root_and_repeat_without_mutation ... ok
+test project::authoring::tests::init_rejects_parent_component_but_accepts_dot_and_unicode_paths ... ok
+test runtime::tests::a_game_that_makes_no_sound_observes_exactly_what_it_did_before ... ok
+test runtime::replay_adapter::tests::adapter_sampling_is_excluded_and_resumes_after_failure ... ok
+test runtime::profiling::tests::sampling_finds_function_preserves_digest_and_freezes_window ... ok
+test runtime::tests::a_reserved_audio_rule_fails_the_load_and_names_what_is_implemented ... ok
+test runtime::tests::an_analyzer_that_fails_silently_is_not_reported_as_a_type_error ... ok
+test runtime::tests::a_disabled_audio_system_says_which_switch_turned_it_off ... ok
+test project::authoring::tests::starter_declares_its_minimal_optional_needs_and_supports_typed_ui ... ok
+test runtime::tests::a_sound_fired_in_start_is_still_heard_on_the_first_frame ... ok
+test runtime::tests::a_restored_save_is_visible_inside_game_start ... ok
+test runtime::tests::failed_on_reload_rolls_back_all_owned_state_and_randomness ... ok
+test runtime::tests::an_exclusive_switch_and_its_fade_are_decided_by_the_engine ... ok
+test runtime::tests::invalid_unified_camera_transform_does_not_switch_projection ... ok
+test runtime::tests::memory_runtime_runs_without_project_files ... ok
+test runtime::tests::an_unknown_system_switch_fails_the_project_load ... ok
+test runtime::tests::observation_digest_matches_snapshot_bytes_and_does_not_mutate_snapshot ... ok
+test runtime::tests::observation_rejects_integers_outside_portable_range ... ok
+test runtime::tests::observation_rejects_non_serializable_values_with_runtime_diagnostic ... ok
+test runtime::tests::observation_state_serializes_typed_view_model_for_ai ... ok
+test runtime::tests::animation_and_effect_state_reach_the_snapshot_for_a_host_to_play ... ok
+test runtime::tests::random_int_is_inclusive_and_rejects_invalid_range ... ok
+test project::authoring::tests::generated_bootstrap_tests_run_and_wrong_movement_amount_fails ... ok
+test runtime::tests::input_sequence_is_relative_to_run_and_clears_missing_frames ... ok
+test runtime::tests::save_payload_round_trips_between_host_and_luau ... ok
+test runtime::tests::a_disabled_system_stops_stepping_and_says_so_when_called ... ok
+test runtime::tests::failed_reload_keeps_previous_script_running ... ok
+test runtime::tests::the_analyzer_argument_drops_the_extended_length_prefix ... ok
+test runtime::tests::seed_controls_luau_random_sequence ... ok
+test runtime::tests::presentation_systems_are_off_until_a_game_declares_them ... ok
+test runtime::tests::three_d_script_api_updates_transform_and_camera_without_game_specific_rules ... ok
+test runtime::tests::reload_if_changed_swaps_script_and_preserves_world_state ... ok
+test runtime::tests::two_d_script_api_updates_visual_transform_and_preserves_position_shape ... ok
+test runtime::tests::ui_set_root_rejects_unknown_nodes_with_runtime_diagnostic ... ok
+test runtime::tests::ui_set_root_validates_and_exposes_host_render_contract ... ok
+test runtime::tests::unified_camera_api_switches_projection_without_a_second_camera_contract ... ok
+test runtime::tests::scroll_helpers_cover_empty_data_nested_views_and_fail_loudly ... ok
+test runtime::tests::visual_transform_changes_snapshot_but_not_same_seed_physics ... ok
+test runtime::vm_metrics::tests::counts_churn_and_incremental_gc_and_restores_hooks ... ok
+test runtime::vm_metrics::tests::nested_vms_and_errors_restore_sampling ... ok
+test runtime_packages::tests::exact_versions_and_system_ownership_are_checked_without_loading_game_code ... ok
+test runtime_packages::tests::package_and_documented_types_ship_from_the_compiled_canonical_sources ... ok
+test scene::tests::accepts_empty_scene_shapes ... ok
+test runtime::tests::nested_component_ui_survives_the_luau_json_boundary ... ok
+test scene::tests::canonical_scene_serialization_keeps_one_camera_authoring_shape ... ok
+test scene::tests::disk_parse_keeps_real_filename_and_fragment_locations ... ok
+test scene::tests::omitted_projection_infers_perspective_only_from_3d_fields ... ok
+test scene::tests::rejects_blank_and_duplicate_ids_without_rewriting_ids ... ok
+test scene::tests::rejects_unknown_root_and_deep_vector_fields_with_context ... ok
+test scene::tests::shared_vec2_contract_rejects_extra_input_pointer_fields ... ok
+test scene::tests::typed_id_failure_happens_before_world_mutation ... ok
+test scene::tests::typed_runtime_rejects_semantic_negative_fixture_matrix ... ok
+test scene::tests::typed_validation_uses_typed_location_without_source_file ... ok
+test scene::tests::unified_camera_scene_definition_maps_to_the_legacy_host_projection ... ok
+test runtime::tests::same_seed_and_input_produce_same_observation_digest ... ok
+test systems::tests::defaults_follow_the_engine_declaration ... ok
+test systems::tests::finds_systems_by_meaning ... ok
+test systems::tests::resolves_declared_switches_and_rejects_impossible_ones ... ok
+test ui::tests::a_centered_node_is_centered ... ok
+test ui::tests::an_anchored_node_keeps_its_corner_and_proportions_on_any_aspect ... ok
+test ui::tests::background_component_reference_counts_toward_the_string_budget ... ok
+test ui::tests::background_component_scope_requires_an_actual_ancestor ... ok
+test ui::tests::background_ownership_cannot_cross_scroll_coordinate_boundaries ... ok
+test ui::tests::background_ownership_rejects_ambiguous_scopes_and_inapplicable_nodes ... ok
+test ui::tests::background_ownership_roundtrips_without_changing_order_or_placement ... ok
+test ui::tests::background_scope_schema_matches_exact_runtime_objects ... ok
+test ui::tests::background_surface_must_fit_scope_without_changing_the_authored_rect ... ok
+test ui::tests::combobox_preserves_controlled_state_and_requires_action ... ok
+test runtime::tests::tick_with_input_is_the_shared_host_frame_boundary ... ok
+test ui::tests::node_types_have_stable_typed_shape ... ok
+test ui::tests::placement_must_be_declared_exactly_once ... ok
+test ui::tests::rejects_duplicate_ids_across_nested_components_and_limits_depth ... ok
+test ui::tests::rejects_duplicate_ids_and_invalid_rectangles ... ok
+test ui::tests::scroll_momentum_defaults_and_raw_boundary_validation ... ok
+test ui::tests::slice_is_one_node_and_nine_regions_with_safe_small_destinations ... ok
+test ui::tests::slider_drag_geometry_defaults_and_raw_boundary_validation ... ok
+test ui::tests::validates_and_serializes_the_minimal_flat_tree ... ok
+test ui::tests::validates_images_and_nested_reusable_components ... ok
+test ui::tests::configurable_budget_counts_wrappers_and_preserves_large_screens ... ok
+test runtime::tests::the_type_gate_still_rejects_a_script_with_a_type_error ... ok
+test bundle::tests::pack_output_collision_rejects_manifest_over_every_authoring_input_without_writes ... ok
+test runtime::tests::the_host_viewport_shape_decides_where_an_anchored_node_lands ... ok
+test world::tests::a_resolved_collision_is_published_as_a_contact ... ok
+test world::tests::broadphase_benchmark ... ignored, manual release physics-only timing; not an end-to-end FPS claim
+test schema::tests::checked_in_schemas_match_runtime_types ... FAILED
+test world::tests::camera_projection_switch_keeps_one_state_and_preserves_mode_settings ... ok
+test world::tests::despawn_removes_the_entity_and_its_contacts ... ok
+test world::tests::dynamic_body_falls_and_stops_on_ground ... ok
+test world::tests::dynamic_body_resolves_against_static_circle ... ok
+test world::tests::ground_friction_stops_a_landed_body_sliding_forever ... ok
+test world::tests::invalid_2d_scene_transform_does_not_pollute_existing_world ... ok
+test world::tests::invalid_2d_transform_update_does_not_mutate_entity ... ok
+test world::tests::invalid_sprite_size_is_rejected_with_semantic_diagnostic ... ok
+test world::tests::loads_minimal_3d_scene_and_exposes_quantized_snapshot ... ok
+test world::tests::non_finite_runtime_vectors_are_rejected_before_world_mutation ... ok
+test world::tests::omitted_2d_visual_fields_keep_position_behavior_and_publish_defaults ... ok
+test world::tests::rejects_invalid_3d_scale_with_semantic_diagnostic ... ok
+test world::tests::sprite_size_defaults_to_unit_dimensions ... ok
+test world::tests::two_d_visual_fields_are_serialized_and_quantized_without_changing_position ... ok
+test world::tests::visual_transform_does_not_change_physics_position_velocity_or_contacts ... ok
+test runtime::tests::virtual_ui_materializes_without_a_game_tick_and_rejects_stale_work ... ok
+test world::tests::broadphase_matches_brute_solver_even_after_correction_creates_contacts ... ok
+test verify::tests::a_project_owns_its_gate_order_and_which_gates_are_advisory ... ok
+test verify::tests::every_gate_runs_even_after_one_fails ... ok
+test verify::tests::failed_test_assertions_fail_the_required_verify_gate ... ok
+test verify::tests::the_gates_a_project_owns_pass_when_the_project_is_sound ... ok
+test bundle::tests::pack_output_collision_rejects_archives_and_staging_over_authoring_inputs ... ok
+test scene::tests::all_disk_consumers_reject_the_shared_negative_fixture_matrix ... ok
+test asset::tests::read_rejects_observation_changes_and_token_errors_before_export ... ok
+test asset::tests::read_validates_missing_and_invalid_active_declarations_before_export ... ok
+test asset_workflow::tests::active_content_failures_are_discoverable_once_with_file_locations ... ok
+
+failures:
+
+---- schema::tests::checked_in_schemas_match_runtime_types stdout ----
+
+thread 'schema::tests::checked_in_schemas_match_runtime_types' (19760) panicked at crates\unone-engine\src\schema.rs:100:13:
+assertion `left == right` failed: Stale developer schema; regenerate with game schema
+  left: Object {"$comment": String("Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities."), "$defs": Object {"Camera3DData": Object {"additionalProperties": Bool(false), "properties": Object {"fov_degrees": Object {"default": Number(60.0), "format": String("double"), "type": String("number")}, "position": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(3.0), "z": Number(8.0)}}, "target": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}}, "type": String("object")}, "Change": Object {"oneOf": Array [Object {"additionalProperties": Bool(false), "properties": Object {"effect": Object {"type": String("string")}, "op": Object {"const": String("spawn_particle"), "type": String("string")}, "position": Object {"$ref": String("#/$defs/Vec3")}, "seed": Object {"format": String("uint64"), "minimum": Number(0), "type": String("integer")}}, "required": Array [String("op"), String("effect"), String("position"), String("seed")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"handle": Object {"type": String("string")}, "op": Object {"const": String("stop_particle"), "type": String("string")}}, "required": Array [String("op"), String("handle")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"definition": Object {"$ref": String("#/$defs/ParticleDefinition")}, "effect": Object {"type": String("string")}, "op": Object {"const": String("set_particle_definition"), "type": String("string")}}, "required": Array [String("op"), String("effect"), String("definition")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_transform3d"), "type": String("string")}, "transform": Object {"$ref": String("#/$defs/Transform3DData")}}, "required": Array [String("op"), String("transform")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"camera": Object {"$ref": String("#/$defs/Camera3DData")}, "op": Object {"const": String("set_camera3d"), "type": String("string")}}, "required": Array [String("op"), String("camera")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_position"), "type": String("string")}, "position": Object {"$ref": String("#/$defs/Vec2")}}, "required": Array [String("op"), String("position")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_transform2d"), "type": String("string")}, "transform": Object {"$ref": String("#/$defs/Transform2DData")}}, "required": Array [String("op"), String("transform")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_velocity"), "type": String("string")}, "velocity": Object {"$ref": String("#/$defs/Vec2")}}, "required": Array [String("op"), String("velocity")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_visible"), "type": String("string")}, "visible": Object {"type": String("boolean")}}, "required": Array [String("op"), String("visible")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"animation": Object {"type": String("string")}, "asset": Object {"type": Array [String("string"), String("null")]}, "looping": Object {"type": Array [String("boolean"), String("null")]}, "op": Object {"const": String("play_animation"), "type": String("string")}, "speed": Object {"format": String("double"), "type": Array [String("number"), String("null")]}}, "required": Array [String("op"), String("animation")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("stop_animation"), "type": String("string")}}, "required": Array [String("op")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_text"), "type": String("string")}, "text": Object {"type": String("string")}}, "required": Array [String("op"), String("text")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_rect"), "type": String("string")}, "rect": Object {"$ref": String("#/$defs/UiRect")}}, "required": Array [String("op"), String("rect")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_camera"), "type": String("string")}, "position": Object {"$ref": String("#/$defs/Vec2")}, "zoom": Object {"format": String("double"), "type": String("number")}}, "required": Array [String("op"), String("position"), String("zoom")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"asset": Object {"type": String("string")}, "op": Object {"const": String("spawn_effect"), "type": String("string")}, "position": Object {"$ref": String("#/$defs/Vec2")}, "rotation": Object {"format": String("double"), "type": Array [String("number"), String("null")]}, "scale": Object {"format": String("double"), "type": Array [String("number"), String("null")]}}, "required": Array [String("op"), String("asset"), String("position")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("stop_effect"), "type": String("string")}}, "required": Array [String("op")], "type": String("object")}]}, "EnactOperation": Object {"additionalProperties": Bool(false), "properties": Object {"change": Object {"$ref": String("#/$defs/Change")}, "selector": Object {"$ref": String("#/$defs/Selector")}}, "required": Array [String("selector"), String("change")], "type": String("object")}, "InputFrame": Object {"additionalProperties": Bool(false), "properties": Object {"actions": Object {"additionalProperties": Object {"type": String("boolean")}, "default": Object {}, "type": String("object")}, "pointer": Object {"anyOf": Array [Object {"$ref": String("#/$defs/PointerInput")}, Object {"type": String("null")}], "default": Null}}, "type": String("object")}, "ParticleDefinition": Object {"additionalProperties": Bool(false), "properties": Object {"duration_frames": Object {"format": String("uint32"), "minimum": Number(0), "type": String("integer")}, "emitters": Object {"items": Object {"$ref": String("#/$defs/ParticleEmitter")}, "type": String("array")}, "version": Object {"format": String("uint32"), "minimum": Number(0), "type": String("integer")}}, "required": Array [String("version"), String("duration_frames"), String("emitters")], "type": String("object")}, "ParticleEasing": Object {"enum": Array [String("linear"), String("ease_in"), String("ease_out"), String("smooth_step")], "type": String("string")}, "ParticleEmissionShape": Object {"enum": Array [String("point"), String("box"), String("sphere"), String("ring")], "type": String("string")}, "ParticleEmitter": Object {"additionalProperties": Bool(false), "properties": Object {"additive": Object {"default": Bool(false), "type": String("boolean")}, "angular_velocity": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "color_easing": Object {"$ref": String("#/$defs/ParticleEasing"), "default": String("linear")}, "color_end": Object {"items": Object {"format": String("double"), "type": String("number")}, "maxItems": Number(4), "minItems": Number(4), "type": String("array")}, "color_start": Object {"items": Object {"format": String("double"), "type": String("number")}, "maxItems": Number(4), "minItems": Number(4), "type": String("array")}, "cone_angle_degrees": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "count": Object {"format": String("uint32"), "minimum": Number(0), "type": String("integer")}, "direction": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}, "emission_radius": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "emission_shape": Object {"$ref": String("#/$defs/ParticleEmissionShape"), "default": String("box")}, "gravity": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}, "id": Object {"type": String("string")}, "interval_frames": Object {"format": String("uint32"), "minimum": Number(0), "type": String("integer")}, "lifetime_frames": Object {"format": String("uint32"), "minimum": Number(0), "type": String("integer")}, "rotation_end": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "rotation_start": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "size_easing": Object {"$ref": String("#/$defs/ParticleEasing"), "default": String("linear")}, "size_end": Object {"format": String("double"), "type": String("number")}, "size_start": Object {"format": String("double"), "type": String("number")}, "speed_max": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "speed_min": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "spread": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}, "sprite_shape": Object {"$ref": String("#/$defs/ParticleSpriteShape"), "default": String("soft_circle")}, "start_delay_frames": Object {"default": Number(0), "format": String("uint32"), "minimum": Number(0), "type": String("integer")}, "velocity_max": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}, "velocity_min": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}, "velocity_mode": Object {"$ref": String("#/$defs/ParticleVelocityMode"), "default": String("vector")}}, "required": Array [String("id"), String("count"), String("interval_frames"), String("lifetime_frames"), String("size_start"), String("size_end"), String("color_start"), String("color_end")], "type": String("object")}, "ParticleSpriteShape": Object {"enum": Array [String("soft_circle"), String("diamond"), String("ring"), String("streak")], "type": String("string")}, "ParticleVelocityMode": Object {"enum": Array [String("vector"), String("cone"), String("radial")], "type": String("string")}, "PointerInput": Object {"additionalProperties": Bool(false), "properties": Object {"down": Object {"default": Bool(false), "type": String("boolean")}, "position": Object {"$ref": String("#/$defs/Vec2")}, "screen_position": Object {"anyOf": Array [Object {"$ref": String("#/$defs/Vec2")}, Object {"type": String("null")}], "default": Null, "description": String("Host-normalized logical UI coordinates. When omitted, world position\nis used as a compatibility-free default for headless callers.")}}, "required": Array [String("position")], "type": String("object")}, "RecordedCommand": Object {"oneOf": Array [Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("step"), "type": String("string")}, "digests": Object {"items": Object {"type": String("string")}, "type": String("array")}, "failure": Object {"anyOf": Array [Object {"$ref": String("#/$defs/RecordedFailure")}, Object {"type": String("null")}]}, "frames": Object {"format": String("uint64"), "minimum": Number(0), "type": String("integer")}, "input": Object {"$ref": String("#/$defs/InputFrame")}}, "required": Array [String("command"), String("frames"), String("input"), String("digests")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("enact"), "type": String("string")}, "digest": Object {"type": String("string")}, "operations": Object {"items": Object {"$ref": String("#/$defs/EnactOperation")}, "type": String("array")}}, "required": Array [String("command"), String("operations"), String("digest")], "type": String("object")}]}, "RecordedFailure": Object {"additionalProperties": Bool(false), "properties": Object {"code": Object {"type": String("string")}}, "required": Array [String("code")], "type": String("object")}, "Recording": Object {"additionalProperties": Bool(false), "properties": Object {"commands": Object {"items": Object {"$ref": String("#/$defs/RecordedCommand")}, "type": String("array")}, "engine_version": Object {"type": String("string")}, "initial_digest": Object {"type": String("string")}, "schema_version": Object {"format": String("uint32"), "minimum": Number(0), "type": String("integer")}, "scope": Object {"type": String("string")}, "script_digest": Object {"type": String("string")}, "seed": Object {"format": String("uint64"), "minimum": Number(0), "type": String("integer")}}, "required": Array [String("schema_version"), String("seed"), String("initial_digest"), String("commands"), String("scope"), String("script_digest"), String("engine_version")], "type": String("object")}, "Selector": Object {"oneOf": Array [Object {"additionalProperties": Bool(false), "properties": Object {"id": Object {"type": String("string")}, "kind": Object {"const": String("entity"), "type": String("string")}}, "required": Array [String("kind"), String("id")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"id": Object {"type": String("string")}, "kind": Object {"const": String("ui"), "type": String("string")}}, "required": Array [String("kind"), String("id")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"kind": Object {"const": String("scene"), "type": String("string")}}, "required": Array [String("kind")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"handle": Object {"type": String("string")}, "kind": Object {"const": String("effect"), "type": String("string")}}, "required": Array [String("kind"), String("handle")], "type": String("object")}]}, "Transform2DData": Object {"additionalProperties": Bool(false), "description": String("The typed 2D transform exposed to Luau.\n\nScene and snapshot JSON keep `Entity.transform` as the existing `{x, y}`\nposition and store `rotation`/`scale` as additive sibling fields. The\naggregate is only the API shape, so existing position-only scripts keep\ntheir current data path."), "properties": Object {"position": Object {"$ref": String("#/$defs/Vec2"), "default": Object {"x": Number(0.0), "y": Number(0.0)}}, "rotation": Object {"default": Number(0.0), "description": String("Visual Euler rotation in radians. Positive rotation is\ncounter-clockwise in the engine's y-up world."), "format": String("double"), "type": String("number")}, "scale": Object {"$ref": String("#/$defs/Vec2"), "default": Object {"x": Number(1.0), "y": Number(1.0)}, "description": String("Visual scale. Both components must be finite and strictly positive;\nmirroring through negative scale is not part of this contract.")}}, "type": String("object")}, "Transform3DData": Object {"additionalProperties": Bool(false), "properties": Object {"position": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}, "rotation": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}, "description": String("Euler rotation in radians. The engine stores the transform; game code\nowns the meaning of steering and other gameplay-specific orientation.")}, "scale": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(1.0), "y": Number(1.0), "z": Number(1.0)}}}, "type": String("object")}, "UiRect": Object {"additionalProperties": Bool(false), "description": String("Logical coordinates for a host-rendered UI element.\n\nBoth axes run 0..100 and **y points up**: y = 0 is the bottom of the screen\nand a rect grows upward from its y. Most UI systems are y-down, so this is\nthe easiest thing for an author who cannot see the screen to get wrong.\n\nThe platform host maps this design space to its viewport. The engine does\nnot know about pixels, DPI, safe areas, fonts, or platform widgets."), "properties": Object {"height": Object {"format": String("double"), "type": String("number")}, "width": Object {"format": String("double"), "type": String("number")}, "x": Object {"format": String("double"), "type": String("number")}, "y": Object {"format": String("double"), "type": String("number")}}, "required": Array [String("x"), String("y"), String("width"), String("height")], "type": String("object")}, "Vec2": Object {"additionalProperties": Bool(false), "properties": Object {"x": Object {"format": String("double"), "type": String("number")}, "y": Object {"format": String("double"), "type": String("number")}}, "required": Array [String("x"), String("y")], "type": String("object")}, "Vec3": Object {"additionalProperties": Bool(false), "properties": Object {"x": Object {"format": String("double"), "type": String("number")}, "y": Object {"format": String("double"), "type": String("number")}, "z": Object {"format": String("double"), "type": String("number")}}, "required": Array [String("x"), String("y"), String("z")], "type": String("object")}}, "$id": String("https://unone.dev/schema/developer.schema.json"), "$schema": String("https://json-schema.org/draft/2020-12/schema"), "oneOf": Array [Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("open"), "type": String("string")}, "seed": Object {"default": Number(42), "format": String("uint64"), "minimum": Number(0), "type": String("integer")}}, "required": Array [String("command")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("close"), "type": String("string")}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("snapshot"), "type": String("string")}, "paths": Object {"default": Array [], "items": Object {"type": String("string")}, "type": String("array")}, "selector": Object {"anyOf": Array [Object {"$ref": String("#/$defs/Selector")}, Object {"type": String("null")}], "default": Null}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"after": Object {"default": Number(0), "format": String("uint64"), "minimum": Number(0), "type": String("integer")}, "command": Object {"const": String("journal"), "type": String("string")}, "limit": Object {"default": Number(100), "format": String("uint"), "minimum": Number(0), "type": String("integer")}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session")], "type": String("object")}, Object {"additionalProperties": Bool(false), "description": String("Incremental polling, never advances the runtime. Hosts can poll at their desired cadence."), "properties": Object {"after": Object {"format": String("uint64"), "minimum": Number(0), "type": String("integer")}, "command": Object {"const": String("watch"), "type": String("string")}, "limit": Object {"default": Number(100), "format": String("uint"), "minimum": Number(0), "type": String("integer")}, "paths": Object {"default": Array [], "items": Object {"type": String("string")}, "type": String("array")}, "selector": Object {"anyOf": Array [Object {"$ref": String("#/$defs/Selector")}, Object {"type": String("null")}], "default": Null}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session"), String("after")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("step"), "type": String("string")}, "expected_revision": Object {"format": String("uint64"), "minimum": Number(0), "type": String("integer")}, "frames": Object {"default": Number(1), "format": String("uint64"), "minimum": Number(0), "type": String("integer")}, "input": Object {"$ref": String("#/$defs/InputFrame"), "default": Object {"actions": Object {}, "pointer": Null}}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session"), String("expected_revision")], "type": String("object")}, Object {"additionalProperties": Bool(false), "description": String("Apply a temporary debug patch to Rust-owned runtime state. This is not a\ngameplay command: no Lua callback runs, and the game may overwrite it next tick."), "properties": Object {"command": Object {"const": String("enact"), "type": String("string")}, "dry_run": Object {"default": Bool(false), "type": String("boolean")}, "expected_revision": Object {"format": String("uint64"), "minimum": Number(0), "type": String("integer")}, "operations": Object {"items": Object {"$ref": String("#/$defs/EnactOperation")}, "type": String("array")}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session"), String("expected_revision"), String("operations")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("perf"), "type": String("string")}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session")], "type": String("object")}, Object {"additionalProperties": Bool(false), "description": String("Read a bounded evidence pack after a failed tick, without rerunning it."), "properties": Object {"command": Object {"const": String("diagnose"), "type": String("string")}, "limit": Object {"default": Number(100), "format": String("uint"), "minimum": Number(0), "type": String("integer")}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("recording"), "type": String("string")}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("replay"), "type": String("string")}, "recording": Object {"$ref": String("#/$defs/Recording")}}, "required": Array [String("command"), String("recording")], "type": String("object")}], "title": String("DeveloperRequest"), "type": String("object")}
+ right: Object {"$comment": String("Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities."), "$defs": Object {"Camera3DData": Object {"additionalProperties": Bool(false), "properties": Object {"fov_degrees": Object {"default": Number(60.0), "format": String("double"), "type": String("number")}, "position": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(3.0), "z": Number(8.0)}}, "target": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}}, "type": String("object")}, "Change": Object {"oneOf": Array [Object {"additionalProperties": Bool(false), "properties": Object {"effect": Object {"type": String("string")}, "op": Object {"const": String("spawn_particle"), "type": String("string")}, "position": Object {"$ref": String("#/$defs/Vec3")}, "seed": Object {"format": String("uint64"), "minimum": Number(0), "type": String("integer")}}, "required": Array [String("op"), String("effect"), String("position"), String("seed")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"handle": Object {"type": String("string")}, "op": Object {"const": String("stop_particle"), "type": String("string")}}, "required": Array [String("op"), String("handle")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"definition": Object {"$ref": String("#/$defs/ParticleDefinition")}, "effect": Object {"type": String("string")}, "op": Object {"const": String("set_particle_definition"), "type": String("string")}}, "required": Array [String("op"), String("effect"), String("definition")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_transform3d"), "type": String("string")}, "transform": Object {"$ref": String("#/$defs/Transform3DData")}}, "required": Array [String("op"), String("transform")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"camera": Object {"$ref": String("#/$defs/Camera3DData")}, "op": Object {"const": String("set_camera3d"), "type": String("string")}}, "required": Array [String("op"), String("camera")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_position"), "type": String("string")}, "position": Object {"$ref": String("#/$defs/Vec2")}}, "required": Array [String("op"), String("position")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_transform2d"), "type": String("string")}, "transform": Object {"$ref": String("#/$defs/Transform2DData")}}, "required": Array [String("op"), String("transform")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_velocity"), "type": String("string")}, "velocity": Object {"$ref": String("#/$defs/Vec2")}}, "required": Array [String("op"), String("velocity")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_visible"), "type": String("string")}, "visible": Object {"type": String("boolean")}}, "required": Array [String("op"), String("visible")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"animation": Object {"type": String("string")}, "asset": Object {"type": Array [String("string"), String("null")]}, "looping": Object {"type": Array [String("boolean"), String("null")]}, "op": Object {"const": String("play_animation"), "type": String("string")}, "speed": Object {"format": String("double"), "type": Array [String("number"), String("null")]}}, "required": Array [String("op"), String("animation")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("stop_animation"), "type": String("string")}}, "required": Array [String("op")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_text"), "type": String("string")}, "text": Object {"type": String("string")}}, "required": Array [String("op"), String("text")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_rect"), "type": String("string")}, "rect": Object {"$ref": String("#/$defs/UiRect")}}, "required": Array [String("op"), String("rect")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("set_camera"), "type": String("string")}, "position": Object {"$ref": String("#/$defs/Vec2")}, "zoom": Object {"format": String("double"), "type": String("number")}}, "required": Array [String("op"), String("position"), String("zoom")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"asset": Object {"type": String("string")}, "op": Object {"const": String("spawn_effect"), "type": String("string")}, "position": Object {"$ref": String("#/$defs/Vec2")}, "rotation": Object {"format": String("double"), "type": Array [String("number"), String("null")]}, "scale": Object {"format": String("double"), "type": Array [String("number"), String("null")]}}, "required": Array [String("op"), String("asset"), String("position")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"op": Object {"const": String("stop_effect"), "type": String("string")}}, "required": Array [String("op")], "type": String("object")}]}, "EnactOperation": Object {"additionalProperties": Bool(false), "properties": Object {"change": Object {"$ref": String("#/$defs/Change")}, "selector": Object {"$ref": String("#/$defs/Selector")}}, "required": Array [String("selector"), String("change")], "type": String("object")}, "InputFrame": Object {"additionalProperties": Bool(false), "properties": Object {"actions": Object {"additionalProperties": Object {"type": String("boolean")}, "default": Object {}, "type": String("object")}, "pointer": Object {"anyOf": Array [Object {"$ref": String("#/$defs/PointerInput")}, Object {"type": String("null")}], "default": Null}, "ui_sliders": Object {"additionalProperties": Object {"$ref": String("#/$defs/SliderInteraction")}, "description": String("Host-projected semantic slider events, consumed once per successful tick.\nValues/ranges remain in the official Luau control, not platform adapters."), "type": String("object")}}, "type": String("object")}, "ParticleDefinition": Object {"additionalProperties": Bool(false), "properties": Object {"duration_frames": Object {"format": String("uint32"), "minimum": Number(0), "type": String("integer")}, "emitters": Object {"items": Object {"$ref": String("#/$defs/ParticleEmitter")}, "type": String("array")}, "version": Object {"format": String("uint32"), "minimum": Number(0), "type": String("integer")}}, "required": Array [String("version"), String("duration_frames"), String("emitters")], "type": String("object")}, "ParticleEasing": Object {"enum": Array [String("linear"), String("ease_in"), String("ease_out"), String("smooth_step")], "type": String("string")}, "ParticleEmissionShape": Object {"enum": Array [String("point"), String("box"), String("sphere"), String("ring")], "type": String("string")}, "ParticleEmitter": Object {"additionalProperties": Bool(false), "properties": Object {"additive": Object {"default": Bool(false), "type": String("boolean")}, "angular_velocity": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "color_easing": Object {"$ref": String("#/$defs/ParticleEasing"), "default": String("linear")}, "color_end": Object {"items": Object {"format": String("double"), "type": String("number")}, "maxItems": Number(4), "minItems": Number(4), "type": String("array")}, "color_start": Object {"items": Object {"format": String("double"), "type": String("number")}, "maxItems": Number(4), "minItems": Number(4), "type": String("array")}, "cone_angle_degrees": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "count": Object {"format": String("uint32"), "minimum": Number(0), "type": String("integer")}, "direction": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}, "emission_radius": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "emission_shape": Object {"$ref": String("#/$defs/ParticleEmissionShape"), "default": String("box")}, "gravity": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}, "id": Object {"type": String("string")}, "interval_frames": Object {"format": String("uint32"), "minimum": Number(0), "type": String("integer")}, "lifetime_frames": Object {"format": String("uint32"), "minimum": Number(0), "type": String("integer")}, "rotation_end": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "rotation_start": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "size_easing": Object {"$ref": String("#/$defs/ParticleEasing"), "default": String("linear")}, "size_end": Object {"format": String("double"), "type": String("number")}, "size_start": Object {"format": String("double"), "type": String("number")}, "speed_max": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "speed_min": Object {"default": Number(0.0), "format": String("double"), "type": String("number")}, "spread": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}, "sprite_shape": Object {"$ref": String("#/$defs/ParticleSpriteShape"), "default": String("soft_circle")}, "start_delay_frames": Object {"default": Number(0), "format": String("uint32"), "minimum": Number(0), "type": String("integer")}, "velocity_max": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}, "velocity_min": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}, "velocity_mode": Object {"$ref": String("#/$defs/ParticleVelocityMode"), "default": String("vector")}}, "required": Array [String("id"), String("count"), String("interval_frames"), String("lifetime_frames"), String("size_start"), String("size_end"), String("color_start"), String("color_end")], "type": String("object")}, "ParticleSpriteShape": Object {"enum": Array [String("soft_circle"), String("diamond"), String("ring"), String("streak")], "type": String("string")}, "ParticleVelocityMode": Object {"enum": Array [String("vector"), String("cone"), String("radial")], "type": String("string")}, "PointerInput": Object {"additionalProperties": Bool(false), "properties": Object {"down": Object {"default": Bool(false), "type": String("boolean")}, "position": Object {"$ref": String("#/$defs/Vec2")}, "screen_position": Object {"anyOf": Array [Object {"$ref": String("#/$defs/Vec2")}, Object {"type": String("null")}], "default": Null, "description": String("Host-normalized logical UI coordinates. When omitted, world position\nis used as a compatibility-free default for headless callers.")}}, "required": Array [String("position")], "type": String("object")}, "RecordedCommand": Object {"oneOf": Array [Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("step"), "type": String("string")}, "digests": Object {"items": Object {"type": String("string")}, "type": String("array")}, "failure": Object {"anyOf": Array [Object {"$ref": String("#/$defs/RecordedFailure")}, Object {"type": String("null")}]}, "frames": Object {"format": String("uint64"), "minimum": Number(0), "type": String("integer")}, "input": Object {"$ref": String("#/$defs/InputFrame")}}, "required": Array [String("command"), String("frames"), String("input"), String("digests")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("enact"), "type": String("string")}, "digest": Object {"type": String("string")}, "operations": Object {"items": Object {"$ref": String("#/$defs/EnactOperation")}, "type": String("array")}}, "required": Array [String("command"), String("operations"), String("digest")], "type": String("object")}]}, "RecordedFailure": Object {"additionalProperties": Bool(false), "properties": Object {"code": Object {"type": String("string")}}, "required": Array [String("code")], "type": String("object")}, "Recording": Object {"additionalProperties": Bool(false), "properties": Object {"commands": Object {"items": Object {"$ref": String("#/$defs/RecordedCommand")}, "type": String("array")}, "engine_version": Object {"type": String("string")}, "initial_digest": Object {"type": String("string")}, "schema_version": Object {"format": String("uint32"), "minimum": Number(0), "type": String("integer")}, "scope": Object {"type": String("string")}, "script_digest": Object {"type": String("string")}, "seed": Object {"format": String("uint64"), "minimum": Number(0), "type": String("integer")}}, "required": Array [String("schema_version"), String("seed"), String("initial_digest"), String("commands"), String("scope"), String("script_digest"), String("engine_version")], "type": String("object")}, "Selector": Object {"oneOf": Array [Object {"additionalProperties": Bool(false), "properties": Object {"id": Object {"type": String("string")}, "kind": Object {"const": String("entity"), "type": String("string")}}, "required": Array [String("kind"), String("id")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"id": Object {"type": String("string")}, "kind": Object {"const": String("ui"), "type": String("string")}}, "required": Array [String("kind"), String("id")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"kind": Object {"const": String("scene"), "type": String("string")}}, "required": Array [String("kind")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"handle": Object {"type": String("string")}, "kind": Object {"const": String("effect"), "type": String("string")}}, "required": Array [String("kind"), String("handle")], "type": String("object")}]}, "SliderInteraction": Object {"additionalProperties": Bool(false), "properties": Object {"phase": Object {"$ref": String("#/$defs/SliderPhase")}, "ratio": Object {"format": String("double"), "type": String("number")}}, "required": Array [String("phase"), String("ratio")], "type": String("object")}, "SliderPhase": Object {"enum": Array [String("start"), String("drag"), String("end"), String("cancel")], "type": String("string")}, "Transform2DData": Object {"additionalProperties": Bool(false), "description": String("The typed 2D transform exposed to Luau.\n\nScene and snapshot JSON keep `Entity.transform` as the existing `{x, y}`\nposition and store `rotation`/`scale` as additive sibling fields. The\naggregate is only the API shape, so existing position-only scripts keep\ntheir current data path."), "properties": Object {"position": Object {"$ref": String("#/$defs/Vec2"), "default": Object {"x": Number(0.0), "y": Number(0.0)}}, "rotation": Object {"default": Number(0.0), "description": String("Visual Euler rotation in radians. Positive rotation is\ncounter-clockwise in the engine's y-up world."), "format": String("double"), "type": String("number")}, "scale": Object {"$ref": String("#/$defs/Vec2"), "default": Object {"x": Number(1.0), "y": Number(1.0)}, "description": String("Visual scale. Both components must be finite and strictly positive;\nmirroring through negative scale is not part of this contract.")}}, "type": String("object")}, "Transform3DData": Object {"additionalProperties": Bool(false), "properties": Object {"position": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}}, "rotation": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(0.0), "y": Number(0.0), "z": Number(0.0)}, "description": String("Euler rotation in radians. The engine stores the transform; game code\nowns the meaning of steering and other gameplay-specific orientation.")}, "scale": Object {"$ref": String("#/$defs/Vec3"), "default": Object {"x": Number(1.0), "y": Number(1.0), "z": Number(1.0)}}}, "type": String("object")}, "UiRect": Object {"additionalProperties": Bool(false), "description": String("Logical coordinates for a host-rendered UI element.\n\nBoth axes run 0..100 and **y points up**: y = 0 is the bottom of the screen\nand a rect grows upward from its y. Most UI systems are y-down, so this is\nthe easiest thing for an author who cannot see the screen to get wrong.\n\nThe platform host maps this design space to its viewport. The engine does\nnot know about pixels, DPI, safe areas, fonts, or platform widgets."), "properties": Object {"height": Object {"format": String("double"), "type": String("number")}, "width": Object {"format": String("double"), "type": String("number")}, "x": Object {"format": String("double"), "type": String("number")}, "y": Object {"format": String("double"), "type": String("number")}}, "required": Array [String("x"), String("y"), String("width"), String("height")], "type": String("object")}, "Vec2": Object {"additionalProperties": Bool(false), "properties": Object {"x": Object {"format": String("double"), "type": String("number")}, "y": Object {"format": String("double"), "type": String("number")}}, "required": Array [String("x"), String("y")], "type": String("object")}, "Vec3": Object {"additionalProperties": Bool(false), "properties": Object {"x": Object {"format": String("double"), "type": String("number")}, "y": Object {"format": String("double"), "type": String("number")}, "z": Object {"format": String("double"), "type": String("number")}}, "required": Array [String("x"), String("y"), String("z")], "type": String("object")}}, "$id": String("https://unone.dev/schema/developer.schema.json"), "$schema": String("https://json-schema.org/draft/2020-12/schema"), "oneOf": Array [Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("open"), "type": String("string")}, "seed": Object {"default": Number(42), "format": String("uint64"), "minimum": Number(0), "type": String("integer")}}, "required": Array [String("command")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("close"), "type": String("string")}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("snapshot"), "type": String("string")}, "paths": Object {"default": Array [], "items": Object {"type": String("string")}, "type": String("array")}, "selector": Object {"anyOf": Array [Object {"$ref": String("#/$defs/Selector")}, Object {"type": String("null")}], "default": Null}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"after": Object {"default": Number(0), "format": String("uint64"), "minimum": Number(0), "type": String("integer")}, "command": Object {"const": String("journal"), "type": String("string")}, "limit": Object {"default": Number(100), "format": String("uint"), "minimum": Number(0), "type": String("integer")}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session")], "type": String("object")}, Object {"additionalProperties": Bool(false), "description": String("Incremental polling, never advances the runtime. Hosts can poll at their desired cadence."), "properties": Object {"after": Object {"format": String("uint64"), "minimum": Number(0), "type": String("integer")}, "command": Object {"const": String("watch"), "type": String("string")}, "limit": Object {"default": Number(100), "format": String("uint"), "minimum": Number(0), "type": String("integer")}, "paths": Object {"default": Array [], "items": Object {"type": String("string")}, "type": String("array")}, "selector": Object {"anyOf": Array [Object {"$ref": String("#/$defs/Selector")}, Object {"type": String("null")}], "default": Null}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session"), String("after")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("step"), "type": String("string")}, "expected_revision": Object {"format": String("uint64"), "minimum": Number(0), "type": String("integer")}, "frames": Object {"default": Number(1), "format": String("uint64"), "minimum": Number(0), "type": String("integer")}, "input": Object {"$ref": String("#/$defs/InputFrame"), "default": Object {"actions": Object {}, "pointer": Null}}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session"), String("expected_revision")], "type": String("object")}, Object {"additionalProperties": Bool(false), "description": String("Apply a temporary debug patch to Rust-owned runtime state. This is not a\ngameplay command: no Lua callback runs, and the game may overwrite it next tick."), "properties": Object {"command": Object {"const": String("enact"), "type": String("string")}, "dry_run": Object {"default": Bool(false), "type": String("boolean")}, "expected_revision": Object {"format": String("uint64"), "minimum": Number(0), "type": String("integer")}, "operations": Object {"items": Object {"$ref": String("#/$defs/EnactOperation")}, "type": String("array")}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session"), String("expected_revision"), String("operations")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("perf"), "type": String("string")}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session")], "type": String("object")}, Object {"additionalProperties": Bool(false), "description": String("Read a bounded evidence pack after a failed tick, without rerunning it."), "properties": Object {"command": Object {"const": String("diagnose"), "type": String("string")}, "limit": Object {"default": Number(100), "format": String("uint"), "minimum": Number(0), "type": String("integer")}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("recording"), "type": String("string")}, "session": Object {"type": String("string")}}, "required": Array [String("command"), String("session")], "type": String("object")}, Object {"additionalProperties": Bool(false), "properties": Object {"command": Object {"const": String("replay"), "type": String("string")}, "recording": Object {"$ref": String("#/$defs/Recording")}}, "required": Array [String("command"), String("recording")], "type": String("object")}], "title": String("DeveloperRequest"), "type": String("object")}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    schema::tests::checked_in_schemas_match_runtime_types
+
+test result: FAILED. 302 passed; 1 failed; 3 ignored; 0 measured; 0 filtered out; finished in 11.03s
+
+error: test failed, to rerun pass `-p unone-engine --lib`

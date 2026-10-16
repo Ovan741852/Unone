@@ -1,0 +1,2 @@
+{"ok":true,"mode":"exported-player","export":"C:\\Users\\MAVERI~1\\AppData\\Local\\Temp\\unone-player-parity-xCrKWQ\\player","cli":"D:\\TSProject\\Voidwake\\game\\tools\\build\\native\\release\\game.exe","wasm":"C:\\Users\\MAVERI~1\\AppData\\Local\\Temp\\unone-player-parity-xCrKWQ\\player\\runtime\\unone-player.js","compared_frames":9,"audio_omission_detected":null}
+{"ok":true,"selected_project_export_verified":"D:\\TSProject\\Voidwake\\engine\\_Games\\harbor-controls"}

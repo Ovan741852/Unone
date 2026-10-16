@@ -39,6 +39,50 @@ test('semantic slider stays in hierarchy while pointer input passes through to s
  r.setTree({children:[slider]});assert.deepEqual(r.hitTest(10,10),{nodeId:slider.id,action:null});
  assert.equal(r.pointer({kind:'down',x:10,y:10}),false);assert.deepEqual(r.capturedPointers,[]);
 });
+
+const modelSlider=(overrides={})=>({kind:'slider',id:'volume',action:'Volume',text:'50%',rect:{x:10,y:30,width:40,height:20},
+ drag:{axis:'horizontal',reverse:false,enabled:true,track_rect:{x:15,y:35,width:30,height:2},hit_rect:{x:8,y:28,width:44,height:24}},...overrides});
+
+test('official slider owns padded visible-track gesture, clamps outside and keeps quick tap edges',()=>{
+ const input=createHostInput(),events=[],r=createUiPointerRouter({onSlider:e=>{events.push(e);input.queueSliderInteraction(e);}}),slider=modelSlider();
+ r.setTree({children:[slider]});assert.equal(r.hitTest(9,29).sliderDrag,true);
+ assert.equal(r.pointer({kind:'down',pointerId:7,x:9,y:29}),true);
+ assert.equal(r.pointer({kind:'move',pointerId:7,x:30,y:90}),true);
+ assert.equal(r.pointer({kind:'move',pointerId:7,x:60,y:90}),true);
+ assert.equal(r.pointer({kind:'up',pointerId:7,x:99,y:99}),true);
+ assert.deepEqual(events.map(e=>[e.phase,e.ratio]),[['start',0],['drag',.5],['drag',1],['end',1]]);
+ assert.deepEqual([input.consumeFrame().ui_sliders.volume,input.consumeFrame().ui_sliders.volume,input.consumeFrame().ui_sliders.volume],
+  [{phase:'start',ratio:0},{phase:'drag',ratio:1},{phase:'end',ratio:1}]);
+ assert.equal(input.consumeFrame().ui_sliders,undefined);assert.equal(input.consumeFrame().pointer.down,false);
+ r.pointer({kind:'down',x:30,y:36});r.pointer({kind:'up',x:30,y:36});
+ assert.equal(input.consumeFrame().ui_sliders.volume.phase,'start');assert.equal(input.consumeFrame().ui_sliders.volume.phase,'end');
+});
+
+test('slider capture survives value text but cancels geometry, disabled and removed nodes without world leakage',()=>{
+ const events=[],r=createUiPointerRouter({onSlider:e=>events.push(e)}),slider=modelSlider();
+ r.setTree({children:[slider]});r.pointer({kind:'down',pointerId:1,x:30,y:35});
+ r.setTree({children:[{...slider,text:'60%',style:{color:[1,1,1,1]}}]});assert.equal(events.length,1);
+ r.pointer({kind:'down',pointerId:2,x:35,y:35});r.pointer({kind:'move',pointerId:2,x:40,y:35});r.pointer({kind:'up',pointerId:2});assert.equal(events.length,1);
+ r.setTree({children:[modelSlider({drag:{...slider.drag,enabled:false}})]});assert.equal(events.at(-1).phase,'cancel');
+ assert.equal(r.pointer({kind:'move',pointerId:1,x:99,y:99}),true);assert.equal(r.pointer({kind:'up',pointerId:1}),true);assert.equal(events.length,2);
+ assert.equal(r.pointer({kind:'down',pointerId:3,x:30,y:35}),true);r.pointer({kind:'up',pointerId:3});assert.equal(events.length,2);
+ r.setTree({children:[slider]});r.pointer({kind:'down',pointerId:4,x:30,y:35});
+ r.setTree({children:[modelSlider({drag:{...slider.drag,reverse:true}})]});assert.equal(events.at(-1).phase,'cancel');r.pointer({kind:'up',pointerId:4});
+ r.pointer({kind:'down',pointerId:5,x:30,y:35});r.setTree({children:[]});assert.equal(events.at(-1).phase,'cancel');assert.equal(r.pointer({kind:'up',pointerId:5}),true);
+ r.setTree({children:[slider]});r.pointer({kind:'down',pointerId:6,x:30,y:35});r.releaseAll();assert.equal(events.at(-1).phase,'cancel');assert.equal(r.pointer({kind:'move',pointerId:6,x:99,y:99}),true);assert.equal(r.pointer({kind:'up',pointerId:6}),true);
+});
+
+test('slider uses foreground semantic order and scroll-local geometry with clipping and reverse once',()=>{
+ const events=[],r=createUiPointerRouter({onSlider:e=>events.push(e)}),slider=modelSlider(),cover={...button,id:'cover',action:'Cover',rect:slider.rect};
+ r.setTree({children:[slider,cover,{kind:'text',id:'caption',rect:slider.rect,text:'Overlay'}]});assert.equal(r.hitTest(30,35).action,'Cover');r.pointer({kind:'down',x:30,y:35});r.pointer({kind:'up'});assert.equal(events.length,0);
+ r.setTree({children:[cover,slider]});assert.equal(r.hitTest(30,35).sliderDrag,true);r.pointer({kind:'down',x:30,y:35});r.pointer({kind:'up'});assert.equal(events.length,2);
+ const local=modelSlider({rect:{x:5,y:5,width:10,height:60},drag:{axis:'vertical',reverse:true,enabled:true,track_rect:{x:8,y:10,width:2,height:40},hit_rect:{x:5,y:5,width:10,height:60}}});
+ r.setTree({children:[{kind:'scroll_view',id:'scroll',rect:{x:10,y:20,width:40,height:60},scroll:{axis:'vertical',enabled:true},children:[local]}]});
+ assert.equal(r.hitTest(19,70).sliderDrag,true);assert.equal(r.pointer({kind:'down',pointerId:9,x:19,y:70}),true);assert.equal(events.at(-1).ratio,0);
+ r.pointer({kind:'move',pointerId:9,x:19,y:30});assert.equal(events.at(-1).ratio,1);r.pointer({kind:'up',pointerId:9,x:19,y:0});assert.equal(events.at(-1).ratio,1);
+ assert.equal(r.pointer({kind:'down',pointerId:10,x:19,y:18}),false);
+ assert.throws(()=>flattenUi({children:[modelSlider({drag:{...slider.drag,track_rect:{...slider.drag.track_rect,width:0}}})]}),/UI_SLIDER_DRAG_INVALID/);
+});
 test('decorative text, image and panel captions pass through to the topmost semantic control',()=>{
  const r=createUiPointerRouter(),label={kind:'text',id:'caption',rect,text:'Continue'},image={kind:'image',id:'ornament',rect,asset:'art'},panel={kind:'panel',id:'box',rect};
  r.setTree({children:[button,label,image,panel]});assert.equal(r.hitTest(10,10).action,'OpenChest');assert.equal(r.pointer({kind:'down',x:10,y:10}),true);r.releaseAll();

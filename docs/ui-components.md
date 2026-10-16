@@ -4,7 +4,10 @@
 Unone Core and the portable SDK. It constructs the existing typed UI tree for
 `api.ui.setRoot`; the official Web/native players render that tree. Start here
 for shared components, button components, card components and theme styles.
-The project owns themes, content, state, action meanings and geometry.
+The project owns themes, content, application state, action meanings and geometry.
+For an interactive numeric slider, start with `createSlider`: the official
+control owns reusable drag/value mechanics, while the project decides what that
+value means.
 
 ## Discover and declare
 
@@ -18,6 +21,11 @@ game api search "共用元件"
 game api search "主題樣式"
 game api search "create button"
 game api search "slider component"
+game api search "slider drag"
+game api search "slider value"
+game api search "滑桿拖曳"
+game api search "scroll inertia"
+game api search "捲動慣性"
 game api search "下拉選單"
 game api search "virtual list"
 game api search "button click"
@@ -25,13 +33,14 @@ game api search "按下瞬間"
 game api describe ui.components.info
 game api describe ui.components.create
 game api describe ui.components.button
+game api describe ui.components.createSlider
 game api describe input.wasPressed
 game api typings
 ```
 
 CLI and MCP discovery share the same index. These searches lead to actual
 `ui.components.create` / `ui.components.info` entrypoints. Control queries lead
-directly to callable `ui.components.button`, `slider`, `combobox`, `scrollView`,
+directly to callable `ui.components.button`, `createSlider`, `combobox`, `scrollView`,
 `virtualList` or `virtualGrid` descriptors. `"button click"`, `"button pressed"`,
 `"按鈕點擊"`, `"按钮点击"`, `"按一下"` and `"按下瞬間"` lead to
 `input.wasPressed`; `"release"` / `"放開"` lead to `input.wasReleased`, while
@@ -47,7 +56,7 @@ Declare the exact bundled version in `project.unone.json`:
 ```json
 {
   "runtime_packages": {
-    "@unone/ui": "0.2.0"
+    "@unone/ui": "0.3.0"
   }
 }
 ```
@@ -56,7 +65,7 @@ This is a project configuration fragment; keep the project's other fields.
 `api.ui.components.info()` returns `UiComponentsInfo`: the bundled manifest
 metadata (`name`, `version`, `kind`, `entry`, `api`, `license`) plus `declared`.
 This works before a project declares the package. The package name is `@unone/ui`
-and its current version is `0.2.0`. Calling other package helpers without declaring the
+and its current version is `0.3.0`. Calling other package helpers without declaring the
 package reports `UI_PACKAGE_NOT_DECLARED` with the required fix. Unknown package
 names, unsupported versions and disabled declarations fail explicitly at load.
 Use the version shipped with the selected Core/SDK; there is no npm installation,
@@ -72,10 +81,13 @@ New `project init` entries already inline the current canonical type contract.
 
 ### What strict types do and do not prove
 
-Slider `value`/`min`/`max`/`step`/`onChange` and combobox
+The low-level `slider(props)` leaf's `value`/`min`/`max`/`step`/`onChange` and combobox
 `value`/`options`/`selected`/`onChange` are typed as absent (`never?`). They are not
-binding APIs; author the model, option nodes and updates in project Luau. An
-ordinary numeric value or callback in those fields fails strict analysis.
+binding APIs. Put numeric configuration on `createSlider(options)`, publish
+`control.view(props)` and call `control.update(api.input)` in `Game.update`;
+see [the complete slider lifecycle](#interactive-sliders). The project authors
+combobox option nodes and selection rules. A callback in any of these fields
+fails strict analysis; no `onChange` callback is needed for slider dragging.
 
 Luau uses structural table types, not an exact object schema. Strict analysis
 alone does not reject every unknown field or prove the conditional placement
@@ -159,7 +171,8 @@ factories that return canonical nodes directly remain valid.
 | --- | --- |
 | `ui.text(props)` | `UiTextNode`; canonical text fields including `id`, `text`, placement and optional `style`. |
 | `ui.button(props)` | `UiButtonNode`; canonical button fields including `id`, `text`, `action`, placement and optional `style`. |
-| `ui.slider(props)` | `UiSliderNode`; `id`, optional `text`, semantic `action`, placement and optional `style`. The project owns the numeric value and drag mapping. |
+| `ui.createSlider(options)` | `UiSliderControl`; persistent numeric control with `view`, `update`, `getValue`, `setValue` and `cancel`. Preferred interactive slider. |
+| `ui.slider(props)` | `UiSliderNode`; low-level compatible semantic leaf with `id`, optional `text`, `action`, placement and optional `style`. It does not create a numeric controller. |
 | `ui.combobox(props)` | `UiComboBoxNode`; `id`, optional `text`, semantic `action`, optional `expanded`, placement and optional `style`. The project authors the option list and selected value. |
 | `ui.panel(props)` | `UiPanelNode`; canonical decorative panel fields, placement, optional box style and `background_for`. |
 | `ui.image(props)` | `UiImageNode`; canonical image fields including `asset`, placement, optional `fit`/`slice`/`alt`, box style and `background_for`. |
@@ -184,7 +197,8 @@ needed. `api.ui.component` does not exist. Props omit `kind`; each constructor c
 canonical kind. Placement is **flattened**: pass `rect={...}` or both
 `anchor="top_right",size={...}` directly on props, exactly as in `UiPlacement`.
 A nested `placement` table, missing placement, or both forms is invalid for a
-leaf/component. `screen` instead uses root props, and scroll wrappers retain
+leaf/component. `createSlider` takes control configuration, and its `view`
+requires an explicit `rect` in the current coordinate space. `screen` instead uses root props, and scroll wrappers retain
 their `viewport` options. All canonical leaf fields remain available; virtual
 wrappers retain the existing engine-managed scroll registry and add no gameplay
 state or manager.
@@ -224,23 +238,120 @@ rendering, observations and virtual-scroll requests do not. Initially actions
 are released, and omitted actions are released on the next input snapshot.
 These are snapshot transitions, not a queued OS-event stream: an entire pulse
 between snapshots is not buffered. Keep action meanings, selected options,
-slider values and screen transitions in project Luau. The kit does not install
-callbacks or automatically modify a model.
+application model changes and screen transitions in project Luau. The kit does
+not install callbacks or automatically modify an application model. A combobox's
+`expanded` flag and option nodes remain authored state.
 
-The slider leaf supplies an authored interaction surface and semantic action;
-it has no `value`, `min`, `max` or `onChange` prop. Map the normalized UI pointer
-through the project's explicit rect to choose a value. A combobox's `expanded`
-flag is authored state; the engine does not invent options or a selection model.
-The constructors retain their canonical control contracts rather than adding
-project-specific widget behavior.
+## Interactive sliders
 
-When a slider skin places a progress track outside its labelled field, include
-that visible track in the project's drag-start hit region too. Use the same
-authored track rectangle for drawing and horizontal value mapping, retain the
-gesture while held outside it, and end it on pointer release. Test dragging the
-visible track in the served player; dragging only the label or sending synthetic
-action snapshots does not validate that affordance. A small explicit vertical
-hit tolerance can make thin tracks usable without changing their artwork.
+Use `api.ui.components.createSlider(options)` or the same method on a themed
+kit. Its stable ID must fit 1024 UTF-8 bytes. Create a control once in `Game.start` and retain it across updates; do not
+recreate it while publishing a view or rendering a virtual row. Use canonical
+`UiSliderControl`, `UiSliderOptions`, `UiSliderViewProps` and `UiSliderUpdate`
+from `game api typings`.
+
+The following is a complete entry body after the canonical type block. Its
+rectangles, colors and initial setting are project choices. The separate track
+panel demonstrates reusing the same rectangle for art and interaction; the
+package does not invent a skin or arrange the controls.
+
+```luau
+local Game = {}
+local kit: UiComponentKit? = nil
+local gain: UiSliderControl? = nil
+local volume = 72
+local track: UiRect = {x=12,y=38,width=76,height=0.6}
+
+local function publish(api: EngineApi)
+    local ui = kit
+    local control = gain
+    assert(ui ~= nil and control ~= nil)
+    local children: {UiNode} = {
+        ui.panel({id="master_gain/track",rect=track,
+            style={background={0.2,0.4,0.5,1},border_width=0}}),
+        control.view({rect={x=12,y=42,width=76,height=8},trackRect=track,
+            text="Master level: "..tostring(volume).."%"}),
+        ui.button({id="reset_gain",action="ResetGain",text="Reset",
+            rect={x=12,y=20,width=25,height=8}}),
+    }
+    api.ui.setRoot(ui.screen({id="audio_settings",node="settings",children=children}))
+end
+
+function Game.start(api: EngineApi)
+    local ui = api.ui.components.create({slider={font_size=2,text_align="start"}})
+    kit = ui
+    gain = ui.createSlider({id="master_gain",value=volume,min=0,max=100,step=1})
+    publish(api)
+end
+
+function Game.update(api: EngineApi, _dt: number)
+    local control = gain
+    assert(control ~= nil)
+    local result: UiSliderUpdate = control.update(api.input)
+    volume = result.value -- Apply this to the project's setting/model as needed.
+    if api.input.wasPressed("ResetGain") then
+        control.setValue(72)
+        volume = control.getValue()
+    end
+    publish(api)
+end
+
+return Game
+```
+
+`createSlider` requires a stable nonblank `id` and finite initial `value`.
+`min=0` and `max=1` are the defaults; `max` must exceed `min` with a finite
+range. `step` is optional, positive and finite. Values are clamped and rounded
+to the nearest step measured from `min`; both exact endpoints remain reachable
+when the range is not divisible by the step. Omit `step` for continuous values.
+Use `axis="vertical"` for a vertical track and `reverse=true` to invert the
+direction; defaults are `axis="horizontal"` and `reverse=false`. After host
+projection, horizontal values increase to the right and vertical values increase
+upward before applying `reverse`.
+
+`view({rect=...,trackRect=...,text=...,style=...,enabled=...,action=...,hitPadding=...})`
+returns a `UiSliderNode`. It copies the explicit rectangles and themed slider
+style, without changing the control's value or advancing interaction. `rect`
+is required and locates the semantic label/field; `trackRect` defaults to `rect`.
+Supply the rectangle used by the visible track when the skin places it
+elsewhere. `hitPadding` defaults to `0.65`, must be finite and non-negative,
+and expands all four track edges for input only. The final hit region contains
+both this padded track and the field. These distances use the current rectangle
+coordinate units, not CSS pixels or style vertical units: stage rectangles are
+0..100/y-up, and scroll content is local top-left/y-down. Keep field, track and
+padding within that coordinate space's valid bounds.
+
+`enabled` defaults to `true`; `action` defaults to the control ID and is semantic
+metadata, not a button-press binding for value changes. The official host projects
+the field, track and hit region together, applies scroll clipping and foreground
+hit testing, and captures the pointer until release or cancellation. Projects
+do not duplicate pointer-down bookkeeping, screen-to-local conversion or drag
+mapping. Keep geometry/configuration stable during a drag: removal, disablement,
+viewport/clip or interaction-geometry changes cancel capture; text, style and
+value updates do not.
+
+Call `update(api.input)` once per control in `Game.update`. It reads the host's
+non-consuming `getSliderInteraction(id)` snapshot and returns `value`, `changed`,
+`dragging`, `started`, `released` and `cancelled`. Phase/ratio snapshots are stable
+within the successful tick and absent on a later tick without new input; absence
+does not end an active drag. A cancel never applies its ratio. Multiple readers
+may inspect the input snapshot; they should not call the stateful control's
+`update` repeatedly. `getValue()` is safe for repeated reads.
+
+Use `setValue(number)` for an explicit model reset or external setting change;
+it applies the same clamp/step policy. `setValue` and `cancel()` stop the current
+control drag and ignore its remaining held drag/end snapshots until a new start.
+Do not call `setValue` every frame to echo the control's own value. Virtual-list
+controls must retain stable models by item key, update them during `Game.update`,
+and call only `view` from UI-pure `renderItem` callbacks. Materialization must
+never advance input or mutate project state.
+
+The old `slider(props)` remains a low-level semantic constructor. Its
+`value`/`min`/`max`/`step` and callbacks are unsupported; it does not create this
+controller. New numeric controls should use `createSlider`, and skins can still
+compose ordinary official panels/images around its view. Verify real dragging
+on the visible track, movement outside the field, release/cancel and sliders
+inside clipped scroll content on the intended official host.
 
 ### Scroll wrappers
 
@@ -252,6 +363,21 @@ have no theme `style`; virtual `renderItem` callbacks remain UI-pure, use stable
 keys and return local nodes. Scrolling does not run `Game.update`. Current
 native/legacy DOM hosts reject scrolling explicitly; package wrappers do not
 expand host support.
+
+Scroll helpers support optional drag inertia on the official Web host:
+
+```luau
+local list = ui.scrollView({id="help",viewport={left=10,top=10,width=80,height=60},
+    content=helpNodes,inertia=true,deceleration=8})
+```
+
+The default is `inertia=false`; `deceleration=8` is the default exponential
+velocity decay in inverse seconds, with a finite allowed range `0 < value <= 100`.
+Higher values stop sooner. The same options exist on `virtualList` and
+`virtualGrid`. Offsets remain clamped: there is no elastic overscroll or bounce.
+See [scroll input, inertia and lifecycle](ui-scroll.md) for cancellation,
+virtualization and host limits. Search `"scroll inertia"`, `"deceleration"`,
+`"捲動慣性"` or `"慣性捲動"` to discover `ui.components.scrollView`.
 
 ## Theme copying and surfaces
 

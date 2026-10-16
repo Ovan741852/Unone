@@ -57,6 +57,8 @@ export type Instances3DApi = {
 }
 
 export type InputApi = {
+    -- Current-tick host-projected UI event. Prefer createSlider().update(input).
+    getSliderInteraction: (id: string) -> UiSliderInteraction?,
     isDown: (action: string) -> boolean,
     -- Non-consuming edges for the current simulation tick. Read in update;
     -- multiple reads return the same result. Held actions press only once.
@@ -207,6 +209,35 @@ export type UiButtonNode = UiPlacement & {
 }
 export type UiSliderNode = UiPlacement & {
     kind: "slider", id: string, text: string?, action: string, style: UiStyle?,
+    drag: UiSliderDrag?,
+}
+export type UiSliderInteraction = {phase: "start" | "drag" | "end" | "cancel", ratio: number}
+export type UiSliderDrag = {
+    axis: "horizontal" | "vertical", reverse: boolean, enabled: boolean,
+    track_rect: UiRect, hit_rect: UiRect,
+}
+export type UiSliderOptions = {
+    id: string, value: number, min: number?, max: number?, step: number?,
+    axis: ("horizontal" | "vertical")?, reverse: boolean?,
+    onChange: never?, onClick: never?,
+}
+-- Explicit rects in the node's current stage/scroll space; no duplicate pointer
+-- mapping in projects. Hosts project, clip and capture these together.
+export type UiSliderViewProps = {
+    rect: UiRect, trackRect: UiRect?, hitPadding: number?, enabled: boolean?,
+    text: string?, action: string?, style: UiStyle?,
+    onChange: never?, value: never?,
+}
+export type UiSliderUpdate = {
+    value: number, changed: boolean, dragging: boolean,
+    started: boolean, released: boolean, cancelled: boolean,
+}
+export type UiSliderControl = {
+    view: (props: UiSliderViewProps) -> UiSliderNode,
+    update: (input: InputApi) -> UiSliderUpdate,
+    getValue: () -> number,
+    setValue: (value: number) -> (),
+    cancel: () -> (),
 }
 export type UiComboBoxNode = UiPlacement & {
     kind: "combobox", id: string, text: string?, action: string,
@@ -230,7 +261,7 @@ export type UiComponentNode = UiPlacement & {
 }
 export type UiScrollNode = UiPlacement & {
     kind: "scroll_view", id: string, viewport: UiViewport?,
-    scroll: {axis: string?, enabled: boolean?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
+    scroll: {axis: string?, enabled: boolean?, inertia: boolean?, deceleration: number?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
     children: {UiNode}?,
 }
 export type UiNode = UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
@@ -278,6 +309,8 @@ export type UiComponentScreenProps = {
     id: string, node: string, children: {UiNode}, budget: UiBudget?,
 }
 export type UiComponentKit = {
+    -- Preferred complete numeric slider: reusable state plus semantic host capture.
+    createSlider: (options: UiSliderOptions) -> UiSliderControl,
     text: (props: UiComponentTextProps) -> UiTextNode,
     button: (props: UiComponentButtonProps) -> UiButtonNode,
     slider: (props: UiComponentSliderProps) -> UiSliderNode,
@@ -311,6 +344,7 @@ export type UiScrollOptions = {
     id: string, viewport: UiViewport, content: {UiNode}?,
     axis: ("vertical" | "horizontal" | "both")?, enabled: boolean?,
     resetKey: string?, wheelRect: UiViewport?,
+    inertia: boolean?, deceleration: number?,
 }
 -- Give T your project row type to check keys and render callbacks.
 -- Bare options keep the legacy any default for existing projects.
@@ -319,6 +353,7 @@ export type UiVirtualOptions<T = any> = {
     rowHeight: number, gapY: number?,
     renderItem: (T, number, string) -> {UiNode},
     enabled: boolean?, resetKey: string?, wheelRect: UiViewport?,
+    inertia: boolean?, deceleration: number?,
 }
 export type UiVirtualGridOptions<T = any> = UiVirtualOptions<T> & {
     columns: number, columnWidth: number, gapX: number?,

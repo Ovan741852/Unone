@@ -25,49 +25,29 @@
   "seed": 42,
   "input_sequence": [
     {
-      "actions": {},
-      "pointer": {
-        "screen_position": {
-          "x": 17.0,
-          "y": 55.775
-        },
-        "position": {
-          "x": 0,
-          "y": 0
-        },
-        "down": true
+      "ui_sliders": {
+        "audio/level": {
+          "phase": "start",
+          "ratio": 0.25
+        }
       }
     },
     {
-      "actions": {},
-      "pointer": {
-        "screen_position": {
-          "x": 35.0,
-          "y": 60.0
-        },
-        "position": {
-          "x": 0,
-          "y": 0
-        },
-        "down": true
+      "ui_sliders": {
+        "audio/level": {
+          "phase": "drag",
+          "ratio": 0.75
+        }
       }
     },
     {
-      "actions": {},
-      "pointer": {
-        "screen_position": {
-          "x": 80.0,
-          "y": 60.0
-        },
-        "position": {
-          "x": 0,
-          "y": 0
-        },
-        "down": true
+      "ui_sliders": {
+        "audio/level": {
+          "phase": "end",
+          "ratio": 1
+        }
       }
     },
-    {
-      "actions": {}
-    }
+    {}
   ]
 }

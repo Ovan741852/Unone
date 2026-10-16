@@ -1,0 +1,72 @@
+{
+  "schema": "unone.browser-review-artifacts.v1",
+  "source_summary": "browser-summary.json",
+  "status": "passed",
+  "files": [
+    {
+      "path": "browser-summary.json",
+      "sha256": "e248338ea89bedb9818c40b05e5d5e06941b2eb9a013b0f22e0f8c0eb90de819",
+      "copied": true,
+      "source": "artifacts/ui-slider-inertia/browser/summary.json",
+      "bytes": 44711
+    },
+    {
+      "path": "browser-after.json",
+      "sha256": "49b4444b7bed1ac1ffc2c5429e555edb4e51c01b73c3995130119416d65e7252",
+      "copied": true,
+      "source": "artifacts/ui-slider-inertia/browser/after.json",
+      "bytes": 570400
+    },
+    {
+      "path": "browser-after.cjs",
+      "sha256": "2d82a694bcbba40caf938f1237bf38de006b9ff674475c32fb6718db3c19eb6b",
+      "copied": true,
+      "source": "artifacts/ui-slider-inertia/browser/after.cjs",
+      "bytes": 24089
+    },
+    {
+      "path": "browser-summarize.cjs",
+      "sha256": "939c03dcb47cde4faa56c638be13749051bb657370d9f508a61b7959aab18b71",
+      "copied": true,
+      "source": "artifacts/ui-slider-inertia/browser/summarize.cjs",
+      "bytes": 4815
+    },
+    {
+      "path": "browser-export-before-sha256.json",
+      "sha256": "df919fbd89fc526414a9c37f72dff0399da88cdc26047aeb68f8d6eb876f37b4",
+      "copied": true,
+      "source": "artifacts/ui-slider-inertia/browser/after-export-before-sha256.json",
+      "bytes": 21330
+    },
+    {
+      "path": "browser-export-after-sha256.json",
+      "sha256": "df919fbd89fc526414a9c37f72dff0399da88cdc26047aeb68f8d6eb876f37b4",
+      "copied": true,
+      "source": "artifacts/ui-slider-inertia/browser/after-export-after-sha256.json",
+      "bytes": 21330
+    },
+    {
+      "visual_review": "QA report says explicitly inspected with view_image; the evidence writer did not repeat the visual review.",
+      "sha256": "13f6db4aca401eb3536e66fc359054fa53b8665bbb9b99dcb70cfcb9b4fa11a8",
+      "copied": false,
+      "source": "artifacts/ui-slider-inertia/browser/after-1440x900.png",
+      "bytes": 63151
+    },
+    {
+      "visual_review": "QA report says explicitly inspected with view_image; the evidence writer did not repeat the visual review.",
+      "sha256": "40858218924ca3691476bfb4809cabb57bb8a31b4b2d1966c1b386cc9a7db5bf",
+      "copied": false,
+      "source": "artifacts/ui-slider-inertia/browser/after-1020x884.png",
+      "bytes": 58917
+    },
+    {
+      "visual_review": "QA report says explicitly inspected with view_image; the evidence writer did not repeat the visual review.",
+      "sha256": "910c849e234bb3e8814ba918433d6b7a53fbfc6edba1b15df459119b8f51ba36",
+      "copied": false,
+      "source": "artifacts/ui-slider-inertia/browser/after-390x844.png",
+      "bytes": 38775
+    }
+  ],
+  "scope": "Natural-coast samples verify continued movement, relative velocity reduction and settling away from content bounds. The configured deceleration 8 is verified from the public descriptor; the browser test does not claim an exact fitted decay coefficient. Synthetic platform events are separately labelled; all primary gestures use physical mouse events.",
+  "assertions": 118
+}

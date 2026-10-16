@@ -213,6 +213,23 @@ pub struct InputFrame {
     pub actions: BTreeMap<String, bool>,
     #[serde(default)]
     pub pointer: Option<PointerInput>,
+    /// Host-projected semantic slider events, consumed once per successful tick.
+    /// Values/ranges remain in the official Luau control, not platform adapters.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub ui_sliders: BTreeMap<String, SliderInteraction>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum SliderPhase { Start, Drag, End, Cancel }
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct SliderInteraction {
+    pub phase: SliderPhase,
+    pub ratio: f64,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -231,6 +248,15 @@ pub struct PointerInput {
 impl InputFrame {
     /// Validate before mutating input or ticking, across every host path.
     pub fn validate(&self) -> Result<(), Box<crate::Diagnostic>> {
+        if self.ui_sliders.len() > 256 || self.ui_sliders.iter().any(|(id, event)| {
+            id.trim().is_empty() || id.len() > 1024 || !event.ratio.is_finite()
+                || !(0.0..=1.0).contains(&event.ratio)
+        }) {
+            return Err(Box::new(crate::Diagnostic::error(
+                "INPUT_FRAME_INVALID", "Invalid semantic slider input",
+                "ui_sliders accepts at most 256 stable nonblank IDs (up to 1024 bytes), each with a phase and finite ratio in 0..1",
+            )));
+        }
         if self.actions.keys().any(|action| action.trim().is_empty()) {
             return Err(Box::new(crate::Diagnostic::error(
                 "INPUT_FRAME_INVALID",

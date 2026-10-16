@@ -138,6 +138,7 @@ impl HostInputState {
         InputFrame {
             actions: std::mem::take(&mut self.actions),
             pointer: self.pointer.clone(),
+            ..InputFrame::default()
         }
     }
 }

@@ -232,6 +232,52 @@ pub struct UiRect {
     pub height: f64,
 }
 
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum UiSliderAxis {
+    #[default]
+    Horizontal,
+    Vertical,
+}
+
+/// Official slider gesture geometry in the same space as its node: stage
+/// y-up, or scroll-local top-left/y-down before host projection. Hosts map
+/// track coordinates to a clamped ratio and apply reverse exactly once.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct UiSliderDrag {
+    #[serde(default)]
+    pub axis: UiSliderAxis,
+    #[serde(default)]
+    pub reverse: bool,
+    #[serde(default = "slider_enabled")]
+    pub enabled: bool,
+    pub track_rect: UiRect,
+    pub hit_rect: UiRect,
+}
+
+fn slider_enabled() -> bool { true }
+
+impl UiSliderDrag {
+    fn validate(&self, local: bool) -> Result<(), String> {
+        for (name, rect) in [("track_rect", self.track_rect), ("hit_rect", self.hit_rect)] {
+            let valid = [rect.x, rect.y, rect.width, rect.height].iter().all(|n| n.is_finite())
+                && (rect.x + rect.width).is_finite() && (rect.y + rect.height).is_finite()
+                && rect.width > 0.0 && rect.height > 0.0
+                // Hit tolerance may protrude: hosts clip it to the stage and
+                // scroll ancestors. Authored visible track bounds stay strict.
+                && (name == "hit_rect" || (rect.x >= 0.0 && rect.y >= 0.0
+                    && (local || (rect.x + rect.width <= UI_DESIGN_WIDTH && rect.y + rect.height <= UI_DESIGN_HEIGHT))));
+            if !valid {
+                return Err(format!("UI_SLIDER_DRAG_INVALID: {name} needs finite bounds and positive width/height; track_rect must have non-negative x/y{}", if local { " in scroll-local coordinates" } else { " inside stage 0..100" }));
+            }
+        }
+        Ok(())
+    }
+}
+
 /// Shared UI styling uses vertical design units (one unit is 1% of viewport
 /// height), including horizontal padding and letter spacing. Styles are local
 /// to one leaf: components do not create implicit style inheritance.
@@ -372,6 +418,12 @@ pub struct UiScroll {
     pub axis: String,
     #[serde(default = "enabled_scroll")]
     pub enabled: bool,
+    /// Presentation-only drag momentum; opt in without changing simulation.
+    #[serde(default)]
+    pub inertia: bool,
+    /// Exponential velocity decay per second, in (0, 100].
+    #[serde(default = "scroll_deceleration")]
+    pub deceleration: f64,
     #[serde(default)]
     pub reset_key: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -381,6 +433,7 @@ pub struct UiScroll {
 }
 fn vertical_axis() -> String { "vertical".into() }
 fn enabled_scroll() -> bool { true }
+fn scroll_deceleration() -> f64 { 8.0 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
@@ -480,16 +533,18 @@ pub enum UiNode {
         #[serde(skip_serializing_if = "Option::is_none")]
         background_for: Option<UiBackgroundScope>,
     },
-    /// A semantic slider input. The leaf owns no artwork: put it inside a
-    /// reusable slider component beside stable `track`, `fill`, and `handler`
-    /// image nodes. The host/game can replace those visual slots while Core
-    /// preserves the identity, action, value text, and input policy boundary.
+    /// A semantic slider input. Official models declare `drag` geometry so
+    /// hosts capture gestures and report normalized ratios through input.
+    /// Leaves without drag retain the legacy project-owned pointer path.
+    /// Artwork and value formatting remain reusable component concerns.
     #[serde(rename = "slider")]
     Slider {
         id: String,
         rect: UiRect,
         text: String,
         action: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        drag: Option<UiSliderDrag>,
         #[serde(skip_serializing_if = "Option::is_none")]
         style: Option<UiStyle>,
     },
@@ -711,6 +766,8 @@ struct RawUiNode {
     children: Option<Vec<RawUiNode>>,
     #[serde(default)]
     expanded: Option<bool>,
+    #[serde(default)]
+    drag: Option<UiSliderDrag>,
     #[serde(default)]
     scroll: Option<UiScroll>,
     #[serde(default)]
@@ -1012,6 +1069,12 @@ fn parse_node(
     if raw_node.expanded.is_some() && raw_node.kind != "combobox" {
         return Err(format!("ui.setRoot node '{}' only supports expanded on combobox", raw_node.id));
     }
+    if raw_node.drag.is_some() && raw_node.kind != "slider" {
+        return Err(format!("UI_SLIDER_DRAG_KIND: '{}' only accepts drag on slider", raw_node.id));
+    }
+    if let Some(drag) = &raw_node.drag {
+        drag.validate(local).map_err(|error| format!("{error}; node={}", raw_node.id))?;
+    }
     if raw_node.slice.is_some() && raw_node.kind != "image" {
         return Err(format!(
             "UI_SLICE_INVALID: node '{}' is not an image",
@@ -1120,11 +1183,15 @@ fn parse_node(
                     style: raw_node.style,
                 });
             }
+            if raw_node.drag.is_some() && id.len() > 1024 {
+                return Err("UI_SLIDER_ID: interactive slider IDs must be at most 1024 UTF-8 bytes".into());
+            }
             Ok(UiNode::Slider {
                 id,
                 rect,
                 text: raw_node.text.unwrap_or_default(),
                 action,
+                drag: raw_node.drag,
                 style: raw_node.style,
             })
         }
@@ -1210,6 +1277,9 @@ fn parse_node(
             let scroll = raw_node.scroll.ok_or_else(|| format!("UI_SCROLL_SPEC: '{id}' requires scroll"))?;
             if !matches!(scroll.axis.as_str(), "vertical" | "horizontal" | "both") {
                 return Err(format!("UI_SCROLL_AXIS: '{id}' expected vertical, horizontal or both"));
+            }
+            if !scroll.deceleration.is_finite() || scroll.deceleration <= 0.0 || scroll.deceleration > 100.0 {
+                return Err(format!("UI_SCROLL_DECELERATION: '{id}' needs a finite number in (0, 100] per second"));
             }
             if let Some(r) = scroll.wheel_rect {
                 if local { return Err(format!("UI_SCROLL_WHEEL_RECT: nested '{id}' uses its viewport only")); }
@@ -1356,6 +1426,61 @@ fn validate_rect(rect: UiRect) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::{UI_REFERENCE_ASPECT, UiBackgroundScope, UiNode, UiRect, UiTree};
+
+    #[test]
+    fn slider_drag_geometry_defaults_and_raw_boundary_validation() {
+        let slider = serde_json::json!({"kind":"slider","id":"volume","text":"50%","action":"Volume",
+            "rect":{"x":10,"y":10,"width":30,"height":10},
+            "drag":{"track_rect":{"x":12,"y":12,"width":26,"height":2},"hit_rect":{"x":8,"y":8,"width":34,"height":14}}});
+        let tree = |node| serde_json::json!({"kind":"screen","id":"screen","node":"screen","children":[node]});
+        let json = serde_json::to_value(UiTree::from_json(tree(slider.clone())).unwrap()).unwrap();
+        assert_eq!(json["children"][0]["drag"]["axis"], "horizontal");
+        assert_eq!(json["children"][0]["drag"]["reverse"], false);
+        assert_eq!(json["children"][0]["drag"]["enabled"], true);
+        let mut old = slider.clone(); old.as_object_mut().unwrap().remove("drag");
+        assert!(serde_json::to_value(UiTree::from_json(tree(old)).unwrap()).unwrap()["children"][0].get("drag").is_none());
+        for (field, invalid) in [("axis", serde_json::json!("diagonal")), ("reverse", serde_json::json!(1)), ("enabled", serde_json::json!("true")), ("unknown", serde_json::json!(true))] {
+            let mut node = slider.clone(); node["drag"][field] = invalid;
+            assert!(UiTree::from_json(tree(node)).is_err(), "{field}");
+        }
+        for (field, invalid) in [("x", -1.0), ("y", -1.0), ("width", 0.0), ("height", -1.0), ("x", 90.0)] {
+            let mut node = slider.clone(); node["drag"]["track_rect"][field] = invalid.into();
+            assert!(UiTree::from_json(tree(node)).unwrap_err().contains("UI_SLIDER_DRAG_INVALID"));
+        }
+        let mut node = slider.clone();node["kind"] = "button".into();
+        assert!(UiTree::from_json(tree(node)).unwrap_err().contains("UI_SLIDER_DRAG_KIND"));
+        let mut node = slider.clone();node.as_object_mut().unwrap().remove("rect");
+        node["anchor"] = "center".into();node["size"] = serde_json::json!({"width":30,"height":10});
+        assert!(UiTree::from_json(tree(node)).is_ok());
+        let mut local = slider;local["drag"]["track_rect"]["y"] = 1000.into();
+        let local_tree = |node| tree(serde_json::json!({"kind":"scroll_view","id":"list","viewport":{"left":10,"top":10,"width":50,"height":50},"scroll":{},"children":[node]}));
+        assert!(UiTree::from_json(local_tree(local.clone())).is_ok());
+        local["drag"]["hit_rect"]["x"] = (-1).into();
+        assert!(UiTree::from_json(local_tree(local.clone())).is_ok(), "hit tolerance is clipped by the host");
+        local["drag"]["track_rect"]["x"] = (-1).into();
+        assert!(UiTree::from_json(local_tree(local)).unwrap_err().contains("UI_SLIDER_DRAG_INVALID"));
+    }
+
+    #[test]
+    fn scroll_momentum_defaults_and_raw_boundary_validation() {
+        let node = serde_json::json!({"kind":"scroll_view","id":"scroller",
+            "viewport":{"left":10,"top":10,"width":20,"height":20},"scroll":{}});
+        let value = serde_json::json!({"kind":"screen","id":"s","node":"s","children":[node]});
+        let json = serde_json::to_value(UiTree::from_json(value.clone()).unwrap()).unwrap();
+        assert_eq!(json["children"][0]["scroll"]["inertia"], false);
+        assert_eq!(json["children"][0]["scroll"]["deceleration"], 8.0);
+        let mut value = value;
+        value["children"][0]["scroll"]["inertia"] = true.into();
+        value["children"][0]["scroll"]["deceleration"] = 12.0.into();
+        assert!(UiTree::from_json(value.clone()).is_ok());
+        for invalid in [serde_json::json!(0), serde_json::json!(-1), serde_json::json!(101), serde_json::json!("8")] {
+            value["children"][0]["scroll"]["deceleration"] = invalid;
+            assert!(UiTree::from_json(value.clone()).is_err());
+        }
+        value["children"][0]["scroll"]["deceleration"] = 8.into();
+        value["children"][0]["scroll"]["inertia"] = "yes".into();
+        assert!(UiTree::from_json(value).is_err());
+    }
 
     fn background_panel(scope: serde_json::Value) -> serde_json::Value {
         serde_json::json!({"kind":"panel","id":"surface",

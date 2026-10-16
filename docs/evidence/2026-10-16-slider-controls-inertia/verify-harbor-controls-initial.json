@@ -1,0 +1,111 @@
+{
+  "ok": false,
+  "value": {
+    "project": "Harbor Settings",
+    "steps": [
+      {
+        "name": "types",
+        "status": "failed",
+        "summary": "the entry script did not pass the Luau contract or type check",
+        "command": "game check --types",
+        "diagnostics": [
+          {
+            "code": "LUAU_TYPECHECK_FAILED",
+            "severity": "ERROR",
+            "summary": "Luau static analyzer found type or lint issues",
+            "explanation": "The entry script passes the runtime contract but not official luau-analyze; fix the typecheck output before hot reload or running tests.",
+            "facts": {
+              "exit_code": 1,
+              "files": [
+                "D:\\TSProject\\Voidwake\\engine\\_Games\\harbor-controls\\scripts\\main.luau"
+              ],
+              "output": "D:/TSProject/Voidwake/engine/_Games/harbor-controls/scripts/main.luau:843.34-843.45: TypeError: Expected this to be\r\n\t't1 where t1 = (boolean | number | string | { [string]: t1 } | {t1})?'\r\nbut got\r\n\t'UiSliderUpdate'",
+              "tool": "D:/TSProject/Voidwake/engine/.toolcache/luau-0.734/luau-analyze.exe"
+            },
+            "likely_causes": [],
+            "suggested_actions": [
+              {
+                "action": "fix_typecheck",
+                "description": "Fix Luau type or lint issues using the files, line numbers, and messages in the output.",
+                "command": "game check --types --json"
+              }
+            ],
+            "source": null
+          }
+        ]
+      },
+      {
+        "name": "assets",
+        "status": "passed",
+        "summary": "0 declared, 0 scene references, ready_for_packaging true",
+        "command": "game asset inspect --strict",
+        "diagnostics": []
+      },
+      {
+        "name": "layout:settings-collapsed",
+        "status": "passed",
+        "summary": "0 findings; nodes: settings/background, settings/eyebrow, settings/title, settings/subtitle, audio/surface, audio/heading, audio/label, audio/value, audio/level, audio/fill, audio/remainder, quality/surface, quality/heading, quality/choice, quality/help, presets/surface, presets/heading, presets/title, presets/list, presets/selection, probe/surface, probe/heading, probe/hold, probe/counts, probe/state, probe/help, settings/apply, settings/reset, settings/footer",
+        "command": "game ui preview --strict --frames 1 --seed 42",
+        "diagnostics": []
+      },
+      {
+        "name": "layout:settings-expanded",
+        "status": "passed",
+        "summary": "0 findings; nodes: settings/background, settings/eyebrow, settings/title, settings/subtitle, audio/surface, audio/heading, audio/label, audio/value, audio/level, audio/fill, audio/remainder, quality/surface, quality/heading, quality/choice, quality/option/Eco, quality/option/Balanced, quality/option/Studio, presets/surface, presets/heading, presets/title, presets/list, presets/selection, probe/surface, probe/heading, probe/hold, probe/counts, probe/state, probe/help, settings/apply, settings/reset, settings/footer",
+        "command": "game ui preview --strict --frames 1 --seed 42 --input-sequence tests/expanded.input.json",
+        "diagnostics": []
+      },
+      {
+        "name": "tests",
+        "status": "failed",
+        "summary": "8/9 deterministic cases passed",
+        "command": "game test",
+        "diagnostics": [
+          {
+            "code": "TEST_ASSERTIONS_FAILED",
+            "severity": "ERROR",
+            "summary": "A deterministic test assertion failed",
+            "explanation": "The test runner completed, but one or more declared assertions did not match the observed world. Fix the assertion or the game behavior before activation.",
+            "facts": {
+              "failed_cases": [
+                {
+                  "failures": [
+                    "Observation 'settings' = {\"applied_preset\":\"morning-calm\",\"applied_quality\":\"Studio\",\"applied_volume\":72,\"apply_count\":1,\"dirty\":true,\"expanded\":false,\"preset\":\"morning-calm\",\"preset_label\":\"Morning / Calm\",\"quality\":\"Balanced\",\"reset_count\":1,\"volume\":72}, does not equal expected {\"applied_preset\":\"morning-calm\",\"applied_quality\":\"Studio\",\"applied_volume\":50,\"apply_count\":1,\"dirty\":true,\"expanded\":false,\"preset\":\"morning-calm\",\"preset_label\":\"Morning / Calm\",\"quality\":\"Balanced\",\"reset_count\":1,\"volume\":72}."
+                  ],
+                  "name": "reset-once-preserves-saved-profile"
+                }
+              ]
+            },
+            "likely_causes": [],
+            "suggested_actions": [],
+            "source": null
+          }
+        ]
+      }
+    ],
+    "passed": 3,
+    "failed": 2,
+    "not_applicable": 0,
+    "step_source": "default"
+  },
+  "diagnostics": [
+    {
+      "code": "VERIFY_FAILED",
+      "severity": "ERROR",
+      "summary": "A verify gate failed",
+      "explanation": "2 steps failed; each step's command field can be rerun independently.",
+      "facts": {
+        "failed_steps": [
+          "types",
+          "tests"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": [
+    "verify ran 5 gates in the default order: 3 passed, 2 failed, 0 not applicable"
+  ]
+}

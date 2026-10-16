@@ -1,0 +1,150 @@
+{
+  "files": [
+    {
+      "path": "claude-attempt.json",
+      "bytes": 1368,
+      "source": "artifacts/ui-slider-inertia/claude-attempt.json",
+      "sha256": "63f064b2a0bb3f37d73fa423980662a007aafb7dc1d8e76af338a04cadefcde8"
+    },
+    {
+      "path": "claude-stdout.txt",
+      "bytes": 0,
+      "source": "artifacts/ui-slider-inertia/claude-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "claude-stderr.txt",
+      "bytes": 0,
+      "source": "artifacts/ui-slider-inertia/claude-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "workspace-tests-initial-schema-failure.txt",
+      "bytes": 85409,
+      "source": "artifacts/ui-slider-inertia/workspace-tests.txt",
+      "sha256": "83d5cc65c0151255a22cd70d8bdddf73eb762ff9b3443ddb8741e819c80f68f6"
+    },
+    {
+      "path": "workspace-tests-intermediate-test-error.txt",
+      "bytes": 44951,
+      "source": "artifacts/ui-slider-inertia/workspace-tests-final.txt",
+      "sha256": "7315c68807ff3e770f8b8f14d7181218b06f11328ba538924ec538102753b8bd"
+    },
+    {
+      "path": "workspace-tests-verified.txt",
+      "bytes": 46446,
+      "source": "artifacts/ui-slider-inertia/workspace-tests-verified.txt",
+      "sha256": "8fe93647027d5d67ded5ef4adf2723613cc1f904aa7a03e860bf7f79c725a0f2"
+    },
+    {
+      "path": "clippy.txt",
+      "bytes": 626,
+      "source": "artifacts/ui-slider-inertia/clippy.txt",
+      "sha256": "63d8ee360cb44858bb2e8bee6bb92f8d628be77fac2f44c21570f7d186fee509"
+    },
+    {
+      "path": "native-tests.txt",
+      "bytes": 3116,
+      "source": "artifacts/ui-slider-inertia/native-tests.txt",
+      "sha256": "fdee26057f32cb4da41d6c3c5403552d92b46689ba9098244ce65559fa67b5a1"
+    },
+    {
+      "path": "node-tests-final.txt",
+      "bytes": 5364,
+      "source": "artifacts/ui-slider-inertia/node-tests-final.txt",
+      "sha256": "e82e82eb1527714b48ea3fed706620587d689dd65f98adbe42a3d7e2d9397e8a"
+    },
+    {
+      "path": "build-cli-final.txt",
+      "bytes": 63,
+      "source": "artifacts/ui-slider-inertia/build-cli-final.txt",
+      "sha256": "1f4ec7d228607819b33cc4e40d6b08025d871b47dcd00492f2508834bd4ed823"
+    },
+    {
+      "path": "build-web-runtime.txt",
+      "bytes": 6749,
+      "source": "artifacts/ui-slider-inertia/build-web-runtime.txt",
+      "sha256": "21921f4bafb71a0dd15779fb988ed13078e34d07113d24ff220463976338f991"
+    },
+    {
+      "path": "sdk-pack.json",
+      "bytes": 25080,
+      "source": "artifacts/ui-slider-inertia/sdk-pack.json",
+      "sha256": "f699c12c62dd01398a4208c4b5df934adf43d4cd15d391ae5236f032302654d8"
+    },
+    {
+      "path": "sdk-inspect.json",
+      "bytes": 25080,
+      "source": "artifacts/ui-slider-inertia/sdk-inspect.json",
+      "sha256": "f699c12c62dd01398a4208c4b5df934adf43d4cd15d391ae5236f032302654d8"
+    },
+    {
+      "path": "final-source-sdk-parity.json",
+      "bytes": 2229,
+      "source": "artifacts/ui-slider-inertia/final-source-sdk-parity.json",
+      "sha256": "d5410d22c7b88589156508ae50936a1d6e4452878d4d41d24cb8867ca21f52ac"
+    },
+    {
+      "path": "verify-harbor-controls-initial.json",
+      "bytes": 5317,
+      "source": "artifacts/ui-slider-inertia/verify-harbor-controls-initial.json",
+      "sha256": "f78417b89501f83c5baef892f907f24be979349c1b5ed8d31b317eb40f0a9601"
+    },
+    {
+      "path": "verify-harbor-controls.json",
+      "bytes": 2363,
+      "source": "artifacts/ui-slider-inertia/verify-harbor-controls.json",
+      "sha256": "d176309e9fe2f3515fd4363ee3061d9b520ee06caf720b7d6b2782a40bde73a6"
+    },
+    {
+      "path": "verify-observatory-settings-initial.json",
+      "bytes": 3322,
+      "source": "artifacts/ui-slider-inertia/verify-observatory-settings-initial.json",
+      "sha256": "7963d4fde1f13f4ec1d8b3aeec3b27bbc2b5b3138d7c9862ff9b5cc4294eae82"
+    },
+    {
+      "path": "verify-observatory-settings.json",
+      "bytes": 1835,
+      "source": "artifacts/ui-slider-inertia/verify-observatory-settings.json",
+      "sha256": "d7811eb1c1029b37acf50657f382bfec9b63716772eebbc10c95aa315d6c84ee"
+    },
+    {
+      "path": "verify-voidwake-initial.json",
+      "bytes": 3074,
+      "source": "artifacts/ui-slider-inertia/verify-voidwake-initial.json",
+      "sha256": "1cb2500a9820fbb769bba642d7b16d6a0ad38e49bd63f247978080d8101061e0"
+    },
+    {
+      "path": "verify-voidwake.json",
+      "bytes": 3074,
+      "source": "artifacts/ui-slider-inertia/verify-voidwake.json",
+      "sha256": "1cb2500a9820fbb769bba642d7b16d6a0ad38e49bd63f247978080d8101061e0"
+    },
+    {
+      "path": "prepare-harbor-controls.json",
+      "bytes": 24186,
+      "source": "artifacts/ui-slider-inertia/prepare-harbor-controls.json",
+      "sha256": "05d21157dc216e1de3c5cf11327eaf005de5fa8787647bb3b010837ee78d65b5"
+    },
+    {
+      "path": "prepare-observatory-settings.json",
+      "bytes": 26511,
+      "source": "artifacts/ui-slider-inertia/prepare-observatory-settings.json",
+      "sha256": "4948ac94b4f88c554d89469fa1ac03ce989ca8d17100da23e8484fb44eb308e8"
+    },
+    {
+      "path": "prepare-voidwake.json",
+      "bytes": 38445,
+      "source": "artifacts/ui-slider-inertia/prepare-voidwake.json",
+      "sha256": "7b452dc0cc2b43919e8158ff09333dc286f8cea87d27e1f4a2d50ba6860708c8"
+    },
+    {
+      "path": "parity-harbor.txt",
+      "bytes": 477,
+      "source": "artifacts/ui-slider-inertia/parity-harbor.txt",
+      "sha256": "e9eebac4bceaa61b77680892d5bb1c98179ff9d43f3b6f6701dfcbbdfa0da5af"
+    }
+  ],
+  "source_root": "artifacts/ui-slider-inertia",
+  "schema": "unone.copied-review-artifacts.v1"
+}

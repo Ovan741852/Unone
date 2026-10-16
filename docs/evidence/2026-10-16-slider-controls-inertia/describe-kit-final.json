@@ -1,0 +1,38 @@
+{
+  "ok": true,
+  "value": {
+    "name": "ui.components.create",
+    "category": "ui",
+    "purpose": "Create the official @unone/ui shared component kit for every canonical UI control, screen/component composition and existing scroll helpers with project-owned theme styles.",
+    "when_to_use": "For UI package, shared components, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.3.0\"} in project.unone.json. See docs/ui-components.md and docs/ui-styling.md. Use canonical EngineApi, UiApi and UiComponentKit types from game api typings; do not replace them with ui:any. The returned themed kit and api.ui.components both expose createSlider/text/button/slider/combobox/panel/image/component/screen/scrollView/virtualList/virtualGrid, id and composeStyle. Prefer createSlider for a complete numeric drag control; slider is the low-level compatibility leaf. Direct module constructors use no theme defaults.",
+    "when_not_to_use": "No hardcoded theme, layout, binding, screen manager or business behavior. Themes, content, state, actions and geometry belong to project Luau. Custom factories remain valid. Constructors return the existing UI tree for ui.setRoot.",
+    "parameters": [
+      {
+        "name": "theme",
+        "type_name": "UiComponentsTheme?",
+        "meaning": "Optional per-kind UiStyle defaults: text, button, panel, image, slider, combobox only. All leaf props use flattened UiPlacement: explicit rect OR anchor+size, plus canonical leaf fields except kind. component takes id, component name, explicit placement, optional children and surface. surface={kind='panel'|'image', asset?,fit?,slice?,alt?,style?} prepends id..'/surface' with background_for={component=id} and the component's unchanged placement. Children retain their authored coordinates and order. screen takes id/node/children and optional budget; scroll helpers retain their existing options and local top-left/y-down content contract."
+      }
+    ],
+    "returns": "UiComponentKit; createSlider -> UiSliderControl (create once, update in Game.update, publish view); text -> UiTextNode, button -> UiButtonNode, slider -> UiSliderNode, combobox -> UiComboBoxNode, panel -> UiPanelNode, image -> UiImageNode, component -> UiComponentNode, screen -> UiScreen; scrollView/virtualList/virtualGrid -> UiNode; id -> string; composeStyle -> UiStyle.",
+    "side_effects": [
+      "Construct pure Luau tables; does not publish UI or mutate props/theme"
+    ],
+    "frame_semantics": "No simulation step. Styles are copied; per-leaf overrides win, padding merges by edge and RGBA arrays replace. Generated backgrounds still use the canonical strict scope/overlap validation at setRoot.",
+    "common_errors": [
+      "UI_PACKAGE_NOT_DECLARED: add runtime_packages: {\"@unone/ui\":\"0.3.0\"} to project.unone.json; info() remains available for discovery.",
+      "Both api.ui.components.button and kit.button exist. api.ui.component and onClick do not exist; publish with ui.setRoot and read semantic action edges with input.wasPressed.",
+      "Author exactly rect OR anchor+size on each node; component children do not become local coordinates. Surface ID id..'/surface' must be globally unique.",
+      "Keep foreground and partial-overlap checks enabled; a surface does not excuse unrelated or protruding content."
+    ],
+    "example": "local ui = api.ui.components.create({button={font_size=2,background={0.1,0.2,0.3,1}}}); local button = ui.button({id=ui.id(\"menu\",\"apply\"),text=\"Apply\",action=\"ApplySettings\",rect={x=60,y=10,width=30,height=8}}); api.ui.setRoot({kind=\"screen\",id=\"settings\",node=\"settings\",children={button}})",
+    "related_apis": [
+      "ui.components.info",
+      "ui.components.composeStyle",
+      "ui.components.id",
+      "ui.setRoot",
+      "ui.getViewport"
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

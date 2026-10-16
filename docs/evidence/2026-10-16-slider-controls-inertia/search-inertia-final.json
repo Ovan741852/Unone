@@ -1,0 +1,129 @@
+{
+  "ok": true,
+  "value": {
+    "query": "scroll inertia deceleration",
+    "matches": [
+      {
+        "name": "ui.components.scrollView",
+        "category": "ui",
+        "purpose": "Construct an authored finite scroll view through the official package's uniform entrypoint.",
+        "when_to_use": "Declare @unone/ui 0.3.0; the module and themed kit delegate to the same existing scroll helper. Read docs/ui-scroll.md and docs/ui-components.md for coordinates, lifecycle and current Web-only host support. Legacy api.ui.scrollView/virtualList/virtualGrid remain compatible.",
+        "when_not_to_use": "No theme style for scroll containers, automatic responsive layout, native scroll support or gameplay callback. Virtual renderItem is UI-pure and never advances Game.update or consumes RNG.",
+        "parameters": [
+          {
+            "name": "options",
+            "type_name": "UiScrollOptions",
+            "meaning": "Viewport belongs to its containing space; content uses local top-left/y-down coordinates. Optional inertia=false and deceleration=8 (finite (0,100], exponential velocity decay in s^-1) configure Web host-only release motion; no elastic overscroll. Stable item keys and explicit fixed row/cell sizes are required for virtualization."
+          }
+        ],
+        "returns": "UiScrollNode (also a UiNode); preserve registered virtualList/virtualGrid handles when composing a screen/component.",
+        "side_effects": [
+          "Construct scroll node; virtual helpers register UI-only materialization callbacks"
+        ],
+        "frame_semantics": "Same lifecycle as the corresponding legacy helper; a wrapper does not duplicate a registration or run a simulation tick. Inertia is opt-in, uses host time and stops on new interaction, wheel, pause, geometry/config change, reset, disable, unmount or bounds.",
+        "common_errors": [
+          "Do not clone registered virtual handles, author contentHeight/maxScroll, use stage coordinates in content or mutate gameplay in renderItem. Unsupported hosts report their capability boundary explicitly."
+        ],
+        "example": "local view = api.ui.components.scrollView({id=\"help\",viewport={left=10,top=10,width=80,height=80},content={}})",
+        "related_apis": [
+          "ui.components.create",
+          "ui.scrollView",
+          "ui.virtualList",
+          "ui.virtualGrid",
+          "ui.setRoot"
+        ]
+      },
+      {
+        "name": "ui.components.virtualList",
+        "category": "ui",
+        "purpose": "Construct a visible fixed-height virtual list through the official package's uniform entrypoint.",
+        "when_to_use": "Declare @unone/ui 0.3.0; the module and themed kit delegate to the same existing scroll helper. Read docs/ui-scroll.md and docs/ui-components.md for coordinates, lifecycle and current Web-only host support. Legacy api.ui.scrollView/virtualList/virtualGrid remain compatible.",
+        "when_not_to_use": "No theme style for scroll containers, automatic responsive layout, native scroll support or gameplay callback. Virtual renderItem is UI-pure and never advances Game.update or consumes RNG.",
+        "parameters": [
+          {
+            "name": "options",
+            "type_name": "UiVirtualOptions",
+            "meaning": "Viewport belongs to its containing space; content uses local top-left/y-down coordinates. Optional inertia=false and deceleration=8 (finite (0,100], exponential velocity decay in s^-1) configure Web host-only release motion; no elastic overscroll. Stable item keys and explicit fixed row/cell sizes are required for virtualization."
+          }
+        ],
+        "returns": "UiScrollNode (also a UiNode); preserve registered virtualList/virtualGrid handles when composing a screen/component.",
+        "side_effects": [
+          "Construct scroll node; virtual helpers register UI-only materialization callbacks"
+        ],
+        "frame_semantics": "Same lifecycle as the corresponding legacy helper; a wrapper does not duplicate a registration or run a simulation tick. Inertia is opt-in, uses host time and stops on new interaction, wheel, pause, geometry/config change, reset, disable, unmount or bounds.",
+        "common_errors": [
+          "Do not clone registered virtual handles, author contentHeight/maxScroll, use stage coordinates in content or mutate gameplay in renderItem. Unsupported hosts report their capability boundary explicitly."
+        ],
+        "example": "local view = api.ui.components.virtualList({id=\"rows\",viewport={left=10,top=10,width=80,height=80},items=items,key=\"id\",rowHeight=8,renderItem=renderRow})",
+        "related_apis": [
+          "ui.components.create",
+          "ui.scrollView",
+          "ui.virtualList",
+          "ui.virtualGrid",
+          "ui.setRoot"
+        ]
+      },
+      {
+        "name": "ui.components.virtualGrid",
+        "category": "ui",
+        "purpose": "Construct a visible fixed-cell virtual grid through the official package's uniform entrypoint.",
+        "when_to_use": "Declare @unone/ui 0.3.0; the module and themed kit delegate to the same existing scroll helper. Read docs/ui-scroll.md and docs/ui-components.md for coordinates, lifecycle and current Web-only host support. Legacy api.ui.scrollView/virtualList/virtualGrid remain compatible.",
+        "when_not_to_use": "No theme style for scroll containers, automatic responsive layout, native scroll support or gameplay callback. Virtual renderItem is UI-pure and never advances Game.update or consumes RNG.",
+        "parameters": [
+          {
+            "name": "options",
+            "type_name": "UiVirtualGridOptions",
+            "meaning": "Viewport belongs to its containing space; content uses local top-left/y-down coordinates. Optional inertia=false and deceleration=8 (finite (0,100], exponential velocity decay in s^-1) configure Web host-only release motion; no elastic overscroll. Stable item keys and explicit fixed row/cell sizes are required for virtualization."
+          }
+        ],
+        "returns": "UiScrollNode (also a UiNode); preserve registered virtualList/virtualGrid handles when composing a screen/component.",
+        "side_effects": [
+          "Construct scroll node; virtual helpers register UI-only materialization callbacks"
+        ],
+        "frame_semantics": "Same lifecycle as the corresponding legacy helper; a wrapper does not duplicate a registration or run a simulation tick. Inertia is opt-in, uses host time and stops on new interaction, wheel, pause, geometry/config change, reset, disable, unmount or bounds.",
+        "common_errors": [
+          "Do not clone registered virtual handles, author contentHeight/maxScroll, use stage coordinates in content or mutate gameplay in renderItem. Unsupported hosts report their capability boundary explicitly."
+        ],
+        "example": "local view = api.ui.components.virtualGrid({id=\"icons\",viewport={left=10,top=10,width=80,height=80},items=items,key=\"id\",columns=8,columnWidth=9,rowHeight=16,gapX=1,renderItem=renderIcon})",
+        "related_apis": [
+          "ui.components.create",
+          "ui.scrollView",
+          "ui.virtualList",
+          "ui.virtualGrid",
+          "ui.setRoot"
+        ]
+      },
+      {
+        "name": "ui.scrollView",
+        "category": "ui",
+        "purpose": "Create a reusable scroll_view node with measured local content and clipped rendering/input.",
+        "when_to_use": "Use for authored finite content. See docs/ui-scroll.md for coordinates, lifecycle and Web host integration.",
+        "when_not_to_use": "Not automatic responsive layout or a gameplay loop. Native/legacy DOM hosts currently reject this capability explicitly.",
+        "parameters": [
+          {
+            "name": "options",
+            "type_name": "UiScrollOptions",
+            "meaning": "id, viewport, content; optional axis, enabled, resetKey, wheelRect, inertia=false and deceleration=8 (finite (0,100], exponential velocity decay in s^-1). Content rects are local top-left/y-down; only viewport is in its containing space."
+          }
+        ],
+        "returns": "UiNode; insert into ui.setRoot children.",
+        "side_effects": [
+          "Construct UI node only"
+        ],
+        "frame_semantics": "Host scroll and optional release inertia do not advance gameplay. New input, pause, geometry/config changes, reset, disable, unmount and bounds stop motion. No elastic overscroll.",
+        "common_errors": [
+          "Do not put stage-space rects in content or hand-author contentHeight/maxScroll."
+        ],
+        "example": "local view = api.ui.scrollView({id='help',viewport={left=10,top=10,width=80,height=80},content={}})",
+        "related_apis": [
+          "ui.virtualList",
+          "ui.virtualGrid",
+          "ui.setRoot"
+        ]
+      }
+    ],
+    "suggested_next_actions": []
+  },
+  "diagnostics": [],
+  "effects": []
+}

@@ -1,0 +1,9 @@
+{
+  "scope": "Independent actual official-player Web QA; lifecycle events are separately labelled synthetic; not physical mobile/native/a11y acceptance.",
+  "browser": "Playwright Microsoft Edge channel msedge, headless, isolated production-page contexts",
+  "url": "http://127.0.0.1:8344/?sdk=fresh-ui-verified",
+  "status": "passed",
+  "release": "c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1",
+  "evidence": "browser-summary.json",
+  "assertions": 118
+}

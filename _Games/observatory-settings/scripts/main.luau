@@ -52,6 +52,8 @@ export type Instances3DApi = {
 }
 
 export type InputApi = {
+    -- Current-tick host-projected UI event. Prefer createSlider().update(input).
+    getSliderInteraction: (id: string) -> UiSliderInteraction?,
     isDown: (action: string) -> boolean,
     -- Non-consuming edges for the current simulation tick. Read in update;
     -- multiple reads return the same result. Held actions press only once.
@@ -202,6 +204,35 @@ export type UiButtonNode = UiPlacement & {
 }
 export type UiSliderNode = UiPlacement & {
     kind: "slider", id: string, text: string?, action: string, style: UiStyle?,
+    drag: UiSliderDrag?,
+}
+export type UiSliderInteraction = {phase: "start" | "drag" | "end" | "cancel", ratio: number}
+export type UiSliderDrag = {
+    axis: "horizontal" | "vertical", reverse: boolean, enabled: boolean,
+    track_rect: UiRect, hit_rect: UiRect,
+}
+export type UiSliderOptions = {
+    id: string, value: number, min: number?, max: number?, step: number?,
+    axis: ("horizontal" | "vertical")?, reverse: boolean?,
+    onChange: never?, onClick: never?,
+}
+-- Explicit rects in the node's current stage/scroll space; no duplicate pointer
+-- mapping in projects. Hosts project, clip and capture these together.
+export type UiSliderViewProps = {
+    rect: UiRect, trackRect: UiRect?, hitPadding: number?, enabled: boolean?,
+    text: string?, action: string?, style: UiStyle?,
+    onChange: never?, value: never?,
+}
+export type UiSliderUpdate = {
+    value: number, changed: boolean, dragging: boolean,
+    started: boolean, released: boolean, cancelled: boolean,
+}
+export type UiSliderControl = {
+    view: (props: UiSliderViewProps) -> UiSliderNode,
+    update: (input: InputApi) -> UiSliderUpdate,
+    getValue: () -> number,
+    setValue: (value: number) -> (),
+    cancel: () -> (),
 }
 export type UiComboBoxNode = UiPlacement & {
     kind: "combobox", id: string, text: string?, action: string,
@@ -225,7 +256,7 @@ export type UiComponentNode = UiPlacement & {
 }
 export type UiScrollNode = UiPlacement & {
     kind: "scroll_view", id: string, viewport: UiViewport?,
-    scroll: {axis: string?, enabled: boolean?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
+    scroll: {axis: string?, enabled: boolean?, inertia: boolean?, deceleration: number?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
     children: {UiNode}?,
 }
 export type UiNode = UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
@@ -273,6 +304,8 @@ export type UiComponentScreenProps = {
     id: string, node: string, children: {UiNode}, budget: UiBudget?,
 }
 export type UiComponentKit = {
+    -- Preferred complete numeric slider: reusable state plus semantic host capture.
+    createSlider: (options: UiSliderOptions) -> UiSliderControl,
     text: (props: UiComponentTextProps) -> UiTextNode,
     button: (props: UiComponentButtonProps) -> UiButtonNode,
     slider: (props: UiComponentSliderProps) -> UiSliderNode,
@@ -306,6 +339,7 @@ export type UiScrollOptions = {
     id: string, viewport: UiViewport, content: {UiNode}?,
     axis: ("vertical" | "horizontal" | "both")?, enabled: boolean?,
     resetKey: string?, wheelRect: UiViewport?,
+    inertia: boolean?, deceleration: number?,
 }
 -- Give T your project row type to check keys and render callbacks.
 -- Bare options keep the legacy any default for existing projects.
@@ -314,6 +348,7 @@ export type UiVirtualOptions<T = any> = {
     rowHeight: number, gapY: number?,
     renderItem: (T, number, string) -> {UiNode},
     enabled: boolean?, resetKey: string?, wheelRect: UiViewport?,
+    inertia: boolean?, deceleration: number?,
 }
 export type UiVirtualGridOptions<T = any> = UiVirtualOptions<T> & {
     columns: number, columnWidth: number, gapX: number?,
@@ -466,7 +501,7 @@ local applied: Settings = {sound=true, mode=2, level=65}
 local applyCount = 0
 local status = "觀測設定已就緒 READY · 長時間觀測前，請確認環境與設備，讓每一個微小的調整成為今晚更好的開始。請將螢幕亮度維持在舒適範圍，讓雙眼適應黑暗，從容等待下一道星光。"
 local previousAspect = 0
-local draggingLevel = false
+local levelSlider: UiSliderControl? = nil
 local sliderRect: UiRect = {x=69,y=27,width=15,height=5}
 local WHITE: UiColor = {0.93,0.95,0.91,1}
 local MUTED: UiColor = {0.49,0.61,0.67,1}
@@ -529,6 +564,8 @@ local function publish(api: EngineApi)
                 border_width=0.10,border_color=LINE,opacity=1}},children=children})
     end
     local function levelControl(compact: boolean): {UiNode}
+        local control = levelSlider
+        assert(control, "Level slider must be created in Game.start")
         local minus = if compact then rect(42,22.5,8,5) else rect(64,26,5,5)
         local plus = if compact then rect(80,22.5,8,5) else rect(85,26,5,5)
         sliderRect = if compact then rect(51,22.5,27,5) else rect(70,26,14,5)
@@ -541,7 +578,7 @@ local function publish(api: EngineApi)
             panel("level_track",track,{0.18,0.28,0.33,1},0.4),
             panel("level_fill",rect(track.x,track.y,fillWidth,track.height),MINT,0.4),
             panel("level_thumb",rect(thumbX,sliderRect.y+1.5,0.8,2),WHITE,0.4),
-            ui.slider({id="level_slider",action="SetLevel",text="",rect=sliderRect,
+            control.view({action="SetLevel",text="",rect=sliderRect,trackRect=track,
                 style={background={0,0,0,0},color={0,0,0,0},border_width=0}}),
             actionButton("level_plus","+","LevelUp",plus,false),
         }
@@ -617,9 +654,12 @@ local function publish(api: EngineApi)
 end
 
 function Game.start(api: EngineApi)
+    levelSlider = api.ui.components.createSlider({id="level_slider",value=draft.level,min=0,max=100,step=1})
     publish(api)
 end
 function Game.update(api: EngineApi,_dt: number)
+    local control = levelSlider
+    assert(control, "Level slider must be created in Game.start")
     local redraw = api.ui.getViewport().aspect ~= previousAspect
     if api.input.wasPressed("ToggleSound") then
         draft.sound=not draft.sound
@@ -634,18 +674,16 @@ function Game.update(api: EngineApi,_dt: number)
             redraw=true
         end
     end
-    if api.input.wasPressed("LevelDown") then draft.level=math.max(0,draft.level-5); redraw=true; status="亮度已降低 LEVEL DOWN · 套用以保留這次調整。" end
-    if api.input.wasPressed("LevelUp") then draft.level=math.min(100,draft.level+5); redraw=true; status="亮度已提高 LEVEL UP · 套用以保留這次調整。" end
-    local pointer=api.input.getScreenPointerPosition()
-    local pointerDown=api.input.isPointerDown()
-    local inside=pointer.x>=sliderRect.x and pointer.x<=sliderRect.x+sliderRect.width and pointer.y>=sliderRect.y and pointer.y<=sliderRect.y+sliderRect.height
-    if pointerDown and (inside or draggingLevel) then
-        draggingLevel=true
-        local value=math.floor(math.clamp((pointer.x-sliderRect.x-1)/(sliderRect.width-2),0,1)*100+0.5)
-        if draft.level~=value then draft.level=value; redraw=true; status="亮度預覽 LEVEL PREVIEW · 套用以保留這次調整。" end
-    elseif not pointerDown then draggingLevel=false end
+    if api.input.wasPressed("LevelDown") then control.setValue(draft.level-5); draft.level=control.getValue(); redraw=true; status="亮度已降低 LEVEL DOWN · 套用以保留這次調整。" end
+    if api.input.wasPressed("LevelUp") then control.setValue(draft.level+5); draft.level=control.getValue(); redraw=true; status="亮度已提高 LEVEL UP · 套用以保留這次調整。" end
+    local change = control.update(api.input)
+    if change.changed then
+        draft.level=change.value; redraw=true
+        status="亮度預覽 LEVEL PREVIEW · 套用以保留這次調整。"
+    end
     if api.input.wasPressed("Reset") then
         draft={sound=defaults.sound,mode=defaults.mode,level=defaults.level}
+        control.setValue(draft.level)
         status="預設值已還原 DEFAULTS RESTORED · 你可以繼續調整，或套用目前設定。"
         redraw=true
     end

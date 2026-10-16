@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "status": "ready",
+  "gates": 5,
+  "sdk": "D:/TSProject/UnoneSliderInertia-20261016/sdk-final",
+  "browser_tested_release_matches": true,
+  "release": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/"
+}
