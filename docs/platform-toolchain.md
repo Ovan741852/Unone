@@ -79,10 +79,16 @@ cargo clean -p mlua-sys --target wasm32-unknown-emscripten
 完成 build 後，在 repo root 啟動靜態 server：
 
 ```powershell
-python -m http.server 8000
+python scripts/serve-player.py --directory . --port 8000 --no-cache
 ```
 
 開啟 `http://127.0.0.1:8000/web/smoke/`。`web/smoke/index.html` 會載入同一份 Emscripten `.js + .wasm`，頁面顯示 `passed: 60 deterministic frames executed` 才算 browser runtime smoke 通過。這仍不是 WebGPU renderer、瀏覽器輸入或正式遊戲 host。
+
+這裡以 repo root 為 server root，供 source smoke 使用；正式遊戲請依
+[player export](player-export.md) 輸出後，以同一 helper 的 `--directory` 指向
+export 目錄。Helper 固定 `.js`／`.mjs` 的 JavaScript MIME 與 `.wasm` 的
+`application/wasm`，避免 Windows 的系統 MIME 設定讓 module 被當成
+`text/plain`。若改用其他 static server，也必須提供這些 MIME types。
 
 ## Mobile host 盤點
 

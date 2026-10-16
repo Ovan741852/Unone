@@ -1,0 +1,35 @@
+{
+  "url": "http://127.0.0.1:8344/?sdk=fresh-ui-verified",
+  "browser": "Playwright Microsoft Edge, channel msedge, headless, new isolated context per viewport",
+  "before": {
+    "expectedFailureReproduced": true,
+    "moduleMime": "text/plain",
+    "strictMimeConsoleErrors": 6,
+    "wasmRequested": false,
+    "ui": "Loading only; official renderer and UI did not boot",
+    "evidence": ["before.json", "before-1440x900.png"]
+  },
+  "after": {
+    "pass": true,
+    "assertions": 36,
+    "viewports": ["1440x900", "1020x884", "390x844"],
+    "javascriptPerViewport": {"responses": 25, "contentType": "text/javascript"},
+    "wasmPerViewport": {"responses": 1, "contentType": "application/wasm"},
+    "renderer": "official / three-webgl",
+    "wasmFrames": [[26, 155], [25, 150], [27, 154]],
+    "holdTicks": [21, 22, 22],
+    "probePerViewport": {"presses": 1, "releases": 1, "reader_a_presses": 1, "reader_a_releases": 1, "reader_b_presses": 1, "reader_b_releases": 1, "mismatches": 0},
+    "sliderPerViewport": {"before": 72, "after": 23},
+    "qualityPerViewport": "Studio",
+    "virtualList": {"wheelPixels": 560, "firstBefore": [1, 1, 1], "firstAfter": [10, 10, 12]},
+    "errors": {"console": 0, "page": 0, "request": 0, "http": 0, "status": 0, "fatal": 0},
+    "evidence": ["after.json", "after-1440x900.png", "after-1020x884.png", "after-390x844.png"]
+  },
+  "visualQa": {
+    "reviewedWithViewImage": ["before-1440x900.png", "after-1440x900.png", "after-1020x884.png", "after-390x844.png"],
+    "desktopAndTablet": "Complete two-column Harbor preferences UI; 23 percent level, Studio choice and Press 1 / Release 1 visible; list shows scrolled evening presets",
+    "mobile": "Complete single-column UI; controls, scrolled preset viewport, probe counts and apply/reset buttons visible; no error overlay"
+  },
+  "exportIntegrity": {"root": "D:/TSProject/Voidwake/engine/_Games/harbor-controls/dist/player", "files": 72, "bytes": 5091752, "sha256Unchanged": true, "evidence": "export-hash-comparison.json"},
+  "constraints": "No source, SDK, export or payload edits. No server start/stop. No Cargo or commit. Read-only observation ptr/len ABI and memory reads; all actions use real browser mouse events. No direct input-state writes or manual virtual-row materialization."
+}

@@ -1,0 +1,66 @@
+{
+  "python_http_tests": 3,
+  "sdk_rust_tests_passed": 11,
+  "sdk_test_command": "cargo test -p unone-cli --release sdk::tests",
+  "clippy_command": "cargo clippy --workspace --all-targets --release -- -D warnings",
+  "actual_user_url_assertions": 36,
+  "logs": [
+    {
+      "path": "artifacts/web-player-mime/server-tests.txt",
+      "bytes": 1111,
+      "sha256": "b62b2632bfcd7a64f79446822982a911b062ea4293bd6f6f850f5d37639e4c1f",
+      "tail": [
+        "127.0.0.1 - - [16/Oct/2026 13:34:47] \"HEAD /player.wasm HTTP/1.1\" 200 -",
+        "127.0.0.1 - - [16/Oct/2026 13:34:47] \"GET /config.json HTTP/1.1\" 200 -",
+        "127.0.0.1 - - [16/Oct/2026 13:34:47] \"HEAD /config.json HTTP/1.1\" 200 -",
+        "..127.0.0.1 - - [16/Oct/2026 13:34:48] \"GET /releases/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/module.mjs HTTP/1.1\" 304 -",
+        "127.0.0.1 - - [16/Oct/2026 13:34:48] \"GET /releases/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/module.mjs HTTP/1.1\" 200 -",
+        ".",
+        "----------------------------------------------------------------------",
+        "Ran 3 tests in 1.902s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "path": "artifacts/web-player-mime/sdk-tests.txt",
+      "bytes": 2811,
+      "sha256": "b447c4bda05739df2f1cd2e483d9bd88d1d96de93ab10e68a239a8a76e87ef37",
+      "tail": [
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s",
+        "",
+        "     Running tests\\diagnostics_replay.rs (D:/TSProject/Voidwake/game/tools/build/native\\release\\deps\\diagnostics_replay-011ad32a55dc0cf0.exe)",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s",
+        ""
+      ]
+    },
+    {
+      "path": "artifacts/web-player-mime/clippy.txt",
+      "bytes": 626,
+      "sha256": "db32ceecfe84d644f891e06afe521909ccf48b1ebbf91064d5f063c7119acb0a",
+      "tail": [
+        "    Checking unone-engine v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-engine)",
+        "    Checking unone-mobile-ffi v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-mobile-ffi)",
+        "    Checking unone-web-smoke v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-web-smoke)",
+        "    Checking unone-web-live-smoke v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-web-live-smoke)",
+        "    Checking unone-cli v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-cli)",
+        "    Checking unone-mobile-android-smoke v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-mobile-android-smoke)",
+        "    Finished `release` profile [optimized] target(s) in 33.33s"
+      ]
+    },
+    {
+      "path": "artifacts/web-player-mime/build-cli.txt",
+      "bytes": 143,
+      "sha256": "2b52927646c8b7f9ddb07fcb7d2a8b9226eebb4ee62215ff37e1290b02c40998",
+      "tail": [
+        "   Compiling unone-cli v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-cli)",
+        "    Finished `release` profile [optimized] target(s) in 25.17s"
+      ]
+    }
+  ]
+}

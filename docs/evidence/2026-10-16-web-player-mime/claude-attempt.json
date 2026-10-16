@@ -1,0 +1,29 @@
+{
+  "baseline": "594ca455ae2800ca4dd5d8a903f42a0c0972b569",
+  "version": "2.1.280 (Claude Code)",
+  "command": [
+    "C:/Users/maverickchiu/.local/bin/claude.exe",
+    "-p",
+    "--tools",
+    "",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--permission-mode",
+    "plan",
+    "--no-session-persistence",
+    "--output-format",
+    "json",
+    "--max-turns",
+    "2",
+    "--disable-slash-commands"
+  ],
+  "timeout_seconds": 55,
+  "duration_seconds": 56.1,
+  "exit_code": 124,
+  "status": "not a completed review",
+  "diff_sha256": "d59f20c55154f14b3dd0c8eb45a0715cb50d81bf2b270f8342b3d2b0805c1acd",
+  "diff_bytes": 15326,
+  "stdout_bytes": 0,
+  "stderr_bytes": 0
+}

@@ -28,19 +28,32 @@ $env:UNONE_LUAU_ANALYZER = 'D:/Tools/Luau/luau-analyze.exe'
 & $game --sdk $sdk --project $project --json verify
 & $game --sdk $sdk --project $project --json project preflight --target web
 & $game --sdk $sdk --project $project --json project prepare --target web --output (Join-Path $project 'dist/player')
-python -m http.server 8344 --bind 127.0.0.1 --directory (Join-Path $project 'dist/player')
+python (Join-Path $sdk 'scripts/serve-player.py') --directory (Join-Path $project 'dist/player') --port 8344 --bind 127.0.0.1 --no-cache
 ```
 
 Open http://127.0.0.1:8344/ . Choose a new output directory for another prepare;
 exports, bundle archives and reports are generated and not checked in. No Rust
 build or engine checkout is needed when this example is copied elsewhere.
 
-Eight deterministic cases and two strict preview states cover edges, held input,
-repeat readers, stable keys, slider capture/clamps and project model semantics.
+The bundled helper fixes JavaScript module and WebAssembly MIME types across
+hosts. External static servers must serve `.js`/`.mjs` with a JavaScript MIME
+type and `.wasm` as `application/wasm`; `text/plain` for `.mjs` prevents loading.
+Validate this served URL with the SDK observer's `--url` workflow in
+[the UI guide](../../docs/ui-components.md#optional-browser-observation-tools).
+Headless checks and the observer's separate `--export` server cannot prove that
+the URL above loads and renders.
+
+Nine deterministic cases and two strict preview states cover edges, held input,
+repeat readers, stable keys, visible-track slider capture/clamps, release and
+project model semantics. The labelled slider field and its thin progress track
+start the same project-owned drag; track painting and value mapping share one
+rectangle, with a small vertical hit tolerance. Preset rows support mouse, pen
+and touch content dragging through the shared official scroll controller.
 Independent real-browser QA also exercises physical pointer/wheel input, option
 selection, long holds, Apply/Reset and three viewport sizes. The fresh author's
-frozen original export remains separate from this maintained copy; only the
-marked canonical type block is refreshed during integration.
+frozen original export remains separate from this maintained copy. Integration
+refreshes the canonical type block and fixes the maintained example's visible
+track hit region; the historical original is unchanged.
 
 Typography uses installed Segoe UI and Microsoft JhengHei with sans-serif
 fallback. No fonts or images are redistributed. Real Windows browser screenshots

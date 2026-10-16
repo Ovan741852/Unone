@@ -1,0 +1,77 @@
+{
+  "sdk_inventory_files_verified": 65,
+  "sdk_manifest_sha256": "9c2daeb8cf4987aa15b3fdad3631ec85f6b1867d837967fd11e1007405f7c04a",
+  "helper_matches_canonical_source": true,
+  "runs": [
+    {
+      "mode": "named",
+      "command": [
+        "C:\\Program Files\\Python312\\python.exe",
+        "D:\\TSProject\\UnoneMimeFix-20261016\\sdk\\scripts\\serve-player.py",
+        "--directory",
+        "D:\\TSProject\\Voidwake\\engine\\_Games\\harbor-controls\\dist\\player",
+        "--port",
+        "0",
+        "--bind",
+        "127.0.0.1",
+        "--no-cache"
+      ],
+      "startup": "Unone Web player: http://127.0.0.1:7500/",
+      "resources": [
+        {
+          "path": "releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/shared/ui-scroll.mjs",
+          "content_type": "text/javascript",
+          "status": 200,
+          "body_sha256": "fde1941b01fa28ceb56deb2c0666c74a94f3cbdd5a1b762ea3f8af93d6d16ef5"
+        },
+        {
+          "path": "releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/shared/canvas-ui.mjs",
+          "content_type": "text/javascript",
+          "status": 200,
+          "body_sha256": "5301827ad53e3eb996c2a2ab7c1f66ce3fc8d720637fbdeacb150d5936b6be51"
+        },
+        {
+          "path": "releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/runtime/unone_player.wasm",
+          "content_type": "application/wasm",
+          "status": 200,
+          "body_sha256": "8a481e4fe92d5d3ea78846eb1171597270455bf64f66978ba9e001b618711462"
+        }
+      ]
+    },
+    {
+      "mode": "legacy",
+      "command": [
+        "C:\\Program Files\\Python312\\python.exe",
+        "D:\\TSProject\\UnoneMimeFix-20261016\\sdk\\scripts\\serve-player.py",
+        "D:\\TSProject\\Voidwake\\engine\\_Games\\harbor-controls\\dist\\player",
+        "--port",
+        "0",
+        "--bind",
+        "127.0.0.1",
+        "--no-cache"
+      ],
+      "startup": "Unone Web player: http://127.0.0.1:12138/",
+      "resources": [
+        {
+          "path": "releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/shared/ui-scroll.mjs",
+          "content_type": "text/javascript",
+          "status": 200,
+          "body_sha256": "fde1941b01fa28ceb56deb2c0666c74a94f3cbdd5a1b762ea3f8af93d6d16ef5"
+        },
+        {
+          "path": "releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/shared/canvas-ui.mjs",
+          "content_type": "text/javascript",
+          "status": 200,
+          "body_sha256": "5301827ad53e3eb996c2a2ab7c1f66ce3fc8d720637fbdeacb150d5936b6be51"
+        },
+        {
+          "path": "releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/runtime/unone_player.wasm",
+          "content_type": "application/wasm",
+          "status": 200,
+          "body_sha256": "8a481e4fe92d5d3ea78846eb1171597270455bf64f66978ba9e001b618711462"
+        }
+      ]
+    }
+  ],
+  "note": "Actual SDK-bundled helper subprocesses; real Windows HTTP responses and unchanged export bytes. Both temporary servers terminated."
+}

@@ -1,0 +1,34 @@
+✔ viewport clips drawing and input without resizing content (4.4676ms)
+✔ lifecycle reset drops queued taps and captures across multiple pointers (1.2015ms)
+✔ hold down/up survive a single display frame without click-through (0.4169ms)
+✔ reverse leaf order, cancellation and multiple fingers share action safely (0.3718ms)
+✔ semantic slider stays in hierarchy while pointer input passes through to settings logic (0.3593ms)
+✔ decorative text, image and panel captions pass through to the topmost semantic control (0.3702ms)
+✔ Canvas has transparent buttons, draws loaded images in leaf order and reports failures (6.327ms)
+✔ explicit font size stays consistent across control heights and scales with canvas pixels (0.4985ms)
+✔ combobox captures the complete field and keeps capture when expanded changes (0.4255ms)
+✔ UI-only request publishes a new window without a simulation tick (2.0605ms)
+✔ aspect never republishes stale instance pointers after a developer mutation (3.6484ms)
+✔ developer inspection restores packed instances without ticking or changing transport (0.8396ms)
+✔ nested wheel chaining, ancestor-clipped rails and control-owned keys (3.2425ms)
+✔ disable retains offset; reset and unmount clean state, listeners and rails (1.2133ms)
+✔ 100000 items use a bounded rail; pending requests coalesce and key focus waits for materialization (24.0633ms)
+✔ touch tap/swipe, second-pointer isolation, cancellation and blur do not fire stale actions (0.7667ms)
+✔ primary mouse and pen distinguish row taps from content drags, including release outside (1.4695ms)
+✔ mouse drag preserves nested ownership, second-pointer isolation and cancellation (0.4881ms)
+✔ a rejected secondary stream stays consumed after its scroll owner releases or is reset (0.7428ms)
+✔ a native scrollbar press abandons the canvas drag without leaking its remaining stream (0.5386ms)
+✔ scroll content leaves slider drags and combobox capture to the existing canvas route (0.6368ms)
+✔ a later scroll pointer never takes an earlier outside control or world pointer stream (1.5224ms)
+✔ authored irregular content derives extent and shares render/hit clip (1.927ms)
+✔ nested viewports intersect parent clips and disabled collections cannot act (0.3694ms)
+✔ horizontal and both axes clamp independently without artificial overflow (0.1632ms)
+✔ virtual windows remain bounded for 100000 items, include last row, and count no phantom rows (13.1719ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 200.5325

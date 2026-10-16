@@ -1,0 +1,27 @@
+[
+  {
+    "path": "artifacts/web-player-mime/after-1020x884.png",
+    "bytes": 58560,
+    "sha256": "4c9cfbf52139703bafffcd2f8ae286521dff981511aaa0b0600a9cf70abba755"
+  },
+  {
+    "path": "artifacts/web-player-mime/after-1440x900.png",
+    "bytes": 63130,
+    "sha256": "68e8a30cd9da2a0cd2f004c01d0d3ae52f81582c9db841e7f58aab51e03dd9d3"
+  },
+  {
+    "path": "artifacts/web-player-mime/after-390x844.png",
+    "bytes": 38816,
+    "sha256": "6d7ccdcfb14172f9b3aed68efc903df9dcecb3e1aeaab5d184d062bc45d447dd"
+  },
+  {
+    "path": "artifacts/web-player-mime/after-inspection.png",
+    "bytes": 63489,
+    "sha256": "2adc328ed611df48317dc08cf968d5121c902c08fae1e86bc424a79ab3d210e7"
+  },
+  {
+    "path": "artifacts/web-player-mime/before-1440x900.png",
+    "bytes": 6684,
+    "sha256": "09840b89379a950cd034ad5ecfe7efb6554e82c3bce0b93c17ff9af9870b25e6"
+  }
+]

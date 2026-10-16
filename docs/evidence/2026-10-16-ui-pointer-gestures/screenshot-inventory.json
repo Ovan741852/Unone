@@ -1,0 +1,27 @@
+[
+  {
+    "path": "artifacts/web-player-gestures/after-1020x884.png",
+    "bytes": 58716,
+    "sha256": "17c26bbd6735e4e00089c790419796884e83b3782f6b7266b2296ed2c1b95015"
+  },
+  {
+    "path": "artifacts/web-player-gestures/after-1440x900.png",
+    "bytes": 63543,
+    "sha256": "e479320f132f92cd1feb4d8fe8c5568b98e01f7e754a4887552d8a9c47133843"
+  },
+  {
+    "path": "artifacts/web-player-gestures/after-390x844.png",
+    "bytes": 38744,
+    "sha256": "ed50eaf6168185fb1cbadb2e0449a490013feb959610e2325387ba2db19bc470"
+  },
+  {
+    "path": "artifacts/web-player-gestures/before-1440x900.png",
+    "bytes": 63489,
+    "sha256": "2adc328ed611df48317dc08cf968d5121c902c08fae1e86bc424a79ab3d210e7"
+  },
+  {
+    "path": "artifacts/web-player-gestures/trial1-first-only-assertion-390x844.png",
+    "bytes": 39484,
+    "sha256": "1242a0a2b972185bdc2b29c96da69ca7cad91e2858f9141a7dfbc3ee73489480"
+  }
+]

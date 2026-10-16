@@ -1,0 +1,38 @@
+{
+  "baseline": "594ca455ae2800ca4dd5d8a903f42a0c0972b569",
+  "version": "2.1.280 (Claude Code)",
+  "command": [
+    "C:/Users/maverickchiu/.local/bin/claude.exe",
+    "-p",
+    "--tools",
+    "",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--permission-mode",
+    "plan",
+    "--no-session-persistence",
+    "--output-format",
+    "json",
+    "--max-turns",
+    "2",
+    "--disable-slash-commands"
+  ],
+  "timeout_seconds": 55,
+  "duration_seconds": 56.0,
+  "exit_code": 124,
+  "status": "not a completed review",
+  "diff_sha256": "34de7a9f8267bab6db47594f92cd8f0b1a0de73106f3abf2339c4b69fd59ab2c",
+  "diff_bytes": 33567,
+  "prompt_sha256": "c0d37cf38928e982f7e2373ad27b2294eb5fdebb802f42e660c218194ebe3139",
+  "prompt_bytes": 70969,
+  "scope": [
+    "web/shared/ui-scroll.mjs",
+    "web/shared/ui-scroll-host.test.mjs",
+    "web/player/main.js",
+    "docs/ui-scroll.md",
+    "_Games/harbor-controls/scripts/main.luau"
+  ],
+  "stdout_bytes": 0,
+  "stderr_bytes": 0
+}

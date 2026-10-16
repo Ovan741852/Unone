@@ -50,6 +50,17 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-16: actual visible-track slider and mouse content-drag failures,
+  shared pointer ownership/cancellation, official-player lifecycle integration
+  and actual-URL regressions:
+  [record](issues/2026-10-16-ui-pointer-gestures.md).
+
+- 2026-10-16: real-host strict module MIME failure and shared SDK preview helper,
+  including original failure, actual-URL browser regression, legacy-cache/tool
+  compatibility and corrected validation scope. The bounded Claude attempt
+  timed out without output and remains incomplete:
+  [record](issues/2026-10-16-web-player-mime.md).
+
 - 2026-10-16: a second fresh-context SDK-only UI author, independent real-browser
   acceptance and shared fixes for composed operation queries, forbidden binding
   props and SDK guide/tool inventory. The bounded Claude attempt failed with

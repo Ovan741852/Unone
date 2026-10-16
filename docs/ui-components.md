@@ -234,6 +234,14 @@ flag is authored state; the engine does not invent options or a selection model.
 The constructors retain their canonical control contracts rather than adding
 project-specific widget behavior.
 
+When a slider skin places a progress track outside its labelled field, include
+that visible track in the project's drag-start hit region too. Use the same
+authored track rectangle for drawing and horizontal value mapping, retain the
+gesture while held outside it, and end it on pointer release. Test dragging the
+visible track in the served player; dragging only the label or sending synthetic
+action snapshots does not validate that affordance. A small explicit vertical
+hit tolerance can make thin tracks usable without changing their artwork.
+
 ### Scroll wrappers
 
 Both the module and themed kit expose the same existing helpers. For example,
@@ -312,10 +320,35 @@ External prerequisites are **Node.js 22+**, **Playwright with an installed
 browser** (its Chromium or a compatible installed browser), and **Python with
 `fontTools`** for the font audit invoked by `--export`. The observer currently
 requires a main-thread production Web runtime and an already published UI tree.
-Prepare the official Web export first; the observer serves a local export itself.
+Prepare the official Web export first. To inspect it at a stable local URL,
+run the bundled Python standard-library helper from the SDK root:
 
-From the SDK root, save `{}` as `browser-plan.json` and run the following,
-replacing the export/evidence paths:
+```powershell
+python scripts/serve-player.py --directory 'D:/Exports/my-game-web' --port 8344 --bind 127.0.0.1 --no-cache
+```
+
+Or use `python (Join-Path $sdk 'scripts/serve-player.py')` with the same
+arguments from another directory after selecting `$sdk` as in the SDK README.
+Open http://127.0.0.1:8344/ and keep the server running. External static hosts
+must also serve `.js` and `.mjs` with a JavaScript MIME type and `.wasm` as
+`application/wasm`; a `.mjs` response with `text/plain` prevents module loading.
+
+For acceptance of this actual served URL, save `{}` as `browser-plan.json` in
+the SDK root, then run in a second terminal:
+
+```powershell
+node scripts/verify-ui-example-browser.mjs --url 'http://127.0.0.1:8344/' --plan browser-plan.json --out 'D:/Evidence/my-game-served-ui'
+```
+
+Replace the URL with the actual hosted address for external-host acceptance.
+Omit `--export` in this run: it starts the observer's own server and overrides
+`--url`. Type checking, headless replay and a passing self-hosted observer run
+cannot verify the actual host's MIME configuration or prove that URL renders.
+Review its screenshots and real input outcomes.
+
+For a separate local-export check and packaged font cmap audit, the observer
+can serve the export itself. From the SDK root, use the same plan and run the
+following, replacing the export/evidence paths:
 
 ```powershell
 node scripts/verify-ui-example-browser.mjs --export 'D:/Exports/my-game-web' --plan browser-plan.json --out 'D:/Evidence/my-game-ui'
@@ -336,7 +369,8 @@ checks any declared font faces load, and rejects browser/asset errors. It does
 not require packaged fonts, repeated components, wrapping or ellipsis. Font cmap
 coverage is reported for a local export but becomes a failing requirement only
 with `"requirePackagedGlyphCoverage": true`. This does not measure shaping or
-prove appearance; review the screenshots.
+prove appearance; review the screenshots. A `--url` run does not invoke the
+local-export cmap audit.
 
 To exercise a project action, replace **every `REPLACE_...` value** below with an
 actual initial label, a unique public control ID and the resulting visible label.

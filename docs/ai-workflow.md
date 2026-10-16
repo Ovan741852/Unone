@@ -458,7 +458,15 @@ For assets, the asset manifest supports `spine` and `effekseer` kinds and uses `
 
 Tests can use `{"animation": {"entity": "reel-3", "equals": {...}}}` and `{"effects": {"equals": [...]}}` for full JSON equality, making presentation state assertable without looking at the screen.
 
-To see them play, use `web/presentation/`: first run `scripts/build-web-live.ps1`, start `python -m http.server 8001` from `D:/Projects`, and open `http://127.0.0.1:8001/Unone/web/presentation/?project=/Unone_Games/slot-machine/`. It plays the same snapshot with spine-webgl and Effekseer for WebGL; native preview and the Android host currently do not render them. Vendored runtime and licensing requirements are documented in `web/vendor/README.md` (Spine requires a license; Effekseer is MIT).
+To see them play, use `web/presentation/`: first run `scripts/build-web-live.ps1`, then from the engine repo root (`D:/Projects/Unone` in this example) start `python scripts/serve-player.py --directory .. --port 8001 --no-cache` and open `http://127.0.0.1:8001/Unone/web/presentation/?project=/Unone_Games/slot-machine/`. The parent-directory server root contains both `Unone` and `Unone_Games`, preserving those URL prefixes. It plays the same snapshot with spine-webgl and Effekseer for WebGL; native preview and the Android host currently do not render them. Vendored runtime and licensing requirements are documented in `web/vendor/README.md` (Spine requires a license; Effekseer is MIT).
+
+These source hosts are development probes. For a distributable game, use
+[official player export](player-export.md) and point the same helper's
+`--directory` at the export directory. The helper fixes JavaScript MIME types
+for `.js` and `.mjs`, and `application/wasm` for `.wasm`; alternative static
+servers must provide those types too. A raw `python -m http.server` can inherit
+Windows MIME settings that serve `.mjs` as `text/plain`, causing module loads to
+fail before the player starts.
 
 Core does not evaluate Spine skeletons, blend their animations, report external
 animation completion, or simulate Effekseer's particles. Those tasks belong to
@@ -695,7 +703,7 @@ cargo run -p unone-cli -- --json api describe camera.setTransform
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/3d-racing --json test
 ```
 
-To validate the Web host for an actual game project, start `python -m http.server 8001` from `D:/Projects`, then open `http://127.0.0.1:8001/Unone/web/runner/?project=/Unone_Games/3d-racing/`. For a project with a bundle manifest, the same runner installs the content-addressed generation, reads the verified project/script/scene, consumes 2D/3D snapshots and UI, and can reinstall the current generation and run Luau hot reload with `Install / reload active bundle`. When the game publishes a save payload, the host persists it in a project-isolated IndexedDB store and outputs `save_store.loaded` so AI can confirm that it was actually loaded; use `?bundle=0` only to diagnose source fallback. This is generic host smoke. It does not require mobile validation for the Web slice. Without asset CDN, OPFS/production quota policy, or content-change hot-update evidence, do not mark the Web final gate passed; actual mobile-host evidence is a separate deferred track.
+To validate the Web source host for an actual game project, start `python scripts/serve-player.py --directory .. --port 8001 --no-cache` from the engine repo root (`D:/Projects/Unone` in this example), then open `http://127.0.0.1:8001/Unone/web/runner/?project=/Unone_Games/3d-racing/`. The server root is `D:/Projects`, containing both engine and game directories. For a project with a bundle manifest, the same runner installs the content-addressed generation, reads the verified project/script/scene, consumes 2D/3D snapshots and UI, and can reinstall the current generation and run Luau hot reload with `Install / reload active bundle`. When the game publishes a save payload, the host persists it in a project-isolated IndexedDB store and outputs `save_store.loaded` so AI can confirm that it was actually loaded; use `?bundle=0` only to diagnose source fallback. This is generic host smoke. It does not require mobile validation for the Web slice. Without asset CDN, OPFS/production quota policy, or content-change hot-update evidence, do not mark the Web final gate passed; actual mobile-host evidence is a separate deferred track.
 
 ## Output rules
 

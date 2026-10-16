@@ -1,0 +1,22 @@
+const fs=require('fs'),path=require('path');
+const {chromium}=require('C:/Users/maverickchiu/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const flat=n=>[n,...(n.children||[]).flatMap(flat)];
+const find=(s,id)=>flat(s.world.ui).find(n=>n.id===id);
+const point=(r,v,fx=.5,fy=.5)=>({x:(r.x+r.width*fx)*v.width/100,y:(100-r.y-r.height*fy)*v.height/100});
+const observe=p=>p.evaluate(()=>{const e=window.__gestureQaWasm.find(i=>i.exports.unone_web_observation_ptr).exports;return JSON.parse(new TextDecoder().decode(new Uint8Array(e.memory.buffer,e.unone_web_observation_ptr(),e.unone_web_observation_len())));});
+const state=s=>({frame:s.world.frame,observations:s.world.observations,list:find(s,'presets/list')});
+(async()=>{
+ const browser=await chromium.launch({channel:'msedge',headless:true});const viewport={width:1440,height:900};const context=await browser.newContext({viewport});
+ await context.addInitScript(()=>{Object.defineProperty(window,'__gestureQaWasm',{value:[],enumerable:false});const capture=r=>{const i=r?.instance||r;if(i?.exports&&!window.__gestureQaWasm.includes(i))window.__gestureQaWasm.push(i);return r;};const a=WebAssembly.instantiate.bind(WebAssembly);WebAssembly.instantiate=(...x)=>a(...x).then(capture);if(WebAssembly.instantiateStreaming){const b=WebAssembly.instantiateStreaming.bind(WebAssembly);WebAssembly.instantiateStreaming=(...x)=>b(...x).then(capture);}});
+ const page=await context.newPage();const report={url:'http://127.0.0.1:8344/?sdk=fresh-ui-verified',phase:'gesture-before',viewport,console:[],pageErrors:[],requestFailures:[],responses:[]};
+ page.on('console',m=>report.console.push({type:m.type(),text:m.text()}));page.on('pageerror',e=>report.pageErrors.push(String(e)));page.on('requestfailed',r=>report.requestFailures.push({url:r.url(),error:r.failure()}));page.on('response',r=>report.responses.push({url:r.url(),status:r.status(),contentType:r.headers()['content-type']}));
+ await page.goto(report.url,{waitUntil:'networkidle'});await page.waitForFunction(()=>Number(document.body.dataset.playerFrame)>10&&window.__gestureQaWasm.length>0);
+ const initial=await observe(page);report.initial=state(initial);
+ const start=point(find(initial,'audio/fill').rect,viewport);const end=point(find(initial,'audio/level').rect,viewport,.23);end.y=start.y;report.lineDrag={start,end,startNode:find(initial,'audio/fill')};
+ await page.mouse.move(start.x,start.y);await page.mouse.down();await page.mouse.move(end.x,end.y,{steps:14});await page.waitForTimeout(180);await page.mouse.up();await page.waitForTimeout(180);const lineAfter=await observe(page);report.lineDrag.after=state(lineAfter);report.lineDrag.reproduced=initial.world.observations.settings.volume===lineAfter.world.observations.settings.volume;
+ const list=find(lineAfter,'presets/list');const listTop=(100-list.rect.y-list.rect.height)*viewport.height/100;const firstRow=list.children.find(n=>n.children?.some(x=>x.action));const row=firstRow.children.find(n=>n.action);const rowStart={x:(list.rect.x+list.rect.width*.5)*viewport.width/100,y:listTop+(row.rect.y+row.rect.height*.5)*viewport.height/100};const rowEnd={x:rowStart.x,y:rowStart.y-150};
+ report.contentDrag={start:rowStart,end:rowEnd,row:row,offsetBefore:await page.locator('[data-ui-scrollbar="presets/list"][data-axis="y"]').evaluate(e=>e.scrollTop)};
+ await page.mouse.move(rowStart.x,rowStart.y);await page.mouse.down();await page.mouse.move(rowEnd.x,rowEnd.y,{steps:18});await page.waitForTimeout(180);await page.mouse.up();await page.waitForTimeout(180);const dragAfter=await observe(page);report.contentDrag.after=state(dragAfter);report.contentDrag.offsetAfter=await page.locator('[data-ui-scrollbar="presets/list"][data-axis="y"]').evaluate(e=>e.scrollTop);report.contentDrag.reproduced=report.contentDrag.offsetAfter===report.contentDrag.offsetBefore;
+ await page.screenshot({path:path.join(__dirname,'before-1440x900.png'),fullPage:true});fs.writeFileSync(path.join(__dirname,'before.json'),JSON.stringify(report,null,2));
+ console.log(JSON.stringify({line:report.lineDrag.reproduced,volumeBefore:initial.world.observations.settings.volume,volumeAfter:lineAfter.world.observations.settings.volume,lineStart:start,lineEnd:end,content:report.contentDrag.reproduced,scrollBefore:report.contentDrag.offsetBefore,scrollAfter:report.contentDrag.offsetAfter,rowStart,rowEnd,rangeBefore:list.scroll.virtual_items.first,rangeAfter:find(dragAfter,'presets/list').scroll.virtual_items.first},null,2));await browser.close();
+})();

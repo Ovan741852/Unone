@@ -1,0 +1,120 @@
+{
+  "url": "http://127.0.0.1:8344/?sdk=fresh-ui-verified",
+  "phase": "before",
+  "responses": [
+    {
+      "url": "http://127.0.0.1:8344/?sdk=fresh-ui-verified",
+      "status": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/player/main.js",
+      "status": 200,
+      "contentType": "application/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/shared/renderer-selection.mjs",
+      "status": 200,
+      "contentType": "text/plain"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/shared/canvas-ui.mjs",
+      "status": 200,
+      "contentType": "text/plain"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/shared/ui-scroll.mjs",
+      "status": 200,
+      "contentType": "text/plain"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/shared/async-scheduler.mjs",
+      "status": 200,
+      "contentType": "text/plain"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/shared/host-input.js",
+      "status": 200,
+      "contentType": "application/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/renderer/three.js",
+      "status": 200,
+      "contentType": "application/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/shared/runtime-backend.mjs",
+      "status": 200,
+      "contentType": "text/plain"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/shared/presentation-interpolation.mjs",
+      "status": 200,
+      "contentType": "text/plain"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/shared/asset-encoding.js",
+      "status": 200,
+      "contentType": "application/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/shared/webgpu-snapshot.js",
+      "status": 200,
+      "contentType": "application/javascript"
+    }
+  ],
+  "console": [
+    {
+      "type": "error",
+      "text": "Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of \"text/plain\". Strict MIME type checking is enforced for module scripts per HTML spec."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of \"text/plain\". Strict MIME type checking is enforced for module scripts per HTML spec."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of \"text/plain\". Strict MIME type checking is enforced for module scripts per HTML spec."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of \"text/plain\". Strict MIME type checking is enforced for module scripts per HTML spec."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of \"text/plain\". Strict MIME type checking is enforced for module scripts per HTML spec."
+    },
+    {
+      "type": "error",
+      "text": "Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of \"text/plain\". Strict MIME type checking is enforced for module scripts per HTML spec."
+    }
+  ],
+  "pageErrors": [],
+  "requestFailures": [],
+  "dom": {
+    "title": "Unone Player",
+    "text": "Loading…",
+    "playerBoot": 553.1000000014901,
+    "canvases": [
+      {
+        "width": 300,
+        "height": 150,
+        "rect": "{\"x\":0,\"y\":0,\"width\":1440,\"height\":900,\"top\":0,\"right\":1440,\"bottom\":900,\"left\":0}"
+      }
+    ],
+    "globals": [
+      "playerBoot"
+    ],
+    "scripts": [
+      {
+        "src": "",
+        "type": ""
+      },
+      {
+        "src": "http://127.0.0.1:8344/releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/web/player/main.js",
+        "type": "module"
+      }
+    ]
+  },
+  "expectedReproduction": true
+}

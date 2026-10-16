@@ -113,7 +113,8 @@ Prerequisites:
   installs the right one on first build. Nothing else to choose.
 - **PowerShell** — most scripts here are `.ps1`. The one you need to get
   started also has a `.sh` version.
-- **Python 3** — only for `python -m http.server`, to look at the Web hosts.
+- **Python 3** — for `scripts/serve-player.py`, to preview the Web hosts with
+  consistent JavaScript and WebAssembly MIME types on every platform.
 - **Emscripten** — only if you want the Web runtime. Point
   `UNONE_EMSDK_ROOT` at it; setup and the verified version are in
   [docs/platform-toolchain.md](docs/platform-toolchain.md). Skip it until you
@@ -226,6 +227,21 @@ For complete type checking, use `game check --types`. A formal engine package pl
 ## Open it and look
 
 For the included 3D battle, follow [Legion Fall's build and run instructions](_Games/legion-fall/README.md). They export a self-contained player and serve its output directory. The older `web/presentation/` and `web/runner/` validation hosts require their own game resources; cloning this repository alone does not provide those private games.
+
+Use the shared preview helper for local HTTP hosting. For example, from the
+repository root, serve an official export with:
+
+```powershell
+python scripts/serve-player.py --directory <export-directory> --port 8000 --no-cache
+```
+
+The source-host guides instead serve the repository or its parent so their
+`/web/...` and project URLs resolve. Source hosts are development probes; use
+[official player export](docs/player-export.md) for a distributable game. Any
+other static server must serve `.js` and `.mjs` with a JavaScript MIME type such
+as `text/javascript`, and `.wasm` as `application/wasm`. Windows MIME detection in
+a raw `python -m http.server` can serve `.mjs` as `text/plain`, which browsers
+reject as a module.
 
 ## Current Web status
 

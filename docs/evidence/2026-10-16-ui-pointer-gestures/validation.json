@@ -1,0 +1,44 @@
+{
+  "ok": true,
+  "baseline": "594ca455ae2800ca4dd5d8a903f42a0c0972b569",
+  "verify": "Five gates passed, including 9/9 deterministic cases and two strict layouts.",
+  "browser": "58/58 actual-URL assertions; 54 physical mouse and 4 platform lifecycle assertions.",
+  "node_tests": 26,
+  "logs": [
+    {
+      "path": "artifacts/web-player-mime/scroll-tests.txt",
+      "bytes": 2623,
+      "sha256": "0e0fc193d72856d2e328112c0923a20abb5d7cc24af4c091bbd484f1d835d3df"
+    },
+    {
+      "path": "artifacts/web-player-mime/build-cli-gestures.txt",
+      "bytes": 228,
+      "sha256": "5a34a2af49e8b5c6972d826c31362a58c46fd04717af4ae1b632d2e850d80524"
+    }
+  ],
+  "source_review": {
+    "mode": "independent read-only source review; no build/test",
+    "findings": [
+      "outside control/world stream release swallowed by later scroll pointer",
+      "rejected/cancelled scroll streams leaking to world after owner release",
+      "native rail acquisition bypassed gesture abandonment"
+    ],
+    "disposition": "All three corrected and independently rechecked; no further concrete finding in bounded scope."
+  },
+  "claude": "55-second bounded attempt timed out at 56.0 seconds, exit 124, empty output; not a completed review.",
+  "claude_snapshot_matches_final_scoped_diff": true,
+  "trial_harness_failure": {
+    "path": "artifacts/web-player-gestures/after-trial1-first-only-assertion.json",
+    "bytes": 321612,
+    "sha256": "d86300a5f9853dc090e1d8132885330e556fd9c3a05b3722364d933c729bede6",
+    "cause": "Overscan can retain first while last changes. Corrected range assertion only, no product change."
+  },
+  "prior_mime_validation": "../2026-10-16-web-player-mime/validation.json",
+  "limitations": [
+    "Mouse at portrait viewport is not hardware touch or pen acceptance.",
+    "Controller tests cover touch/pen/multi-pointer ownership; no momentum or variable-height measurement.",
+    "Installed system fonts remain device-dependent; no new glyph-coverage claim."
+  ],
+  "claude_fixed_diff_record": "claude-fixed-diff.json (base64 preserves exact reviewed bytes without Git whitespace normalization)",
+  "node_test_reproduction_command": "node --test web/shared/ui-scroll-host.test.mjs web/shared/ui-scroll.test.mjs web/shared/canvas-ui.test.mjs web/shared/runtime-core.test.mjs"
+}

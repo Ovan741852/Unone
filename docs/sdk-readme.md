@@ -66,6 +66,19 @@ versions. Use the same `--runtime-id` and `--development` choices for preflight
 and prepare if selecting those options. Headless verification, schema checks
 and renderer labels do not establish visual completion.
 
+Serve the Web export with the bundled Python standard-library helper. Its
+absolute script path works from any directory with the `$sdk` selected above:
+
+```powershell
+python (Join-Path $sdk 'scripts/serve-player.py') --directory 'D:/Exports/my-game-web' --port 8344 --bind 127.0.0.1 --no-cache
+```
+
+Open http://127.0.0.1:8344/ and leave that terminal running while inspecting the
+player. From the SDK root, the script path is `scripts/serve-player.py`.
+The helper serves `.js` and `.mjs` with a JavaScript MIME type and `.wasm` as
+`application/wasm`. Configure the same MIME types on any external static host;
+serving `.mjs` as `text/plain` prevents the official player modules from loading.
+
 ## Author shared UI with the bundled contract
 
 Read [shared components](docs/ui-components.md), [typography and fonts](docs/ui-styling.md),
@@ -123,3 +136,16 @@ installed browser, and Python with `fontTools` for the local-export font audit.
 See the [runnable browser workflow and plan format](docs/ui-components.md#optional-browser-observation-tools).
 Inspect the recorded screenshots as well as the JSON reports. Packaged glyph
 coverage and structural checks do not prove visual quality.
+
+For acceptance of the URL actually served above, run from the SDK root in a
+second terminal after saving `{}` as `browser-plan.json`:
+
+```powershell
+node scripts/verify-ui-example-browser.mjs --url 'http://127.0.0.1:8344/' --plan browser-plan.json --out 'D:/Evidence/my-game-served-ui'
+```
+
+Use the actual hosted URL when validating an external host, and omit `--export`
+for this run. Type checking, headless replay and the observer's `--export`
+self-hosted check cannot verify another server's MIME configuration or prove
+that its URL loads and renders. Review the screenshots and exercise real input
+on that URL; use a separate `--export` run for the packaged font cmap audit.

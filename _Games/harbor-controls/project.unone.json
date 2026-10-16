@@ -28,7 +28,8 @@
     "tests/choose-last-semantic-key-and-apply-once.test.json",
     "tests/slider-screen-pointer-capture-and-upper-clamp.test.json",
     "tests/slider-lower-clamp-zero-width-fill-safe.test.json",
-    "tests/reset-once-preserves-saved-profile.test.json"
+    "tests/reset-once-preserves-saved-profile.test.json",
+    "tests/slider-track-release-and-no-late-capture.test.json"
   ],
   "ui_previews": [
     {

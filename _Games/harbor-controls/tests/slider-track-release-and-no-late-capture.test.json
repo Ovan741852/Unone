@@ -1,0 +1,76 @@
+{
+  "assertions": [
+    {
+      "observation": {
+        "equals": {
+          "expanded": false,
+          "preset_label": "Morning / Calm",
+          "volume": 50,
+          "dirty": true,
+          "applied_quality": "Balanced",
+          "apply_count": 0,
+          "reset_count": 0,
+          "applied_volume": 72,
+          "preset": "morning-calm",
+          "applied_preset": "morning-calm",
+          "quality": "Balanced"
+        },
+        "key": "settings"
+      }
+    }
+  ],
+  "input": {},
+  "frames": 5,
+  "name": "slider-track-release-and-no-late-capture",
+  "seed": 42,
+  "input_sequence": [
+    {
+      "pointer": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "screen_position": {
+          "x": 26,
+          "y": 55.775
+        },
+        "down": true
+      },
+      "actions": {}
+    },
+    {
+      "actions": {}
+    },
+    {
+      "pointer": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "screen_position": {
+          "x": 3,
+          "y": 55.775
+        },
+        "down": true
+      },
+      "actions": {}
+    },
+    {
+      "pointer": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "screen_position": {
+          "x": 40,
+          "y": 55.775
+        },
+        "down": true
+      },
+      "actions": {}
+    },
+    {
+      "actions": {}
+    }
+  ]
+}

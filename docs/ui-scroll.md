@@ -133,7 +133,10 @@ Use `createUiScrollHost` from `web/shared/ui-scroll.mjs` once per stage. Pass
 `canvas`, `stage`, `onAction`, and `requestWindow(request)`; the latter sends
 `backend.request({kind:"ui",request})`, accepts the returned snapshot and redraws.
 Run `scroll.draw(snapshot)` before Canvas/UI motion/accessibility projection.
-Route touch through `scroll.pointer(event,kind,hit)` before ordinary UI input;
+Route mouse, pen and touch through `scroll.pointer(event,kind,hit)` before
+ordinary UI input. Pass the current hit test's `nodeId` and `action`; the
+controller resolves control ownership from the projected tree. Keep pointer
+capture from down through up so a drag can finish outside the viewport.
 Route pointercancel/lostpointercapture through `scroll.pointer(event,"cancel")`;
 use `scroll.cancel()` for a whole-surface pause/blur and `dispose()` on removal.
 Normal pointer capture release must not clear the last keyboard scroll owner.
@@ -154,8 +157,21 @@ restoration while `scroll.isNavigating()` is true; otherwise it can scroll back
 to the previous row before the requested target is materialized. Sliders,
 comboboxes and editable fields retain their own keyboard input. Nested wheel
 input chains to an outer view when the inner view reaches its edge, and nested
-rails are clipped to ancestor viewports. This release uses direct touch dragging,
-not momentum, elastic overscroll or variable-height measurement.
+rails are clipped to ancestor viewports. Primary mouse buttons, pen tips and
+touches can drag content directly. Movement must exceed 8 CSS pixels before
+scrolling starts; smaller movement remains a tap. The deepest enabled view under
+the pointer owns the drag, including its release outside the viewport. A second
+pointer cannot replace that gesture. Sliders retain project-owned drag values,
+combobox fields retain their normal pointer capture, and foreground controls
+outside the collection retain their normal input.
+
+Buttons inside draggable content activate once on release when the same node
+and action are still under the pointer. A drag never activates its starting row,
+even if it ends there. Use `wasPressed` for row selection; these deferred taps
+do not expose continuous held duration. Buttons outside scroll content keep their
+ordinary down/held/up input. Cancellation, blur, disabling or removing a view
+abandons its pending tap. This release has no momentum, elastic overscroll or
+variable-height measurement.
 
 ## Images, actions and foreground dialogs
 
@@ -177,18 +193,16 @@ Buttons use the existing semantic action input protocol: host `onAction(action)`
 queues that action using `createHostInput().queueAction(action)`. That callback
 belongs to the host adapter, not to a Luau node. In `Game.update`, read
 `api.input.wasPressed(action)` for one activation per press,
-`api.input.wasReleased(action)` for release, or `api.input.isDown(action)` for
-continuous held behavior. Search `"button click"` / `"按下瞬間"`, `"release"` /
+`api.input.wasReleased(action)` for the end of that action pulse. Scroll-row taps
+are deferred until pointer release; `isDown` is true for the queued pulse rather
+than for the physical hold. Search `"button click"` / `"按下瞬間"`, `"release"` /
 `"放開"` or `"hold"` / `"長按"` for those real APIs. There is no Luau `onClick`
 or `onAction` function prop:
 
 ```luau
 local selectedId: string? = nil
-local heldSeconds = 0
 function Game.update(api: EngineApi,dt: number)
  if api.input.wasPressed("Inspect_known_item") then selectedId="known_item" end
- if api.input.isDown("Inspect_known_item") then heldSeconds+=dt end
- if api.input.wasReleased("Inspect_known_item") then heldSeconds=0 end
  publish(api) -- Rebuild the view from game state; renderItem only reads it.
 end
 ```

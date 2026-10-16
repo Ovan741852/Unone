@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createUiScrollHost} from './ui-scroll.mjs';
+import {createUiPointerRouter} from './canvas-ui.mjs';
 
 // Minimal DOM surface for controller lifecycle checks. Painted native rails,
 // actual keyboard focus and touch dispatch are also exercised by the game UI test.
@@ -88,7 +89,145 @@ test('touch tap/swipe, second-pointer isolation, cancellation and blur do not fi
  const event=(id,x=150,y=350)=>({pointerType:'touch',pointerId:id,clientX:x,clientY:y});
  host.pointer(event(1),'down',{action:'tap'});host.pointer(event(2,950,950),'down',{action:'other'});host.pointer(event(2),'cancel');host.pointer(event(1),'up',{action:'tap'});
  assert.deepEqual(state.actions,['tap']);
- host.pointer(event(1),'down',{action:'tap'});host.pointer(event(1,150,100),'move');host.pointer(event(1),'up',{action:'tap'});assert.deepEqual(state.actions,['tap']);assert.equal(host.report()[0].offset.y,25);
+ host.pointer(event(1),'down',{action:'tap'});host.pointer(event(1,150,100),'move');host.pointer(event(1,150,100),'up',{action:'tap'});assert.deepEqual(state.actions,['tap']);assert.equal(host.report()[0].offset.y,25);
  host.pointer(event(1),'down',{action:'tap'});host.pointer(event(1),'cancel');host.pointer(event(1),'up',{action:'tap'});
  host.pointer(event(1),'down',{action:'tap'});win.dispatch('blur');host.pointer(event(1),'up',{action:'tap'});assert.deepEqual(state.actions,['tap']);
+});
+
+const pointerEvent=(x=150,y=150,options={})=>({pointerType:'mouse',pointerId:1,isPrimary:true,button:0,buttons:1,clientX:x,clientY:y,...options});
+function routeThroughCanvas(host,router,event,kind){
+ const x=event.clientX/10,y=100-event.clientY/10;
+ return host.pointer(event,kind,router.hitTest(x,y))||router.pointer({kind,pointerId:event.pointerId,x,y});
+}
+
+test('primary mouse and pen distinguish row taps from content drags, including release outside',t=>{
+ const {host,state,draw}=harness(t,screen([view('rows',[button('first'),button('tail',110)])]));
+ const router=createUiPointerRouter({onAction:e=>assert.fail('scroll row must defer activation: '+e.phase)});
+ const sync=()=>router.setTree(host.draw(state.snapshot).ui);sync();
+ const route=(event,kind)=>{sync();return routeThroughCanvas(host,router,event,kind);};
+ assert(route(pointerEvent(),'down'));assert.deepEqual(state.actions,[],'press waits until tap versus pan is known');
+ assert(route(pointerEvent(154,154),'move'));assert.equal(host.report()[0].offset.y,0);
+ assert(route(pointerEvent(154,154,{buttons:0}),'up'));assert.deepEqual(state.actions,['first']);
+ route(pointerEvent(),'down');route(pointerEvent(150,100),'move');
+ assert.equal(host.report()[0].offset.y,5);route(pointerEvent(150,150,{buttons:0}),'up');
+ assert.deepEqual(state.actions,['first'],'returning to the pressed row after dragging still cannot activate it');
+ route(pointerEvent(150,150,{pointerType:'pen'}),'down');route(pointerEvent(150,-100,{pointerType:'pen'}),'move');
+ assert.equal(host.report()[0].offset.y,25);route(pointerEvent(150,-100,{pointerType:'pen',buttons:0}),'up');
+ assert.deepEqual(state.actions,['first'],'captured release outside the viewport cannot activate');
+ draw(screen([view('rows',[button('first'),button('tail',110)],{reset_key:'coalesced'})]));
+ route(pointerEvent(),'down');route(pointerEvent(150,50,{buttons:0}),'up');
+ assert.equal(host.report()[0].offset.y,10,'a fast release also uses the final pointer position');assert.deepEqual(state.actions,['first']);
+});
+
+test('mouse drag preserves nested ownership, second-pointer isolation and cancellation',t=>{
+ const inner=view('inner',[button('deep',90)]);inner.rect={x:2,y:5,width:20,height:30};
+ const outer=view('outer',[inner,button('tail',110)]),{host,state,win,draw}=harness(t,screen([outer]));
+ assert(host.pointer(pointerEvent(150,200),'down'));
+ assert(host.pointer(pointerEvent(150,100,{pointerId:2}),'move'));
+ assert.deepEqual(host.report().map(v=>v.offset.y),[0,0]);
+ host.pointer(pointerEvent(150,100),'move');assert.deepEqual(host.report().map(v=>v.offset.y),[0,10]);
+ host.pointer(pointerEvent(150,100,{buttons:0}),'up');
+ assert.equal(host.pointer(pointerEvent(150,200,{button:2}),'down'),false,'right mouse button keeps its host meaning');
+ assert.equal(host.pointer(pointerEvent(150,200,{isPrimary:false}),'down'),false);
+ host.pointer(pointerEvent(150,200),'down',{action:'stale'});host.pointer(pointerEvent(),'cancel');
+ assert.equal(host.pointer(pointerEvent(150,200,{buttons:0}),'up',{action:'stale'}),false);
+ host.pointer(pointerEvent(150,200),'down',{action:'stale'});win.dispatch('blur');host.pointer(pointerEvent(150,200),'up',{action:'stale'});
+ host.pointer(pointerEvent(150,200),'down',{action:'stale'});host.pointer(pointerEvent(150,190,{buttons:0}),'move');host.pointer(pointerEvent(150,200),'up',{action:'stale'});
+ host.pointer(pointerEvent(150,200),'down',{action:'stale'});draw(screen([{...outer,scroll:{...outer.scroll,enabled:false}}]));draw(screen([outer]));host.pointer(pointerEvent(150,200),'up',{action:'stale'});
+ host.pointer(pointerEvent(150,200),'down',{action:'stale'});draw(screen([]));host.pointer(pointerEvent(150,200),'up',{action:'stale'});
+ assert.deepEqual(state.actions,[],'cancel, blur, lost mouse hold and removal never replay a tap');
+});
+
+test('a rejected secondary stream stays consumed after its scroll owner releases or is reset',t=>{
+ const node=view('rows',[button('tail',110)]),{host,state,draw,win}=harness(t,screen([node]));
+ const router=createUiPointerRouter(),world=[];
+ const route=(event,kind)=>{
+  router.setTree(host.draw(state.snapshot).ui);
+  const handled=routeThroughCanvas(host,router,event,kind);
+  if(!handled)world.push(kind);
+  return handled;
+ };
+ const owner=pointerEvent(150,300),other=pointerEvent(900,900,{pointerType:'touch',pointerId:2});
+ assert(route(owner,'down'));assert(route(other,'down'));
+ assert(route({...owner,buttons:0},'up'));
+ assert(route({...other,clientY:800},'move'));assert(route({...other,clientY:800,buttons:0},'up'));
+ assert.deepEqual(world,[],'the secondary finger cannot begin a world stream midway through its physical hold');
+ assert.equal(route({...other,clientY:800},'down'),false,'a subsequent physical press is a new stream');
+ route({...other,clientY:800,buttons:0},'up');world.length=0;
+ for(const reset of [()=>win.dispatch('blur'),()=>draw(screen([{...node,scroll:{...node.scroll,reset_key:'new'}}])),()=>draw(screen([]))]){
+  draw(screen([node]));assert(route(owner,'down'));reset();
+  assert(route({...owner,clientY:200},'move'));assert(route({...owner,clientY:200,buttons:0},'up'));
+ }
+ assert.deepEqual(world,[],'abandoned scroll streams also remain consumed until their own release');
+});
+
+test('a native scrollbar press abandons the canvas drag without leaking its remaining stream',t=>{
+ const {host,stage,state}=harness(t,screen([view('rows',[button('tail',110)])]));
+ const router=createUiPointerRouter(),world=[];
+ const route=(event,kind)=>{
+  router.setTree(host.draw(state.snapshot).ui);
+  const handled=routeThroughCanvas(host,router,event,kind);
+  if(!handled)world.push(kind);
+  return handled;
+ };
+ assert(route(pointerEvent(150,300),'down'));assert(route(pointerEvent(150,200),'move'));
+ const before=host.report()[0].offset.y,rail=stage.children.find(n=>n.dataset.axis==='y');
+ rail.dispatch('pointerdown',{pointerType:'touch',pointerId:2});
+ assert(route(pointerEvent(150,100),'move'));assert(route(pointerEvent(150,100,{buttons:0}),'up'));
+ assert.equal(host.report()[0].offset.y,before,'native rail owns scrolling after its press');
+ assert.deepEqual(world,[]);assert.deepEqual(state.actions,[]);
+ assert.equal(route(pointerEvent(900,900),'down'),false,'a subsequent physical press starts a new world stream');
+ route(pointerEvent(900,900,{buttons:0}),'up');assert.deepEqual(world,['down','up']);
+});
+
+test('scroll content leaves slider drags and combobox capture to the existing canvas route',t=>{
+ const slider={kind:'slider',id:'level',rect:{x:0,y:0,width:20,height:10},action:'Adjust'},combo={kind:'combobox',id:'choice',rect:{x:0,y:15,width:20,height:10},action:'Choose'};
+ const overlay={...button('foreground'),rect:{x:10,y:50,width:20,height:10}};
+ const {host,state}=harness(t,screen([view('rows',[slider,combo,button('tail',110)]),overlay]));
+ const events=[],router=createUiPointerRouter({onAction:e=>events.push(e)});router.setTree(host.draw(state.snapshot).ui);
+ const route=(event,kind)=>routeThroughCanvas(host,router,event,kind);
+ assert.equal(route(pointerEvent(),'down'),false,'semantic slider remains game-owned pointer input');
+ assert.equal(route(pointerEvent(150,50),'move'),false);assert.equal(route(pointerEvent(150,50,{buttons:0}),'up'),false);
+ assert.equal(host.report()[0].offset.y,0);
+ route(pointerEvent(150,300),'down');route(pointerEvent(150,50),'move');route(pointerEvent(150,50,{buttons:0}),'up');
+ assert.deepEqual(events.map(e=>[e.action,e.phase]),[['Choose','down'],['Choose','up']]);
+ assert.equal(host.report()[0].offset.y,0,'combobox capture does not become a scroll drag');
+ route(pointerEvent(150,450),'down');route(pointerEvent(150,50),'move');route(pointerEvent(150,50,{buttons:0}),'up');
+ assert.deepEqual(events.slice(-2).map(e=>[e.action,e.phase]),[['foreground','down'],['foreground','up']]);
+ assert.deepEqual(state.actions,[],'foreground overlay controls preserve their ordinary input');
+ route(pointerEvent(150,300),'down');
+ route(pointerEvent(350,300,{pointerType:'touch',pointerId:2}),'down');
+ route(pointerEvent(350,200,{pointerType:'touch',pointerId:2}),'move');
+ route(pointerEvent(150,300,{buttons:0}),'up');
+ assert.deepEqual(events.slice(-2).map(e=>[e.action,e.phase]),[['Choose','down'],['Choose','up']],'a second scrolling pointer cannot swallow the combobox release');
+ route(pointerEvent(350,200,{pointerType:'touch',pointerId:2,buttons:0}),'up');
+ assert.equal(host.report()[0].offset.y,10);
+});
+
+test('a later scroll pointer never takes an earlier outside control or world pointer stream',t=>{
+ const outside=[
+  {...button('outside_button'),rect:{x:70,y:70,width:20,height:10}},
+  {kind:'combobox',id:'outside_combo',action:'Choose',rect:{x:70,y:55,width:20,height:10}},
+  {kind:'slider',id:'outside_slider',action:'Adjust',rect:{x:70,y:40,width:20,height:10}},
+ ];
+ const {host,state}=harness(t,screen([view('rows',[button('tail',110)]),...outside]));
+ const events=[],world=[],router=createUiPointerRouter({onAction:e=>events.push(e)});
+ const route=(event,kind)=>{
+  router.setTree(host.draw(state.snapshot).ui);
+  const handled=routeThroughCanvas(host,router,event,kind);
+  if(!handled)world.push({pointer:event.pointerId,kind});
+  return handled;
+ };
+ for(const [index,y]of [250,400,550,800].entries()){
+  const mouse=10+index,touch=20+index,before=events.length;
+  route(pointerEvent(750,y,{pointerId:mouse}),'down');
+  assert(route(pointerEvent(350,300,{pointerType:'touch',pointerId:touch}),'down'));
+  assert(route(pointerEvent(350,200,{pointerType:'touch',pointerId:touch}),'move'));
+  route(pointerEvent(750,y,{pointerId:mouse,buttons:0}),'up');
+  assert.deepEqual(router.capturedPointers,[],'outside capture must receive its release while the other pointer scrolls');
+  route(pointerEvent(350,200,{pointerType:'touch',pointerId:touch,buttons:0}),'up');
+  if(index<2)assert.deepEqual(events.slice(before).map(e=>e.phase),['down','up']);
+  else assert.deepEqual(world.filter(e=>e.pointer===mouse).map(e=>e.kind),['down','up'],'slider and world receive their complete pointer input');
+ }
+ assert.equal(host.report()[0].offset.y,40);assert.deepEqual(state.actions,[]);
 });

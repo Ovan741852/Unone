@@ -5,11 +5,19 @@ simulation and the semantic state, this page owns the runtimes that turn it into
 pixels. It never decides a game result.
 
 ```powershell
-# from D:/Projects
-python -m http.server 8001
+# from the engine repository at D:/Projects/Unone
+cd D:/Projects/Unone
+python scripts/serve-player.py --directory .. --port 8001 --no-cache
 # then open
 # http://127.0.0.1:8001/Unone/web/presentation/?project=/Unone_Games/slot-machine/
 ```
+
+The server root is `D:/Projects`, containing both `Unone` and `Unone_Games`, so
+the URL prefixes above resolve. This source host is a development probe; use
+[official player export](../../docs/player-export.md) for distribution and serve
+that export directory instead. The helper sets JavaScript MIME types for `.js`
+and `.mjs`, and `application/wasm` for `.wasm`. Any other static server must do
+the same; a module served as `text/plain` will fail to load.
 
 The page needs `target/wasm32-unknown-emscripten/debug/deps/unone_web_live_smoke.js`;
 build it with `scripts/build-web-live.ps1` first.

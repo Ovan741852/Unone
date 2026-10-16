@@ -464,7 +464,7 @@ export type Game = {
 type PresetRow = {key: string, label: string, category: string}
 type Geometry = {
     name: string, compact: boolean, audio: UiRect, quality: UiRect,
-    library: UiRect, probe: UiRect, slider: UiRect, combo: UiRect,
+    library: UiRect, probe: UiRect, slider: UiRect, sliderTrack: UiRect, combo: UiRect,
     apply: UiRect, reset: UiRect, probeButton: UiRect, list: UiViewport,
 }
 
@@ -554,7 +554,8 @@ local function geometry(aspect: number): Geometry
             name="portrait", compact=true,
             audio=stageRect(5,19,90,14), quality=stageRect(5,35,90,17),
             library=stageRect(5,54,90,24.5), probe=stageRect(5,80.5,90,10.5),
-            slider=stageRect(8,28,84,3.6), combo=stageRect(8,40.2,84,4.8),
+            slider=stageRect(8,28,84,3.6), sliderTrack=stageRect(8,32.1,84,0.28),
+            combo=stageRect(8,40.2,84,4.8),
             apply=stageRect(5,93,56,4.8), reset=stageRect(64,93,31,4.8),
             probeButton=stageRect(8,85.2,28,4.2),
             list={left=8,top=61.2,width=84,height=13.6},
@@ -564,7 +565,8 @@ local function geometry(aspect: number): Geometry
             name="medium", compact=false,
             audio=stageRect(5,25,43,23), quality=stageRect(5,51,43,25),
             library=stageRect(51,25,44,42), probe=stageRect(51,70,44,19),
-            slider=stageRect(7,37,39,5), combo=stageRect(7,59.5,39,5.5),
+            slider=stageRect(7,37,39,5), sliderTrack=stageRect(7,44,39,0.45),
+            combo=stageRect(7,59.5,39,5.5),
             apply=stageRect(5,81,26,6), reset=stageRect(33,81,15,6),
             probeButton=stageRect(53,79.5,13,6),
             list={left=53,top=36,width=40,height=25},
@@ -574,7 +576,8 @@ local function geometry(aspect: number): Geometry
         name="desktop", compact=false,
         audio=stageRect(6,25,40,23), quality=stageRect(6,51,40,25),
         library=stageRect(49,25,45,42), probe=stageRect(49,70,45,19),
-        slider=stageRect(8,37,36,5), combo=stageRect(8,59.5,36,5.5),
+        slider=stageRect(8,37,36,5), sliderTrack=stageRect(8,44,36,0.45),
+        combo=stageRect(8,59.5,36,5.5),
         apply=stageRect(6,81,25,6), reset=stageRect(33,81,13,6),
         probeButton=stageRect(51,79.5,13,6),
         list={left=51,top=36,width=41,height=25},
@@ -646,15 +649,15 @@ local function publish(api: EngineApi)
             rect=g.slider,style={font_size=compact and 1.55 or 1.7,
                 text_align="start",color=palette.muted}}),
     }
-    local barTop = compact and 32.1 or 44
-    local barHeight = compact and 0.28 or 0.45
-    local fillWidth = aw * volume / 100
+    -- The visible track and its drag mapping share one authored rectangle.
+    local track = g.sliderTrack
+    local fillWidth = track.width * volume / 100
     if fillWidth > 0 then
-        table.insert(audioChildren,ui.panel({id="audio/fill",rect=stageRect(ax,barTop,fillWidth,barHeight),
+        table.insert(audioChildren,ui.panel({id="audio/fill",rect={x=track.x,y=track.y,width=fillWidth,height=track.height},
             style={background=palette.mint,border_width=0,border_radius=0.1}}))
     end
     if volume < 100 then
-        table.insert(audioChildren,ui.panel({id="audio/remainder",rect=stageRect(ax+fillWidth,barTop,aw-fillWidth,barHeight),
+        table.insert(audioChildren,ui.panel({id="audio/remainder",rect={x=track.x+fillWidth,y=track.y,width=track.width-fillWidth,height=track.height},
             style={background=palette.border,border_width=0,border_radius=0.1}}))
     end
     table.insert(root,card("audio","harbor.audio_settings",g.audio,audioChildren))
@@ -762,7 +765,7 @@ local function publish(api: EngineApi)
         reader_b_releases=readerBReleases,mismatches=mismatches,
         last_press_a=pressA,last_press_b=pressB,last_release_a=releaseA,last_release_b=releaseB})
     api.observation.set("layout",{name=g.name,aspect=aspect,compact=compact,
-        slider=g.slider,combobox=g.combo,list=g.list,probe=g.probeButton,apply=g.apply,reset=g.reset})
+        slider=g.slider,slider_track=g.sliderTrack,combobox=g.combo,list=g.list,probe=g.probeButton,apply=g.apply,reset=g.reset})
     api.observation.set("preset_count",#rows)
     api.observation.set("tick",tick)
 end
@@ -800,9 +803,15 @@ function Game.update(api: EngineApi, _dt: number)
     local g = geometry(api.ui.getViewport().aspect)
     local pointer = api.input.getScreenPointerPosition()
     local pointerDown = api.input.isPointerDown()
-    if pointerDown and not pointerWasDown and contains(g.slider,pointer) then dragging = true end
+    -- Both the labelled field and the visible skin start the same project-owned
+    -- gesture. Give the thin track a vertical tolerance without moving its art.
+    local track = g.sliderTrack
+    local trackHit: UiRect = {x=track.x,y=track.y-0.65,width=track.width,height=track.height+1.3}
+    if pointerDown and not pointerWasDown and (contains(g.slider,pointer) or contains(trackHit,pointer)) then
+        dragging = true
+    end
     if dragging and pointerDown then
-        volume = math.clamp(math.floor((pointer.x-g.slider.x)/g.slider.width*100+0.5),0,100)
+        volume = math.clamp(math.floor((pointer.x-track.x)/track.width*100+0.5),0,100)
     end
     if not pointerDown then dragging = false end
     pointerWasDown = pointerDown

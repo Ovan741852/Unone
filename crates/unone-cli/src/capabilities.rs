@@ -438,7 +438,7 @@ fn renderer_records() -> Vec<CapabilityRecord> {
                 "WebGPU availability does not guarantee device initialization or asset parity.".to_string(),
             ],
             vec![
-                "From a server root containing both Unone and the project, run `python -m http.server 8000`, then open `http://127.0.0.1:8000/Unone/web/runner/?project=/<project-relative-path>/`.".to_string(),
+                "Use `python <Unone-checkout>/scripts/serve-player.py --directory <server-root> --port 8000 --no-cache`, where server-root contains both Unone and the project, then open `http://127.0.0.1:8000/Unone/web/runner/?project=/<project-relative-path>/`.".to_string(),
             ],
         ),
         renderer(
@@ -448,7 +448,7 @@ fn renderer_records() -> Vec<CapabilityRecord> {
                 "It requires a browser WebGPU adapter and is not a cross-platform release guarantee.".to_string(),
             ],
             vec![
-                "From a server root containing both Unone and the project, run `python -m http.server 8000`, then open `http://127.0.0.1:8000/Unone/web/runner/?project=/<project-relative-path>/&renderer=webgpu-raw`.".to_string(),
+                "Use `python <Unone-checkout>/scripts/serve-player.py --directory <server-root> --port 8000 --no-cache`, where server-root contains both Unone and the project, then open `http://127.0.0.1:8000/Unone/web/runner/?project=/<project-relative-path>/&renderer=webgpu-raw`.".to_string(),
             ],
         ),
         renderer(
@@ -459,7 +459,7 @@ fn renderer_records() -> Vec<CapabilityRecord> {
                 "Spine licensing and host runtime availability remain external requirements.".to_string(),
             ],
             vec![
-                "From the Unone repository root run `scripts/build-web-live.ps1`, serve a root containing Unone and a presentation-compatible project with `python -m http.server 8001`, then use the project URL documented in `web/presentation/README.md`.".to_string(),
+                "From the Unone repository root run `scripts/build-web-live.ps1`, serve a root containing Unone and a presentation-compatible project with `python <Unone-checkout>/scripts/serve-player.py --directory <server-root> --port 8001 --no-cache`, then use the project URL documented in `web/presentation/README.md`.".to_string(),
             ],
         ),
     ]

@@ -133,3 +133,22 @@ preserved. All 72 files of its actual SDK-tool-tested official export are
 byte-identical to the maintained live preview; the final SDK inventory and both
 follow-up source/export manifests passed a final hash recheck. Original author
 project (166 files) and original evidence (162 files) remained unchanged.
+
+
+## Subsequent user-facing host correction
+
+The user later reported strict module MIME errors at the actual8344 preview.
+Earlier `--export` QA used its own correctly configured HTTP server and did not
+cover that host. The raw Python preview served mjs as text/plain on this Windows
+machine. The shared server/SDK guidance and actual-URL acceptance were corrected;
+the original player export bytes remain unchanged. See the
+[MIME issue and regression](../issues/2026-10-16-web-player-mime.md).
+
+The subsequent mouse-gesture report also exposed a validation gap: earlier
+slider checks used the labelled field rather than its separately painted track,
+and list checks used the wheel rather than content dragging. The maintained
+example now includes the visible track in its authored drag-start region, and
+the shared Web controller supports desktop content dragging. These changes
+intentionally go beyond the earlier type-block-only integration; frozen original
+authoring evidence stays unchanged. See the
+[gesture correction](../issues/2026-10-16-ui-pointer-gestures.md).

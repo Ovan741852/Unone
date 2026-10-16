@@ -21,7 +21,7 @@ the source tests below do not certify rendered pixels or mobile performance.
 ## Export from a portable SDK
 
 Use an extracted compatible **Windows portable Unone SDK**, the official
-`luau-analyze` executable, PowerShell and any static HTTP server. No Cargo, Rust
+`luau-analyze` executable, PowerShell and Python 3 for the SDK preview helper. No Cargo, Rust
 checkout, Node.js or source-built runtime is required. `-Sdk` is always explicit.
 The analyzer may be supplied with `-Analyzer` or the documented
 `UNONE_LUAU_ANALYZER` environment variable.
@@ -29,24 +29,34 @@ The analyzer may be supplied with `-Analyzer` or the documented
 From the repository root:
 
 ```powershell
-./_Games/observatory-settings/export.ps1 -Sdk C:/Tools/UnoneSDK -Analyzer C:/Tools/Luau/luau-analyze.exe
-python -m http.server 8196 --bind 127.0.0.1 --directory ./_Games/observatory-settings/dist/player
+$sdk = (Resolve-Path 'C:/Tools/UnoneSDK').Path
+./_Games/observatory-settings/export.ps1 -Sdk $sdk -Analyzer C:/Tools/Luau/luau-analyze.exe
+python "$sdk/scripts/serve-player.py" --directory ./_Games/observatory-settings/dist/player --port 8196 --bind 127.0.0.1 --no-cache
 ```
 
 From this example folder:
 
 ```powershell
-./export.ps1 -Sdk C:/Tools/UnoneSDK -Analyzer C:/Tools/Luau/luau-analyze.exe
-python -m http.server 8196 --bind 127.0.0.1 --directory ./dist/player
+$sdk = (Resolve-Path 'C:/Tools/UnoneSDK').Path
+./export.ps1 -Sdk $sdk -Analyzer C:/Tools/Luau/luau-analyze.exe
+python "$sdk/scripts/serve-player.py" --directory ./dist/player --port 8196 --bind 127.0.0.1 --no-cache
 ```
 
 Open `http://127.0.0.1:8196/`. A `file://` URL is not the Web player launch route.
-The optional `Play.ps1` combines export and the Python standard-library server;
+The optional `Play.ps1` combines export and the SDK's Python preview helper;
 pass `-OpenBrowser` to open the URL and press Ctrl+C to stop its foreground server:
 
 ```powershell
 ./Play.ps1 -Sdk C:/Tools/UnoneSDK -Analyzer C:/Tools/Luau/luau-analyze.exe -OpenBrowser
 ```
+
+The helper comes from the explicit SDK, so this launcher also works when the
+example is outside an engine checkout. Update the SDK if
+`scripts/serve-player.py` is missing. It serves `.js` and `.mjs` with a JavaScript
+MIME type, and `.wasm` as `application/wasm`. An alternative static host must do
+the same: Windows MIME detection in a raw `python -m http.server` can return
+`text/plain` for `.mjs`, which browsers reject as a module. Serve the official
+`dist/player` export; repository source hosts have a separate development role.
 
 `export.ps1` calls the SDK's public `project prepare --target web` workflow. The
 SDK CLI owns verification, bundle synchronization, runtime selection and the

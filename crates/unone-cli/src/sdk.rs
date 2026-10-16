@@ -738,12 +738,13 @@ pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value>
     result
 }
 
-// Keep the public entry guide and its optional validation tools together. They
+// Keep the public entry guide and its preview/validation tools together. They
 // come from the CLI's compiled authoring contract, like the package guides, so a
 // different template checkout cannot silently replace the documented tools.
-fn authoring_files() -> [(&'static str, &'static str); 3] {
+fn authoring_files() -> [(&'static str, &'static str); 4] {
     [
         ("README.md", include_str!("../../../docs/sdk-readme.md")),
+        ("scripts/serve-player.py", include_str!("../../../scripts/serve-player.py")),
         ("scripts/verify-ui-example-browser.mjs", include_str!("../../../scripts/verify-ui-example-browser.mjs")),
         ("scripts/audit-ui-fonts.py", include_str!("../../../scripts/audit-ui-fonts.py")),
     ]
@@ -1044,13 +1045,13 @@ mod tests {
         let output = temp.path().join("sdk");
         pack(&source, &[runtime], &output).unwrap();
         let mut manifest = load(&output).unwrap();
-        let added = ["README.md", "scripts/verify-ui-example-browser.mjs", "scripts/audit-ui-fonts.py"];
+        let added = ["README.md", "scripts/serve-player.py", "scripts/verify-ui-example-browser.mjs", "scripts/audit-ui-fonts.py"];
         for name in added {
             assert!(manifest.files.iter().any(|file| file.path == name), "missing documented SDK entry: {name}");
             assert!(output.join(name).is_file());
         }
         // Newly shipped tools receive the same integrity checks as every SDK file.
-        let tool = output.join("scripts/audit-ui-fonts.py");
+        let tool = output.join("scripts/serve-player.py");
         let original = fs::read(&tool).unwrap();
         fs::write(&tool, b"changed tool").unwrap();
         assert!(inspect(Some(&output)).unwrap_err().to_string().contains("SDK_HASH_MISMATCH"));

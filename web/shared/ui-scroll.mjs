@@ -39,7 +39,7 @@ export function projectScrollTree(tree,offsets=new Map()){
 }
 
 export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=async()=>{},onDiagnostic=console.error,requestRender=()=>{},getFocusedNode=()=>document.activeElement?.dataset?.uiControl,focusNode=id=>{const el=[...stage.querySelectorAll('[data-ui-control]')].find(el=>el.dataset.uiControl===id);if(!el)return false;el.focus();return true;}}){
- const states=new Map();let views=[],projected=null,hovered='',focused='',gesture=null,disposed=false,pendingFocus=null;
+ const states=new Map(),passthrough=new Set(),ignored=new Set();let views=[],projected=null,hovered='',focused='',gesture=null,disposed=false,pendingFocus=null;
  const point=e=>{const r=stage.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*100,y:100-(e.clientY-r.top)/r.height*100};};
  const ownerAt=p=>[...views].reverse().find(v=>v.enabled&&inside(v.clip,p.x,p.y));
  function makeState(id){
@@ -48,7 +48,7 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
    Object.assign(bar.style,{position:'absolute',zIndex:'7',boxSizing:'border-box',overscrollBehavior:'contain',scrollBehavior:'auto',scrollbarColor:'var(--ui-scroll-thumb, #b4b4b4) var(--ui-scroll-track, #252525)',overflowX:axis==='x'?'scroll':'hidden',overflowY:axis==='y'?'scroll':'hidden'});
    bar.append(content);stage.append(bar);rails[axis]={bar,content,range:0,max:0};
    bar.addEventListener('scroll',()=>{const s=states.get(id),rail=s?.rails[axis];if(!s||bar.hidden||!rail.range)return;s[axis]=(axis==='x'?bar.scrollLeft:bar.scrollTop)/rail.range*rail.max;requestRender();});
-   bar.addEventListener('pointerdown',()=>{focused=id;gesture=null;});
+   bar.addEventListener('pointerdown',()=>{focused=id;abandonGesture();});
   }
   return {x:0,y:0,reset:null,rails,pending:false,requested:'',keys:null,pitch:0};
  }
@@ -91,15 +91,17 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
   const s=states.get(v.id);e.preventDefault();e.stopPropagation();if(e.code==='Home')setOffset(v,0,0);else if(e.code==='End')setOffset(v,v.maxX,v.maxY);
   else {const horizontal=e.code==='ArrowLeft'||e.code==='ArrowRight'||v.node.scroll.axis==='horizontal',sign=['PageUp','ArrowUp','ArrowLeft'].includes(e.code)?-1:1;setOffset(v,s.x+(horizontal?sign*v.rect.width*.15:0),s.y+(!horizontal?sign*v.rect.height*(e.code.startsWith('Page')?.85:.15):0));}
  };
- const cancel=()=>{gesture=null;focused='';pendingFocus=null;};
+ const abandonGesture=()=>{if(gesture)ignored.add(gesture.pointer);gesture=null;};
+ const cancel=()=>{abandonGesture();passthrough.clear();focused='';pendingFocus=null;};
  canvas.addEventListener('wheel',wheel,{passive:false});canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerleave',leave);window.addEventListener('keydown',keydown,true);window.addEventListener('blur',cancel);
  return {
   draw(snapshot){
    if(disposed)throw Error('UI_SCROLL_DISPOSED');const tree=(snapshot.world??snapshot).ui,initial=projectScrollTree(tree,states),live=new Set(initial.views.map(v=>v.id));
-   for(const [id,s]of states)if(!live.has(id)){for(const {bar}of Object.values(s.rails))bar.remove();states.delete(id);if(gesture?.id===id)gesture=null;}
+   for(const [id,s]of states)if(!live.has(id)){for(const {bar}of Object.values(s.rails))bar.remove();states.delete(id);if(gesture?.id===id)abandonGesture();}
    for(const v of initial.views){
+    if(!v.enabled&&gesture?.id===v.id)abandonGesture();
     let s=states.get(v.id);if(!s){s=makeState(v.id);states.set(v.id,s);}const reset=v.node.scroll.reset_key;
-    if(s.reset!==reset){s.x=0;s.y=0;s.reset=reset;s.requested='';s.keys=null;gesture=null;if(pendingFocus?.owner===v.id)pendingFocus=null;}
+    if(s.reset!==reset){s.x=0;s.y=0;s.reset=reset;s.requested='';s.keys=null;abandonGesture();if(pendingFocus?.owner===v.id)pendingFocus=null;}
     const data=v.node.scroll.virtual_items,keys=data?.keys,pitch=data?data.row_height+data.gap_y:0;
     if(keys&&s.keys&&s.pitch===pitch&&s.columns===data.columns){const oldIndex=Math.floor(s.y/pitch)*data.columns,key=s.keys[oldIndex],index=keys.indexOf(key);if(index>=0)s.y+=(Math.floor(index/data.columns)-Math.floor(oldIndex/data.columns))*pitch;}
     s.keys=keys;s.pitch=pitch;s.columns=data?.columns;s.x=clamp(s.x,v.maxX);s.y=clamp(s.y,v.maxY);
@@ -119,16 +121,30 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
   },
   scrollToKey,ensureVisible,reveal:ensureVisible,navigate,isNavigating:()=>!!pendingFocus,
   pointer(e,kind,hit){
-   if(e.pointerType!=='touch')return false;
-   if(gesture&&gesture.pointer!==e.pointerId)return true;
-   if(kind==='cancel'){gesture=null;return false;}const p=point(e);
-   if(kind==='down'){const v=ownerAt(p);if(!v)return false;const s=states.get(v.id);gesture={id:v.id,pointer:e.pointerId,x:e.clientX,y:e.clientY,startX:s.x,startY:s.y,moved:false,action:hit?.action};focused=v.id;return true;}
-   if(!gesture)return false;const g=gesture,v=views.find(v=>v.id===g.id&&v.enabled);if(!v){gesture=null;return true;}
-   if(kind==='move'){const r=stage.getBoundingClientRect(),dx=g.x-e.clientX,dy=g.y-e.clientY;g.moved||=Math.hypot(dx,dy)>8;if(g.moved)setOffset(v,g.startX+dx/r.width*100,g.startY+dy/r.height*100);}
-   if(kind==='up'){if(!g.moved&&g.action&&g.action===hit?.action&&inside(v.clip,p.x,p.y))onAction(g.action);gesture=null;}return true;
+   if(passthrough.has(e.pointerId)){if(kind==='up'||kind==='cancel')passthrough.delete(e.pointerId);return false;}
+   if(ignored.has(e.pointerId)){if(kind==='down')ignored.delete(e.pointerId);else{if(kind==='up'||kind==='cancel')ignored.delete(e.pointerId);return true;}}
+   if(gesture&&gesture.pointer!==e.pointerId){if(kind==='down')ignored.add(e.pointerId);return true;}
+   if(kind==='cancel'){const owned=!!gesture;gesture=null;return owned;}
+   if(!['touch','mouse','pen'].includes(e.pointerType)){if(kind==='down')passthrough.add(e.pointerId);return false;}
+   const p=point(e);
+   if(kind==='down'){
+    if(gesture)return true;
+    if(e.isPrimary===false||(e.button!==undefined&&e.button!==0)){passthrough.add(e.pointerId);return false;}
+    const v=ownerAt(p);if(!v){passthrough.add(e.pointerId);return false;}
+    const node=projected?.children?.find(n=>n.id===hit?.nodeId);
+    // Sliders own their drag values, and comboboxes own the field's full
+    // pointer stream. A foreground control outside this scroll projection
+    // must also keep its ordinary input even when it overlaps the viewport.
+    if(node&&(['slider','combobox'].includes(node.kind)||(node.kind==='button'&&node.scrollOwner!==v.id))){passthrough.add(e.pointerId);return false;}
+    const s=states.get(v.id);gesture={id:v.id,pointer:e.pointerId,x:e.clientX,y:e.clientY,startX:s.x,startY:s.y,moved:false,action:hit?.action,nodeId:hit?.nodeId};focused=v.id;return true;
+   }
+   if(!gesture)return false;const g=gesture,v=views.find(v=>v.id===g.id&&v.enabled);if(!v){abandonGesture();return true;}
+   if(kind==='move'&&e.pointerType!=='touch'&&e.buttons===0){abandonGesture();return true;}
+   if(kind==='move'||kind==='up'){const r=stage.getBoundingClientRect(),dx=g.x-e.clientX,dy=g.y-e.clientY;g.moved||=Math.hypot(dx,dy)>8;if(g.moved)setOffset(v,g.startX+dx/r.width*100,g.startY+dy/r.height*100);}
+   if(kind==='up'){if(!g.moved&&g.action&&g.action===hit?.action&&g.nodeId===hit?.nodeId&&inside(v.clip,p.x,p.y))onAction(g.action);gesture=null;}return true;
   },
   cancel,
   report(){return views.map(v=>({id:v.id,enabled:v.enabled,viewport:v.rect,extent:v.extent,offset:{x:states.get(v.id).x,y:states.get(v.id).y},max:{x:v.maxX,y:v.maxY},total:v.node.scroll.virtual_items?.keys.length??null,window:v.node.scroll.virtual_items?{first:v.node.scroll.virtual_items.first,last:v.node.scroll.virtual_items.last}:null,materialized:v.node.children?.length??0}));},
-  dispose(){disposed=true;cancel();canvas.removeEventListener('wheel',wheel);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerleave',leave);window.removeEventListener('keydown',keydown,true);window.removeEventListener('blur',cancel);for(const s of states.values())for(const {bar}of Object.values(s.rails))bar.remove();states.clear();},
+  dispose(){disposed=true;cancel();ignored.clear();canvas.removeEventListener('wheel',wheel);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerleave',leave);window.removeEventListener('keydown',keydown,true);window.removeEventListener('blur',cancel);for(const s of states.values())for(const {bar}of Object.values(s.rails))bar.remove();states.clear();},
  };
 }

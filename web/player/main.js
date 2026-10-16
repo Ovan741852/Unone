@@ -76,7 +76,7 @@ async function start(){
  audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',document.baseURI)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));
  draw();await renderer.ready();draw();await new Promise(requestAnimationFrame);
  metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';saved=JSON.stringify(snapshot.save_payload);
- scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,onVisibilityChange:({visible})=>{uiRenderer.releaseAll();input.releaseAll();audio?.setVisibility(visible);}});
+ scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,onVisibilityChange:({visible})=>{uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();audio?.setVisibility(visible);}});
  /* DEVELOPER_CONNECT */
  scheduler.start();
  window.addEventListener('resize',()=>{backend.request({kind:'aspect',value:canvas.clientWidth/canvas.clientHeight}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);});
@@ -86,7 +86,7 @@ function routeUi(e,kind){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.l
 canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);audio?.unlock();if(!routeUi(e,'down'))pointer(e,true,'edge');});
 canvas.addEventListener('pointermove',e=>{if(!routeUi(e,'move'))pointer(e,Boolean(e.buttons),'move');});canvas.addEventListener('pointerup',e=>{if(!routeUi(e,'up'))pointer(e,false,'edge');});canvas.addEventListener('pointercancel',e=>{routeUi(e,'cancel');uiRenderer.releaseAll();input.releaseAll();});
 window.addEventListener('keydown',e=>input.setHeld(e.code,true));window.addEventListener('keyup',e=>input.setHeld(e.code,false));window.addEventListener('blur',()=>{uiRenderer.releaseAll();input.releaseAll();});
-window.addEventListener('unone-host-pause',()=>{uiRenderer.releaseAll();input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
+window.addEventListener('unone-host-pause',()=>{uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
 window.addEventListener('pagehide',()=>{uiScroll.dispose();uiRenderer.dispose?.();scheduler?.stop();try{disposeRenderer(renderer);}catch(error){console.error(error);}backend?.close();});
 canvas.addEventListener('lostpointercapture',e=>uiScroll.pointer(e,'cancel'));

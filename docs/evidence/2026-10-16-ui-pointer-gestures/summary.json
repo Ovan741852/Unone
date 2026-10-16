@@ -1,0 +1,309 @@
+{
+  "url": "http://127.0.0.1:8344/?sdk=fresh-ui-verified",
+  "browser": "Playwright Microsoft Edge channel msedge, headless; independent context for each viewport and platform lifecycle probe",
+  "pass": true,
+  "release": "888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a",
+  "before": {
+    "lineReproduced": true,
+    "lineVolume": [
+      72,
+      72
+    ],
+    "contentReproduced": true,
+    "contentScroll": [
+      0,
+      0
+    ],
+    "evidence": [
+      "before.json",
+      "before-1440x900.png"
+    ]
+  },
+  "assertions": 58,
+  "viewports": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "pass": true,
+      "assertions": 18,
+      "visibleLine": {
+        "startNode": "audio/fill",
+        "start": {
+          "x": 301.824,
+          "y": 398.025
+        },
+        "target": {
+          "x": 234.43200000000002,
+          "y": 398.025
+        },
+        "value": 23,
+        "outsideReleased": 100,
+        "returnedWithoutButton": 100,
+        "final": 23
+      },
+      "content": {
+        "physicalStartRow": "preset/morning-balanced",
+        "scrollTop": [
+          0,
+          158
+        ],
+        "rangeBefore": [
+          1,
+          6
+        ],
+        "rangeAfter": [
+          2,
+          9
+        ],
+        "presetBefore": "morning-calm",
+        "presetAfterDrag": "morning-calm",
+        "clickPreset": "morning-warm",
+        "wheelScrollTop": 558
+      },
+      "quality": "Studio",
+      "inputProbe": {
+        "held": false,
+        "hold_ticks": 0,
+        "last_press_a": false,
+        "last_press_b": false,
+        "last_release_a": false,
+        "last_release_b": false,
+        "mismatches": 0,
+        "presses": 1,
+        "reader_a_presses": 1,
+        "reader_a_releases": 1,
+        "reader_b_presses": 1,
+        "reader_b_releases": 1,
+        "releases": 1,
+        "total_held_ticks": 22
+      },
+      "frames": [
+        27,
+        347
+      ],
+      "mime": {
+        "javascript": 25,
+        "wasm": 1,
+        "bad": []
+      },
+      "errors": {
+        "console": 0,
+        "page": 0,
+        "request": 0,
+        "http": 0,
+        "status": "",
+        "fatal": null
+      }
+    },
+    {
+      "viewport": {
+        "width": 1020,
+        "height": 884
+      },
+      "pass": true,
+      "assertions": 18,
+      "visibleLine": {
+        "startNode": "audio/fill",
+        "start": {
+          "x": 214.608,
+          "y": 390.949
+        },
+        "target": {
+          "x": 162.894,
+          "y": 390.949
+        },
+        "value": 23,
+        "outsideReleased": 100,
+        "returnedWithoutButton": 100,
+        "final": 23
+      },
+      "content": {
+        "physicalStartRow": "preset/morning-balanced",
+        "scrollTop": [
+          0,
+          155
+        ],
+        "rangeBefore": [
+          1,
+          6
+        ],
+        "rangeAfter": [
+          2,
+          9
+        ],
+        "presetBefore": "morning-calm",
+        "presetAfterDrag": "morning-calm",
+        "clickPreset": "morning-warm",
+        "wheelScrollTop": 555
+      },
+      "quality": "Studio",
+      "inputProbe": {
+        "held": false,
+        "hold_ticks": 0,
+        "last_press_a": false,
+        "last_press_b": false,
+        "last_release_a": false,
+        "last_release_b": false,
+        "mismatches": 0,
+        "presses": 1,
+        "reader_a_presses": 1,
+        "reader_a_releases": 1,
+        "reader_b_presses": 1,
+        "reader_b_releases": 1,
+        "releases": 1,
+        "total_held_ticks": 21
+      },
+      "frames": [
+        26,
+        354
+      ],
+      "mime": {
+        "javascript": 25,
+        "wasm": 1,
+        "bad": []
+      },
+      "errors": {
+        "console": 0,
+        "page": 0,
+        "request": 0,
+        "http": 0,
+        "status": "",
+        "fatal": null
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "pass": true,
+      "assertions": 18,
+      "visibleLine": {
+        "startNode": "audio/fill",
+        "start": {
+          "x": 149.136,
+          "y": 272.1055999999999
+        },
+        "target": {
+          "x": 106.54799999999999,
+          "y": 272.1055999999999
+        },
+        "value": 23,
+        "outsideReleased": 100,
+        "returnedWithoutButton": 100,
+        "final": 23
+      },
+      "content": {
+        "physicalStartRow": "preset/morning-balanced",
+        "scrollTop": [
+          0,
+          110
+        ],
+        "rangeBefore": [
+          1,
+          4
+        ],
+        "rangeAfter": [
+          1,
+          6
+        ],
+        "presetBefore": "morning-calm",
+        "presetAfterDrag": "morning-calm",
+        "clickPreset": "morning-deep",
+        "wheelScrollTop": 510
+      },
+      "quality": "Studio",
+      "inputProbe": {
+        "held": false,
+        "hold_ticks": 0,
+        "last_press_a": false,
+        "last_press_b": false,
+        "last_release_a": false,
+        "last_release_b": false,
+        "mismatches": 0,
+        "presses": 1,
+        "reader_a_presses": 1,
+        "reader_a_releases": 1,
+        "reader_b_presses": 1,
+        "reader_b_releases": 1,
+        "releases": 1,
+        "total_held_ticks": 22
+      },
+      "frames": [
+        25,
+        340
+      ],
+      "mime": {
+        "javascript": 25,
+        "wasm": 1,
+        "bad": []
+      },
+      "errors": {
+        "console": 0,
+        "page": 0,
+        "request": 0,
+        "http": 0,
+        "status": "",
+        "fatal": null
+      }
+    }
+  ],
+  "lifecycle": {
+    "pass": true,
+    "assertions": [
+      {
+        "pass": true,
+        "message": "Physical row drag activates before platform pause"
+      },
+      {
+        "pass": true,
+        "message": "Still-held movement after pause/resume does not continue the cancelled drag"
+      },
+      {
+        "pass": true,
+        "message": "Cancelled platform drag does not select a row on release"
+      },
+      {
+        "pass": true,
+        "message": "Lifecycle probe has no page, request or console errors"
+      }
+    ],
+    "eventType": "Synthetic platform lifecycle events only: window Event unone-host-pause and unone-host-resume. The row pointer gesture remains physical Playwright mouse.",
+    "scrollTop": [
+      24,
+      24,
+      24
+    ],
+    "presetBefore": "morning-calm",
+    "presetAfter": "morning-calm"
+  },
+  "visualQa": {
+    "viewImageReviewed": [
+      "before-1440x900.png",
+      "after-1440x900.png",
+      "after-1020x884.png",
+      "after-390x844.png"
+    ],
+    "finding": "Complete desktop/tablet two-column and mobile single-column UI visible. All show 23 percent, Studio, scroll content, Press 1 / Release 1 and apply/reset. No error overlay. Virtual viewport deliberately clips partially visible top/bottom rows."
+  },
+  "exportIntegrity": {
+    "root": "D:/TSProject/Voidwake/engine/_Games/harbor-controls/dist/player",
+    "files": 72,
+    "bytes": 5096026,
+    "sha256Unchanged": true,
+    "evidence": [
+      "after-export-before-sha256.json",
+      "after-export-after-sha256.json"
+    ]
+  },
+  "harnessCorrection": {
+    "note": "First trial required virtual first index to increase. Mobile drag moved scrollTop 0 to 110 and range 1..4 to 1..6; overscan legitimately preserved first=1. Corrected assertion to detect change in either range bound. Final trial passed; no product code was changed by QA.",
+    "evidence": [
+      "after-trial1-first-only-assertion.json",
+      "trial1-first-only-assertion-390x844.png"
+    ]
+  },
+  "constraints": "No source/docs/SDK/export/payload edits; no Cargo/commit/server start or stop. Prior web-player-mime evidence untouched. Production WASM ptr/len observation only; all primary interactions physical mouse; platform lifecycle events are explicitly synthetic."
+}
